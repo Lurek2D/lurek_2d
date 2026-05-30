@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["StimulusType"],"struct":["DetectedStimulus","Sensor","Stimulus","StimulusWorld"]};

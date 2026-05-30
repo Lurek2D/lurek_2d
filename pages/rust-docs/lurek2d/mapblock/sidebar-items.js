@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["block","config","constraints","generator","group","layer","maptile","multilevel","orientation","output","placement","script","tileset_ref"]};

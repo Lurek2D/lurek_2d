@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["CloudState","FilmGrainState","FogState","HeatHazeState","LightningState","VignetteState"]};

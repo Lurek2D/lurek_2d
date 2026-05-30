@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["astar","line_of_sight","smooth_path"]};

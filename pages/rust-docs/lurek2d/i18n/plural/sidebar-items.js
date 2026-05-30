@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["PluralForm"],"fn":["pluralize","pluralize_slavic"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaAutoTileSheet","LuaChunkMap","LuaIsoMap","LuaLargeMapRenderer","LuaMapBlock","LuaMapGen","LuaMapGroup","LuaMapScript","LuaTileMap","LuaTileSet"]};

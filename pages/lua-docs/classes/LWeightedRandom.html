@@ -3,139 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LWeightedRandom - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LWeightedRandom Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/patterns.html#lweightedrandom-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a class="active" href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LWeightedRandom</h1>
-  <p>Lua-facing weighted random selection pool. Add items with weights and pick random selections.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/patterns.html">lurek.patterns</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
-    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
-    print(&quot;items = &quot; .. wr:len())
-    print(&quot;total = &quot; .. wr:totalWeight())
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LWeightedRandom userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-add"><div class="item-row-main"><h3>add</h3><pre class="inline-signature">LWeightedRandom:add(weight: number, value: any, label: string?) -&gt; number</pre><p>Add an item with a relative weight. Higher weight = higher selection probability.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2509</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
-    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
-    print(&quot;items = &quot; .. wr:len())
-    print(&quot;total = &quot; .. wr:totalWeight())
-end</code></pre></details></article><article class="item-row api-row" id="method-clearall"><div class="item-row-main"><h3>clearAll</h3><pre class="inline-signature">LWeightedRandom:clearAll()</pre><p>Remove all entries from the pool. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2594</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(5, &quot;item_a&quot;)
-    wr:add(5, &quot;item_b&quot;)
-    print(&quot;before = &quot; .. wr:len())
-    wr:clearAll()
-    print(&quot;after = &quot; .. wr:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-getrevision"><div class="item-row-main"><h3>getRevision</h3><pre class="inline-signature">LWeightedRandom:getRevision() -&gt; number</pre><p>Return the revision counter. Increments on any add/remove/weight change.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2605</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, &quot;item_a&quot;)
-    wr:setWeight(id, 20)
-    print(&quot;revision = &quot; .. wr:getRevision())
-    print(&quot;items = &quot; .. wr:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-isempty"><div class="item-row-main"><h3>isEmpty</h3><pre class="inline-signature">LWeightedRandom:isEmpty() -&gt; boolean</pre><p>Check whether the pool has no entries.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2591</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    print(&quot;empty = &quot; .. tostring(wr:isEmpty()))
-    wr:add(5, &quot;item_a&quot;)
-    print(&quot;after add = &quot; .. tostring(wr:isEmpty()))
-end</code></pre></details></article><article class="item-row api-row" id="method-len"><div class="item-row-main"><h3>len</h3><pre class="inline-signature">LWeightedRandom:len() -&gt; number</pre><p>Return the number of entries in the pool.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2587</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
-    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
-    print(&quot;items = &quot; .. wr:len())
-    print(&quot;total = &quot; .. wr:totalWeight())
-end</code></pre></details></article><article class="item-row api-row" id="method-pick"><div class="item-row-main"><h3>pick</h3><pre class="inline-signature">LWeightedRandom:pick(sample: number) -&gt; string</pre><p>Pick one item using a random sample value in [0, 1). Returns its value or nil.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2547</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
-    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
-    print(&quot;picked = &quot; .. tostring(wr:pick(0.5)))
-    print(&quot;items = &quot; .. wr:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-pickn"><div class="item-row-main"><h3>pickN</h3><pre class="inline-signature">LWeightedRandom:pickN(count: integer, samples: table) -&gt; number[]</pre><p>Pick multiple unique items. Requires an array of random samples.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2564</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
-    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
-    wr:add(1, &quot;legendary&quot;, &quot;legendary_loot&quot;)
-    local values = wr:pickN(2, {0.1, 0.9})
-    print(&quot;count = &quot; .. #values)
-    print(&quot;items = &quot; .. wr:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">LWeightedRandom:remove(id: integer) -&gt; boolean</pre><p>Remove an item by its ID. Returns true if it existed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2525</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, &quot;item_a&quot;)
-    wr:add(5, &quot;item_b&quot;)
-    wr:remove(id)
-    print(&quot;items = &quot; .. wr:len())
-    print(&quot;revision = &quot; .. wr:getRevision())
-end</code></pre></details></article><article class="item-row api-row" id="method-setweight"><div class="item-row-main"><h3>setWeight</h3><pre class="inline-signature">LWeightedRandom:setWeight(id: integer, weight: number) -&gt; boolean</pre><p>Change the weight of an existing entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2539</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    local id = wr:add(5, &quot;item_a&quot;)
-    wr:add(5, &quot;item_b&quot;)
-    wr:setWeight(id, 20)
-    print(&quot;total = &quot; .. wr:totalWeight())
-    print(&quot;revision = &quot; .. wr:getRevision())
-end</code></pre></details></article><article class="item-row api-row" id="method-totalweight"><div class="item-row-main"><h3>totalWeight</h3><pre class="inline-signature">LWeightedRandom:totalWeight() -&gt; number</pre><p>Return the sum of all entry weights.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/patterns_api.rs:2581</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
-    local wr = lurek.patterns.newWeightedRandom()
-    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
-    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
-    print(&quot;total = &quot; .. wr:totalWeight())
-    print(&quot;items = &quot; .. wr:len())
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/patterns.html#lweightedrandom-handle">../../modules/patterns.html#lweightedrandom-handle</a>…</p>
 </body>
 </html>

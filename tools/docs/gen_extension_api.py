@@ -26,39 +26,8 @@ import os
 import sys
 from datetime import date
 
-# Engine callbacks (game script slot functions).
-# Stable Lurek contracts -- not extracted from source.
-CALLBACKS: list[dict] = [
-    {"name": "draw", "signature": "function lurek.draw()", "description": "Called every frame for rendering. All draw calls must happen here.", "parameters": []},
-    {"name": "keypressed", "signature": "function lurek.keypressed(key)", "description": "Called when a keyboard key is pressed.", "parameters": [{"name": "key", "type": "string", "description": "Key name", "optional": False}]},
-    {"name": "keyreleased", "signature": "function lurek.keyreleased(key)", "description": "Called when a keyboard key is released.", "parameters": [{"name": "key", "type": "string", "description": "Key name", "optional": False}]},
-    {"name": "textinput", "signature": "function lurek.textinput(text)", "description": "Called when text input is received.", "parameters": [{"name": "text", "type": "string", "description": "Input character(s)", "optional": False}]},
-    {"name": "mousepressed", "signature": "function lurek.mousepressed(x, y, button)", "description": "Called when a mouse button is pressed.", "parameters": [{"name": "x", "type": "number", "description": "Mouse X", "optional": False}, {"name": "y", "type": "number", "description": "Mouse Y", "optional": False}, {"name": "button", "type": "number", "description": "Button index (1=left, 2=right, 3=middle)", "optional": False}]},
-    {"name": "mousereleased", "signature": "function lurek.mousereleased(x, y, button)", "description": "Called when a mouse button is released.", "parameters": [{"name": "x", "type": "number", "description": "Mouse X", "optional": False}, {"name": "y", "type": "number", "description": "Mouse Y", "optional": False}, {"name": "button", "type": "number", "description": "Button index", "optional": False}]},
-    {"name": "mousemoved", "signature": "function lurek.mousemoved(x, y, dx, dy)", "description": "Called when the mouse cursor moves.", "parameters": [{"name": "x", "type": "number", "description": "X", "optional": False}, {"name": "y", "type": "number", "description": "Y", "optional": False}, {"name": "dx", "type": "number", "description": "X delta", "optional": False}, {"name": "dy", "type": "number", "description": "Y delta", "optional": False}]},
-    {"name": "wheelmoved", "signature": "function lurek.wheelmoved(x, y)", "description": "Called on mouse wheel scroll.", "parameters": [{"name": "x", "type": "number", "description": "Horizontal scroll", "optional": False}, {"name": "y", "type": "number", "description": "Vertical scroll", "optional": False}]},
-    {"name": "gamepadpressed", "signature": "function lurek.gamepadpressed(id, button)", "description": "Called when a gamepad button is pressed.", "parameters": [{"name": "id", "type": "number", "description": "Gamepad ID", "optional": False}, {"name": "button", "type": "string", "description": "Button name", "optional": False}]},
-    {"name": "gamepadreleased", "signature": "function lurek.gamepadreleased(id, button)", "description": "Called when a gamepad button is released.", "parameters": [{"name": "id", "type": "number", "description": "Gamepad ID", "optional": False}, {"name": "button", "type": "string", "description": "Button name", "optional": False}]},
-    {"name": "gamepadaxis", "signature": "function lurek.gamepadaxis(id, axis, value)", "description": "Called when a gamepad axis changes.", "parameters": [{"name": "id", "type": "number", "description": "Gamepad ID", "optional": False}, {"name": "axis", "type": "string", "description": "Axis name", "optional": False}, {"name": "value", "type": "number", "description": "Axis value", "optional": False}]},
-    {"name": "joystickadded", "signature": "function lurek.joystickadded(id)", "description": "Called when a gamepad is connected.", "parameters": [{"name": "id", "type": "number", "description": "Device ID", "optional": False}]},
-    {"name": "joystickremoved", "signature": "function lurek.joystickremoved(id)", "description": "Called when a gamepad is disconnected.", "parameters": [{"name": "id", "type": "number", "description": "Device ID", "optional": False}]},
-    {"name": "focus", "signature": "function lurek.focus(has_focus)", "description": "Called when window gains or loses focus.", "parameters": [{"name": "has_focus", "type": "boolean", "description": "True if focused", "optional": False}]},
-    {"name": "visible", "signature": "function lurek.visible(is_visible)", "description": "Called when window visibility changes.", "parameters": [{"name": "is_visible", "type": "boolean", "description": "True if visible", "optional": False}]},
-    {"name": "resize", "signature": "function lurek.resize(w, h)", "description": "Called when the window is resized.", "parameters": [{"name": "w", "type": "number", "description": "New width", "optional": False}, {"name": "h", "type": "number", "description": "New height", "optional": False}]},
-    {"name": "quit", "signature": "function lurek.quit()", "description": "Called when the window is about to close. Return true to cancel.", "parameters": []},
-    {"name": "init", "signature": "function lurek.init()", "description": "Called once when the engine initialises, before the first frame.", "parameters": []},
-    {"name": "ready", "signature": "function lurek.ready()", "description": "Called once after init, when the window and GPU are ready.", "parameters": []},
-    {"name": "process", "signature": "function lurek.process(dt)", "description": "Called every frame for game logic. `dt` is elapsed seconds.", "parameters": [{"name": "dt", "type": "number", "description": "Delta time in seconds", "optional": False}]},
-    {"name": "process_late", "signature": "function lurek.process_late(dt)", "description": "Called every frame after process, for late updates (camera follow, etc).", "parameters": [{"name": "dt", "type": "number", "description": "Delta time in seconds", "optional": False}]},
-    {"name": "process_physics", "signature": "function lurek.process_physics(dt)", "description": "Called at fixed physics timestep rate.", "parameters": [{"name": "dt", "type": "number", "description": "Fixed delta time", "optional": False}]},
-    {"name": "fixedUpdate", "signature": "function lurek.fixedUpdate(dt)", "description": "Deprecated alias for process_physics. Use lurek.process_physics(dt).", "parameters": [{"name": "dt", "type": "number", "description": "Fixed delta time", "optional": False}]},
-    {"name": "draw_ui", "signature": "function lurek.draw_ui()", "description": "Called every frame after draw, for UI overlay rendering.", "parameters": []},
-    {"name": "exit", "signature": "function lurek.exit()", "description": "Called when the engine is shutting down, after quit.", "parameters": []},
-    {"name": "touchpressed", "signature": "function lurek.touchpressed(id, x, y, dx, dy, pressure)", "description": "Called when a touch begins.", "parameters": [{"name": "id", "type": "number", "description": "Touch ID", "optional": False}, {"name": "x", "type": "number", "description": "X", "optional": False}, {"name": "y", "type": "number", "description": "Y", "optional": False}, {"name": "dx", "type": "number", "description": "X delta", "optional": False}, {"name": "dy", "type": "number", "description": "Y delta", "optional": False}, {"name": "pressure", "type": "number", "description": "Pressure", "optional": False}]},
-    {"name": "touchmoved", "signature": "function lurek.touchmoved(id, x, y, dx, dy, pressure)", "description": "Called when a touch point moves.", "parameters": [{"name": "id", "type": "number", "description": "Touch ID", "optional": False}, {"name": "x", "type": "number", "description": "X", "optional": False}, {"name": "y", "type": "number", "description": "Y", "optional": False}, {"name": "dx", "type": "number", "description": "X delta", "optional": False}, {"name": "dy", "type": "number", "description": "Y delta", "optional": False}, {"name": "pressure", "type": "number", "description": "Pressure", "optional": False}]},
-    {"name": "touchreleased", "signature": "function lurek.touchreleased(id, x, y, dx, dy, pressure)", "description": "Called when a touch ends.", "parameters": [{"name": "id", "type": "number", "description": "Touch ID", "optional": False}, {"name": "x", "type": "number", "description": "X", "optional": False}, {"name": "y", "type": "number", "description": "Y", "optional": False}, {"name": "dx", "type": "number", "description": "X delta", "optional": False}, {"name": "dy", "type": "number", "description": "Y delta", "optional": False}, {"name": "pressure", "type": "number", "description": "Pressure", "optional": False}]},
-    {"name": "textedited", "signature": "function lurek.textedited(text, start, length)", "description": "Called when IME composition text changes.", "parameters": [{"name": "text", "type": "string", "description": "Composition text", "optional": False}, {"name": "start", "type": "number", "description": "Cursor start", "optional": False}, {"name": "length", "type": "number", "description": "Selection length", "optional": False}]},
-]
+# Engine callbacks are sourced from `engine_callbacks` in logs/data/lua_api_data.json,
+# which is extracted from Rust `@engine-callback` tags in src/app/lua_callbacks.rs.
 
 KEY_NAMES: list[str] = [
     "space", "return", "escape", "backspace", "tab", "delete", "insert",
@@ -171,6 +140,7 @@ def convert(data: dict, verbose: bool = False) -> dict:
     api_root = data.get("lua_api", data)
     raw_modules: dict = api_root.get("modules", {})
     raw_enums: dict[str, list[str]] = api_root.get("enums") or BUILTIN_ENUMS
+    raw_callbacks: list[dict] = data.get("engine_callbacks") or []
 
     modules_out: list[dict] = []
     classes_out: dict[str, dict] = {}
@@ -242,7 +212,7 @@ def convert(data: dict, verbose: bool = False) -> dict:
         "modules": modules_out,
         "classes": sorted(classes_out.values(), key=lambda c: c["name"]),
         "enums": raw_enums,
-        "callbacks": CALLBACKS,
+        "callbacks": raw_callbacks,
         "keyNames": KEY_NAMES,
         "gamepadButtons": GAMEPAD_BUTTONS,
         "gamepadAxes": GAMEPAD_AXES,

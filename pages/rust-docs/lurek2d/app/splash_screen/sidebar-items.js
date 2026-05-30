@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["load_splash_branding","make_splash_commands"],"struct":["SplashBranding","SplashTexture"]};

@@ -3,138 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LRingBuffer - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LRingBuffer Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/binary.html#lringbuffer-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a class="active" href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LRingBuffer</h1>
-  <p>Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/binary.html">lurek.binary</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(3)
-    rb:push(&quot;a&quot;)
-    rb:push(&quot;b&quot;)
-    local evicted = rb:push(&quot;d&quot;)
-    print(&quot;evicted = &quot; .. tostring(evicted))
-    print(&quot;newest = &quot; .. tostring(rb:peekNewest()))
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LRingBuffer userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-capacity"><div class="item-row-main"><h3>capacity</h3><pre class="inline-signature">LRingBuffer:capacity() -&gt; integer</pre><p>Returns the maximum capacity of the ring buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:170</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(5)
-    print(&quot;capacity = &quot; .. rb:capacity())
-end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LRingBuffer:clear()</pre><p>Removes every stored value and releases their registry keys.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:184</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    rb:push(1)
-    rb:push(2)
-    rb:clear()
-    print(&quot;after clear len = &quot; .. rb:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-isempty"><div class="item-row-main"><h3>isEmpty</h3><pre class="inline-signature">LRingBuffer:isEmpty() -&gt; boolean</pre><p>Returns whether the ring buffer has no values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:174</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    print(&quot;empty = &quot; .. tostring(rb:isEmpty()))
-    rb:push(&quot;value&quot;)
-    print(&quot;empty after push = &quot; .. tostring(rb:isEmpty()))
-end</code></pre></details></article><article class="item-row api-row" id="method-isfull"><div class="item-row-main"><h3>isFull</h3><pre class="inline-signature">LRingBuffer:isFull() -&gt; boolean</pre><p>Returns whether the ring buffer is at capacity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:178</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(2)
-    rb:push(&quot;a&quot;)
-    rb:push(&quot;b&quot;)
-    print(&quot;full = &quot; .. tostring(rb:isFull()))
-    print(&quot;len = &quot; .. tostring(rb:len()))
-end</code></pre></details></article><article class="item-row api-row" id="method-len"><div class="item-row-main"><h3>len</h3><pre class="inline-signature">LRingBuffer:len() -&gt; integer</pre><p>Returns the number of values currently stored.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:166</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(10)
-    rb:push(1)
-    rb:push(2)
-    print(&quot;len = &quot; .. rb:len())
-    print(&quot;capacity = &quot; .. rb:capacity())
-end</code></pre></details></article><article class="item-row api-row" id="method-peek"><div class="item-row-main"><h3>peek</h3><pre class="inline-signature">LRingBuffer:peek() -&gt; LuaValue</pre><p>Returns the oldest stored value without removing it from the ring buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:152</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    rb:push(&quot;first&quot;)
-    rb:push(&quot;second&quot;)
-    print(&quot;peek = &quot; .. rb:peek())
-end</code></pre></details></article><article class="item-row api-row" id="method-peeknewest"><div class="item-row-main"><h3>peekNewest</h3><pre class="inline-signature">LRingBuffer:peekNewest() -&gt; LuaValue</pre><p>Returns the newest stored value without removing it from the ring buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:159</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    rb:push(&quot;old&quot;)
-    rb:push(&quot;new&quot;)
-    print(&quot;newest = &quot; .. rb:peekNewest())
-end</code></pre></details></article><article class="item-row api-row" id="method-pop"><div class="item-row-main"><h3>pop</h3><pre class="inline-signature">LRingBuffer:pop() -&gt; LuaValue</pre><p>Removes and returns the oldest stored value from the ring buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:141</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    rb:push(10)
-    rb:push(20)
-    local oldest = rb:pop()
-    print(&quot;popped = &quot; .. oldest)
-end</code></pre></details></article><article class="item-row api-row" id="method-push"><div class="item-row-main"><h3>push</h3><pre class="inline-signature">LRingBuffer:push(value: any) -&gt; boolean</pre><p>Pushes a value into the ring buffer and evicts the oldest value when full.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:127</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(3)
-    rb:push(&quot;a&quot;)
-    rb:push(&quot;b&quot;)
-    local evicted = rb:push(&quot;d&quot;)
-    print(&quot;evicted = &quot; .. tostring(evicted))
-    print(&quot;newest = &quot; .. tostring(rb:peekNewest()))
-end</code></pre></details></article><article class="item-row api-row" id="method-totable"><div class="item-row-main"><h3>toTable</h3><pre class="inline-signature">LRingBuffer:toTable() -&gt; number[]</pre><p>Returns stored values in oldest-to-newest order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:193</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    rb:push(10)
-    rb:push(20)
-    local t = rb:toTable()
-    print(&quot;table len = &quot; .. #t)
-    print(&quot;first item = &quot; .. tostring(t[1]))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LRingBuffer:type() -&gt; string</pre><p>Returns the Lua-visible type name for this ring buffer handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:204</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    print(&quot;type = &quot; .. rb:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LRingBuffer:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this ring buffer handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:209</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
-    local rb = lurek.binary.newRingBuffer(4)
-    print(&quot;is LRingBuffer = &quot; .. tostring(rb:typeOf(&quot;LRingBuffer&quot;)))
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/binary.html#lringbuffer-handle">../../modules/binary.html#lringbuffer-handle</a>…</p>
 </body>
 </html>

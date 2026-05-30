@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ProvinceZoomMode"],"fn":["generate_render_commands"],"struct":["ProvinceRenderOptions"]};

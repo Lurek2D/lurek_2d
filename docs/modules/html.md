@@ -1,12 +1,76 @@
 # Html
 
-- The `html` module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D.
+## Summary
 
 It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element.
 
 Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
 
 The module also handles complex text rendering, ensuring accurate wrapping, alignment, and multi-line overflow management. Furthermore, the `html` module is deeply interactive. It routes user input—such as mouse clicks, hover events, keyboard focus, and text input—directly to the appropriate DOM elements, executing bound Lua callbacks (`mousepressed`, `mousemoved`, `keypressed`). The entire document lifecycle, from DOM queries (`getElementById`, `querySelector`) to dynamic structural mutations, is fully scriptable via the `lurek.html.*` API.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### color.rs
+
+- Turns raw CSS color text into normalized RGBA values ready for render-side blending.
+- Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles.
+- Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape.
+- Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable.
+- Returns compact `[f32; 4]` color vectors in 0..1 space for direct engine consumption.
+
+### document.rs
+
+- Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state.
+- Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs.
+- Resolves selector-driven style cascades into computed per-element visual properties for later layout.
+- Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry.
+- Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing.
+- Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries.
+- Applies DOM mutations like attribute edits, class toggles, text replacement, and inner fragment insertion.
+- Serializes inner and outer HTML snapshots so runtime edits can be observed or persisted deterministically.
+- Generates draw command streams carrying rectangles, text, and color intent for render-side execution.
+- Collects parse and style warnings so caller code can surface authoring issues without aborting runtime flow.
+
+### element.rs
+
+- Defines the core DOM node shape used to store structure, attributes, text, and layout geometry.
+- Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state.
+- Provides class token mutation paths that preserve deterministic ordering and membership checks.
+- Tracks parent-child linkage and removal flags to support stable traversal without index churn.
+- Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow.
+- Supplies normalization and void-element classification rules that guide parsing and tree mutations.
+
+### mod.rs
+
+- High-level HTML module surface that composes parsing, styling, selection, and document orchestration.
+- Re-exports stable document and element types used by runtime code interacting with HTML-driven UI.
+- Binds color, parser, selector, and style helpers into one cohesive entry point for the subsystem.
+
+### parser.rs
+
+- Converts raw HTML text into document nodes with stable parent-child links and normalized attributes.
+- Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state.
+- Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization.
+- Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical.
+- Collapses insignificant whitespace in text nodes to keep rendered output predictable across content styles.
+
+### selector.rs
+
+- Implements selector matching logic that maps CSS-like queries onto the live HTML element tree.
+- Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering.
+- Supports descendant and direct-child relationships for ancestry-aware filtering semantics.
+- Walks parent links to evaluate multi-part selector chains against runtime element topology.
+- Provides the core predicate shared by style cascade resolution and document query operations.
+
+### style.rs
+
+- Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout.
+- Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs.
+- Normalizes declaration keys and values so later cascade merges operate on stable property naming.
+- Resolves pixel, percent, and unitless length text into float values against caller-provided bases.
+- Supplies compact parse outputs consumed by document rebuild, style recompute, and layout phases.
 
 ## Functions
 
@@ -15,7 +79,6 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 Returns whether the default action was prevented.
 
 ```lua
--- signature
 lurek.html.isDefaultPrevented()
 ```
 
@@ -23,7 +86,7 @@ lurek.html.isDefaultPrevented()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the default was prevented. |
+| boolean | True when the default was prevented. |
 
 **Example**
 
@@ -44,7 +107,6 @@ end
 Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
 
 ```lua
--- signature
 lurek.html.loadDocument(path, opts)
 ```
 
@@ -52,14 +114,14 @@ lurek.html.loadDocument(path, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to the HTML file. |
-| `opts?` | `table` | Table with `css`, `cssPath`, `width`, and `height` fields. |
+| `path` | string | GameFS path to the HTML file. |
+| `opts?` | table | Table with `css`, `cssPath`, `width`, and `height` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHtmlDocument` | Loaded HTML document handle. |
+| [LHtmlDocument](#lhtmldocument-handle) | Loaded HTML document handle. |
 
 **Example**
 
@@ -80,7 +142,6 @@ end
 Creates an HTML document from optional source and layout/style options.
 
 ```lua
--- signature
 lurek.html.newDocument(source, opts)
 ```
 
@@ -88,14 +149,14 @@ lurek.html.newDocument(source, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source?` | `string` | HTML source, defaulting to an empty document. |
-| `opts?` | `table` | Table with `css`, `cssPath`, `width`, and `height` fields. |
+| `source?` | string | HTML source, defaulting to an empty document. |
+| `opts?` | table | Table with `css`, `cssPath`, `width`, and `height` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHtmlDocument` | New HTML document handle. |
+| [LHtmlDocument](#lhtmldocument-handle) | New HTML document handle. |
 
 **Example**
 
@@ -113,7 +174,6 @@ end
 Marks the event as having its default action prevented.
 
 ```lua
--- signature
 lurek.html.preventDefault()
 ```
 
@@ -136,7 +196,6 @@ end
 Stops event propagation to remaining listeners.
 
 ```lua
--- signature
 lurek.html.stopPropagation()
 ```
 
@@ -159,7 +218,6 @@ end
 Returns whether the HTML engine supports a named feature.
 
 ```lua
--- signature
 lurek.html.supports(feature)
 ```
 
@@ -167,13 +225,13 @@ lurek.html.supports(feature)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `feature` | `string` | Feature name to query. |
+| `feature` | string | Feature name to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the feature is supported. |
+| boolean | True when the feature is supported. |
 
 **Example**
 
@@ -186,14 +244,36 @@ end
 
 ---
 
-## LHtmlDocument
+## Module Fields
 
-### `LHtmlDocument:addCss`
+*No module-level fields documented.*
+
+## Types
+
+- [LHtmlDocument Handle](#lhtmldocument-handle)
+- [LHtmlElement Handle](#lhtmlelement-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LHtmlDocument Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LHtmlDocument:addCss`
 
 Appends CSS source text to the document stylesheet.
 
 ```lua
--- signature
 LHtmlDocument:addCss(css)
 ```
 
@@ -201,7 +281,7 @@ LHtmlDocument:addCss(css)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `css` | `string` | CSS source text to append. |
+| `css` | string | CSS source text to append. |
 
 **Example**
 
@@ -216,12 +296,11 @@ end
 
 ---
 
-### `LHtmlDocument:clearCss`
+#### `LHtmlDocument:clearCss`
 
 Clears all CSS source text from the document.
 
 ```lua
--- signature
 LHtmlDocument:clearCss()
 ```
 
@@ -238,12 +317,11 @@ end
 
 ---
 
-### `LHtmlDocument:draw`
+#### `LHtmlDocument:draw`
 
 Queues render commands for this document at an optional offset.
 
 ```lua
--- signature
 LHtmlDocument:draw(x, y)
 ```
 
@@ -251,8 +329,8 @@ LHtmlDocument:draw(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x?` | `number` | X offset, defaulting to 0. |
-| `y?` | `number` | Y offset, defaulting to 0. |
+| `x?` | number | X offset, defaulting to 0. |
+| `y?` | number | Y offset, defaulting to 0. |
 
 **Example**
 
@@ -266,12 +344,11 @@ end
 
 ---
 
-### `LHtmlDocument:getElementById`
+#### `LHtmlDocument:getElementById`
 
 Looks up the first element with a matching id attribute.
 
 ```lua
--- signature
 LHtmlDocument:getElementById(id)
 ```
 
@@ -279,13 +356,13 @@ LHtmlDocument:getElementById(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | Element id attribute. |
+| `id` | string | Element id attribute. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | `LHtmlElement` handle, or nil when no element matches. |
+| LuaValue | `[LHtmlElement](#lhtmlelement-handle)` handle, or nil when no element matches. |
 
 **Example**
 
@@ -301,12 +378,11 @@ end
 
 ---
 
-### `LHtmlDocument:getHtml`
+#### `LHtmlDocument:getHtml`
 
 Returns the current document markup string.
 
 ```lua
--- signature
 LHtmlDocument:getHtml()
 ```
 
@@ -314,7 +390,7 @@ LHtmlDocument:getHtml()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current HTML markup. |
+| string | Current HTML markup. |
 
 **Example**
 
@@ -328,12 +404,11 @@ end
 
 ---
 
-### `LHtmlDocument:getRoot`
+#### `LHtmlDocument:getRoot`
 
 Returns the root DOM element handle.
 
 ```lua
--- signature
 LHtmlDocument:getRoot()
 ```
 
@@ -341,7 +416,7 @@ LHtmlDocument:getRoot()
 
 | Type | Description |
 |------|-------------|
-| `LHtmlElement` | Root element handle. |
+| [LHtmlElement](#lhtmlelement-handle) | Root element handle. |
 
 **Example**
 
@@ -355,12 +430,11 @@ end
 
 ---
 
-### `LHtmlDocument:getViewport`
+#### `LHtmlDocument:getViewport`
 
 Returns the document layout viewport size.
 
 ```lua
--- signature
 LHtmlDocument:getViewport()
 ```
 
@@ -368,8 +442,8 @@ LHtmlDocument:getViewport()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Viewport width in pixels. |
-| `number` | b Viewport height in pixels. |
+| number | Viewport width in pixels. |
+| number | Viewport height in pixels. |
 
 **Example**
 
@@ -384,12 +458,11 @@ end
 
 ---
 
-### `LHtmlDocument:isDirty`
+#### `LHtmlDocument:isDirty`
 
 Returns whether the document layout is dirty.
 
 ```lua
--- signature
 LHtmlDocument:isDirty()
 ```
 
@@ -397,7 +470,7 @@ LHtmlDocument:isDirty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a relayout is needed. |
+| boolean | True when a relayout is needed. |
 
 **Example**
 
@@ -411,12 +484,11 @@ end
 
 ---
 
-### `LHtmlDocument:keypressed`
+#### `LHtmlDocument:keypressed`
 
 Forwards a key press to the focused document element and dispatches `keydown`.
 
 ```lua
--- signature
 LHtmlDocument:keypressed(key)
 ```
 
@@ -424,13 +496,13 @@ LHtmlDocument:keypressed(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Key name. |
+| `key` | string | Key name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the event was consumed or default was prevented. |
+| boolean | True when the event was consumed or default was prevented. |
 
 **Example**
 
@@ -444,12 +516,11 @@ end
 
 ---
 
-### `LHtmlDocument:mousemoved`
+#### `LHtmlDocument:mousemoved`
 
 Forwards mouse movement to the document.
 
 ```lua
--- signature
 LHtmlDocument:mousemoved(x, y)
 ```
 
@@ -457,14 +528,14 @@ LHtmlDocument:mousemoved(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Mouse x coordinate. |
-| `y` | `number` | Mouse y coordinate. |
+| `x` | number | Mouse x coordinate. |
+| `y` | number | Mouse y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an element handled the move. |
+| boolean | True when an element handled the move. |
 
 **Example**
 
@@ -478,12 +549,11 @@ end
 
 ---
 
-### `LHtmlDocument:mousepressed`
+#### `LHtmlDocument:mousepressed`
 
 Forwards a mouse press to the document and dispatches a click event when an element is hit.
 
 ```lua
--- signature
 LHtmlDocument:mousepressed(x, y, button)
 ```
 
@@ -491,15 +561,15 @@ LHtmlDocument:mousepressed(x, y, button)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Mouse x coordinate. |
-| `y` | `number` | Mouse y coordinate. |
-| `button?` | `number` | Mouse button, defaulting to 1. |
+| `x` | number | Mouse x coordinate. |
+| `y` | number | Mouse y coordinate. |
+| `button?` | number | Mouse button, defaulting to 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the event was consumed or default was prevented. |
+| boolean | True when the event was consumed or default was prevented. |
 
 **Example**
 
@@ -513,12 +583,11 @@ end
 
 ---
 
-### `LHtmlDocument:mousereleased`
+#### `LHtmlDocument:mousereleased`
 
 Forwards a mouse release to the document.
 
 ```lua
--- signature
 LHtmlDocument:mousereleased(x, y, button)
 ```
 
@@ -526,15 +595,15 @@ LHtmlDocument:mousereleased(x, y, button)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Mouse x coordinate. |
-| `y` | `number` | Mouse y coordinate. |
-| `button?` | `number` | Mouse button, defaulting to 1. |
+| `x` | number | Mouse x coordinate. |
+| `y` | number | Mouse y coordinate. |
+| `button?` | number | Mouse button, defaulting to 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an element handled the release. |
+| boolean | True when an element handled the release. |
 
 **Example**
 
@@ -548,12 +617,11 @@ end
 
 ---
 
-### `LHtmlDocument:off`
+#### `LHtmlDocument:off`
 
 Removes a document-level event listener by handle.
 
 ```lua
--- signature
 LHtmlDocument:off(handle)
 ```
 
@@ -561,7 +629,7 @@ LHtmlDocument:off(handle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle` | `number` | Listener handle returned by `on`. |
+| `handle` | number | Listener handle returned by `on`. |
 
 **Example**
 
@@ -576,12 +644,11 @@ end
 
 ---
 
-### `LHtmlDocument:on`
+#### `LHtmlDocument:on`
 
 Registers a document-level event listener.
 
 ```lua
--- signature
 LHtmlDocument:on(event, func)
 ```
 
@@ -589,14 +656,14 @@ LHtmlDocument:on(event, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | Event name to listen for. |
-| `func` | `function` | Lua callback receiving an event table. |
+| `event` | string | Event name to listen for. |
+| `func` | function | Lua callback receiving an event table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Listener handle used by `off`. |
+| number | Listener handle used by `off`. |
 
 **Example**
 
@@ -612,12 +679,11 @@ end
 
 ---
 
-### `LHtmlDocument:query`
+#### `LHtmlDocument:query`
 
 Looks up the first element matching a selector.
 
 ```lua
--- signature
 LHtmlDocument:query(selector)
 ```
 
@@ -625,13 +691,13 @@ LHtmlDocument:query(selector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `selector` | `string` | Selector supported by the HTML engine. |
+| `selector` | string | Selector supported by the HTML engine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | `LHtmlElement` handle, or nil when no element matches. |
+| LuaValue | `[LHtmlElement](#lhtmlelement-handle)` handle, or nil when no element matches. |
 
 **Example**
 
@@ -647,12 +713,11 @@ end
 
 ---
 
-### `LHtmlDocument:queryAll`
+#### `LHtmlDocument:queryAll`
 
 Returns all elements matching a selector.
 
 ```lua
--- signature
 LHtmlDocument:queryAll(selector)
 ```
 
@@ -660,13 +725,13 @@ LHtmlDocument:queryAll(selector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `selector` | `string` | Selector supported by the HTML engine. |
+| `selector` | string | Selector supported by the HTML engine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHtmlElement[]` | `LHtmlElement` handles. |
+| [LHtmlElement](#lhtmlelement-handle)[] | `[LHtmlElement](#lhtmlelement-handle)` handles. |
 
 **Example**
 
@@ -680,12 +745,11 @@ end
 
 ---
 
-### `LHtmlDocument:relayout`
+#### `LHtmlDocument:relayout`
 
 Rebuilds document layout immediately.
 
 ```lua
--- signature
 LHtmlDocument:relayout()
 ```
 
@@ -701,12 +765,11 @@ end
 
 ---
 
-### `LHtmlDocument:render`
+#### `LHtmlDocument:render`
 
 Queues render commands for this document at an optional offset.
 
 ```lua
--- signature
 LHtmlDocument:render(x, y)
 ```
 
@@ -714,8 +777,8 @@ LHtmlDocument:render(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x?` | `number` | X offset, defaulting to 0. |
-| `y?` | `number` | Y offset, defaulting to 0. |
+| `x?` | number | X offset, defaulting to 0. |
+| `y?` | number | Y offset, defaulting to 0. |
 
 **Example**
 
@@ -729,12 +792,11 @@ end
 
 ---
 
-### `LHtmlDocument:setCss`
+#### `LHtmlDocument:setCss`
 
 Replaces the document stylesheet text.
 
 ```lua
--- signature
 LHtmlDocument:setCss(css)
 ```
 
@@ -742,7 +804,7 @@ LHtmlDocument:setCss(css)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `css` | `string` | CSS source text. |
+| `css` | string | CSS source text. |
 
 **Example**
 
@@ -756,12 +818,11 @@ end
 
 ---
 
-### `LHtmlDocument:setHtml`
+#### `LHtmlDocument:setHtml`
 
 Replaces the document markup and invalidates existing element handles.
 
 ```lua
--- signature
 LHtmlDocument:setHtml(html)
 ```
 
@@ -769,7 +830,7 @@ LHtmlDocument:setHtml(html)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `html` | `string` | New HTML markup. |
+| `html` | string | New HTML markup. |
 
 **Example**
 
@@ -783,12 +844,11 @@ end
 
 ---
 
-### `LHtmlDocument:setViewport`
+#### `LHtmlDocument:setViewport`
 
 Sets the document layout viewport size.
 
 ```lua
--- signature
 LHtmlDocument:setViewport(w, h)
 ```
 
@@ -796,8 +856,8 @@ LHtmlDocument:setViewport(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Viewport width in pixels. |
-| `h` | `number` | Viewport height in pixels. |
+| `w` | number | Viewport width in pixels. |
+| `h` | number | Viewport height in pixels. |
 
 **Example**
 
@@ -811,12 +871,11 @@ end
 
 ---
 
-### `LHtmlDocument:textinput`
+#### `LHtmlDocument:textinput`
 
 Forwards text input to the focused document element and dispatches `input`.
 
 ```lua
--- signature
 LHtmlDocument:textinput(text)
 ```
 
@@ -824,13 +883,13 @@ LHtmlDocument:textinput(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Input text. |
+| `text` | string | Input text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the event was consumed or default was prevented. |
+| boolean | True when the event was consumed or default was prevented. |
 
 **Example**
 
@@ -844,12 +903,11 @@ end
 
 ---
 
-### `LHtmlDocument:type`
+#### `LHtmlDocument:type`
 
 Returns the Lua-visible type name for this HTML document handle.
 
 ```lua
--- signature
 LHtmlDocument:type()
 ```
 
@@ -857,7 +915,7 @@ LHtmlDocument:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LHtmlDocument`. |
+| string | The string `[LHtmlDocument](#lhtmldocument-handle)`. |
 
 **Example**
 
@@ -870,12 +928,11 @@ end
 
 ---
 
-### `LHtmlDocument:typeOf`
+#### `LHtmlDocument:typeOf`
 
 Returns whether this document handle matches a supported type name.
 
 ```lua
--- signature
 LHtmlDocument:typeOf(name)
 ```
 
@@ -883,13 +940,13 @@ LHtmlDocument:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LHtmlDocument` and `Object`. |
+| `name` | string | Type name to compare against `[LHtmlDocument](#lhtmldocument-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -902,12 +959,11 @@ end
 
 ---
 
-### `LHtmlDocument:update`
+#### `LHtmlDocument:update`
 
 Advances document timers and animated state.
 
 ```lua
--- signature
 LHtmlDocument:update(dt)
 ```
 
@@ -915,7 +971,7 @@ LHtmlDocument:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -929,12 +985,11 @@ end
 
 ---
 
-### `LHtmlDocument:wheelmoved`
+#### `LHtmlDocument:wheelmoved`
 
 Forwards mouse wheel movement to the document.
 
 ```lua
--- signature
 LHtmlDocument:wheelmoved(dx, dy)
 ```
 
@@ -942,14 +997,14 @@ LHtmlDocument:wheelmoved(dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dx` | `number` | Horizontal wheel delta. |
-| `dy` | `number` | Vertical wheel delta. |
+| `dx` | number | Horizontal wheel delta. |
+| `dy` | number | Vertical wheel delta. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an element handled the wheel event. |
+| boolean | True when an element handled the wheel event. |
 
 **Example**
 
@@ -963,14 +1018,19 @@ end
 
 ---
 
-## LHtmlElement
+## LHtmlElement Handle
 
-### `LHtmlElement:addClass`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LHtmlElement:addClass`
 
 Adds a CSS class to this element's class list.
 
 ```lua
--- signature
 LHtmlElement:addClass(name)
 ```
 
@@ -978,7 +1038,7 @@ LHtmlElement:addClass(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Class name to add. |
+| `name` | string | Class name to add. |
 
 **Example**
 
@@ -993,12 +1053,11 @@ end
 
 ---
 
-### `LHtmlElement:appendHtml`
+#### `LHtmlElement:appendHtml`
 
 Appends HTML source to this element's inner HTML.
 
 ```lua
--- signature
 LHtmlElement:appendHtml(html)
 ```
 
@@ -1006,7 +1065,7 @@ LHtmlElement:appendHtml(html)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `html` | `string` | HTML source to append. |
+| `html` | string | HTML source to append. |
 
 **Example**
 
@@ -1021,12 +1080,11 @@ end
 
 ---
 
-### `LHtmlElement:blur`
+#### `LHtmlElement:blur`
 
 Removes keyboard focus from this element when it is focused.
 
 ```lua
--- signature
 LHtmlElement:blur()
 ```
 
@@ -1046,12 +1104,11 @@ end
 
 ---
 
-### `LHtmlElement:focus`
+#### `LHtmlElement:focus`
 
 Gives keyboard focus to this element.
 
 ```lua
--- signature
 LHtmlElement:focus()
 ```
 
@@ -1068,12 +1125,11 @@ end
 
 ---
 
-### `LHtmlElement:getAttribute`
+#### `LHtmlElement:getAttribute`
 
 Returns an attribute value from this element.
 
 ```lua
--- signature
 LHtmlElement:getAttribute(name)
 ```
 
@@ -1081,13 +1137,13 @@ LHtmlElement:getAttribute(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Attribute name. |
+| `name` | string | Attribute name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Attribute string, or nil when absent. |
+| LuaValue | Attribute string, or nil when absent. |
 
 **Example**
 
@@ -1101,12 +1157,11 @@ end
 
 ---
 
-### `LHtmlElement:getDocument`
+#### `LHtmlElement:getDocument`
 
 Returns the document handle that owns this element.
 
 ```lua
--- signature
 LHtmlElement:getDocument()
 ```
 
@@ -1114,7 +1169,7 @@ LHtmlElement:getDocument()
 
 | Type | Description |
 |------|-------------|
-| `LHtmlDocument` | Owning document handle. |
+| [LHtmlDocument](#lhtmldocument-handle) | Owning document handle. |
 
 **Example**
 
@@ -1130,12 +1185,11 @@ end
 
 ---
 
-### `LHtmlElement:getHtml`
+#### `LHtmlElement:getHtml`
 
 Returns this element's inner HTML.
 
 ```lua
--- signature
 LHtmlElement:getHtml()
 ```
 
@@ -1143,7 +1197,7 @@ LHtmlElement:getHtml()
 
 | Type | Description |
 |------|-------------|
-| `string` | Element inner HTML, or an empty string when unavailable. |
+| string | Element inner HTML, or an empty string when unavailable. |
 
 **Example**
 
@@ -1159,12 +1213,11 @@ end
 
 ---
 
-### `LHtmlElement:getId`
+#### `LHtmlElement:getId`
 
 Returns this element's id attribute.
 
 ```lua
--- signature
 LHtmlElement:getId()
 ```
 
@@ -1172,7 +1225,7 @@ LHtmlElement:getId()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Id string, or nil when no id attribute exists. |
+| LuaValue | Id string, or nil when no id attribute exists. |
 
 **Example**
 
@@ -1188,12 +1241,11 @@ end
 
 ---
 
-### `LHtmlElement:getRect`
+#### `LHtmlElement:getRect`
 
 Returns this element's layout rectangle after relayout if needed.
 
 ```lua
--- signature
 LHtmlElement:getRect()
 ```
 
@@ -1201,10 +1253,10 @@ LHtmlElement:getRect()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X coordinate. |
-| `number` | b Y coordinate. |
-| `number` | c Width. |
-| `number` | d Height. |
+| number | X coordinate. |
+| number | Y coordinate. |
+| number | Width. |
+| number | Height. |
 
 **Example**
 
@@ -1223,12 +1275,11 @@ end
 
 ---
 
-### `LHtmlElement:getStyle`
+#### `LHtmlElement:getStyle`
 
 Returns an inline or computed style value for this element.
 
 ```lua
--- signature
 LHtmlElement:getStyle(name)
 ```
 
@@ -1236,13 +1287,13 @@ LHtmlElement:getStyle(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | CSS property name. |
+| `name` | string | CSS property name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Style value string, or nil when missing. |
+| LuaValue | Style value string, or nil when missing. |
 
 **Example**
 
@@ -1256,12 +1307,11 @@ end
 
 ---
 
-### `LHtmlElement:getTagName`
+#### `LHtmlElement:getTagName`
 
 Returns this element's HTML tag name.
 
 ```lua
--- signature
 LHtmlElement:getTagName()
 ```
 
@@ -1269,7 +1319,7 @@ LHtmlElement:getTagName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Tag name, or an empty string for missing elements. |
+| string | Tag name, or an empty string for missing elements. |
 
 **Example**
 
@@ -1283,12 +1333,11 @@ end
 
 ---
 
-### `LHtmlElement:getText`
+#### `LHtmlElement:getText`
 
 Returns this element's text content.
 
 ```lua
--- signature
 LHtmlElement:getText()
 ```
 
@@ -1296,7 +1345,7 @@ LHtmlElement:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | Text content, or an empty string when none exists. |
+| string | Text content, or an empty string when none exists. |
 
 **Example**
 
@@ -1312,12 +1361,11 @@ end
 
 ---
 
-### `LHtmlElement:hasClass`
+#### `LHtmlElement:hasClass`
 
 Returns whether this element has a CSS class.
 
 ```lua
--- signature
 LHtmlElement:hasClass(name)
 ```
 
@@ -1325,13 +1373,13 @@ LHtmlElement:hasClass(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Class name to check. |
+| `name` | string | Class name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the class is present. |
+| boolean | True when the class is present. |
 
 **Example**
 
@@ -1347,12 +1395,11 @@ end
 
 ---
 
-### `LHtmlElement:off`
+#### `LHtmlElement:off`
 
 Removes an element-level event listener by handle.
 
 ```lua
--- signature
 LHtmlElement:off(handle)
 ```
 
@@ -1360,7 +1407,7 @@ LHtmlElement:off(handle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle` | `number` | Listener handle returned by `on`. |
+| `handle` | number | Listener handle returned by `on`. |
 
 **Example**
 
@@ -1379,12 +1426,11 @@ end
 
 ---
 
-### `LHtmlElement:on`
+#### `LHtmlElement:on`
 
 Registers an element-level event listener.
 
 ```lua
--- signature
 LHtmlElement:on(event, func)
 ```
 
@@ -1392,14 +1438,14 @@ LHtmlElement:on(event, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | Event name to listen for. |
-| `func` | `function` | Lua callback receiving an event table. |
+| `event` | string | Event name to listen for. |
+| `func` | function | Lua callback receiving an event table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Listener handle used by `off`. |
+| number | Listener handle used by `off`. |
 
 **Example**
 
@@ -1418,12 +1464,11 @@ end
 
 ---
 
-### `LHtmlElement:query`
+#### `LHtmlElement:query`
 
 Looks up the first descendant element matching a selector.
 
 ```lua
--- signature
 LHtmlElement:query(selector)
 ```
 
@@ -1431,13 +1476,13 @@ LHtmlElement:query(selector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `selector` | `string` | Selector supported by the HTML engine. |
+| `selector` | string | Selector supported by the HTML engine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | `LHtmlElement` handle, or nil when no descendant matches. |
+| LuaValue | `[LHtmlElement](#lhtmlelement-handle)` handle, or nil when no descendant matches. |
 
 **Example**
 
@@ -1452,12 +1497,11 @@ end
 
 ---
 
-### `LHtmlElement:queryAll`
+#### `LHtmlElement:queryAll`
 
 Returns all descendant elements matching a selector.
 
 ```lua
--- signature
 LHtmlElement:queryAll(selector)
 ```
 
@@ -1465,13 +1509,13 @@ LHtmlElement:queryAll(selector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `selector` | `string` | Selector supported by the HTML engine. |
+| `selector` | string | Selector supported by the HTML engine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHtmlElement[]` | `LHtmlElement` handles. |
+| [LHtmlElement](#lhtmlelement-handle)[] | `[LHtmlElement](#lhtmlelement-handle)` handles. |
 
 **Example**
 
@@ -1485,12 +1529,11 @@ end
 
 ---
 
-### `LHtmlElement:remove`
+#### `LHtmlElement:remove`
 
 Removes this element from the document.
 
 ```lua
--- signature
 LHtmlElement:remove()
 ```
 
@@ -1507,12 +1550,11 @@ end
 
 ---
 
-### `LHtmlElement:removeAttribute`
+#### `LHtmlElement:removeAttribute`
 
 Removes an attribute from this element.
 
 ```lua
--- signature
 LHtmlElement:removeAttribute(name)
 ```
 
@@ -1520,7 +1562,7 @@ LHtmlElement:removeAttribute(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Attribute name to remove. |
+| `name` | string | Attribute name to remove. |
 
 **Example**
 
@@ -1535,12 +1577,11 @@ end
 
 ---
 
-### `LHtmlElement:removeClass`
+#### `LHtmlElement:removeClass`
 
 Removes a CSS class from this element.
 
 ```lua
--- signature
 LHtmlElement:removeClass(name)
 ```
 
@@ -1548,7 +1589,7 @@ LHtmlElement:removeClass(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Class name to remove. |
+| `name` | string | Class name to remove. |
 
 **Example**
 
@@ -1563,12 +1604,11 @@ end
 
 ---
 
-### `LHtmlElement:setAttribute`
+#### `LHtmlElement:setAttribute`
 
 Sets or clears an attribute on this element.
 
 ```lua
--- signature
 LHtmlElement:setAttribute(name, value)
 ```
 
@@ -1576,8 +1616,8 @@ LHtmlElement:setAttribute(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Attribute name. |
-| `value?` | `string` | Attribute value, or nil to remove the attribute. |
+| `name` | string | Attribute name. |
+| `value?` | string | Attribute value, or nil to remove the attribute. |
 
 **Example**
 
@@ -1592,12 +1632,11 @@ end
 
 ---
 
-### `LHtmlElement:setHtml`
+#### `LHtmlElement:setHtml`
 
 Replaces this element's inner HTML and may invalidate descendant element handles.
 
 ```lua
--- signature
 LHtmlElement:setHtml(html)
 ```
 
@@ -1605,7 +1644,7 @@ LHtmlElement:setHtml(html)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `html` | `string` | New inner HTML source. |
+| `html` | string | New inner HTML source. |
 
 **Example**
 
@@ -1620,12 +1659,11 @@ end
 
 ---
 
-### `LHtmlElement:setId`
+#### `LHtmlElement:setId`
 
 Sets or clears this element's id attribute.
 
 ```lua
--- signature
 LHtmlElement:setId(id)
 ```
 
@@ -1633,7 +1671,7 @@ LHtmlElement:setId(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id?` | `string` | Id attribute value, or nil to clear. |
+| `id?` | string | Id attribute value, or nil to clear. |
 
 **Example**
 
@@ -1648,12 +1686,11 @@ end
 
 ---
 
-### `LHtmlElement:setStyle`
+#### `LHtmlElement:setStyle`
 
 Sets or clears a style property on this element.
 
 ```lua
--- signature
 LHtmlElement:setStyle(name, value)
 ```
 
@@ -1661,8 +1698,8 @@ LHtmlElement:setStyle(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | CSS property name. |
-| `value?` | `string` | CSS value, or nil to clear the property. |
+| `name` | string | CSS property name. |
+| `value?` | string | CSS value, or nil to clear the property. |
 
 **Example**
 
@@ -1677,12 +1714,11 @@ end
 
 ---
 
-### `LHtmlElement:setText`
+#### `LHtmlElement:setText`
 
 Replaces this element's text content.
 
 ```lua
--- signature
 LHtmlElement:setText(text)
 ```
 
@@ -1690,7 +1726,7 @@ LHtmlElement:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | New text content. |
+| `text` | string | New text content. |
 
 **Example**
 
@@ -1705,12 +1741,11 @@ end
 
 ---
 
-### `LHtmlElement:toggleClass`
+#### `LHtmlElement:toggleClass`
 
 Toggles a CSS class on this element, optionally forcing the final state.
 
 ```lua
--- signature
 LHtmlElement:toggleClass(name, force)
 ```
 
@@ -1718,14 +1753,14 @@ LHtmlElement:toggleClass(name, force)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Class name to toggle. |
-| `force?` | `boolean` | Forced state. |
+| `name` | string | Class name to toggle. |
+| `force?` | boolean | Forced state. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Final class presence, or false when the element is unavailable. |
+| boolean | Final class presence, or false when the element is unavailable. |
 
 **Example**
 
@@ -1739,12 +1774,11 @@ end
 
 ---
 
-### `LHtmlElement:type`
+#### `LHtmlElement:type`
 
 Returns the Lua-visible type name for this HTML element handle.
 
 ```lua
--- signature
 LHtmlElement:type()
 ```
 
@@ -1752,7 +1786,7 @@ LHtmlElement:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LHtmlElement`. |
+| string | The string `[LHtmlElement](#lhtmlelement-handle)`. |
 
 **Example**
 
@@ -1766,12 +1800,11 @@ end
 
 ---
 
-### `LHtmlElement:typeOf`
+#### `LHtmlElement:typeOf`
 
 Returns whether this element handle matches a supported type name.
 
 ```lua
--- signature
 LHtmlElement:typeOf(name)
 ```
 
@@ -1779,13 +1812,13 @@ LHtmlElement:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LHtmlElement` and `Object`. |
+| `name` | string | Type name to compare against `[LHtmlElement](#lhtmlelement-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

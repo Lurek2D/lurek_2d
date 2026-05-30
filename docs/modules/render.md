@@ -1,12 +1,171 @@
 # Render
 
-- The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D.
+## Summary
 
 Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
 
 The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
 
 A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using cached ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### canvas.rs
+
+- This file defines the lightweight canvas handle that describes an off-screen render target by size and identity.
+- It is metadata for the renderer rather than a GPU allocation, so higher layers can reason about canvas ownership cheaply.
+- The type exists to keep canvas-facing APIs stable while the renderer manages the actual backing resources elsewhere.
+
+### decal_surface.rs
+
+- This file defines the persistent decal surface descriptor used when the engine needs a paintable texture space for marks and splats.
+- It keeps only the durable dimensions and identity needed for later GPU allocation and reuse across frames.
+- The descriptor stays intentionally small because the renderer owns the heavy texture lifecycle and attachment details.
+
+### draw_layer.rs
+
+- This file stores deferred draw-layer callbacks that should execute in a chosen depth order later in the frame.
+- Entries carry ordering intent without forcing immediate GPU work, which lets gameplay and UI enqueue layered drawing cheaply.
+- Sorting is centralized here so every queued callback follows the same layering rule before the renderer flushes it.
+- The result is a narrow scheduling buffer between scripting-time draw requests and render-time command emission.
+
+### font.rs
+
+- This file handles the text asset side of rendering, from bundled bitmap atlases to dynamically rasterized font faces.
+- It keeps glyph metrics, atlas placement, and lookup behavior close together so layout and draw code share one text model.
+- Built-in faces give the engine predictable default text coverage even before user fonts are loaded from content.
+- Runtime rasterization feeds custom font files into the same practical atlas-oriented representation used by bundled resources.
+- Measurement helpers live here as well, which keeps wrapping, alignment, and cursor math consistent with the actual glyph data.
+- Character lookup includes compatibility behavior for terminal-style symbols and legacy code ranges that show up in retro UI work.
+- The file therefore sits between raw font assets and renderer-facing text quads, preserving both readability and runtime flexibility.
+- In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
+
+### gpu_renderer.rs
+
+- This file is the concrete wgpu renderer that turns the engine command vocabulary into encoded GPU work and presented frames.
+- It owns device-facing state such as pipelines, bind groups, buffers, samplers, and the transient attachments needed during a frame.
+- Incoming draw commands are interpreted here into flat-color, textured, mesh, font, light, and post-effect passes that share one frame lifecycle.
+- Geometry for common 2D shapes is tessellated on demand so higher layers can speak in circles, lines, rounded boxes, and polygons instead of vertices.
+- Vertex and index buffers are resized as frame demand grows, which keeps command recording simple while still adapting to heavy scenes.
+- Textured drawing and flat drawing travel through separate but coordinated paths so color-only work does not inherit texture overhead by accident.
+- Off-screen canvas targets are managed beside the swapchain path, allowing the same renderer core to feed composition layers and final output.
+- Depth and stencil attachments are created only where needed, which keeps specialty passes available without forcing that cost onto every target.
+- User shaders can be compiled, cached, and driven with typed uniform values so scripted visual experiments fit into the same backend.
+- Post-processing hooks are integrated at the frame level instead of bolted on after presentation, enabling chained full-screen effects over rendered scenes.
+- Lighting support includes additive point contributions and shadow-related data preparation that enrich 2D scenes without leaving the renderer.
+- Screenshot readback and statistics gathering also happen here because this file has the authoritative picture of what the GPU just processed.
+- Font atlas uploads, texture writes, and canvas surface reuse are coordinated in one place so resource churn stays observable and bounded.
+- Visibility pruning happens before expensive draw expansion where possible, which helps large scenes skip obviously off-camera work.
+- Blend, stencil, and depth modes are translated here into the exact pipeline variants the backend needs for compositing correctness.
+- The file also contains the glue that keeps meshes, particles, Spine output, and generic primitives flowing through one renderer abstraction.
+- Low-level vertex formats live here because they are backend contracts rather than reusable engine-domain types.
+- A large part of the file is practical translation work between ergonomic engine commands and the stricter shapes demanded by wgpu.
+- Frame setup and teardown logic are colocated with pass encoding so lifetime ordering for temporary GPU objects remains explicit.
+- Canvas rendering, main-surface rendering, and readback all depend on the same shared resource maps keyed by engine handles.
+- When a command sequence mixes text, textures, shapes, and custom shaders, this file is what turns that mixture into a coherent render graph.
+- It therefore serves as the mechanical heart of visual output rather than a thin wrapper around API calls.
+- Most engine rendering features eventually pass through this file, even when their public APIs live elsewhere.
+- The design favors one rich backend with many translation helpers over scattering GPU details across the rest of the codebase.
+- That centralization keeps GPU policy, caching, and pass ordering inspectable when rendering bugs appear.
+- It also makes new draw features cheaper to add because they can target an existing command pipeline instead of inventing a second renderer.
+- From the outside this file seems like a renderer implementation.
+- From the inside it is the point where command semantics, resource ownership, and frame orchestration are kept in sync.
+- It is the place where the engine decides how abstract 2D drawing intent becomes actual pixels on hardware.
+- Everything else in the render module exists largely to feed or shape the work that this backend executes.
+
+### image_effect.rs
+
+- This file defines the compact descriptor for one post-processing step in a larger image-effect chain.
+- Each record carries effect identity, parameter values, and enable state so pipelines can be configured without custom structs per effect.
+- The type is the small control surface between high-level effect selection and the GPU post-processing backend.
+
+### mesh.rs
+
+- This file defines reusable 2D mesh data for renderable geometry that is richer than the engine's immediate-mode shape commands.
+- It keeps positions, UVs, colors, and topology choices together so imported content and generated geometry share one draw-ready format.
+- Indexed and non-indexed paths are both represented, which gives callers flexibility without forcing a single authoring style.
+- Triangulation helpers bridge higher-level topology choices into the triangles the backend ultimately needs.
+- The file is therefore the geometry interchange layer between content generation, importers, and the renderer.
+
+### mod.rs
+
+- This module provides the engine render stack, from command definitions and asset-side helpers to the concrete GPU backend.
+- It covers shapes, text, textures, meshes, decals, canvas targets, shaders, and full-screen image effects under one rendering vocabulary.
+- At the highest level it is the subsystem that turns frame-local draw intent into ordered, composited visual output.
+
+### obj_loader.rs
+
+- This file imports Wavefront OBJ content and converts it into forms that make sense inside a 2D engine rather than a full 3D renderer.
+- Parsed models can be projected into engine mesh data for GPU drawing or rasterized in software for previews and tooling images.
+- Material parsing keeps basic diffuse color and texture references close to the mesh data so projected results still carry authored surface intent.
+- Local vector and camera utilities are included here because the conversion work needs lightweight 3D math without spreading that concern across the engine.
+- Face handling normalizes OBJ indexing quirks such as relative references and mixed attribute indices into stable internal structures.
+- CPU rasterization gives the module a no-GPU path for thumbnails, validation, and other inspection-oriented workflows.
+- Projection support is tuned for systems like the raycaster and globe views that want 3D-authored silhouettes in a 2D presentation model.
+- The file is feature-gated because model import is useful but not fundamental to every game built on the runtime.
+- In design terms this is an adapter from common 3D content formats to the engine's 2D rendering language.
+- It preserves enough material and geometric structure to stay expressive without promising a general-purpose 3D pipeline.
+- That boundary is the point: authored 3D assets may inform a scene, but final display still obeys the engine's 2D rendering architecture.
+- This file is where that translation is made concrete and reusable.
+
+### postfx_pipeline.rs
+
+- This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
+- Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
+- Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
+- Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.
+- Shared fullscreen geometry and ping-pong render targets keep multi-pass execution practical without rebuilding the whole frame graph each time.
+- Disabled chains degrade gracefully to a plain copy, which keeps the backend simple when no visual treatment is active.
+- Time, frame count, and resolution are injected centrally so effect authors can rely on common runtime signals.
+- Pass order follows the configured chain order, making visual stacking explicit rather than implicit.
+- The file therefore acts as the image-finishing stage of the renderer, where an already rendered frame can be polished or stylized.
+- It is not about drawing scene geometry.
+- It is about transforming one finished image into another with controlled GPU shader passes.
+- In practice this is the renderer's color-grading room, distortion rack, and screen-material toolbox.
+
+### province_map_pipeline.rs
+
+- This file provides the specialized GPU pipeline used to render province-map views that need more than generic sprite or mesh drawing.
+- It binds province identity, borders, and distance-related data together so the shader can reason about map regions instead of plain pixels.
+- Viewport mapping and mode-dependent behavior are configured here because that logic belongs to this strategic map presentation path.
+- The pipeline is intentionally dedicated, reflecting that province rendering has distinct data needs from ordinary scene rendering.
+- It turns map-analysis textures and buffers into a coherent fullscreen visual layer.
+- This is the render-side home for province-specific screen synthesis.
+
+### renderer.rs
+
+- This file defines the renderer command language that the rest of the engine speaks when it wants something visual to happen this frame.
+- It gathers draw operations, state changes, auxiliary descriptors, and shared render-side enums into one canonical vocabulary.
+- Shapes, text, textures, particles, Spine output, layered sorting, stencil control, and depth behavior all meet here as data instead of immediate API calls.
+- The command set is broad because many subsystems submit visual intent before the GPU backend ever becomes involved.
+- Shared enums for alignment, blend, compare, and draw styles live beside the commands so callers agree on meaning without backend coupling.
+- Higher-level rendering helpers can build rich features simply by emitting combinations of these records.
+- Post-processing descriptors and upload payloads also sit here because they are part of the same frame command stream.
+- In practice this file is the renderer's grammar, not its execution engine.
+- It explains what can be said to the backend, in what shapes, and with what supporting metadata.
+- Keeping that grammar centralized is what lets Lua, gameplay systems, and specialized modules target one render pipeline.
+- The file therefore stabilizes render intent across the codebase even as the backend implementation grows more complex.
+- Almost every visible feature eventually passes through the types defined here.
+
+### shader.rs
+
+- This file handles user-facing shader ingestion so custom WGSL fragments can plug into the renderer without exposing raw backend setup everywhere.
+- Source code is parsed, constrained, and rewritten into the wrapper shape the engine expects for controlled pipeline generation.
+- Fragment inputs are inspected so only supported coordinate and color channels enter the custom shader path.
+- Uniform values are represented in typed form here, which keeps script-driven shader parameters explicit and serializable enough for per-frame upload.
+- Ordered uniform iteration matters because GPU buffer layout must stay stable once a shader is accepted.
+- Attribute markers are also normalized here so author-facing shader syntax can remain a little friendlier than raw internal conventions.
+- The file is therefore the contract layer between flexible user shader text and a renderer that still needs predictable pipeline inputs.
+
+### shape.rs
+
+- This file stores reusable vector shape definitions as replayable command sequences instead of immediate one-off draw calls.
+- A shape can therefore package many primitive strokes and fills into one named asset-like unit for later reuse.
+- Drawing state such as color and line width travels with the sequence so replays preserve intended appearance.
+- The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
+- It acts as a small retained-mode layer inside the otherwise command-driven renderer.
 
 ## Functions
 
@@ -15,7 +174,6 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 
 ```lua
--- signature
 lurek.render.applyTransform(mat)
 ```
 
@@ -23,7 +181,7 @@ lurek.render.applyTransform(mat)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mat` | `table` | Flat table of 9 numbers representing a 3x3 transform matrix. |
+| `mat` | table | Flat table of 9 numbers representing a 3x3 transform matrix. |
 
 **Example**
 
@@ -46,7 +204,6 @@ end
 Draws a filled or outlined circular arc segment.
 
 ```lua
--- signature
 lurek.render.arc(mode, x, y, radius, angle1, angle2, segments)
 ```
 
@@ -54,13 +211,13 @@ lurek.render.arc(mode, x, y, radius, angle1, angle2, segments)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Center X. |
-| `y` | `number` | Center Y. |
-| `radius` | `number` | Arc radius. |
-| `angle1` | `number` | Start angle in radians. |
-| `angle2` | `number` | End angle in radians. |
-| `segments?` | `number` | Number of arc segments (default 32). |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Center X. |
+| `y` | number | Center Y. |
+| `radius` | number | Arc radius. |
+| `angle1` | number | Start angle in radians. |
+| `angle2` | number | End angle in radians. |
+| `segments?` | number | Number of arc segments (default 32). |
 
 **Example**
 
@@ -83,7 +240,6 @@ end
 Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 
 ```lua
--- signature
 lurek.render.beginSortGroup(id)
 ```
 
@@ -91,7 +247,7 @@ lurek.render.beginSortGroup(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Group identifier. |
+| `id` | number | Group identifier. |
 
 **Example**
 
@@ -115,7 +271,6 @@ end
 Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
 
 ```lua
--- signature
 lurek.render.captureScreenshot(callback)
 ```
 
@@ -123,7 +278,7 @@ lurek.render.captureScreenshot(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | `function` | Called with an LImageData argument. |
+| `callback` | function | Called with an [LImageData](#limagedata-handle) argument. |
 
 **Example**
 
@@ -145,7 +300,6 @@ end
 Draws a filled or outlined circle at the given position.
 
 ```lua
--- signature
 lurek.render.circle(mode, x, y, radius)
 ```
 
@@ -153,10 +307,10 @@ lurek.render.circle(mode, x, y, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Center X. |
-| `y` | `number` | Center Y. |
-| `radius` | `number` | Circle radius in pixels. |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Center X. |
+| `y` | number | Center Y. |
+| `radius` | number | Circle radius in pixels. |
 
 **Example**
 
@@ -179,7 +333,6 @@ end
 Clears all queued render commands for the current frame.
 
 ```lua
--- signature
 lurek.render.clear(r, g, b)
 ```
 
@@ -187,9 +340,9 @@ lurek.render.clear(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r?` | `number` | Unused (reserved for future clear-color override). |
-| `g?` | `number` | Unused. |
-| `b?` | `number` | Unused. |
+| `r?` | number | Unused (reserved for future clear-color override). |
+| `g?` | number | Unused. |
+| `b?` | number | Unused. |
 
 **Example**
 
@@ -209,7 +362,6 @@ end
 Resets the stencil state to defaults (no stencil operations).
 
 ```lua
--- signature
 lurek.render.clearStencil()
 ```
 
@@ -231,7 +383,6 @@ end
 Returns the name of the currently active rendering layer.
 
 ```lua
--- signature
 lurek.render.currentLayer()
 ```
 
@@ -239,7 +390,7 @@ lurek.render.currentLayer()
 
 | Type | Description |
 |------|-------------|
-| `string` | Active layer name. |
+| string | Active layer name. |
 
 **Example**
 
@@ -259,7 +410,6 @@ end
 Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
 
 ```lua
--- signature
 lurek.render.draw(drawable, x, y, r, sx, sy, ox, oy)
 ```
 
@@ -267,20 +417,20 @@ lurek.render.draw(drawable, x, y, r, sx, sy, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `drawable` | `LImage|LCanvas|LSpriteBatch|LMesh` | The drawable object to render. |
-| `x?` | `number` | X position (default 0). |
-| `y?` | `number` | Y position (default 0). |
-| `r?` | `number` | Rotation in radians (default 0). |
-| `sx?` | `number` | Scale X (default 1). |
-| `sy?` | `number` | Scale Y (default 1). |
-| `ox?` | `number` | Origin offset X (default 0). |
-| `oy?` | `number` | Origin offset Y (default 0). |
+| `drawable` | [LImage](#limage-handle)|[LCanvas](#lcanvas-handle)|[LSpriteBatch](#lspritebatch-handle)|[LMesh](#lmesh-handle) | The drawable object to render. |
+| `x?` | number | X position (default 0). |
+| `y?` | number | Y position (default 0). |
+| `r?` | number | Rotation in radians (default 0). |
+| `sx?` | number | Scale X (default 1). |
+| `sy?` | number | Scale Y (default 1). |
+| `ox?` | number | Origin offset X (default 0). |
+| `oy?` | number | Origin offset Y (default 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No return value. |
+| nil | No return value. |
 
 **Example**
 
@@ -303,7 +453,6 @@ end
 Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
 
 ```lua
--- signature
 lurek.render.drawBatch(batch)
 ```
 
@@ -311,13 +460,13 @@ lurek.render.drawBatch(batch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `batch` | `LSpriteBatch` | Sprite batch handle to draw. |
+| `batch` | [LSpriteBatch](#lspritebatch-handle) | Sprite batch handle to draw. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No return value. |
+| nil | No return value. |
 
 **Example**
 
@@ -339,7 +488,6 @@ end
 Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 
 ```lua
--- signature
 lurek.render.drawBevelRect(x, y, w, h, bevelW, style, opts)
 ```
 
@@ -347,13 +495,13 @@ lurek.render.drawBevelRect(x, y, w, h, bevelW, style, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Left edge X. |
-| `y` | `number` | Top edge Y. |
-| `w` | `number` | Width (must be positive). |
-| `h` | `number` | Height (must be positive). |
-| `bevelW?` | `number` | Bevel border width (default 2). |
-| `style?` | `string` | Bevel style: "raised" (default), "sunken", "ridge", "groove", "flat". |
-| `opts?` | `table` | Options: highlight, shadow, fillColor (each a {r,g,b,a} table). |
+| `x` | number | Left edge X. |
+| `y` | number | Top edge Y. |
+| `w` | number | Width (must be positive). |
+| `h` | number | Height (must be positive). |
+| `bevelW?` | number | Bevel border width (default 2). |
+| `style?` | string | Bevel style: "raised" (default), "sunken", "ridge", "groove", "flat". |
+| `opts?` | table | Options: highlight, shadow, fillColor (each a {r,g,b,a} table). |
 
 **Example**
 
@@ -378,7 +526,6 @@ end
 Draws a polygon with per-vertex colors.
 
 ```lua
--- signature
 lurek.render.drawColoredPolygon(vertices, colors, mode)
 ```
 
@@ -386,9 +533,9 @@ lurek.render.drawColoredPolygon(vertices, colors, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vertices` | `table` | Flat array of x,y coordinates: {x1, y1, x2, y2, ...}. |
-| `colors` | `table` | Array of color tables: {{r, g, b, a}, ...}, one per vertex. |
-| `mode?` | `string` | "fill" (default) or "line". |
+| `vertices` | table | Flat array of x,y coordinates: {x1, y1, x2, y2, ...}. |
+| `colors` | table | Array of color tables: {{r, g, b, a}, ...}, one per vertex. |
+| `mode?` | string | "fill" (default) or "line". |
 
 **Example**
 
@@ -414,7 +561,6 @@ end
 Draws a cubic Bezier curve through start, two control points, and end.
 
 ```lua
--- signature
 lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segs)
 ```
 
@@ -422,15 +568,15 @@ lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Start X. |
-| `y1` | `number` | Start Y. |
-| `cx1` | `number` | First control point X. |
-| `cy1` | `number` | First control point Y. |
-| `cx2` | `number` | Second control point X. |
-| `cy2` | `number` | Second control point Y. |
-| `x2` | `number` | End X. |
-| `y2` | `number` | End Y. |
-| `segs?` | `number` | Number of line segments (default 16). |
+| `x1` | number | Start X. |
+| `y1` | number | Start Y. |
+| `cx1` | number | First control point X. |
+| `cy1` | number | First control point Y. |
+| `cx2` | number | Second control point X. |
+| `cy2` | number | Second control point Y. |
+| `x2` | number | End X. |
+| `y2` | number | End Y. |
+| `segs?` | number | Number of line segments (default 16). |
 
 **Example**
 
@@ -451,7 +597,6 @@ end
 Draws a rectangle with a two-color gradient fill.
 
 ```lua
--- signature
 lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir)
 ```
 
@@ -459,13 +604,13 @@ lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Left edge X. |
-| `y` | `number` | Top edge Y. |
-| `w` | `number` | Width (must be positive). |
-| `h` | `number` | Height (must be positive). |
-| `c1` | `table` | Start color {r, g, b [, a]}. |
-| `c2` | `table` | End color {r, g, b [, a]}. |
-| `dir?` | `string` | Direction: "vertical" (default), "horizontal", "diagDown", "diagUp", "radial". |
+| `x` | number | Left edge X. |
+| `y` | number | Top edge Y. |
+| `w` | number | Width (must be positive). |
+| `h` | number | Height (must be positive). |
+| `c1` | table | Start color {r, g, b [, a]}. |
+| `c2` | table | End color {r, g, b [, a]}. |
+| `dir?` | string | Direction: "vertical" (default), "horizontal", "diagDown", "diagUp", "radial". |
 
 **Example**
 
@@ -485,7 +630,6 @@ end
 Draws a regular hexagonal tile at the given center position.
 
 ```lua
--- signature
 lurek.render.drawHexTile(cx, cy, size, orientation, mode)
 ```
 
@@ -493,11 +637,11 @@ lurek.render.drawHexTile(cx, cy, size, orientation, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Center X. |
-| `cy` | `number` | Center Y. |
-| `size` | `number` | Hex radius (must be positive). |
-| `orientation?` | `string` | "pointyTop" (default) or "flatTop". |
-| `mode?` | `string` | "line" (default) or "fill". |
+| `cx` | number | Center X. |
+| `cy` | number | Center Y. |
+| `size` | number | Hex radius (must be positive). |
+| `orientation?` | string | "pointyTop" (default) or "flatTop". |
+| `mode?` | string | "line" (default) or "fill". |
 
 **Example**
 
@@ -519,7 +663,6 @@ end
 Draws an isometric cube tile with configurable face colors and optional textures.
 
 ```lua
--- signature
 lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts)
 ```
 
@@ -527,11 +670,11 @@ lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Screen X position of the tile center. |
-| `sy` | `number` | Screen Y position of the tile center. |
-| `halfW` | `number` | Half-width of the tile diamond. |
-| `halfH` | `number` | Half-height of the tile diamond. |
-| `opts?` | `table` | Options: depth, topColor, leftColor, rightColor, topTexture, leftTexture, rightTexture. |
+| `sx` | number | Screen X position of the tile center. |
+| `sy` | number | Screen Y position of the tile center. |
+| `halfW` | number | Half-width of the tile diamond. |
+| `halfH` | number | Half-height of the tile diamond. |
+| `opts?` | table | Options: depth, topColor, leftColor, rightColor, topTexture, leftTexture, rightTexture. |
 
 **Example**
 
@@ -555,7 +698,6 @@ end
 Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
 
 ```lua
--- signature
 lurek.render.drawMany(list)
 ```
 
@@ -563,7 +705,7 @@ lurek.render.drawMany(list)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `list` | `table` | Array of draw entry tables. |
+| `list` | table | Array of draw entry tables. |
 
 **Example**
 
@@ -588,7 +730,6 @@ end
 Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
 
 ```lua
--- signature
 lurek.render.drawNineSlice(slice, x, y, w, h)
 ```
 
@@ -596,11 +737,11 @@ lurek.render.drawNineSlice(slice, x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `slice` | `LNineSlice` | The 9-slice handle to draw. |
-| `x` | `number` | Left edge X. |
-| `y` | `number` | Top edge Y. |
-| `w` | `number` | Target width. |
-| `h` | `number` | Target height. |
+| `slice` | [LNineSlice](#lnineslice-handle) | The 9-slice handle to draw. |
+| `x` | number | Left edge X. |
+| `y` | number | Top edge Y. |
+| `w` | number | Target width. |
+| `h` | number | Target height. |
 
 **Example**
 
@@ -621,7 +762,6 @@ end
 Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
 
 ```lua
--- signature
 lurek.render.drawPath(path, mode, close)
 ```
 
@@ -629,9 +769,9 @@ lurek.render.drawPath(path, mode, close)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `table` | Array of segment tables, each with a "type" field and coordinates. |
-| `mode?` | `string` | "line" (default) or "fill". |
-| `close?` | `boolean` | Close the path back to start (default false). |
+| `path` | table | Array of segment tables, each with a "type" field and coordinates. |
+| `mode?` | string | "line" (default) or "fill". |
+| `close?` | boolean | Close the path back to start (default false). |
 
 **Example**
 
@@ -658,7 +798,6 @@ end
 Draws a quadratic Bezier curve through start, control, and end points.
 
 ```lua
--- signature
 lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segs)
 ```
 
@@ -666,13 +805,13 @@ lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Start X. |
-| `y1` | `number` | Start Y. |
-| `cx` | `number` | Control point X. |
-| `cy` | `number` | Control point Y. |
-| `x2` | `number` | End X. |
-| `y2` | `number` | End Y. |
-| `segs?` | `number` | Number of line segments (default 16). |
+| `x1` | number | Start X. |
+| `y1` | number | Start Y. |
+| `cx` | number | Control point X. |
+| `cy` | number | Control point Y. |
+| `x2` | number | End X. |
+| `y2` | number | End Y. |
+| `segs?` | number | Number of line segments (default 16). |
 
 **Example**
 
@@ -693,7 +832,6 @@ end
 Draws a sub-region of an image defined by a Quad, with optional transform.
 
 ```lua
--- signature
 lurek.render.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 ```
 
@@ -701,15 +839,15 @@ lurek.render.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImage` | Source image to draw from. |
-| `quad` | `LQuad` | Quad defining the source rectangle within the image. |
-| `x?` | `number` | X position (default 0). |
-| `y?` | `number` | Y position (default 0). |
-| `r?` | `number` | Rotation in radians (default 0). |
-| `sx?` | `number` | Scale X (default 1). |
-| `sy?` | `number` | Scale Y (default 1). |
-| `ox?` | `number` | Origin offset X (default 0). |
-| `oy?` | `number` | Origin offset Y (default 0). |
+| `image` | [LImage](#limage-handle) | Source image to draw from. |
+| `quad` | [LQuad](#lquad-handle) | Quad defining the source rectangle within the image. |
+| `x?` | number | X position (default 0). |
+| `y?` | number | Y position (default 0). |
+| `r?` | number | Rotation in radians (default 0). |
+| `sx?` | number | Scale X (default 1). |
+| `sy?` | number | Scale Y (default 1). |
+| `ox?` | number | Origin offset X (default 0). |
+| `oy?` | number | Origin offset Y (default 0). |
 
 **Example**
 
@@ -731,7 +869,6 @@ end
 Draws a filled or outlined ellipse at the given position.
 
 ```lua
--- signature
 lurek.render.ellipse(mode, x, y, rx, ry)
 ```
 
@@ -739,11 +876,11 @@ lurek.render.ellipse(mode, x, y, rx, ry)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Center X. |
-| `y` | `number` | Center Y. |
-| `rx` | `number` | Horizontal radius. |
-| `ry` | `number` | Vertical radius. |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Center X. |
+| `y` | number | Center Y. |
+| `rx` | number | Horizontal radius. |
+| `ry` | number | Vertical radius. |
 
 **Example**
 
@@ -765,7 +902,6 @@ end
 Ends a sort group and emits all accumulated draw calls in sorted order.
 
 ```lua
--- signature
 lurek.render.flushSortGroup(id)
 ```
 
@@ -773,7 +909,7 @@ lurek.render.flushSortGroup(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Group identifier matching the beginSortGroup call. |
+| `id` | number | Group identifier matching the beginSortGroup call. |
 
 **Example**
 
@@ -794,7 +930,6 @@ end
 Returns the current background clear color.
 
 ```lua
--- signature
 lurek.render.getBackgroundColor()
 ```
 
@@ -802,10 +937,10 @@ lurek.render.getBackgroundColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red, green, blue, alpha channels (0–1). |
-| `number` | b Red, green, blue, alpha channels (0–1). |
-| `number` | c Red, green, blue, alpha channels (0–1). |
-| `number` | d Red, green, blue, alpha channels (0–1). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 1). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 2). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 3). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 4). |
 
 **Example**
 
@@ -825,7 +960,6 @@ end
 Returns the current blend mode name.
 
 ```lua
--- signature
 lurek.render.getBlendMode()
 ```
 
@@ -833,7 +967,7 @@ lurek.render.getBlendMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current blend mode: "alpha", "add", "multiply", "replace", or "screen". |
+| string | Current blend mode: "alpha", "add", "multiply", "replace", or "screen". |
 
 **Example**
 
@@ -851,7 +985,6 @@ end
 Returns all stable built-in font names.
 
 ```lua
--- signature
 lurek.render.getBuiltInFontNames()
 ```
 
@@ -859,7 +992,7 @@ lurek.render.getBuiltInFontNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Array of bundled font names such as font_8 and fontb_8. |
+| string[] | Array of bundled font names such as font_8 and fontb_8. |
 
 **Example**
 
@@ -878,7 +1011,6 @@ end
 Returns the currently active canvas, or nil if drawing to the screen.
 
 ```lua
--- signature
 lurek.render.getCanvas()
 ```
 
@@ -886,7 +1018,7 @@ lurek.render.getCanvas()
 
 | Type | Description |
 |------|-------------|
-| `LCanvas` | The active canvas handle. |
+| [LCanvas](#lcanvas-handle) | The active canvas handle. |
 
 **Example**
 
@@ -910,7 +1042,6 @@ end
 Returns the pixel dimensions of a canvas.
 
 ```lua
--- signature
 lurek.render.getCanvasSize(canvas)
 ```
 
@@ -918,14 +1049,14 @@ lurek.render.getCanvasSize(canvas)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `canvas` | `LCanvas` | Canvas handle to query. |
+| `canvas` | [LCanvas](#lcanvas-handle) | Canvas handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 **Example**
 
@@ -946,7 +1077,6 @@ end
 Returns the current drawing color.
 
 ```lua
--- signature
 lurek.render.getColor()
 ```
 
@@ -954,10 +1084,10 @@ lurek.render.getColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red, green, blue, alpha channels (0–1). |
-| `number` | b Red, green, blue, alpha channels (0–1). |
-| `number` | c Red, green, blue, alpha channels (0–1). |
-| `number` | d Red, green, blue, alpha channels (0–1). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 1). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 2). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 3). |
+| number | Red; green; blue; alpha channels (0â€“1). (value 4). |
 
 **Example**
 
@@ -977,7 +1107,6 @@ end
 Returns the current color write mask.
 
 ```lua
--- signature
 lurek.render.getColorMask()
 ```
 
@@ -985,10 +1114,10 @@ lurek.render.getColorMask()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a Red, green, blue, alpha channel write states. |
-| `boolean` | b Red, green, blue, alpha channel write states. |
-| `boolean` | c Red, green, blue, alpha channel write states. |
-| `boolean` | d Red, green, blue, alpha channel write states. |
+| boolean | Red; green; blue; alpha channel write states. (value 1). |
+| boolean | Red; green; blue; alpha channel write states. (value 2). |
+| boolean | Red; green; blue; alpha channel write states. (value 3). |
+| boolean | Red; green; blue; alpha channel write states. (value 4). |
 
 **Example**
 
@@ -1008,7 +1137,6 @@ end
 Returns the current default texture filtering settings.
 
 ```lua
--- signature
 lurek.render.getDefaultFilter()
 ```
 
@@ -1016,9 +1144,9 @@ lurek.render.getDefaultFilter()
 
 | Type | Description |
 |------|-------------|
-| `string` | a Min filter, mag filter, anisotropy level. |
-| `string` | b Min filter, mag filter, anisotropy level. |
-| `number` | c Min filter, mag filter, anisotropy level. |
+| string | Min filter; mag filter; anisotropy level. (value 1). |
+| string | Min filter; mag filter; anisotropy level. (value 2). |
+| number | Min filter; mag filter; anisotropy level. (value 3). |
 
 **Example**
 
@@ -1036,7 +1164,6 @@ end
 Returns a built-in default font at the nearest available bundled point size.
 
 ```lua
--- signature
 lurek.render.getDefaultFont(pointSize, bold)
 ```
 
@@ -1044,14 +1171,14 @@ lurek.render.getDefaultFont(pointSize, bold)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pointSize?` | `number` | Desired built-in point size. When omitted, returns the current configured default. |
-| `bold?` | `boolean` | When true, returns the bold variant. When omitted, uses the current bold selection. |
+| `pointSize?` | number | Desired built-in point size. When omitted, returns the current configured default. |
+| `bold?` | boolean | When true, returns the bold variant. When omitted, uses the current bold selection. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The built-in font handle. |
+| [LFont](#lfont-handle) | The built-in font handle. |
 
 **Example**
 
@@ -1072,7 +1199,6 @@ end
 Returns the current depth comparison mode and write-enable flag.
 
 ```lua
--- signature
 lurek.render.getDepthMode()
 ```
 
@@ -1080,8 +1206,8 @@ lurek.render.getDepthMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | a Depth mode name and whether depth writes are enabled. |
-| `boolean` | b Depth mode name and whether depth writes are enabled. |
+| string | Depth mode name and whether depth writes are enabled. (value 1). |
+| boolean | Depth mode name and whether depth writes are enabled. (value 2). |
 
 **Example**
 
@@ -1100,7 +1226,6 @@ end
 Returns the current window width and height.
 
 ```lua
--- signature
 lurek.render.getDimensions()
 ```
 
@@ -1108,8 +1233,8 @@ lurek.render.getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 **Example**
 
@@ -1128,7 +1253,6 @@ end
 Returns the currently active font, or nil if none is set.
 
 ```lua
--- signature
 lurek.render.getFont()
 ```
 
@@ -1136,7 +1260,7 @@ lurek.render.getFont()
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The active font handle. |
+| [LFont](#lfont-handle) | The active font handle. |
 
 **Example**
 
@@ -1157,7 +1281,6 @@ end
 Returns the ascent (pixels above baseline) of the given font.
 
 ```lua
--- signature
 lurek.render.getFontAscent(font)
 ```
 
@@ -1165,13 +1288,13 @@ lurek.render.getFontAscent(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to query. |
+| `font` | [LFont](#lfont-handle) | Font handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Ascent in pixels. |
+| number | Ascent in pixels. |
 
 **Example**
 
@@ -1190,7 +1313,6 @@ end
 Returns the fixed cell width of a bitmap font.
 
 ```lua
--- signature
 lurek.render.getFontCellWidth(font)
 ```
 
@@ -1198,13 +1320,13 @@ lurek.render.getFontCellWidth(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to query. |
+| `font` | [LFont](#lfont-handle) | Font handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell width in pixels. |
+| number | Cell width in pixels. |
 
 **Example**
 
@@ -1223,7 +1345,6 @@ end
 Returns the descent (pixels below baseline) of the given font.
 
 ```lua
--- signature
 lurek.render.getFontDescent(font)
 ```
 
@@ -1231,13 +1352,13 @@ lurek.render.getFontDescent(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to query. |
+| `font` | [LFont](#lfont-handle) | Font handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Descent in pixels. |
+| number | Descent in pixels. |
 
 **Example**
 
@@ -1256,7 +1377,6 @@ end
 Returns the line height of the given font.
 
 ```lua
--- signature
 lurek.render.getFontHeight(font)
 ```
 
@@ -1264,13 +1384,13 @@ lurek.render.getFontHeight(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to query. |
+| `font` | [LFont](#lfont-handle) | Font handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 **Example**
 
@@ -1289,7 +1409,6 @@ end
 Returns the line spacing of the given font.
 
 ```lua
--- signature
 lurek.render.getFontLineHeight(font)
 ```
 
@@ -1297,13 +1416,13 @@ lurek.render.getFontLineHeight(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to query. |
+| `font` | [LFont](#lfont-handle) | Font handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 **Example**
 
@@ -1322,7 +1441,6 @@ end
 Returns all available built-in point sizes.
 
 ```lua
--- signature
 lurek.render.getFontSizes()
 ```
 
@@ -1330,7 +1448,7 @@ lurek.render.getFontSizes()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30. |
+| number[] | Array of bundled font sizes such as 8, 10, 12, 16, 20, 24, and 30. |
 
 **Example**
 
@@ -1349,7 +1467,6 @@ end
 Measures the pixel width of text using the given font.
 
 ```lua
--- signature
 lurek.render.getFontWidth(font, text)
 ```
 
@@ -1357,14 +1474,14 @@ lurek.render.getFontWidth(font, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to measure with. |
-| `text` | `string` | Text to measure. |
+| `font` | [LFont](#lfont-handle) | Font handle to measure with. |
+| `text` | string | Text to measure. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -1383,7 +1500,6 @@ end
 Word-wraps text using the active font and returns the resulting lines and widest line width.
 
 ```lua
--- signature
 lurek.render.getFontWrap(text, limit)
 ```
 
@@ -1391,15 +1507,15 @@ lurek.render.getFontWrap(text, limit)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to wrap. |
-| `limit` | `number` | Maximum line width in pixels. |
+| `text` | string | Text to wrap. |
+| `limit` | number | Maximum line width in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | a Wrapped lines as a table when a font is active, or nil otherwise, followed by the widest line width. |
-| `number` | b Wrapped lines as a table when a font is active, or nil otherwise, followed by the widest line width. |
+| LuaValue | Wrapped lines as a table when a font is active; or nil otherwise; followed by the widest line width. (value 1). |
+| number | Wrapped lines as a table when a font is active; or nil otherwise; followed by the widest line width. (value 2). |
 
 **Example**
 
@@ -1420,7 +1536,6 @@ end
 Returns the current window height in pixels.
 
 ```lua
--- signature
 lurek.render.getHeight()
 ```
 
@@ -1428,7 +1543,7 @@ lurek.render.getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Window height. |
+| number | Window height. |
 
 **Example**
 
@@ -1447,7 +1562,6 @@ end
 Returns the z-order value of a named rendering layer.
 
 ```lua
--- signature
 lurek.render.getLayerZOrder(name)
 ```
 
@@ -1455,13 +1569,13 @@ lurek.render.getLayerZOrder(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
+| `name` | string | Layer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Z-order value (default 0 if unset). |
+| number | Z-order value (default 0 if unset). |
 
 **Example**
 
@@ -1481,7 +1595,6 @@ end
 Returns the current line width used for line-mode drawing.
 
 ```lua
--- signature
 lurek.render.getLineWidth()
 ```
 
@@ -1489,7 +1602,7 @@ lurek.render.getLineWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line width in pixels. |
+| number | Line width in pixels. |
 
 **Example**
 
@@ -1510,7 +1623,6 @@ end
 Returns the current point diameter used for point drawing.
 
 ```lua
--- signature
 lurek.render.getPointSize()
 ```
 
@@ -1518,7 +1630,7 @@ lurek.render.getPointSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Point diameter in pixels. |
+| number | Point diameter in pixels. |
 
 **Example**
 
@@ -1539,7 +1651,6 @@ end
 Returns the current scissor rectangle, or nothing if no scissor is set.
 
 ```lua
--- signature
 lurek.render.getScissor()
 ```
 
@@ -1547,10 +1658,10 @@ lurek.render.getScissor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a x, y, w, h of the scissor rect (empty if none). |
-| `number` | b x, y, w, h of the scissor rect (empty if none). |
-| `number` | c x, y, w, h of the scissor rect (empty if none). |
-| `number` | d x, y, w, h of the scissor rect (empty if none). |
+| number | x; y; w; h of the scissor rect (empty if none). (value 1). |
+| number | x; y; w; h of the scissor rect (empty if none). (value 2). |
+| number | x; y; w; h of the scissor rect (empty if none). (value 3). |
+| number | x; y; w; h of the scissor rect (empty if none). (value 4). |
 
 **Example**
 
@@ -1570,7 +1681,6 @@ end
 Returns the currently active shader, or nil if using the default.
 
 ```lua
--- signature
 lurek.render.getShader()
 ```
 
@@ -1578,7 +1688,7 @@ lurek.render.getShader()
 
 | Type | Description |
 |------|-------------|
-| `LShader` | The active shader handle. |
+| [LShader](#lshader-handle) | The active shader handle. |
 
 **Example**
 
@@ -1600,7 +1710,6 @@ end
 Returns a table of rendering statistics for the current frame.
 
 ```lua
--- signature
 lurek.render.getStats()
 ```
 
@@ -1608,7 +1717,7 @@ lurek.render.getStats()
 
 | Type | Description |
 |------|-------------|
-| `RenderGetStatsResult` | Stats table with rendering counters. |
+| LRenderGetStatsResult | Stats table with rendering counters. |
 
 **Example**
 
@@ -1628,7 +1737,6 @@ end
 Returns the current stencil action, compare mode, and reference value.
 
 ```lua
--- signature
 lurek.render.getStencilMode()
 ```
 
@@ -1636,9 +1744,9 @@ lurek.render.getStencilMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | a Action name, compare mode name, and reference value. |
-| `string` | b Action name, compare mode name, and reference value. |
-| `number` | c Action name, compare mode name, and reference value. |
+| string | Action name; compare mode name; and reference value. (value 1). |
+| string | Action name; compare mode name; and reference value. (value 2). |
+| number | Action name; compare mode name; and reference value. (value 3). |
 
 **Example**
 
@@ -1658,7 +1766,6 @@ end
 Returns the current window width in pixels.
 
 ```lua
--- signature
 lurek.render.getWidth()
 ```
 
@@ -1666,7 +1773,7 @@ lurek.render.getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Window width. |
+| number | Window width. |
 
 **Example**
 
@@ -1685,7 +1792,6 @@ end
 Intersects the given rectangle with the current scissor, narrowing the drawable region.
 
 ```lua
--- signature
 lurek.render.intersectScissor(x, y, w, h)
 ```
 
@@ -1693,10 +1799,10 @@ lurek.render.intersectScissor(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Left edge. |
-| `y` | `number` | Top edge. |
-| `w` | `number` | Width. |
-| `h` | `number` | Height. |
+| `x` | number | Left edge. |
+| `y` | number | Top edge. |
+| `w` | number | Width. |
+| `h` | number | Height. |
 
 **Example**
 
@@ -1717,7 +1823,6 @@ end
 Returns true if the current default font selection uses the bold variant.
 
 ```lua
--- signature
 lurek.render.isBold()
 ```
 
@@ -1725,7 +1830,7 @@ lurek.render.isBold()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when bold is active. |
+| boolean | True when bold is active. |
 
 **Example**
 
@@ -1743,7 +1848,6 @@ end
 Returns whether a named rendering layer is currently visible.
 
 ```lua
--- signature
 lurek.render.isLayerVisible(name)
 ```
 
@@ -1751,13 +1855,13 @@ lurek.render.isLayerVisible(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
+| `name` | string | Layer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the layer is visible. |
+| boolean | True if the layer is visible. |
 
 **Example**
 
@@ -1778,7 +1882,6 @@ end
 Returns whether wireframe rendering is currently active.
 
 ```lua
--- signature
 lurek.render.isWireframe()
 ```
 
@@ -1786,7 +1889,7 @@ lurek.render.isWireframe()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if wireframe mode is on. |
+| boolean | True if wireframe mode is on. |
 
 **Example**
 
@@ -1806,7 +1909,6 @@ end
 Draws a line between two points, or a polyline through multiple points.
 
 ```lua
--- signature
 lurek.render.line(...)
 ```
 
@@ -1837,7 +1939,6 @@ end
 Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 
 ```lua
--- signature
 lurek.render.loadModel(path)
 ```
 
@@ -1845,13 +1946,13 @@ lurek.render.loadModel(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | File path to the model file relative to the game directory. |
+| `path` | string | File path to the model file relative to the game directory. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LObjModel` | The loaded model handle. |
+| [LObjModel](#lobjmodel-handle) | The loaded model handle. |
 
 **Example**
 
@@ -1870,7 +1971,6 @@ end
 Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 
 ```lua
--- signature
 lurek.render.loadObj(path)
 ```
 
@@ -1878,13 +1978,13 @@ lurek.render.loadObj(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | File path to the .obj file relative to the game directory. |
+| `path` | string | File path to the .obj file relative to the game directory. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LObjModel` | The loaded OBJ model handle. |
+| [LObjModel](#lobjmodel-handle) | The loaded OBJ model handle. |
 
 **Example**
 
@@ -1903,7 +2003,6 @@ end
 Creates a new off-screen render target with the given dimensions.
 
 ```lua
--- signature
 lurek.render.newCanvas(width, height)
 ```
 
@@ -1911,14 +2010,14 @@ lurek.render.newCanvas(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Canvas width in pixels (must be > 0). |
-| `height` | `number` | Canvas height in pixels (must be > 0). |
+| `width` | number | Canvas width in pixels (must be > 0). |
+| `height` | number | Canvas height in pixels (must be > 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCanvas` | The created canvas handle. |
+| [LCanvas](#lcanvas-handle) | The created canvas handle. |
 
 **Example**
 
@@ -1940,10 +2039,9 @@ end
 
 ### `lurek.render.newDepthSorter`
 
-Performs the 'render' operation.
+Registers the depth-sorted drawing helper constructor in the render module.
 
 ```lua
--- signature
 lurek.render.newDepthSorter()
 ```
 
@@ -1951,7 +2049,19 @@ lurek.render.newDepthSorter()
 
 | Type | Description |
 |------|-------------|
-| `LDepthSorter` | A fresh depth sorter with no queued entries. |
+| [LDepthSorter](#ldepthsorter-handle) | A fresh depth sorter with no queued entries. |
+
+**Example**
+
+```lua
+do
+    local sorter = lurek.render.newDepthSorter()
+    sorter:add(function() print("draw layer A") end, 10)
+    sorter:add(function() print("draw layer B") end, 5)
+    sorter:flush()
+    print("depth sorter type = " .. sorter:type())
+end
+```
 
 ---
 
@@ -1960,7 +2070,6 @@ lurek.render.newDepthSorter()
 Creates a new z-ordered draw layer for sorting draw callbacks by depth.
 
 ```lua
--- signature
 lurek.render.newDrawLayer()
 ```
 
@@ -1968,7 +2077,7 @@ lurek.render.newDrawLayer()
 
 | Type | Description |
 |------|-------------|
-| `LDrawLayer` | The created draw layer. |
+| [LDrawLayer](#ldrawlayer-handle) | The created draw layer. |
 
 **Example**
 
@@ -1994,7 +2103,6 @@ end
 Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
 
 ```lua
--- signature
 lurek.render.newFont(pathOrSize, size)
 ```
 
@@ -2002,14 +2110,14 @@ lurek.render.newFont(pathOrSize, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pathOrSize` | `any` | Built-in font name, font file path, or numeric built-in point-size selector. |
-| `size?` | `number` | Point size for TTF/OTF files, or cell height for PNG atlases. |
+| `pathOrSize` | any | Built-in font name, font file path, or numeric built-in point-size selector. |
+| `size?` | number | Point size for TTF/OTF files, or cell height for PNG atlases. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The created font handle. |
+| [LFont](#lfont-handle) | The created font handle. |
 
 **Example**
 
@@ -2030,7 +2138,6 @@ end
 Loads a texture from a file path or creates one from an ImageData object.
 
 ```lua
--- signature
 lurek.render.newImage(pathOrData, colorSpace)
 ```
 
@@ -2038,14 +2145,14 @@ lurek.render.newImage(pathOrData, colorSpace)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pathOrData` | `string|LImageData` | File path to an image, or an ImageData object. |
-| `colorSpace?` | `string` | Color space: "srgb" (default) or "linear". |
+| `pathOrData` | string|[LImageData](#limagedata-handle) | File path to an image, or an ImageData object. |
+| `colorSpace?` | string | Color space: "srgb" (default) or "linear". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImage` | The loaded image handle. |
+| [LImage](#limage-handle) | The loaded image handle. |
 
 **Example**
 
@@ -2067,7 +2174,6 @@ end
 Creates a named rendering layer with an optional z-order for draw call organization.
 
 ```lua
--- signature
 lurek.render.newLayer(name, zOrder)
 ```
 
@@ -2075,8 +2181,8 @@ lurek.render.newLayer(name, zOrder)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `zOrder?` | `number` | Z-order for layer sorting (default 0). |
+| `name` | string | Layer name. |
+| `zOrder?` | number | Z-order for layer sorting (default 0). |
 
 **Example**
 
@@ -2097,7 +2203,6 @@ end
 Creates a custom vertex mesh from an array of vertex data tables.
 
 ```lua
--- signature
 lurek.render.newMesh(verts, mode)
 ```
 
@@ -2105,14 +2210,14 @@ lurek.render.newMesh(verts, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `verts` | `table` | Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}. |
-| `mode?` | `string` | Draw mode: "triangles" (default), "fan", or "strip". |
+| `verts` | table | Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}. |
+| `mode?` | string | Draw mode: "triangles" (default), "fan", or "strip". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMesh` | The created mesh handle. |
+| [LMesh](#lmesh-handle) | The created mesh handle. |
 
 **Example**
 
@@ -2137,7 +2242,6 @@ end
 Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 
 ```lua
--- signature
 lurek.render.newNineSlice(image, top, right, bottom, left)
 ```
 
@@ -2145,17 +2249,17 @@ lurek.render.newNineSlice(image, top, right, bottom, left)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImage` | Source texture. |
-| `top` | `number` | Top border inset in pixels. |
-| `right` | `number` | Right border inset. |
-| `bottom` | `number` | Bottom border inset. |
-| `left` | `number` | Left border inset. |
+| `image` | [LImage](#limage-handle) | Source texture. |
+| `top` | number | Top border inset in pixels. |
+| `right` | number | Right border inset. |
+| `bottom` | number | Bottom border inset. |
+| `left` | number | Left border inset. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNineSlice` | The 9-slice handle. |
+| [LNineSlice](#lnineslice-handle) | The 9-slice handle. |
 
 **Example**
 
@@ -2177,7 +2281,6 @@ end
 Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
 
 ```lua
--- signature
 lurek.render.newQuad(x, y, w, h, sw, sh)
 ```
 
@@ -2185,18 +2288,18 @@ lurek.render.newQuad(x, y, w, h, sw, sh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Left edge in texture pixels. |
-| `y` | `number` | Top edge in texture pixels. |
-| `w` | `number` | Width in texture pixels. |
-| `h` | `number` | Height in texture pixels. |
-| `sw` | `number` | Full source texture width. |
-| `sh` | `number` | Full source texture height. |
+| `x` | number | Left edge in texture pixels. |
+| `y` | number | Top edge in texture pixels. |
+| `w` | number | Width in texture pixels. |
+| `h` | number | Height in texture pixels. |
+| `sw` | number | Full source texture width. |
+| `sh` | number | Full source texture height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LQuad` | The created quad. |
+| [LQuad](#lquad-handle) | The created quad. |
 
 **Example**
 
@@ -2219,7 +2322,6 @@ end
 Compiles a WGSL shader program from source code and returns a handle.
 
 ```lua
--- signature
 lurek.render.newShader(code)
 ```
 
@@ -2227,13 +2329,13 @@ lurek.render.newShader(code)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `code` | `string` | WGSL shader source code. |
+| `code` | string | WGSL shader source code. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LShader` | The compiled shader handle. |
+| [LShader](#lshader-handle) | The compiled shader handle. |
 
 **Example**
 
@@ -2253,7 +2355,6 @@ end
 Creates a new retained compound shape for accumulating draw commands.
 
 ```lua
--- signature
 lurek.render.newShape()
 ```
 
@@ -2261,7 +2362,7 @@ lurek.render.newShape()
 
 | Type | Description |
 |------|-------------|
-| `LShape` | The created shape handle. |
+| [LShape](#lshape-handle) | The created shape handle. |
 
 **Example**
 
@@ -2285,7 +2386,6 @@ end
 Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
 
 ```lua
--- signature
 lurek.render.newSpriteBatch(image, max)
 ```
 
@@ -2293,14 +2393,14 @@ lurek.render.newSpriteBatch(image, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImage` | Source texture for all sprites in the batch. |
-| `max?` | `number` | Maximum number of entries (default 1000). |
+| `image` | [LImage](#limage-handle) | Source texture for all sprites in the batch. |
+| `max?` | number | Maximum number of entries (default 1000). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteBatch` | The created sprite batch handle. |
+| [LSpriteBatch](#lspritebatch-handle) | The created sprite batch handle. |
 
 **Example**
 
@@ -2323,7 +2423,6 @@ end
 Resets the current transformation matrix to the identity (no transform).
 
 ```lua
--- signature
 lurek.render.origin()
 ```
 
@@ -2348,7 +2447,6 @@ end
 Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
 
 ```lua
--- signature
 lurek.render.points(...)
 ```
 
@@ -2381,7 +2479,6 @@ end
 Draws a polygon from a flat list of x,y vertex coordinates.
 
 ```lua
--- signature
 lurek.render.polygon(mode, ...)
 ```
 
@@ -2389,7 +2486,7 @@ lurek.render.polygon(mode, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
+| `mode` | string | "fill" or "line". |
 | — | — | @param ... number Flat vertex coordinates: x1, y1, x2, y2, ... (minimum 3 vertices). |
 
 **Example**
@@ -2412,7 +2509,6 @@ end
 Pops the top transformation matrix from the transform stack, restoring the previous one.
 
 ```lua
--- signature
 lurek.render.pop()
 ```
 
@@ -2439,7 +2535,6 @@ end
 Ends a compositing layer and composites it with the previous content.
 
 ```lua
--- signature
 lurek.render.popLayer(id)
 ```
 
@@ -2447,7 +2542,7 @@ lurek.render.popLayer(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Layer identifier matching the pushLayer call. |
+| `id` | number | Layer identifier matching the pushLayer call. |
 
 **Example**
 
@@ -2467,7 +2562,6 @@ end
 Draws text using the active font at the given position.
 
 ```lua
--- signature
 lurek.render.print(text, x, y, scale)
 ```
 
@@ -2475,10 +2569,10 @@ lurek.render.print(text, x, y, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to render. |
-| `x?` | `number` | X position (default 0). |
-| `y?` | `number` | Y position (default 0). |
-| `scale?` | `number` | Text scale factor (default 1). |
+| `text` | string | Text to render. |
+| `x?` | number | X position (default 0). |
+| `y?` | number | Y position (default 0). |
+| `scale?` | number | Text scale factor (default 1). |
 
 **Example**
 
@@ -2499,7 +2593,6 @@ end
 Draws rich text composed of individually styled spans at the given position.
 
 ```lua
--- signature
 lurek.render.printRich(spans, x, y)
 ```
 
@@ -2507,9 +2600,9 @@ lurek.render.printRich(spans, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `spans` | `table` | Array of span tables, each with fields: text, r, g, b, a, scale. |
-| `x` | `number` | X position. |
-| `y` | `number` | Y position. |
+| `spans` | table | Array of span tables, each with fields: text, r, g, b, a, scale. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
 
 **Example**
 
@@ -2535,7 +2628,6 @@ end
 Draws rich text using a specific font without changing the global active font.
 
 ```lua
--- signature
 lurek.render.printRichWithFont(font, spans, x, y)
 ```
 
@@ -2543,10 +2635,10 @@ lurek.render.printRichWithFont(font, spans, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to use for this draw. |
-| `spans` | `table` | Array of span tables, each with fields: text, r, g, b, a, scale. |
-| `x` | `number` | X position. |
-| `y` | `number` | Y position. |
+| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `spans` | table | Array of span tables, each with fields: text, r, g, b, a, scale. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
 
 **Example**
 
@@ -2571,7 +2663,6 @@ end
 Draws text centered and rotated around its midpoint.
 
 ```lua
--- signature
 lurek.render.printRotated(text, x, y, angle, scale)
 ```
 
@@ -2579,11 +2670,11 @@ lurek.render.printRotated(text, x, y, angle, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to render. |
-| `x` | `number` | Center X position. |
-| `y` | `number` | Center Y position. |
-| `angle` | `number` | Rotation angle in radians. |
-| `scale?` | `number` | Text scale factor (default 1). |
+| `text` | string | Text to render. |
+| `x` | number | Center X position. |
+| `y` | number | Center Y position. |
+| `angle` | number | Rotation angle in radians. |
+| `scale?` | number | Text scale factor (default 1). |
 
 **Example**
 
@@ -2604,7 +2695,6 @@ end
 Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
 
 ```lua
--- signature
 lurek.render.printRotatedWithFont(font, text, x, y, angle, scale)
 ```
 
@@ -2612,12 +2702,12 @@ lurek.render.printRotatedWithFont(font, text, x, y, angle, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to use for this draw. |
-| `text` | `string` | Text to render. |
-| `x` | `number` | Center X position. |
-| `y` | `number` | Center Y position. |
-| `angle` | `number` | Rotation angle in radians. |
-| `scale?` | `number` | Text scale factor (default 1). |
+| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `text` | string | Text to render. |
+| `x` | number | Center X position. |
+| `y` | number | Center Y position. |
+| `angle` | number | Rotation angle in radians. |
+| `scale?` | number | Text scale factor (default 1). |
 
 **Example**
 
@@ -2636,7 +2726,6 @@ end
 Draws text using a specific font without changing the global active font.
 
 ```lua
--- signature
 lurek.render.printWithFont(font, text, x, y, scale)
 ```
 
@@ -2644,11 +2733,11 @@ lurek.render.printWithFont(font, text, x, y, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to use for this draw. |
-| `text` | `string` | Text to render. |
-| `x?` | `number` | X position (default 0). |
-| `y?` | `number` | Y position (default 0). |
-| `scale?` | `number` | Text scale factor (default 1). |
+| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `text` | string | Text to render. |
+| `x?` | number | X position (default 0). |
+| `y?` | number | Y position (default 0). |
+| `scale?` | number | Text scale factor (default 1). |
 
 **Example**
 
@@ -2667,7 +2756,6 @@ end
 Draws word-wrapped and aligned text within a pixel-width limit.
 
 ```lua
--- signature
 lurek.render.printf(text, x, y, limit, align)
 ```
 
@@ -2675,11 +2763,11 @@ lurek.render.printf(text, x, y, limit, align)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to render. |
-| `x` | `number` | X position. |
-| `y` | `number` | Y position. |
-| `limit` | `number` | Maximum line width in pixels for wrapping. |
-| `align?` | `string` | Alignment: "left" (default), "center", "right", or "justify". |
+| `text` | string | Text to render. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
+| `limit` | number | Maximum line width in pixels for wrapping. |
+| `align?` | string | Alignment: "left" (default), "center", "right", or "justify". |
 
 **Example**
 
@@ -2700,7 +2788,6 @@ end
 Draws word-wrapped and aligned text with a specific font without changing the global active font.
 
 ```lua
--- signature
 lurek.render.printfWithFont(font, text, x, y, limit, align)
 ```
 
@@ -2708,12 +2795,12 @@ lurek.render.printfWithFont(font, text, x, y, limit, align)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to use for this draw. |
-| `text` | `string` | Text to render. |
-| `x` | `number` | X position. |
-| `y` | `number` | Y position. |
-| `limit` | `number` | Maximum line width in pixels for wrapping. |
-| `align?` | `string` | Alignment: "left" (default), "center", "right", or "justify". |
+| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `text` | string | Text to render. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
+| `limit` | number | Maximum line width in pixels for wrapping. |
+| `align?` | string | Alignment: "left" (default), "center", "right", or "justify". |
 
 **Example**
 
@@ -2733,7 +2820,6 @@ end
 Pushes the current transformation matrix onto the transform stack.
 
 ```lua
--- signature
 lurek.render.push()
 ```
 
@@ -2759,7 +2845,6 @@ end
 Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
 
 ```lua
--- signature
 lurek.render.pushLayer(id, alpha, blendMode)
 ```
 
@@ -2767,9 +2852,9 @@ lurek.render.pushLayer(id, alpha, blendMode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Layer identifier (must match the popLayer call). |
-| `alpha?` | `number` | Layer opacity (0–1, default 1). |
-| `blendMode?` | `string` | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen". |
+| `id` | number | Layer identifier (must match the popLayer call). |
+| `alpha?` | number | Layer opacity (0â€“1, default 1). |
+| `blendMode?` | string | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen". |
 
 **Example**
 
@@ -2790,7 +2875,6 @@ end
 Sets the depth sort key for subsequent draw calls within the current sort group.
 
 ```lua
--- signature
 lurek.render.pushSortKey(depth)
 ```
 
@@ -2798,7 +2882,7 @@ lurek.render.pushSortKey(depth)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `depth` | `number` | Sort depth value (lower draws first). |
+| `depth` | number | Sort depth value (lower draws first). |
 
 **Example**
 
@@ -2819,7 +2903,6 @@ end
 Draws a rectangle. If rx is provided, draws a rounded rectangle.
 
 ```lua
--- signature
 lurek.render.rectangle(mode, x, y, w, h, rx, ry)
 ```
 
@@ -2827,13 +2910,13 @@ lurek.render.rectangle(mode, x, y, w, h, rx, ry)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Left edge X. |
-| `y` | `number` | Top edge Y. |
-| `w` | `number` | Width. |
-| `h` | `number` | Height. |
-| `rx?` | `number` | Horizontal corner radius for rounded rectangle. |
-| `ry?` | `number` | Vertical corner radius (defaults to rx). |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Left edge X. |
+| `y` | number | Top edge Y. |
+| `w` | number | Width. |
+| `h` | number | Height. |
+| `rx?` | number | Horizontal corner radius for rounded rectangle. |
+| `ry?` | number | Vertical corner radius (defaults to rx). |
 
 **Example**
 
@@ -2855,7 +2938,6 @@ end
 Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
 
 ```lua
--- signature
 lurek.render.resetCanvas(canvas)
 ```
 
@@ -2863,13 +2945,13 @@ lurek.render.resetCanvas(canvas)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `canvas` | `LCanvas` | Canvas to reset. |
+| `canvas` | [LCanvas](#lcanvas-handle) | Canvas to reset. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No return value. |
+| nil | No return value. |
 
 **Example**
 
@@ -2889,7 +2971,6 @@ end
 Applies a rotation to the current transformation matrix.
 
 ```lua
--- signature
 lurek.render.rotate(angle)
 ```
 
@@ -2897,7 +2978,7 @@ lurek.render.rotate(angle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle` | `number` | Rotation angle in radians. |
+| `angle` | number | Rotation angle in radians. |
 
 **Example**
 
@@ -2920,7 +3001,6 @@ end
 Saves a screenshot of the current frame to a file under the save/ directory.
 
 ```lua
--- signature
 lurek.render.saveScreenshot(path)
 ```
 
@@ -2928,7 +3008,7 @@ lurek.render.saveScreenshot(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Output path (must start with "save/"). |
+| `path` | string | Output path (must start with "save/"). |
 
 **Example**
 
@@ -2946,7 +3026,6 @@ end
 Applies scaling to the current transformation matrix.
 
 ```lua
--- signature
 lurek.render.scale(sx, sy)
 ```
 
@@ -2954,8 +3033,8 @@ lurek.render.scale(sx, sy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Horizontal scale factor. |
-| `sy?` | `number` | Vertical scale factor (defaults to sx for uniform scaling). |
+| `sx` | number | Horizontal scale factor. |
+| `sy?` | number | Vertical scale factor (defaults to sx for uniform scaling). |
 
 **Example**
 
@@ -2978,7 +3057,6 @@ end
 Sets the background clear color used at the start of each frame.
 
 ```lua
--- signature
 lurek.render.setBackgroundColor(r, g, b)
 ```
 
@@ -2986,9 +3064,9 @@ lurek.render.setBackgroundColor(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
 
 **Example**
 
@@ -3009,7 +3087,6 @@ end
 Sets the blend mode for subsequent draw operations.
 
 ```lua
--- signature
 lurek.render.setBlendMode(mode)
 ```
 
@@ -3017,7 +3094,7 @@ lurek.render.setBlendMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | One of: "alpha", "add", "multiply", "replace", "screen". |
+| `mode` | string | One of: "alpha", "add", "multiply", "replace", "screen". |
 
 **Example**
 
@@ -3041,7 +3118,6 @@ end
 Sets whether subsequent font size lookups use the bold Courier New variant.
 
 ```lua
--- signature
 lurek.render.setBold(bold)
 ```
 
@@ -3049,7 +3125,7 @@ lurek.render.setBold(bold)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bold` | `boolean` | True to enable bold, false for regular. |
+| `bold` | boolean | True to enable bold, false for regular. |
 
 **Example**
 
@@ -3071,7 +3147,6 @@ end
 Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
 
 ```lua
--- signature
 lurek.render.setCanvas(canvas)
 ```
 
@@ -3079,7 +3154,7 @@ lurek.render.setCanvas(canvas)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `canvas?` | `LCanvas` | Canvas to draw to, or nil for the main screen. |
+| `canvas?` | [LCanvas](#lcanvas-handle) | Canvas to draw to, or nil for the main screen. |
 
 **Example**
 
@@ -3102,7 +3177,6 @@ end
 Sets the active drawing color for all subsequent draw operations.
 
 ```lua
--- signature
 lurek.render.setColor(r, g, b, a)
 ```
 
@@ -3110,10 +3184,10 @@ lurek.render.setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
-| `a?` | `number` | Alpha channel (0–1, default 1). |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
+| `a?` | number | Alpha channel (0â€“1, default 1). |
 
 **Example**
 
@@ -3135,7 +3209,6 @@ end
 Sets which color channels are written during draw calls. Call with no args to enable all.
 
 ```lua
--- signature
 lurek.render.setColorMask(r, g, b, a)
 ```
 
@@ -3143,10 +3216,10 @@ lurek.render.setColorMask(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r?` | `boolean` | Enable red channel. |
-| `g?` | `boolean` | Enable green channel. |
-| `b?` | `boolean` | Enable blue channel. |
-| `a?` | `boolean` | Enable alpha channel. |
+| `r?` | boolean | Enable red channel. |
+| `g?` | boolean | Enable green channel. |
+| `b?` | boolean | Enable blue channel. |
+| `a?` | boolean | Enable alpha channel. |
 
 **Example**
 
@@ -3167,7 +3240,6 @@ end
 Sets the default texture filtering mode for newly created images.
 
 ```lua
--- signature
 lurek.render.setDefaultFilter(min, mag, anisotropy)
 ```
 
@@ -3175,9 +3247,9 @@ lurek.render.setDefaultFilter(min, mag, anisotropy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `string` | Minification filter: "nearest" or "linear". |
-| `mag` | `string` | Magnification filter: "nearest" or "linear". |
-| `anisotropy?` | `number` | Anisotropy level (default 1). |
+| `min` | string | Minification filter: "nearest" or "linear". |
+| `mag` | string | Magnification filter: "nearest" or "linear". |
+| `anisotropy?` | number | Anisotropy level (default 1). |
 
 **Example**
 
@@ -3199,7 +3271,6 @@ end
 Selects a built-in default font by bundled point size and makes it the active render font.
 
 ```lua
--- signature
 lurek.render.setDefaultFont(pointSize, bold)
 ```
 
@@ -3207,14 +3278,14 @@ lurek.render.setDefaultFont(pointSize, bold)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pointSize?` | `number` | Desired built-in point size. When omitted, reuses the configured default size. |
-| `bold?` | `boolean` | When true, selects the bold variant. When omitted, reuses the current bold selection. |
+| `pointSize?` | number | Desired built-in point size. When omitted, reuses the configured default size. |
+| `bold?` | boolean | When true, selects the bold variant. When omitted, reuses the current bold selection. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The selected built-in font handle. |
+| [LFont](#lfont-handle) | The selected built-in font handle. |
 
 **Example**
 
@@ -3235,7 +3306,6 @@ end
 Sets the depth comparison mode and whether depth writes are enabled.
 
 ```lua
--- signature
 lurek.render.setDepthMode(mode, write)
 ```
 
@@ -3243,8 +3313,8 @@ lurek.render.setDepthMode(mode, write)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Compare mode: "always", "never", "less", "lequal", "equal", "notequal", "greater", "gequal". |
-| `write?` | `boolean` | Enable depth buffer writes (default false). |
+| `mode` | string | Compare mode: "always", "never", "less", "lequal", "equal", "notequal", "greater", "gequal". |
+| `write?` | boolean | Enable depth buffer writes (default false). |
 
 **Example**
 
@@ -3266,7 +3336,6 @@ end
 Sets the active font used by print, printf, and other text rendering calls.
 
 ```lua
--- signature
 lurek.render.setFont(font)
 ```
 
@@ -3274,7 +3343,7 @@ lurek.render.setFont(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to make active. |
+| `font` | [LFont](#lfont-handle) | Font handle to make active. |
 
 **Example**
 
@@ -3295,7 +3364,6 @@ end
 Sets the line height override for a font (currently a no-op stub).
 
 ```lua
--- signature
 lurek.render.setFontLineHeight(font, lh)
 ```
 
@@ -3303,8 +3371,8 @@ lurek.render.setFontLineHeight(font, lh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle. |
-| `lh` | `number` | Line height value. |
+| `font` | [LFont](#lfont-handle) | Font handle. |
+| `lh` | number | Line height value. |
 
 **Example**
 
@@ -3324,7 +3392,6 @@ end
 Sets the active rendering layer by name. Creates the layer if it does not exist.
 
 ```lua
--- signature
 lurek.render.setLayer(name)
 ```
 
@@ -3332,7 +3399,7 @@ lurek.render.setLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name to activate. |
+| `name` | string | Layer name to activate. |
 
 **Example**
 
@@ -3352,7 +3419,6 @@ end
 Sets whether a named rendering layer is visible.
 
 ```lua
--- signature
 lurek.render.setLayerVisible(name, visible)
 ```
 
@@ -3360,8 +3426,8 @@ lurek.render.setLayerVisible(name, visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `visible` | `boolean` | True to show, false to hide. |
+| `name` | string | Layer name. |
+| `visible` | boolean | True to show, false to hide. |
 
 **Example**
 
@@ -3381,7 +3447,6 @@ end
 Sets the z-order value of a named rendering layer.
 
 ```lua
--- signature
 lurek.render.setLayerZOrder(name, z)
 ```
 
@@ -3389,8 +3454,8 @@ lurek.render.setLayerZOrder(name, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `z` | `number` | New z-order value. |
+| `name` | string | Layer name. |
+| `z` | number | New z-order value. |
 
 **Example**
 
@@ -3409,7 +3474,6 @@ end
 Sets the line width for subsequent line-mode draw calls.
 
 ```lua
--- signature
 lurek.render.setLineWidth(w)
 ```
 
@@ -3417,7 +3481,7 @@ lurek.render.setLineWidth(w)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Line width in pixels. |
+| `w` | number | Line width in pixels. |
 
 **Example**
 
@@ -3438,7 +3502,6 @@ end
 Sets the point size for subsequent point draw calls.
 
 ```lua
--- signature
 lurek.render.setPointSize(size)
 ```
 
@@ -3446,7 +3509,7 @@ lurek.render.setPointSize(size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Point diameter in pixels. |
+| `size` | number | Point diameter in pixels. |
 
 **Example**
 
@@ -3467,7 +3530,6 @@ end
 Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
 
 ```lua
--- signature
 lurek.render.setScissor(x, y, w, h)
 ```
 
@@ -3475,10 +3537,10 @@ lurek.render.setScissor(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x?` | `number` | Left edge of the scissor rectangle. |
-| `y?` | `number` | Top edge. |
-| `w?` | `number` | Width. |
-| `h?` | `number` | Height. |
+| `x?` | number | Left edge of the scissor rectangle. |
+| `y?` | number | Top edge. |
+| `w?` | number | Width. |
+| `h?` | number | Height. |
 
 **Example**
 
@@ -3502,7 +3564,6 @@ end
 Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
 
 ```lua
--- signature
 lurek.render.setShader(shader)
 ```
 
@@ -3510,7 +3571,7 @@ lurek.render.setShader(shader)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader?` | `LShader` | Shader handle to activate, or nil for default. |
+| `shader?` | [LShader](#lshader-handle) | Shader handle to activate, or nil for default. |
 
 **Example**
 
@@ -3534,7 +3595,6 @@ end
 Sets the stencil write action, compare function, and reference value at once.
 
 ```lua
--- signature
 lurek.render.setStencilMode(action, compare, value)
 ```
 
@@ -3542,9 +3602,9 @@ lurek.render.setStencilMode(action, compare, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Stencil action: "keep", "zero", "replace", "increment", "decrement", etc. |
-| `compare?` | `string` | Compare function (default "always"). |
-| `value?` | `number` | Reference value (default 0). |
+| `action` | string | Stencil action: "keep", "zero", "replace", "increment", "decrement", etc. |
+| `compare?` | string | Compare function (default "always"). |
+| `value?` | number | Reference value (default 0). |
 
 **Example**
 
@@ -3565,7 +3625,6 @@ end
 Configures the stencil comparison test for subsequent draws. Pass nil to disable.
 
 ```lua
--- signature
 lurek.render.setStencilTest(compare, value)
 ```
 
@@ -3573,8 +3632,8 @@ lurek.render.setStencilTest(compare, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `compare?` | `string` | Compare function: "equal", "notequal", "less", "greater", etc. Nil disables. |
-| `value?` | `number` | Reference value to compare against (default 1). |
+| `compare?` | string | Compare function: "equal", "notequal", "less", "greater", etc. Nil disables. |
+| `value?` | number | Reference value to compare against (default 1). |
 
 **Example**
 
@@ -3594,7 +3653,6 @@ end
 Enables or disables wireframe rendering mode.
 
 ```lua
--- signature
 lurek.render.setWireframe(enabled)
 ```
 
@@ -3602,7 +3660,7 @@ lurek.render.setWireframe(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True for wireframe, false for solid. |
+| `enabled` | boolean | True for wireframe, false for solid. |
 
 **Example**
 
@@ -3623,7 +3681,6 @@ end
 Applies a shear (skew) to the current transformation matrix.
 
 ```lua
--- signature
 lurek.render.shear(kx, ky)
 ```
 
@@ -3631,8 +3688,8 @@ lurek.render.shear(kx, ky)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kx` | `number` | Horizontal shear factor. |
-| `ky` | `number` | Vertical shear factor. |
+| `kx` | number | Horizontal shear factor. |
+| `ky` | number | Vertical shear factor. |
 
 **Example**
 
@@ -3655,7 +3712,6 @@ end
 Begins a stencil write pass with the given action and reference value.
 
 ```lua
--- signature
 lurek.render.stencil(action, value)
 ```
 
@@ -3663,8 +3719,8 @@ lurek.render.stencil(action, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action?` | `string` | Stencil action: "replace" (default), "zero", "increment", "decrement", etc. |
-| `value?` | `number` | Stencil reference value (default 1). |
+| `action?` | string | Stencil action: "replace" (default), "zero", "increment", "decrement", etc. |
+| `value?` | number | Stencil reference value (default 1). |
 
 **Example**
 
@@ -3687,7 +3743,6 @@ end
 Applies a translation to the current transformation matrix.
 
 ```lua
--- signature
 lurek.render.translate(x, y)
 ```
 
@@ -3695,8 +3750,8 @@ lurek.render.translate(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Horizontal translation in pixels. |
-| `y` | `number` | Vertical translation in pixels. |
+| `x` | number | Horizontal translation in pixels. |
+| `y` | number | Vertical translation in pixels. |
 
 **Example**
 
@@ -3718,7 +3773,6 @@ end
 Draws a triangle from three vertex positions.
 
 ```lua
--- signature
 lurek.render.triangle(mode, x1, y1, x2, y2, x3, y3)
 ```
 
@@ -3726,13 +3780,13 @@ lurek.render.triangle(mode, x1, y1, x2, y2, x3, y3)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x1` | `number` | First vertex X. |
-| `y1` | `number` | First vertex Y. |
-| `x2` | `number` | Second vertex X. |
-| `y2` | `number` | Second vertex Y. |
-| `x3` | `number` | Third vertex X. |
-| `y3` | `number` | Third vertex Y. |
+| `mode` | string | "fill" or "line". |
+| `x1` | number | First vertex X. |
+| `y1` | number | First vertex Y. |
+| `x2` | number | Second vertex X. |
+| `y2` | number | Second vertex Y. |
+| `x3` | number | Third vertex X. |
+| `y3` | number | Third vertex Y. |
 
 **Example**
 
@@ -3749,14 +3803,47 @@ end
 
 ---
 
-## LCanvas
+## Module Fields
 
-### `LCanvas:getDimensions`
+*No module-level fields documented.*
+
+## Types
+
+- [LCanvas Handle](#lcanvas-handle)
+- [LDepthSorter Handle](#ldepthsorter-handle)
+- [LDrawLayer Handle](#ldrawlayer-handle)
+- [LFont Handle](#lfont-handle)
+- [LImage Handle](#limage-handle)
+- [LImageData Handle](#limagedata-handle)
+- [LMesh Handle](#lmesh-handle)
+- [LNineSlice Handle](#lnineslice-handle)
+- [LObjModel Handle](#lobjmodel-handle)
+- [LQuad Handle](#lquad-handle)
+- [LShader Handle](#lshader-handle)
+- [LShape Handle](#lshape-handle)
+- [LSpriteBatch Handle](#lspritebatch-handle)
+
+## Callbacks
+
+- `lurek.render.captureScreenshot` param `callback` (`function`): Called with an LImageData argument.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LCanvas Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCanvas:getDimensions`
 
 Returns both width and height of this canvas.
 
 ```lua
--- signature
 LCanvas:getDimensions()
 ```
 
@@ -3764,8 +3851,8 @@ LCanvas:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 **Example**
 
@@ -3781,12 +3868,11 @@ end
 
 ---
 
-### `LCanvas:getHeight`
+#### `LCanvas:getHeight`
 
 Returns the height of this canvas in pixels.
 
 ```lua
--- signature
 LCanvas:getHeight()
 ```
 
@@ -3794,7 +3880,7 @@ LCanvas:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -3809,12 +3895,11 @@ end
 
 ---
 
-### `LCanvas:getWidth`
+#### `LCanvas:getWidth`
 
 Returns the width of this canvas in pixels.
 
 ```lua
--- signature
 LCanvas:getWidth()
 ```
 
@@ -3822,7 +3907,7 @@ LCanvas:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -3837,12 +3922,11 @@ end
 
 ---
 
-### `LCanvas:release`
+#### `LCanvas:release`
 
 Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
 
 ```lua
--- signature
 LCanvas:release()
 ```
 
@@ -3850,7 +3934,7 @@ LCanvas:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the canvas was still valid and was released. |
+| boolean | True if the canvas was still valid and was released. |
 
 **Example**
 
@@ -3865,12 +3949,11 @@ end
 
 ---
 
-### `LCanvas:type`
+#### `LCanvas:type`
 
 Returns the type name string for this canvas object.
 
 ```lua
--- signature
 LCanvas:type()
 ```
 
@@ -3878,7 +3961,7 @@ LCanvas:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LCanvas". |
+| string | Always "[LCanvas](#lcanvas-handle)". |
 
 **Example**
 
@@ -3893,12 +3976,11 @@ end
 
 ---
 
-### `LCanvas:typeOf`
+#### `LCanvas:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LCanvas:typeOf(name)
 ```
 
@@ -3906,13 +3988,13 @@ LCanvas:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Canvas" or "Object"). |
+| `name` | string | Type name to check ("Canvas" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -3927,14 +4009,176 @@ end
 
 ---
 
-## LDrawLayer
+## LDepthSorter Handle
 
-### `LDrawLayer:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDepthSorter:add`
+
+Register a draw callback at a given depth value. When `flush` is called, all registered callbacks execute in back-to-front order (lowest depth drawn first, highest depth drawn last / on top). Use this for simple draw calls like sprite rendering where each entity has a depth/z-layer.
+
+```lua
+LDepthSorter:add(callback, depth)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `callback` | function | A zero-argument draw function invoked during flush. |
+| `depth` | number | Numeric z-depth controlling draw order â€” lower values are drawn behind higher values. |
+
+---
+
+#### `LDepthSorter:addObject`
+
+Register a game object table for depth-sorted rendering. The object must expose a numeric `depth` field and a `drawSorted(self)` method. During `flush`, each object's `drawSorted` is called in depth order, making this ideal for entity-based architectures where objects manage their own drawing.
+
+```lua
+LDepthSorter:addObject(obj)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | table | A game object table with a numeric `depth` field and a `drawSorted(self)` method. |
+
+---
+
+#### `LDepthSorter:clear`
+
+Discard all pending entries without executing any draw callbacks. Use this when a scene is interrupted, reset, or destroyed before its normal `flush` call.
+
+```lua
+LDepthSorter:clear()
+```
+
+---
+
+#### `LDepthSorter:flush`
+
+Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.
+
+```lua
+LDepthSorter:flush()
+```
+
+---
+
+#### `LDepthSorter:getCount`
+
+Returns the number of draw entries currently queued for the next `flush` call. Useful for debugging or deciding whether to skip an empty render pass.
+
+```lua
+LDepthSorter:getCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Count of pending draw entries. |
+
+---
+
+#### `LDepthSorter:isStable`
+
+Returns whether the sorter uses stable sorting.
+
+```lua
+LDepthSorter:isStable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if stable sort is enabled. |
+
+---
+
+#### `LDepthSorter:setStable`
+
+Enable or disable stable sorting. When stable, items sharing the same depth value retain their insertion order, which prevents visual flickering between overlapping sprites at the same layer. Unstable sort is slightly faster but may swap equal-depth items between frames.
+
+```lua
+LDepthSorter:setStable(stable)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `stable` | boolean | True for stable sort (deterministic order at equal depth), false for unstable (faster but may flicker). |
+
+---
+
+#### `LDepthSorter:sort`
+
+Sort all registered entries by depth without executing any callbacks. Call this only if you need to inspect the sorted order before drawing; `flush` already sorts automatically.
+
+```lua
+LDepthSorter:sort()
+```
+
+---
+
+#### `LDepthSorter:type`
+
+Returns the type name string `"[LDepthSorter](#ldepthsorter-handle)"`.
+
+```lua
+LDepthSorter:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The literal `"[LDepthSorter](#ldepthsorter-handle)"`. |
+
+---
+
+#### `LDepthSorter:typeOf`
+
+Check whether this object matches a given type name. Accepts `"[LDepthSorter](#ldepthsorter-handle)"` or `"Object"`.
+
+```lua
+LDepthSorter:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | The type name to test against. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the name matches. |
+
+---
+
+## LDrawLayer Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDrawLayer:clear`
 
 Discards all queued callbacks without executing them.
 
 ```lua
--- signature
 LDrawLayer:clear()
 ```
 
@@ -3953,12 +4197,11 @@ end
 
 ---
 
-### `LDrawLayer:flush`
+#### `LDrawLayer:flush`
 
 Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
 
 ```lua
--- signature
 LDrawLayer:flush()
 ```
 
@@ -3981,12 +4224,11 @@ end
 
 ---
 
-### `LDrawLayer:getCount`
+#### `LDrawLayer:getCount`
 
 Returns the number of callbacks currently queued.
 
 ```lua
--- signature
 LDrawLayer:getCount()
 ```
 
@@ -3994,7 +4236,7 @@ LDrawLayer:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Queue length. |
+| number | Queue length. |
 
 **Example**
 
@@ -4010,12 +4252,11 @@ end
 
 ---
 
-### `LDrawLayer:queue`
+#### `LDrawLayer:queue`
 
 Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
 
 ```lua
--- signature
 LDrawLayer:queue(z, f)
 ```
 
@@ -4023,8 +4264,8 @@ LDrawLayer:queue(z, f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | Z-depth value used for sorting (lower draws first). |
-| `f` | `function` | Callback to invoke during flush. |
+| `z` | number | Z-depth value used for sorting (lower draws first). |
+| `f` | function | Callback to invoke during flush. |
 
 **Example**
 
@@ -4040,12 +4281,11 @@ end
 
 ---
 
-### `LDrawLayer:type`
+#### `LDrawLayer:type`
 
 Returns the type name string for this draw layer.
 
 ```lua
--- signature
 LDrawLayer:type()
 ```
 
@@ -4053,7 +4293,7 @@ LDrawLayer:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LDrawLayer". |
+| string | Always "[LDrawLayer](#ldrawlayer-handle)". |
 
 **Example**
 
@@ -4067,12 +4307,11 @@ end
 
 ---
 
-### `LDrawLayer:typeOf`
+#### `LDrawLayer:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LDrawLayer:typeOf(name)
 ```
 
@@ -4080,13 +4319,13 @@ LDrawLayer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("LDrawLayer", "DrawLayer", or "Object"). |
+| `name` | string | Type name to check ("[LDrawLayer](#ldrawlayer-handle)", "DrawLayer", or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -4100,14 +4339,19 @@ end
 
 ---
 
-## LFont
+## LFont Handle
 
-### `LFont:containsGlyph`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFont:containsGlyph`
 
 Returns whether the font contains a glyph for the given character. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:containsGlyph(char)
 ```
 
@@ -4115,22 +4359,21 @@ LFont:containsGlyph(char)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `char` | `string` | A single-character string to check. |
+| `char` | string | A single-character string to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the font has a glyph for this character. |
+| boolean | True if the font has a glyph for this character. |
 
 ---
 
-### `LFont:getAscent`
+#### `LFont:getAscent`
 
 Returns the ascent (pixels above the baseline) of this font.
 
 ```lua
--- signature
 LFont:getAscent()
 ```
 
@@ -4138,7 +4381,7 @@ LFont:getAscent()
 
 | Type | Description |
 |------|-------------|
-| `number` | Ascent in pixels. |
+| number | Ascent in pixels. |
 
 **Example**
 
@@ -4152,12 +4395,11 @@ end
 
 ---
 
-### `LFont:getDescent`
+#### `LFont:getDescent`
 
 Returns the descent (pixels below the baseline) of this font.
 
 ```lua
--- signature
 LFont:getDescent()
 ```
 
@@ -4165,7 +4407,7 @@ LFont:getDescent()
 
 | Type | Description |
 |------|-------------|
-| `number` | Descent in pixels (positive value extending downward). |
+| number | Descent in pixels (positive value extending downward). |
 
 **Example**
 
@@ -4179,12 +4421,11 @@ end
 
 ---
 
-### `LFont:getHeight`
+#### `LFont:getHeight`
 
 Returns the line height of this font in pixels.
 
 ```lua
--- signature
 LFont:getHeight()
 ```
 
@@ -4192,7 +4433,7 @@ LFont:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 **Example**
 
@@ -4206,12 +4447,11 @@ end
 
 ---
 
-### `LFont:getLineHeight`
+#### `LFont:getLineHeight`
 
 Returns the spacing between consecutive lines of text.
 
 ```lua
--- signature
 LFont:getLineHeight()
 ```
 
@@ -4219,7 +4459,7 @@ LFont:getLineHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 **Example**
 
@@ -4233,12 +4473,11 @@ end
 
 ---
 
-### `LFont:getName`
+#### `LFont:getName`
 
 Returns the human-readable name of this font. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:getName()
 ```
 
@@ -4246,16 +4485,15 @@ LFont:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Font name. |
+| string | Font name. |
 
 ---
 
-### `LFont:getSize`
+#### `LFont:getSize`
 
 Returns the point size of this font. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:getSize()
 ```
 
@@ -4263,16 +4501,15 @@ LFont:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Point size. |
+| number | Point size. |
 
 ---
 
-### `LFont:getStyle`
+#### `LFont:getStyle`
 
 Returns the style string of this font. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:getStyle()
 ```
 
@@ -4280,16 +4517,15 @@ LFont:getStyle()
 
 | Type | Description |
 |------|-------------|
-| `string` | Style name ("regular", "bold"). |
+| string | Style name ("regular", "bold"). |
 
 ---
 
-### `LFont:getWidth`
+#### `LFont:getWidth`
 
 Measures the pixel width of a string when rendered with this font.
 
 ```lua
--- signature
 LFont:getWidth(text)
 ```
 
@@ -4297,13 +4533,13 @@ LFont:getWidth(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The text to measure. |
+| `text` | string | The text to measure. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -4317,12 +4553,11 @@ end
 
 ---
 
-### `LFont:getWrap`
+#### `LFont:getWrap`
 
 Word-wraps text to fit within a pixel width limit and returns the resulting lines.
 
 ```lua
--- signature
 LFont:getWrap(text, limit)
 ```
 
@@ -4330,15 +4565,15 @@ LFont:getWrap(text, limit)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The text to wrap. |
-| `limit` | `number` | Maximum line width in pixels. |
+| `text` | string | The text to wrap. |
+| `limit` | number | Maximum line width in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | a Array of wrapped line strings, and the widest line width. |
-| `number` | b Array of wrapped line strings, and the widest line width. |
+| table | Array of wrapped line strings; and the widest line width. (value 1). |
+| number | Array of wrapped line strings; and the widest line width. (value 2). |
 
 **Example**
 
@@ -4353,12 +4588,11 @@ end
 
 ---
 
-### `LFont:isBold`
+#### `LFont:isBold`
 
 Returns whether this font is the bold variant. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:isBold()
 ```
 
@@ -4366,16 +4600,15 @@ LFont:isBold()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if font style is bold. |
+| boolean | True if font style is bold. |
 
 ---
 
-### `LFont:lineHeight`
+#### `LFont:lineHeight`
 
 Returns the line height of this font in pixels. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:lineHeight()
 ```
 
@@ -4383,16 +4616,15 @@ LFont:lineHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 ---
 
-### `LFont:measure`
+#### `LFont:measure`
 
 Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:measure(text, scale)
 ```
 
@@ -4400,24 +4632,23 @@ LFont:measure(text, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to measure. |
-| `scale?` | `number` | Scale factor applied to dimensions. |
+| `text` | string | Text to measure. |
+| `scale?` | number | Scale factor applied to dimensions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 ---
 
-### `LFont:release`
+#### `LFont:release`
 
 Releases the font resource. The handle becomes invalid after this call.
 
 ```lua
--- signature
 LFont:release()
 ```
 
@@ -4425,7 +4656,7 @@ LFont:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the font was still valid and was released. |
+| boolean | True if the font was still valid and was released. |
 
 **Example**
 
@@ -4439,12 +4670,11 @@ end
 
 ---
 
-### `LFont:setLineHeight`
+#### `LFont:setLineHeight`
 
 Overrides the line height used for multi-line text rendering.
 
 ```lua
--- signature
 LFont:setLineHeight(height)
 ```
 
@@ -4452,7 +4682,7 @@ LFont:setLineHeight(height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `height` | `number` | New line height in pixels. |
+| `height` | number | New line height in pixels. |
 
 **Example**
 
@@ -4467,12 +4697,11 @@ end
 
 ---
 
-### `LFont:type`
+#### `LFont:type`
 
 Returns the type name string for this font object.
 
 ```lua
--- signature
 LFont:type()
 ```
 
@@ -4480,7 +4709,7 @@ LFont:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LFont". |
+| string | Always "[LFont](#lfont-handle)". |
 
 **Example**
 
@@ -4495,12 +4724,11 @@ end
 
 ---
 
-### `LFont:typeOf`
+#### `LFont:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LFont:typeOf(name)
 ```
 
@@ -4508,13 +4736,13 @@ LFont:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Font" or "Object"). |
+| `name` | string | Type name to check ("Font" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -4529,12 +4757,11 @@ end
 
 ---
 
-### `LFont:wrapText`
+#### `LFont:wrapText`
 
 Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:wrapText(text, maxWidth, scale)
 ```
 
@@ -4542,26 +4769,31 @@ LFont:wrapText(text, maxWidth, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to wrap. |
-| `maxWidth` | `number` | Maximum line width in pixels. |
-| `scale?` | `number` | Scale factor. |
+| `text` | string | Text to wrap. |
+| `maxWidth` | number | Maximum line width in pixels. |
+| `scale?` | number | Scale factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of wrapped line strings. |
+| table | Array of wrapped line strings. |
 
 ---
 
-## LImage
+## LImage Handle
 
-### `LImage:getDimensions`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImage:getDimensions`
 
 Returns both width and height of this image.
 
 ```lua
--- signature
 LImage:getDimensions()
 ```
 
@@ -4569,8 +4801,8 @@ LImage:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 **Example**
 
@@ -4586,12 +4818,11 @@ end
 
 ---
 
-### `LImage:getHeight`
+#### `LImage:getHeight`
 
 Returns the height of this image in pixels.
 
 ```lua
--- signature
 LImage:getHeight()
 ```
 
@@ -4599,7 +4830,7 @@ LImage:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -4614,12 +4845,11 @@ end
 
 ---
 
-### `LImage:getId`
+#### `LImage:getId`
 
 Returns the internal numeric handle ID for this image.
 
 ```lua
--- signature
 LImage:getId()
 ```
 
@@ -4627,7 +4857,7 @@ LImage:getId()
 
 | Type | Description |
 |------|-------------|
-| `number` | Opaque image handle identifier. |
+| number | Opaque image handle identifier. |
 
 **Example**
 
@@ -4642,12 +4872,11 @@ end
 
 ---
 
-### `LImage:getWidth`
+#### `LImage:getWidth`
 
 Returns the width of this image in pixels.
 
 ```lua
--- signature
 LImage:getWidth()
 ```
 
@@ -4655,7 +4884,7 @@ LImage:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -4670,12 +4899,11 @@ end
 
 ---
 
-### `LImage:release`
+#### `LImage:release`
 
 Releases the GPU memory for this image. The handle becomes invalid after this call.
 
 ```lua
--- signature
 LImage:release()
 ```
 
@@ -4683,7 +4911,7 @@ LImage:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the image was still valid and was released. |
+| boolean | True if the image was still valid and was released. |
 
 **Example**
 
@@ -4698,12 +4926,11 @@ end
 
 ---
 
-### `LImage:type`
+#### `LImage:type`
 
 Returns the type name string for this image object.
 
 ```lua
--- signature
 LImage:type()
 ```
 
@@ -4711,7 +4938,7 @@ LImage:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LImage". |
+| string | Always "[LImage](#limage-handle)". |
 
 **Example**
 
@@ -4726,12 +4953,11 @@ end
 
 ---
 
-### `LImage:typeOf`
+#### `LImage:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LImage:typeOf(name)
 ```
 
@@ -4739,13 +4965,13 @@ LImage:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Image" or "Object"). |
+| `name` | string | Type name to check ("Image" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -4760,14 +4986,823 @@ end
 
 ---
 
-## LMesh
+## LImageData Handle
 
-### `LMesh:getVertex`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageData:alphaMask`
+
+Multiplies this image alpha channel by a factor in place.
+
+```lua
+LImageData:alphaMask(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Alpha multiplier. |
+
+---
+
+#### `LImageData:applyPaletteLut`
+
+Applies a palette lookup table to this image in place.
+
+```lua
+LImageData:applyPaletteLut(lut_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+
+---
+
+#### `LImageData:blit`
+
+Copies a source image into this image at a destination coordinate.
+
+```lua
+LImageData:blit(src_ud, dst_x, dst_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:blur`
+
+Returns a blurred copy of this image.
+
+```lua
+LImageData:blur(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Blur radius. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Blurred image data handle. |
+
+---
+
+#### `LImageData:brightness`
+
+Applies a brightness factor to this image in place.
+
+```lua
+LImageData:brightness(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Brightness multiplier or adjustment factor. |
+
+---
+
+#### `LImageData:contrast`
+
+Applies a contrast factor to this image in place.
+
+```lua
+LImageData:contrast(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Contrast factor. |
+
+---
+
+#### `LImageData:convolve`
+
+Applies a convolution kernel and returns the filtered image.
+
+```lua
+LImageData:convolve(kernel_t, ksize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Convolved image data handle. |
+
+---
+
+#### `LImageData:crop`
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+```lua
+LImageData:crop(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Cropped image data handle. |
+
+---
+
+#### `LImageData:diff`
+
+Computes a difference metric against another image.
+
+```lua
+LImageData:diff(other_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Difference score. |
+
+---
+
+#### `LImageData:drawCircle`
+
+Draws a filled circle into this image.
+
+```lua
+LImageData:drawCircle(cx, cy, radius, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawLine`
+
+Draws a line into this image. This method is available to Lua scripts.
+
+```lua
+LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawNineSlice`
+
+Draws a nine-slice region from a source image into this image.
+
+```lua
+LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_x` | number | Source region x coordinate. |
+| `src_y` | number | Source region y coordinate. |
+| `src_w` | number | Source region width. |
+| `src_h` | number | Source region height. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+| `dst_w` | number | Destination width. |
+| `dst_h` | number | Destination height. |
+| `inset_left` | number | Left inset width. |
+| `inset_right` | number | Right inset width. |
+| `inset_top` | number | Top inset height. |
+| `inset_bottom` | number | Bottom inset height. |
+
+---
+
+#### `LImageData:drawRect`
+
+Draws a filled rectangle into this image.
+
+```lua
+LImageData:drawRect(x, y, w, h, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:encode`
+
+Encodes image data in a supported format.
+
+```lua
+LImageData:encode(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Format name; currently `png`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded image bytes. |
+
+---
+
+#### `LImageData:fill`
+
+Fills the whole image with one RGBA color.
+
+```lua
+LImageData:fill(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:flipHorizontal`
+
+Flips this image horizontally in place.
+
+```lua
+LImageData:flipHorizontal()
+```
+
+---
+
+#### `LImageData:flipVertical`
+
+Flips this image vertically in place.
+
+```lua
+LImageData:flipVertical()
+```
+
+---
+
+#### `LImageData:gamma`
+
+Applies gamma correction to this image in place.
+
+```lua
+LImageData:gamma(gamma)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gamma` | number | Gamma value. |
+
+---
+
+#### `LImageData:getDimensions`
+
+Returns image dimensions. This method is available to Lua scripts.
+
+```lua
+LImageData:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getHeight`
+
+Returns image height. This method is available to Lua scripts.
+
+```lua
+LImageData:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getPixel`
+
+Returns RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:getPixel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LImageData:getRawBytes`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getRawBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getRegion`
+
+Returns an image region when the requested rectangle is inside bounds.
+
+```lua
+LImageData:getRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+
+---
+
+#### `LImageData:getString`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getString()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getWidth`
+
+Returns image width. This method is available to Lua scripts.
+
+```lua
+LImageData:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LImageData:grayscale`
+
+Converts this image to grayscale in place.
+
+```lua
+LImageData:grayscale()
+```
+
+---
+
+#### `LImageData:invert`
+
+Inverts image color channels in place.
+
+```lua
+LImageData:invert()
+```
+
+---
+
+#### `LImageData:mapPixel`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixel(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:mapPixels`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixels(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:noise`
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+```lua
+LImageData:noise(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Noise amount. |
+
+---
+
+#### `LImageData:paste`
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+```lua
+LImageData:paste(src_ud, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:posterize`
+
+Reduces image colors to a fixed number of levels in place.
+
+```lua
+LImageData:posterize(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels` | number | Number of posterization levels. |
+
+---
+
+#### `LImageData:resize`
+
+Returns a resized image using an optional named filter.
+
+```lua
+LImageData:resize(width, height, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+
+---
+
+#### `LImageData:resizeNearest`
+
+Returns a resized image using nearest-neighbor sampling.
+
+```lua
+LImageData:resizeNearest(new_w, new_h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Resized image data handle. |
+
+---
+
+#### `LImageData:rotate90cw`
+
+Returns a new image rotated ninety degrees clockwise.
+
+```lua
+LImageData:rotate90cw()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Rotated image data handle. |
+
+---
+
+#### `LImageData:saturation`
+
+Applies a saturation factor to this image in place.
+
+```lua
+LImageData:saturation(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Saturation factor. |
+
+---
+
+#### `LImageData:sepia`
+
+Applies a sepia filter to this image in place.
+
+```lua
+LImageData:sepia()
+```
+
+---
+
+#### `LImageData:setPixel`
+
+Sets RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:setPixel(x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:setRawData`
+
+Replaces the image byte buffer with raw bytes.
+
+```lua
+LImageData:setRawData(bytes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bytes` | string | Raw byte string matching the image storage size. |
+
+---
+
+#### `LImageData:sharpen`
+
+Returns a sharpened copy of this image.
+
+```lua
+LImageData:sharpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+
+---
+
+#### `LImageData:threshold`
+
+Applies a threshold filter to this image in place.
+
+```lua
+LImageData:threshold(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | number | Threshold channel value. |
+
+---
+
+#### `LImageData:tint`
+
+Blends this image toward a tint color in place.
+
+```lua
+LImageData:tint(tr, tg, tb, factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:type`
+
+Returns the Lua-visible type name for this image data handle.
+
+```lua
+LImageData:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LImageData](#limagedata-handle)`. |
+
+---
+
+#### `LImageData:typeOf`
+
+Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+
+```lua
+LImageData:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+---
+
+## LMesh Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMesh:getVertex`
 
 Returns the data for a single vertex by 1-based index.
 
 ```lua
--- signature
 LMesh:getVertex(index)
 ```
 
@@ -4775,20 +5810,20 @@ LMesh:getVertex(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based vertex index. |
+| `index` | number | 1-based vertex index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a x, y, u, v, r, g, b, a. |
-| `number` | b x, y, u, v, r, g, b, a. |
-| `number` | c x, y, u, v, r, g, b, a. |
-| `number` | d x, y, u, v, r, g, b, a. |
-| `number` | e x, y, u, v, r, g, b, a. |
-| `number` | f x, y, u, v, r, g, b, a. |
-| `number` | g x, y, u, v, r, g, b, a. |
-| `number` | h x, y, u, v, r, g, b, a. |
+| number | x; y; u; v; r; g; b; a. (value 1). |
+| number | x; y; u; v; r; g; b; a. (value 2). |
+| number | x; y; u; v; r; g; b; a. (value 3). |
+| number | x; y; u; v; r; g; b; a. (value 4). |
+| number | x; y; u; v; r; g; b; a. (value 5). |
+| number | x; y; u; v; r; g; b; a. (value 6). |
+| number | x; y; u; v; r; g; b; a. (value 7). |
+| number | x; y; u; v; r; g; b; a. (value 8). |
 
 **Example**
 
@@ -4807,12 +5842,11 @@ end
 
 ---
 
-### `LMesh:getVertexCount`
+#### `LMesh:getVertexCount`
 
 Returns the number of vertices in this mesh.
 
 ```lua
--- signature
 LMesh:getVertexCount()
 ```
 
@@ -4820,7 +5854,7 @@ LMesh:getVertexCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Vertex count. |
+| number | Vertex count. |
 
 **Example**
 
@@ -4842,12 +5876,11 @@ end
 
 ---
 
-### `LMesh:release`
+#### `LMesh:release`
 
 Releases the mesh GPU resource and invalidates the handle.
 
 ```lua
--- signature
 LMesh:release()
 ```
 
@@ -4855,7 +5888,7 @@ LMesh:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the mesh was valid and was released. |
+| boolean | True if the mesh was valid and was released. |
 
 **Example**
 
@@ -4874,12 +5907,11 @@ end
 
 ---
 
-### `LMesh:setTexture`
+#### `LMesh:setTexture`
 
 Assigns or removes a texture for this mesh. Pass nil to clear the texture.
 
 ```lua
--- signature
 LMesh:setTexture(image)
 ```
 
@@ -4887,7 +5919,7 @@ LMesh:setTexture(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image?` | `LImage` | Image to use as the mesh texture, or nil to remove. |
+| `image?` | [LImage](#limage-handle) | Image to use as the mesh texture, or nil to remove. |
 
 **Example**
 
@@ -4908,12 +5940,11 @@ end
 
 ---
 
-### `LMesh:setVertex`
+#### `LMesh:setVertex`
 
 Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
 
 ```lua
--- signature
 LMesh:setVertex(index, data)
 ```
 
@@ -4921,8 +5952,8 @@ LMesh:setVertex(index, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based vertex index. |
-| `data` | `table` | Vertex data: {x, y, u, v, r, g, b, a}. |
+| `index` | number | 1-based vertex index. |
+| `data` | table | Vertex data: {x, y, u, v, r, g, b, a}. |
 
 **Example**
 
@@ -4942,12 +5973,11 @@ end
 
 ---
 
-### `LMesh:type`
+#### `LMesh:type`
 
 Returns the type name string for this mesh object.
 
 ```lua
--- signature
 LMesh:type()
 ```
 
@@ -4955,7 +5985,7 @@ LMesh:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LMesh". |
+| string | Always "[LMesh](#lmesh-handle)". |
 
 **Example**
 
@@ -4974,12 +6004,11 @@ end
 
 ---
 
-### `LMesh:typeOf`
+#### `LMesh:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMesh:typeOf(name)
 ```
 
@@ -4987,13 +6016,13 @@ LMesh:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Mesh" or "Object"). |
+| `name` | string | Type name to check ("Mesh" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -5012,14 +6041,19 @@ end
 
 ---
 
-## LNineSlice
+## LNineSlice Handle
 
-### `LNineSlice:getInsets`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNineSlice:getInsets`
 
 Returns the border insets (top, right, bottom, left) that define the stretchable regions.
 
 ```lua
--- signature
 LNineSlice:getInsets()
 ```
 
@@ -5027,10 +6061,10 @@ LNineSlice:getInsets()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Top, right, bottom, left inset values. |
-| `number` | b Top, right, bottom, left inset values. |
-| `number` | c Top, right, bottom, left inset values. |
-| `number` | d Top, right, bottom, left inset values. |
+| number | Top; right; bottom; left inset values. (value 1). |
+| number | Top; right; bottom; left inset values. (value 2). |
+| number | Top; right; bottom; left inset values. (value 3). |
+| number | Top; right; bottom; left inset values. (value 4). |
 
 **Example**
 
@@ -5047,12 +6081,11 @@ end
 
 ---
 
-### `LNineSlice:getTextureSize`
+#### `LNineSlice:getTextureSize`
 
 Returns the pixel dimensions of the underlying source texture.
 
 ```lua
--- signature
 LNineSlice:getTextureSize()
 ```
 
@@ -5060,8 +6093,8 @@ LNineSlice:getTextureSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 **Example**
 
@@ -5078,12 +6111,11 @@ end
 
 ---
 
-### `LNineSlice:type`
+#### `LNineSlice:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LNineSlice:type()
 ```
 
@@ -5091,7 +6123,7 @@ LNineSlice:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LNineSlice". |
+| string | Always "[LNineSlice](#lnineslice-handle)". |
 
 **Example**
 
@@ -5107,12 +6139,11 @@ end
 
 ---
 
-### `LNineSlice:typeOf`
+#### `LNineSlice:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LNineSlice:typeOf(name)
 ```
 
@@ -5120,13 +6151,13 @@ LNineSlice:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("NineSlice" or "Object"). |
+| `name` | string | Type name to check ("NineSlice" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -5142,14 +6173,19 @@ end
 
 ---
 
-## LObjModel
+## LObjModel Handle
 
-### `LObjModel:getFaceCount`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LObjModel:getFaceCount`
 
 Returns the number of faces (triangles) in this OBJ model.
 
 ```lua
--- signature
 LObjModel:getFaceCount()
 ```
 
@@ -5157,7 +6193,7 @@ LObjModel:getFaceCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Face count. |
+| number | Face count. |
 
 **Example**
 
@@ -5171,12 +6207,11 @@ end
 
 ---
 
-### `LObjModel:getNormalCount`
+#### `LObjModel:getNormalCount`
 
 Returns the number of vertex normals in this OBJ model.
 
 ```lua
--- signature
 LObjModel:getNormalCount()
 ```
 
@@ -5184,7 +6219,7 @@ LObjModel:getNormalCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Normal count. |
+| number | Normal count. |
 
 **Example**
 
@@ -5198,12 +6233,11 @@ end
 
 ---
 
-### `LObjModel:getUvCount`
+#### `LObjModel:getUvCount`
 
 Returns the number of UV texture coordinates in this OBJ model.
 
 ```lua
--- signature
 LObjModel:getUvCount()
 ```
 
@@ -5211,7 +6245,7 @@ LObjModel:getUvCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | UV coordinate count. |
+| number | UV coordinate count. |
 
 **Example**
 
@@ -5225,12 +6259,11 @@ end
 
 ---
 
-### `LObjModel:getVertexCount`
+#### `LObjModel:getVertexCount`
 
 Returns the number of vertices in this OBJ model.
 
 ```lua
--- signature
 LObjModel:getVertexCount()
 ```
 
@@ -5238,7 +6271,7 @@ LObjModel:getVertexCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Vertex count. |
+| number | Vertex count. |
 
 **Example**
 
@@ -5252,12 +6285,11 @@ end
 
 ---
 
-### `LObjModel:projectToMesh`
+#### `LObjModel:projectToMesh`
 
 Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
 
 ```lua
--- signature
 LObjModel:projectToMesh(camera, screenW, screenH)
 ```
 
@@ -5265,15 +6297,15 @@ LObjModel:projectToMesh(camera, screenW, screenH)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `camera` | `table` | Camera parameters: {x, y, z, tx, ty, tz, fov}. |
-| `screenW` | `number` | Screen width for projection. |
-| `screenH` | `number` | Screen height for projection. |
+| `camera` | table | Camera parameters: {x, y, z, tx, ty, tz, fov}. |
+| `screenW` | number | Screen width for projection. |
+| `screenH` | number | Screen height for projection. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LObjModelProjectToMeshResult` | Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}. |
+| LObjModelProjectToMeshResult | Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}. |
 
 **Example**
 
@@ -5289,12 +6321,11 @@ end
 
 ---
 
-### `LObjModel:renderToImage`
+#### `LObjModel:renderToImage`
 
 Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
 
 ```lua
--- signature
 LObjModel:renderToImage(width, height, rotation)
 ```
 
@@ -5302,15 +6333,15 @@ LObjModel:renderToImage(width, height, rotation)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Output image width in pixels. |
-| `height` | `number` | Output image height in pixels. |
-| `rotation?` | `number` | Rotation step (0–3, each step = 90 degrees, default 0). |
+| `width` | number | Output image width in pixels. |
+| `height` | number | Output image height in pixels. |
+| `rotation?` | number | Rotation step (0â€“3, each step = 90 degrees, default 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImage` | The rendered image handle. |
+| [LImage](#limage-handle) | The rendered image handle. |
 
 **Example**
 
@@ -5326,14 +6357,19 @@ end
 
 ---
 
-## LQuad
+## LQuad Handle
 
-### `LQuad:getTextureDimensions`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LQuad:getTextureDimensions`
 
 Returns the full dimensions of the source texture this quad references.
 
 ```lua
--- signature
 LQuad:getTextureDimensions()
 ```
 
@@ -5341,8 +6377,8 @@ LQuad:getTextureDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Source texture width and height. |
-| `number` | b Source texture width and height. |
+| number | Source texture width and height. (value 1). |
+| number | Source texture width and height. (value 2). |
 
 **Example**
 
@@ -5357,12 +6393,11 @@ end
 
 ---
 
-### `LQuad:getViewport`
+#### `LQuad:getViewport`
 
 Returns the quad's viewport rectangle within the source texture.
 
 ```lua
--- signature
 LQuad:getViewport()
 ```
 
@@ -5370,10 +6405,10 @@ LQuad:getViewport()
 
 | Type | Description |
 |------|-------------|
-| `number` | a x, y, width, height in texture pixels. |
-| `number` | b x, y, width, height in texture pixels. |
-| `number` | c x, y, width, height in texture pixels. |
-| `number` | d x, y, width, height in texture pixels. |
+| number | x; y; width; height in texture pixels. (value 1). |
+| number | x; y; width; height in texture pixels. (value 2). |
+| number | x; y; width; height in texture pixels. (value 3). |
+| number | x; y; width; height in texture pixels. (value 4). |
 
 **Example**
 
@@ -5388,12 +6423,11 @@ end
 
 ---
 
-### `LQuad:setViewport`
+#### `LQuad:setViewport`
 
 Updates the quad's viewport rectangle.
 
 ```lua
--- signature
 LQuad:setViewport(x, y, w, h)
 ```
 
@@ -5401,10 +6435,10 @@ LQuad:setViewport(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Left edge in texture pixels. |
-| `y` | `number` | Top edge in texture pixels. |
-| `w` | `number` | Width in texture pixels. |
-| `h` | `number` | Height in texture pixels. |
+| `x` | number | Left edge in texture pixels. |
+| `y` | number | Top edge in texture pixels. |
+| `w` | number | Width in texture pixels. |
+| `h` | number | Height in texture pixels. |
 
 **Example**
 
@@ -5419,12 +6453,11 @@ end
 
 ---
 
-### `LQuad:type`
+#### `LQuad:type`
 
 Returns the type name string for this quad object.
 
 ```lua
--- signature
 LQuad:type()
 ```
 
@@ -5432,7 +6465,7 @@ LQuad:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LQuad". |
+| string | Always "[LQuad](#lquad-handle)". |
 
 **Example**
 
@@ -5446,12 +6479,11 @@ end
 
 ---
 
-### `LQuad:typeOf`
+#### `LQuad:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LQuad:typeOf(name)
 ```
 
@@ -5459,13 +6491,13 @@ LQuad:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Quad" or "Object"). |
+| `name` | string | Type name to check ("Quad" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -5479,14 +6511,19 @@ end
 
 ---
 
-## LShader
+## LShader Handle
 
-### `LShader:hasUniform`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LShader:hasUniform`
 
 Checks whether this shader declares a uniform with the given name.
 
 ```lua
--- signature
 LShader:hasUniform(name)
 ```
 
@@ -5494,13 +6531,13 @@ LShader:hasUniform(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Uniform name to check. |
+| `name` | string | Uniform name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the uniform exists. |
+| boolean | True if the uniform exists. |
 
 **Example**
 
@@ -5517,12 +6554,11 @@ end
 
 ---
 
-### `LShader:release`
+#### `LShader:release`
 
 Releases the shader resource. If active, the default shader is restored.
 
 ```lua
--- signature
 LShader:release()
 ```
 
@@ -5530,7 +6566,7 @@ LShader:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the shader was valid and was released. |
+| boolean | True if the shader was valid and was released. |
 
 **Example**
 
@@ -5546,12 +6582,11 @@ end
 
 ---
 
-### `LShader:send`
+#### `LShader:send`
 
 Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
 
 ```lua
--- signature
 LShader:send(name, value)
 ```
 
@@ -5559,8 +6594,8 @@ LShader:send(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Uniform variable name declared in the shader. |
-| `value` | `number|boolean|table` | The value to send. |
+| `name` | string | Uniform variable name declared in the shader. |
+| `value` | number|boolean|table | The value to send. |
 
 **Example**
 
@@ -5576,12 +6611,11 @@ end
 
 ---
 
-### `LShader:type`
+#### `LShader:type`
 
 Returns the type name string for this shader object.
 
 ```lua
--- signature
 LShader:type()
 ```
 
@@ -5589,7 +6623,7 @@ LShader:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LShader". |
+| string | Always "[LShader](#lshader-handle)". |
 
 **Example**
 
@@ -5606,12 +6640,11 @@ end
 
 ---
 
-### `LShader:typeOf`
+#### `LShader:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LShader:typeOf(name)
 ```
 
@@ -5619,13 +6652,13 @@ LShader:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Shader" or "Object"). |
+| `name` | string | Type name to check ("Shader" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -5642,14 +6675,19 @@ end
 
 ---
 
-## LShape
+## LShape Handle
 
-### `LShape:arc`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LShape:arc`
 
 Adds a filled or outlined arc command to the shape.
 
 ```lua
--- signature
 LShape:arc(mode, x, y, r, astart, aend, segments)
 ```
 
@@ -5657,13 +6695,13 @@ LShape:arc(mode, x, y, r, astart, aend, segments)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Center X. |
-| `y` | `number` | Center Y. |
-| `r` | `number` | Radius. |
-| `astart` | `number` | Start angle in radians. |
-| `aend` | `number` | End angle in radians. |
-| `segments?` | `number` | Number of arc segments (default 32). |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Center X. |
+| `y` | number | Center Y. |
+| `r` | number | Radius. |
+| `astart` | number | Start angle in radians. |
+| `aend` | number | End angle in radians. |
+| `segments?` | number | Number of arc segments (default 32). |
 
 **Example**
 
@@ -5679,12 +6717,11 @@ end
 
 ---
 
-### `LShape:circle`
+#### `LShape:circle`
 
 Adds a filled or outlined circle command to the shape.
 
 ```lua
--- signature
 LShape:circle(mode, x, y, r)
 ```
 
@@ -5692,10 +6729,10 @@ LShape:circle(mode, x, y, r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Center X. |
-| `y` | `number` | Center Y. |
-| `r` | `number` | Radius. |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Center X. |
+| `y` | number | Center Y. |
+| `r` | number | Radius. |
 
 **Example**
 
@@ -5711,12 +6748,11 @@ end
 
 ---
 
-### `LShape:clear`
+#### `LShape:clear`
 
 Removes all drawing commands from this shape, making it empty.
 
 ```lua
--- signature
 LShape:clear()
 ```
 
@@ -5735,12 +6771,11 @@ end
 
 ---
 
-### `LShape:draw`
+#### `LShape:draw`
 
 Renders the accumulated shape commands to the screen with optional transform.
 
 ```lua
--- signature
 LShape:draw(x, y, rotation, sx, sy, ox, oy)
 ```
 
@@ -5748,13 +6783,13 @@ LShape:draw(x, y, rotation, sx, sy, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X position. |
-| `y` | `number` | Y position. |
-| `rotation?` | `number` | Rotation in radians (default 0). |
-| `sx?` | `number` | Scale X (default 1). |
-| `sy?` | `number` | Scale Y (default 1). |
-| `ox?` | `number` | Origin offset X (default 0). |
-| `oy?` | `number` | Origin offset Y (default 0). |
+| `x` | number | X position. |
+| `y` | number | Y position. |
+| `rotation?` | number | Rotation in radians (default 0). |
+| `sx?` | number | Scale X (default 1). |
+| `sy?` | number | Scale Y (default 1). |
+| `ox?` | number | Origin offset X (default 0). |
+| `oy?` | number | Origin offset Y (default 0). |
 
 **Example**
 
@@ -5771,12 +6806,11 @@ end
 
 ---
 
-### `LShape:ellipse`
+#### `LShape:ellipse`
 
 Adds an ellipse command to the shape.
 
 ```lua
--- signature
 LShape:ellipse(mode, x, y, rx, ry)
 ```
 
@@ -5784,11 +6818,11 @@ LShape:ellipse(mode, x, y, rx, ry)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Center X. |
-| `y` | `number` | Center Y. |
-| `rx` | `number` | Horizontal radius. |
-| `ry` | `number` | Vertical radius. |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Center X. |
+| `y` | number | Center Y. |
+| `rx` | number | Horizontal radius. |
+| `ry` | number | Vertical radius. |
 
 **Example**
 
@@ -5803,12 +6837,11 @@ end
 
 ---
 
-### `LShape:getCommandCount`
+#### `LShape:getCommandCount`
 
 Returns the number of drawing commands accumulated in this shape.
 
 ```lua
--- signature
 LShape:getCommandCount()
 ```
 
@@ -5816,7 +6849,7 @@ LShape:getCommandCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Command count. |
+| number | Command count. |
 
 **Example**
 
@@ -5835,12 +6868,11 @@ end
 
 ---
 
-### `LShape:line`
+#### `LShape:line`
 
 Adds a line segment command to the shape.
 
 ```lua
--- signature
 LShape:line(x1, y1, x2, y2)
 ```
 
@@ -5848,10 +6880,10 @@ LShape:line(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Start X. |
-| `y1` | `number` | Start Y. |
-| `x2` | `number` | End X. |
-| `y2` | `number` | End Y. |
+| `x1` | number | Start X. |
+| `y1` | number | Start Y. |
+| `x2` | number | End X. |
+| `y2` | number | End Y. |
 
 **Example**
 
@@ -5866,12 +6898,11 @@ end
 
 ---
 
-### `LShape:polygon`
+#### `LShape:polygon`
 
 Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
 
 ```lua
--- signature
 LShape:polygon(mode, ...)
 ```
 
@@ -5879,7 +6910,7 @@ LShape:polygon(mode, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
+| `mode` | string | "fill" or "line". |
 | — | — | @param ... number Flat coordinate values: x1, y1, x2, y2, ... (minimum 3 vertices / 6 values). |
 
 **Example**
@@ -5897,12 +6928,11 @@ end
 
 ---
 
-### `LShape:polyline`
+#### `LShape:polyline`
 
 Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
 
 ```lua
--- signature
 LShape:polyline(...)
 ```
 
@@ -5927,12 +6957,11 @@ end
 
 ---
 
-### `LShape:rectangle`
+#### `LShape:rectangle`
 
 Adds a rectangle command to the shape.
 
 ```lua
--- signature
 LShape:rectangle(mode, x, y, w, h)
 ```
 
@@ -5940,11 +6969,11 @@ LShape:rectangle(mode, x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Left edge X. |
-| `y` | `number` | Top edge Y. |
-| `w` | `number` | Width. |
-| `h` | `number` | Height. |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Left edge X. |
+| `y` | number | Top edge Y. |
+| `w` | number | Width. |
+| `h` | number | Height. |
 
 **Example**
 
@@ -5959,12 +6988,11 @@ end
 
 ---
 
-### `LShape:roundedRectangle`
+#### `LShape:roundedRectangle`
 
 Adds a rounded rectangle command to the shape.
 
 ```lua
--- signature
 LShape:roundedRectangle(mode, x, y, w, h, rx, ry)
 ```
 
@@ -5972,13 +7000,13 @@ LShape:roundedRectangle(mode, x, y, w, h, rx, ry)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x` | `number` | Left edge X. |
-| `y` | `number` | Top edge Y. |
-| `w` | `number` | Width. |
-| `h` | `number` | Height. |
-| `rx` | `number` | Horizontal corner radius. |
-| `ry?` | `number` | Vertical corner radius (defaults to rx). |
+| `mode` | string | "fill" or "line". |
+| `x` | number | Left edge X. |
+| `y` | number | Top edge Y. |
+| `w` | number | Width. |
+| `h` | number | Height. |
+| `rx` | number | Horizontal corner radius. |
+| `ry?` | number | Vertical corner radius (defaults to rx). |
 
 **Example**
 
@@ -5995,12 +7023,11 @@ end
 
 ---
 
-### `LShape:setColor`
+#### `LShape:setColor`
 
 Sets the drawing color for subsequent shape commands.
 
 ```lua
--- signature
 LShape:setColor(r, g, b, a)
 ```
 
@@ -6008,10 +7035,10 @@ LShape:setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
-| `a?` | `number` | Alpha channel (0–1, default 1). |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
+| `a?` | number | Alpha channel (0â€“1, default 1). |
 
 **Example**
 
@@ -6027,12 +7054,11 @@ end
 
 ---
 
-### `LShape:setLineWidth`
+#### `LShape:setLineWidth`
 
 Sets the line width for subsequent line-mode shape commands.
 
 ```lua
--- signature
 LShape:setLineWidth(w)
 ```
 
@@ -6040,7 +7066,7 @@ LShape:setLineWidth(w)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Line width in pixels. |
+| `w` | number | Line width in pixels. |
 
 **Example**
 
@@ -6056,12 +7082,11 @@ end
 
 ---
 
-### `LShape:triangle`
+#### `LShape:triangle`
 
 Adds a triangle command to the shape.
 
 ```lua
--- signature
 LShape:triangle(mode, x1, y1, x2, y2, x3, y3)
 ```
 
@@ -6069,13 +7094,13 @@ LShape:triangle(mode, x1, y1, x2, y2, x3, y3)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | "fill" or "line". |
-| `x1` | `number` | First vertex X. |
-| `y1` | `number` | First vertex Y. |
-| `x2` | `number` | Second vertex X. |
-| `y2` | `number` | Second vertex Y. |
-| `x3` | `number` | Third vertex X. |
-| `y3` | `number` | Third vertex Y. |
+| `mode` | string | "fill" or "line". |
+| `x1` | number | First vertex X. |
+| `y1` | number | First vertex Y. |
+| `x2` | number | Second vertex X. |
+| `y2` | number | Second vertex Y. |
+| `x3` | number | Third vertex X. |
+| `y3` | number | Third vertex Y. |
 
 **Example**
 
@@ -6091,12 +7116,11 @@ end
 
 ---
 
-### `LShape:type`
+#### `LShape:type`
 
 Returns the type name string for this shape object.
 
 ```lua
--- signature
 LShape:type()
 ```
 
@@ -6104,7 +7128,7 @@ LShape:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LShape". |
+| string | Always "[LShape](#lshape-handle)". |
 
 **Example**
 
@@ -6118,12 +7142,11 @@ end
 
 ---
 
-### `LShape:typeOf`
+#### `LShape:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LShape:typeOf(name)
 ```
 
@@ -6131,13 +7154,13 @@ LShape:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Shape" or "Object"). |
+| `name` | string | Type name to check ("Shape" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -6151,14 +7174,19 @@ end
 
 ---
 
-## LSpriteBatch
+## LSpriteBatch Handle
 
-### `LSpriteBatch:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpriteBatch:add`
 
 Adds a sprite entry to the batch at the given position with optional transform.
 
 ```lua
--- signature
 LSpriteBatch:add(x, y, r, sx, sy, ox, oy)
 ```
 
@@ -6166,19 +7194,19 @@ LSpriteBatch:add(x, y, r, sx, sy, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X position. |
-| `y` | `number` | Y position. |
-| `r?` | `number` | Rotation in radians. |
-| `sx?` | `number` | Scale X (default 1). |
-| `sy?` | `number` | Scale Y (default 1). |
-| `ox?` | `number` | Origin offset X. |
-| `oy?` | `number` | Origin offset Y. |
+| `x` | number | X position. |
+| `y` | number | Y position. |
+| `r?` | number | Rotation in radians. |
+| `sx?` | number | Scale X (default 1). |
+| `sy?` | number | Scale Y (default 1). |
+| `ox?` | number | Origin offset X. |
+| `oy?` | number | Origin offset Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Index of the added entry. |
+| number | Index of the added entry. |
 
 **Example**
 
@@ -6196,12 +7224,11 @@ end
 
 ---
 
-### `LSpriteBatch:clear`
+#### `LSpriteBatch:clear`
 
 Removes all entries from the sprite batch.
 
 ```lua
--- signature
 LSpriteBatch:clear()
 ```
 
@@ -6222,12 +7249,11 @@ end
 
 ---
 
-### `LSpriteBatch:getBufferSize`
+#### `LSpriteBatch:getBufferSize`
 
 Returns the maximum number of entries this batch can hold.
 
 ```lua
--- signature
 LSpriteBatch:getBufferSize()
 ```
 
@@ -6235,7 +7261,7 @@ LSpriteBatch:getBufferSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Buffer capacity. |
+| number | Buffer capacity. |
 
 **Example**
 
@@ -6252,12 +7278,11 @@ end
 
 ---
 
-### `LSpriteBatch:getCount`
+#### `LSpriteBatch:getCount`
 
 Returns the number of sprite entries currently in the batch.
 
 ```lua
--- signature
 LSpriteBatch:getCount()
 ```
 
@@ -6265,7 +7290,7 @@ LSpriteBatch:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Entry count. |
+| number | Entry count. |
 
 **Example**
 
@@ -6283,12 +7308,11 @@ end
 
 ---
 
-### `LSpriteBatch:release`
+#### `LSpriteBatch:release`
 
 Releases the sprite batch resource.
 
 ```lua
--- signature
 LSpriteBatch:release()
 ```
 
@@ -6296,7 +7320,7 @@ LSpriteBatch:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the batch was valid and was released. |
+| boolean | True if the batch was valid and was released. |
 
 **Example**
 
@@ -6312,12 +7336,11 @@ end
 
 ---
 
-### `LSpriteBatch:type`
+#### `LSpriteBatch:type`
 
 Returns the type name string for this sprite batch.
 
 ```lua
--- signature
 LSpriteBatch:type()
 ```
 
@@ -6325,7 +7348,7 @@ LSpriteBatch:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LSpriteBatch". |
+| string | Always "[LSpriteBatch](#lspritebatch-handle)". |
 
 **Example**
 
@@ -6341,12 +7364,11 @@ end
 
 ---
 
-### `LSpriteBatch:typeOf`
+#### `LSpriteBatch:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSpriteBatch:typeOf(name)
 ```
 
@@ -6354,13 +7376,13 @@ LSpriteBatch:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("SpriteBatch" or "Object"). |
+| `name` | string | Type name to check ("SpriteBatch" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 

@@ -1,6 +1,6 @@
 # Flownet
 
-- The `flownet` module is a powerful Foundations tier component designed to model directed flow-simulation networks.
+## Summary
 
 Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
 
@@ -8,14 +8,147 @@ The simulation is deeply systemic. Items (`GraphItem`) accumulate in node invent
 
 The module runs an intricate simulation pipeline (`step(dt)`) that processes item decay, executes conversion rules, matches supply against demand declarations, and progresses items along edges. To support this, the module includes a comprehensive suite of graph algorithms: A* and Dijkstra shortest-path searches, reachability flood-fills, connected component discovery, cycle detection, topological sorting, Kruskal's minimum spanning tree, and graph coloring. Pathfinding inherently respects edge constraints and item-type filters. For performance scalability, the simulation tick can be executed in parallel using multi-threading. The engine exposes this entire logistical framework, alongside event-driven callbacks for state transitions, to Lua scripts via the `lurek.graph.*` namespace.
 
-## LGraph
+## Spec File Descriptions
 
-### `LGraph:addEdge`
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### algorithms.rs
+
+- Provides graph algorithm utilities for connectivity, ordering, coloring, and optimization analyses.
+- Implements traversal and cycle checks that reveal structural health of directed flow networks.
+- Supplies deterministic topological and spanning computations for planning and diagnostics workflows.
+- Includes coloring and bipartite checks for partitioning and compatibility reasoning.
+- Offers heuristic shortest-path search to support efficient route estimation over node geometry.
+- Operates directly on shared graph adjacency state to avoid duplicate model translations.
+- Delivers the analytical toolkit used to inspect and tune flownet topology behavior.
+
+### core.rs
+
+- Provides the central flownet graph container that owns nodes, edges, items, and adjacency indexes.
+- Manages full CRUD lifecycles with cascading cleanup to keep topology and item state coherent.
+- Tracks outgoing and incoming connectivity for efficient route and neighborhood queries.
+- Coordinates item creation, placement, transit, and removal under node and edge constraints.
+- Supports subgraph extraction and aggregate statistics for analysis and tooling pipelines.
+- Exposes directional query helpers that simplify traversal and simulation planning logic.
+- Includes debug-friendly serialization and preview output for inspection and persistence workflows.
+- Keeps id allocation and storage ownership centralized for deterministic graph mutation behavior.
+- Integrates overflow-aware placement paths that align with node policy semantics.
+- Delivers the authoritative data backbone consumed by algorithms, pathfinding, and simulation updates.
+
+### edge.rs
+
+- Provides flownet edge state that links nodes with transit limits, timing, and routing metadata.
+- Encodes capacity, throughput, cooldown, and filtering constraints that govern movement eligibility.
+- Supports directional and bidirectional semantics with pathfinding weight and speed modifiers.
+- Delivers the per-connection transport contract used by simulation and routing systems.
+- Keeps edge behavior explicit so tuning and diagnostics remain consistent across network updates.
+
+### item.rs
+
+- Provides flownet item records that carry typed payload identity through nodes and transit edges.
+- Tracks location state as node-bound, in-transit, or unplaced to drive simulation decisions.
+- Stores decay lifetime, priority, and alive status for scheduling and cleanup behavior.
+- Delivers the movable unit model consumed by demand, conversion, and transport mechanics.
+- Keeps item lifecycle state centralized for deterministic flow simulation and event emission.
+
+### mod.rs
+
+- Provides the high-level flownet module boundary for graph flow modeling, simulation, and rendering support.
+- Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface.
+- Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation.
+
+### node.rs
+
+- Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration.
+- Defines overflow behavior modes that govern how nodes handle arrivals beyond available space.
+- Encodes push and pull flow semantics used by simulation to move items across the graph.
+- Stores conversion, supply, and demand records for transformation and economic-style mechanics.
+- Exposes node-level queue and tag operations needed for runtime orchestration.
+- Parses textual policy and flow values into typed enums for resilient script integration.
+- Delivers the per-node behavior contract that anchors transport and conversion decisions.
+
+### pathfinding.rs
+
+- Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges.
+- Respects edge activity, cooldown, and type filters so route output matches simulation constraints.
+- Supports distance and reachability queries for planning and demand-matching workflows.
+- Builds predecessor maps and reconstructs ordered node and edge paths for execution.
+- Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state.
+- Integrates neighbor discovery across directional and bidirectional connectivity patterns.
+- Delivers the routing layer used by supply movement and logistics decision systems.
+
+### render.rs
+
+- Provides debug render-command generation that visualizes flownet topology as node-edge diagrams.
+- Lays out nodes on a circular frame and draws links with deterministic mapping.
+- Colors nodes by type to expose structural roles at a glance during inspection.
+- Delivers a self-contained preview command stream consumable by the renderer.
+
+### simulation.rs
+
+- Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick.
+- Processes item lifetimes and removes expired entities while preserving graph consistency guarantees.
+- Moves transit items along edges and resolves arrivals using each node's overflow policy.
+- Executes push and pull flow mechanics with rate-limited logic tied to node configuration.
+- Applies conversion rules that consume inputs and emit transformed output items at nodes.
+- Handles queued backpressure by promoting waiting items when capacity becomes available.
+- Emits structured simulation events for observable state transitions consumed by scripts.
+- Supports optional parallel stepping paths for larger network workloads under feature gating.
+- Coordinates sub-steps in deterministic order to keep outcomes reproducible across runs.
+- Delivers the runtime progression core for logistics-style gameplay simulation.
+
+### supply_demand.rs
+
+- Provides demand-processing logic that matches prioritized needs against available network supply.
+- Uses pathfinding to route produced items from supplier nodes toward consumer destinations.
+- Tracks fulfillment progress and decrements source supply quantities during transfer.
+- Emits simulation events that expose depletion and fulfillment transitions to observers.
+- Delivers the balancing layer that drives directed resource flow through the graph.
+
+### types.rs
+
+- Provides shared flownet identifier wrappers used to type node, edge, and item handles.
+- Encapsulates raw numeric ids in lightweight newtypes for clearer API contracts.
+- Supports conversion and display behavior needed across simulation and tooling call paths.
+- Delivers the common identity foundation for graph storage and cross-module interoperability.
+- Keeps handle semantics consistent so id usage remains safe and readable throughout flownet code.
+
+## Functions
+
+*No standalone module functions documented.*
+
+## Module Fields
+
+*No module-level fields documented.*
+
+## Types
+
+- [LGraph Handle](#lgraph-handle)
+- [LGraphEdge Handle](#lgraphedge-handle)
+- [LGraphItem Handle](#lgraphitem-handle)
+- [LGraphNode Handle](#lgraphnode-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LGraph Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGraph:addEdge`
 
 Creates an edge between two nodes with an optional edge type.
 
 ```lua
--- signature
 LGraph:addEdge(from_ud, to_ud, edge_type)
 ```
 
@@ -23,15 +156,15 @@ LGraph:addEdge(from_ud, to_ud, edge_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LGraphNode` | Source node handle. |
-| `to_ud` | `LGraphNode` | Destination node handle. |
-| `edge_type?` | `string` | Edge type. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Source node handle. |
+| `to_ud` | [LGraphNode](#lgraphnode-handle) | Destination node handle. |
+| `edge_type?` | string | Edge type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphEdge` | New edge handle. |
+| [LGraphEdge](#lgraphedge-handle) | New edge handle. |
 
 **Example**
 
@@ -47,12 +180,11 @@ end
 
 ---
 
-### `LGraph:addEdgeUnchecked`
+#### `LGraph:addEdgeUnchecked`
 
 Adds an edge without validating endpoint nodes exist. Faster for batch construction.
 
 ```lua
--- signature
 LGraph:addEdgeUnchecked(from_ud, to_ud, edge_type)
 ```
 
@@ -60,15 +192,15 @@ LGraph:addEdgeUnchecked(from_ud, to_ud, edge_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LGraphNode` | Source node handle. |
-| `to_ud` | `LGraphNode` | Destination node handle. |
-| `edge_type?` | `string` | Edge type. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Source node handle. |
+| `to_ud` | [LGraphNode](#lgraphnode-handle) | Destination node handle. |
+| `edge_type?` | string | Edge type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphEdge` | New edge handle. |
+| [LGraphEdge](#lgraphedge-handle) | New edge handle. |
 
 **Example**
 
@@ -85,12 +217,11 @@ end
 
 ---
 
-### `LGraph:addItem`
+#### `LGraph:addItem`
 
 Places an item onto a destination node.
 
 ```lua
--- signature
 LGraph:addItem(item_ud, node_ud)
 ```
 
@@ -98,8 +229,8 @@ LGraph:addItem(item_ud, node_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_ud` | `LGraphItem` | Item handle to place. |
-| `node_ud` | `LGraphNode` | Destination node handle. |
+| `item_ud` | [LGraphItem](#lgraphitem-handle) | Item handle to place. |
+| `node_ud` | [LGraphNode](#lgraphnode-handle) | Destination node handle. |
 
 **Example**
 
@@ -115,12 +246,11 @@ end
 
 ---
 
-### `LGraph:addNode`
+#### `LGraph:addNode`
 
 Creates a node with optional type and capacity.
 
 ```lua
--- signature
 LGraph:addNode(node_type, capacity)
 ```
 
@@ -128,14 +258,14 @@ LGraph:addNode(node_type, capacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node_type?` | `string` | Node type, defaulting to `default`. |
-| `capacity?` | `number` | Capacity, defaulting to -1. |
+| `node_type?` | string | Node type, defaulting to `default`. |
+| `capacity?` | number | Capacity, defaulting to -1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode` | New node handle. |
+| [LGraphNode](#lgraphnode-handle) | New node handle. |
 
 **Example**
 
@@ -149,12 +279,11 @@ end
 
 ---
 
-### `LGraph:astar`
+#### `LGraph:astar`
 
 Runs A* pathfinding between two nodes.
 
 ```lua
--- signature
 LGraph:astar(from_node, to_node)
 ```
 
@@ -162,14 +291,14 @@ LGraph:astar(from_node, to_node)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_node` | `LGraphNode` | Start node handle. |
-| `to_node` | `LGraphNode` | Target node handle. |
+| `from_node` | [LGraphNode](#lgraphnode-handle) | Start node handle. |
+| `to_node` | [LGraphNode](#lgraphnode-handle) | Target node handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode[]` | `LGraphNode` handles along the path, or nil when no path exists. |
+| [LGraphNode](#lgraphnode-handle)[] | `[LGraphNode](#lgraphnode-handle)` handles along the path, or nil when no path exists. |
 
 **Example**
 
@@ -185,12 +314,11 @@ end
 
 ---
 
-### `LGraph:batchAddEdges`
+#### `LGraph:batchAddEdges`
 
 Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.
 
 ```lua
--- signature
 LGraph:batchAddEdges(edges)
 ```
 
@@ -198,13 +326,13 @@ LGraph:batchAddEdges(edges)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edges` | `table` | Array of sub-tables with node IDs and optional edge type. |
+| `edges` | table | Array of sub-tables with node IDs and optional edge type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of new edge IDs. |
+| number[] | Array of new edge IDs. |
 
 **Example**
 
@@ -223,12 +351,11 @@ end
 
 ---
 
-### `LGraph:batchAddNodes`
+#### `LGraph:batchAddNodes`
 
 Creates multiple nodes at once, returning their IDs as a table.
 
 ```lua
--- signature
 LGraph:batchAddNodes(count, config)
 ```
 
@@ -236,14 +363,14 @@ LGraph:batchAddNodes(count, config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of nodes to create. |
-| `config?` | `table` | Optional shared config: node_type (string?), capacity (integer?). |
+| `count` | number | Number of nodes to create. |
+| `config?` | table | Optional shared config: node_type (string?), capacity (integer?). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of new node IDs. |
+| number[] | Array of new node IDs. |
 
 **Example**
 
@@ -260,12 +387,11 @@ end
 
 ---
 
-### `LGraph:batchStep`
+#### `LGraph:batchStep`
 
 Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.
 
 ```lua
--- signature
 LGraph:batchStep(dt, iterations)
 ```
 
@@ -273,8 +399,8 @@ LGraph:batchStep(dt, iterations)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time per step. |
-| `iterations` | `number` | Number of steps to run. |
+| `dt` | number | Delta time per step. |
+| `iterations` | number | Number of steps to run. |
 
 **Example**
 
@@ -293,12 +419,11 @@ end
 
 ---
 
-### `LGraph:colorGraph`
+#### `LGraph:colorGraph`
 
 Computes graph coloring and returns color indices by node id.
 
 ```lua
--- signature
 LGraph:colorGraph()
 ```
 
@@ -306,7 +431,7 @@ LGraph:colorGraph()
 
 | Type | Description |
 |------|-------------|
-| `table` | Map table from node id (integer key) to color index (integer). |
+| table | Map table from node id (integer key) to color index (integer). |
 
 **Example**
 
@@ -322,12 +447,11 @@ end
 
 ---
 
-### `LGraph:createItem`
+#### `LGraph:createItem`
 
 Creates an unplaced graph item with optional type and decay time.
 
 ```lua
--- signature
 LGraph:createItem(item_type, decay_time)
 ```
 
@@ -335,14 +459,14 @@ LGraph:createItem(item_type, decay_time)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_type?` | `string` | Item type, defaulting to `default`. |
-| `decay_time?` | `number` | Decay lifetime, defaulting to -1.0. |
+| `item_type?` | string | Item type, defaulting to `default`. |
+| `decay_time?` | number | Decay lifetime, defaulting to -1.0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphItem` | New graph item handle. |
+| [LGraphItem](#lgraphitem-handle) | New graph item handle. |
 
 **Example**
 
@@ -356,12 +480,11 @@ end
 
 ---
 
-### `LGraph:findPath`
+#### `LGraph:findPath`
 
 Finds a path between two graph nodes.
 
 ```lua
--- signature
 LGraph:findPath(from_ud, to_ud)
 ```
 
@@ -369,14 +492,14 @@ LGraph:findPath(from_ud, to_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LGraphNode` | Start node handle. |
-| `to_ud` | `LGraphNode` | Target node handle. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Start node handle. |
+| `to_ud` | [LGraphNode](#lgraphnode-handle) | Target node handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphFindPathResult` | Path result table with nodes, edges, and cost, or nil when no path exists. |
+| LGraphFindPathResult | Path result table with nodes, edges, and cost, or nil when no path exists. |
 
 **Example**
 
@@ -393,12 +516,11 @@ end
 
 ---
 
-### `LGraph:findPathForItem`
+#### `LGraph:findPathForItem`
 
 Finds a path for a specific item between two nodes while respecting item constraints.
 
 ```lua
--- signature
 LGraph:findPathForItem(item_ud, from_ud, to_ud)
 ```
 
@@ -406,15 +528,15 @@ LGraph:findPathForItem(item_ud, from_ud, to_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_ud` | `LGraphItem` | Item handle used for routing constraints. |
-| `from_ud` | `LGraphNode` | Start node handle. |
-| `to_ud` | `LGraphNode` | Target node handle. |
+| `item_ud` | [LGraphItem](#lgraphitem-handle) | Item handle used for routing constraints. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Start node handle. |
+| `to_ud` | [LGraphNode](#lgraphnode-handle) | Target node handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphFindPathForItemResult` | Path result table with nodes, edges, and cost, or nil when no path exists. |
+| LGraphFindPathForItemResult | Path result table with nodes, edges, and cost, or nil when no path exists. |
 
 **Example**
 
@@ -431,12 +553,11 @@ end
 
 ---
 
-### `LGraph:getComponents`
+#### `LGraph:getComponents`
 
 Returns connected components as arrays of node handles.
 
 ```lua
--- signature
 LGraph:getComponents()
 ```
 
@@ -444,7 +565,7 @@ LGraph:getComponents()
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode[]` | Component tables containing `LGraphNode` handles. |
+| [LGraphNode](#lgraphnode-handle)[] | Component tables containing `[LGraphNode](#lgraphnode-handle)` handles. |
 
 **Example**
 
@@ -460,12 +581,11 @@ end
 
 ---
 
-### `LGraph:getDistance`
+#### `LGraph:getDistance`
 
 Returns graph distance between two nodes when reachable.
 
 ```lua
--- signature
 LGraph:getDistance(from_ud, to_ud)
 ```
 
@@ -473,14 +593,14 @@ LGraph:getDistance(from_ud, to_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LGraphNode` | Start node handle. |
-| `to_ud` | `LGraphNode` | Target node handle. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Start node handle. |
+| `to_ud` | [LGraphNode](#lgraphnode-handle) | Target node handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Distance between the two nodes, or nil when no path connects the nodes. |
+| number | Distance between the two nodes, or nil when no path connects the nodes. |
 
 **Example**
 
@@ -496,12 +616,11 @@ end
 
 ---
 
-### `LGraph:getEdgeBetween`
+#### `LGraph:getEdgeBetween`
 
 Returns the edge connecting two nodes when one exists.
 
 ```lua
--- signature
 LGraph:getEdgeBetween(from_ud, to_ud)
 ```
 
@@ -509,14 +628,14 @@ LGraph:getEdgeBetween(from_ud, to_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LGraphNode` | Source node handle. |
-| `to_ud` | `LGraphNode` | Destination node handle. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Source node handle. |
+| `to_ud` | [LGraphNode](#lgraphnode-handle) | Destination node handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphEdge` | Edge handle connecting the two nodes, or nil when no edge connects the nodes. |
+| [LGraphEdge](#lgraphedge-handle) | Edge handle connecting the two nodes, or nil when no edge connects the nodes. |
 
 **Example**
 
@@ -532,12 +651,11 @@ end
 
 ---
 
-### `LGraph:getEdgeCount`
+#### `LGraph:getEdgeCount`
 
 Returns the number of edges in this graph.
 
 ```lua
--- signature
 LGraph:getEdgeCount()
 ```
 
@@ -545,7 +663,7 @@ LGraph:getEdgeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Edge count. |
+| number | Edge count. |
 
 **Example**
 
@@ -561,12 +679,11 @@ end
 
 ---
 
-### `LGraph:getEdges`
+#### `LGraph:getEdges`
 
 Returns all edges in this logistics graph.
 
 ```lua
--- signature
 LGraph:getEdges()
 ```
 
@@ -574,7 +691,7 @@ LGraph:getEdges()
 
 | Type | Description |
 |------|-------------|
-| `LGraphEdge[]` | `LGraphEdge` handles. |
+| [LGraphEdge](#lgraphedge-handle)[] | `[LGraphEdge](#lgraphedge-handle)` handles. |
 
 **Example**
 
@@ -590,12 +707,11 @@ end
 
 ---
 
-### `LGraph:getItemCount`
+#### `LGraph:getItemCount`
 
 Returns the number of items in this graph.
 
 ```lua
--- signature
 LGraph:getItemCount()
 ```
 
@@ -603,7 +719,7 @@ LGraph:getItemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -618,12 +734,11 @@ end
 
 ---
 
-### `LGraph:getItems`
+#### `LGraph:getItems`
 
 Returns all items in this logistics graph.
 
 ```lua
--- signature
 LGraph:getItems()
 ```
 
@@ -631,7 +746,7 @@ LGraph:getItems()
 
 | Type | Description |
 |------|-------------|
-| `LGraphItem[]` | `LGraphItem` handles. |
+| [LGraphItem](#lgraphitem-handle)[] | `[LGraphItem](#lgraphitem-handle)` handles. |
 
 **Example**
 
@@ -646,12 +761,11 @@ end
 
 ---
 
-### `LGraph:getNeighbors`
+#### `LGraph:getNeighbors`
 
 Returns neighbor nodes connected to a node.
 
 ```lua
--- signature
 LGraph:getNeighbors(node_ud)
 ```
 
@@ -659,13 +773,13 @@ LGraph:getNeighbors(node_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node_ud` | `LGraphNode` | Node handle to inspect. |
+| `node_ud` | [LGraphNode](#lgraphnode-handle) | Node handle to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode[]` | Neighboring `LGraphNode` handles. |
+| [LGraphNode](#lgraphnode-handle)[] | Neighboring `[LGraphNode](#lgraphnode-handle)` handles. |
 
 **Example**
 
@@ -682,12 +796,11 @@ end
 
 ---
 
-### `LGraph:getNodeCount`
+#### `LGraph:getNodeCount`
 
 Returns the number of nodes in this graph.
 
 ```lua
--- signature
 LGraph:getNodeCount()
 ```
 
@@ -695,7 +808,7 @@ LGraph:getNodeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Node count. |
+| number | Node count. |
 
 **Example**
 
@@ -710,12 +823,11 @@ end
 
 ---
 
-### `LGraph:getNodes`
+#### `LGraph:getNodes`
 
 Returns all nodes in this logistics graph.
 
 ```lua
--- signature
 LGraph:getNodes()
 ```
 
@@ -723,7 +835,7 @@ LGraph:getNodes()
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode[]` | `LGraphNode` handles. |
+| [LGraphNode](#lgraphnode-handle)[] | `[LGraphNode](#lgraphnode-handle)` handles. |
 
 **Example**
 
@@ -739,12 +851,11 @@ end
 
 ---
 
-### `LGraph:getReachable`
+#### `LGraph:getReachable`
 
 Returns nodes reachable from a start node within an optional maximum distance.
 
 ```lua
--- signature
 LGraph:getReachable(from_ud, max_dist)
 ```
 
@@ -752,14 +863,14 @@ LGraph:getReachable(from_ud, max_dist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LGraphNode` | Start node handle. |
-| `max_dist?` | `number` | Maximum distance. |
+| `from_ud` | [LGraphNode](#lgraphnode-handle) | Start node handle. |
+| `max_dist?` | number | Maximum distance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode[]` | Reachable `LGraphNode` handles. |
+| [LGraphNode](#lgraphnode-handle)[] | Reachable `[LGraphNode](#lgraphnode-handle)` handles. |
 
 **Example**
 
@@ -775,12 +886,11 @@ end
 
 ---
 
-### `LGraph:getStats`
+#### `LGraph:getStats`
 
 Returns graph counts and aggregate supply-demand statistics.
 
 ```lua
--- signature
 LGraph:getStats()
 ```
 
@@ -788,7 +898,7 @@ LGraph:getStats()
 
 | Type | Description |
 |------|-------------|
-| `LGraphGetStatsResult` | Table with node, edge, item, activity, transit, demand, supply, and queue counts. |
+| LGraphGetStatsResult | Table with node, edge, item, activity, transit, demand, supply, and queue counts. |
 
 **Example**
 
@@ -804,12 +914,11 @@ end
 
 ---
 
-### `LGraph:hasCycle`
+#### `LGraph:hasCycle`
 
 Returns whether this graph contains a cycle.
 
 ```lua
--- signature
 LGraph:hasCycle()
 ```
 
@@ -817,7 +926,7 @@ LGraph:hasCycle()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the graph has a cycle. |
+| boolean | True when the graph has a cycle. |
 
 **Example**
 
@@ -833,12 +942,11 @@ end
 
 ---
 
-### `LGraph:hasEdge`
+#### `LGraph:hasEdge`
 
 Returns whether an edge handle still exists in this graph.
 
 ```lua
--- signature
 LGraph:hasEdge(edge_ud)
 ```
 
@@ -846,13 +954,13 @@ LGraph:hasEdge(edge_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge_ud` | `LGraphEdge` | Edge handle to check. |
+| `edge_ud` | [LGraphEdge](#lgraphedge-handle) | Edge handle to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the edge exists. |
+| boolean | True when the edge exists. |
 
 **Example**
 
@@ -868,12 +976,11 @@ end
 
 ---
 
-### `LGraph:hasItem`
+#### `LGraph:hasItem`
 
 Returns whether an item handle still exists in this graph.
 
 ```lua
--- signature
 LGraph:hasItem(item_ud)
 ```
 
@@ -881,13 +988,13 @@ LGraph:hasItem(item_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_ud` | `LGraphItem` | Item handle to check. |
+| `item_ud` | [LGraphItem](#lgraphitem-handle) | Item handle to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item exists. |
+| boolean | True when the item exists. |
 
 **Example**
 
@@ -901,12 +1008,11 @@ end
 
 ---
 
-### `LGraph:hasNode`
+#### `LGraph:hasNode`
 
 Returns whether a node handle still exists in this graph.
 
 ```lua
--- signature
 LGraph:hasNode(node_ud)
 ```
 
@@ -914,13 +1020,13 @@ LGraph:hasNode(node_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node_ud` | `LGraphNode` | Node handle to check. |
+| `node_ud` | [LGraphNode](#lgraphnode-handle) | Node handle to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the node exists. |
+| boolean | True when the node exists. |
 
 **Example**
 
@@ -934,12 +1040,11 @@ end
 
 ---
 
-### `LGraph:isBipartite`
+#### `LGraph:isBipartite`
 
 Returns whether this graph is bipartite.
 
 ```lua
--- signature
 LGraph:isBipartite()
 ```
 
@@ -947,7 +1052,7 @@ LGraph:isBipartite()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the graph is bipartite. |
+| boolean | True when the graph is bipartite. |
 
 **Example**
 
@@ -963,12 +1068,11 @@ end
 
 ---
 
-### `LGraph:mst`
+#### `LGraph:mst`
 
 Computes a minimum spanning tree using Kruskal and returns edge ids.
 
 ```lua
--- signature
 LGraph:mst()
 ```
 
@@ -976,7 +1080,7 @@ LGraph:mst()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of edge ids included in the tree. |
+| number[] | Array table of edge ids included in the tree. |
 
 **Example**
 
@@ -994,12 +1098,11 @@ end
 
 ---
 
-### `LGraph:on`
+#### `LGraph:on`
 
 Registers a callback for a named graph event generated during simulation.
 
 ```lua
--- signature
 LGraph:on(event_name, func)
 ```
 
@@ -1007,8 +1110,8 @@ LGraph:on(event_name, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event_name` | `string` | Event name from the valid graph event list. |
-| `func` | `function` | Lua callback invoked with event-specific handles and values. |
+| `event_name` | string | Event name from the valid graph event list. |
+| `func` | function | Lua callback invoked with event-specific handles and values. |
 
 **Example**
 
@@ -1024,12 +1127,11 @@ end
 
 ---
 
-### `LGraph:processDemand`
+#### `LGraph:processDemand`
 
 Processes graph supply and demand once and dispatches generated callbacks.
 
 ```lua
--- signature
 LGraph:processDemand()
 ```
 
@@ -1045,12 +1147,11 @@ end
 
 ---
 
-### `LGraph:removeEdge`
+#### `LGraph:removeEdge`
 
 Removes an edge by handle on this object.
 
 ```lua
--- signature
 LGraph:removeEdge(edge_ud)
 ```
 
@@ -1058,13 +1159,13 @@ LGraph:removeEdge(edge_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge_ud` | `LGraphEdge` | Edge handle to remove. |
+| `edge_ud` | [LGraphEdge](#lgraphedge-handle) | Edge handle to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the edge was removed. |
+| boolean | True when the edge was removed. |
 
 **Example**
 
@@ -1080,12 +1181,11 @@ end
 
 ---
 
-### `LGraph:removeItem`
+#### `LGraph:removeItem`
 
 Removes an item from this logistics graph.
 
 ```lua
--- signature
 LGraph:removeItem(item_ud)
 ```
 
@@ -1093,13 +1193,13 @@ LGraph:removeItem(item_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_ud` | `LGraphItem` | Item handle to remove. |
+| `item_ud` | [LGraphItem](#lgraphitem-handle) | Item handle to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item was removed. |
+| boolean | True when the item was removed. |
 
 **Example**
 
@@ -1114,12 +1214,11 @@ end
 
 ---
 
-### `LGraph:removeNode`
+#### `LGraph:removeNode`
 
 Removes a node and graph links associated with it.
 
 ```lua
--- signature
 LGraph:removeNode(node_ud)
 ```
 
@@ -1127,13 +1226,13 @@ LGraph:removeNode(node_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node_ud` | `LGraphNode` | Node handle to remove. |
+| `node_ud` | [LGraphNode](#lgraphnode-handle) | Node handle to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the node was removed. |
+| boolean | True when the node was removed. |
 
 **Example**
 
@@ -1148,12 +1247,11 @@ end
 
 ---
 
-### `LGraph:sendItem`
+#### `LGraph:sendItem`
 
 Starts moving an item along an edge.
 
 ```lua
--- signature
 LGraph:sendItem(item_ud, edge_ud)
 ```
 
@@ -1161,8 +1259,8 @@ LGraph:sendItem(item_ud, edge_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_ud` | `LGraphItem` | Item handle to send. |
-| `edge_ud` | `LGraphEdge` | Edge handle to traverse. |
+| `item_ud` | [LGraphItem](#lgraphitem-handle) | Item handle to send. |
+| `edge_ud` | [LGraphEdge](#lgraphedge-handle) | Edge handle to traverse. |
 
 **Example**
 
@@ -1179,12 +1277,11 @@ end
 
 ---
 
-### `LGraph:step`
+#### `LGraph:step`
 
 Runs one discrete graph simulation step and dispatches generated callbacks.
 
 ```lua
--- signature
 LGraph:step()
 ```
 
@@ -1200,12 +1297,11 @@ end
 
 ---
 
-### `LGraph:subgraph`
+#### `LGraph:subgraph`
 
 Creates a new graph containing a subset of nodes.
 
 ```lua
--- signature
 LGraph:subgraph(nodes)
 ```
 
@@ -1213,13 +1309,13 @@ LGraph:subgraph(nodes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `nodes` | `table` | Array table of `LGraphNode` handles to include. |
+| `nodes` | table | Array table of `[LGraphNode](#lgraphnode-handle)` handles to include. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraph` | New subgraph handle. |
+| [LGraph](#lgraph-handle) | New subgraph handle. |
 
 **Example**
 
@@ -1235,12 +1331,11 @@ end
 
 ---
 
-### `LGraph:tickParallel`
+#### `LGraph:tickParallel`
 
 Advances graph simulation through the parallel update path and dispatches generated callbacks.
 
 ```lua
--- signature
 LGraph:tickParallel(dt)
 ```
 
@@ -1248,7 +1343,7 @@ LGraph:tickParallel(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -1262,12 +1357,11 @@ end
 
 ---
 
-### `LGraph:topologicalSort`
+#### `LGraph:topologicalSort`
 
 Returns nodes in topological order when the graph is acyclic.
 
 ```lua
--- signature
 LGraph:topologicalSort()
 ```
 
@@ -1275,7 +1369,7 @@ LGraph:topologicalSort()
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode[]` | `LGraphNode` handles in topological order, or nil when sorting is impossible due to cycles. |
+| [LGraphNode](#lgraphnode-handle)[] | `[LGraphNode](#lgraphnode-handle)` handles in topological order, or nil when sorting is impossible due to cycles. |
 
 **Example**
 
@@ -1292,12 +1386,11 @@ end
 
 ---
 
-### `LGraph:type`
+#### `LGraph:type`
 
 Returns the Lua-visible type name for this graph handle.
 
 ```lua
--- signature
 LGraph:type()
 ```
 
@@ -1305,7 +1398,7 @@ LGraph:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGraph`. |
+| string | The string `[LGraph](#lgraph-handle)`. |
 
 **Example**
 
@@ -1318,12 +1411,11 @@ end
 
 ---
 
-### `LGraph:typeOf`
+#### `LGraph:typeOf`
 
 Returns whether this graph handle matches a supported type name.
 
 ```lua
--- signature
 LGraph:typeOf(name)
 ```
 
@@ -1331,13 +1423,13 @@ LGraph:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LGraph`, `Graph`, and `Object`. |
+| `name` | string | Type name to compare against `[LGraph](#lgraph-handle)`, `Graph`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1350,12 +1442,11 @@ end
 
 ---
 
-### `LGraph:update`
+#### `LGraph:update`
 
 Advances graph simulation by delta time and dispatches generated callbacks.
 
 ```lua
--- signature
 LGraph:update(dt)
 ```
 
@@ -1363,7 +1454,7 @@ LGraph:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -1377,14 +1468,19 @@ end
 
 ---
 
-## LGraphEdge
+## LGraphEdge Handle
 
-### `LGraphEdge:addAllowedType`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGraphEdge:addAllowedType`
 
 Allows an item type to traverse this edge.
 
 ```lua
--- signature
 LGraphEdge:addAllowedType(t)
 ```
 
@@ -1392,7 +1488,7 @@ LGraphEdge:addAllowedType(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | Item type to allow. |
+| `t` | string | Item type to allow. |
 
 **Example**
 
@@ -1408,12 +1504,11 @@ end
 
 ---
 
-### `LGraphEdge:clearAllowedTypes`
+#### `LGraphEdge:clearAllowedTypes`
 
 Clears this edge's item type allow-list.
 
 ```lua
--- signature
 LGraphEdge:clearAllowedTypes()
 ```
 
@@ -1432,12 +1527,11 @@ end
 
 ---
 
-### `LGraphEdge:getCapacity`
+#### `LGraphEdge:getCapacity`
 
 Returns this edge's maximum concurrent item capacity.
 
 ```lua
--- signature
 LGraphEdge:getCapacity()
 ```
 
@@ -1445,7 +1539,7 @@ LGraphEdge:getCapacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Edge capacity. |
+| number | Edge capacity. |
 
 **Example**
 
@@ -1461,12 +1555,11 @@ end
 
 ---
 
-### `LGraphEdge:getCooldown`
+#### `LGraphEdge:getCooldown`
 
 Returns this edge's cooldown timer value.
 
 ```lua
--- signature
 LGraphEdge:getCooldown()
 ```
 
@@ -1474,7 +1567,7 @@ LGraphEdge:getCooldown()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cooldown in seconds. |
+| number | Cooldown in seconds. |
 
 **Example**
 
@@ -1490,12 +1583,11 @@ end
 
 ---
 
-### `LGraphEdge:getFrom`
+#### `LGraphEdge:getFrom`
 
 Returns the source node for this edge.
 
 ```lua
--- signature
 LGraphEdge:getFrom()
 ```
 
@@ -1503,7 +1595,7 @@ LGraphEdge:getFrom()
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode` | Source node handle. |
+| [LGraphNode](#lgraphnode-handle) | Source node handle. |
 
 **Example**
 
@@ -1519,12 +1611,11 @@ end
 
 ---
 
-### `LGraphEdge:getItemsInTransit`
+#### `LGraphEdge:getItemsInTransit`
 
 Returns graph items currently traveling along this edge.
 
 ```lua
--- signature
 LGraphEdge:getItemsInTransit()
 ```
 
@@ -1532,7 +1623,7 @@ LGraphEdge:getItemsInTransit()
 
 | Type | Description |
 |------|-------------|
-| `LGraphItem[]` | `LGraphItem` handles. |
+| [LGraphItem](#lgraphitem-handle)[] | `[LGraphItem](#lgraphitem-handle)` handles. |
 
 **Example**
 
@@ -1548,12 +1639,11 @@ end
 
 ---
 
-### `LGraphEdge:getSpeedModifier`
+#### `LGraphEdge:getSpeedModifier`
 
 Returns this edge's speed modifier.
 
 ```lua
--- signature
 LGraphEdge:getSpeedModifier()
 ```
 
@@ -1561,7 +1651,7 @@ LGraphEdge:getSpeedModifier()
 
 | Type | Description |
 |------|-------------|
-| `number` | Speed modifier. |
+| number | Speed modifier. |
 
 **Example**
 
@@ -1577,12 +1667,11 @@ end
 
 ---
 
-### `LGraphEdge:getThroughput`
+#### `LGraphEdge:getThroughput`
 
 Returns this edge's throughput value.
 
 ```lua
--- signature
 LGraphEdge:getThroughput()
 ```
 
@@ -1590,7 +1679,7 @@ LGraphEdge:getThroughput()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current throughput. |
+| number | Current throughput. |
 
 **Example**
 
@@ -1606,12 +1695,11 @@ end
 
 ---
 
-### `LGraphEdge:getTo`
+#### `LGraphEdge:getTo`
 
 Returns the destination node for this edge.
 
 ```lua
--- signature
 LGraphEdge:getTo()
 ```
 
@@ -1619,7 +1707,7 @@ LGraphEdge:getTo()
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode` | Destination node handle. |
+| [LGraphNode](#lgraphnode-handle) | Destination node handle. |
 
 **Example**
 
@@ -1635,12 +1723,11 @@ end
 
 ---
 
-### `LGraphEdge:getTravelTime`
+#### `LGraphEdge:getTravelTime`
 
 Returns the travel time for items moving across this edge.
 
 ```lua
--- signature
 LGraphEdge:getTravelTime()
 ```
 
@@ -1648,7 +1735,7 @@ LGraphEdge:getTravelTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Travel time in seconds. |
+| number | Travel time in seconds. |
 
 **Example**
 
@@ -1664,12 +1751,11 @@ end
 
 ---
 
-### `LGraphEdge:getType`
+#### `LGraphEdge:getType`
 
 Returns the edge type string used by routing and filters.
 
 ```lua
--- signature
 LGraphEdge:getType()
 ```
 
@@ -1677,7 +1763,7 @@ LGraphEdge:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current edge type. |
+| string | Current edge type. |
 
 **Example**
 
@@ -1693,12 +1779,11 @@ end
 
 ---
 
-### `LGraphEdge:getWeight`
+#### `LGraphEdge:getWeight`
 
 Returns the pathfinding weight for this edge.
 
 ```lua
--- signature
 LGraphEdge:getWeight()
 ```
 
@@ -1706,7 +1791,7 @@ LGraphEdge:getWeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Edge weight. |
+| number | Edge weight. |
 
 **Example**
 
@@ -1722,12 +1807,11 @@ end
 
 ---
 
-### `LGraphEdge:isActive`
+#### `LGraphEdge:isActive`
 
 Returns whether this edge is active for routing and simulation.
 
 ```lua
--- signature
 LGraphEdge:isActive()
 ```
 
@@ -1735,7 +1819,7 @@ LGraphEdge:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the edge is active. |
+| boolean | True when the edge is active. |
 
 **Example**
 
@@ -1751,12 +1835,11 @@ end
 
 ---
 
-### `LGraphEdge:isBidirectional`
+#### `LGraphEdge:isBidirectional`
 
 Returns whether this edge allows travel in both directions.
 
 ```lua
--- signature
 LGraphEdge:isBidirectional()
 ```
 
@@ -1764,7 +1847,7 @@ LGraphEdge:isBidirectional()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the edge is bidirectional. |
+| boolean | True when the edge is bidirectional. |
 
 **Example**
 
@@ -1780,12 +1863,11 @@ end
 
 ---
 
-### `LGraphEdge:isItemTypeAllowed`
+#### `LGraphEdge:isItemTypeAllowed`
 
 Returns whether an item type may traverse this edge.
 
 ```lua
--- signature
 LGraphEdge:isItemTypeAllowed(t)
 ```
 
@@ -1793,13 +1875,13 @@ LGraphEdge:isItemTypeAllowed(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | Item type to check. |
+| `t` | string | Item type to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item type is allowed. |
+| boolean | True when the item type is allowed. |
 
 **Example**
 
@@ -1815,12 +1897,11 @@ end
 
 ---
 
-### `LGraphEdge:isOnCooldown`
+#### `LGraphEdge:isOnCooldown`
 
 Returns whether this edge is currently on cooldown.
 
 ```lua
--- signature
 LGraphEdge:isOnCooldown()
 ```
 
@@ -1828,7 +1909,7 @@ LGraphEdge:isOnCooldown()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when cooldown is active. |
+| boolean | True when cooldown is active. |
 
 **Example**
 
@@ -1844,12 +1925,11 @@ end
 
 ---
 
-### `LGraphEdge:removeAllowedType`
+#### `LGraphEdge:removeAllowedType`
 
 Removes an item type from this edge's allow-list.
 
 ```lua
--- signature
 LGraphEdge:removeAllowedType(t)
 ```
 
@@ -1857,13 +1937,13 @@ LGraphEdge:removeAllowedType(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | Item type to remove. |
+| `t` | string | Item type to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the type was present. |
+| boolean | True when the type was present. |
 
 **Example**
 
@@ -1880,12 +1960,11 @@ end
 
 ---
 
-### `LGraphEdge:setActive`
+#### `LGraphEdge:setActive`
 
 Enables or disables this edge for routing and simulation.
 
 ```lua
--- signature
 LGraphEdge:setActive(a)
 ```
 
@@ -1893,7 +1972,7 @@ LGraphEdge:setActive(a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `boolean` | New active flag. |
+| `a` | boolean | New active flag. |
 
 **Example**
 
@@ -1909,12 +1988,11 @@ end
 
 ---
 
-### `LGraphEdge:setBidirectional`
+#### `LGraphEdge:setBidirectional`
 
 Sets whether this edge allows travel in both directions.
 
 ```lua
--- signature
 LGraphEdge:setBidirectional(b)
 ```
 
@@ -1922,7 +2000,7 @@ LGraphEdge:setBidirectional(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `boolean` | New bidirectional flag. |
+| `b` | boolean | New bidirectional flag. |
 
 **Example**
 
@@ -1938,12 +2016,11 @@ end
 
 ---
 
-### `LGraphEdge:setCapacity`
+#### `LGraphEdge:setCapacity`
 
 Sets this edge's maximum concurrent item capacity.
 
 ```lua
--- signature
 LGraphEdge:setCapacity(c)
 ```
 
@@ -1951,7 +2028,7 @@ LGraphEdge:setCapacity(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | New edge capacity. |
+| `c` | number | New edge capacity. |
 
 **Example**
 
@@ -1967,12 +2044,11 @@ end
 
 ---
 
-### `LGraphEdge:setCooldown`
+#### `LGraphEdge:setCooldown`
 
 Sets this edge's cooldown timer value.
 
 ```lua
--- signature
 LGraphEdge:setCooldown(c)
 ```
 
@@ -1980,7 +2056,7 @@ LGraphEdge:setCooldown(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | Cooldown in seconds. |
+| `c` | number | Cooldown in seconds. |
 
 **Example**
 
@@ -1996,12 +2072,11 @@ end
 
 ---
 
-### `LGraphEdge:setSpeedModifier`
+#### `LGraphEdge:setSpeedModifier`
 
 Sets this edge's speed modifier value.
 
 ```lua
--- signature
 LGraphEdge:setSpeedModifier(m)
 ```
 
@@ -2009,7 +2084,7 @@ LGraphEdge:setSpeedModifier(m)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `m` | `number` | Speed modifier. |
+| `m` | number | Speed modifier. |
 
 **Example**
 
@@ -2025,12 +2100,11 @@ end
 
 ---
 
-### `LGraphEdge:setThroughput`
+#### `LGraphEdge:setThroughput`
 
 Sets this edge's throughput value.
 
 ```lua
--- signature
 LGraphEdge:setThroughput(t)
 ```
 
@@ -2038,7 +2112,7 @@ LGraphEdge:setThroughput(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | New throughput. |
+| `t` | number | New throughput. |
 
 **Example**
 
@@ -2054,12 +2128,11 @@ end
 
 ---
 
-### `LGraphEdge:setTravelTime`
+#### `LGraphEdge:setTravelTime`
 
 Sets the travel time for items moving across this edge.
 
 ```lua
--- signature
 LGraphEdge:setTravelTime(t)
 ```
 
@@ -2067,7 +2140,7 @@ LGraphEdge:setTravelTime(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Travel time in seconds. |
+| `t` | number | Travel time in seconds. |
 
 **Example**
 
@@ -2083,12 +2156,11 @@ end
 
 ---
 
-### `LGraphEdge:setType`
+#### `LGraphEdge:setType`
 
 Sets the edge type string used by routing and filters.
 
 ```lua
--- signature
 LGraphEdge:setType(t)
 ```
 
@@ -2096,7 +2168,7 @@ LGraphEdge:setType(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | New edge type. |
+| `t` | string | New edge type. |
 
 **Example**
 
@@ -2112,12 +2184,11 @@ end
 
 ---
 
-### `LGraphEdge:setWeight`
+#### `LGraphEdge:setWeight`
 
 Sets the pathfinding weight for this edge.
 
 ```lua
--- signature
 LGraphEdge:setWeight(w)
 ```
 
@@ -2125,7 +2196,7 @@ LGraphEdge:setWeight(w)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Edge weight. |
+| `w` | number | Edge weight. |
 
 **Example**
 
@@ -2141,12 +2212,11 @@ end
 
 ---
 
-### `LGraphEdge:type`
+#### `LGraphEdge:type`
 
 Returns the Lua-visible type name for this graph edge handle.
 
 ```lua
--- signature
 LGraphEdge:type()
 ```
 
@@ -2154,7 +2224,7 @@ LGraphEdge:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGraphEdge`. |
+| string | The string `[LGraphEdge](#lgraphedge-handle)`. |
 
 **Example**
 
@@ -2170,12 +2240,11 @@ end
 
 ---
 
-### `LGraphEdge:typeOf`
+#### `LGraphEdge:typeOf`
 
 Returns whether this graph edge handle matches a supported type name.
 
 ```lua
--- signature
 LGraphEdge:typeOf(name)
 ```
 
@@ -2183,13 +2252,13 @@ LGraphEdge:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LGraphEdge`, `GraphEdge`, and `Object`. |
+| `name` | string | Type name to compare against `[LGraphEdge](#lgraphedge-handle)`, `GraphEdge`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2205,14 +2274,19 @@ end
 
 ---
 
-## LGraphItem
+## LGraphItem Handle
 
-### `LGraphItem:getDecayTime`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGraphItem:getDecayTime`
 
 Returns the total decay lifetime configured for this item.
 
 ```lua
--- signature
 LGraphItem:getDecayTime()
 ```
 
@@ -2220,7 +2294,7 @@ LGraphItem:getDecayTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Decay time in seconds, or the graph's sentinel for no decay. |
+| number | Decay time in seconds, or the graph's sentinel for no decay. |
 
 **Example**
 
@@ -2234,12 +2308,11 @@ end
 
 ---
 
-### `LGraphItem:getPosition`
+#### `LGraphItem:getPosition`
 
 Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
 
 ```lua
--- signature
 LGraphItem:getPosition()
 ```
 
@@ -2247,9 +2320,9 @@ LGraphItem:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `LGraphNode` | a Node handle when the item is at a node. |
-| `LGraphEdge` | b Edge handle when the item is in transit. |
-| `number` | c Transit progress when the item is in transit, or nil no value when the item is unplaced. |
+| [LGraphNode](#lgraphnode-handle) | Node handle when the item is at a node. |
+| [LGraphEdge](#lgraphedge-handle) | Edge handle when the item is in transit. |
+| number | Transit progress when the item is in transit; or nil no value when the item is unplaced. |
 
 **Example**
 
@@ -2265,12 +2338,11 @@ end
 
 ---
 
-### `LGraphItem:getPriority`
+#### `LGraphItem:getPriority`
 
 Returns this item's routing or queue priority.
 
 ```lua
--- signature
 LGraphItem:getPriority()
 ```
 
@@ -2278,7 +2350,7 @@ LGraphItem:getPriority()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item priority. |
+| number | Item priority. |
 
 **Example**
 
@@ -2292,12 +2364,11 @@ end
 
 ---
 
-### `LGraphItem:getRemainingLife`
+#### `LGraphItem:getRemainingLife`
 
 Returns this item's remaining lifetime before decay.
 
 ```lua
--- signature
 LGraphItem:getRemainingLife()
 ```
 
@@ -2305,7 +2376,7 @@ LGraphItem:getRemainingLife()
 
 | Type | Description |
 |------|-------------|
-| `number` | Remaining lifetime in seconds. |
+| number | Remaining lifetime in seconds. |
 
 **Example**
 
@@ -2319,12 +2390,11 @@ end
 
 ---
 
-### `LGraphItem:getType`
+#### `LGraphItem:getType`
 
 Returns the item type string used by filters, conversions, supplies, and demands.
 
 ```lua
--- signature
 LGraphItem:getType()
 ```
 
@@ -2332,7 +2402,7 @@ LGraphItem:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current item type. |
+| string | Current item type. |
 
 **Example**
 
@@ -2346,12 +2416,11 @@ end
 
 ---
 
-### `LGraphItem:isAlive`
+#### `LGraphItem:isAlive`
 
 Returns whether this item is still alive in the graph simulation.
 
 ```lua
--- signature
 LGraphItem:isAlive()
 ```
 
@@ -2359,7 +2428,7 @@ LGraphItem:isAlive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item has not decayed or been killed. |
+| boolean | True when the item has not decayed or been killed. |
 
 **Example**
 
@@ -2373,12 +2442,11 @@ end
 
 ---
 
-### `LGraphItem:kill`
+#### `LGraphItem:kill`
 
 Marks this item as dead so graph processing can remove or ignore it.
 
 ```lua
--- signature
 LGraphItem:kill()
 ```
 
@@ -2395,12 +2463,11 @@ end
 
 ---
 
-### `LGraphItem:setDecayTime`
+#### `LGraphItem:setDecayTime`
 
 Sets the total decay lifetime for this item.
 
 ```lua
--- signature
 LGraphItem:setDecayTime(t)
 ```
 
@@ -2408,7 +2475,7 @@ LGraphItem:setDecayTime(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Decay time in seconds, or the graph's sentinel for no decay. |
+| `t` | number | Decay time in seconds, or the graph's sentinel for no decay. |
 
 **Example**
 
@@ -2423,12 +2490,11 @@ end
 
 ---
 
-### `LGraphItem:setPriority`
+#### `LGraphItem:setPriority`
 
 Sets this item's routing or queue priority.
 
 ```lua
--- signature
 LGraphItem:setPriority(p)
 ```
 
@@ -2436,7 +2502,7 @@ LGraphItem:setPriority(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | `number` | New item priority. |
+| `p` | number | New item priority. |
 
 **Example**
 
@@ -2451,12 +2517,11 @@ end
 
 ---
 
-### `LGraphItem:setType`
+#### `LGraphItem:setType`
 
 Changes the item type string used by graph routing and processing rules.
 
 ```lua
--- signature
 LGraphItem:setType(t)
 ```
 
@@ -2464,7 +2529,7 @@ LGraphItem:setType(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | New item type. |
+| `t` | string | New item type. |
 
 **Example**
 
@@ -2479,12 +2544,11 @@ end
 
 ---
 
-### `LGraphItem:type`
+#### `LGraphItem:type`
 
 Returns the Lua-visible type name for this graph item handle.
 
 ```lua
--- signature
 LGraphItem:type()
 ```
 
@@ -2492,7 +2556,7 @@ LGraphItem:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGraphItem`. |
+| string | The string `[LGraphItem](#lgraphitem-handle)`. |
 
 **Example**
 
@@ -2506,12 +2570,11 @@ end
 
 ---
 
-### `LGraphItem:typeOf`
+#### `LGraphItem:typeOf`
 
 Returns whether this graph item handle matches a supported type name.
 
 ```lua
--- signature
 LGraphItem:typeOf(name)
 ```
 
@@ -2519,13 +2582,13 @@ LGraphItem:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LGraphItem`, `GraphItem`, and `Object`. |
+| `name` | string | Type name to compare against `[LGraphItem](#lgraphitem-handle)`, `GraphItem`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2539,14 +2602,19 @@ end
 
 ---
 
-## LGraphNode
+## LGraphNode Handle
 
-### `LGraphNode:addDemand`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGraphNode:addDemand`
 
 Adds demand quantity and optional priority for an item type on this node.
 
 ```lua
--- signature
 LGraphNode:addDemand(item_type, quantity, priority)
 ```
 
@@ -2554,9 +2622,9 @@ LGraphNode:addDemand(item_type, quantity, priority)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_type` | `string` | Item type demanded by the node. |
-| `quantity` | `number` | Demand quantity to add. |
-| `priority?` | `number` | Demand priority, defaulting to 0. |
+| `item_type` | string | Item type demanded by the node. |
+| `quantity` | number | Demand quantity to add. |
+| `priority?` | number | Demand priority, defaulting to 0. |
 
 **Example**
 
@@ -2571,12 +2639,11 @@ end
 
 ---
 
-### `LGraphNode:addSupply`
+#### `LGraphNode:addSupply`
 
 Adds supply quantity for an item type on this node.
 
 ```lua
--- signature
 LGraphNode:addSupply(item_type, quantity)
 ```
 
@@ -2584,8 +2651,8 @@ LGraphNode:addSupply(item_type, quantity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_type` | `string` | Item type supplied by the node. |
-| `quantity` | `number` | Supply quantity to add. |
+| `item_type` | string | Item type supplied by the node. |
+| `quantity` | number | Supply quantity to add. |
 
 **Example**
 
@@ -2600,12 +2667,11 @@ end
 
 ---
 
-### `LGraphNode:addTag`
+#### `LGraphNode:addTag`
 
 Adds a tag to this node on this object.
 
 ```lua
--- signature
 LGraphNode:addTag(tag)
 ```
 
@@ -2613,7 +2679,7 @@ LGraphNode:addTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | Tag to add. |
+| `tag` | string | Tag to add. |
 
 **Example**
 
@@ -2628,12 +2694,11 @@ end
 
 ---
 
-### `LGraphNode:clearAllConversions`
+#### `LGraphNode:clearAllConversions`
 
 Removes every conversion rule from this node.
 
 ```lua
--- signature
 LGraphNode:clearAllConversions()
 ```
 
@@ -2652,12 +2717,11 @@ end
 
 ---
 
-### `LGraphNode:clearConversion`
+#### `LGraphNode:clearConversion`
 
 Removes a conversion rule by input item type.
 
 ```lua
--- signature
 LGraphNode:clearConversion(in_type)
 ```
 
@@ -2665,13 +2729,13 @@ LGraphNode:clearConversion(in_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `in_type` | `string` | Input item type. |
+| `in_type` | string | Input item type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a conversion rule was removed. |
+| boolean | True when a conversion rule was removed. |
 
 **Example**
 
@@ -2687,12 +2751,11 @@ end
 
 ---
 
-### `LGraphNode:clearDemands`
+#### `LGraphNode:clearDemands`
 
 Removes every demand entry from this node.
 
 ```lua
--- signature
 LGraphNode:clearDemands()
 ```
 
@@ -2710,12 +2773,11 @@ end
 
 ---
 
-### `LGraphNode:clearSupplies`
+#### `LGraphNode:clearSupplies`
 
 Removes every supply entry from this node.
 
 ```lua
--- signature
 LGraphNode:clearSupplies()
 ```
 
@@ -2734,12 +2796,11 @@ end
 
 ---
 
-### `LGraphNode:clearTags`
+#### `LGraphNode:clearTags`
 
 Removes every tag from this graph node.
 
 ```lua
--- signature
 LGraphNode:clearTags()
 ```
 
@@ -2758,12 +2819,11 @@ end
 
 ---
 
-### `LGraphNode:dequeue`
+#### `LGraphNode:dequeue`
 
 Removes and returns the next item from this node's explicit queue.
 
 ```lua
--- signature
 LGraphNode:dequeue()
 ```
 
@@ -2771,7 +2831,7 @@ LGraphNode:dequeue()
 
 | Type | Description |
 |------|-------------|
-| `LGraphItem` | Item handle from the queue, or nil when the queue is empty. |
+| [LGraphItem](#lgraphitem-handle) | Item handle from the queue, or nil when the queue is empty. |
 
 **Example**
 
@@ -2792,12 +2852,11 @@ end
 
 ---
 
-### `LGraphNode:enqueue`
+#### `LGraphNode:enqueue`
 
 Adds an item handle to this node's explicit queue.
 
 ```lua
--- signature
 LGraphNode:enqueue(item_ud)
 ```
 
@@ -2805,13 +2864,13 @@ LGraphNode:enqueue(item_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_ud` | `LGraphItem` | Item handle to enqueue. |
+| `item_ud` | [LGraphItem](#lgraphitem-handle) | Item handle to enqueue. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item was queued. |
+| boolean | True when the item was queued. |
 
 **Example**
 
@@ -2831,12 +2890,11 @@ end
 
 ---
 
-### `LGraphNode:getCapacity`
+#### `LGraphNode:getCapacity`
 
 Returns this node's item capacity.
 
 ```lua
--- signature
 LGraphNode:getCapacity()
 ```
 
@@ -2844,7 +2902,7 @@ LGraphNode:getCapacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Node capacity. |
+| number | Node capacity. |
 
 **Example**
 
@@ -2858,12 +2916,11 @@ end
 
 ---
 
-### `LGraphNode:getEdges`
+#### `LGraphNode:getEdges`
 
 Returns edge handles connected to this node in the requested direction.
 
 ```lua
--- signature
 LGraphNode:getEdges(dir)
 ```
 
@@ -2871,13 +2928,13 @@ LGraphNode:getEdges(dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dir?` | `string` | Direction string, defaulting to `both`. |
+| `dir?` | string | Direction string, defaulting to `both`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGraphEdge[]` | `LGraphEdge` handles. |
+| [LGraphEdge](#lgraphedge-handle)[] | `[LGraphEdge](#lgraphedge-handle)` handles. |
 
 **Example**
 
@@ -2893,12 +2950,11 @@ end
 
 ---
 
-### `LGraphNode:getFlowMode`
+#### `LGraphNode:getFlowMode`
 
 Returns this node's flow mode name.
 
 ```lua
--- signature
 LGraphNode:getFlowMode()
 ```
 
@@ -2906,7 +2962,7 @@ LGraphNode:getFlowMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | Flow mode string. |
+| string | Flow mode string. |
 
 **Example**
 
@@ -2920,12 +2976,11 @@ end
 
 ---
 
-### `LGraphNode:getItemCount`
+#### `LGraphNode:getItemCount`
 
 Returns the number of items currently stored on this node.
 
 ```lua
--- signature
 LGraphNode:getItemCount()
 ```
 
@@ -2933,7 +2988,7 @@ LGraphNode:getItemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -2947,12 +3002,11 @@ end
 
 ---
 
-### `LGraphNode:getItems`
+#### `LGraphNode:getItems`
 
 Returns item handles currently stored on this node.
 
 ```lua
--- signature
 LGraphNode:getItems()
 ```
 
@@ -2960,7 +3014,7 @@ LGraphNode:getItems()
 
 | Type | Description |
 |------|-------------|
-| `LGraphItem[]` | `LGraphItem` handles. |
+| [LGraphItem](#lgraphitem-handle)[] | `[LGraphItem](#lgraphitem-handle)` handles. |
 
 **Example**
 
@@ -2976,12 +3030,11 @@ end
 
 ---
 
-### `LGraphNode:getOverflowPolicy`
+#### `LGraphNode:getOverflowPolicy`
 
 Returns this node's overflow policy name.
 
 ```lua
--- signature
 LGraphNode:getOverflowPolicy()
 ```
 
@@ -2989,7 +3042,7 @@ LGraphNode:getOverflowPolicy()
 
 | Type | Description |
 |------|-------------|
-| `string` | Overflow policy string. |
+| string | Overflow policy string. |
 
 **Example**
 
@@ -3003,12 +3056,11 @@ end
 
 ---
 
-### `LGraphNode:getProcessTime`
+#### `LGraphNode:getProcessTime`
 
 Returns the processing time used by this node's conversions.
 
 ```lua
--- signature
 LGraphNode:getProcessTime()
 ```
 
@@ -3016,7 +3068,7 @@ LGraphNode:getProcessTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Processing time in seconds. |
+| number | Processing time in seconds. |
 
 **Example**
 
@@ -3030,12 +3082,11 @@ end
 
 ---
 
-### `LGraphNode:getPullFilter`
+#### `LGraphNode:getPullFilter`
 
 Returns this node's optional pull item-type filter.
 
 ```lua
--- signature
 LGraphNode:getPullFilter()
 ```
 
@@ -3043,7 +3094,7 @@ LGraphNode:getPullFilter()
 
 | Type | Description |
 |------|-------------|
-| `string` | Filter string when a pull filter is set, or nil when no pull filter is set. |
+| string | Filter string when a pull filter is set, or nil when no pull filter is set. |
 
 **Example**
 
@@ -3058,12 +3109,11 @@ end
 
 ---
 
-### `LGraphNode:getPullRate`
+#### `LGraphNode:getPullRate`
 
 Returns this node's pull rate value.
 
 ```lua
--- signature
 LGraphNode:getPullRate()
 ```
 
@@ -3071,7 +3121,7 @@ LGraphNode:getPullRate()
 
 | Type | Description |
 |------|-------------|
-| `number` | Pull rate. |
+| number | Pull rate. |
 
 **Example**
 
@@ -3085,12 +3135,11 @@ end
 
 ---
 
-### `LGraphNode:getPushFilter`
+#### `LGraphNode:getPushFilter`
 
 Returns this node's optional push item-type filter.
 
 ```lua
--- signature
 LGraphNode:getPushFilter()
 ```
 
@@ -3098,7 +3147,7 @@ LGraphNode:getPushFilter()
 
 | Type | Description |
 |------|-------------|
-| `string` | Filter string when a push filter is set, or nil when no push filter is set. |
+| string | Filter string when a push filter is set, or nil when no push filter is set. |
 
 **Example**
 
@@ -3113,12 +3162,11 @@ end
 
 ---
 
-### `LGraphNode:getPushRate`
+#### `LGraphNode:getPushRate`
 
 Returns this node's push rate value.
 
 ```lua
--- signature
 LGraphNode:getPushRate()
 ```
 
@@ -3126,7 +3174,7 @@ LGraphNode:getPushRate()
 
 | Type | Description |
 |------|-------------|
-| `number` | Push rate. |
+| number | Push rate. |
 
 **Example**
 
@@ -3140,12 +3188,11 @@ end
 
 ---
 
-### `LGraphNode:getQueueCapacity`
+#### `LGraphNode:getQueueCapacity`
 
 Returns this node's queue capacity.
 
 ```lua
--- signature
 LGraphNode:getQueueCapacity()
 ```
 
@@ -3153,7 +3200,7 @@ LGraphNode:getQueueCapacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Queue capacity. |
+| number | Queue capacity. |
 
 **Example**
 
@@ -3167,12 +3214,11 @@ end
 
 ---
 
-### `LGraphNode:getQueueSize`
+#### `LGraphNode:getQueueSize`
 
 Returns the number of item ids currently queued at this node.
 
 ```lua
--- signature
 LGraphNode:getQueueSize()
 ```
 
@@ -3180,7 +3226,7 @@ LGraphNode:getQueueSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Queue size. |
+| number | Queue size. |
 
 **Example**
 
@@ -3194,12 +3240,11 @@ end
 
 ---
 
-### `LGraphNode:getTags`
+#### `LGraphNode:getTags`
 
 Returns all tags assigned to this node.
 
 ```lua
--- signature
 LGraphNode:getTags()
 ```
 
@@ -3207,7 +3252,7 @@ LGraphNode:getTags()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Tag strings. |
+| string[] | Tag strings. |
 
 **Example**
 
@@ -3224,12 +3269,11 @@ end
 
 ---
 
-### `LGraphNode:getType`
+#### `LGraphNode:getType`
 
 Returns this node's type classification string.
 
 ```lua
--- signature
 LGraphNode:getType()
 ```
 
@@ -3237,7 +3281,7 @@ LGraphNode:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current node type. |
+| string | Current node type. |
 
 **Example**
 
@@ -3251,12 +3295,11 @@ end
 
 ---
 
-### `LGraphNode:hasTag`
+#### `LGraphNode:hasTag`
 
 Returns whether this node has a tag.
 
 ```lua
--- signature
 LGraphNode:hasTag(tag)
 ```
 
@@ -3264,13 +3307,13 @@ LGraphNode:hasTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | Tag to check. |
+| `tag` | string | Tag to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the tag is present. |
+| boolean | True when the tag is present. |
 
 **Example**
 
@@ -3285,12 +3328,11 @@ end
 
 ---
 
-### `LGraphNode:isActive`
+#### `LGraphNode:isActive`
 
 Returns whether this node is active for graph simulation.
 
 ```lua
--- signature
 LGraphNode:isActive()
 ```
 
@@ -3298,7 +3340,7 @@ LGraphNode:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the node is active. |
+| boolean | True when the node is active. |
 
 **Example**
 
@@ -3312,12 +3354,11 @@ end
 
 ---
 
-### `LGraphNode:isFull`
+#### `LGraphNode:isFull`
 
 Returns whether this node has reached its item capacity.
 
 ```lua
--- signature
 LGraphNode:isFull()
 ```
 
@@ -3325,7 +3366,7 @@ LGraphNode:isFull()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the node is full. |
+| boolean | True when the node is full. |
 
 **Example**
 
@@ -3339,12 +3380,11 @@ end
 
 ---
 
-### `LGraphNode:isQueueEnabled`
+#### `LGraphNode:isQueueEnabled`
 
 Returns whether this node's explicit queue is enabled.
 
 ```lua
--- signature
 LGraphNode:isQueueEnabled()
 ```
 
@@ -3352,7 +3392,7 @@ LGraphNode:isQueueEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when queueing is enabled. |
+| boolean | True when queueing is enabled. |
 
 **Example**
 
@@ -3366,12 +3406,11 @@ end
 
 ---
 
-### `LGraphNode:removeDemand`
+#### `LGraphNode:removeDemand`
 
 Removes demand entry for an item type from this node.
 
 ```lua
--- signature
 LGraphNode:removeDemand(item_type)
 ```
 
@@ -3379,13 +3418,13 @@ LGraphNode:removeDemand(item_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_type` | `string` | Item type demand entry to remove. |
+| `item_type` | string | Item type demand entry to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when demand existed. |
+| boolean | True when demand existed. |
 
 **Example**
 
@@ -3401,12 +3440,11 @@ end
 
 ---
 
-### `LGraphNode:removeSupply`
+#### `LGraphNode:removeSupply`
 
 Removes supply entry for an item type from this node.
 
 ```lua
--- signature
 LGraphNode:removeSupply(item_type)
 ```
 
@@ -3414,13 +3452,13 @@ LGraphNode:removeSupply(item_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item_type` | `string` | Item type supply entry to remove. |
+| `item_type` | string | Item type supply entry to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when supply existed. |
+| boolean | True when supply existed. |
 
 **Example**
 
@@ -3436,12 +3474,11 @@ end
 
 ---
 
-### `LGraphNode:removeTag`
+#### `LGraphNode:removeTag`
 
 Removes a tag from this node on this object.
 
 ```lua
--- signature
 LGraphNode:removeTag(tag)
 ```
 
@@ -3449,13 +3486,13 @@ LGraphNode:removeTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | Tag to remove. |
+| `tag` | string | Tag to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the tag was present. |
+| boolean | True when the tag was present. |
 
 **Example**
 
@@ -3471,12 +3508,11 @@ end
 
 ---
 
-### `LGraphNode:setActive`
+#### `LGraphNode:setActive`
 
 Enables or disables this node for graph simulation.
 
 ```lua
--- signature
 LGraphNode:setActive(a)
 ```
 
@@ -3484,7 +3520,7 @@ LGraphNode:setActive(a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `boolean` | New active flag. |
+| `a` | boolean | New active flag. |
 
 **Example**
 
@@ -3499,12 +3535,11 @@ end
 
 ---
 
-### `LGraphNode:setCapacity`
+#### `LGraphNode:setCapacity`
 
 Sets this node's item capacity value.
 
 ```lua
--- signature
 LGraphNode:setCapacity(c)
 ```
 
@@ -3512,7 +3547,7 @@ LGraphNode:setCapacity(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | New node capacity. |
+| `c` | number | New node capacity. |
 
 **Example**
 
@@ -3527,12 +3562,11 @@ end
 
 ---
 
-### `LGraphNode:setConversion`
+#### `LGraphNode:setConversion`
 
 Configures an item conversion rule on this node.
 
 ```lua
--- signature
 LGraphNode:setConversion(in_type, out_type, in_count, out_count)
 ```
 
@@ -3540,10 +3574,10 @@ LGraphNode:setConversion(in_type, out_type, in_count, out_count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `in_type` | `string` | Input item type. |
-| `out_type` | `string` | Output item type. |
-| `in_count?` | `number` | Input count, defaulting to 1. |
-| `out_count?` | `number` | Output count, defaulting to 1. |
+| `in_type` | string | Input item type. |
+| `out_type` | string | Output item type. |
+| `in_count?` | number | Input count, defaulting to 1. |
+| `out_count?` | number | Output count, defaulting to 1. |
 
 **Example**
 
@@ -3558,12 +3592,11 @@ end
 
 ---
 
-### `LGraphNode:setFlowMode`
+#### `LGraphNode:setFlowMode`
 
 Sets this node's flow mode from a mode name.
 
 ```lua
--- signature
 LGraphNode:setFlowMode(m)
 ```
 
@@ -3571,7 +3604,7 @@ LGraphNode:setFlowMode(m)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `m` | `string` | Flow mode string. |
+| `m` | string | Flow mode string. |
 
 **Example**
 
@@ -3586,12 +3619,11 @@ end
 
 ---
 
-### `LGraphNode:setOverflowPolicy`
+#### `LGraphNode:setOverflowPolicy`
 
 Sets this node's overflow policy from a policy name.
 
 ```lua
--- signature
 LGraphNode:setOverflowPolicy(p)
 ```
 
@@ -3599,7 +3631,7 @@ LGraphNode:setOverflowPolicy(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | `string` | Overflow policy string. |
+| `p` | string | Overflow policy string. |
 
 **Example**
 
@@ -3614,12 +3646,11 @@ end
 
 ---
 
-### `LGraphNode:setProcessTime`
+#### `LGraphNode:setProcessTime`
 
 Sets the processing time used by this node's conversions.
 
 ```lua
--- signature
 LGraphNode:setProcessTime(t)
 ```
 
@@ -3627,7 +3658,7 @@ LGraphNode:setProcessTime(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Processing time in seconds. |
+| `t` | number | Processing time in seconds. |
 
 **Example**
 
@@ -3642,12 +3673,11 @@ end
 
 ---
 
-### `LGraphNode:setPullFilter`
+#### `LGraphNode:setPullFilter`
 
 Sets or clears this node's pull item-type filter.
 
 ```lua
--- signature
 LGraphNode:setPullFilter(f)
 ```
 
@@ -3655,7 +3685,7 @@ LGraphNode:setPullFilter(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f?` | `string` | Item type filter string. |
+| `f?` | string | Item type filter string. |
 
 **Example**
 
@@ -3670,12 +3700,11 @@ end
 
 ---
 
-### `LGraphNode:setPullRate`
+#### `LGraphNode:setPullRate`
 
 Sets this node's pull rate for this object.
 
 ```lua
--- signature
 LGraphNode:setPullRate(r)
 ```
 
@@ -3683,7 +3712,7 @@ LGraphNode:setPullRate(r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | New pull rate. |
+| `r` | number | New pull rate. |
 
 **Example**
 
@@ -3698,12 +3727,11 @@ end
 
 ---
 
-### `LGraphNode:setPushFilter`
+#### `LGraphNode:setPushFilter`
 
 Sets or clears this node's push item-type filter.
 
 ```lua
--- signature
 LGraphNode:setPushFilter(f)
 ```
 
@@ -3711,7 +3739,7 @@ LGraphNode:setPushFilter(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f?` | `string` | Item type filter string. |
+| `f?` | string | Item type filter string. |
 
 **Example**
 
@@ -3726,12 +3754,11 @@ end
 
 ---
 
-### `LGraphNode:setPushRate`
+#### `LGraphNode:setPushRate`
 
 Sets this node's push rate for this object.
 
 ```lua
--- signature
 LGraphNode:setPushRate(r)
 ```
 
@@ -3739,7 +3766,7 @@ LGraphNode:setPushRate(r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | New push rate. |
+| `r` | number | New push rate. |
 
 **Example**
 
@@ -3754,12 +3781,11 @@ end
 
 ---
 
-### `LGraphNode:setQueueCapacity`
+#### `LGraphNode:setQueueCapacity`
 
 Sets this node's queue capacity value.
 
 ```lua
--- signature
 LGraphNode:setQueueCapacity(c)
 ```
 
@@ -3767,7 +3793,7 @@ LGraphNode:setQueueCapacity(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | Queue capacity. |
+| `c` | number | Queue capacity. |
 
 **Example**
 
@@ -3782,12 +3808,11 @@ end
 
 ---
 
-### `LGraphNode:setQueueEnabled`
+#### `LGraphNode:setQueueEnabled`
 
 Enables or disables this node's explicit queue.
 
 ```lua
--- signature
 LGraphNode:setQueueEnabled(e)
 ```
 
@@ -3795,7 +3820,7 @@ LGraphNode:setQueueEnabled(e)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `e` | `boolean` | New queue enabled flag. |
+| `e` | boolean | New queue enabled flag. |
 
 **Example**
 
@@ -3810,12 +3835,11 @@ end
 
 ---
 
-### `LGraphNode:setType`
+#### `LGraphNode:setType`
 
 Sets this node's type string for this object.
 
 ```lua
--- signature
 LGraphNode:setType(t)
 ```
 
@@ -3823,7 +3847,7 @@ LGraphNode:setType(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | New node type. |
+| `t` | string | New node type. |
 
 **Example**
 
@@ -3838,12 +3862,11 @@ end
 
 ---
 
-### `LGraphNode:type`
+#### `LGraphNode:type`
 
 Returns the Lua-visible type name for this graph node handle.
 
 ```lua
--- signature
 LGraphNode:type()
 ```
 
@@ -3851,7 +3874,7 @@ LGraphNode:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGraphNode`. |
+| string | The string `[LGraphNode](#lgraphnode-handle)`. |
 
 **Example**
 
@@ -3865,12 +3888,11 @@ end
 
 ---
 
-### `LGraphNode:typeOf`
+#### `LGraphNode:typeOf`
 
 Returns whether this graph node handle matches a supported type name.
 
 ```lua
--- signature
 LGraphNode:typeOf(name)
 ```
 
@@ -3878,13 +3900,13 @@ LGraphNode:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LGraphNode`, `GraphNode`, and `Object`. |
+| `name` | string | Type name to compare against `[LGraphNode](#lgraphnode-handle)`, `GraphNode`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

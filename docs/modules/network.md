@@ -1,12 +1,116 @@
 # Network
 
-- The `network` module is a powerful Core Runtime tier component providing a comprehensive multiplayer networking stack for Lurek2D.
+## Summary
 
 It is engineered to handle a diverse array of network topologies and transport protocols, including high-performance ENet UDP transport, raw non-blocking TCP sockets, asynchronous HTTP requests, and persistent bidirectional WebSocket connections. The module is built around a dedicated background `NetworkRuntime` thread (powered by Tokio) that handles all blocking I/O, ensuring that socket latency and network operations never stall the primary game loop. The game thread communicates with this runtime via highly efficient MPSC request/response channels.
 
 At the heart of real-time multiplayer functionality is the `NetworkHost` structure, which wraps an ENet instance and manages robust connections across Server, Client, or Peer-to-Peer roles. It supports sophisticated traffic shaping, including per-peer bandwidth limits and reliable/unreliable channel separation, and provides a continuous stream of `NetworkEvent`s (connect, disconnect, receive) for Lua to consume. To address the complexities of modern internet connectivity, the module features a sophisticated `relay` system that utilizes NAT-punching probes and encoded `RelayTicket`s to establish peer connections even across restrictive networks. It also provides built-in LAN lobby discovery via UDP broadcasting.
 
 Beyond raw transport, the module implements high-level game synchronization features. The `net_sync` submodule provides tools for entity snapshot replication, utilizing linear dead-reckoning prediction and server-authoritative reconciliation to ensure smooth gameplay across varied latencies. Network messaging is powered by a custom `NetValue` wire-format, mirroring Lua's dynamic type system and utilizing compact MessagePack serialization. Auxiliary services, like the synchronous HTTP client (supporting all major verbs with headers and timeouts) and the WebSocket manager, provide vital hooks for integrating with REST APIs, authentication servers, and web-based services. This extensive networking suite is fully exposed to scripts via the `lurek.network.*` API, making it a cornerstone for connected Lurek2D games.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### constants.rs
+
+- Numeric limits for peer connections, channels, and buffer sizes.
+- Provides default fallback values when game config omits network settings.
+- Holds timeout durations for HTTP and transport-level operations.
+
+### error.rs
+
+- Unified error type for all network subsystem failures.
+- Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
+- Integrates with thiserror for automatic Display and From implementations.
+
+### host.rs
+
+- ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint.
+- Classifies the host role as server, client, or combined host for session routing.
+- Runs the event poll loop that yields connect, disconnect, and receive events.
+- Manages connection lifecycle, packet delivery, and reset flows.
+- Exposes peer diagnostics such as round-trip time, state, address, and statistics.
+- Lets callers tune bandwidth and channel limits at runtime.
+- Provides convenience constructors for common server and client bind patterns.
+- Acts as the low-level connection anchor for the multiplayer stack.
+
+### http.rs
+
+- Synchronous HTTP client built on ureq for common request verbs.
+- Supports per-request timeout configuration through the agent builder.
+- Returns a unified response object with status, body, headers, and error text.
+- Keeps the API small so game code can fetch remote data without async setup.
+- Fits simple request/response workflows inside scripts and engine tools.
+
+### lobby.rs
+
+- LAN lobby discovery via timed UDP broadcast on a fixed port.
+- Encodes and parses lobby advertisements in a compact key-value wire format.
+- Maintains an in-process room registry for create, join, leave, and list flows.
+- Sends one broadcast datagram across all interfaces when scanning starts.
+- Deduplicates discovered lobbies by host and port during the scan window.
+
+### message.rs
+
+- Wire-format value type mirroring Lua's dynamic type system for peer messaging.
+- Uses MessagePack serialization and deserialization for packed transport.
+- Provides zero-allocation size estimation before a message is sent.
+
+### mod.rs
+
+- Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers.
+- Hosts the host/client model, lobby flow, peer management, and game-state sync.
+- Runs the background async runtime for non-blocking socket I/O.
+
+### net_sync.rs
+
+- Entity snapshot capture and wire serialization for networked state.
+- Supports linear dead-reckoning prediction between ticks.
+- Handles server-authoritative reconciliation with a configurable blend factor.
+- Gives the multiplayer stack a compact sync model for replicated actors.
+
+### net_thread.rs
+
+- Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work.
+- Uses MPSC request and response channels to keep the game thread isolated from latency.
+- Drives transport activity through typed request and response enums.
+- Models connection state with explicit TCP and WebSocket event types.
+- Spawns, polls, and shuts down the runtime while preserving request ordering.
+- Routes completed results back with correlation ids for outstanding work.
+- Keeps the blocking transport surface off the main loop.
+
+### relay.rs
+
+- Relay ticket encoding and decoding for room and peer identification.
+- Builds UDP hole-punch probe payloads with a magic prefix.
+- Provides lightweight helpers for relay-based NAT traversal signalling.
+
+### sse.rs
+
+- Server-Sent Events stream reader for HTTP event endpoints.
+- Uses a background thread to parse frames and forward them through a channel.
+- Offers non-blocking polling plus a blocking collect helper for batched reads.
+- Keeps live event streams separate from the main game thread.
+- Fits long-lived event feeds that should not stall gameplay.
+- Exposes a simple streaming shape for push-based remote updates.
+
+### tcp.rs
+
+- Non-blocking TCP connection pool for the background network thread.
+- Uses round-robin polling across all active streams with event-based notification.
+- Supports connect, send, close, and bulk-poll operations with automatic cleanup.
+- Keeps stream management simple for the threaded network runtime.
+- Serves as the pooled TCP transport layer for multiplayer I/O.
+
+### websocket.rs
+
+- Pool of active WebSocket connections keyed by caller-assigned id.
+- Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop.
+- Polls live sockets for text, binary, and close frames without blocking.
+- Sends text or binary frames and performs graceful close with drain semantics.
+- Posts connection lifecycle events through an MPSC channel.
+- Keeps WebSocket transport behaviour isolated from game-thread timing.
 
 ## Functions
 
@@ -15,7 +119,6 @@ Beyond raw transport, the module implements high-level game synchronization feat
 Broadcasts lobby information and returns it as a table.
 
 ```lua
--- signature
 lurek.network.createLobby(name, port, player_count, max_players)
 ```
 
@@ -23,16 +126,16 @@ lurek.network.createLobby(name, port, player_count, max_players)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Lobby name. |
-| `port` | `number` | Lobby port. |
-| `player_count?` | `number` | Optional current player count, defaulting to 1. |
-| `max_players?` | `number` | Optional maximum players, defaulting to 8. |
+| `name` | string | Lobby name. |
+| `port` | number | Lobby port. |
+| `player_count?` | number | Optional current player count, defaulting to 1. |
+| `max_players?` | number | Optional maximum players, defaulting to 8. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkCreateLobbyResult` | Lobby info table. |
+| LNetworkCreateLobbyResult | Lobby info table. |
 
 **Example**
 
@@ -52,7 +155,6 @@ end
 Creates a local room record. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.createRoom(name, host, max_players)
 ```
 
@@ -60,15 +162,15 @@ lurek.network.createRoom(name, host, max_players)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Room name. |
-| `host` | `string` | Host string. |
-| `max_players?` | `number` | Optional maximum players, defaulting to 8. |
+| `name` | string | Room name. |
+| `host` | string | Host string. |
+| `max_players?` | number | Optional maximum players, defaulting to 8. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkCreateRoomResult` | Room info table. |
+| LNetworkCreateRoomResult | Room info table. |
 
 **Example**
 
@@ -89,7 +191,6 @@ end
 Discovers broadcast lobbies. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.discoverLobbies(timeout_ms)
 ```
 
@@ -97,13 +198,13 @@ lurek.network.discoverLobbies(timeout_ms)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `timeout_ms?` | `number` | Optional timeout in milliseconds, defaulting to 500. |
+| `timeout_ms?` | number | Optional timeout in milliseconds, defaulting to 500. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkDiscoverLobbiesResult` | Array table of lobby info tables. |
+| LNetworkDiscoverLobbiesResult | Array table of lobby info tables. |
 
 **Example**
 
@@ -123,7 +224,6 @@ end
 Joins a room by id when available. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.joinRoom(id)
 ```
 
@@ -131,13 +231,13 @@ lurek.network.joinRoom(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | Room id. |
+| `id` | string | Room id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkJoinRoomResult` | Room info table, or nil when missing. |
+| LNetworkJoinRoomResult | Room info table, or nil when missing. |
 
 **Example**
 
@@ -157,7 +257,6 @@ end
 Leaves a room by id when available. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.leaveRoom(id)
 ```
 
@@ -165,13 +264,13 @@ lurek.network.leaveRoom(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | Room id. |
+| `id` | string | Room id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkLeaveRoomResult` | Room info table, or nil when missing. |
+| LNetworkLeaveRoomResult | Room info table, or nil when missing. |
 
 **Example**
 
@@ -192,7 +291,6 @@ end
 Lists known local room records. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.listRooms()
 ```
 
@@ -200,7 +298,7 @@ lurek.network.listRooms()
 
 | Type | Description |
 |------|-------------|
-| `NetworkListRoomsResult` | Array table of room info tables. |
+| LNetworkListRoomsResult | Array table of room info tables. |
 
 **Example**
 
@@ -221,7 +319,6 @@ end
 Creates a relay punch probe payload for a peer id.
 
 ```lua
--- signature
 lurek.network.makePunchProbe(peer_id)
 ```
 
@@ -229,13 +326,13 @@ lurek.network.makePunchProbe(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `string` | Peer id. |
+| `peer_id` | string | Peer id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Probe payload. |
+| string | Probe payload. |
 
 **Example**
 
@@ -255,7 +352,6 @@ end
 Creates a client host and connects to an address.
 
 ```lua
--- signature
 lurek.network.newClient(opts)
 ```
 
@@ -263,13 +359,13 @@ lurek.network.newClient(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Options with required `addr`, optional `channels`, and `data`. |
+| `opts` | table | Options with required `addr`, optional `channels`, and `data`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNetworkHost` | New client host handle. |
+| [LNetworkHost](#lnetworkhost-handle) | New client host handle. |
 
 **Example**
 
@@ -291,7 +387,6 @@ end
 Creates a network host from an options table.
 
 ```lua
--- signature
 lurek.network.newHost(opts)
 ```
 
@@ -299,13 +394,13 @@ lurek.network.newHost(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Options with `addr`, optional `maxPeers`/`peers`, `channels`, `inBandwidth`, and `outBandwidth`. |
+| `opts` | table | Options with `addr`, optional `maxPeers`/`peers`, `channels`, `inBandwidth`, and `outBandwidth`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNetworkHost` | New network host handle. |
+| [LNetworkHost](#lnetworkhost-handle) | New network host handle. |
 
 **Example**
 
@@ -325,7 +420,6 @@ end
 Creates an encoded relay ticket. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.newRelayTicket(room_id, peer_id)
 ```
 
@@ -333,14 +427,14 @@ lurek.network.newRelayTicket(room_id, peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `room_id` | `string` | Room id. |
-| `peer_id` | `string` | Peer id. |
+| `room_id` | string | Room id. |
+| `peer_id` | string | Peer id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Encoded relay ticket. |
+| string | Encoded relay ticket. |
 
 **Example**
 
@@ -360,7 +454,6 @@ end
 Creates a background network runtime.
 
 ```lua
--- signature
 lurek.network.newRuntime()
 ```
 
@@ -368,7 +461,7 @@ lurek.network.newRuntime()
 
 | Type | Description |
 |------|-------------|
-| `LNetworkRuntime` | New network runtime handle. |
+| [LNetworkRuntime](#lnetworkruntime-handle) | New network runtime handle. |
 
 **Example**
 
@@ -388,7 +481,6 @@ end
 Creates a server host from an options table.
 
 ```lua
--- signature
 lurek.network.newServer(opts)
 ```
 
@@ -396,13 +488,13 @@ lurek.network.newServer(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Options with required `port`, optional `maxPeers`/`peers`, and `channels`. |
+| `opts` | table | Options with required `port`, optional `maxPeers`/`peers`, and `channels`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNetworkHost` | New server host handle. |
+| [LNetworkHost](#lnetworkhost-handle) | New server host handle. |
 
 **Example**
 
@@ -422,7 +514,6 @@ end
 Packs a supported Lua value into a binary network message string.
 
 ```lua
--- signature
 lurek.network.pack(value)
 ```
 
@@ -430,13 +521,13 @@ lurek.network.pack(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Lua value to pack (table, number, string, or boolean). |
+| `value` | any | Lua value to pack (table, number, string, or boolean). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Binary packed message. |
+| string | Binary packed message. |
 
 **Example**
 
@@ -457,7 +548,6 @@ end
 Parses a relay punch probe payload.
 
 ```lua
--- signature
 lurek.network.parsePunchProbe(payload)
 ```
 
@@ -465,13 +555,13 @@ lurek.network.parsePunchProbe(payload)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `payload` | `string` | Probe payload. |
+| `payload` | string | Probe payload. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Parsed peer id, or nil when invalid. |
+| string | Parsed peer id, or nil when invalid. |
 
 **Example**
 
@@ -490,7 +580,6 @@ end
 Parses an encoded relay ticket. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.network.parseRelayTicket(token)
 ```
 
@@ -498,13 +587,13 @@ lurek.network.parseRelayTicket(token)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `token` | `string` | Encoded relay ticket. |
+| `token` | string | Encoded relay ticket. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkParseRelayTicketResult` | Ticket table, or nil when invalid. |
+| LNetworkParseRelayTicketResult | Ticket table, or nil when invalid. |
 
 **Example**
 
@@ -524,7 +613,6 @@ end
 Predicts an entity snapshot forward by linear velocity.
 
 ```lua
--- signature
 lurek.network.predictLinear(snapshot, dt)
 ```
 
@@ -532,14 +620,14 @@ lurek.network.predictLinear(snapshot, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `snapshot` | `table` | Snapshot table with `id`, `tick`, `x`, `y`, `vx`, and `vy`. |
-| `dt` | `number` | Prediction delta time. |
+| `snapshot` | table | Snapshot table with `id`, `tick`, `x`, `y`, `vx`, and `vy`. |
+| `dt` | number | Prediction delta time. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkPredictLinearResult` | Predicted snapshot table. |
+| LNetworkPredictLinearResult | Predicted snapshot table. |
 
 **Example**
 
@@ -559,7 +647,6 @@ end
 Reconciles a predicted snapshot toward an authoritative snapshot.
 
 ```lua
--- signature
 lurek.network.reconcileSnapshot(pred, auth, alpha)
 ```
 
@@ -567,15 +654,15 @@ lurek.network.reconcileSnapshot(pred, auth, alpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pred` | `table` | Predicted snapshot table. |
-| `auth` | `table` | Authoritative snapshot table. |
-| `alpha` | `number` | Blend factor. |
+| `pred` | table | Predicted snapshot table. |
+| `auth` | table | Authoritative snapshot table. |
+| `alpha` | number | Blend factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkReconcileSnapshotResult` | Reconciled snapshot table. |
+| LNetworkReconcileSnapshotResult | Reconciled snapshot table. |
 
 **Example**
 
@@ -596,7 +683,6 @@ end
 Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 
 ```lua
--- signature
 lurek.network.sseCollect(url, n, timeout_secs)
 ```
 
@@ -604,15 +690,15 @@ lurek.network.sseCollect(url, n, timeout_secs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | SSE endpoint URL. |
-| `n` | `number` | Maximum number of events to collect. |
-| `timeout_secs?` | `number` | Optional timeout in seconds; defaults to 5. |
+| `url` | string | SSE endpoint URL. |
+| `n` | number | Maximum number of events to collect. |
+| `timeout_secs?` | number | Optional timeout in seconds; defaults to 5. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of event tables `{ id?, event?, data }`. |
+| table | Array of event tables `{ id?, event?, data }`. |
 
 **Example**
 
@@ -629,10 +715,9 @@ end
 
 ### `lurek.network.sseConnect`
 
-Opens an SSE stream to `url` and returns an `LSseStream` handle.
+Opens an SSE stream to `url` and returns an `[LSseStream](#lssestream-handle)` handle.
 
 ```lua
--- signature
 lurek.network.sseConnect(url, callback)
 ```
 
@@ -640,14 +725,14 @@ lurek.network.sseConnect(url, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | SSE endpoint URL. |
-| `callback` | `function` | Called with each event table `{ id?, event?, data }`. |
+| `url` | string | SSE endpoint URL. |
+| `callback` | function | Called with each event table `{ id?, event?, data }`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSseStream` | Stream handle for polling or closing. |
+| [LSseStream](#lssestream-handle) | Stream handle for polling or closing. |
 
 **Example**
 
@@ -673,7 +758,6 @@ end
 Broadcasts a packed entity sync payload through a network host.
 
 ```lua
--- signature
 lurek.network.syncEntity(host_ud, entity_id, data_tbl, channel, reliable)
 ```
 
@@ -681,11 +765,11 @@ lurek.network.syncEntity(host_ud, entity_id, data_tbl, channel, reliable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `host_ud` | `LNetworkHost` | Network host handle. |
-| `entity_id` | `number` | Entity id. |
-| `data_tbl` | `table` | Entity field table. |
-| `channel?` | `number` | Optional channel id, defaulting to 0. |
-| `reliable?` | `boolean` | Optional reliable flag, defaulting to false. |
+| `host_ud` | [LNetworkHost](#lnetworkhost-handle) | Network host handle. |
+| `entity_id` | number | Entity id. |
+| `data_tbl` | table | Entity field table. |
+| `channel?` | number | Optional channel id, defaulting to 0. |
+| `reliable?` | boolean | Optional reliable flag, defaulting to false. |
 
 **Example**
 
@@ -710,7 +794,6 @@ end
 Unpacks a binary network message string into a Lua value.
 
 ```lua
--- signature
 lurek.network.unpack(data)
 ```
 
@@ -718,13 +801,13 @@ lurek.network.unpack(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `string` | Binary packed message. |
+| `data` | string | Binary packed message. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `NetworkUnpackResult` | Unpacked Lua value. |
+| LNetworkUnpackResult | Unpacked Lua value. |
 
 **Example**
 
@@ -739,14 +822,37 @@ end
 
 ---
 
-## LNetworkHost
+## Module Fields
 
-### `LNetworkHost:broadcast`
+*No module-level fields documented.*
+
+## Types
+
+- [LNetworkHost Handle](#lnetworkhost-handle)
+- [LNetworkRuntime Handle](#lnetworkruntime-handle)
+- [LSseStream Handle](#lssestream-handle)
+
+## Callbacks
+
+- `lurek.network.sseConnect` param `callback` (`function`): Called with each event table `{ id?, event?, data }`.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LNetworkHost Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNetworkHost:broadcast`
 
 Broadcasts bytes to all connected peers on a channel.
 
 ```lua
--- signature
 LNetworkHost:broadcast(channel_id, data, reliable)
 ```
 
@@ -754,9 +860,9 @@ LNetworkHost:broadcast(channel_id, data, reliable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel_id` | `number` | Channel id. |
-| `data` | `string` | Binary payload string. |
-| `reliable?` | `boolean` | Optional reliable flag, defaulting to true. |
+| `channel_id` | number | Channel id. |
+| `data` | string | Binary payload string. |
+| `reliable?` | boolean | Optional reliable flag, defaulting to true. |
 
 **Example**
 
@@ -775,12 +881,11 @@ end
 
 ---
 
-### `LNetworkHost:connect`
+#### `LNetworkHost:connect`
 
 Connects to a remote address. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:connect(addr_str, channels, data)
 ```
 
@@ -788,15 +893,15 @@ LNetworkHost:connect(addr_str, channels, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `addr_str` | `string` | Remote socket address. |
-| `channels?` | `number` | Optional channel count, defaulting to 1. |
-| `data?` | `number` | Optional connection data, defaulting to 0. |
+| `addr_str` | string | Remote socket address. |
+| `channels?` | number | Optional channel count, defaulting to 1. |
+| `data?` | number | Optional connection data, defaulting to 0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Peer id. |
+| number | Peer id. |
 
 **Example**
 
@@ -815,12 +920,11 @@ end
 
 ---
 
-### `LNetworkHost:destroy`
+#### `LNetworkHost:destroy`
 
 Destroys the network host and releases resources.
 
 ```lua
--- signature
 LNetworkHost:destroy()
 ```
 
@@ -837,12 +941,11 @@ end
 
 ---
 
-### `LNetworkHost:disconnect`
+#### `LNetworkHost:disconnect`
 
 Requests a graceful peer disconnect.
 
 ```lua
--- signature
 LNetworkHost:disconnect(peer_id, data)
 ```
 
@@ -850,8 +953,8 @@ LNetworkHost:disconnect(peer_id, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
-| `data?` | `number` | Optional disconnect data. |
+| `peer_id` | number | Peer id. |
+| `data?` | number | Optional disconnect data. |
 
 **Example**
 
@@ -870,12 +973,11 @@ end
 
 ---
 
-### `LNetworkHost:disconnectLater`
+#### `LNetworkHost:disconnectLater`
 
 Schedules a peer disconnect after pending packets.
 
 ```lua
--- signature
 LNetworkHost:disconnectLater(peer_id, data)
 ```
 
@@ -883,8 +985,8 @@ LNetworkHost:disconnectLater(peer_id, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
-| `data?` | `number` | Optional disconnect data. |
+| `peer_id` | number | Peer id. |
+| `data?` | number | Optional disconnect data. |
 
 **Example**
 
@@ -905,12 +1007,11 @@ end
 
 ---
 
-### `LNetworkHost:disconnectNow`
+#### `LNetworkHost:disconnectNow`
 
 Disconnects a peer immediately. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:disconnectNow(peer_id, data)
 ```
 
@@ -918,8 +1019,8 @@ LNetworkHost:disconnectNow(peer_id, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
-| `data?` | `number` | Optional disconnect data. |
+| `peer_id` | number | Peer id. |
+| `data?` | number | Optional disconnect data. |
 
 **Example**
 
@@ -938,12 +1039,11 @@ end
 
 ---
 
-### `LNetworkHost:flush`
+#### `LNetworkHost:flush`
 
 Flushes queued outgoing network packets.
 
 ```lua
--- signature
 LNetworkHost:flush()
 ```
 
@@ -964,12 +1064,11 @@ end
 
 ---
 
-### `LNetworkHost:getAddress`
+#### `LNetworkHost:getAddress`
 
 Returns local host socket address.
 
 ```lua
--- signature
 LNetworkHost:getAddress()
 ```
 
@@ -977,7 +1076,7 @@ LNetworkHost:getAddress()
 
 | Type | Description |
 |------|-------------|
-| `string` | Local socket address. |
+| string | Local socket address. |
 
 **Example**
 
@@ -991,12 +1090,11 @@ end
 
 ---
 
-### `LNetworkHost:getBandwidthLimit`
+#### `LNetworkHost:getBandwidthLimit`
 
 Returns incoming and outgoing bandwidth limits.
 
 ```lua
--- signature
 LNetworkHost:getBandwidthLimit()
 ```
 
@@ -1004,7 +1102,7 @@ LNetworkHost:getBandwidthLimit()
 
 | Type | Description |
 |------|-------------|
-| `LNetworkHostGetBandwidthLimitResult` | Table with `incoming` and `outgoing` fields. |
+| LNetworkHostGetBandwidthLimitResult | Table with `incoming` and `outgoing` fields. |
 
 **Example**
 
@@ -1021,12 +1119,11 @@ end
 
 ---
 
-### `LNetworkHost:getChannelLimit`
+#### `LNetworkHost:getChannelLimit`
 
 Returns configured channel limit.
 
 ```lua
--- signature
 LNetworkHost:getChannelLimit()
 ```
 
@@ -1034,7 +1131,7 @@ LNetworkHost:getChannelLimit()
 
 | Type | Description |
 |------|-------------|
-| `number` | Channel limit. |
+| number | Channel limit. |
 
 **Example**
 
@@ -1048,12 +1145,11 @@ end
 
 ---
 
-### `LNetworkHost:getConnectedPeerCount`
+#### `LNetworkHost:getConnectedPeerCount`
 
 Returns the number of currently connected peers.
 
 ```lua
--- signature
 LNetworkHost:getConnectedPeerCount()
 ```
 
@@ -1061,7 +1157,7 @@ LNetworkHost:getConnectedPeerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Connected peer count. |
+| number | Connected peer count. |
 
 **Example**
 
@@ -1076,12 +1172,11 @@ end
 
 ---
 
-### `LNetworkHost:getConnectedPeerIds`
+#### `LNetworkHost:getConnectedPeerIds`
 
 Returns an array of ids for all connected peers.
 
 ```lua
--- signature
 LNetworkHost:getConnectedPeerIds()
 ```
 
@@ -1089,7 +1184,7 @@ LNetworkHost:getConnectedPeerIds()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of peer ids. |
+| number[] | Array table of peer ids. |
 
 **Example**
 
@@ -1106,12 +1201,11 @@ end
 
 ---
 
-### `LNetworkHost:getPeerAddress`
+#### `LNetworkHost:getPeerAddress`
 
 Returns peer socket address when available.
 
 ```lua
--- signature
 LNetworkHost:getPeerAddress(peer_id)
 ```
 
@@ -1119,13 +1213,13 @@ LNetworkHost:getPeerAddress(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
+| `peer_id` | number | Peer id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Peer address, or nil when unavailable. |
+| string | Peer address, or nil when unavailable. |
 
 **Example**
 
@@ -1140,12 +1234,11 @@ end
 
 ---
 
-### `LNetworkHost:getPeerLimit`
+#### `LNetworkHost:getPeerLimit`
 
 Returns configured peer limit. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:getPeerLimit()
 ```
 
@@ -1153,7 +1246,7 @@ LNetworkHost:getPeerLimit()
 
 | Type | Description |
 |------|-------------|
-| `number` | Peer limit. |
+| number | Peer limit. |
 
 **Example**
 
@@ -1167,12 +1260,11 @@ end
 
 ---
 
-### `LNetworkHost:getPeerState`
+#### `LNetworkHost:getPeerState`
 
 Returns peer connection state. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:getPeerState(peer_id)
 ```
 
@@ -1180,13 +1272,13 @@ LNetworkHost:getPeerState(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
+| `peer_id` | number | Peer id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Peer state string. |
+| string | Peer state string. |
 
 **Example**
 
@@ -1201,12 +1293,11 @@ end
 
 ---
 
-### `LNetworkHost:getPeerStats`
+#### `LNetworkHost:getPeerStats`
 
 Returns statistics for a peer. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:getPeerStats(peer_id)
 ```
 
@@ -1214,13 +1305,13 @@ LNetworkHost:getPeerStats(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
+| `peer_id` | number | Peer id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNetworkHostGetPeerStatsResult` | Peer statistics table. |
+| LNetworkHostGetPeerStatsResult | Peer statistics table. |
 
 **Example**
 
@@ -1237,12 +1328,11 @@ end
 
 ---
 
-### `LNetworkHost:getRole`
+#### `LNetworkHost:getRole`
 
 Returns host role string. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:getRole()
 ```
 
@@ -1250,7 +1340,7 @@ LNetworkHost:getRole()
 
 | Type | Description |
 |------|-------------|
-| `string` | Role string. |
+| string | Role string. |
 
 **Example**
 
@@ -1264,12 +1354,11 @@ end
 
 ---
 
-### `LNetworkHost:getRoundTripTime`
+#### `LNetworkHost:getRoundTripTime`
 
 Returns peer round trip time in milliseconds.
 
 ```lua
--- signature
 LNetworkHost:getRoundTripTime(peer_id)
 ```
 
@@ -1277,13 +1366,13 @@ LNetworkHost:getRoundTripTime(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
+| `peer_id` | number | Peer id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Round trip time in milliseconds. |
+| number | Round trip time in milliseconds. |
 
 **Example**
 
@@ -1300,12 +1389,11 @@ end
 
 ---
 
-### `LNetworkHost:isClient`
+#### `LNetworkHost:isClient`
 
 Returns whether this host has client role.
 
 ```lua
--- signature
 LNetworkHost:isClient()
 ```
 
@@ -1313,7 +1401,7 @@ LNetworkHost:isClient()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when role is client. |
+| boolean | True when role is client. |
 
 **Example**
 
@@ -1329,12 +1417,11 @@ end
 
 ---
 
-### `LNetworkHost:isDestroyed`
+#### `LNetworkHost:isDestroyed`
 
 Returns whether the network host is destroyed.
 
 ```lua
--- signature
 LNetworkHost:isDestroyed()
 ```
 
@@ -1342,7 +1429,7 @@ LNetworkHost:isDestroyed()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when destroyed. |
+| boolean | True when destroyed. |
 
 **Example**
 
@@ -1356,12 +1443,11 @@ end
 
 ---
 
-### `LNetworkHost:isServer`
+#### `LNetworkHost:isServer`
 
 Returns whether this host has server role.
 
 ```lua
--- signature
 LNetworkHost:isServer()
 ```
 
@@ -1369,7 +1455,7 @@ LNetworkHost:isServer()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when role is server. |
+| boolean | True when role is server. |
 
 **Example**
 
@@ -1383,12 +1469,11 @@ end
 
 ---
 
-### `LNetworkHost:ping`
+#### `LNetworkHost:ping`
 
 Sends a ping to a peer. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:ping(peer_id)
 ```
 
@@ -1396,7 +1481,7 @@ LNetworkHost:ping(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
+| `peer_id` | number | Peer id. |
 
 **Example**
 
@@ -1414,12 +1499,11 @@ end
 
 ---
 
-### `LNetworkHost:resetPeer`
+#### `LNetworkHost:resetPeer`
 
 Resets a peer connection. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:resetPeer(peer_id)
 ```
 
@@ -1427,7 +1511,7 @@ LNetworkHost:resetPeer(peer_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
+| `peer_id` | number | Peer id. |
 
 **Example**
 
@@ -1446,12 +1530,11 @@ end
 
 ---
 
-### `LNetworkHost:send`
+#### `LNetworkHost:send`
 
 Sends bytes to a peer on a channel. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:send(peer_id, channel_id, data, reliable)
 ```
 
@@ -1459,10 +1542,10 @@ LNetworkHost:send(peer_id, channel_id, data, reliable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `peer_id` | `number` | Peer id. |
-| `channel_id` | `number` | Channel id. |
-| `data` | `string` | Binary payload string. |
-| `reliable?` | `boolean` | Optional reliable flag, defaulting to true. |
+| `peer_id` | number | Peer id. |
+| `channel_id` | number | Channel id. |
+| `data` | string | Binary payload string. |
+| `reliable?` | boolean | Optional reliable flag, defaulting to true. |
 
 **Example**
 
@@ -1481,12 +1564,11 @@ end
 
 ---
 
-### `LNetworkHost:service`
+#### `LNetworkHost:service`
 
 Polls the host for one network event.
 
 ```lua
--- signature
 LNetworkHost:service()
 ```
 
@@ -1494,7 +1576,7 @@ LNetworkHost:service()
 
 | Type | Description |
 |------|-------------|
-| `LNetworkHostServiceResult` | Event table, or nil when no event is available. |
+| LNetworkHostServiceResult | Event table, or nil when no event is available. |
 
 **Example**
 
@@ -1510,12 +1592,11 @@ end
 
 ---
 
-### `LNetworkHost:setBandwidthLimit`
+#### `LNetworkHost:setBandwidthLimit`
 
 Sets incoming and outgoing bandwidth limits.
 
 ```lua
--- signature
 LNetworkHost:setBandwidthLimit(incoming, outgoing)
 ```
 
@@ -1523,8 +1604,8 @@ LNetworkHost:setBandwidthLimit(incoming, outgoing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `incoming?` | `number` | Optional incoming bandwidth limit. |
-| `outgoing?` | `number` | Optional outgoing bandwidth limit. |
+| `incoming?` | number | Optional incoming bandwidth limit. |
+| `outgoing?` | number | Optional outgoing bandwidth limit. |
 
 **Example**
 
@@ -1541,12 +1622,11 @@ end
 
 ---
 
-### `LNetworkHost:setChannelLimit`
+#### `LNetworkHost:setChannelLimit`
 
 Sets channel limit. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkHost:setChannelLimit(limit)
 ```
 
@@ -1554,7 +1634,7 @@ LNetworkHost:setChannelLimit(limit)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `limit` | `number` | Channel limit. |
+| `limit` | number | Channel limit. |
 
 **Example**
 
@@ -1569,12 +1649,11 @@ end
 
 ---
 
-### `LNetworkHost:type`
+#### `LNetworkHost:type`
 
 Returns the Lua-visible type name for this network host handle.
 
 ```lua
--- signature
 LNetworkHost:type()
 ```
 
@@ -1582,7 +1661,7 @@ LNetworkHost:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LNetworkHost`. |
+| string | The string `[LNetworkHost](#lnetworkhost-handle)`. |
 
 **Example**
 
@@ -1596,12 +1675,11 @@ end
 
 ---
 
-### `LNetworkHost:typeOf`
+#### `LNetworkHost:typeOf`
 
 Returns whether this network host handle matches a supported type name.
 
 ```lua
--- signature
 LNetworkHost:typeOf(name)
 ```
 
@@ -1609,13 +1687,13 @@ LNetworkHost:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LNetworkHost` and `Object`. |
+| `name` | string | Type name to compare against `[LNetworkHost](#lnetworkhost-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1629,14 +1707,19 @@ end
 
 ---
 
-## LNetworkRuntime
+## LNetworkRuntime Handle
 
-### `LNetworkRuntime:httpGet`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNetworkRuntime:httpGet`
 
 Starts an HTTP GET request. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:httpGet(url, headers)
 ```
 
@@ -1644,14 +1727,14 @@ LNetworkRuntime:httpGet(url, headers)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | Request URL. |
-| `headers?` | `table` | Optional headers table. |
+| `url` | string | Request URL. |
+| `headers?` | table | Optional headers table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Request id. |
+| number | Request id. |
 
 **Example**
 
@@ -1667,12 +1750,11 @@ end
 
 ---
 
-### `LNetworkRuntime:httpJson`
+#### `LNetworkRuntime:httpJson`
 
 Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
 
 ```lua
--- signature
 LNetworkRuntime:httpJson(url, body, headers)
 ```
 
@@ -1680,24 +1762,34 @@ LNetworkRuntime:httpJson(url, body, headers)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | Request URL. |
-| `body` | `string` | JSON string to send as the request body. |
-| `headers?` | `table` | Optional additional headers table. |
+| `url` | string | Request URL. |
+| `body` | string | JSON string to send as the request body. |
+| `headers?` | table | Optional additional headers table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Request id. |
+| number | Request id. |
+
+**Example**
+
+```lua
+do
+    local net = lurek.network.new()
+    -- httpJson is a POST helper that automatically sets Content-Type: application/json
+    local response = net:httpJson("http://localhost:8080/api", '{"key":"value"}')
+    print("httpJson response: " .. tostring(response))
+end
+```
 
 ---
 
-### `LNetworkRuntime:httpPost`
+#### `LNetworkRuntime:httpPost`
 
 Starts an HTTP POST request. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:httpPost(url, body, headers)
 ```
 
@@ -1705,15 +1797,15 @@ LNetworkRuntime:httpPost(url, body, headers)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | Request URL. |
-| `body` | `string` | Request body. |
-| `headers?` | `table` | Optional headers table. |
+| `url` | string | Request URL. |
+| `body` | string | Request body. |
+| `headers?` | table | Optional headers table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Request id. |
+| number | Request id. |
 
 **Example**
 
@@ -1729,12 +1821,11 @@ end
 
 ---
 
-### `LNetworkRuntime:httpRequest`
+#### `LNetworkRuntime:httpRequest`
 
 Starts an HTTP request from an options table and returns its request id.
 
 ```lua
--- signature
 LNetworkRuntime:httpRequest(opts)
 ```
 
@@ -1742,13 +1833,13 @@ LNetworkRuntime:httpRequest(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Options table with `url`, optional `method`, `headers`, `body`, and `timeout`. |
+| `opts` | table | Options table with `url`, optional `method`, `headers`, `body`, and `timeout`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Request id. |
+| number | Request id. |
 
 **Example**
 
@@ -1764,12 +1855,11 @@ end
 
 ---
 
-### `LNetworkRuntime:httpStream`
+#### `LNetworkRuntime:httpStream`
 
 Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
 
 ```lua
--- signature
 LNetworkRuntime:httpStream(url, headers, timeout_secs)
 ```
 
@@ -1777,24 +1867,34 @@ LNetworkRuntime:httpStream(url, headers, timeout_secs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | Request URL. |
-| `headers?` | `table` | Optional headers table. |
-| `timeout_secs?` | `number` | Optional timeout override in seconds. |
+| `url` | string | Request URL. |
+| `headers?` | table | Optional headers table. |
+| `timeout_secs?` | number | Optional timeout override in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Request id. |
+| number | Request id. |
+
+**Example**
+
+```lua
+do
+    local net = lurek.network.new()
+    -- httpStream streams response for SSE/chunked responses
+    local response = net:httpStream("http://localhost:8080/stream")
+    print("httpStream response: " .. tostring(response))
+end
+```
 
 ---
 
-### `LNetworkRuntime:poll`
+#### `LNetworkRuntime:poll`
 
 Polls runtime responses for HTTP, TCP, and WebSocket operations.
 
 ```lua
--- signature
 LNetworkRuntime:poll()
 ```
 
@@ -1802,7 +1902,7 @@ LNetworkRuntime:poll()
 
 | Type | Description |
 |------|-------------|
-| `LNetworkRuntimePollResult` | Array table of response/event tables. |
+| LNetworkRuntimePollResult | Array table of response/event tables. |
 
 **Example**
 
@@ -1818,12 +1918,11 @@ end
 
 ---
 
-### `LNetworkRuntime:shutdown`
+#### `LNetworkRuntime:shutdown`
 
 Shuts down the network runtime and cancels pending requests.
 
 ```lua
--- signature
 LNetworkRuntime:shutdown()
 ```
 
@@ -1840,12 +1939,11 @@ end
 
 ---
 
-### `LNetworkRuntime:tcpClose`
+#### `LNetworkRuntime:tcpClose`
 
 Closes a TCP connection. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:tcpClose(id)
 ```
 
@@ -1853,7 +1951,7 @@ LNetworkRuntime:tcpClose(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Connection id. |
+| `id` | number | Connection id. |
 
 **Example**
 
@@ -1870,12 +1968,11 @@ end
 
 ---
 
-### `LNetworkRuntime:tcpConnect`
+#### `LNetworkRuntime:tcpConnect`
 
 Opens a TCP connection. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:tcpConnect(addr)
 ```
 
@@ -1883,13 +1980,13 @@ LNetworkRuntime:tcpConnect(addr)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `addr` | `string` | Remote address. |
+| `addr` | string | Remote address. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Connection id. |
+| number | Connection id. |
 
 **Example**
 
@@ -1905,12 +2002,11 @@ end
 
 ---
 
-### `LNetworkRuntime:tcpSend`
+#### `LNetworkRuntime:tcpSend`
 
 Sends bytes over a TCP connection. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:tcpSend(id, data)
 ```
 
@@ -1918,8 +2014,8 @@ LNetworkRuntime:tcpSend(id, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Connection id. |
-| `data` | `string` | Binary payload string. |
+| `id` | number | Connection id. |
+| `data` | string | Binary payload string. |
 
 **Example**
 
@@ -1936,12 +2032,11 @@ end
 
 ---
 
-### `LNetworkRuntime:type`
+#### `LNetworkRuntime:type`
 
 Returns the Lua-visible type name for this network runtime handle.
 
 ```lua
--- signature
 LNetworkRuntime:type()
 ```
 
@@ -1949,7 +2044,7 @@ LNetworkRuntime:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LNetworkRuntime`. |
+| string | The string `[LNetworkRuntime](#lnetworkruntime-handle)`. |
 
 **Example**
 
@@ -1963,12 +2058,11 @@ end
 
 ---
 
-### `LNetworkRuntime:typeOf`
+#### `LNetworkRuntime:typeOf`
 
 Returns whether this network runtime handle matches a supported type name.
 
 ```lua
--- signature
 LNetworkRuntime:typeOf(name)
 ```
 
@@ -1976,13 +2070,13 @@ LNetworkRuntime:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LNetworkRuntime` and `Object`. |
+| `name` | string | Type name to compare against `[LNetworkRuntime](#lnetworkruntime-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1996,12 +2090,11 @@ end
 
 ---
 
-### `LNetworkRuntime:wsClose`
+#### `LNetworkRuntime:wsClose`
 
 Closes a WebSocket connection. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:wsClose(id)
 ```
 
@@ -2009,7 +2102,7 @@ LNetworkRuntime:wsClose(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Connection id. |
+| `id` | number | Connection id. |
 
 **Example**
 
@@ -2026,12 +2119,11 @@ end
 
 ---
 
-### `LNetworkRuntime:wsConnect`
+#### `LNetworkRuntime:wsConnect`
 
 Opens a WebSocket connection. This method is available to Lua scripts.
 
 ```lua
--- signature
 LNetworkRuntime:wsConnect(url)
 ```
 
@@ -2039,13 +2131,13 @@ LNetworkRuntime:wsConnect(url)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | WebSocket URL. |
+| `url` | string | WebSocket URL. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Connection id. |
+| number | Connection id. |
 
 **Example**
 
@@ -2061,12 +2153,11 @@ end
 
 ---
 
-### `LNetworkRuntime:wsSend`
+#### `LNetworkRuntime:wsSend`
 
 Sends text over a WebSocket connection.
 
 ```lua
--- signature
 LNetworkRuntime:wsSend(id, data)
 ```
 
@@ -2074,8 +2165,8 @@ LNetworkRuntime:wsSend(id, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Connection id. |
-| `data` | `string` | Text payload. |
+| `id` | number | Connection id. |
+| `data` | string | Text payload. |
 
 **Example**
 
@@ -2092,14 +2183,19 @@ end
 
 ---
 
-## LSseStream
+## LSseStream Handle
 
-### `LSseStream:close`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSseStream:close`
 
 Signals the background reader thread to stop and closes the stream.
 
 ```lua
--- signature
 LSseStream:close()
 ```
 
@@ -2115,12 +2211,11 @@ end
 
 ---
 
-### `LSseStream:isOpen`
+#### `LSseStream:isOpen`
 
 Returns true if the background reader thread is still connected and reading.
 
 ```lua
--- signature
 LSseStream:isOpen()
 ```
 
@@ -2128,7 +2223,7 @@ LSseStream:isOpen()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True while the stream is open. |
+| boolean | True while the stream is open. |
 
 **Example**
 
@@ -2143,12 +2238,11 @@ end
 
 ---
 
-### `LSseStream:next`
+#### `LSseStream:next`
 
 Polls for the next available event from the SSE stream (non-blocking).
 
 ```lua
--- signature
 LSseStream:next()
 ```
 
@@ -2156,7 +2250,7 @@ LSseStream:next()
 
 | Type | Description |
 |------|-------------|
-| `table?` | Event table `{ id?, event?, data }`, or nil when no event is ready. |
+| table | Event table `{ id?, event?, data }` when available; returns nil when no event is ready. |
 
 **Example**
 
@@ -2174,12 +2268,11 @@ end
 
 ---
 
-### `LSseStream:type`
+#### `LSseStream:type`
 
 Returns the Lua-visible type name for this SSE stream handle.
 
 ```lua
--- signature
 LSseStream:type()
 ```
 
@@ -2187,7 +2280,7 @@ LSseStream:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LSseStream`. |
+| string | The string `[LSseStream](#lssestream-handle)`. |
 
 **Example**
 
@@ -2202,12 +2295,11 @@ end
 
 ---
 
-### `LSseStream:typeOf`
+#### `LSseStream:typeOf`
 
 Returns whether this SSE stream handle matches a supported type name.
 
 ```lua
--- signature
 LSseStream:typeOf(name)
 ```
 
@@ -2215,13 +2307,13 @@ LSseStream:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LSseStream` and `Object`. |
+| `name` | string | Type name to compare against `[LSseStream](#lssestream-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

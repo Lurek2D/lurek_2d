@@ -1,12 +1,76 @@
 # Cursor
 
-- The `cursor` module manages OS cursor state, custom image cursors, animated frame sequences, context-sensitive switching, visual trail effects, and a magnifying zoom lens for Lurek2D games.
+## Summary
 
-The `cursor` module provides complete cursor lifecycle management for Lurek2D games. At its foundation, the `CursorManager` centralizes all cursor state: it can display native OS system cursors (arrow, crosshair, hand, IBeam, and resize variants), custom RGBA image cursors with configurable hotspot offsets, or smooth animated frame sequences built from `AnimatedCursor`. Each animated cursor supports per-frame durations and an independent sine-driven `PulseConfig` scale animation, creating subtle breathing or emphasis effects without additional scripting.
+The `cursor` module owns cursor presentation and behavior policy, including system cursor selection, custom image cursors, animated cursor sequences, context-based switching, trail effects, and cursor magnifier support. It provides a single stateful surface for cursor concerns instead of scattering cursor logic across input and UI code.
 
-Context-sensitive switching is a first-class feature. Developers register `ContextRule` mappings from named string contexts (e.g., `"dialog"`, `"combat"`, `"menu"`) to specific cursor states. Activating a context via `setContext` instantly swaps to the registered cursor, allowing the cursor to always reflect the current game interaction mode without polling game state from the rendering layer.
+Submodules map directly to feature domains: `system_cursor` for native cursor kinds, `custom_cursor` for image/hotspot management, `animated_cursor` for timed frame cycling and pulse behavior, `context` for dynamic mode switching, `trail` for visual trails, and `zoom` for cursor-centered magnification.
 
-The module also provides two post-process visual effects layered on top of the hardware cursor. The `CursorTrail` records a ring buffer of recent cursor positions (`TrailPoint`), each with linearly decaying alpha, and renders them in one of three modes: fading dots, connected line segments, or particle clusters. The `CursorZoom` lens composites a configurable magnifying glass (1.1× to 8.0×) around the cursor position as a post-process scissored blit, useful for map editors or accessibility features. All cursor behavior — visibility, hardware lock for FPS-style grabs, trail, zoom, and context rules — is fully accessible via the `lurek.cursor.*` Lua API.
+The design keeps input capture and cursor rendering conceptually separate. Input modules report state; cursor modules decide representation and visual behavior. This improves maintainability when adding context-sensitive visuals or accessibility-oriented cursor modes.
+
+In practice, cursor behavior should remain deterministic and low-latency, with clear fallback paths between native/system cursors and custom/animated variants.
+
+Implementation detail and boundary guarantees for cursor: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: animated_cursor.rs: Animated cursor: frame sequences with per-frame timing and pulse scale effects.; config.rs: Global cursor system configuration shared across the cursor manager.; context.rs: Context-sensitive cursor switching: maps named contexts to cursor states.; custom_cursor.rs: Custom image cursor built from RGBA pixel data with configurable hotspot offset.; mod.rs: Cursor management system.; system_cursor.rs: System cursor shapes available on all desktop platforms.; trail.rs: Cursor trail effects: fading dot trails, connected line trails, and particle modes.; zoom.rs: Cursor magnifier lens: a configurable zoom window that follows the cursor.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### animated_cursor.rs
+
+- Implements animated cursor state using frame sequences and time-based frame advancement.
+- Supports optional pulse scaling driven by oscillation parameters independent of frame stepping.
+- Maintains deterministic timing behavior through per-frame duration tracking.
+- Integrates as an active cursor-state variant within context-aware cursor orchestration.
+- Serves as the runtime animation layer for custom cursors with motion feedback.
+
+### config.rs
+
+- Defines cursor-system configuration values loaded from project settings and startup defaults.
+- Controls feature toggles and behavior for trail effects, zoom lens, contexts, and idle visibility.
+- Serves as the shared config contract consumed by cursor runtime orchestration.
+
+### context.rs
+
+- Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states.
+- Supports system, custom, and animated cursor variants under one discriminated state model.
+- Applies context changes immediately while preserving a deterministic default fallback path.
+- Integrates optional trail and zoom behavior into active cursor presentation state.
+- Serves as the policy layer for script-driven cursor-mode transitions.
+
+### custom_cursor.rs
+
+- Implements custom cursor images built from RGBA pixel buffers and hotspot metadata.
+- Validates buffer dimensions at construction to prevent malformed cursor payload usage.
+- Supports standalone custom cursors and animated-frame reuse through shared image structure.
+- Serves as the pixel-defined cursor asset contract for script-driven cursor customization.
+
+### mod.rs
+
+- Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior.
+- Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface.
+- Serves as the composition entry for engine and script-side cursor control workflows.
+
+### system_cursor.rs
+
+- Defines cross-platform system cursor shape variants used by runtime cursor state.
+- Maps engine-facing cursor variants to platform-native icon representations.
+- Supports case-insensitive string parsing for config and script-driven selection.
+- Serves as the canonical enum contract for system cursor mode requests.
+
+### trail.rs
+
+- Implements cursor-trail effects with fading points, connected strokes, and particle-style variants.
+- Tracks trail samples as timestamped points with alpha decay progression over update ticks.
+- Maintains bounded point history through capped storage to control runtime memory pressure.
+- Supports multiple trail render modes selected by explicit trail behavior configuration.
+- Serves as the visual motion-feedback layer for cursor movement presentation.
+
+### zoom.rs
+
+- Implements cursor-following zoom-lens state for magnified local inspection around pointer position.
+- Stores radius, magnification, and border settings used by post-process cursor-lens rendering.
+- Serves as the magnifier feature contract controlled through cursor config and scripting paths.
 
 ## Functions
 
@@ -15,7 +79,6 @@ The module also provides two post-process visual effects layered on top of the h
 Creates a new animated cursor that can cycle through frames.
 
 ```lua
--- signature
 lurek.cursor.newAnimated(looping)
 ```
 
@@ -23,13 +86,13 @@ lurek.cursor.newAnimated(looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `looping` | `boolean` | Whether the animation loops continuously. |
+| `looping` | boolean | Whether the animation loops continuously. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAnimatedCursor` | A new animated cursor instance. |
+| [LAnimatedCursor](#lanimatedcursor-handle) | A new animated cursor instance. |
 
 **Example**
 
@@ -48,7 +111,6 @@ end
 Creates a new custom cursor with specified dimensions and hotspot position.
 
 ```lua
--- signature
 lurek.cursor.newCustom(w, h, hx, hy)
 ```
 
@@ -56,16 +118,16 @@ lurek.cursor.newCustom(w, h, hx, hy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width of the cursor image in pixels. |
-| `h` | `number` | Height of the cursor image in pixels. |
-| `hx` | `number` | Hotspot X offset from cursor origin. |
-| `hy` | `number` | Hotspot Y offset from cursor origin. |
+| `w` | number | Width of the cursor image in pixels. |
+| `h` | number | Height of the cursor image in pixels. |
+| `hx` | number | Hotspot X offset from cursor origin. |
+| `hy` | number | Hotspot Y offset from cursor origin. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCustomCursor` | A new custom cursor instance. |
+| [LCustomCursor](#lcustomcursor-handle) | A new custom cursor instance. |
 
 **Example**
 
@@ -85,7 +147,6 @@ end
 Creates a new cursor manager for handling cursor state and visibility.
 
 ```lua
--- signature
 lurek.cursor.newManager()
 ```
 
@@ -93,7 +154,7 @@ lurek.cursor.newManager()
 
 | Type | Description |
 |------|-------------|
-| `LCursorManager` | A new cursor manager instance. |
+| [LCursorManager](#lcursormanager-handle) | A new cursor manager instance. |
 
 **Example**
 
@@ -112,7 +173,6 @@ end
 Returns a list of all available system cursor names as a string array.
 
 ```lua
--- signature
 lurek.cursor.systemCursors()
 ```
 
@@ -120,7 +180,7 @@ lurek.cursor.systemCursors()
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of system cursor name strings. |
+| table | Array of system cursor name strings. |
 
 **Example**
 
@@ -133,14 +193,37 @@ end
 
 ---
 
-## LAnimatedCursor
+## Module Fields
 
-### `LAnimatedCursor:addFrame`
+*No module-level fields documented.*
+
+## Types
+
+- [LAnimatedCursor Handle](#lanimatedcursor-handle)
+- [LCursorManager Handle](#lcursormanager-handle)
+- [LCustomCursor Handle](#lcustomcursor-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAnimatedCursor Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAnimatedCursor:addFrame`
 
 Add a frame from a custom cursor image.
 
 ```lua
--- signature
 LAnimatedCursor:addFrame(cursor, duration_ms)
 ```
 
@@ -148,8 +231,8 @@ LAnimatedCursor:addFrame(cursor, duration_ms)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cursor` | `LuaCustomCursor` | Frame image. |
-| `duration_ms` | `number` | Frame duration in milliseconds. |
+| `cursor` | [LCustomCursor](#lcustomcursor-handle) | Frame image. |
+| `duration_ms` | number | Frame duration in milliseconds. |
 
 **Example**
 
@@ -164,12 +247,11 @@ end
 
 ---
 
-### `LAnimatedCursor:clearPulse`
+#### `LAnimatedCursor:clearPulse`
 
 Disable pulse animation for this object.
 
 ```lua
--- signature
 LAnimatedCursor:clearPulse()
 ```
 
@@ -186,12 +268,11 @@ end
 
 ---
 
-### `LAnimatedCursor:currentIndex`
+#### `LAnimatedCursor:currentIndex`
 
 Get current frame index for this object.
 
 ```lua
--- signature
 LAnimatedCursor:currentIndex()
 ```
 
@@ -199,7 +280,7 @@ LAnimatedCursor:currentIndex()
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based frame index. |
+| number | Zero-based frame index. |
 
 **Example**
 
@@ -212,12 +293,11 @@ end
 
 ---
 
-### `LAnimatedCursor:currentScale`
+#### `LAnimatedCursor:currentScale`
 
 Get current scale from pulse animation.
 
 ```lua
--- signature
 LAnimatedCursor:currentScale()
 ```
 
@@ -225,7 +305,7 @@ LAnimatedCursor:currentScale()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current scale factor. |
+| number | Current scale factor. |
 
 **Example**
 
@@ -238,12 +318,11 @@ end
 
 ---
 
-### `LAnimatedCursor:frameCount`
+#### `LAnimatedCursor:frameCount`
 
 Get total frame count for this object.
 
 ```lua
--- signature
 LAnimatedCursor:frameCount()
 ```
 
@@ -251,7 +330,7 @@ LAnimatedCursor:frameCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of frames. |
+| number | Number of frames. |
 
 **Example**
 
@@ -266,12 +345,11 @@ end
 
 ---
 
-### `LAnimatedCursor:reset`
+#### `LAnimatedCursor:reset`
 
 Reset the cursor animation playback to the first frame.
 
 ```lua
--- signature
 LAnimatedCursor:reset()
 ```
 
@@ -289,12 +367,11 @@ end
 
 ---
 
-### `LAnimatedCursor:setPulse`
+#### `LAnimatedCursor:setPulse`
 
 Set the pulse animation speed and scale factor parameters.
 
 ```lua
--- signature
 LAnimatedCursor:setPulse(min_scale, max_scale, speed)
 ```
 
@@ -302,9 +379,9 @@ LAnimatedCursor:setPulse(min_scale, max_scale, speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min_scale` | `number` | Minimum scale. |
-| `max_scale` | `number` | Maximum scale. |
-| `speed` | `number` | Pulse speed. |
+| `min_scale` | number | Minimum scale. |
+| `max_scale` | number | Maximum scale. |
+| `speed` | number | Pulse speed. |
 
 **Example**
 
@@ -318,12 +395,11 @@ end
 
 ---
 
-### `LAnimatedCursor:update`
+#### `LAnimatedCursor:update`
 
 Update animation (call each frame).
 
 ```lua
--- signature
 LAnimatedCursor:update(dt)
 ```
 
@@ -331,7 +407,7 @@ LAnimatedCursor:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -347,14 +423,19 @@ end
 
 ---
 
-## LCursorManager
+## LCursorManager Handle
 
-### `LCursorManager:addRule`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCursorManager:addRule`
 
 Add a context rule that maps a context to a system cursor.
 
 ```lua
--- signature
 LCursorManager:addRule(ctx, cursor_name)
 ```
 
@@ -362,8 +443,8 @@ LCursorManager:addRule(ctx, cursor_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ctx` | `string` | Context name. |
-| `cursor_name` | `string` | System cursor name. |
+| `ctx` | string | Context name. |
+| `cursor_name` | string | System cursor name. |
 
 **Example**
 
@@ -379,12 +460,11 @@ end
 
 ---
 
-### `LCursorManager:disableTrail`
+#### `LCursorManager:disableTrail`
 
 Disable cursor trail for this object.
 
 ```lua
--- signature
 LCursorManager:disableTrail()
 ```
 
@@ -401,12 +481,11 @@ end
 
 ---
 
-### `LCursorManager:disableZoom`
+#### `LCursorManager:disableZoom`
 
 Disable cursor zoom for this object.
 
 ```lua
--- signature
 LCursorManager:disableZoom()
 ```
 
@@ -423,12 +502,11 @@ end
 
 ---
 
-### `LCursorManager:enableLineTrail`
+#### `LCursorManager:enableLineTrail`
 
 Enable cursor trail with line mode.
 
 ```lua
--- signature
 LCursorManager:enableLineTrail(r, g, b, width)
 ```
 
@@ -436,10 +514,10 @@ LCursorManager:enableLineTrail(r, g, b, width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red (0-1). |
-| `g` | `number` | Green (0-1). |
-| `b` | `number` | Blue (0-1). |
-| `width` | `number` | Line width in pixels. |
+| `r` | number | Red (0-1). |
+| `g` | number | Green (0-1). |
+| `b` | number | Blue (0-1). |
+| `width` | number | Line width in pixels. |
 
 **Example**
 
@@ -454,12 +532,11 @@ end
 
 ---
 
-### `LCursorManager:enableTrail`
+#### `LCursorManager:enableTrail`
 
 Enable cursor trail with fade points mode.
 
 ```lua
--- signature
 LCursorManager:enableTrail(r, g, b, lifetime)
 ```
 
@@ -467,10 +544,10 @@ LCursorManager:enableTrail(r, g, b, lifetime)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red (0-1). |
-| `g` | `number` | Green (0-1). |
-| `b` | `number` | Blue (0-1). |
-| `lifetime` | `number` | Seconds before trail fades. |
+| `r` | number | Red (0-1). |
+| `g` | number | Green (0-1). |
+| `b` | number | Blue (0-1). |
+| `lifetime` | number | Seconds before trail fades. |
 
 **Example**
 
@@ -485,12 +562,11 @@ end
 
 ---
 
-### `LCursorManager:enableZoom`
+#### `LCursorManager:enableZoom`
 
 Enable zoom/magnifier at cursor position.
 
 ```lua
--- signature
 LCursorManager:enableZoom(magnification, radius)
 ```
 
@@ -498,8 +574,8 @@ LCursorManager:enableZoom(magnification, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `magnification` | `number` | Zoom factor (1-10). |
-| `radius` | `number` | Lens radius in pixels. |
+| `magnification` | number | Zoom factor (1-10). |
+| `radius` | number | Lens radius in pixels. |
 
 **Example**
 
@@ -514,12 +590,11 @@ end
 
 ---
 
-### `LCursorManager:getContext`
+#### `LCursorManager:getContext`
 
 Get current context name for this object.
 
 ```lua
--- signature
 LCursorManager:getContext()
 ```
 
@@ -527,7 +602,7 @@ LCursorManager:getContext()
 
 | Type | Description |
 |------|-------------|
-| `string` | Active context name. |
+| string | Active context name. |
 
 **Example**
 
@@ -541,12 +616,11 @@ end
 
 ---
 
-### `LCursorManager:getPosition`
+#### `LCursorManager:getPosition`
 
 Get cursor position for this object.
 
 ```lua
--- signature
 LCursorManager:getPosition()
 ```
 
@@ -554,8 +628,8 @@ LCursorManager:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X position. |
-| `number` | b Y position. |
+| number | X position. |
+| number | Y position. |
 
 **Example**
 
@@ -569,12 +643,11 @@ end
 
 ---
 
-### `LCursorManager:isLocked`
+#### `LCursorManager:isLocked`
 
 Get cursor lock state for this object.
 
 ```lua
--- signature
 LCursorManager:isLocked()
 ```
 
@@ -582,7 +655,7 @@ LCursorManager:isLocked()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Whether the cursor is locked. |
+| boolean | Whether the cursor is locked. |
 
 **Example**
 
@@ -596,12 +669,11 @@ end
 
 ---
 
-### `LCursorManager:isVisible`
+#### `LCursorManager:isVisible`
 
 Get cursor visibility for this object.
 
 ```lua
--- signature
 LCursorManager:isVisible()
 ```
 
@@ -609,7 +681,7 @@ LCursorManager:isVisible()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Whether the cursor is visible. |
+| boolean | Whether the cursor is visible. |
 
 **Example**
 
@@ -623,12 +695,11 @@ end
 
 ---
 
-### `LCursorManager:removeRule`
+#### `LCursorManager:removeRule`
 
 Remove a context rule for this object.
 
 ```lua
--- signature
 LCursorManager:removeRule(ctx)
 ```
 
@@ -636,7 +707,7 @@ LCursorManager:removeRule(ctx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ctx` | `string` | Context name to remove. |
+| `ctx` | string | Context name to remove. |
 
 **Example**
 
@@ -651,12 +722,11 @@ end
 
 ---
 
-### `LCursorManager:setAnimated`
+#### `LCursorManager:setAnimated`
 
 Set the active cursor to an animated cursor.
 
 ```lua
--- signature
 LCursorManager:setAnimated(cursor)
 ```
 
@@ -664,7 +734,7 @@ LCursorManager:setAnimated(cursor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cursor` | `LuaAnimatedCursor` | Animated cursor object. |
+| `cursor` | [LAnimatedCursor](#lanimatedcursor-handle) | Animated cursor object. |
 
 **Example**
 
@@ -679,12 +749,11 @@ end
 
 ---
 
-### `LCursorManager:setContext`
+#### `LCursorManager:setContext`
 
 Set the current context for context-sensitive switching.
 
 ```lua
--- signature
 LCursorManager:setContext(ctx)
 ```
 
@@ -692,7 +761,7 @@ LCursorManager:setContext(ctx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ctx` | `string` | Context name (default, raycaster, globe, tilemap, ui_button, etc.). |
+| `ctx` | string | Context name (default, raycaster, globe, tilemap, ui_button, etc.). |
 
 **Example**
 
@@ -706,12 +775,11 @@ end
 
 ---
 
-### `LCursorManager:setCustom`
+#### `LCursorManager:setCustom`
 
 Set the active cursor to a custom image cursor.
 
 ```lua
--- signature
 LCursorManager:setCustom(cursor)
 ```
 
@@ -719,7 +787,7 @@ LCursorManager:setCustom(cursor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cursor` | `LuaCustomCursor` | Custom cursor object. |
+| `cursor` | [LCustomCursor](#lcustomcursor-handle) | Custom cursor object. |
 
 **Example**
 
@@ -734,12 +802,11 @@ end
 
 ---
 
-### `LCursorManager:setLocked`
+#### `LCursorManager:setLocked`
 
 Lock the cursor position using the system grab mode.
 
 ```lua
--- signature
 LCursorManager:setLocked(locked)
 ```
 
@@ -747,7 +814,7 @@ LCursorManager:setLocked(locked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `locked` | `boolean` | Whether the cursor is locked. |
+| `locked` | boolean | Whether the cursor is locked. |
 
 **Example**
 
@@ -761,12 +828,11 @@ end
 
 ---
 
-### `LCursorManager:setSystem`
+#### `LCursorManager:setSystem`
 
 Set the active cursor to a system cursor by name.
 
 ```lua
--- signature
 LCursorManager:setSystem(name)
 ```
 
@@ -774,7 +840,7 @@ LCursorManager:setSystem(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | System cursor name (arrow, hand, crosshair, ibeam, wait, no, etc.). |
+| `name` | string | System cursor name (arrow, hand, crosshair, ibeam, wait, no, etc.). |
 
 **Example**
 
@@ -788,12 +854,11 @@ end
 
 ---
 
-### `LCursorManager:setVisible`
+#### `LCursorManager:setVisible`
 
 Set cursor visibility for this object.
 
 ```lua
--- signature
 LCursorManager:setVisible(visible)
 ```
 
@@ -801,7 +866,7 @@ LCursorManager:setVisible(visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `visible` | `boolean` | Whether the cursor is visible. |
+| `visible` | boolean | Whether the cursor is visible. |
 
 **Example**
 
@@ -815,12 +880,11 @@ end
 
 ---
 
-### `LCursorManager:update`
+#### `LCursorManager:update`
 
 Update cursor state (call each frame).
 
 ```lua
--- signature
 LCursorManager:update(x, y, dt)
 ```
 
@@ -828,9 +892,9 @@ LCursorManager:update(x, y, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Cursor X position. |
-| `y` | `number` | Cursor Y position. |
-| `dt` | `number` | Delta time in seconds. |
+| `x` | number | Cursor X position. |
+| `y` | number | Cursor Y position. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -846,14 +910,19 @@ end
 
 ---
 
-## LCustomCursor
+## LCustomCursor Handle
 
-### `LCustomCursor:getHotspot`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCustomCursor:getHotspot`
 
 Get hotspot position for this object.
 
 ```lua
--- signature
 LCustomCursor:getHotspot()
 ```
 
@@ -861,8 +930,8 @@ LCustomCursor:getHotspot()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Hotspot X. |
-| `number` | b Hotspot Y. |
+| number | Hotspot X. |
+| number | Hotspot Y. |
 
 **Example**
 
@@ -876,12 +945,11 @@ end
 
 ---
 
-### `LCustomCursor:getPixel`
+#### `LCustomCursor:getPixel`
 
 Get the pixel color at the specified cursor image position.
 
 ```lua
--- signature
 LCustomCursor:getPixel(x, y)
 ```
 
@@ -889,17 +957,17 @@ LCustomCursor:getPixel(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red. |
-| `number` | b Green. |
-| `number` | c Blue. |
-| `number` | d Alpha. |
+| number | Red. |
+| number | Green. |
+| number | Blue. |
+| number | Alpha. |
 
 **Example**
 
@@ -915,12 +983,11 @@ end
 
 ---
 
-### `LCustomCursor:getSize`
+#### `LCustomCursor:getSize`
 
 Get the pixel width and height of the cursor image.
 
 ```lua
--- signature
 LCustomCursor:getSize()
 ```
 
@@ -928,8 +995,8 @@ LCustomCursor:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width. |
-| `number` | b Height. |
+| number | Width. |
+| number | Height. |
 
 **Example**
 
@@ -943,12 +1010,11 @@ end
 
 ---
 
-### `LCustomCursor:setPixel`
+#### `LCustomCursor:setPixel`
 
-Set a pixel color — Lua userdata object exposed by the engine.
+Set a pixel color â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LCustomCursor:setPixel(x, y, r, g, b, a)
 ```
 
@@ -956,12 +1022,12 @@ LCustomCursor:setPixel(x, y, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
-| `r` | `number` | Red (0-255). |
-| `g` | `number` | Green (0-255). |
-| `b` | `number` | Blue (0-255). |
-| `a` | `number` | Alpha (0-255). |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red (0-255). |
+| `g` | number | Green (0-255). |
+| `b` | number | Blue (0-255). |
+| `a` | number | Alpha (0-255). |
 
 **Example**
 

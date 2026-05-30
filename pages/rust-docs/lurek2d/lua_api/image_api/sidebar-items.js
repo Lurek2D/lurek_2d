@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaCompressedImageData","LuaLayeredImage","LuaPaletteLUT","LuaProvinceGrid"]};

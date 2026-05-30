@@ -1,12 +1,71 @@
 # Spine
 
-- The `spine` module is an advanced Feature Systems tier component that provides a complete, high-performance runtime for 2D skeletal animation.
+## Summary
 
 Moving beyond traditional frame-by-frame sprites, this module enables fluid, dynamic animations using hierarchical bone trees and slot-based attachments. Central to the system is the `Skeleton` struct, which maintains an ordered array of `Bone` elements. Each bone stores local transform properties (position, rotation, scale) and automatically computes accumulated world-space transforms as they propagate down the parent-child hierarchy. Visual representation is handled via `Slot` attachments, which bind graphical content—such as sprite regions, meshes, or bounding boxes—to specific bones with precise draw-order and blend-mode configurations, ensuring correct back-to-front rendering even in complex layered characters.
 
 To achieve sophisticated, procedural motion, the module features a dedicated Inverse Kinematics (IK) system. The `IKConstraint` solver calculates the necessary joint rotations for a two-bone chain (e.g., an arm or leg) to reach a specific world-space target, vastly simplifying dynamic interactions like foot placement on uneven terrain or aiming weapons. The animation pipeline itself is driven by `SkeletonAnimation` clips, which organize multiple `BoneTimeline` and `SlotTimeline` sequences containing keyed property changes. The runtime efficiently interpolates between these keyframes using various easing curves (linear, stepped, bezier) and applies the resulting poses to the skeleton. Animations can be blended together using configurable weights, allowing for smooth transitions between states (like transitioning from a run cycle to a jump).
 
 The module also supports extensive customization and event handling. The Skin system allows developers to group specific slot attachments into switchable visual sets, enabling character customization (e.g., changing armor or weapons) without duplicating the underlying animation rig. Furthermore, `EventKeyframe` markers can be embedded within timelines to trigger Lua callbacks at precise moments, perfect for syncing footstep audio or hit-box activation. Fully exposed through the `lurek.spine.*` API, this module provides the robust tooling necessary to bring complex, expressive, and interactive 2D characters to life.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### bone.rs
+
+- This file defines the skeletal bone unit that carries local pose data and resolved world transform state.
+- Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy.
+- The type exists as the core transform-bearing element for the rest of the spine animation system.
+- It is where local intent becomes world-space pose context for attached visuals and constraints.
+
+### ik.rs
+
+- This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
+- It computes joint angles from geometric constraints instead of relying only on keyed animation values.
+- Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally.
+- The file adds procedural responsiveness to otherwise keyframed skeletal motion.
+- It is the module's compact answer to target-seeking limb behavior.
+
+### mod.rs
+
+- This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
+- It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
+- At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
+
+### render.rs
+
+- This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization.
+- Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
+- The output emphasizes readable structure over full attachment rendering complexity.
+- It is the handoff layer from skeletal pose data to generic draw command streams.
+
+### skeleton.rs
+
+- This file implements the main skeleton container that holds the full moving rig, visual attachment points, animations, and runtime playback state.
+- Bones and slots are managed together here because final pose evaluation must understand both transform hierarchy and attachment ownership.
+- Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
+- Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
+- World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
+- Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
+- The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
+- It is where skeletal state becomes animated pose over time.
+
+### slot.rs
+
+- This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
+- Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
+- The type is the visual attachment bridge between pose evaluation and rendered character parts.
+
+### timeline.rs
+
+- This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
+- Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys.
+- Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
+- Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
+- Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
+- The file is therefore the temporal logic center of the spine subsystem.
+- It explains how authored motion unfolds, not just what a static pose looks like.
 
 ## Functions
 
@@ -15,7 +74,6 @@ The module also supports extensive customization and event handling. The Skin sy
 Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
 
 ```lua
--- signature
 lurek.spine.animationFromJson(json)
 ```
 
@@ -23,13 +81,13 @@ lurek.spine.animationFromJson(json)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `json` | `string` | JSON string describing the animation (Spine-compatible format). |
+| `json` | string | JSON string describing the animation (Spine-compatible format). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSkeletonAnimation` | Parsed animation userdata, or nil on failure. |
+| [LSkeletonAnimation](#lskeletonanimation-handle) | Parsed animation userdata, or nil on failure. |
 
 **Example**
 
@@ -48,7 +106,6 @@ end
 Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
 
 ```lua
--- signature
 lurek.spine.newSkeleton(name)
 ```
 
@@ -56,13 +113,13 @@ lurek.spine.newSkeleton(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name identifier for this skeleton. |
+| `name` | string | Name identifier for this skeleton. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSkeleton` | A new skeleton userdata. |
+| [LSkeleton](#lskeleton-handle) | A new skeleton userdata. |
 
 **Example**
 
@@ -83,7 +140,6 @@ end
 Creates a new empty animation with the given name and duration. Add keyframes to define motion.
 
 ```lua
--- signature
 lurek.spine.newSkeletonAnimation(name, duration)
 ```
 
@@ -91,14 +147,14 @@ lurek.spine.newSkeletonAnimation(name, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name identifier for this animation (used with playAnimation). |
-| `duration` | `number` | Total duration of the animation in seconds. |
+| `name` | string | Name identifier for this animation (used with playAnimation). |
+| `duration` | number | Total duration of the animation in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSkeletonAnimation` | A new animation userdata. |
+| [LSkeletonAnimation](#lskeletonanimation-handle) | A new animation userdata. |
 
 **Example**
 
@@ -113,14 +169,36 @@ end
 
 ---
 
-## LSkeleton
+## Module Fields
 
-### `LSkeleton:addAnimation`
+*No module-level fields documented.*
+
+## Types
+
+- [LSkeleton Handle](#lskeleton-handle)
+- [LSkeletonAnimation Handle](#lskeletonanimation-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LSkeleton Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSkeleton:addAnimation`
 
 Registers a SkeletonAnimation object with this skeleton so it can be played by name.
 
 ```lua
--- signature
 LSkeleton:addAnimation(anim)
 ```
 
@@ -128,7 +206,7 @@ LSkeleton:addAnimation(anim)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim` | `LSkeletonAnimation` | The animation userdata to register. Consumed by this call. |
+| `anim` | [LSkeletonAnimation](#lskeletonanimation-handle) | The animation userdata to register. Consumed by this call. |
 
 **Example**
 
@@ -143,12 +221,11 @@ end
 
 ---
 
-### `LSkeleton:addBone`
+#### `LSkeleton:addBone`
 
 Adds a root-level bone to the skeleton with optional transform properties.
 
 ```lua
--- signature
 LSkeleton:addBone(name, opts)
 ```
 
@@ -156,14 +233,14 @@ LSkeleton:addBone(name, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for this bone. |
-| `opts?` | `table` | Optional table with keys: x, y, rotation, scale_x, scale_y. |
+| `name` | string | Unique name for this bone. |
+| `opts?` | table | Optional table with keys: x, y, rotation, scale_x, scale_y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based index of the newly added bone. |
+| number | Zero-based index of the newly added bone. |
 
 **Example**
 
@@ -178,12 +255,11 @@ end
 
 ---
 
-### `LSkeleton:addChildBone`
+#### `LSkeleton:addChildBone`
 
 Adds a bone as a child of an existing bone, inheriting its parent's world transform.
 
 ```lua
--- signature
 LSkeleton:addChildBone(name, parent_idx, opts)
 ```
 
@@ -191,15 +267,15 @@ LSkeleton:addChildBone(name, parent_idx, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for this bone. |
-| `parent_idx` | `number` | Zero-based index of the parent bone. |
-| `opts?` | `table` | Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent). |
+| `name` | string | Unique name for this bone. |
+| `parent_idx` | number | Zero-based index of the parent bone. |
+| `opts?` | table | Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based index of the newly added child bone. |
+| number | Zero-based index of the newly added child bone. |
 
 **Example**
 
@@ -215,12 +291,11 @@ end
 
 ---
 
-### `LSkeleton:addIKConstraint`
+#### `LSkeleton:addIKConstraint`
 
 Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
 
 ```lua
--- signature
 LSkeleton:addIKConstraint(name, chain, bend_positive)
 ```
 
@@ -228,15 +303,15 @@ LSkeleton:addIKConstraint(name, chain, bend_positive)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for this IK constraint (used with setIKTarget). |
-| `chain` | `table` | Array of bone indices forming the IK chain from root to tip. |
-| `bend_positive?` | `boolean` | Whether the joint bends in the positive direction. Defaults to true. |
+| `name` | string | Unique name for this IK constraint (used with setIKTarget). |
+| `chain` | table | Array of bone indices forming the IK chain from root to tip. |
+| `bend_positive?` | boolean | Whether the joint bends in the positive direction. Defaults to true. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Index of the newly added constraint. |
+| number | Index of the newly added constraint. |
 
 **Example**
 
@@ -252,12 +327,11 @@ end
 
 ---
 
-### `LSkeleton:addSkin`
+#### `LSkeleton:addSkin`
 
 Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
 
 ```lua
--- signature
 LSkeleton:addSkin(name)
 ```
 
@@ -265,7 +339,7 @@ LSkeleton:addSkin(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for the skin. |
+| `name` | string | Unique name for the skin. |
 
 **Example**
 
@@ -280,12 +354,11 @@ end
 
 ---
 
-### `LSkeleton:addSlot`
+#### `LSkeleton:addSlot`
 
 Adds a slot attached to a specific bone, optionally assigning a default attachment name.
 
 ```lua
--- signature
 LSkeleton:addSlot(name, bone_idx, attachment)
 ```
 
@@ -293,15 +366,15 @@ LSkeleton:addSlot(name, bone_idx, attachment)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for this slot. |
-| `bone_idx` | `number` | Zero-based index of the bone this slot is attached to. |
-| `attachment?` | `string` | Optional default attachment name for this slot. |
+| `name` | string | Unique name for this slot. |
+| `bone_idx` | number | Zero-based index of the bone this slot is attached to. |
+| `attachment?` | string | Optional default attachment name for this slot. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based index of the newly added slot. |
+| number | Zero-based index of the newly added slot. |
 
 **Example**
 
@@ -316,12 +389,11 @@ end
 
 ---
 
-### `LSkeleton:blendAnimation`
+#### `LSkeleton:blendAnimation`
 
 Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
 
 ```lua
--- signature
 LSkeleton:blendAnimation(anim, time, blend_weight)
 ```
 
@@ -329,9 +401,9 @@ LSkeleton:blendAnimation(anim, time, blend_weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim` | `LSkeletonAnimation` | The animation to sample and blend from. |
-| `time` | `number` | The time position to sample within the animation. |
-| `blend_weight?` | `number` | Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0. |
+| `anim` | [LSkeletonAnimation](#lskeletonanimation-handle) | The animation to sample and blend from. |
+| `time` | number | The time position to sample within the animation. |
+| `blend_weight?` | number | Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0. |
 
 **Example**
 
@@ -352,12 +424,11 @@ end
 
 ---
 
-### `LSkeleton:boneCount`
+#### `LSkeleton:boneCount`
 
 Returns the total number of bones in the skeleton.
 
 ```lua
--- signature
 LSkeleton:boneCount()
 ```
 
@@ -365,7 +436,7 @@ LSkeleton:boneCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Bone count. |
+| number | Bone count. |
 
 **Example**
 
@@ -380,12 +451,11 @@ end
 
 ---
 
-### `LSkeleton:drawToImage`
+#### `LSkeleton:drawToImage`
 
 Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
 
 ```lua
--- signature
 LSkeleton:drawToImage(w, h)
 ```
 
@@ -393,14 +463,14 @@ LSkeleton:drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width of the output image in pixels. |
-| `h` | `number` | Height of the output image in pixels. |
+| `w` | number | Width of the output image in pixels. |
+| `h` | number | Height of the output image in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | A new image data object containing the rendered skeleton. |
+| LImageData | A new image data object containing the rendered skeleton. |
 
 **Example**
 
@@ -417,12 +487,11 @@ end
 
 ---
 
-### `LSkeleton:findBone`
+#### `LSkeleton:findBone`
 
 Searches for a bone by name and returns its zero-based index, or nil if not found.
 
 ```lua
--- signature
 LSkeleton:findBone(name)
 ```
 
@@ -430,13 +499,13 @@ LSkeleton:findBone(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the bone to find. |
+| `name` | string | Name of the bone to find. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based bone index, or nil if no bone with that name exists. |
+| number | Zero-based bone index, or nil if no bone with that name exists. |
 
 **Example**
 
@@ -451,12 +520,11 @@ end
 
 ---
 
-### `LSkeleton:findSlot`
+#### `LSkeleton:findSlot`
 
 Searches for a slot by name and returns its zero-based index, or nil if not found.
 
 ```lua
--- signature
 LSkeleton:findSlot(name)
 ```
 
@@ -464,13 +532,13 @@ LSkeleton:findSlot(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the slot to find. |
+| `name` | string | Name of the slot to find. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based slot index, or nil if no slot with that name exists. |
+| number | Zero-based slot index, or nil if no slot with that name exists. |
 
 **Example**
 
@@ -485,12 +553,11 @@ end
 
 ---
 
-### `LSkeleton:getAnimationTime`
+#### `LSkeleton:getAnimationTime`
 
 Returns the current playback time of the active animation in seconds.
 
 ```lua
--- signature
 LSkeleton:getAnimationTime()
 ```
 
@@ -498,7 +565,7 @@ LSkeleton:getAnimationTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current animation time position. |
+| number | Current animation time position. |
 
 **Example**
 
@@ -514,12 +581,11 @@ end
 
 ---
 
-### `LSkeleton:getBoneWorld`
+#### `LSkeleton:getBoneWorld`
 
 Returns the final world-space transform of a bone after hierarchy resolution.
 
 ```lua
--- signature
 LSkeleton:getBoneWorld(idx)
 ```
 
@@ -527,13 +593,13 @@ LSkeleton:getBoneWorld(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Zero-based bone index. |
+| `idx` | number | Zero-based bone index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSkeletonGetBoneWorldResult` | Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid. |
+| LSkeletonGetBoneWorldResult | Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid. |
 
 **Example**
 
@@ -549,12 +615,11 @@ end
 
 ---
 
-### `LSkeleton:getSkin`
+#### `LSkeleton:getSkin`
 
 Returns the name of the currently active skin, or nil if no skin is set.
 
 ```lua
--- signature
 LSkeleton:getSkin()
 ```
 
@@ -562,7 +627,7 @@ LSkeleton:getSkin()
 
 | Type | Description |
 |------|-------------|
-| `string` | Active skin name or nil. |
+| string | Active skin name or nil. |
 
 **Example**
 
@@ -577,12 +642,11 @@ end
 
 ---
 
-### `LSkeleton:playAnimation`
+#### `LSkeleton:playAnimation`
 
 Starts playing a named animation on this skeleton. Optionally loops.
 
 ```lua
--- signature
 LSkeleton:playAnimation(name, looping)
 ```
 
@@ -590,14 +654,14 @@ LSkeleton:playAnimation(name, looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the animation to play (must have been added via addAnimation). |
-| `looping?` | `boolean` | Whether to loop the animation. Defaults to true. |
+| `name` | string | Name of the animation to play (must have been added via addAnimation). |
+| `looping?` | boolean | Whether to loop the animation. Defaults to true. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the animation was found and started, false otherwise. |
+| boolean | True if the animation was found and started, false otherwise. |
 
 **Example**
 
@@ -614,12 +678,11 @@ end
 
 ---
 
-### `LSkeleton:setIKTarget`
+#### `LSkeleton:setIKTarget`
 
 Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
 
 ```lua
--- signature
 LSkeleton:setIKTarget(name, x, y)
 ```
 
@@ -627,15 +690,15 @@ LSkeleton:setIKTarget(name, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the IK constraint to update. |
-| `x` | `number` | Target world X coordinate. |
-| `y` | `number` | Target world Y coordinate. |
+| `name` | string | Name of the IK constraint to update. |
+| `x` | number | Target world X coordinate. |
+| `y` | number | Target world Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the constraint was found and updated, false otherwise. |
+| boolean | True if the constraint was found and updated, false otherwise. |
 
 **Example**
 
@@ -653,12 +716,11 @@ end
 
 ---
 
-### `LSkeleton:setPosition`
+#### `LSkeleton:setPosition`
 
 Sets the root bone world position, shifting the entire skeleton.
 
 ```lua
--- signature
 LSkeleton:setPosition(x, y)
 ```
 
@@ -666,8 +728,8 @@ LSkeleton:setPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | World X coordinate. |
-| `y` | `number` | World Y coordinate. |
+| `x` | number | World X coordinate. |
+| `y` | number | World Y coordinate. |
 
 **Example**
 
@@ -681,12 +743,11 @@ end
 
 ---
 
-### `LSkeleton:setSkin`
+#### `LSkeleton:setSkin`
 
 Activates a named skin, applying its slot-attachment mappings to the skeleton.
 
 ```lua
--- signature
 LSkeleton:setSkin(name)
 ```
 
@@ -694,13 +755,13 @@ LSkeleton:setSkin(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the skin to activate (must have been added via addSkin). |
+| `name` | string | Name of the skin to activate (must have been added via addSkin). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the skin was found and activated, false otherwise. |
+| boolean | True if the skin was found and activated, false otherwise. |
 
 **Example**
 
@@ -715,12 +776,11 @@ end
 
 ---
 
-### `LSkeleton:setSkinMapping`
+#### `LSkeleton:setSkinMapping`
 
 Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
 
 ```lua
--- signature
 LSkeleton:setSkinMapping(skin, slot, attachment)
 ```
 
@@ -728,9 +788,9 @@ LSkeleton:setSkinMapping(skin, slot, attachment)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `skin` | `string` | Name of the skin to add the mapping to. |
-| `slot` | `string` | Name of the slot to remap. |
-| `attachment` | `string` | Attachment name to display in that slot when the skin is active. |
+| `skin` | string | Name of the skin to add the mapping to. |
+| `slot` | string | Name of the slot to remap. |
+| `attachment` | string | Attachment name to display in that slot when the skin is active. |
 
 **Example**
 
@@ -749,12 +809,11 @@ end
 
 ---
 
-### `LSkeleton:slotCount`
+#### `LSkeleton:slotCount`
 
 Returns the total number of slots in the skeleton.
 
 ```lua
--- signature
 LSkeleton:slotCount()
 ```
 
@@ -762,7 +821,7 @@ LSkeleton:slotCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Slot count. |
+| number | Slot count. |
 
 **Example**
 
@@ -777,12 +836,11 @@ end
 
 ---
 
-### `LSkeleton:stopAnimation`
+#### `LSkeleton:stopAnimation`
 
 Stops the currently playing animation and resets playback state.
 
 ```lua
--- signature
 LSkeleton:stopAnimation()
 ```
 
@@ -801,12 +859,11 @@ end
 
 ---
 
-### `LSkeleton:type`
+#### `LSkeleton:type`
 
 Returns the type name of this userdata object.
 
 ```lua
--- signature
 LSkeleton:type()
 ```
 
@@ -814,7 +871,7 @@ LSkeleton:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LSkeleton". |
+| string | Always "[LSkeleton](#lskeleton-handle)". |
 
 **Example**
 
@@ -827,12 +884,11 @@ end
 
 ---
 
-### `LSkeleton:typeOf`
+#### `LSkeleton:typeOf`
 
-Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
+Checks whether this object is of the given type name. Supports "[LSkeleton](#lskeleton-handle)" and "Object".
 
 ```lua
--- signature
 LSkeleton:typeOf(name)
 ```
 
@@ -840,13 +896,13 @@ LSkeleton:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -859,12 +915,11 @@ end
 
 ---
 
-### `LSkeleton:updateAnimation`
+#### `LSkeleton:updateAnimation`
 
 Advances the current animation by a delta time, applying bone transforms to the skeleton.
 
 ```lua
--- signature
 LSkeleton:updateAnimation(dt)
 ```
 
@@ -872,7 +927,7 @@ LSkeleton:updateAnimation(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Time step in seconds (e.g. from lurek.timer.getDelta()). |
+| `dt` | number | Time step in seconds (e.g. from lurek.timer.getDelta()). |
 
 **Example**
 
@@ -889,12 +944,11 @@ end
 
 ---
 
-### `LSkeleton:updateWorldTransforms`
+#### `LSkeleton:updateWorldTransforms`
 
 Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
 
 ```lua
--- signature
 LSkeleton:updateWorldTransforms()
 ```
 
@@ -911,14 +965,19 @@ end
 
 ---
 
-## LSkeletonAnimation
+## LSkeletonAnimation Handle
 
-### `LSkeletonAnimation:addEventKey`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSkeletonAnimation:addEventKey`
 
 Inserts an event trigger at a specific time within the animation timeline.
 
 ```lua
--- signature
 LSkeletonAnimation:addEventKey(time, name, value)
 ```
 
@@ -926,9 +985,9 @@ LSkeletonAnimation:addEventKey(time, name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `time` | `number` | Time position in seconds when the event fires. |
-| `name` | `string` | Name of the event (used to identify it when querying). |
-| `value?` | `number` | Optional numeric payload for the event. Defaults to 0. |
+| `time` | number | Time position in seconds when the event fires. |
+| `name` | string | Name of the event (used to identify it when querying). |
+| `value?` | number | Optional numeric payload for the event. Defaults to 0. |
 
 **Example**
 
@@ -943,12 +1002,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:addKeyframe`
+#### `LSkeletonAnimation:addKeyframe`
 
 Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
 
 ```lua
--- signature
 LSkeletonAnimation:addKeyframe(bone_idx, property, time, value, easing)
 ```
 
@@ -956,11 +1014,11 @@ LSkeletonAnimation:addKeyframe(bone_idx, property, time, value, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bone_idx` | `number` | Zero-based index of the target bone. |
-| `property` | `string` | Bone property: "x", "y", "rotation", "scale_x", or "scale_y". |
-| `time` | `number` | Time position in seconds for this keyframe. |
-| `value` | `number` | Value of the property at this keyframe. |
-| `easing?` | `string` | Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step". |
+| `bone_idx` | number | Zero-based index of the target bone. |
+| `property` | string | Bone property: "x", "y", "rotation", "scale_x", or "scale_y". |
+| `time` | number | Time position in seconds for this keyframe. |
+| `value` | number | Value of the property at this keyframe. |
+| `easing?` | string | Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step". |
 
 **Example**
 
@@ -975,12 +1033,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:getDuration`
+#### `LSkeletonAnimation:getDuration`
 
 Returns the total duration of this animation in seconds.
 
 ```lua
--- signature
 LSkeletonAnimation:getDuration()
 ```
 
@@ -988,7 +1045,7 @@ LSkeletonAnimation:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -1001,12 +1058,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:getEvents`
+#### `LSkeletonAnimation:getEvents`
 
 Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
 
 ```lua
--- signature
 LSkeletonAnimation:getEvents(from, to)
 ```
 
@@ -1014,14 +1070,14 @@ LSkeletonAnimation:getEvents(from, to)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Start time in seconds (inclusive). |
-| `to` | `number` | End time in seconds (exclusive). |
+| `from` | number | Start time in seconds (inclusive). |
+| `to` | number | End time in seconds (exclusive). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSkeletonAnimationGetEventsResult` | Array of tables, each with "name" (string) and "value" (number) fields. |
+| LSkeletonAnimationGetEventsResult | Array of tables, each with "name" (string) and "value" (number) fields. |
 
 **Example**
 
@@ -1036,12 +1092,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:getTimelineCount`
+#### `LSkeletonAnimation:getTimelineCount`
 
 Returns the number of bone-property timelines in this animation.
 
 ```lua
--- signature
 LSkeletonAnimation:getTimelineCount()
 ```
 
@@ -1049,7 +1104,7 @@ LSkeletonAnimation:getTimelineCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Timeline count. |
+| number | Timeline count. |
 
 **Example**
 
@@ -1063,12 +1118,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:poseAt`
+#### `LSkeletonAnimation:poseAt`
 
 Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
 
 ```lua
--- signature
 LSkeletonAnimation:poseAt(time)
 ```
 
@@ -1076,13 +1130,13 @@ LSkeletonAnimation:poseAt(time)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `time` | `number` | Time position in seconds to sample. |
+| `time` | number | Time position in seconds to sample. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSkeletonAnimationPoseAtResult` | Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number). |
+| LSkeletonAnimationPoseAtResult | Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number). |
 
 **Example**
 
@@ -1097,12 +1151,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:reverse`
+#### `LSkeletonAnimation:reverse`
 
 Creates a new animation that plays this animation's keyframes in reverse order.
 
 ```lua
--- signature
 LSkeletonAnimation:reverse()
 ```
 
@@ -1110,7 +1163,7 @@ LSkeletonAnimation:reverse()
 
 | Type | Description |
 |------|-------------|
-| `LSkeletonAnimation` | A new reversed copy of this animation. |
+| [LSkeletonAnimation](#lskeletonanimation-handle) | A new reversed copy of this animation. |
 
 **Example**
 
@@ -1126,12 +1179,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:type`
+#### `LSkeletonAnimation:type`
 
 Returns the type name of this userdata object.
 
 ```lua
--- signature
 LSkeletonAnimation:type()
 ```
 
@@ -1139,7 +1191,7 @@ LSkeletonAnimation:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LSkeletonAnimation". |
+| string | Always "[LSkeletonAnimation](#lskeletonanimation-handle)". |
 
 **Example**
 
@@ -1152,12 +1204,11 @@ end
 
 ---
 
-### `LSkeletonAnimation:typeOf`
+#### `LSkeletonAnimation:typeOf`
 
-Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
+Checks whether this object is of the given type name. Supports "[LSkeletonAnimation](#lskeletonanimation-handle)" and "Object".
 
 ```lua
--- signature
 LSkeletonAnimation:typeOf(name)
 ```
 
@@ -1165,13 +1216,13 @@ LSkeletonAnimation:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 

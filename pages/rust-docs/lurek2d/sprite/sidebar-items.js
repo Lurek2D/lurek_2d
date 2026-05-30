@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["atlas","nine_slice","sprite","sprite_batch","sprite_sheet"]};

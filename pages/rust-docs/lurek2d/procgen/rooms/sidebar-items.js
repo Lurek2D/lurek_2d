@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["rooms_dungeon","rooms_dungeon_with_prefabs"],"struct":["PlacedRoomPrefab","Room","RoomPrefabStamp","RoomsDungeon","RoomsOpts"]};

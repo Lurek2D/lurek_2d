@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["border_index","cache","distance_field","events","gpu_bridge","gpu_upload","import","labels","map_modes","properties","province_grid","registry","render","routing","topology","types","view_transform"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["create_border_index_texture","create_distance_field_texture","create_province_gpu_textures","create_province_id_texture","pack_u16_pixels_le","pack_u32_pixels_le"],"struct":["ProvinceGpuTextures"]};

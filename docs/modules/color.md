@@ -1,19 +1,56 @@
 # Color
 
-- RGBA color primitives with color-space conversions, blending modes, and predefined palettes for 2D rendering.
+## Summary
 
-The color module provides linear RGBA float color types, constructors from multiple color spaces (hex, HSL, HSV, u8), blending operations (lerp, multiply, screen, overlay, additive, alpha blend), and predefined palettes (CSS named colors, PICO-8, Game Boy, NES). Colors in Lua are plain tables `{r, g, b, a}` indexed 1–4 for maximum interop with rendering APIs. The module also exposes gamma↔linear conversion utilities and a brightness calculator.
+The `color` module is the foundational color utility layer for linear RGBA operations, palette access, blending, and color-space conversion. Its core `Color` model and helpers provide a stable contract used by rendering, effects, UI, and tooling paths.
 
-This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+Submodules separate concerns cleanly: `color_core` handles representation and transforms (including HSL/HSV and gamma-linear conversions), `palette` provides named and retro palette catalogs, and `blend` provides compositing/interpolation operations such as lerp, multiply, screen, overlay, additive, and alpha blend.
+
+The module's value is consistency across engine systems. Instead of ad-hoc formulas repeated in many places, color math is centralized here so behavior remains predictable and testable.
+
+As a foundations module, its APIs should remain small, explicit, and deterministic. Higher-level artistic policy belongs elsewhere; this module should continue to provide the reusable primitives those policies rely on.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### blend.rs
+
+- Implements color blending helpers for interpolation and compositing-style channel math.
+- Provides clamped linear interpolation between RGBA values for smooth visual transitions.
+- Keeps operations lightweight and deterministic for per-frame use in effects and tween flows.
+- Serves as the core blend-utility layer consumed by rendering-adjacent systems.
+
+### color_core.rs
+
+- Implements core color representation and conversion utilities across RGB, HSL, and HSV domains.
+- Parses hex color strings into structured channel values with support for common shorthand forms.
+- Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging.
+- Provides pure color-space transforms suitable for runtime use without hidden global state.
+- Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs.
+- Serves as the foundational color math and parsing layer for the full color module.
+
+### mod.rs
+
+- Defines the color module boundary for channel types, conversion logic, palettes, and blending helpers.
+- Groups core color math and curated palette sources into one reusable runtime surface.
+- Serves as the composition entry for engine-side and Lua-side color workflows.
+
+### palette.rs
+
+- Implements named color-palette collections for retro, utility, and designer-oriented presets.
+- Stores curated palette definitions as static data for low-overhead runtime access.
+- Provides lookup and conversion helpers that map palette entries into structured color values.
+- Supports extension flows where new palette sets can be surfaced through higher API layers.
+- Serves as the canonical palette source used by rendering tools and script-facing color features.
 
 ## Functions
 
 ### `lurek.color.additive`
 
-Additive blend of two colors (clamped to 0–1 per channel).
+Additive blend of two colors (clamped to 0â€“1 per channel).
 
 ```lua
--- signature
 lurek.color.additive(c1, c2)
 ```
 
@@ -21,14 +58,14 @@ lurek.color.additive(c1, c2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c1` | `table` | First color {r, g, b, a}. |
-| `c2` | `table` | Second color {r, g, b, a}. |
+| `c1` | table | First color {r, g, b, a}. |
+| `c2` | table | Second color {r, g, b, a}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Additively blended color table. |
+| table | Additively blended color table. |
 
 **Example**
 
@@ -49,7 +86,6 @@ end
 Alpha compositing (Porter-Duff "over") of foreground over background.
 
 ```lua
--- signature
 lurek.color.alphaBlend(fg, bg)
 ```
 
@@ -57,14 +93,14 @@ lurek.color.alphaBlend(fg, bg)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fg` | `table` | Foreground color {r, g, b, a}. |
-| `bg` | `table` | Background color {r, g, b, a}. |
+| `fg` | table | Foreground color {r, g, b, a}. |
+| `bg` | table | Background color {r, g, b, a}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Composited color table. |
+| table | Composited color table. |
 
 **Example**
 
@@ -85,7 +121,6 @@ end
 Computes perceived luminance (ITU-R BT.601) of an RGB color.
 
 ```lua
--- signature
 lurek.color.brightness(r, g, b)
 ```
 
@@ -93,15 +128,15 @@ lurek.color.brightness(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Perceived brightness (0–1). |
+| number | Perceived brightness (0â€“1). |
 
 **Example**
 
@@ -119,7 +154,6 @@ end
 Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
 
 ```lua
--- signature
 lurek.color.fromHex(hex)
 ```
 
@@ -127,13 +161,13 @@ lurek.color.fromHex(hex)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `hex` | `string` | Hex color string with leading '#'. |
+| `hex` | string | Hex color string with leading '#'. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | nil | Color table or nil if parsing fails. |
+| table | nil | Color table or nil if parsing fails. |
 
 **Example**
 
@@ -154,7 +188,6 @@ end
 Creates a color from HSL components. Returns an opaque color (alpha = 1).
 
 ```lua
--- signature
 lurek.color.fromHsl(h, s, l)
 ```
 
@@ -162,15 +195,15 @@ lurek.color.fromHsl(h, s, l)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `h` | `number` | Hue in degrees (0–360). |
-| `s` | `number` | Saturation (0–1). |
-| `l` | `number` | Lightness (0–1). |
+| `h` | number | Hue in degrees (0â€“360). |
+| `s` | number | Saturation (0â€“1). |
+| `l` | number | Lightness (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Color table {r, g, b, a}. |
+| table | Color table {r, g, b, a}. |
 
 **Example**
 
@@ -189,7 +222,6 @@ end
 Creates a color from HSV components. Returns an opaque color (alpha = 1).
 
 ```lua
--- signature
 lurek.color.fromHsv(h, s, v)
 ```
 
@@ -197,15 +229,15 @@ lurek.color.fromHsv(h, s, v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `h` | `number` | Hue in degrees (0–360). |
-| `s` | `number` | Saturation (0–1). |
-| `v` | `number` | Value/brightness (0–1). |
+| `h` | number | Hue in degrees (0â€“360). |
+| `s` | number | Saturation (0â€“1). |
+| `v` | number | Value/brightness (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Color table {r, g, b, a}. |
+| table | Color table {r, g, b, a}. |
 
 **Example**
 
@@ -221,10 +253,9 @@ end
 
 ### `lurek.color.fromU8`
 
-Creates a color from 0–255 integer components. Alpha defaults to 255.
+Creates a color from 0â€“255 integer components. Alpha defaults to 255.
 
 ```lua
--- signature
 lurek.color.fromU8(r, g, b, a)
 ```
 
@@ -232,16 +263,16 @@ lurek.color.fromU8(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–255). |
-| `g` | `number` | Green channel (0–255). |
-| `b` | `number` | Blue channel (0–255). |
-| `a?` | `number` | Alpha channel (0–255); defaults to 255. |
+| `r` | number | Red channel (0â€“255). |
+| `g` | number | Green channel (0â€“255). |
+| `b` | number | Blue channel (0â€“255). |
+| `a?` | number | Alpha channel (0â€“255); defaults to 255. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Color table {r, g, b, a} with values normalised to 0–1. |
+| table | Color table {r, g, b, a} with values normalised to 0â€“1. |
 
 **Example**
 
@@ -260,7 +291,6 @@ end
 Converts a single sRGB gamma-encoded component to linear space.
 
 ```lua
--- signature
 lurek.color.gammaToLinear(c)
 ```
 
@@ -268,13 +298,13 @@ lurek.color.gammaToLinear(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | Gamma-encoded value (0–1). |
+| `c` | number | Gamma-encoded value (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Linear value. |
+| number | Linear value. |
 
 **Example**
 
@@ -292,7 +322,6 @@ end
 Inverts the RGB channels of a color, keeping alpha unchanged.
 
 ```lua
--- signature
 lurek.color.invert(r, g, b, a)
 ```
 
@@ -300,16 +329,16 @@ lurek.color.invert(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
-| `a?` | `number` | Alpha channel (0–1); defaults to 1.0. |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
+| `a?` | number | Alpha channel (0â€“1); defaults to 1.0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Inverted color table. |
+| table | Inverted color table. |
 
 **Example**
 
@@ -325,10 +354,9 @@ end
 
 ### `lurek.color.lerp`
 
-Linearly interpolates between two color tables by factor t (clamped to 0–1).
+Linearly interpolates between two color tables by factor t (clamped to 0â€“1).
 
 ```lua
--- signature
 lurek.color.lerp(c1, c2, t)
 ```
 
@@ -336,15 +364,15 @@ lurek.color.lerp(c1, c2, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c1` | `table` | Start color {r, g, b, a}. |
-| `c2` | `table` | End color {r, g, b, a}. |
-| `t` | `number` | Interpolation factor (0–1). |
+| `c1` | table | Start color {r, g, b, a}. |
+| `c2` | table | End color {r, g, b, a}. |
+| `t` | number | Interpolation factor (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Interpolated color table. |
+| table | Interpolated color table. |
 
 **Example**
 
@@ -365,7 +393,6 @@ end
 Converts a single linear component to sRGB gamma-encoded space.
 
 ```lua
--- signature
 lurek.color.linearToGamma(c)
 ```
 
@@ -373,13 +400,13 @@ lurek.color.linearToGamma(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | Linear value (0–1). |
+| `c` | number | Linear value (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Gamma-encoded value. |
+| number | Gamma-encoded value. |
 
 **Example**
 
@@ -397,7 +424,6 @@ end
 Channel-wise multiply blend of two colors.
 
 ```lua
--- signature
 lurek.color.multiply(c1, c2)
 ```
 
@@ -405,14 +431,14 @@ lurek.color.multiply(c1, c2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c1` | `table` | First color {r, g, b, a}. |
-| `c2` | `table` | Second color {r, g, b, a}. |
+| `c1` | table | First color {r, g, b, a}. |
+| `c2` | table | Second color {r, g, b, a}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Multiplied color table. |
+| table | Multiplied color table. |
 
 **Example**
 
@@ -430,10 +456,9 @@ end
 
 ### `lurek.color.new`
 
-Creates an RGBA color from 0–1 float components. Alpha defaults to 1.0.
+Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.
 
 ```lua
--- signature
 lurek.color.new(r, g, b, a)
 ```
 
@@ -441,16 +466,16 @@ lurek.color.new(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
-| `a?` | `number` | Alpha channel (0–1); defaults to 1.0. |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
+| `a?` | number | Alpha channel (0â€“1); defaults to 1.0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Color table {r, g, b, a}. |
+| table | Color table {r, g, b, a}. |
 
 **Example**
 
@@ -469,7 +494,6 @@ end
 Overlay blend of two colors exposed by the lurek engine.
 
 ```lua
--- signature
 lurek.color.overlay(base, blend)
 ```
 
@@ -477,14 +501,14 @@ lurek.color.overlay(base, blend)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `base` | `table` | Base color {r, g, b, a}. |
-| `blend` | `table` | Blend color {r, g, b, a}. |
+| `base` | table | Base color {r, g, b, a}. |
+| `blend` | table | Blend color {r, g, b, a}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Overlay-blended color table. |
+| table | Overlay-blended color table. |
 
 **Example**
 
@@ -505,7 +529,6 @@ end
 Returns a named retro palette as a table of color tables. Supported: "pico8", "gameboy", "nes".
 
 ```lua
--- signature
 lurek.color.palette(name)
 ```
 
@@ -513,13 +536,13 @@ lurek.color.palette(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Palette name ("pico8", "gameboy", or "nes"). |
+| `name` | string | Palette name ("pico8", "gameboy", or "nes"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of color tables, or empty table if name is unknown. |
+| table | Array of color tables, or empty table if name is unknown. |
 
 **Example**
 
@@ -540,7 +563,6 @@ end
 Apply screen blend mode to combine two color values.
 
 ```lua
--- signature
 lurek.color.screen(c1, c2)
 ```
 
@@ -548,14 +570,14 @@ lurek.color.screen(c1, c2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c1` | `table` | First color {r, g, b, a}. |
-| `c2` | `table` | Second color {r, g, b, a}. |
+| `c1` | table | First color {r, g, b, a}. |
+| `c2` | table | Second color {r, g, b, a}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Screen-blended color table. |
+| table | Screen-blended color table. |
 
 **Example**
 
@@ -576,7 +598,6 @@ end
 Converts RGBA components to a hex string ("#RRGGBB" or "#RRGGBBAA" if alpha < 1).
 
 ```lua
--- signature
 lurek.color.toHex(r, g, b, a)
 ```
 
@@ -584,16 +605,16 @@ lurek.color.toHex(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
-| `a?` | `number` | Alpha channel (0–1); defaults to 1.0. |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
+| `a?` | number | Alpha channel (0â€“1); defaults to 1.0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Hex color string. |
+| string | Hex color string. |
 
 **Example**
 
@@ -611,7 +632,6 @@ end
 Convert RGB color components to HSL color representation.
 
 ```lua
--- signature
 lurek.color.toHsl(r, g, b)
 ```
 
@@ -619,17 +639,17 @@ lurek.color.toHsl(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Hue (0–360), saturation (0–1), lightness (0–1). |
-| `number` | b Hue (0–360), saturation (0–1), lightness (0–1). |
-| `number` | c Hue (0–360), saturation (0–1), lightness (0–1). |
+| number | Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 1). |
+| number | Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 2). |
+| number | Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 3). |
 
 **Example**
 
@@ -647,7 +667,6 @@ end
 Returns a color with the alpha channel replaced.
 
 ```lua
--- signature
 lurek.color.withAlpha(r, g, b, a, newAlpha)
 ```
 
@@ -655,17 +674,17 @@ lurek.color.withAlpha(r, g, b, a, newAlpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel (0–1). |
-| `g` | `number` | Green channel (0–1). |
-| `b` | `number` | Blue channel (0–1). |
-| `a` | `number` | Original alpha (ignored in output). |
-| `newAlpha` | `number` | New alpha channel value (0–1). |
+| `r` | number | Red channel (0â€“1). |
+| `g` | number | Green channel (0â€“1). |
+| `b` | number | Blue channel (0â€“1). |
+| `a` | number | Original alpha (ignored in output). |
+| `newAlpha` | number | New alpha channel value (0â€“1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Color table with the new alpha. |
+| table | Color table with the new alpha. |
 
 **Example**
 
@@ -678,3 +697,19 @@ end
 ```
 
 ---
+
+## Module Fields
+
+*No module-level fields documented.*
+
+## Types
+
+*No Lua userdata types detected for this module.*
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*

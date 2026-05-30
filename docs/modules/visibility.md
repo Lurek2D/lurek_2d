@@ -1,6 +1,6 @@
 # Visibility
 
-- The `visibility` module is a geometry-agnostic fog-of-war, discovery state, and line-of-sight system attachable to any region-based map (tilemap, province, globe, or custom grids).
+## Summary
 
 The `visibility` module provides a universal fog-of-war and discovery layer that can be attached to any region-based map without coupling to a specific map module. The foundational abstraction is the `AdjacencyProvider` trait: callers implement a single `neighbors(region_id)` method to describe neighbor relationships. Grid maps inject 4- or 8-directional adjacency; province maps use their border index; custom systems supply arbitrary neighbor lists. This injection point is the only geometry dependency.
 
@@ -10,6 +10,79 @@ Discovery semantics are controlled per region via `VisibilityCost`: a movement-p
 
 Rendering integration is handled via `FogRenderConfig`, which supplies per-state fog opacity values and RGBA tint colors composited as per-tile multiply in the world render pass. The full grid state serializes compactly (2 bits per region per faction) into the save file. The `lurek.visibility.*` Lua API exposes grid construction, reveal/hide calls, state queries, event draining, cost and flag mutation, faction grouping, and fog configuration.
 
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### adjacency.rs
+
+- This file provides the adjacency abstraction that supplies neighborhood topology to visibility.
+- It defines a geometry-agnostic contract so grids, graphs, and region maps share one interface.
+- It enables visibility algorithms to run without coupling to any single world representation.
+- It keeps neighbor queries and region cardinality explicit for deterministic reveal behavior.
+
+### cost.rs
+
+- This file provides per-region discovery cost metadata used by reveal progression logic.
+- It encodes adjacency prerequisites and progression thresholds for visibility expansion.
+- It keeps reveal gating explicit so exploration pacing remains tunable and predictable.
+
+### events.rs
+
+- This file provides event types emitted when visibility state transitions occur.
+- It captures reveal, hide, and ownership-related changes as script-consumable signals.
+- It enables frame-coherent reaction flows for fog effects and gameplay scripting hooks.
+
+### flags.rs
+
+- This file provides bitflag storage for per-region visibility-related feature markers.
+- It encodes what information layers are present or unlocked for each map region.
+- It supports gated reveal logic by combining flag checks with discovery progression rules.
+- It keeps per-region capability state compact and efficient for frequent visibility queries.
+
+### fog_render.rs
+
+- This file provides fog rendering configuration that maps visibility state to visual intensity.
+- It defines opacity and transition behavior used by world compositing passes.
+- It keeps fog appearance tunable without altering visibility simulation internals.
+
+### grid.rs
+
+- This file provides the main visibility grid that stores region state across players and factions.
+- It tracks current and historical knowledge levels to separate visible and discovered outcomes.
+- It drives reveal and hide progression while emitting state-change events for script consumers.
+- It marks dirty regions so rendering and event systems process only meaningful transitions.
+- It supports compact serialization so long-campaign visibility history remains save-friendly.
+
+### mod.rs
+
+- This module delivers the high-level fog, discovery, and line-of-sight system for region maps.
+- It stays geometry-agnostic so tile, province, and custom topologies can share the same model.
+- It unifies state storage, ownership sharing, reveal costs, events, and fog presentation paths.
+
+### owner.rs
+
+- This file provides ownership and alliance mapping used for shared visibility semantics.
+- It tracks player grouping so allied entities can inherit reveal information coherently.
+- It answers hot-path sharing queries that visibility updates depend on each frame.
+- It ensures ownership changes can trigger consistent recalculation of affected states.
+
+### shadowcast.rs
+
+- This file provides recursive shadowcasting field-of-view for tile-grid visibility queries.
+- It computes current sight masks while preserving explored history across update frames.
+- It accepts blocker predicates at compute time for flexible integration with world state.
+- It serializes visible and explored masks so FOV state can persist across save boundaries.
+- It supports deterministic octant traversal suitable for stealth and roguelike mechanics.
+- It gives visibility systems a fast geometric core for line-of-sight decisions.
+- It keeps FOV computation stable enough for repeated per-frame use in tactical scenarios.
+
+### state.rs
+
+- This file provides the visibility state model that describes player knowledge per region.
+- It encodes hidden, discovered, visible, and extensible custom levels in one ordered enum.
+- It standardizes information progression so reveal logic and fog rendering stay consistent.
+
 ## Functions
 
 ### `lurek.visibility.new`
@@ -17,7 +90,6 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 Create a new visibility grid for shadow-cast computation.
 
 ```lua
--- signature
 lurek.visibility.new(config)
 ```
 
@@ -25,13 +97,13 @@ lurek.visibility.new(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | `table` | Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number). |
+| `config` | table | Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVisibilityGrid` | New visibility grid handle. |
+| [LVisibilityGrid](#lvisibilitygrid-handle) | New visibility grid handle. |
 
 **Example**
 
@@ -45,14 +117,416 @@ end
 
 ---
 
-## LVisibilityGrid
+### `lurek.visibility.newFov`
 
-### `LVisibilityGrid:drainEvents`
+Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+
+```lua
+lurek.visibility.newFov(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{ range=integer, light_walls=boolean? }` (default light_walls=true). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LFov](#lfov-handle) | New FOV handle ready for blocker assignment and compute calls. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    print("newFov type=" .. fov:type())
+end
+```
+
+---
+
+## Module Fields
+
+*No module-level fields documented.*
+
+## Types
+
+- [LFov Handle](#lfov-handle)
+- [LVisibilityGrid Handle](#lvisibilitygrid-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LFov Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFov:compute`
+
+Runs recursive shadowcasting from the observer position.
+
+```lua
+LFov:compute(ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ox` | number | Observer column (one-based). |
+| `oy` | number | Observer row (one-based). |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print("LFov:compute visible_10_10=" .. tostring(fov:isVisible(10, 10)))
+end
+```
+
+---
+
+#### `LFov:eachVisible`
+
+Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+
+```lua
+LFov:eachVisible(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Callback receiving column and row integers. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local count = 0
+    fov:eachVisible(function(_x, _y)
+        count = count + 1
+    end)
+    print("LFov:eachVisible count=" .. count)
+end
+```
+
+---
+
+#### `LFov:export`
+
+Serialises the visible and explored masks to a binary blob.
+
+```lua
+LFov:export()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local blob = fov:export()
+    print("LFov:export bytes=" .. #blob)
+end
+```
+
+---
+
+#### `LFov:import`
+
+Restores visible and explored masks from a blob produced by `export`.
+
+```lua
+LFov:import(blob)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `blob` | string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local blob = fov:export()
+
+    local fov2 = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov2:import(blob)
+    print("LFov:import explored_10_10=" .. tostring(fov2:isExplored(10, 10)))
+end
+```
+
+---
+
+#### `LFov:isExplored`
+
+Returns true if the cell has ever been visible.
+
+```lua
+LFov:isExplored(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Column (one-based). |
+| `y` | number | Row (one-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when explored. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print("LFov:isExplored_before_reset=" .. tostring(fov:isExplored(10, 10)))
+end
+```
+
+---
+
+#### `LFov:isVisible`
+
+Returns true if the cell is visible in the current frame.
+
+```lua
+LFov:isVisible(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Column (one-based). |
+| `y` | number | Row (one-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when visible. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print("LFov:isVisible=" .. tostring(fov:isVisible(12, 10)))
+end
+```
+
+---
+
+#### `LFov:resetExplored`
+
+Clears the explored mask so all cells appear unexplored.
+
+```lua
+LFov:resetExplored()
+```
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    fov:resetExplored()
+    print("LFov:resetExplored=" .. tostring(fov:isExplored(10, 10)))
+end
+```
+
+---
+
+#### `LFov:setBlocker`
+
+Sets the Lua predicate that determines which cells are opaque.
+
+```lua
+LFov:setBlocker(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | `fn(x: integer, y: integer) -> boolean` (one-based). |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:setBlocker(function(x, y)
+        return x == 10 and y >= 6 and y <= 14
+    end)
+    fov:compute(5, 10)
+    print("LFov:setBlocker visible_12_10=" .. tostring(fov:isVisible(12, 10)))
+end
+```
+
+---
+
+#### `LFov:setRange`
+
+Changes the visibility radius for subsequent compute calls.
+
+```lua
+LFov:setRange(range)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `range` | number | Maximum sight radius in cells. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 4 })
+    fov:setRange(10)
+    fov:compute(10, 10)
+    print("LFov:setRange visible_18_10=" .. tostring(fov:isVisible(18, 10)))
+end
+```
+
+---
+
+#### `LFov:type`
+
+Returns the Lua-visible type name for this FOV handle.
+
+```lua
+LFov:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LFov](#lfov-handle)`. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 8, height = 8, range = 4 })
+    print("LFov:type=" .. fov:type())
+end
+```
+
+---
+
+#### `LFov:typeOf`
+
+Returns whether this FOV handle matches the given type name.
+
+```lua
+LFov:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the name matches. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 8, height = 8, range = 4 })
+    print("LFov:typeOf_Fov=" .. tostring(fov:typeOf("LFov")))
+    print("LFov:typeOf_Object=" .. tostring(fov:typeOf("LObject")))
+end
+```
+
+---
+
+#### `LFov:visibleCells`
+
+Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+
+```lua
+LFov:visibleCells()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of cell position tables. |
+
+**Example**
+
+```lua
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local cells = fov:visibleCells()
+    print("LFov:visibleCells count=" .. #cells)
+end
+```
+
+---
+
+## LVisibilityGrid Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LVisibilityGrid:drainEvents`
 
 Drains and returns all pending visibility events.
 
 ```lua
--- signature
 LVisibilityGrid:drainEvents()
 ```
 
@@ -60,7 +534,7 @@ LVisibilityGrid:drainEvents()
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of event tables with `type`, `player_id`, and `region_id` fields. |
+| table | Array of event tables with `type`, `player_id`, and `region_id` fields. |
 
 **Example**
 
@@ -75,12 +549,11 @@ end
 
 ---
 
-### `LVisibilityGrid:getCost`
+#### `LVisibilityGrid:getCost`
 
 Gets the discovery cost for a region.
 
 ```lua
--- signature
 LVisibilityGrid:getCost(region_id)
 ```
 
@@ -88,13 +561,13 @@ LVisibilityGrid:getCost(region_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `region_id` | `number` | Region index (0-based). |
+| `region_id` | number | Region index (0-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Discovery cost value. |
+| number | Discovery cost value. |
 
 **Example**
 
@@ -108,12 +581,11 @@ end
 
 ---
 
-### `LVisibilityGrid:getFogIntensity`
+#### `LVisibilityGrid:getFogIntensity`
 
 Gets the fog intensity for a region from a player's perspective.
 
 ```lua
--- signature
 LVisibilityGrid:getFogIntensity(player_id, region_id)
 ```
 
@@ -121,14 +593,14 @@ LVisibilityGrid:getFogIntensity(player_id, region_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_id` | `number` | Player index (0-based). |
-| `region_id` | `number` | Region index (0-based). |
+| `player_id` | number | Player index (0-based). |
+| `region_id` | number | Region index (0-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Fog intensity from 0.0 (clear) to 1.0 (fully fogged). |
+| number | Fog intensity from 0.0 (clear) to 1.0 (fully fogged). |
 
 **Example**
 
@@ -142,12 +614,11 @@ end
 
 ---
 
-### `LVisibilityGrid:getState`
+#### `LVisibilityGrid:getState`
 
 Gets the visibility state for a player at a region.
 
 ```lua
--- signature
 LVisibilityGrid:getState(player_id, region_id)
 ```
 
@@ -155,14 +626,14 @@ LVisibilityGrid:getState(player_id, region_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_id` | `number` | Player index (0-based). |
-| `region_id` | `number` | Region index (0-based). |
+| `player_id` | number | Player index (0-based). |
+| `region_id` | number | Region index (0-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | "hidden", "discovered", "visible", or a number for custom levels. |
+| string | "hidden", "discovered", "visible", or a number for custom levels. |
 
 **Example**
 
@@ -176,12 +647,11 @@ end
 
 ---
 
-### `LVisibilityGrid:hasFlag`
+#### `LVisibilityGrid:hasFlag`
 
 Checks if a visibility flag bit is set on a region.
 
 ```lua
--- signature
 LVisibilityGrid:hasFlag(region_id, bit)
 ```
 
@@ -189,14 +659,14 @@ LVisibilityGrid:hasFlag(region_id, bit)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `region_id` | `number` | Region index (0-based). |
-| `bit` | `number` | Flag bit index (0-63). |
+| `region_id` | number | Region index (0-based). |
+| `bit` | number | Flag bit index (0-63). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Whether the bit is set. |
+| boolean | Whether the bit is set. |
 
 **Example**
 
@@ -210,12 +680,11 @@ end
 
 ---
 
-### `LVisibilityGrid:hide`
+#### `LVisibilityGrid:hide`
 
 Hides a region for a player (moves from Visible to Discovered).
 
 ```lua
--- signature
 LVisibilityGrid:hide(player_id, region_id)
 ```
 
@@ -223,8 +692,8 @@ LVisibilityGrid:hide(player_id, region_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_id` | `number` | Player index (0-based). |
-| `region_id` | `number` | Region index (0-based). |
+| `player_id` | number | Player index (0-based). |
+| `region_id` | number | Region index (0-based). |
 
 **Example**
 
@@ -239,12 +708,11 @@ end
 
 ---
 
-### `LVisibilityGrid:playerCount`
+#### `LVisibilityGrid:playerCount`
 
 Returns the total number of players in the grid.
 
 ```lua
--- signature
 LVisibilityGrid:playerCount()
 ```
 
@@ -252,7 +720,7 @@ LVisibilityGrid:playerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Player count. |
+| number | Player count. |
 
 **Example**
 
@@ -266,12 +734,11 @@ end
 
 ---
 
-### `LVisibilityGrid:regionCount`
+#### `LVisibilityGrid:regionCount`
 
 Returns the total number of regions in the grid.
 
 ```lua
--- signature
 LVisibilityGrid:regionCount()
 ```
 
@@ -279,7 +746,7 @@ LVisibilityGrid:regionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Region count. |
+| number | Region count. |
 
 **Example**
 
@@ -292,12 +759,11 @@ end
 
 ---
 
-### `LVisibilityGrid:reset`
+#### `LVisibilityGrid:reset`
 
 Resets all visibility to Hidden for a player.
 
 ```lua
--- signature
 LVisibilityGrid:reset(player_id)
 ```
 
@@ -305,7 +771,7 @@ LVisibilityGrid:reset(player_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_id` | `number` | Player index (0-based). |
+| `player_id` | number | Player index (0-based). |
 
 **Example**
 
@@ -320,12 +786,11 @@ end
 
 ---
 
-### `LVisibilityGrid:reveal`
+#### `LVisibilityGrid:reveal`
 
 Reveals a region for a player (and their allies). Optional flags argument.
 
 ```lua
--- signature
 LVisibilityGrid:reveal(player_id, region_id, flags)
 ```
 
@@ -333,9 +798,9 @@ LVisibilityGrid:reveal(player_id, region_id, flags)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_id` | `number` | Player index (0-based). |
-| `region_id` | `number` | Region index (0-based). |
-| `flags?` | `number` | Optional bitfield flags to set on the region. |
+| `player_id` | number | Player index (0-based). |
+| `region_id` | number | Region index (0-based). |
+| `flags?` | number | Optional bitfield flags to set on the region. |
 
 **Example**
 
@@ -349,12 +814,11 @@ end
 
 ---
 
-### `LVisibilityGrid:revealAll`
+#### `LVisibilityGrid:revealAll`
 
 Reveals all regions for a player (debug/cheat).
 
 ```lua
--- signature
 LVisibilityGrid:revealAll(player_id)
 ```
 
@@ -362,7 +826,7 @@ LVisibilityGrid:revealAll(player_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_id` | `number` | Player index (0-based). |
+| `player_id` | number | Player index (0-based). |
 
 **Example**
 
@@ -376,12 +840,11 @@ end
 
 ---
 
-### `LVisibilityGrid:setCost`
+#### `LVisibilityGrid:setCost`
 
 Sets the discovery cost for a region.
 
 ```lua
--- signature
 LVisibilityGrid:setCost(region_id, cost)
 ```
 
@@ -389,8 +852,8 @@ LVisibilityGrid:setCost(region_id, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `region_id` | `number` | Region index (0-based). |
-| `cost` | `number` | Discovery cost value. |
+| `region_id` | number | Region index (0-based). |
+| `cost` | number | Discovery cost value. |
 
 **Example**
 
@@ -404,12 +867,11 @@ end
 
 ---
 
-### `LVisibilityGrid:setFlag`
+#### `LVisibilityGrid:setFlag`
 
 Sets a visibility flag bit on a region.
 
 ```lua
--- signature
 LVisibilityGrid:setFlag(region_id, bit, value)
 ```
 
@@ -417,9 +879,9 @@ LVisibilityGrid:setFlag(region_id, bit, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `region_id` | `number` | Region index (0-based). |
-| `bit` | `number` | Flag bit index (0-63). |
-| `value` | `boolean` | Whether to set or clear the bit. |
+| `region_id` | number | Region index (0-based). |
+| `bit` | number | Flag bit index (0-63). |
+| `value` | boolean | Whether to set or clear the bit. |
 
 **Example**
 
@@ -433,12 +895,11 @@ end
 
 ---
 
-### `LVisibilityGrid:setGroup`
+#### `LVisibilityGrid:setGroup`
 
 Sets an alliance group for a list of players (shared visibility).
 
 ```lua
--- signature
 LVisibilityGrid:setGroup(players)
 ```
 
@@ -446,13 +907,13 @@ LVisibilityGrid:setGroup(players)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `players` | `table` | Array of player IDs (0-based) to group together. |
+| `players` | table | Array of player IDs (0-based) to group together. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The assigned group ID. |
+| number | The assigned group ID. |
 
 **Example**
 
@@ -466,12 +927,11 @@ end
 
 ---
 
-### `LVisibilityGrid:sharesVisibility`
+#### `LVisibilityGrid:sharesVisibility`
 
 Checks if two players share visibility (same alliance group or same player).
 
 ```lua
--- signature
 LVisibilityGrid:sharesVisibility(player_a, player_b)
 ```
 
@@ -479,14 +939,14 @@ LVisibilityGrid:sharesVisibility(player_a, player_b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `player_a` | `number` | First player index (0-based). |
-| `player_b` | `number` | Second player index (0-based). |
+| `player_a` | number | First player index (0-based). |
+| `player_b` | number | Second player index (0-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Whether they share visibility. |
+| boolean | Whether they share visibility. |
 
 **Example**
 

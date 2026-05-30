@@ -1,6 +1,6 @@
 # Physics
 
-- The `physics` module is a core Platform Services tier component that provides a robust, high-performance 2D rigid-body simulation for Lurek2D, backed by the industry-standard Rapier2D (v0.32) engine.
+## Summary
 
 At its center is the `World` struct, which completely encapsulates the Rapier simulation state, including body sets, collider sets, joint sets, and the broad/narrow-phase collision pipelines. The simulation is advanced via deterministic fixed-timestep sub-stepping (`step_fixed`), ensuring consistent and predictable physical interactions regardless of frame rate fluctuations.
 
@@ -10,6 +10,97 @@ A comprehensive suite of joints enables complex mechanical linkages between bodi
 
 Additionally, the `cellular` submodule provides a cellular automaton grid for simulating falling sand, flowing water, and other particle-like materials. For spatial queries, the module offers extensive raycasting, shape-casting, and point intersection tests, alongside pure-geometry collision helpers for lightweight, physics-free checks. The entire system—from body lifecycle management to collision event callbacks and debug rendering—is comprehensively exposed to the Lua environment via the `lurek.physics.*` API, forming the backbone of physical interactions in Lurek2D games.
 
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### body.rs
+
+- Physics body description layer that gathers the state a simulation object needs before or while it lives inside the world.
+- The file defines the playable vocabulary of rigid body roles such as dynamic movers, fixed solids, script-driven kinematics, and overlap-only sensors.
+- It also binds those roles to supported geometry forms, material defaults, collision filtering, and transform helpers so a body can be reasoned about as one coherent unit.
+- Constructors emphasize ready-to-use authoring by filling in sensible density, friction, restitution, and motion settings rather than forcing every caller to spell out raw fields.
+- Geometry utilities keep body space and world space connected, which matters for bounds queries, spawn setup, editor tooling, and shape-aware logic outside the solver.
+- Functionally this file delivers the authored physical identity of an object before the broader world machinery turns it into live simulated behavior.
+
+### collision.rs
+
+- Collision event buffering for the moments when physical contact needs to become stable gameplay information instead of transient solver state.
+- The file packages body pairs, normals, penetration data, and sensor transitions into an ordered queue that can be drained after stepping without disturbing the simulation loop.
+- Functionally this delivers the bridge from raw contact detection to script-consumable collision events with clean step-boundary timing.
+
+### collision_helpers.rs
+
+- Lightweight geometry overlap helpers for code that needs quick collision answers without standing up a full physics world.
+- The file keeps AABB, circle, and point tests allocation-free and side-effect free so they fit hot loops, culling, and cheap gameplay probes.
+- Functionally this delivers the smallest collision vocabulary for fast spatial checks in plain screen-space coordinates.
+
+### mod.rs
+
+- Platform-level 2D physics module that unifies authored bodies, geometric shapes, simulation stepping, spatial queries, terrain sync, and trigger-style environmental effects.
+- It exposes the major surfaces of the subsystem as one coherent toolbox, from lightweight helper tests through full world simulation and debug-oriented support structures.
+- Functionally this file is the high-level entry point for physical interaction, movement constraints, collision reporting, and physics-backed world state in Lurek2D.
+
+### render.rs
+
+- Physics debug rendering layer for turning invisible simulation state into visible lines, outlines, and motion cues that developers can inspect frame by frame.
+- The file translates bodies and shapes into render-friendly snapshots without changing the simulation, letting diagnostics live beside gameplay rather than inside it.
+- Type-based coloring keeps static, dynamic, kinematic, and sensor objects readable at a glance when scenes grow dense.
+- Velocity arrows and shape outlines expose both form and movement so developers can see why contacts, tunnels, or odd impulses are happening.
+- Functionally this delivers the visual instrumentation needed to understand, tune, and trust the physics subsystem during development.
+
+### shape.rs
+
+- Physics shape definition layer that gives the subsystem a compact language for circles, rectangles, polygons, edges, and chained outlines.
+- The file keeps geometry authoring, validation, and collider conversion close together so malformed inputs can be rejected before they become unstable runtime fixtures.
+- Parsing and regular-polygon construction make the surface practical for scripts, tools, and data-driven content that describe shape intent rather than raw engine objects.
+- Standalone shapes carry material and sensor settings alongside geometry, which lets authored collision pieces travel with the properties that affect how they behave in the world.
+- Local bounding logic keeps each shape queryable without needing a live body, which is useful for previews, authoring tools, and lightweight reasoning.
+- Functionally this file delivers the reusable geometry vocabulary that both bodies and higher-level physics workflows build upon.
+
+### terrain.rs
+
+- Destructible terrain map layer that turns editable solid cells into physics-ready world geometry without making callers manage collider lifecycles manually.
+- The file tracks terrain in chunks so local edits stay local, allowing flush operations to rebuild only the regions that actually changed.
+- Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
+- Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
+- Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
+- Debris spawning and collapse helpers push the system beyond passive walls into active destructible-environment behavior.
+- Functionally this file delivers the editable ground model that connects tile logic, destruction effects, and efficient static collision rebuilds.
+
+### types.rs
+
+- Small core type surface for the physics subsystem where stable identifiers need stronger meaning than a bare integer can provide.
+- The file wraps body identity in a dedicated type so physics handles remain cheap to pass around while still reading as deliberate domain values.
+- Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
+
+### world.rs
+
+- Central physics simulation world that owns the living state of rigid bodies, colliders, joints, queries, events, and solver progression for the engine.
+- The file wraps Rapier into an engine-shaped runtime surface where spawning, stepping, sleeping, destruction, and body mutation all speak one consistent game-facing vocabulary.
+- Fixed-timestep accumulation is part of that surface, which keeps motion and contact results deterministic enough for frame-rate-independent gameplay code.
+- Collision collection lives beside stepping so begin, end, and overlap information emerges as stable post-step data rather than scattered callbacks fired from deep inside the solver.
+- Spatial queries such as raycasts, point tests, and area checks share the same authoritative world state, which lets gameplay systems ask where things are without duplicating geometry.
+- Joint support turns the world from a loose body container into a mechanical playground where links, motors, ropes, sliders, and welded constraints become first-class scene behaviors.
+- Break thresholds and one-way platform handling add gameplay-oriented control over how contacts and constraints should behave under stress or directional motion.
+- Trigger zones extend the world beyond classic rigid-body simulation by letting areas override gravity, damping, and enter-exit signaling as bodies move through space.
+- Pixels-per-meter conversion keeps authored screen-scale intent aligned with simulation-scale correctness, reducing the friction between gameplay numbers and solver numbers.
+- Debug shape extraction and line drawing make the same world inspectable, so developers can see the geometry and contact surfaces that drive runtime outcomes.
+- Terrain-linked behavior integrates static environment rebuilding into the same physical authority instead of leaving destructible ground as an external special case.
+- Body lifecycle controls cover creation, disabling, wake-sleep flow, velocity mutation, material changes, and other everyday manipulations expected from a playable simulation backend.
+- Query, contact, and mutation responsibilities stay concentrated here so higher layers can treat the world as the one source of truth for physical state.
+- The result is a large but coherent orchestration surface where simulation, environment effects, and debug visibility reinforce each other instead of fragmenting across helper subsystems.
+- Functionally this file delivers the full physical stage on which movement, impact, constraints, triggers, terrain interaction, and spatial reasoning all take place.
+
+### zone.rs
+
+- Physics zone system for spatial rule overrides that should apply because a body is somewhere, not because it touched a solid object.
+- The file defines bounded areas that can replace normal gravity with directional pull, attraction, repulsion, or weightless behavior.
+- Priority and mask filtering let multiple zones coexist without turning area-based effects into ambiguous global state.
+- Damping overrides make zones useful for liquids, mud, low-friction fields, or other environmental modifiers that change motion feel.
+- Enter and leave tracking turns zones into event sources as well as force fields, which is important for scripting and gameplay transitions.
+- Functionally this file delivers area-driven physics behavior for environmental control, special spaces, and location-sensitive simulation rules.
+
 ## Functions
 
 ### `lurek.physics.attachShape`
@@ -17,7 +108,6 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 Attaches a previously created shape to a body, using the shape's stored material properties.
 
 ```lua
--- signature
 lurek.physics.attachShape(body, shape)
 ```
 
@@ -25,8 +115,8 @@ lurek.physics.attachShape(body, shape)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `body` | `LBody` | The target body. |
-| `shape` | `LPhysicsShape` | The shape to attach. |
+| `body` | [LBody](#lbody-handle) | The target body. |
+| `shape` | [LPhysicsShape](#lphysicsshape-handle) | The shape to attach. |
 
 **Example**
 
@@ -49,7 +139,6 @@ end
 Enables or disables automatic physics debug overlay rendering for the next frame.
 
 ```lua
--- signature
 lurek.physics.debugDraw(enable)
 ```
 
@@ -57,7 +146,7 @@ lurek.physics.debugDraw(enable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enable` | `boolean` | True to show debug shapes. |
+| `enable` | boolean | True to show debug shapes. |
 
 **Example**
 
@@ -78,7 +167,6 @@ end
 No-op placeholder for API parity. Worlds are freed when no longer referenced.
 
 ```lua
--- signature
 lurek.physics.destroyWorld(world)
 ```
 
@@ -86,7 +174,7 @@ lurek.physics.destroyWorld(world)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world to destroy. |
+| `world` | [LWorld](#lworld-handle) | The world to destroy. |
 
 **Example**
 
@@ -107,7 +195,6 @@ end
 Queues a GPU-rendered physics debug visualization using the world's current body state.
 
 ```lua
--- signature
 lurek.physics.drawDebugGpu(world, config)
 ```
 
@@ -115,8 +202,8 @@ lurek.physics.drawDebugGpu(world, config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world to visualize. |
-| `config?` | `table` | Optional config: {bodyColor, staticColor, sleepColor, sensorColor, lineWidth}. |
+| `world` | [LWorld](#lworld-handle) | The world to visualize. |
+| `config?` | table | Optional config: {bodyColor, staticColor, sleepColor, sensorColor, lineWidth}. |
 
 **Example**
 
@@ -135,7 +222,6 @@ end
 Returns position and velocity of a body (free-function variant for quick queries).
 
 ```lua
--- signature
 lurek.physics.getBody(world, body)
 ```
 
@@ -143,17 +229,17 @@ lurek.physics.getBody(world, body)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world. |
-| `body` | `LBody` | The body to query. |
+| `world` | [LWorld](#lworld-handle) | The world. |
+| `body` | [LBody](#lbody-handle) | The body to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X position. |
-| `number` | b Y position. |
-| `number` | c Velocity X. |
-| `number` | d Velocity Y. |
+| number | X position. |
+| number | Y position. |
+| number | Velocity X. |
+| number | Velocity Y. |
 
 **Example**
 
@@ -173,7 +259,6 @@ end
 Returns all collision events from the last world step as {body_a, body_b} pairs.
 
 ```lua
--- signature
 lurek.physics.getCollisions(world)
 ```
 
@@ -181,13 +266,13 @@ lurek.physics.getCollisions(world)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world to query. |
+| `world` | [LWorld](#lworld-handle) | The world to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `PhysicsGetCollisionsResult` | Array of collision event tables. |
+| LPhysicsGetCollisionsResult | Array of collision event tables. |
 
 **Example**
 
@@ -214,7 +299,6 @@ end
 Checks if sleeping is allowed on a body (free-function variant).
 
 ```lua
--- signature
 lurek.physics.isSleepingAllowed(world, body)
 ```
 
@@ -222,14 +306,14 @@ lurek.physics.isSleepingAllowed(world, body)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world. |
-| `body` | `LBody` | The body. |
+| `world` | [LWorld](#lworld-handle) | The world. |
+| `body` | [LBody](#lbody-handle) | The body. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if sleeping is allowed. |
+| boolean | True if sleeping is allowed. |
 
 **Example**
 
@@ -251,7 +335,6 @@ end
 Creates a new body in a world (free-function variant).
 
 ```lua
--- signature
 lurek.physics.newBody(world, x, y, bodyType)
 ```
 
@@ -259,16 +342,16 @@ lurek.physics.newBody(world, x, y, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The target world. |
-| `x` | `number` | Initial X position. |
-| `y` | `number` | Initial Y position. |
-| `bodyType` | `string` | Body type: "static", "dynamic", "kinematic", or "sensor". |
+| `world` | [LWorld](#lworld-handle) | The target world. |
+| `x` | number | Initial X position. |
+| `y` | number | Initial Y position. |
+| `bodyType` | string | Body type: "static", "dynamic", "kinematic", or "sensor". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBody` | The newly created body. |
+| [LBody](#lbody-handle) | The newly created body. |
 
 **Example**
 
@@ -288,7 +371,6 @@ end
 Creates a chain (polyline) collision shape. Useful for terrain outlines.
 
 ```lua
--- signature
 lurek.physics.newChainShape(closed, ...)
 ```
 
@@ -296,14 +378,14 @@ lurek.physics.newChainShape(closed, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `closed` | `boolean` | If true, connects last vertex to first. |
+| `closed` | boolean | If true, connects last vertex to first. |
 | — | — | @param ... number Alternating x,y coordinates (minimum 2 pairs = 4 numbers). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPhysicsShape` | The shape object. |
+| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
 
 **Example**
 
@@ -323,7 +405,6 @@ end
 Creates a circle collision shape with the given radius.
 
 ```lua
--- signature
 lurek.physics.newCircleShape(r)
 ```
 
@@ -331,13 +412,13 @@ lurek.physics.newCircleShape(r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Radius. |
+| `r` | number | Radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPhysicsShape` | The shape object. |
+| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
 
 **Example**
 
@@ -358,7 +439,6 @@ end
 Creates an edge (line segment) collision shape between two local points.
 
 ```lua
--- signature
 lurek.physics.newEdgeShape(x1, y1, x2, y2)
 ```
 
@@ -366,16 +446,16 @@ lurek.physics.newEdgeShape(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Start X. |
-| `y1` | `number` | Start Y. |
-| `x2` | `number` | End X. |
-| `y2` | `number` | End Y. |
+| `x1` | number | Start X. |
+| `y1` | number | Start Y. |
+| `x2` | number | End X. |
+| `y2` | number | End Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPhysicsShape` | The shape object. |
+| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
 
 **Example**
 
@@ -395,7 +475,6 @@ end
 Creates a convex polygon collision shape from vertex coordinate pairs.
 
 ```lua
--- signature
 lurek.physics.newPolygonShape(...)
 ```
 
@@ -409,7 +488,7 @@ lurek.physics.newPolygonShape(...)
 
 | Type | Description |
 |------|-------------|
-| `LPhysicsShape` | The shape object. |
+| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
 
 **Example**
 
@@ -429,7 +508,6 @@ end
 Creates a rectangle collision shape with the given dimensions.
 
 ```lua
--- signature
 lurek.physics.newRectangleShape(w, h)
 ```
 
@@ -437,14 +515,14 @@ lurek.physics.newRectangleShape(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width. |
-| `h` | `number` | Height. |
+| `w` | number | Width. |
+| `h` | number | Height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPhysicsShape` | The shape object. |
+| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
 
 **Example**
 
@@ -464,7 +542,6 @@ end
 Creates a destructible terrain grid linked to a physics world for automatic collider generation.
 
 ```lua
--- signature
 lurek.physics.newTerrain(width, height, cellSize, world)
 ```
 
@@ -472,16 +549,16 @@ lurek.physics.newTerrain(width, height, cellSize, world)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Grid width in cells. |
-| `height` | `number` | Grid height in cells. |
-| `cellSize` | `number` | World-space size of each cell. |
-| `world` | `LWorld` | The physics world that will own the generated colliders. |
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
+| `cellSize` | number | World-space size of each cell. |
+| `world` | [LWorld](#lworld-handle) | The physics world that will own the generated colliders. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTerrain` | The terrain object. |
+| [LTerrain](#lterrain-handle) | The terrain object. |
 
 **Example**
 
@@ -504,7 +581,6 @@ end
 Creates a new physics world with the given gravity vector.
 
 ```lua
--- signature
 lurek.physics.newWorld(gx, gy)
 ```
 
@@ -512,14 +588,14 @@ lurek.physics.newWorld(gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gx` | `number` | Gravity X component. |
-| `gy` | `number` | Gravity Y component (positive = down). |
+| `gx` | number | Gravity X component. |
+| `gy` | number | Gravity Y component (positive = down). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWorld` | The new physics world. |
+| [LWorld](#lworld-handle) | The new physics world. |
 
 **Example**
 
@@ -539,7 +615,6 @@ end
 Sets a body's velocity (free-function variant).
 
 ```lua
--- signature
 lurek.physics.setBodyVelocity(world, body, vx, vy)
 ```
 
@@ -547,10 +622,10 @@ lurek.physics.setBodyVelocity(world, body, vx, vy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world. |
-| `body` | `LBody` | The body. |
-| `vx` | `number` | Velocity X. |
-| `vy` | `number` | Velocity Y. |
+| `world` | [LWorld](#lworld-handle) | The world. |
+| `body` | [LBody](#lbody-handle) | The body. |
+| `vx` | number | Velocity X. |
+| `vy` | number | Velocity Y. |
 
 **Example**
 
@@ -570,7 +645,6 @@ end
 Sets whether a body is allowed to sleep (free-function variant).
 
 ```lua
--- signature
 lurek.physics.setSleepingAllowed(world, body, allowed)
 ```
 
@@ -578,9 +652,9 @@ lurek.physics.setSleepingAllowed(world, body, allowed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world. |
-| `body` | `LBody` | The body. |
-| `allowed` | `boolean` | True to allow sleeping. |
+| `world` | [LWorld](#lworld-handle) | The world. |
+| `body` | [LBody](#lbody-handle) | The body. |
+| `allowed` | boolean | True to allow sleeping. |
 
 **Example**
 
@@ -600,7 +674,6 @@ end
 Steps a physics world forward by dt seconds (free-function variant).
 
 ```lua
--- signature
 lurek.physics.step(world, dt)
 ```
 
@@ -608,8 +681,8 @@ lurek.physics.step(world, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | `LWorld` | The world to step. |
-| `dt` | `number` | Time step in seconds. |
+| `world` | [LWorld](#lworld-handle) | The world to step. |
+| `dt` | number | Time step in seconds. |
 
 **Example**
 
@@ -629,7 +702,6 @@ end
 Tests whether two axis-aligned bounding boxes overlap. Lightweight collision check without physics world.
 
 ```lua
--- signature
 lurek.physics.testAABB(ax, ay, aw, ah, bx, by, bw, bh)
 ```
 
@@ -637,20 +709,20 @@ lurek.physics.testAABB(ax, ay, aw, ah, bx, by, bw, bh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ax` | `number` | First rect X. |
-| `ay` | `number` | First rect Y. |
-| `aw` | `number` | First rect width. |
-| `ah` | `number` | First rect height. |
-| `bx` | `number` | Second rect X. |
-| `by` | `number` | Second rect Y. |
-| `bw` | `number` | Second rect width. |
-| `bh` | `number` | Second rect height. |
+| `ax` | number | First rect X. |
+| `ay` | number | First rect Y. |
+| `aw` | number | First rect width. |
+| `ah` | number | First rect height. |
+| `bx` | number | Second rect X. |
+| `by` | number | Second rect Y. |
+| `bw` | number | Second rect width. |
+| `bh` | number | Second rect height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the rectangles overlap. |
+| boolean | True if the rectangles overlap. |
 
 **Example**
 
@@ -670,7 +742,6 @@ end
 Tests whether a circle overlaps an AABB. Lightweight check without physics world.
 
 ```lua
--- signature
 lurek.physics.testCircleAABB(cx, cy, cr, ax, ay, aw, ah)
 ```
 
@@ -678,19 +749,19 @@ lurek.physics.testCircleAABB(cx, cy, cr, ax, ay, aw, ah)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Circle center X. |
-| `cy` | `number` | Circle center Y. |
-| `cr` | `number` | Circle radius. |
-| `ax` | `number` | Rect X. |
-| `ay` | `number` | Rect Y. |
-| `aw` | `number` | Rect width. |
-| `ah` | `number` | Rect height. |
+| `cx` | number | Circle center X. |
+| `cy` | number | Circle center Y. |
+| `cr` | number | Circle radius. |
+| `ax` | number | Rect X. |
+| `ay` | number | Rect Y. |
+| `aw` | number | Rect width. |
+| `ah` | number | Rect height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if circle and AABB overlap. |
+| boolean | True if circle and AABB overlap. |
 
 **Example**
 
@@ -710,7 +781,6 @@ end
 Tests whether two circles overlap. Lightweight collision check without physics world.
 
 ```lua
--- signature
 lurek.physics.testCircles(ax, ay, ar, bx, by, br)
 ```
 
@@ -718,18 +788,18 @@ lurek.physics.testCircles(ax, ay, ar, bx, by, br)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ax` | `number` | First circle center X. |
-| `ay` | `number` | First circle center Y. |
-| `ar` | `number` | First circle radius. |
-| `bx` | `number` | Second circle center X. |
-| `by` | `number` | Second circle center Y. |
-| `br` | `number` | Second circle radius. |
+| `ax` | number | First circle center X. |
+| `ay` | number | First circle center Y. |
+| `ar` | number | First circle radius. |
+| `bx` | number | Second circle center X. |
+| `by` | number | Second circle center Y. |
+| `br` | number | Second circle radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the circles overlap. |
+| boolean | True if the circles overlap. |
 
 **Example**
 
@@ -749,7 +819,6 @@ end
 Tests whether a point lies inside an AABB. Lightweight check without physics world.
 
 ```lua
--- signature
 lurek.physics.testPoint(px, py, ax, ay, aw, ah)
 ```
 
@@ -757,18 +826,18 @@ lurek.physics.testPoint(px, py, ax, ay, aw, ah)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Point X. |
-| `py` | `number` | Point Y. |
-| `ax` | `number` | Rect X. |
-| `ay` | `number` | Rect Y. |
-| `aw` | `number` | Rect width. |
-| `ah` | `number` | Rect height. |
+| `px` | number | Point X. |
+| `py` | number | Point Y. |
+| `ax` | number | Rect X. |
+| `ay` | number | Rect Y. |
+| `aw` | number | Rect width. |
+| `ah` | number | Rect height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the point is inside. |
+| boolean | True if the point is inside. |
 
 **Example**
 
@@ -783,14 +852,40 @@ end
 
 ---
 
-## LBody
+## Module Fields
 
-### `LBody:applyAngularImpulse`
+*No module-level fields documented.*
+
+## Types
+
+- [LBody Handle](#lbody-handle)
+- [LChainShape Handle](#lchainshape-handle)
+- [LPhysicsShape Handle](#lphysicsshape-handle)
+- [LTerrain Handle](#lterrain-handle)
+- [LWorld Handle](#lworld-handle)
+- [LZone Handle](#lzone-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LBody Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBody:applyAngularImpulse`
 
 Applies an instantaneous angular impulse (spin) to the body.
 
 ```lua
--- signature
 LBody:applyAngularImpulse(impulse)
 ```
 
@@ -798,7 +893,7 @@ LBody:applyAngularImpulse(impulse)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `impulse` | `number` | Angular impulse value. |
+| `impulse` | number | Angular impulse value. |
 
 **Example**
 
@@ -815,12 +910,11 @@ end
 
 ---
 
-### `LBody:applyForce`
+#### `LBody:applyForce`
 
 Applies a continuous force to the body's center of mass (accumulates over the step).
 
 ```lua
--- signature
 LBody:applyForce(fx, fy)
 ```
 
@@ -828,8 +922,8 @@ LBody:applyForce(fx, fy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fx` | `number` | Force X component. |
-| `fy` | `number` | Force Y component. |
+| `fx` | number | Force X component. |
+| `fy` | number | Force Y component. |
 
 **Example**
 
@@ -846,12 +940,11 @@ end
 
 ---
 
-### `LBody:applyForceAtPoint`
+#### `LBody:applyForceAtPoint`
 
 Applies a force at a specific world point, generating both linear and angular acceleration.
 
 ```lua
--- signature
 LBody:applyForceAtPoint(fx, fy, px, py)
 ```
 
@@ -859,10 +952,10 @@ LBody:applyForceAtPoint(fx, fy, px, py)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fx` | `number` | Force X component. |
-| `fy` | `number` | Force Y component. |
-| `px` | `number` | Application point X in world coordinates. |
-| `py` | `number` | Application point Y in world coordinates. |
+| `fx` | number | Force X component. |
+| `fy` | number | Force Y component. |
+| `px` | number | Application point X in world coordinates. |
+| `py` | number | Application point Y in world coordinates. |
 
 **Example**
 
@@ -879,12 +972,11 @@ end
 
 ---
 
-### `LBody:applyImpulse`
+#### `LBody:applyImpulse`
 
 Applies an instantaneous linear impulse to the body's center of mass.
 
 ```lua
--- signature
 LBody:applyImpulse(ix, iy)
 ```
 
@@ -892,8 +984,8 @@ LBody:applyImpulse(ix, iy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ix` | `number` | Impulse X component. |
-| `iy` | `number` | Impulse Y component. |
+| `ix` | number | Impulse X component. |
+| `iy` | number | Impulse Y component. |
 
 **Example**
 
@@ -910,12 +1002,11 @@ end
 
 ---
 
-### `LBody:applyTorque`
+#### `LBody:applyTorque`
 
 Applies a rotational torque to the body.
 
 ```lua
--- signature
 LBody:applyTorque(torque)
 ```
 
@@ -923,7 +1014,7 @@ LBody:applyTorque(torque)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `torque` | `number` | Torque value (positive = counter-clockwise). |
+| `torque` | number | Torque value (positive = counter-clockwise). |
 
 **Example**
 
@@ -940,12 +1031,11 @@ end
 
 ---
 
-### `LBody:destroy`
+#### `LBody:destroy`
 
 Destroys this body, removing it from the world along with all fixtures and joints.
 
 ```lua
--- signature
 LBody:destroy()
 ```
 
@@ -963,12 +1053,11 @@ end
 
 ---
 
-### `LBody:getAngle`
+#### `LBody:getAngle`
 
 Returns the body's rotation angle in radians.
 
 ```lua
--- signature
 LBody:getAngle()
 ```
 
@@ -976,7 +1065,7 @@ LBody:getAngle()
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -992,12 +1081,11 @@ end
 
 ---
 
-### `LBody:getAngularDamping`
+#### `LBody:getAngularDamping`
 
 Returns the angular damping factor (rotational decay rate).
 
 ```lua
--- signature
 LBody:getAngularDamping()
 ```
 
@@ -1005,7 +1093,7 @@ LBody:getAngularDamping()
 
 | Type | Description |
 |------|-------------|
-| `number` | Angular damping value. |
+| number | Angular damping value. |
 
 **Example**
 
@@ -1021,12 +1109,11 @@ end
 
 ---
 
-### `LBody:getAngularVelocity`
+#### `LBody:getAngularVelocity`
 
 Returns the body's angular (rotational) velocity.
 
 ```lua
--- signature
 LBody:getAngularVelocity()
 ```
 
@@ -1034,7 +1121,7 @@ LBody:getAngularVelocity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Angular velocity in radians per second. |
+| number | Angular velocity in radians per second. |
 
 **Example**
 
@@ -1050,12 +1137,11 @@ end
 
 ---
 
-### `LBody:getFriction`
+#### `LBody:getFriction`
 
 Returns the body's friction coefficient.
 
 ```lua
--- signature
 LBody:getFriction()
 ```
 
@@ -1063,7 +1149,7 @@ LBody:getFriction()
 
 | Type | Description |
 |------|-------------|
-| `number` | Friction value. |
+| number | Friction value. |
 
 **Example**
 
@@ -1079,12 +1165,11 @@ end
 
 ---
 
-### `LBody:getGravityScale`
+#### `LBody:getGravityScale`
 
 Returns the gravity scale multiplier for this body (1.0 = normal gravity).
 
 ```lua
--- signature
 LBody:getGravityScale()
 ```
 
@@ -1092,7 +1177,7 @@ LBody:getGravityScale()
 
 | Type | Description |
 |------|-------------|
-| `number` | Gravity scale. |
+| number | Gravity scale. |
 
 **Example**
 
@@ -1108,12 +1193,11 @@ end
 
 ---
 
-### `LBody:getHeight`
+#### `LBody:getHeight`
 
 Returns the body's bounding height (from its primary shape).
 
 ```lua
--- signature
 LBody:getHeight()
 ```
 
@@ -1121,7 +1205,7 @@ LBody:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in world units. |
+| number | Height in world units. |
 
 **Example**
 
@@ -1136,12 +1220,11 @@ end
 
 ---
 
-### `LBody:getId`
+#### `LBody:getId`
 
 Returns the unique numeric ID of this body within the world.
 
 ```lua
--- signature
 LBody:getId()
 ```
 
@@ -1149,7 +1232,7 @@ LBody:getId()
 
 | Type | Description |
 |------|-------------|
-| `number` | Body ID. |
+| number | Body ID. |
 
 **Example**
 
@@ -1164,12 +1247,11 @@ end
 
 ---
 
-### `LBody:getLayer`
+#### `LBody:getLayer`
 
 Returns the body's collision layer bitmask.
 
 ```lua
--- signature
 LBody:getLayer()
 ```
 
@@ -1177,7 +1259,7 @@ LBody:getLayer()
 
 | Type | Description |
 |------|-------------|
-| `number` | Layer bitmask. |
+| number | Layer bitmask. |
 
 **Example**
 
@@ -1193,12 +1275,11 @@ end
 
 ---
 
-### `LBody:getLinearDamping`
+#### `LBody:getLinearDamping`
 
 Returns the linear damping factor (velocity decay rate, like air resistance).
 
 ```lua
--- signature
 LBody:getLinearDamping()
 ```
 
@@ -1206,7 +1287,7 @@ LBody:getLinearDamping()
 
 | Type | Description |
 |------|-------------|
-| `number` | Damping value. |
+| number | Damping value. |
 
 **Example**
 
@@ -1222,12 +1303,11 @@ end
 
 ---
 
-### `LBody:getMask`
+#### `LBody:getMask`
 
 Returns the body's collision mask (which layers this body can collide with).
 
 ```lua
--- signature
 LBody:getMask()
 ```
 
@@ -1235,7 +1315,7 @@ LBody:getMask()
 
 | Type | Description |
 |------|-------------|
-| `number` | Mask bitmask. |
+| number | Mask bitmask. |
 
 **Example**
 
@@ -1251,12 +1331,11 @@ end
 
 ---
 
-### `LBody:getMass`
+#### `LBody:getMass`
 
 Returns the body's total mass (computed from density and fixture areas).
 
 ```lua
--- signature
 LBody:getMass()
 ```
 
@@ -1264,7 +1343,7 @@ LBody:getMass()
 
 | Type | Description |
 |------|-------------|
-| `number` | Mass in kilograms. |
+| number | Mass in kilograms. |
 
 **Example**
 
@@ -1281,12 +1360,11 @@ end
 
 ---
 
-### `LBody:getPosition`
+#### `LBody:getPosition`
 
 Returns the current world-space position of this body.
 
 ```lua
--- signature
 LBody:getPosition()
 ```
 
@@ -1294,8 +1372,8 @@ LBody:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X coordinate. |
-| `number` | b Y coordinate. |
+| number | X coordinate. |
+| number | Y coordinate. |
 
 **Example**
 
@@ -1310,12 +1388,11 @@ end
 
 ---
 
-### `LBody:getRestitution`
+#### `LBody:getRestitution`
 
 Returns the body's restitution (bounciness) value.
 
 ```lua
--- signature
 LBody:getRestitution()
 ```
 
@@ -1323,7 +1400,7 @@ LBody:getRestitution()
 
 | Type | Description |
 |------|-------------|
-| `number` | Restitution (0 = no bounce, 1 = perfectly elastic). |
+| number | Restitution (0 = no bounce, 1 = perfectly elastic). |
 
 **Example**
 
@@ -1339,12 +1416,11 @@ end
 
 ---
 
-### `LBody:getType`
+#### `LBody:getType`
 
 Returns the body's type as a string.
 
 ```lua
--- signature
 LBody:getType()
 ```
 
@@ -1352,7 +1428,7 @@ LBody:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Body type: "static", "dynamic", "kinematic", or "sensor". |
+| string | Body type: "static", "dynamic", "kinematic", or "sensor". |
 
 **Example**
 
@@ -1367,12 +1443,11 @@ end
 
 ---
 
-### `LBody:getVelocity`
+#### `LBody:getVelocity`
 
 Returns the body's current linear velocity.
 
 ```lua
--- signature
 LBody:getVelocity()
 ```
 
@@ -1380,8 +1455,8 @@ LBody:getVelocity()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Velocity X component. |
-| `number` | b Velocity Y component. |
+| number | Velocity X component. |
+| number | Velocity Y component. |
 
 **Example**
 
@@ -1397,12 +1472,11 @@ end
 
 ---
 
-### `LBody:getWidth`
+#### `LBody:getWidth`
 
 Returns the body's bounding width (from its primary shape).
 
 ```lua
--- signature
 LBody:getWidth()
 ```
 
@@ -1410,7 +1484,7 @@ LBody:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in world units. |
+| number | Width in world units. |
 
 **Example**
 
@@ -1425,12 +1499,11 @@ end
 
 ---
 
-### `LBody:getX`
+#### `LBody:getX`
 
 Returns only the X component of the body's position.
 
 ```lua
--- signature
 LBody:getX()
 ```
 
@@ -1438,7 +1511,7 @@ LBody:getX()
 
 | Type | Description |
 |------|-------------|
-| `number` | X coordinate. |
+| number | X coordinate. |
 
 **Example**
 
@@ -1453,12 +1526,11 @@ end
 
 ---
 
-### `LBody:getY`
+#### `LBody:getY`
 
 Returns only the Y component of the body's position.
 
 ```lua
--- signature
 LBody:getY()
 ```
 
@@ -1466,7 +1538,7 @@ LBody:getY()
 
 | Type | Description |
 |------|-------------|
-| `number` | Y coordinate. |
+| number | Y coordinate. |
 
 **Example**
 
@@ -1481,12 +1553,11 @@ end
 
 ---
 
-### `LBody:isBullet`
+#### `LBody:isBullet`
 
 Returns whether continuous collision detection (bullet mode) is enabled for this body.
 
 ```lua
--- signature
 LBody:isBullet()
 ```
 
@@ -1494,7 +1565,7 @@ LBody:isBullet()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if CCD is active. |
+| boolean | True if CCD is active. |
 
 **Example**
 
@@ -1510,12 +1581,11 @@ end
 
 ---
 
-### `LBody:isFixedRotation`
+#### `LBody:isFixedRotation`
 
 Returns whether the body's rotation is locked.
 
 ```lua
--- signature
 LBody:isFixedRotation()
 ```
 
@@ -1523,7 +1593,7 @@ LBody:isFixedRotation()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if rotation is fixed. |
+| boolean | True if rotation is fixed. |
 
 **Example**
 
@@ -1539,12 +1609,11 @@ end
 
 ---
 
-### `LBody:isSleeping`
+#### `LBody:isSleeping`
 
 Returns whether this body is currently in the sleeping (inactive) state.
 
 ```lua
--- signature
 LBody:isSleeping()
 ```
 
@@ -1552,7 +1621,7 @@ LBody:isSleeping()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if sleeping. |
+| boolean | True if sleeping. |
 
 **Example**
 
@@ -1569,12 +1638,11 @@ end
 
 ---
 
-### `LBody:isSleepingAllowed`
+#### `LBody:isSleepingAllowed`
 
 Returns whether the body is allowed to enter sleep state when at rest.
 
 ```lua
--- signature
 LBody:isSleepingAllowed()
 ```
 
@@ -1582,7 +1650,7 @@ LBody:isSleepingAllowed()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if sleeping is allowed. |
+| boolean | True if sleeping is allowed. |
 
 **Example**
 
@@ -1598,12 +1666,11 @@ end
 
 ---
 
-### `LBody:setAngle`
+#### `LBody:setAngle`
 
 Sets the body's rotation angle directly.
 
 ```lua
--- signature
 LBody:setAngle(angle)
 ```
 
@@ -1611,7 +1678,7 @@ LBody:setAngle(angle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle` | `number` | New angle in radians. |
+| `angle` | number | New angle in radians. |
 
 **Example**
 
@@ -1627,12 +1694,11 @@ end
 
 ---
 
-### `LBody:setAngularDamping`
+#### `LBody:setAngularDamping`
 
 Sets the angular damping factor (higher = rotation decays faster).
 
 ```lua
--- signature
 LBody:setAngularDamping(damping)
 ```
 
@@ -1640,7 +1706,7 @@ LBody:setAngularDamping(damping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `damping` | `number` | Angular damping value. |
+| `damping` | number | Angular damping value. |
 
 **Example**
 
@@ -1656,12 +1722,11 @@ end
 
 ---
 
-### `LBody:setAngularVelocity`
+#### `LBody:setAngularVelocity`
 
 Sets the body's angular velocity directly.
 
 ```lua
--- signature
 LBody:setAngularVelocity(omega)
 ```
 
@@ -1669,7 +1734,7 @@ LBody:setAngularVelocity(omega)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `omega` | `number` | Angular velocity in radians per second. |
+| `omega` | number | Angular velocity in radians per second. |
 
 **Example**
 
@@ -1686,12 +1751,11 @@ end
 
 ---
 
-### `LBody:setBullet`
+#### `LBody:setBullet`
 
 Enables or disables continuous collision detection to prevent fast-moving tunneling.
 
 ```lua
--- signature
 LBody:setBullet(bullet)
 ```
 
@@ -1699,7 +1763,7 @@ LBody:setBullet(bullet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bullet` | `boolean` | True to enable CCD. |
+| `bullet` | boolean | True to enable CCD. |
 
 **Example**
 
@@ -1715,12 +1779,11 @@ end
 
 ---
 
-### `LBody:setFixedRotation`
+#### `LBody:setFixedRotation`
 
 Locks or unlocks the body's rotation. Useful for player characters.
 
 ```lua
--- signature
 LBody:setFixedRotation(fixed)
 ```
 
@@ -1728,7 +1791,7 @@ LBody:setFixedRotation(fixed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fixed` | `boolean` | True to prevent rotation. |
+| `fixed` | boolean | True to prevent rotation. |
 
 **Example**
 
@@ -1744,12 +1807,11 @@ end
 
 ---
 
-### `LBody:setFriction`
+#### `LBody:setFriction`
 
 Sets the body's friction coefficient.
 
 ```lua
--- signature
 LBody:setFriction(friction)
 ```
 
@@ -1757,7 +1819,7 @@ LBody:setFriction(friction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `friction` | `number` | New friction value (0 = ice, 1 = rubber). |
+| `friction` | number | New friction value (0 = ice, 1 = rubber). |
 
 **Example**
 
@@ -1773,12 +1835,11 @@ end
 
 ---
 
-### `LBody:setGravityScale`
+#### `LBody:setGravityScale`
 
 Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
 
 ```lua
--- signature
 LBody:setGravityScale(scale)
 ```
 
@@ -1786,7 +1847,7 @@ LBody:setGravityScale(scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scale` | `number` | Gravity scale factor. |
+| `scale` | number | Gravity scale factor. |
 
 **Example**
 
@@ -1803,12 +1864,11 @@ end
 
 ---
 
-### `LBody:setLayer`
+#### `LBody:setLayer`
 
 Sets the body's collision layer bitmask (which layers this body belongs to).
 
 ```lua
--- signature
 LBody:setLayer(layer)
 ```
 
@@ -1816,7 +1876,7 @@ LBody:setLayer(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer bitmask. |
+| `layer` | number | Layer bitmask. |
 
 **Example**
 
@@ -1832,12 +1892,11 @@ end
 
 ---
 
-### `LBody:setLinearDamping`
+#### `LBody:setLinearDamping`
 
 Sets the linear damping factor (higher = more velocity decay per step).
 
 ```lua
--- signature
 LBody:setLinearDamping(damping)
 ```
 
@@ -1845,7 +1904,7 @@ LBody:setLinearDamping(damping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `damping` | `number` | Damping value (0 = no damping). |
+| `damping` | number | Damping value (0 = no damping). |
 
 **Example**
 
@@ -1861,12 +1920,11 @@ end
 
 ---
 
-### `LBody:setMask`
+#### `LBody:setMask`
 
 Sets the body's collision mask (which layers this body can collide with).
 
 ```lua
--- signature
 LBody:setMask(mask)
 ```
 
@@ -1874,7 +1932,7 @@ LBody:setMask(mask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | `number` | Collision mask bitmask. |
+| `mask` | number | Collision mask bitmask. |
 
 **Example**
 
@@ -1890,12 +1948,11 @@ end
 
 ---
 
-### `LBody:setMass`
+#### `LBody:setMass`
 
 Overrides the body's mass directly.
 
 ```lua
--- signature
 LBody:setMass(mass)
 ```
 
@@ -1903,7 +1960,7 @@ LBody:setMass(mass)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mass` | `number` | New mass value. |
+| `mass` | number | New mass value. |
 
 **Example**
 
@@ -1919,12 +1976,11 @@ end
 
 ---
 
-### `LBody:setPosition`
+#### `LBody:setPosition`
 
 Teleports the body to a new world-space position (does not apply physics forces).
 
 ```lua
--- signature
 LBody:setPosition(x, y)
 ```
 
@@ -1932,8 +1988,8 @@ LBody:setPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | New X position. |
-| `y` | `number` | New Y position. |
+| `x` | number | New X position. |
+| `y` | number | New Y position. |
 
 **Example**
 
@@ -1949,12 +2005,11 @@ end
 
 ---
 
-### `LBody:setRestitution`
+#### `LBody:setRestitution`
 
 Sets the body's restitution (bounciness) value.
 
 ```lua
--- signature
 LBody:setRestitution(restitution)
 ```
 
@@ -1962,7 +2017,7 @@ LBody:setRestitution(restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `restitution` | `number` | New restitution (0Ă˘â‚¬â€ś1). |
+| `restitution` | number | New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1). |
 
 **Example**
 
@@ -1978,12 +2033,11 @@ end
 
 ---
 
-### `LBody:setSleepingAllowed`
+#### `LBody:setSleepingAllowed`
 
 Controls whether the body can enter sleep state. Disable for bodies that must stay active.
 
 ```lua
--- signature
 LBody:setSleepingAllowed(allowed)
 ```
 
@@ -1991,7 +2045,7 @@ LBody:setSleepingAllowed(allowed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `allowed` | `boolean` | True to allow sleeping. |
+| `allowed` | boolean | True to allow sleeping. |
 
 **Example**
 
@@ -2007,12 +2061,11 @@ end
 
 ---
 
-### `LBody:setType`
+#### `LBody:setType`
 
 Changes the body's type at runtime.
 
 ```lua
--- signature
 LBody:setType(bodyType)
 ```
 
@@ -2020,7 +2073,7 @@ LBody:setType(bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyType` | `string` | New type: "static", "dynamic", "kinematic", or "sensor". |
+| `bodyType` | string | New type: "static", "dynamic", "kinematic", or "sensor". |
 
 **Example**
 
@@ -2036,12 +2089,11 @@ end
 
 ---
 
-### `LBody:setVelocity`
+#### `LBody:setVelocity`
 
 Directly sets the body's linear velocity.
 
 ```lua
--- signature
 LBody:setVelocity(vx, vy)
 ```
 
@@ -2049,8 +2101,8 @@ LBody:setVelocity(vx, vy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vx` | `number` | Velocity X component. |
-| `vy` | `number` | Velocity Y component. |
+| `vx` | number | Velocity X component. |
+| `vy` | number | Velocity Y component. |
 
 **Example**
 
@@ -2067,12 +2119,11 @@ end
 
 ---
 
-### `LBody:sleep`
+#### `LBody:sleep`
 
 Forces the body into sleep state, pausing its simulation until disturbed.
 
 ```lua
--- signature
 LBody:sleep()
 ```
 
@@ -2091,12 +2142,11 @@ end
 
 ---
 
-### `LBody:type`
+#### `LBody:type`
 
-Returns the type name of this object ("LBody").
+Returns the type name of this object ("[LBody](#lbody-handle)").
 
 ```lua
--- signature
 LBody:type()
 ```
 
@@ -2104,7 +2154,7 @@ LBody:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | "LBody". |
+| string | "[LBody](#lbody-handle)". |
 
 **Example**
 
@@ -2119,12 +2169,11 @@ end
 
 ---
 
-### `LBody:typeOf`
+#### `LBody:typeOf`
 
 Checks if this object is of a given type name.
 
 ```lua
--- signature
 LBody:typeOf(name)
 ```
 
@@ -2132,13 +2181,13 @@ LBody:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object matches. |
+| boolean | True if the object matches. |
 
 **Example**
 
@@ -2153,12 +2202,11 @@ end
 
 ---
 
-### `LBody:wakeUp`
+#### `LBody:wakeUp`
 
 Wakes the body from sleep, making it active in the simulation again.
 
 ```lua
--- signature
 LBody:wakeUp()
 ```
 
@@ -2178,459 +2226,29 @@ end
 
 ---
 
-## LCellular
+## LChainShape Handle
 
-### `LCellular:countCells`
+### Fields
 
-Counts how many cells of a given material type exist in the grid.
+*No documented fields for this handle.*
 
-```lua
--- signature
-LCellular:countCells(cellType)
-```
+### Methods
 
-**Parameters**
+*No documented methods for this handle.*
 
-| Name | Type | Description |
-|------|------|-------------|
-| `cellType` | `number` | Material type constant to count. |
+## LPhysicsShape Handle
 
-**Returns**
+### Fields
 
-| Type | Description |
-|------|-------------|
-| `number` | Cell count. |
+*No documented fields for this handle.*
 
-**Example**
+### Methods
 
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    ca:setCell(5, 5, lurek.physics.CELL_SAND)
-    print("count", ca:countCells(lurek.physics.CELL_SAND))
-    print("type", ca:type())
-end
-```
-
----
-
-### `LCellular:fillCircle`
-
-Fills a circular region of cells with a material type.
-
-```lua
--- signature
-LCellular:fillCircle(cx, cy, r, cellType)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cx` | `number` | Center cell column. |
-| `cy` | `number` | Center cell row. |
-| `r` | `number` | Radius in cells. |
-| `cellType` | `number` | Material type constant. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(128, 128)
-    grid:fillCircle(64, 64, 15, lurek.physics.CELL_FIRE)
-    print("fire", grid:countCells(lurek.physics.CELL_FIRE))
-    print("type", grid:type())
-end
-```
-
----
-
-### `LCellular:fillRect`
-
-Fills a rectangular region of cells with a material type.
-
-```lua
--- signature
-LCellular:fillRect(cx0, cy0, cw, ch, cellType)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cx0` | `number` | Top-left cell column. |
-| `cy0` | `number` | Top-left cell row. |
-| `cw` | `number` | Width in cells. |
-| `ch` | `number` | Height in cells. |
-| `cellType` | `number` | Material type constant. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(128, 128)
-    grid:fillRect(10, 10, 20, 5, lurek.physics.CELL_WATER)
-    print("water", grid:countCells(lurek.physics.CELL_WATER))
-    print("type", grid:type())
-end
-```
-
----
-
-### `LCellular:findCells`
-
-Returns positions of all cells matching a material type.
-
-```lua
--- signature
-LCellular:findCells(cellType)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cellType` | `number` | Material type constant to find. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `LCellularFindCellsResult` | Array of {x, y} tables with cell coordinates. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(32, 32)
-    grid:fillRect(14, 0, 4, 2, lurek.physics.CELL_SAND)
-    local positions = grid:findCells(lurek.physics.CELL_SAND)
-    print("count", #positions)
-    if positions[1] then
-        print("first", positions[1].x, positions[1].y)
-    end
-end
-```
-
----
-
-### `LCellular:getCell`
-
-Returns the material type of a cell at the given grid position.
-
-```lua
--- signature
-LCellular:getCell(cx, cy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cx` | `number` | Cell column. |
-| `cy` | `number` | Cell row. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Material type constant. |
-
-**Example**
-
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    ca:setCell(5, 5, lurek.physics.CELL_SAND)
-    print("cell", ca:getCell(5, 5))
-    print("count", ca:countCells(lurek.physics.CELL_SAND))
-end
-```
-
----
-
-### `LCellular:loadFromBytes`
-
-Restores cellular grid state from binary data previously produced by toBytes.
-
-```lua
--- signature
-LCellular:loadFromBytes(data)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `data` | `string` | Binary cellular data. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | True if loading succeeded, false if data was invalid. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(32, 32)
-    grid:fillCircle(16, 16, 8, lurek.physics.CELL_SAND)
-    local bytes = grid:toBytes()
-    local clone = lurek.physics.newCellular(32, 32)
-    print("loaded", clone:loadFromBytes(bytes))
-    print("cell", clone:getCell(16, 16))
-end
-```
-
----
-
-### `LCellular:setCell`
-
-Sets a single cell in the cellular grid to a specific material type.
-
-```lua
--- signature
-LCellular:setCell(cx, cy, cellType)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cx` | `number` | Cell column (0-based). |
-| `cy` | `number` | Cell row (0-based). |
-| `cellType` | `number` | Material type constant (CELL_AIR, CELL_SAND, etc.). |
-
-**Example**
-
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    ca:setCell(5, 5, lurek.physics.CELL_SAND)
-    print("cell", ca:getCell(5, 5))
-    print("type", ca:type())
-end
-```
-
----
-
-### `LCellular:step`
-
-Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
-
-```lua
--- signature
-LCellular:step()
-```
-
-**Example**
-
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    ca:setCell(5, 5, lurek.physics.CELL_SAND)
-    ca:step()
-    print("count", ca:countCells(lurek.physics.CELL_SAND))
-    print("type", ca:type())
-end
-```
-
----
-
-### `LCellular:stepN`
-
-Advances the cellular simulation by N ticks in a single call.
-
-```lua
--- signature
-LCellular:stepN(n)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `n` | `number` | Number of simulation ticks to run. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(32, 32)
-    grid:fillRect(14, 0, 4, 2, lurek.physics.CELL_SAND)
-    grid:stepN(10)
-    print("sand", grid:countCells(lurek.physics.CELL_SAND))
-    print("type", grid:type())
-end
-```
-
----
-
-### `LCellular:toBytes`
-
-Serializes the cellular grid to a compact binary format for saving.
-
-```lua
--- signature
-LCellular:toBytes()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Binary cellular data. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(32, 32)
-    grid:fillCircle(16, 16, 8, lurek.physics.CELL_SAND)
-    local bytes = grid:toBytes()
-    print("bytes", #bytes)
-    print("type", grid:type())
-end
-```
-
----
-
-### `LCellular:toImageData`
-
-Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
-
-```lua
--- signature
-LCellular:toImageData()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Raw RGBA pixel bytes (width * height * 4). |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.physics.newCellular(32, 32)
-    grid:fillCircle(16, 16, 8, lurek.physics.CELL_SAND)
-    local pixels = grid:toImageData()
-    print("bytes", #pixels)
-    print("count", grid:countCells(lurek.physics.CELL_SAND))
-end
-```
-
----
-
-### `LCellular:toImageDataRegion`
-
-Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
-
-```lua
--- signature
-LCellular:toImageDataRegion(cx0, cy0, cw, ch)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `cx0` | `number` | Top-left cell column. |
-| `cy0` | `number` | Top-left cell row. |
-| `cw` | `number` | Width in cells. |
-| `ch` | `number` | Height in cells. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Raw RGBA pixel bytes (cw * ch * 4). |
-
-**Example**
-
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    ca:setCell(5, 5, lurek.physics.CELL_SAND)
-    local img = ca:toImageDataRegion(0, 0, 32, 32)
-    print("bytes", #img)
-    print("type", ca:type())
-end
-```
-
----
-
-### `LCellular:type`
-
-Returns the type name of this object ("LCellular").
-
-```lua
--- signature
-LCellular:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | "LCellular". |
-
-**Example**
-
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    print("type", ca:type())
-    print("type_of", ca:typeOf("LCellular"))
-end
-```
-
----
-
-### `LCellular:typeOf`
-
-Checks if this object is of a given type name.
-
-```lua
--- signature
-LCellular:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | `string` | Type name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | True if the object matches. |
-
-**Example**
-
-```lua
-do
-    local ca = lurek.physics.newCellular(32, 32)
-    print("type_of", ca:typeOf("LCellular"), ca:typeOf("LObject"))
-    print("type", ca:type())
-end
-```
-
----
-
-## LPhysicsShape
-
-### `LPhysicsShape:destroy`
+#### `LPhysicsShape:destroy`
 
 No-op placeholder for API consistency. Shapes are freed when no longer referenced.
 
 ```lua
--- signature
 LPhysicsShape:destroy()
 ```
 
@@ -2646,12 +2264,11 @@ end
 
 ---
 
-### `LPhysicsShape:getBoundingBox`
+#### `LPhysicsShape:getBoundingBox`
 
 Returns the axis-aligned bounding box of the shape in local coordinates.
 
 ```lua
--- signature
 LPhysicsShape:getBoundingBox()
 ```
 
@@ -2659,10 +2276,10 @@ LPhysicsShape:getBoundingBox()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum X. |
-| `number` | b Minimum Y. |
-| `number` | c Maximum X. |
-| `number` | d Maximum Y. |
+| number | Minimum X. |
+| number | Minimum Y. |
+| number | Maximum X. |
+| number | Maximum Y. |
 
 **Example**
 
@@ -2676,12 +2293,11 @@ end
 
 ---
 
-### `LPhysicsShape:getRadius`
+#### `LPhysicsShape:getRadius`
 
 Returns the radius of a circle shape. Errors if called on a non-circle shape.
 
 ```lua
--- signature
 LPhysicsShape:getRadius()
 ```
 
@@ -2689,7 +2305,7 @@ LPhysicsShape:getRadius()
 
 | Type | Description |
 |------|-------------|
-| `number` | Circle radius. |
+| number | Circle radius. |
 
 **Example**
 
@@ -2703,12 +2319,11 @@ end
 
 ---
 
-### `LPhysicsShape:getType`
+#### `LPhysicsShape:getType`
 
 Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
 
 ```lua
--- signature
 LPhysicsShape:getType()
 ```
 
@@ -2716,7 +2331,7 @@ LPhysicsShape:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Shape type name. |
+| string | Shape type name. |
 
 **Example**
 
@@ -2730,12 +2345,11 @@ end
 
 ---
 
-### `LPhysicsShape:setDensity`
+#### `LPhysicsShape:setDensity`
 
 Sets the density used when this shape is attached to a body (affects mass calculation).
 
 ```lua
--- signature
 LPhysicsShape:setDensity(density)
 ```
 
@@ -2743,7 +2357,7 @@ LPhysicsShape:setDensity(density)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `density` | `number` | Mass density. |
+| `density` | number | Mass density. |
 
 **Example**
 
@@ -2758,12 +2372,11 @@ end
 
 ---
 
-### `LPhysicsShape:setFriction`
+#### `LPhysicsShape:setFriction`
 
 Sets the friction coefficient for this shape.
 
 ```lua
--- signature
 LPhysicsShape:setFriction(friction)
 ```
 
@@ -2771,7 +2384,7 @@ LPhysicsShape:setFriction(friction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `friction` | `number` | Friction (0 = ice, 1 = rubber). |
+| `friction` | number | Friction (0 = ice, 1 = rubber). |
 
 **Example**
 
@@ -2786,12 +2399,11 @@ end
 
 ---
 
-### `LPhysicsShape:setRestitution`
+#### `LPhysicsShape:setRestitution`
 
 Sets the restitution (bounciness) for this shape.
 
 ```lua
--- signature
 LPhysicsShape:setRestitution(restitution)
 ```
 
@@ -2799,7 +2411,7 @@ LPhysicsShape:setRestitution(restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `restitution` | `number` | Restitution (0\u20131). |
+| `restitution` | number | Restitution (0\u20131). |
 
 **Example**
 
@@ -2814,12 +2426,11 @@ end
 
 ---
 
-### `LPhysicsShape:setSensor`
+#### `LPhysicsShape:setSensor`
 
 Marks this shape as a sensor (overlap detection only, no physical response).
 
 ```lua
--- signature
 LPhysicsShape:setSensor(sensor)
 ```
 
@@ -2827,7 +2438,7 @@ LPhysicsShape:setSensor(sensor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sensor` | `boolean` | True for sensor mode. |
+| `sensor` | boolean | True for sensor mode. |
 
 **Example**
 
@@ -2842,12 +2453,11 @@ end
 
 ---
 
-### `LPhysicsShape:type`
+#### `LPhysicsShape:type`
 
-Returns the type name of this object ("LPhysicsShape").
+Returns the type name of this object ("[LPhysicsShape](#lphysicsshape-handle)").
 
 ```lua
--- signature
 LPhysicsShape:type()
 ```
 
@@ -2855,7 +2465,7 @@ LPhysicsShape:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | "LPhysicsShape". |
+| string | "[LPhysicsShape](#lphysicsshape-handle)". |
 
 **Example**
 
@@ -2868,12 +2478,11 @@ end
 
 ---
 
-### `LPhysicsShape:typeOf`
+#### `LPhysicsShape:typeOf`
 
 Checks if this object is of a given type name.
 
 ```lua
--- signature
 LPhysicsShape:typeOf(name)
 ```
 
@@ -2881,13 +2490,13 @@ LPhysicsShape:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object matches. |
+| boolean | True if the object matches. |
 
 **Example**
 
@@ -2901,14 +2510,19 @@ end
 
 ---
 
-## LTerrain
+## LTerrain Handle
 
-### `LTerrain:collapseColumns`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTerrain:collapseColumns`
 
 Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
 
 ```lua
--- signature
 LTerrain:collapseColumns()
 ```
 
@@ -2916,7 +2530,7 @@ LTerrain:collapseColumns()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of columns collapsed. |
+| number | Number of columns collapsed. |
 
 **Example**
 
@@ -2934,12 +2548,11 @@ end
 
 ---
 
-### `LTerrain:fillAll`
+#### `LTerrain:fillAll`
 
 Sets all terrain cells to either solid or empty.
 
 ```lua
--- signature
 LTerrain:fillAll(solid)
 ```
 
@@ -2947,7 +2560,7 @@ LTerrain:fillAll(solid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `solid` | `boolean` | True to fill everything solid, false to clear. |
+| `solid` | boolean | True to fill everything solid, false to clear. |
 
 **Example**
 
@@ -2963,12 +2576,11 @@ end
 
 ---
 
-### `LTerrain:fillCircle`
+#### `LTerrain:fillCircle`
 
 Fills or clears a circular region of terrain cells.
 
 ```lua
--- signature
 LTerrain:fillCircle(wx, wy, radius, solid)
 ```
 
@@ -2976,10 +2588,10 @@ LTerrain:fillCircle(wx, wy, radius, solid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wx` | `number` | Circle center X in world coordinates. |
-| `wy` | `number` | Circle center Y in world coordinates. |
-| `radius` | `number` | Circle radius in world units. |
-| `solid` | `boolean` | True to fill solid, false to carve empty. |
+| `wx` | number | Circle center X in world coordinates. |
+| `wy` | number | Circle center Y in world coordinates. |
+| `radius` | number | Circle radius in world units. |
+| `solid` | boolean | True to fill solid, false to carve empty. |
 
 **Example**
 
@@ -2996,12 +2608,11 @@ end
 
 ---
 
-### `LTerrain:fillRect`
+#### `LTerrain:fillRect`
 
 Fills or clears a rectangular region of terrain cells.
 
 ```lua
--- signature
 LTerrain:fillRect(wx, wy, w, h, solid)
 ```
 
@@ -3009,11 +2620,11 @@ LTerrain:fillRect(wx, wy, w, h, solid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wx` | `number` | Rectangle left X in world coordinates. |
-| `wy` | `number` | Rectangle top Y in world coordinates. |
-| `w` | `number` | Rectangle width. |
-| `h` | `number` | Rectangle height. |
-| `solid` | `boolean` | True to fill solid, false to carve empty. |
+| `wx` | number | Rectangle left X in world coordinates. |
+| `wy` | number | Rectangle top Y in world coordinates. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `solid` | boolean | True to fill solid, false to carve empty. |
 
 **Example**
 
@@ -3029,12 +2640,11 @@ end
 
 ---
 
-### `LTerrain:flush`
+#### `LTerrain:flush`
 
 Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
 
 ```lua
--- signature
 LTerrain:flush()
 ```
 
@@ -3053,12 +2663,11 @@ end
 
 ---
 
-### `LTerrain:getCell`
+#### `LTerrain:getCell`
 
 Returns whether a cell is solid. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTerrain:getCell(cx, cy)
 ```
 
@@ -3066,14 +2675,14 @@ LTerrain:getCell(cx, cy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Cell column. |
-| `cy` | `number` | Cell row. |
+| `cx` | number | Cell column. |
+| `cy` | number | Cell row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the cell is solid. |
+| boolean | True if the cell is solid. |
 
 **Example**
 
@@ -3089,12 +2698,11 @@ end
 
 ---
 
-### `LTerrain:isDirty`
+#### `LTerrain:isDirty`
 
 Returns true if terrain cells have been modified since the last flush.
 
 ```lua
--- signature
 LTerrain:isDirty()
 ```
 
@@ -3102,7 +2710,7 @@ LTerrain:isDirty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a flush is needed. |
+| boolean | True if a flush is needed. |
 
 **Example**
 
@@ -3118,12 +2726,11 @@ end
 
 ---
 
-### `LTerrain:loadFromBytes`
+#### `LTerrain:loadFromBytes`
 
 Restores terrain grid state from binary data previously produced by toBytes.
 
 ```lua
--- signature
 LTerrain:loadFromBytes(data)
 ```
 
@@ -3131,13 +2738,13 @@ LTerrain:loadFromBytes(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `string` | Binary terrain data. |
+| `data` | string | Binary terrain data. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if loading succeeded. |
+| boolean | True if loading succeeded. |
 
 **Example**
 
@@ -3155,12 +2762,11 @@ end
 
 ---
 
-### `LTerrain:setCell`
+#### `LTerrain:setCell`
 
 Sets a single terrain cell to solid or empty.
 
 ```lua
--- signature
 LTerrain:setCell(cx, cy, solid)
 ```
 
@@ -3168,9 +2774,9 @@ LTerrain:setCell(cx, cy, solid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Cell column (0-based). |
-| `cy` | `number` | Cell row (0-based). |
-| `solid` | `boolean` | True for solid, false for empty. |
+| `cx` | number | Cell column (0-based). |
+| `cy` | number | Cell row (0-based). |
+| `solid` | boolean | True for solid, false for empty. |
 
 **Example**
 
@@ -3186,12 +2792,11 @@ end
 
 ---
 
-### `LTerrain:solidPositions`
+#### `LTerrain:solidPositions`
 
 Returns all solid cell positions as a table of {x, y} entries.
 
 ```lua
--- signature
 LTerrain:solidPositions()
 ```
 
@@ -3199,7 +2804,7 @@ LTerrain:solidPositions()
 
 | Type | Description |
 |------|-------------|
-| `LTerrainSolidPositionsResult` | Array of tables with x and y fields (cell coordinates). |
+| LTerrainSolidPositionsResult | Array of tables with x and y fields (cell coordinates). |
 
 **Example**
 
@@ -3219,12 +2824,11 @@ end
 
 ---
 
-### `LTerrain:spawnDebris`
+#### `LTerrain:spawnDebris`
 
 Spawns small dynamic debris bodies at the given positions (for destruction effects).
 
 ```lua
--- signature
 LTerrain:spawnDebris(positions, mass, restitution)
 ```
 
@@ -3232,15 +2836,15 @@ LTerrain:spawnDebris(positions, mass, restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `positions` | `table` | Array of {x, y} tables in world coordinates. |
-| `mass` | `number` | Mass of each debris body. |
-| `restitution` | `number` | Bounciness of debris bodies. |
+| `positions` | table | Array of {x, y} tables in world coordinates. |
+| `mass` | number | Mass of each debris body. |
+| `restitution` | number | Bounciness of debris bodies. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of body IDs for the spawned debris. |
+| number[] | Array of body IDs for the spawned debris. |
 
 **Example**
 
@@ -3258,12 +2862,11 @@ end
 
 ---
 
-### `LTerrain:toBytes`
+#### `LTerrain:toBytes`
 
 Serializes the terrain grid to a compact binary format for saving.
 
 ```lua
--- signature
 LTerrain:toBytes()
 ```
 
@@ -3271,7 +2874,7 @@ LTerrain:toBytes()
 
 | Type | Description |
 |------|-------------|
-| `string` | Binary terrain data. |
+| string | Binary terrain data. |
 
 **Example**
 
@@ -3289,12 +2892,11 @@ end
 
 ---
 
-### `LTerrain:toImageData`
+#### `LTerrain:toImageData`
 
 Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
 
 ```lua
--- signature
 LTerrain:toImageData(sr, sg, sb, er, eg, eb)
 ```
 
@@ -3302,18 +2904,18 @@ LTerrain:toImageData(sr, sg, sb, er, eg, eb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sr` | `number` | Solid color red (0-255). |
-| `sg` | `number` | Solid color green. |
-| `sb` | `number` | Solid color blue. |
-| `er` | `number` | Empty color red. |
-| `eg` | `number` | Empty color green. |
-| `eb` | `number` | Empty color blue. |
+| `sr` | number | Solid color red (0-255). |
+| `sg` | number | Solid color green. |
+| `sb` | number | Solid color blue. |
+| `er` | number | Empty color red. |
+| `eg` | number | Empty color green. |
+| `eb` | number | Empty color blue. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Raw RGBA pixel bytes. |
+| string | Raw RGBA pixel bytes. |
 
 **Example**
 
@@ -3331,12 +2933,11 @@ end
 
 ---
 
-### `LTerrain:type`
+#### `LTerrain:type`
 
-Returns the type name of this object ("LTerrain").
+Returns the type name of this object ("[LTerrain](#lterrain-handle)").
 
 ```lua
--- signature
 LTerrain:type()
 ```
 
@@ -3344,7 +2945,7 @@ LTerrain:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | "LTerrain". |
+| string | "[LTerrain](#lterrain-handle)". |
 
 **Example**
 
@@ -3359,12 +2960,11 @@ end
 
 ---
 
-### `LTerrain:typeOf`
+#### `LTerrain:typeOf`
 
 Checks if this object is of a given type name.
 
 ```lua
--- signature
 LTerrain:typeOf(name)
 ```
 
@@ -3372,13 +2972,13 @@ LTerrain:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object matches. |
+| boolean | True if the object matches. |
 
 **Example**
 
@@ -3393,14 +2993,19 @@ end
 
 ---
 
-## LWorld
+## LWorld Handle
 
-### `LWorld:addDistanceJoint`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LWorld:addDistanceJoint`
 
 Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
 
 ```lua
--- signature
 LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length)
 ```
 
@@ -3408,19 +3013,19 @@ LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, le
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorAX` | `number` | Local anchor X on body A. |
-| `anchorAY` | `number` | Local anchor Y on body A. |
-| `anchorBX` | `number` | Local anchor X on body B. |
-| `anchorBY` | `number` | Local anchor Y on body B. |
-| `length` | `number` | Target distance between anchors. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorAX` | number | Local anchor X on body A. |
+| `anchorAY` | number | Local anchor Y on body A. |
+| `anchorBX` | number | Local anchor X on body B. |
+| `anchorBY` | number | Local anchor Y on body B. |
+| `length` | number | Target distance between anchors. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3437,12 +3042,11 @@ end
 
 ---
 
-### `LWorld:addFixture`
+#### `LWorld:addFixture`
 
 Attaches a new collider shape to an existing body with material properties.
 
 ```lua
--- signature
 LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...)
 ```
 
@@ -3450,19 +3054,19 @@ LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The target body ID. |
-| `shapeType` | `string` | Shape kind: "circle", "rectangle", "polygon", "edge", or "chain". |
-| `density` | `number` | Mass density (affects dynamic body mass calculation). |
-| `friction` | `number` | Surface friction coefficient (0 = ice, 1 = rubber). |
-| `restitution` | `number` | Bounciness (0 = no bounce, 1 = perfectly elastic). |
-| `sensor` | `boolean` | If true, detects overlaps without generating collision response. |
+| `bodyId` | number | The target body ID. |
+| `shapeType` | string | Shape kind: "circle", "rectangle", "polygon", "edge", or "chain". |
+| `density` | number | Mass density (affects dynamic body mass calculation). |
+| `friction` | number | Surface friction coefficient (0 = ice, 1 = rubber). |
+| `restitution` | number | Bounciness (0 = no bounce, 1 = perfectly elastic). |
+| `sensor` | boolean | If true, detects overlaps without generating collision response. |
 | — | — | @param ... number Shape-specific size arguments (radius, width/height, or vertex list). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The fixture index on the body. |
+| number | The fixture index on the body. |
 
 **Example**
 
@@ -3478,12 +3082,11 @@ end
 
 ---
 
-### `LWorld:addFrictionJoint`
+#### `LWorld:addFrictionJoint`
 
 Creates a friction joint that applies resistance to relative motion between two bodies.
 
 ```lua
--- signature
 LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque)
 ```
 
@@ -3491,18 +3094,18 @@ LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorX` | `number` | Anchor X in world coordinates. |
-| `anchorY` | `number` | Anchor Y in world coordinates. |
-| `maxForce` | `number` | Maximum friction force. |
-| `maxTorque` | `number` | Maximum friction torque. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorX` | number | Anchor X in world coordinates. |
+| `anchorY` | number | Anchor Y in world coordinates. |
+| `maxForce` | number | Maximum friction force. |
+| `maxTorque` | number | Maximum friction torque. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3519,12 +3122,11 @@ end
 
 ---
 
-### `LWorld:addGearJoint`
+#### `LWorld:addGearJoint`
 
 Creates a gear joint that synchronizes rotation between two bodies at an anchor.
 
 ```lua
--- signature
 LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY)
 ```
 
@@ -3532,16 +3134,16 @@ LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorX` | `number` | Gear anchor X. |
-| `anchorY` | `number` | Gear anchor Y. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorX` | number | Gear anchor X. |
+| `anchorY` | number | Gear anchor Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3558,12 +3160,11 @@ end
 
 ---
 
-### `LWorld:addMotorJoint`
+#### `LWorld:addMotorJoint`
 
 Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 
 ```lua
--- signature
 LWorld:addMotorJoint(bodyA, bodyB, factor)
 ```
 
@@ -3571,15 +3172,15 @@ LWorld:addMotorJoint(bodyA, bodyB, factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `factor` | `number` | Correction factor (0Ă˘â‚¬â€ś1), higher = faster convergence. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `factor` | number | Correction factor (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1), higher = faster convergence. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3596,12 +3197,11 @@ end
 
 ---
 
-### `LWorld:addMouseJoint`
+#### `LWorld:addMouseJoint`
 
 Creates a mouse joint that pulls a body toward a world target point with spring-like force.
 
 ```lua
--- signature
 LWorld:addMouseJoint(bodyId, targetX, targetY, maxForce)
 ```
 
@@ -3609,16 +3209,16 @@ LWorld:addMouseJoint(bodyId, targetX, targetY, maxForce)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The body to pull. |
-| `targetX` | `number` | Initial target X in world coordinates. |
-| `targetY` | `number` | Initial target Y in world coordinates. |
-| `maxForce` | `number` | Maximum force applied to reach the target. |
+| `bodyId` | number | The body to pull. |
+| `targetX` | number | Initial target X in world coordinates. |
+| `targetY` | number | Initial target Y in world coordinates. |
+| `maxForce` | number | Maximum force applied to reach the target. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3635,12 +3235,11 @@ end
 
 ---
 
-### `LWorld:addPrismaticJoint`
+#### `LWorld:addPrismaticJoint`
 
 Creates a prismatic (slider) joint that constrains body B to move along an axis relative to body A.
 
 ```lua
--- signature
 LWorld:addPrismaticJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY)
 ```
 
@@ -3648,18 +3247,18 @@ LWorld:addPrismaticJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorX` | `number` | Anchor X in world coordinates. |
-| `anchorY` | `number` | Anchor Y in world coordinates. |
-| `axisX` | `number` | Slide axis X direction. |
-| `axisY` | `number` | Slide axis Y direction. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorX` | number | Anchor X in world coordinates. |
+| `anchorY` | number | Anchor Y in world coordinates. |
+| `axisX` | number | Slide axis X direction. |
+| `axisY` | number | Slide axis Y direction. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3676,12 +3275,11 @@ end
 
 ---
 
-### `LWorld:addPulleyJoint`
+#### `LWorld:addPulleyJoint`
 
 Creates a pulley joint connecting two bodies so that movement of one affects the other inversely.
 
 ```lua
--- signature
 LWorld:addPulleyJoint(bodyA, bodyB, anchorX, anchorY)
 ```
 
@@ -3689,16 +3287,16 @@ LWorld:addPulleyJoint(bodyA, bodyB, anchorX, anchorY)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorX` | `number` | Shared anchor X. |
-| `anchorY` | `number` | Shared anchor Y. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorX` | number | Shared anchor X. |
+| `anchorY` | number | Shared anchor Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3715,12 +3313,11 @@ end
 
 ---
 
-### `LWorld:addRevoluteJoint`
+#### `LWorld:addRevoluteJoint`
 
 Creates a revolute (hinge) joint connecting two bodies at an anchor point. Bodies can rotate freely around the anchor.
 
 ```lua
--- signature
 LWorld:addRevoluteJoint(bodyA, bodyB, anchorX, anchorY)
 ```
 
@@ -3728,16 +3325,16 @@ LWorld:addRevoluteJoint(bodyA, bodyB, anchorX, anchorY)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorX` | `number` | Anchor X in world coordinates. |
-| `anchorY` | `number` | Anchor Y in world coordinates. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorX` | number | Anchor X in world coordinates. |
+| `anchorY` | number | Anchor Y in world coordinates. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3754,12 +3351,11 @@ end
 
 ---
 
-### `LWorld:addRopeJoint`
+#### `LWorld:addRopeJoint`
 
 Creates a rope joint limiting the maximum distance between two anchor points on two bodies.
 
 ```lua
--- signature
 LWorld:addRopeJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, maxLength)
 ```
 
@@ -3767,19 +3363,19 @@ LWorld:addRopeJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, maxLen
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorAX` | `number` | Local anchor X on body A. |
-| `anchorAY` | `number` | Local anchor Y on body A. |
-| `anchorBX` | `number` | Local anchor X on body B. |
-| `anchorBY` | `number` | Local anchor Y on body B. |
-| `maxLength` | `number` | Maximum allowed distance between anchors. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorAX` | number | Local anchor X on body A. |
+| `anchorAY` | number | Local anchor Y on body A. |
+| `anchorBX` | number | Local anchor X on body B. |
+| `anchorBY` | number | Local anchor Y on body B. |
+| `maxLength` | number | Maximum allowed distance between anchors. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3796,12 +3392,11 @@ end
 
 ---
 
-### `LWorld:addWeldJoint`
+#### `LWorld:addWeldJoint`
 
 Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
 
 ```lua
--- signature
 LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY)
 ```
 
@@ -3809,16 +3404,16 @@ LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID. |
-| `bodyB` | `number` | Second body ID. |
-| `anchorX` | `number` | Anchor X in world coordinates. |
-| `anchorY` | `number` | Anchor Y in world coordinates. |
+| `bodyA` | number | First body ID. |
+| `bodyB` | number | Second body ID. |
+| `anchorX` | number | Anchor X in world coordinates. |
+| `anchorY` | number | Anchor Y in world coordinates. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3835,12 +3430,11 @@ end
 
 ---
 
-### `LWorld:addWheelJoint`
+#### `LWorld:addWheelJoint`
 
 Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
 
 ```lua
--- signature
 LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY)
 ```
 
@@ -3848,18 +3442,18 @@ LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyA` | `number` | First body ID (chassis). |
-| `bodyB` | `number` | Second body ID (wheel). |
-| `anchorX` | `number` | Anchor X in world coordinates. |
-| `anchorY` | `number` | Anchor Y in world coordinates. |
-| `axisX` | `number` | Suspension axis X direction. |
-| `axisY` | `number` | Suspension axis Y direction. |
+| `bodyA` | number | First body ID (chassis). |
+| `bodyB` | number | Second body ID (wheel). |
+| `anchorX` | number | Anchor X in world coordinates. |
+| `anchorY` | number | Anchor Y in world coordinates. |
+| `axisX` | number | Suspension axis X direction. |
+| `axisY` | number | Suspension axis Y direction. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The joint ID. |
+| number | The joint ID. |
 
 **Example**
 
@@ -3876,12 +3470,11 @@ end
 
 ---
 
-### `LWorld:addZone`
+#### `LWorld:addZone`
 
 Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
 
 ```lua
--- signature
 LWorld:addZone(x, y, w, h)
 ```
 
@@ -3889,16 +3482,16 @@ LWorld:addZone(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Zone left X. |
-| `y` | `number` | Zone top Y. |
-| `w` | `number` | Zone width. |
-| `h` | `number` | Zone height. |
+| `x` | number | Zone left X. |
+| `y` | number | Zone top Y. |
+| `w` | number | Zone width. |
+| `h` | number | Zone height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LZone` | The zone handle. |
+| [LZone](#lzone-handle) | The zone handle. |
 
 **Example**
 
@@ -3914,12 +3507,11 @@ end
 
 ---
 
-### `LWorld:clear`
+#### `LWorld:clear`
 
 Removes all bodies and joints from the world, resetting it to an empty state.
 
 ```lua
--- signature
 LWorld:clear()
 ```
 
@@ -3937,12 +3529,11 @@ end
 
 ---
 
-### `LWorld:clearBeginContact`
+#### `LWorld:clearBeginContact`
 
 Removes the begin-contact callback so it is no longer called.
 
 ```lua
--- signature
 LWorld:clearBeginContact()
 ```
 
@@ -3967,12 +3558,11 @@ end
 
 ---
 
-### `LWorld:clearBodyData`
+#### `LWorld:clearBodyData`
 
 Removes and releases the Lua data attached to a body.
 
 ```lua
--- signature
 LWorld:clearBodyData(id)
 ```
 
@@ -3980,7 +3570,7 @@ LWorld:clearBodyData(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Example**
 
@@ -3996,12 +3586,11 @@ end
 
 ---
 
-### `LWorld:clearBodyOneWay`
+#### `LWorld:clearBodyOneWay`
 
 Removes the one-way platform behavior from a body, making it block from all directions.
 
 ```lua
--- signature
 LWorld:clearBodyOneWay(id)
 ```
 
@@ -4009,7 +3598,7 @@ LWorld:clearBodyOneWay(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Example**
 
@@ -4025,12 +3614,11 @@ end
 
 ---
 
-### `LWorld:clearEndContact`
+#### `LWorld:clearEndContact`
 
 Removes the end-contact callback so it is no longer called.
 
 ```lua
--- signature
 LWorld:clearEndContact()
 ```
 
@@ -4056,12 +3644,11 @@ end
 
 ---
 
-### `LWorld:destroyBody`
+#### `LWorld:destroyBody`
 
 Removes a body from the world by its ID, along with all attached fixtures and joints.
 
 ```lua
--- signature
 LWorld:destroyBody(id)
 ```
 
@@ -4069,7 +3656,7 @@ LWorld:destroyBody(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID to destroy. |
+| `id` | number | The body ID to destroy. |
 
 **Example**
 
@@ -4085,12 +3672,11 @@ end
 
 ---
 
-### `LWorld:destroyJoint`
+#### `LWorld:destroyJoint`
 
 Removes a joint from the world, disconnecting the two bodies it linked.
 
 ```lua
--- signature
 LWorld:destroyJoint(jointId)
 ```
 
@@ -4098,7 +3684,7 @@ LWorld:destroyJoint(jointId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID to destroy. |
+| `jointId` | number | The joint ID to destroy. |
 
 **Example**
 
@@ -4116,12 +3702,11 @@ end
 
 ---
 
-### `LWorld:drawDebug`
+#### `LWorld:drawDebug`
 
 Renders a debug visualization of all physics bodies onto a software ImageData target.
 
 ```lua
--- signature
 LWorld:drawDebug(target, r, g, b, a)
 ```
 
@@ -4129,11 +3714,11 @@ LWorld:drawDebug(target, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | The image to draw debug shapes onto. |
-| `r?` | `number` | Red channel (0-255, default 0). |
-| `g?` | `number` | Green channel (0-255, default 255). |
-| `b?` | `number` | Blue channel (0-255, default 0). |
-| `a?` | `number` | Alpha channel (0-255, default 255). |
+| `target` | LImageData | The image to draw debug shapes onto. |
+| `r?` | number | Red channel (0-255, default 0). |
+| `g?` | number | Green channel (0-255, default 255). |
+| `b?` | number | Blue channel (0-255, default 0). |
+| `a?` | number | Alpha channel (0-255, default 255). |
 
 **Example**
 
@@ -4149,12 +3734,11 @@ end
 
 ---
 
-### `LWorld:fixtureCount`
+#### `LWorld:fixtureCount`
 
 Returns how many fixtures (colliders) are attached to a body.
 
 ```lua
--- signature
 LWorld:fixtureCount(bodyId)
 ```
 
@@ -4162,13 +3746,13 @@ LWorld:fixtureCount(bodyId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The body to query. |
+| `bodyId` | number | The body to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of attached fixtures. |
+| number | Number of attached fixtures. |
 
 **Example**
 
@@ -4183,12 +3767,11 @@ end
 
 ---
 
-### `LWorld:getBeginContactEvents`
+#### `LWorld:getBeginContactEvents`
 
 Returns contact-begin events from the last step (pairs of bodies that started touching).
 
 ```lua
--- signature
 LWorld:getBeginContactEvents()
 ```
 
@@ -4196,7 +3779,7 @@ LWorld:getBeginContactEvents()
 
 | Type | Description |
 |------|-------------|
-| `LWorldGetBeginContactEventsResult` | Array of {bodyA, bodyB} tables. |
+| LWorldGetBeginContactEventsResult | Array of {bodyA, bodyB} tables. |
 
 **Example**
 
@@ -4220,12 +3803,11 @@ end
 
 ---
 
-### `LWorld:getBodyAtPoint`
+#### `LWorld:getBodyAtPoint`
 
 Returns the body ID at a specific world point, or nil if no body is there.
 
 ```lua
--- signature
 LWorld:getBodyAtPoint(x, y)
 ```
 
@@ -4233,14 +3815,14 @@ LWorld:getBodyAtPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Query point X. |
-| `y` | `number` | Query point Y. |
+| `x` | number | Query point X. |
+| `y` | number | Query point Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Body ID at the point, or nil. |
+| number | Body ID at the point, or nil. |
 
 **Example**
 
@@ -4257,12 +3839,11 @@ end
 
 ---
 
-### `LWorld:getBodyCCD`
+#### `LWorld:getBodyCCD`
 
 Returns whether continuous collision detection is enabled on a body.
 
 ```lua
--- signature
 LWorld:getBodyCCD(id)
 ```
 
@@ -4270,13 +3851,13 @@ LWorld:getBodyCCD(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if CCD is enabled. |
+| boolean | True if CCD is enabled. |
 
 **Example**
 
@@ -4292,12 +3873,11 @@ end
 
 ---
 
-### `LWorld:getBodyContacts`
+#### `LWorld:getBodyContacts`
 
 Returns all contacts involving a specific body.
 
 ```lua
--- signature
 LWorld:getBodyContacts(bodyId)
 ```
 
@@ -4305,13 +3885,13 @@ LWorld:getBodyContacts(bodyId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The body to query contacts for. |
+| `bodyId` | number | The body to query contacts for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWorldGetBodyContactsResult` | Array of {bodyA, bodyB, normalX, normalY, isTouching} tables. |
+| LWorldGetBodyContactsResult | Array of {bodyA, bodyB, normalX, normalY, isTouching} tables. |
 
 **Example**
 
@@ -4333,12 +3913,11 @@ end
 
 ---
 
-### `LWorld:getBodyCount`
+#### `LWorld:getBodyCount`
 
 Returns the total number of active bodies in the world.
 
 ```lua
--- signature
 LWorld:getBodyCount()
 ```
 
@@ -4346,7 +3925,7 @@ LWorld:getBodyCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Body count. |
+| number | Body count. |
 
 **Example**
 
@@ -4361,12 +3940,11 @@ end
 
 ---
 
-### `LWorld:getBodyData`
+#### `LWorld:getBodyData`
 
 Retrieves the Lua data previously attached to a body, or nil if none was set.
 
 ```lua
--- signature
 LWorld:getBodyData(id)
 ```
 
@@ -4374,13 +3952,13 @@ LWorld:getBodyData(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | The stored value, or nil if none was set. |
+| table | The stored value, or nil if none was set. |
 
 **Example**
 
@@ -4397,12 +3975,11 @@ end
 
 ---
 
-### `LWorld:getBodyIds`
+#### `LWorld:getBodyIds`
 
 Returns a sequential table of all body IDs currently in the world.
 
 ```lua
--- signature
 LWorld:getBodyIds()
 ```
 
@@ -4410,7 +3987,7 @@ LWorld:getBodyIds()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Body ID numbers. |
+| number[] | Body ID numbers. |
 
 **Example**
 
@@ -4427,12 +4004,11 @@ end
 
 ---
 
-### `LWorld:getBodyOneWay`
+#### `LWorld:getBodyOneWay`
 
 Returns the one-way platform normal for a body, or nil,nil if not set.
 
 ```lua
--- signature
 LWorld:getBodyOneWay(id)
 ```
 
@@ -4440,14 +4016,14 @@ LWorld:getBodyOneWay(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Normal X, or nil if not a one-way body. |
-| `number` | b Normal Y, or nil if not a one-way body. |
+| number | Normal X; or nil if not a one-way body. |
+| number | Normal Y; or nil if not a one-way body. |
 
 **Example**
 
@@ -4462,12 +4038,11 @@ end
 
 ---
 
-### `LWorld:getBodyType`
+#### `LWorld:getBodyType`
 
 Returns the type name of a body as a string.
 
 ```lua
--- signature
 LWorld:getBodyType(id)
 ```
 
@@ -4475,13 +4050,13 @@ LWorld:getBodyType(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Body type: "static", "dynamic", "kinematic", or "sensor". |
+| string | Body type: "static", "dynamic", "kinematic", or "sensor". |
 
 **Example**
 
@@ -4496,12 +4071,11 @@ end
 
 ---
 
-### `LWorld:getCollisionEvents`
+#### `LWorld:getCollisionEvents`
 
 Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
 
 ```lua
--- signature
 LWorld:getCollisionEvents()
 ```
 
@@ -4509,7 +4083,7 @@ LWorld:getCollisionEvents()
 
 | Type | Description |
 |------|-------------|
-| `LWorldGetCollisionEventsResult` | Array of collision event tables. |
+| LWorldGetCollisionEventsResult | Array of collision event tables. |
 
 **Example**
 
@@ -4534,12 +4108,11 @@ end
 
 ---
 
-### `LWorld:getContacts`
+#### `LWorld:getContacts`
 
 Returns all currently active contact manifolds with normals and touching state.
 
 ```lua
--- signature
 LWorld:getContacts()
 ```
 
@@ -4547,7 +4120,7 @@ LWorld:getContacts()
 
 | Type | Description |
 |------|-------------|
-| `LWorldGetContactsResult` | Array of {bodyA, bodyB, normalX, normalY, isTouching} tables. |
+| LWorldGetContactsResult | Array of {bodyA, bodyB, normalX, normalY, isTouching} tables. |
 
 **Example**
 
@@ -4567,12 +4140,11 @@ end
 
 ---
 
-### `LWorld:getEndContactEvents`
+#### `LWorld:getEndContactEvents`
 
 Returns contact-end events from the last step (pairs of bodies that stopped touching).
 
 ```lua
--- signature
 LWorld:getEndContactEvents()
 ```
 
@@ -4580,7 +4152,7 @@ LWorld:getEndContactEvents()
 
 | Type | Description |
 |------|-------------|
-| `LWorldGetEndContactEventsResult` | Array of {bodyA, bodyB} tables. |
+| LWorldGetEndContactEventsResult | Array of {bodyA, bodyB} tables. |
 
 **Example**
 
@@ -4605,12 +4177,11 @@ end
 
 ---
 
-### `LWorld:getGravity`
+#### `LWorld:getGravity`
 
 Returns the current world gravity vector.
 
 ```lua
--- signature
 LWorld:getGravity()
 ```
 
@@ -4618,8 +4189,8 @@ LWorld:getGravity()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Gravity X component in world units per second squared. |
-| `number` | b Gravity Y component in world units per second squared. |
+| number | Gravity X component in world units per second squared. |
+| number | Gravity Y component in world units per second squared. |
 
 **Example**
 
@@ -4635,12 +4206,11 @@ end
 
 ---
 
-### `LWorld:getJointBodies`
+#### `LWorld:getJointBodies`
 
 Returns the two body IDs connected by a joint.
 
 ```lua
--- signature
 LWorld:getJointBodies(jointId)
 ```
 
@@ -4648,14 +4218,14 @@ LWorld:getJointBodies(jointId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID to query. |
+| `jointId` | number | The joint ID to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Body A ID. |
-| `number` | b Body B ID. |
+| number | Body A ID. |
+| number | Body B ID. |
 
 **Example**
 
@@ -4671,12 +4241,11 @@ end
 
 ---
 
-### `LWorld:getJointBreakForce`
+#### `LWorld:getJointBreakForce`
 
 Returns the break force threshold for a joint.
 
 ```lua
--- signature
 LWorld:getJointBreakForce(jointId)
 ```
 
@@ -4684,13 +4253,13 @@ LWorld:getJointBreakForce(jointId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
+| `jointId` | number | The joint ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Break force value. |
+| number | Break force value. |
 
 **Example**
 
@@ -4707,12 +4276,11 @@ end
 
 ---
 
-### `LWorld:getJointIds`
+#### `LWorld:getJointIds`
 
 Returns a sequential table of all joint IDs currently in the world.
 
 ```lua
--- signature
 LWorld:getJointIds()
 ```
 
@@ -4720,7 +4288,7 @@ LWorld:getJointIds()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Joint ID numbers. |
+| number[] | Joint ID numbers. |
 
 **Example**
 
@@ -4738,12 +4306,11 @@ end
 
 ---
 
-### `LWorld:getJointLimits`
+#### `LWorld:getJointLimits`
 
 Returns the lower and upper limit values for a joint.
 
 ```lua
--- signature
 LWorld:getJointLimits(jointId)
 ```
 
@@ -4751,14 +4318,14 @@ LWorld:getJointLimits(jointId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
+| `jointId` | number | The joint ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Lower limit. |
-| `number` | b Upper limit. |
+| number | Lower limit. |
+| number | Upper limit. |
 
 **Example**
 
@@ -4775,12 +4342,11 @@ end
 
 ---
 
-### `LWorld:getJointMotorSpeed`
+#### `LWorld:getJointMotorSpeed`
 
 Returns the current motor speed setting of a joint.
 
 ```lua
--- signature
 LWorld:getJointMotorSpeed(jointId)
 ```
 
@@ -4788,13 +4354,13 @@ LWorld:getJointMotorSpeed(jointId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
+| `jointId` | number | The joint ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Motor speed value. |
+| number | Motor speed value. |
 
 **Example**
 
@@ -4811,12 +4377,11 @@ end
 
 ---
 
-### `LWorld:getJointType`
+#### `LWorld:getJointType`
 
 Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
 
 ```lua
--- signature
 LWorld:getJointType(jointId)
 ```
 
@@ -4824,13 +4389,13 @@ LWorld:getJointType(jointId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
+| `jointId` | number | The joint ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The joint type name. |
+| string | The joint type name. |
 
 **Example**
 
@@ -4846,12 +4411,11 @@ end
 
 ---
 
-### `LWorld:getMeter`
+#### `LWorld:getMeter`
 
 Returns the current pixels-per-meter scale.
 
 ```lua
--- signature
 LWorld:getMeter()
 ```
 
@@ -4859,7 +4423,7 @@ LWorld:getMeter()
 
 | Type | Description |
 |------|-------------|
-| `number` | Pixels per meter. |
+| number | Pixels per meter. |
 
 **Example**
 
@@ -4874,12 +4438,11 @@ end
 
 ---
 
-### `LWorld:getSolverIterations`
+#### `LWorld:getSolverIterations`
 
 Returns the current number of velocity solver iterations.
 
 ```lua
--- signature
 LWorld:getSolverIterations()
 ```
 
@@ -4887,7 +4450,7 @@ LWorld:getSolverIterations()
 
 | Type | Description |
 |------|-------------|
-| `number` | Iteration count. |
+| number | Iteration count. |
 
 **Example**
 
@@ -4901,12 +4464,11 @@ end
 
 ---
 
-### `LWorld:getZoneEvents`
+#### `LWorld:getZoneEvents`
 
 Returns all zone enter/leave events from the last step.
 
 ```lua
--- signature
 LWorld:getZoneEvents()
 ```
 
@@ -4914,7 +4476,7 @@ LWorld:getZoneEvents()
 
 | Type | Description |
 |------|-------------|
-| `LWorldGetZoneEventsResult` | Array of {zone_id, body_id, kind} tables where kind is "enter" or "leave". |
+| LWorldGetZoneEventsResult | Array of {zone_id, body_id, kind} tables where kind is "enter" or "leave". |
 
 **Example**
 
@@ -4936,12 +4498,11 @@ end
 
 ---
 
-### `LWorld:isBodySleeping`
+#### `LWorld:isBodySleeping`
 
 Returns whether a body is currently in the sleeping (inactive) state.
 
 ```lua
--- signature
 LWorld:isBodySleeping(id)
 ```
 
@@ -4949,13 +4510,13 @@ LWorld:isBodySleeping(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the body is sleeping. |
+| boolean | True if the body is sleeping. |
 
 **Example**
 
@@ -4971,12 +4532,11 @@ end
 
 ---
 
-### `LWorld:jointCount`
+#### `LWorld:jointCount`
 
 Returns the total number of joints in the world.
 
 ```lua
--- signature
 LWorld:jointCount()
 ```
 
@@ -4984,7 +4544,7 @@ LWorld:jointCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Joint count. |
+| number | Joint count. |
 
 **Example**
 
@@ -5000,12 +4560,11 @@ end
 
 ---
 
-### `LWorld:newBodies`
+#### `LWorld:newBodies`
 
 Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
 
 ```lua
--- signature
 LWorld:newBodies(specs)
 ```
 
@@ -5013,13 +4572,13 @@ LWorld:newBodies(specs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `specs` | `table` | Array of tables: {{x, y, w, h, "dynamic"}, ...} or {{x, y, "dynamic"}, ...} (defaults to 16x16). |
+| `specs` | table | Array of tables: {{x, y, w, h, "dynamic"}, ...} or {{x, y, "dynamic"}, ...} (defaults to 16x16). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Body ID numbers in creation order. |
+| number[] | Body ID numbers in creation order. |
 
 **Example**
 
@@ -5038,12 +4597,11 @@ end
 
 ---
 
-### `LWorld:newBody`
+#### `LWorld:newBody`
 
 Creates a new physics body at the given position with the specified type and dimensions.
 
 ```lua
--- signature
 LWorld:newBody(x, y, bodyType)
 ```
 
@@ -5051,15 +4609,15 @@ LWorld:newBody(x, y, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Initial X position in world coordinates. |
-| `y` | `number` | Initial Y position in world coordinates. |
-| `bodyType` | `string` | One of "static", "dynamic", "kinematic", or "sensor". |
+| `x` | number | Initial X position in world coordinates. |
+| `y` | number | Initial Y position in world coordinates. |
+| `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBody` | The newly created body handle. |
+| [LBody](#lbody-handle) | The newly created body handle. |
 
 **Example**
 
@@ -5076,12 +4634,11 @@ end
 
 ---
 
-### `LWorld:newChainBody`
+#### `LWorld:newChainBody`
 
 Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 
 ```lua
--- signature
 LWorld:newChainBody(x, y, vertices, closed, bodyType)
 ```
 
@@ -5089,17 +4646,17 @@ LWorld:newChainBody(x, y, vertices, closed, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Body X position in world coordinates. |
-| `y` | `number` | Body Y position in world coordinates. |
-| `vertices` | `table` | Flat array of vertex coordinates {x1,y1,x2,y2,...}. |
-| `closed` | `boolean` | If true, connects the last vertex back to the first. |
-| `bodyType` | `string` | One of "static", "dynamic", "kinematic", or "sensor". |
+| `x` | number | Body X position in world coordinates. |
+| `y` | number | Body Y position in world coordinates. |
+| `vertices` | table | Flat array of vertex coordinates {x1,y1,x2,y2,...}. |
+| `closed` | boolean | If true, connects the last vertex back to the first. |
+| `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBody` | The newly created body handle. |
+| [LBody](#lbody-handle) | The newly created body handle. |
 
 **Example**
 
@@ -5114,12 +4671,11 @@ end
 
 ---
 
-### `LWorld:newCircleBody`
+#### `LWorld:newCircleBody`
 
 Creates a new body with a circle collider already attached.
 
 ```lua
--- signature
 LWorld:newCircleBody(x, y, radius, bodyType)
 ```
 
@@ -5127,16 +4683,16 @@ LWorld:newCircleBody(x, y, radius, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Initial X position in world coordinates. |
-| `y` | `number` | Initial Y position in world coordinates. |
-| `radius` | `number` | Circle radius in world units. |
-| `bodyType` | `string` | One of "static", "dynamic", "kinematic", or "sensor". |
+| `x` | number | Initial X position in world coordinates. |
+| `y` | number | Initial Y position in world coordinates. |
+| `radius` | number | Circle radius in world units. |
+| `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBody` | The newly created body handle. |
+| [LBody](#lbody-handle) | The newly created body handle. |
 
 **Example**
 
@@ -5151,12 +4707,11 @@ end
 
 ---
 
-### `LWorld:newEdgeBody`
+#### `LWorld:newEdgeBody`
 
 Creates a new body with an edge (line segment) collider between two local points.
 
 ```lua
--- signature
 LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 ```
 
@@ -5164,19 +4719,19 @@ LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Body X position in world coordinates. |
-| `y` | `number` | Body Y position in world coordinates. |
-| `x1` | `number` | Edge start X relative to body. |
-| `y1` | `number` | Edge start Y relative to body. |
-| `x2` | `number` | Edge end X relative to body. |
-| `y2` | `number` | Edge end Y relative to body. |
-| `bodyType` | `string` | One of "static", "dynamic", "kinematic", or "sensor". |
+| `x` | number | Body X position in world coordinates. |
+| `y` | number | Body Y position in world coordinates. |
+| `x1` | number | Edge start X relative to body. |
+| `y1` | number | Edge start Y relative to body. |
+| `x2` | number | Edge end X relative to body. |
+| `y2` | number | Edge end Y relative to body. |
+| `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBody` | The newly created body handle. |
+| [LBody](#lbody-handle) | The newly created body handle. |
 
 **Example**
 
@@ -5191,12 +4746,11 @@ end
 
 ---
 
-### `LWorld:newPolygonBody`
+#### `LWorld:newPolygonBody`
 
 Creates a new body with a convex polygon collider defined by vertex pairs.
 
 ```lua
--- signature
 LWorld:newPolygonBody(x, y, vertices, bodyType)
 ```
 
@@ -5204,16 +4758,16 @@ LWorld:newPolygonBody(x, y, vertices, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Initial X position in world coordinates. |
-| `y` | `number` | Initial Y position in world coordinates. |
-| `vertices` | `table` | Flat array of vertex coordinates {x1,y1,x2,y2,...}. |
-| `bodyType` | `string` | One of "static", "dynamic", "kinematic", or "sensor". |
+| `x` | number | Initial X position in world coordinates. |
+| `y` | number | Initial Y position in world coordinates. |
+| `vertices` | table | Flat array of vertex coordinates {x1,y1,x2,y2,...}. |
+| `bodyType` | string | One of "static", "dynamic", "kinematic", or "sensor". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBody` | The newly created body handle. |
+| [LBody](#lbody-handle) | The newly created body handle. |
 
 **Example**
 
@@ -5228,12 +4782,11 @@ end
 
 ---
 
-### `LWorld:queryAABB`
+#### `LWorld:queryAABB`
 
 Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 
 ```lua
--- signature
 LWorld:queryAABB(x, y, w, h)
 ```
 
@@ -5241,16 +4794,16 @@ LWorld:queryAABB(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Query rectangle left X. |
-| `y` | `number` | Query rectangle top Y. |
-| `w` | `number` | Query rectangle width. |
-| `h` | `number` | Query rectangle height. |
+| `x` | number | Query rectangle left X. |
+| `y` | number | Query rectangle top Y. |
+| `w` | number | Query rectangle width. |
+| `h` | number | Query rectangle height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Body ID numbers found in the region. |
+| number[] | Body ID numbers found in the region. |
 
 **Example**
 
@@ -5268,12 +4821,11 @@ end
 
 ---
 
-### `LWorld:raycast`
+#### `LWorld:raycast`
 
 Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 
 ```lua
--- signature
 LWorld:raycast(x1, y1, x2, y2)
 ```
 
@@ -5281,16 +4833,16 @@ LWorld:raycast(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Ray origin X. |
-| `y1` | `number` | Ray origin Y. |
-| `x2` | `number` | Ray end X. |
-| `y2` | `number` | Ray end Y. |
+| `x1` | number | Ray origin X. |
+| `y1` | number | Ray origin Y. |
+| `x2` | number | Ray end X. |
+| `y2` | number | Ray end Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWorldRaycastResult` | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit. |
+| LWorldRaycastResult | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit. |
 
 **Example**
 
@@ -5311,12 +4863,11 @@ end
 
 ---
 
-### `LWorld:raycastAll`
+#### `LWorld:raycastAll`
 
 Casts a directional ray and returns all bodies hit within max distance as a table of results.
 
 ```lua
--- signature
 LWorld:raycastAll(x, y, dx, dy, maxDist)
 ```
 
@@ -5324,17 +4875,17 @@ LWorld:raycastAll(x, y, dx, dy, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Ray origin X. |
-| `y` | `number` | Ray origin Y. |
-| `dx` | `number` | Ray direction X. |
-| `dy` | `number` | Ray direction Y. |
-| `maxDist` | `number` | Maximum ray travel distance. |
+| `x` | number | Ray origin X. |
+| `y` | number | Ray origin Y. |
+| `dx` | number | Ray direction X. |
+| `dy` | number | Ray direction Y. |
+| `maxDist` | number | Maximum ray travel distance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWorldRaycastAllResult` | Array of hit tables {bodyId, x, y, normalX, normalY, toi}. |
+| LWorldRaycastAllResult | Array of hit tables {bodyId, x, y, normalX, normalY, toi}. |
 
 **Example**
 
@@ -5354,12 +4905,11 @@ end
 
 ---
 
-### `LWorld:raycastClosest`
+#### `LWorld:raycastClosest`
 
 Casts a directional ray from a point and returns the closest hit within max distance.
 
 ```lua
--- signature
 LWorld:raycastClosest(x, y, dx, dy, maxDist)
 ```
 
@@ -5367,17 +4917,17 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Ray origin X. |
-| `y` | `number` | Ray origin Y. |
-| `dx` | `number` | Ray direction X (does not need to be normalized). |
-| `dy` | `number` | Ray direction Y. |
-| `maxDist` | `number` | Maximum ray travel distance. |
+| `x` | number | Ray origin X. |
+| `y` | number | Ray origin Y. |
+| `dx` | number | Ray direction X (does not need to be normalized). |
+| `dy` | number | Ray direction Y. |
+| `maxDist` | number | Maximum ray travel distance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWorldRaycastClosestResult` | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit. |
+| LWorldRaycastClosestResult | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit. |
 
 **Example**
 
@@ -5398,12 +4948,11 @@ end
 
 ---
 
-### `LWorld:setBeginContact`
+#### `LWorld:setBeginContact`
 
 Registers a callback function invoked whenever two bodies begin touching.
 
 ```lua
--- signature
 LWorld:setBeginContact(callback)
 ```
 
@@ -5411,7 +4960,7 @@ LWorld:setBeginContact(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | `function` | Called with (bodyIdA, bodyIdB) on each new contact. |
+| `callback` | function | Called with (bodyIdA, bodyIdB) on each new contact. |
 
 **Example**
 
@@ -5434,12 +4983,11 @@ end
 
 ---
 
-### `LWorld:setBodyCCD`
+#### `LWorld:setBodyCCD`
 
 Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 
 ```lua
--- signature
 LWorld:setBodyCCD(id, enabled)
 ```
 
@@ -5447,8 +4995,8 @@ LWorld:setBodyCCD(id, enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
-| `enabled` | `boolean` | True to enable CCD. |
+| `id` | number | The body ID. |
+| `enabled` | boolean | True to enable CCD. |
 
 **Example**
 
@@ -5464,12 +5012,11 @@ end
 
 ---
 
-### `LWorld:setBodyData`
+#### `LWorld:setBodyData`
 
 Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
 
 ```lua
--- signature
 LWorld:setBodyData(id, value)
 ```
 
@@ -5477,8 +5024,8 @@ LWorld:setBodyData(id, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
-| `value` | `any` | Lua value to associate with this body (table, number, string, etc.). |
+| `id` | number | The body ID. |
+| `value` | any | Lua value to associate with this body (table, number, string, etc.). |
 
 **Example**
 
@@ -5495,12 +5042,11 @@ end
 
 ---
 
-### `LWorld:setBodyOneWay`
+#### `LWorld:setBodyOneWay`
 
 Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
 
 ```lua
--- signature
 LWorld:setBodyOneWay(id, nx, ny)
 ```
 
@@ -5508,9 +5054,9 @@ LWorld:setBodyOneWay(id, nx, ny)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
-| `nx` | `number` | One-way normal X (points toward the blocking side). |
-| `ny` | `number` | One-way normal Y. |
+| `id` | number | The body ID. |
+| `nx` | number | One-way normal X (points toward the blocking side). |
+| `ny` | number | One-way normal Y. |
 
 **Example**
 
@@ -5525,12 +5071,11 @@ end
 
 ---
 
-### `LWorld:setBodyType`
+#### `LWorld:setBodyType`
 
 Changes the type of an existing body (e.g. from "dynamic" to "static").
 
 ```lua
--- signature
 LWorld:setBodyType(id, bodyType)
 ```
 
@@ -5538,8 +5083,8 @@ LWorld:setBodyType(id, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
-| `bodyType` | `string` | New type: "static", "dynamic", "kinematic", or "sensor". |
+| `id` | number | The body ID. |
+| `bodyType` | string | New type: "static", "dynamic", "kinematic", or "sensor". |
 
 **Example**
 
@@ -5554,12 +5099,11 @@ end
 
 ---
 
-### `LWorld:setEndContact`
+#### `LWorld:setEndContact`
 
 Registers a callback function invoked whenever two bodies stop touching.
 
 ```lua
--- signature
 LWorld:setEndContact(callback)
 ```
 
@@ -5567,7 +5111,7 @@ LWorld:setEndContact(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | `function` | Called with (bodyIdA, bodyIdB) on each ended contact. |
+| `callback` | function | Called with (bodyIdA, bodyIdB) on each ended contact. |
 
 **Example**
 
@@ -5591,12 +5135,11 @@ end
 
 ---
 
-### `LWorld:setFixtureFriction`
+#### `LWorld:setFixtureFriction`
 
 Updates the friction coefficient of a specific fixture on a body.
 
 ```lua
--- signature
 LWorld:setFixtureFriction(bodyId, fixtureIndex, friction)
 ```
 
@@ -5604,9 +5147,9 @@ LWorld:setFixtureFriction(bodyId, fixtureIndex, friction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The body ID. |
-| `fixtureIndex` | `number` | Zero-based fixture index on the body. |
-| `friction` | `number` | New friction value (0Ă˘â‚¬â€ś1 typical range). |
+| `bodyId` | number | The body ID. |
+| `fixtureIndex` | number | Zero-based fixture index on the body. |
+| `friction` | number | New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range). |
 
 **Example**
 
@@ -5623,12 +5166,11 @@ end
 
 ---
 
-### `LWorld:setFixtureRestitution`
+#### `LWorld:setFixtureRestitution`
 
 Updates the restitution (bounciness) of a specific fixture on a body.
 
 ```lua
--- signature
 LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution)
 ```
 
@@ -5636,9 +5178,9 @@ LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The body ID. |
-| `fixtureIndex` | `number` | Zero-based fixture index on the body. |
-| `restitution` | `number` | New restitution value (0 = no bounce, 1 = full bounce). |
+| `bodyId` | number | The body ID. |
+| `fixtureIndex` | number | Zero-based fixture index on the body. |
+| `restitution` | number | New restitution value (0 = no bounce, 1 = full bounce). |
 
 **Example**
 
@@ -5655,12 +5197,11 @@ end
 
 ---
 
-### `LWorld:setFixtureSensor`
+#### `LWorld:setFixtureSensor`
 
 Toggles whether a fixture acts as a sensor (overlap detection only, no physical response).
 
 ```lua
--- signature
 LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor)
 ```
 
@@ -5668,9 +5209,9 @@ LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bodyId` | `number` | The body ID. |
-| `fixtureIndex` | `number` | Zero-based fixture index on the body. |
-| `sensor` | `boolean` | True to make it a sensor, false for solid collision. |
+| `bodyId` | number | The body ID. |
+| `fixtureIndex` | number | Zero-based fixture index on the body. |
+| `sensor` | boolean | True to make it a sensor, false for solid collision. |
 
 **Example**
 
@@ -5687,12 +5228,11 @@ end
 
 ---
 
-### `LWorld:setGravity`
+#### `LWorld:setGravity`
 
 Sets the world gravity vector. Affects all dynamic bodies.
 
 ```lua
--- signature
 LWorld:setGravity(gx, gy)
 ```
 
@@ -5700,8 +5240,8 @@ LWorld:setGravity(gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gx` | `number` | Horizontal gravity component. |
-| `gy` | `number` | Vertical gravity component (positive = down in screen space). |
+| `gx` | number | Horizontal gravity component. |
+| `gy` | number | Vertical gravity component (positive = down in screen space). |
 
 **Example**
 
@@ -5717,12 +5257,11 @@ end
 
 ---
 
-### `LWorld:setJointBreakForce`
+#### `LWorld:setJointBreakForce`
 
 Sets the maximum force a joint can withstand before it breaks and is automatically destroyed.
 
 ```lua
--- signature
 LWorld:setJointBreakForce(jointId, force)
 ```
 
@@ -5730,8 +5269,8 @@ LWorld:setJointBreakForce(jointId, force)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
-| `force` | `number` | Break threshold force (use math.huge for unbreakable). |
+| `jointId` | number | The joint ID. |
+| `force` | number | Break threshold force (use math.huge for unbreakable). |
 
 **Example**
 
@@ -5748,12 +5287,11 @@ end
 
 ---
 
-### `LWorld:setJointLimits`
+#### `LWorld:setJointLimits`
 
 Sets the lower and upper bounds for a joint's limited range of motion.
 
 ```lua
--- signature
 LWorld:setJointLimits(jointId, lower, upper)
 ```
 
@@ -5761,9 +5299,9 @@ LWorld:setJointLimits(jointId, lower, upper)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
-| `lower` | `number` | Lower limit (radians or meters depending on joint type). |
-| `upper` | `number` | Upper limit. |
+| `jointId` | number | The joint ID. |
+| `lower` | number | Lower limit (radians or meters depending on joint type). |
+| `upper` | number | Upper limit. |
 
 **Example**
 
@@ -5780,12 +5318,11 @@ end
 
 ---
 
-### `LWorld:setJointLimitsEnabled`
+#### `LWorld:setJointLimitsEnabled`
 
 Enables or disables angular/linear limits on a joint.
 
 ```lua
--- signature
 LWorld:setJointLimitsEnabled(jointId, enabled)
 ```
 
@@ -5793,8 +5330,8 @@ LWorld:setJointLimitsEnabled(jointId, enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
-| `enabled` | `boolean` | True to enforce limits, false to allow free movement. |
+| `jointId` | number | The joint ID. |
+| `enabled` | boolean | True to enforce limits, false to allow free movement. |
 
 **Example**
 
@@ -5811,12 +5348,11 @@ end
 
 ---
 
-### `LWorld:setJointMotorSpeed`
+#### `LWorld:setJointMotorSpeed`
 
 Sets the motor speed on a motorized joint (revolute or prismatic).
 
 ```lua
--- signature
 LWorld:setJointMotorSpeed(jointId, speed)
 ```
 
@@ -5824,8 +5360,8 @@ LWorld:setJointMotorSpeed(jointId, speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The joint ID. |
-| `speed` | `number` | Desired motor speed (radians/sec for revolute, meters/sec for prismatic). |
+| `jointId` | number | The joint ID. |
+| `speed` | number | Desired motor speed (radians/sec for revolute, meters/sec for prismatic). |
 
 **Example**
 
@@ -5842,12 +5378,11 @@ end
 
 ---
 
-### `LWorld:setMeter`
+#### `LWorld:setMeter`
 
 Sets the pixels-per-meter scale used to convert between pixel coordinates and physics units.
 
 ```lua
--- signature
 LWorld:setMeter(ppm)
 ```
 
@@ -5855,7 +5390,7 @@ LWorld:setMeter(ppm)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ppm` | `number` | Pixels per meter (e.g. 64 means 64 px = 1 meter in physics). |
+| `ppm` | number | Pixels per meter (e.g. 64 means 64 px = 1 meter in physics). |
 
 **Example**
 
@@ -5870,12 +5405,11 @@ end
 
 ---
 
-### `LWorld:setMouseJointTarget`
+#### `LWorld:setMouseJointTarget`
 
 Moves the target position of a mouse joint, causing the attached body to follow.
 
 ```lua
--- signature
 LWorld:setMouseJointTarget(jointId, x, y)
 ```
 
@@ -5883,9 +5417,9 @@ LWorld:setMouseJointTarget(jointId, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jointId` | `number` | The mouse joint ID. |
-| `x` | `number` | New target X in world coordinates. |
-| `y` | `number` | New target Y in world coordinates. |
+| `jointId` | number | The mouse joint ID. |
+| `x` | number | New target X in world coordinates. |
+| `y` | number | New target Y in world coordinates. |
 
 **Example**
 
@@ -5902,12 +5436,11 @@ end
 
 ---
 
-### `LWorld:setSolverIterations`
+#### `LWorld:setSolverIterations`
 
 Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
 
 ```lua
--- signature
 LWorld:setSolverIterations(n)
 ```
 
@@ -5915,7 +5448,7 @@ LWorld:setSolverIterations(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of iterations (default is typically 4Ă˘â‚¬â€ś8). |
+| `n` | number | Number of iterations (default is typically 4Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›8). |
 
 **Example**
 
@@ -5929,12 +5462,11 @@ end
 
 ---
 
-### `LWorld:sleepBody`
+#### `LWorld:sleepBody`
 
 Forces a body into the sleeping state, pausing its simulation until disturbed.
 
 ```lua
--- signature
 LWorld:sleepBody(id)
 ```
 
@@ -5942,7 +5474,7 @@ LWorld:sleepBody(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Example**
 
@@ -5958,12 +5490,11 @@ end
 
 ---
 
-### `LWorld:step`
+#### `LWorld:step`
 
 Advances the physics simulation by a time delta and fires any registered contact callbacks.
 
 ```lua
--- signature
 LWorld:step(dt)
 ```
 
@@ -5971,7 +5502,7 @@ LWorld:step(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Time step in seconds (e.g. 1/60 for 60 FPS). |
+| `dt` | number | Time step in seconds (e.g. 1/60 for 60 FPS). |
 
 **Example**
 
@@ -5987,12 +5518,11 @@ end
 
 ---
 
-### `LWorld:stepFixed`
+#### `LWorld:stepFixed`
 
 Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
 
 ```lua
--- signature
 LWorld:stepFixed(accumulator, stepDt, maxSteps)
 ```
 
@@ -6000,15 +5530,15 @@ LWorld:stepFixed(accumulator, stepDt, maxSteps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `accumulator` | `number` | Accumulated time since last frame (seconds). |
-| `stepDt` | `number` | Fixed step size (e.g. 1/60). |
-| `maxSteps` | `number` | Maximum sub-steps per call to prevent spiral of death. |
+| `accumulator` | number | Accumulated time since last frame (seconds). |
+| `stepDt` | number | Fixed step size (e.g. 1/60). |
+| `maxSteps` | number | Maximum sub-steps per call to prevent spiral of death. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Remaining unstepped time to carry into next frame. |
+| number | Remaining unstepped time to carry into next frame. |
 
 **Example**
 
@@ -6023,12 +5553,11 @@ end
 
 ---
 
-### `LWorld:toPhysics`
+#### `LWorld:toPhysics`
 
 Converts a pixel measurement to physics-world meters using the current meter scale.
 
 ```lua
--- signature
 LWorld:toPhysics(px)
 ```
 
@@ -6036,13 +5565,13 @@ LWorld:toPhysics(px)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Value in pixels. |
+| `px` | number | Value in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Equivalent value in physics meters. |
+| number | Equivalent value in physics meters. |
 
 **Example**
 
@@ -6057,12 +5586,11 @@ end
 
 ---
 
-### `LWorld:toPixels`
+#### `LWorld:toPixels`
 
 Converts a physics-world meter measurement to pixels using the current meter scale.
 
 ```lua
--- signature
 LWorld:toPixels(m)
 ```
 
@@ -6070,13 +5598,13 @@ LWorld:toPixels(m)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `m` | `number` | Value in physics meters. |
+| `m` | number | Value in physics meters. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Equivalent value in pixels. |
+| number | Equivalent value in pixels. |
 
 **Example**
 
@@ -6091,12 +5619,11 @@ end
 
 ---
 
-### `LWorld:type`
+#### `LWorld:type`
 
-Returns the type name of this object ("LWorld").
+Returns the type name of this object ("[LWorld](#lworld-handle)").
 
 ```lua
--- signature
 LWorld:type()
 ```
 
@@ -6104,7 +5631,7 @@ LWorld:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | "LWorld". |
+| string | "[LWorld](#lworld-handle)". |
 
 **Example**
 
@@ -6118,12 +5645,11 @@ end
 
 ---
 
-### `LWorld:typeOf`
+#### `LWorld:typeOf`
 
 Checks if this object is of a given type name. Supports inheritance (always matches "Object").
 
 ```lua
--- signature
 LWorld:typeOf(name)
 ```
 
@@ -6131,13 +5657,13 @@ LWorld:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object matches. |
+| boolean | True if the object matches. |
 
 **Example**
 
@@ -6151,12 +5677,11 @@ end
 
 ---
 
-### `LWorld:wakeUpBody`
+#### `LWorld:wakeUpBody`
 
 Forces a sleeping body to wake up and participate in simulation again.
 
 ```lua
--- signature
 LWorld:wakeUpBody(id)
 ```
 
@@ -6164,7 +5689,7 @@ LWorld:wakeUpBody(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The body ID. |
+| `id` | number | The body ID. |
 
 **Example**
 
@@ -6181,14 +5706,19 @@ end
 
 ---
 
-## LZone
+## LZone Handle
 
-### `LZone:destroy`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LZone:destroy`
 
 Removes this zone from the world. Bodies will no longer be affected by it.
 
 ```lua
--- signature
 LZone:destroy()
 ```
 
@@ -6206,12 +5736,11 @@ end
 
 ---
 
-### `LZone:getId`
+#### `LZone:getId`
 
 Returns the unique ID of this zone. This method is available to Lua scripts.
 
 ```lua
--- signature
 LZone:getId()
 ```
 
@@ -6219,7 +5748,7 @@ LZone:getId()
 
 | Type | Description |
 |------|-------------|
-| `number` | Zone ID. |
+| number | Zone ID. |
 
 **Example**
 
@@ -6234,12 +5763,11 @@ end
 
 ---
 
-### `LZone:setAngularDampingOverride`
+#### `LZone:setAngularDampingOverride`
 
 Overrides the angular damping of bodies inside this zone, or nil to use each body's own value.
 
 ```lua
--- signature
 LZone:setAngularDampingOverride(value)
 ```
 
@@ -6247,7 +5775,7 @@ LZone:setAngularDampingOverride(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value?` | `number` | Damping override, or nil to clear. |
+| `value?` | number | Damping override, or nil to clear. |
 
 **Example**
 
@@ -6268,12 +5796,11 @@ end
 
 ---
 
-### `LZone:setCircle`
+#### `LZone:setCircle`
 
 Changes this zone's shape to a circle (overrides the initial rectangle).
 
 ```lua
--- signature
 LZone:setCircle(cx, cy, radius)
 ```
 
@@ -6281,9 +5808,9 @@ LZone:setCircle(cx, cy, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Center X. |
-| `cy` | `number` | Center Y. |
-| `radius` | `number` | Circle radius. |
+| `cx` | number | Center X. |
+| `cy` | number | Center Y. |
+| `radius` | number | Circle radius. |
 
 **Example**
 
@@ -6300,12 +5827,11 @@ end
 
 ---
 
-### `LZone:setEnabled`
+#### `LZone:setEnabled`
 
 Enables or disables this zone. Disabled zones have no effect on bodies.
 
 ```lua
--- signature
 LZone:setEnabled(enabled)
 ```
 
@@ -6313,7 +5839,7 @@ LZone:setEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to enable, false to disable. |
+| `enabled` | boolean | True to enable, false to disable. |
 
 **Example**
 
@@ -6329,12 +5855,11 @@ end
 
 ---
 
-### `LZone:setGravityDirectional`
+#### `LZone:setGravityDirectional`
 
 Sets the zone to apply a constant directional gravity to bodies inside.
 
 ```lua
--- signature
 LZone:setGravityDirectional(gx, gy)
 ```
 
@@ -6342,8 +5867,8 @@ LZone:setGravityDirectional(gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gx` | `number` | Gravity X component. |
-| `gy` | `number` | Gravity Y component. |
+| `gx` | number | Gravity X component. |
+| `gy` | number | Gravity Y component. |
 
 **Example**
 
@@ -6363,12 +5888,11 @@ end
 
 ---
 
-### `LZone:setGravityPoint`
+#### `LZone:setGravityPoint`
 
 Sets the zone to attract bodies toward a center point with a given strength.
 
 ```lua
--- signature
 LZone:setGravityPoint(cx, cy, strength)
 ```
 
@@ -6376,9 +5900,9 @@ LZone:setGravityPoint(cx, cy, strength)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Attractor center X. |
-| `cy` | `number` | Attractor center Y. |
-| `strength` | `number` | Pull force magnitude. |
+| `cx` | number | Attractor center X. |
+| `cy` | number | Attractor center Y. |
+| `strength` | number | Pull force magnitude. |
 
 **Example**
 
@@ -6398,12 +5922,11 @@ end
 
 ---
 
-### `LZone:setGravityRepulsor`
+#### `LZone:setGravityRepulsor`
 
 Sets the zone to push bodies away from a center point with a given strength.
 
 ```lua
--- signature
 LZone:setGravityRepulsor(cx, cy, strength)
 ```
 
@@ -6411,9 +5934,9 @@ LZone:setGravityRepulsor(cx, cy, strength)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Repulsor center X. |
-| `cy` | `number` | Repulsor center Y. |
-| `strength` | `number` | Push force magnitude. |
+| `cx` | number | Repulsor center X. |
+| `cy` | number | Repulsor center Y. |
+| `strength` | number | Push force magnitude. |
 
 **Example**
 
@@ -6433,12 +5956,11 @@ end
 
 ---
 
-### `LZone:setGravityZero`
+#### `LZone:setGravityZero`
 
 Sets the zone to cancel all gravity for bodies inside (zero-G area).
 
 ```lua
--- signature
 LZone:setGravityZero()
 ```
 
@@ -6460,12 +5982,11 @@ end
 
 ---
 
-### `LZone:setLayerMask`
+#### `LZone:setLayerMask`
 
 Sets a bitmask controlling which body layers this zone affects.
 
 ```lua
--- signature
 LZone:setLayerMask(mask)
 ```
 
@@ -6473,7 +5994,7 @@ LZone:setLayerMask(mask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | `number` | Layer bitmask (bitwise AND with body layer must be nonzero). |
+| `mask` | number | Layer bitmask (bitwise AND with body layer must be nonzero). |
 
 **Example**
 
@@ -6489,12 +6010,11 @@ end
 
 ---
 
-### `LZone:setLinearDampingOverride`
+#### `LZone:setLinearDampingOverride`
 
 Overrides the linear damping of bodies inside this zone, or nil to use each body's own value.
 
 ```lua
--- signature
 LZone:setLinearDampingOverride(value)
 ```
 
@@ -6502,7 +6022,7 @@ LZone:setLinearDampingOverride(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value?` | `number` | Damping override, or nil to clear. |
+| `value?` | number | Damping override, or nil to clear. |
 
 **Example**
 
@@ -6523,12 +6043,11 @@ end
 
 ---
 
-### `LZone:setPriority`
+#### `LZone:setPriority`
 
 Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
 
 ```lua
--- signature
 LZone:setPriority(priority)
 ```
 
@@ -6536,7 +6055,7 @@ LZone:setPriority(priority)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `priority` | `number` | Integer priority value. |
+| `priority` | number | Integer priority value. |
 
 **Example**
 
@@ -6552,12 +6071,11 @@ end
 
 ---
 
-### `LZone:type`
+#### `LZone:type`
 
-Returns the type name of this object ("LZone").
+Returns the type name of this object ("[LZone](#lzone-handle)").
 
 ```lua
--- signature
 LZone:type()
 ```
 
@@ -6565,7 +6083,7 @@ LZone:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | "LZone". |
+| string | "[LZone](#lzone-handle)". |
 
 **Example**
 
@@ -6580,12 +6098,11 @@ end
 
 ---
 
-### `LZone:typeOf`
+#### `LZone:typeOf`
 
 Checks if this object is of a given type name.
 
 ```lua
--- signature
 LZone:typeOf(name)
 ```
 
@@ -6593,13 +6110,13 @@ LZone:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object matches. |
+| boolean | True if the object matches. |
 
 **Example**
 

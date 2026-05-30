@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["agent","behavior_tree","command_queue","context_steering","dialogue","director","emotion","fsm","goap","htn","lod","mcts","needs","orca","perception","render","squad","steering","strategy","traits","utility_ai","world"]};

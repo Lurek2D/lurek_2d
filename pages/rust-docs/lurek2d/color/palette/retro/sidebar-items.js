@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["GAMEBOY","NES","PICO8"]};

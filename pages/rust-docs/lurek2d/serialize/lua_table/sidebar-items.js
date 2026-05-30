@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["SerialValue"],"fn":["from_lua","to_lua"]};

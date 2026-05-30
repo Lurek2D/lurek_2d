@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Accordion","AccordionSection","Badge","ColorPicker","CustomWidget","Dialog","GUITable","ImageWidget","MenuBar","MenuItem","Separator","Spacer","StatusBar","TableColumn","TableDataFrameOptions","Toast","Toolbar","ToolbarButton","TooltipPanel","TreeNode","TreeView"]};

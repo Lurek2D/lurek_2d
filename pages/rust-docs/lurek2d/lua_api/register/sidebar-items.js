@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["create_headless_vm","create_lua_vm","create_test_vm"]};

@@ -1,12 +1,74 @@
 # Filesystem
 
-- The `filesystem` module resides in the Core Runtime tier and implements `GameFS`, a strictly sandboxed virtual filesystem.
+## Summary
 
 It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
 
 Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
 
 To prevent blocking the main engine thread during expensive I/O operations, the module includes an `AsyncLoader`. This loader dispatches read and write requests to a dedicated background worker thread, returning opaque handles that scripts can poll for completion. For fine-grained file manipulation, `FileHandle` provides a buffered, cursor-based streaming API with discrete read, write, and append modes. Additionally, for hot-reload development workflows, a poll-based `FileWatcher` tracks modification-time (`mtime`) changes across registered paths, enabling real-time asset updates. The full functionality of the virtual filesystem, including JSON validation helpers and file metadata queries, is exposed to scripts via the `lurek.filesystem.*` API.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### async_loader.rs
+
+- Provides background file I/O through a dedicated worker thread and bounded request channel.
+- Supports non-blocking read and write scheduling with opaque handles for later status polling.
+- Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers.
+- Enforces queue capacity limits to keep memory and scheduling pressure under control.
+- Handles worker lifecycle shutdown cleanly when the loader is dropped.
+- Delivers asynchronous file transfer behavior for systems that must avoid main-thread stalls.
+
+### file_data.rs
+
+- Provides a lightweight file payload container pairing logical paths with loaded raw bytes.
+- Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption.
+- Delivers the shared data object returned by filesystem read operations.
+
+### file_handle.rs
+
+- Provides buffered file-handle behavior for mode-aware read, write, and append stream operations.
+- Resolves logical game paths through GameFS before touching host filesystem resources.
+- Exposes byte and line reading utilities with EOF-aware iteration semantics.
+- Supports seek, tell, flush, and explicit close workflows for predictable stream control.
+- Enforces access-mode checks so invalid operation mixes fail with clear runtime errors.
+- Delivers safe per-file I/O primitives used by script APIs and engine persistence code.
+
+### mod.rs
+
+- Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access.
+- Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface.
+- Delivers the core file-service layer used by runtime systems and script-facing persistence flows.
+
+### vfs.rs
+
+- Provides the core virtual filesystem implementation rooted at a game directory and save space.
+- Resolves read and write paths through mount overlays and base-root fallback rules.
+- Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior.
+- Exposes metadata, glob, list, copy, move, and removal operations under one coherent API.
+- Supports layered directory and archive mounts with deterministic conflict resolution order.
+- Builds file-handle and async-loader integration points over canonical resolved paths.
+- Includes JSON helpers and temporary file utilities for common content and tooling workflows.
+- Normalizes separators and path shapes to keep behavior stable across desktop platforms.
+- Keeps mount metadata explicit so runtime systems can inspect and reason about storage topology.
+- Delivers the authoritative storage-routing layer consumed by higher-level filesystem services.
+
+### watcher.rs
+
+- Provides poll-based file watch behavior that detects mtime changes for registered paths.
+- Maintains cached modification snapshots and reports deterministic change sets per poll cycle.
+- Supports watch, unwatch, and forced invalidation workflows for runtime refresh control.
+- Delivers a lightweight change-detection utility for assets and config reload pipelines.
+
+### zip_mount.rs
+
+- Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries.
+- Builds an index for fast repeated lookups while reading files on demand without full extraction.
+- Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
+- Supports listing and existence checks over mounted archive content through a unified interface.
+- Delivers archive overlay functionality used by the virtual filesystem mount stack.
 
 ## Functions
 
@@ -15,7 +77,6 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 Appends UTF-8 text to a GameFS file.
 
 ```lua
--- signature
 lurek.filesystem.append(path, data)
 ```
 
@@ -23,8 +84,8 @@ lurek.filesystem.append(path, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to append to. |
-| `data` | `string` | Text to append. |
+| `path` | string | GameFS path to append to. |
+| `data` | string | Text to append. |
 
 **Example**
 
@@ -43,7 +104,6 @@ end
 Copies one GameFS file to another path.
 
 ```lua
--- signature
 lurek.filesystem.copy(src, dst)
 ```
 
@@ -51,8 +111,8 @@ lurek.filesystem.copy(src, dst)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src` | `string` | Source path. |
-| `dst` | `string` | Destination path. |
+| `src` | string | Source path. |
+| `dst` | string | Destination path. |
 
 **Example**
 
@@ -71,7 +131,6 @@ end
 Creates a GameFS directory and any missing parents.
 
 ```lua
--- signature
 lurek.filesystem.createDirectory(path)
 ```
 
@@ -79,7 +138,7 @@ lurek.filesystem.createDirectory(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Directory path to create. |
+| `path` | string | Directory path to create. |
 
 **Example**
 
@@ -97,7 +156,6 @@ end
 Creates a temporary file through GameFS.
 
 ```lua
--- signature
 lurek.filesystem.createTempFile(prefix)
 ```
 
@@ -105,13 +163,13 @@ lurek.filesystem.createTempFile(prefix)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prefix?` | `string` | Optional filename prefix, defaulting to `tmp`. |
+| `prefix?` | string | Optional filename prefix, defaulting to `tmp`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Created temporary file path. |
+| string | Created temporary file path. |
 
 **Example**
 
@@ -129,7 +187,6 @@ end
 Returns whether a path exists in GameFS.
 
 ```lua
--- signature
 lurek.filesystem.exists(path)
 ```
 
@@ -137,13 +194,13 @@ lurek.filesystem.exists(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to check. |
+| `path` | string | GameFS path to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the path exists. |
+| boolean | True when the path exists. |
 
 **Example**
 
@@ -163,7 +220,6 @@ end
 Lists immediate entries in a GameFS directory.
 
 ```lua
--- signature
 lurek.filesystem.getDirectoryItems(path)
 ```
 
@@ -171,13 +227,13 @@ lurek.filesystem.getDirectoryItems(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Directory path to list. |
+| `path` | string | Directory path to list. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Entry names. |
+| string[] | Entry names. |
 
 **Example**
 
@@ -195,7 +251,6 @@ end
 Returns the current filesystem identity string.
 
 ```lua
--- signature
 lurek.filesystem.getIdentity()
 ```
 
@@ -203,7 +258,7 @@ lurek.filesystem.getIdentity()
 
 | Type | Description |
 |------|-------------|
-| `string` | Filesystem identity used for save namespacing. |
+| string | Filesystem identity used for save namespacing. |
 
 **Example**
 
@@ -221,7 +276,6 @@ end
 Returns file metadata for a GameFS path when available.
 
 ```lua
--- signature
 lurek.filesystem.getInfo(path)
 ```
 
@@ -229,13 +283,13 @@ lurek.filesystem.getInfo(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to inspect. |
+| `path` | string | GameFS path to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `FilesystemGetInfoResult` | Metadata table with type, size, modtime, and readonly fields, or nil on error. |
+| LFilesystemGetInfoResult | Metadata table with type, size, modtime, and readonly fields, or nil on error. |
 
 **Example**
 
@@ -257,7 +311,6 @@ end
 Returns the save directory path used by GameFS.
 
 ```lua
--- signature
 lurek.filesystem.getSaveDirectory()
 ```
 
@@ -265,7 +318,7 @@ lurek.filesystem.getSaveDirectory()
 
 | Type | Description |
 |------|-------------|
-| `string` | Save directory path. |
+| string | Save directory path. |
 
 **Example**
 
@@ -283,7 +336,6 @@ end
 Returns the GameFS source root string.
 
 ```lua
--- signature
 lurek.filesystem.getSource()
 ```
 
@@ -291,7 +343,7 @@ lurek.filesystem.getSource()
 
 | Type | Description |
 |------|-------------|
-| `string` | Source directory or source description. |
+| string | Source directory or source description. |
 
 **Example**
 
@@ -309,7 +361,6 @@ end
 Returns the current user's directory path.
 
 ```lua
--- signature
 lurek.filesystem.getUserDirectory()
 ```
 
@@ -317,7 +368,7 @@ lurek.filesystem.getUserDirectory()
 
 | Type | Description |
 |------|-------------|
-| `string` | User directory path. |
+| string | User directory path. |
 
 **Example**
 
@@ -335,7 +386,6 @@ end
 Returns the process working directory.
 
 ```lua
--- signature
 lurek.filesystem.getWorkingDirectory()
 ```
 
@@ -343,7 +393,7 @@ lurek.filesystem.getWorkingDirectory()
 
 | Type | Description |
 |------|-------------|
-| `string` | Working directory path. |
+| string | Working directory path. |
 
 **Example**
 
@@ -361,7 +411,6 @@ end
 Returns GameFS paths matching a glob pattern.
 
 ```lua
--- signature
 lurek.filesystem.glob(pattern)
 ```
 
@@ -369,13 +418,13 @@ lurek.filesystem.glob(pattern)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pattern` | `string` | Glob pattern. |
+| `pattern` | string | Glob pattern. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Matching path strings. |
+| string[] | Matching path strings. |
 
 **Example**
 
@@ -395,7 +444,6 @@ end
 Returns whether a GameFS path is a directory.
 
 ```lua
--- signature
 lurek.filesystem.isDirectory(path)
 ```
 
@@ -403,13 +451,13 @@ lurek.filesystem.isDirectory(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to check. |
+| `path` | string | GameFS path to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the path is a directory. |
+| boolean | True when the path is a directory. |
 
 **Example**
 
@@ -427,7 +475,6 @@ end
 Returns whether a GameFS path is a regular file.
 
 ```lua
--- signature
 lurek.filesystem.isFile(path)
 ```
 
@@ -435,13 +482,13 @@ lurek.filesystem.isFile(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to check. |
+| `path` | string | GameFS path to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the path is a file. |
+| boolean | True when the path is a file. |
 
 **Example**
 
@@ -460,7 +507,6 @@ end
 Creates an iterator function over lines in a text file.
 
 ```lua
--- signature
 lurek.filesystem.lines(path)
 ```
 
@@ -468,13 +514,13 @@ lurek.filesystem.lines(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to read. |
+| `path` | string | GameFS path to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `function` | Iterator returning the next line string or nil at EOF. |
+| function | Iterator returning the next line string or nil at EOF. |
 
 **Example**
 
@@ -495,7 +541,6 @@ end
 Lists all paths under a GameFS directory recursively.
 
 ```lua
--- signature
 lurek.filesystem.listRecursive(path)
 ```
 
@@ -503,13 +548,13 @@ lurek.filesystem.listRecursive(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Root directory path. |
+| `path` | string | Root directory path. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Path strings. |
+| string[] | Path strings. |
 
 **Example**
 
@@ -527,7 +572,6 @@ end
 Loads a Lua chunk from GameFS and returns it as a Lua function.
 
 ```lua
--- signature
 lurek.filesystem.load(path)
 ```
 
@@ -535,13 +579,13 @@ lurek.filesystem.load(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to a Lua script chunk. |
+| `path` | string | GameFS path to a Lua script chunk. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `function` | Compiled Lua chunk function. |
+| function | Compiled Lua chunk function. |
 
 **Example**
 
@@ -561,7 +605,6 @@ end
 Creates a directory under the GameFS base directory.
 
 ```lua
--- signature
 lurek.filesystem.mkdir(path)
 ```
 
@@ -569,7 +612,7 @@ lurek.filesystem.mkdir(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative directory path to create. |
+| `path` | string | Relative directory path to create. |
 
 **Example**
 
@@ -587,7 +630,6 @@ end
 Mounts an external source path at a GameFS mount point.
 
 ```lua
--- signature
 lurek.filesystem.mount(src, mp)
 ```
 
@@ -595,14 +637,14 @@ lurek.filesystem.mount(src, mp)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src` | `string` | Source path to mount. |
-| `mp` | `string` | Virtual mount point. |
+| `src` | string | Source path to mount. |
+| `mp` | string | Virtual mount point. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the mount succeeds. |
+| boolean | True when the mount succeeds. |
 
 **Example**
 
@@ -620,7 +662,6 @@ end
 Opens a ZIP archive and exposes it through a virtual prefix.
 
 ```lua
--- signature
 lurek.filesystem.mountZip(archive_path, prefix)
 ```
 
@@ -628,14 +669,14 @@ lurek.filesystem.mountZip(archive_path, prefix)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `archive_path` | `string` | Archive path on disk. |
-| `prefix` | `string` | Virtual path prefix for archive contents. |
+| `archive_path` | string | Archive path on disk. |
+| `prefix` | string | Virtual path prefix for archive contents. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LZipMount` | New ZIP mount handle. |
+| [LZipMount](#lzipmount-handle) | New ZIP mount handle. |
 
 **Example**
 
@@ -653,7 +694,6 @@ end
 Moves or renames one GameFS file to another path.
 
 ```lua
--- signature
 lurek.filesystem.move(src, dst)
 ```
 
@@ -661,8 +701,8 @@ lurek.filesystem.move(src, dst)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src` | `string` | Source path. |
-| `dst` | `string` | Destination path. |
+| `src` | string | Source path. |
+| `dst` | string | Destination path. |
 
 **Example**
 
@@ -681,7 +721,6 @@ end
 Loads a file into an immutable file data handle.
 
 ```lua
--- signature
 lurek.filesystem.newFileData(path)
 ```
 
@@ -689,13 +728,13 @@ lurek.filesystem.newFileData(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to load. |
+| `path` | string | GameFS path to load. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFileData` | New file data handle containing path and bytes. |
+| [LFileData](#lfiledata-handle) | New file data handle containing path and bytes. |
 
 **Example**
 
@@ -714,7 +753,6 @@ end
 Opens a GameFS file handle in a requested mode.
 
 ```lua
--- signature
 lurek.filesystem.openFile(path, mode)
 ```
 
@@ -722,14 +760,14 @@ lurek.filesystem.openFile(path, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to open. |
-| `mode` | `string` | File mode understood by GameFS. |
+| `path` | string | GameFS path to open. |
+| `mode` | string | File mode understood by GameFS. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFileHandle` | Open file handle. |
+| [LFileHandle](#lfilehandle-handle) | Open file handle. |
 
 **Example**
 
@@ -749,7 +787,6 @@ end
 Polls an asynchronous file load request.
 
 ```lua
--- signature
 lurek.filesystem.pollAsync(handle_id)
 ```
 
@@ -757,13 +794,13 @@ lurek.filesystem.pollAsync(handle_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle_id` | `number` | Async load handle id. |
+| `handle_id` | number | Async load handle id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Completed bytes/result, pending marker, or nil depending on async state. |
+| string | Completed bytes/result, pending marker, or nil depending on async state. |
 
 **Example**
 
@@ -783,7 +820,6 @@ end
 Polls an asynchronous file write request.
 
 ```lua
--- signature
 lurek.filesystem.pollAsyncWrite(handle_id)
 ```
 
@@ -791,13 +827,13 @@ lurek.filesystem.pollAsyncWrite(handle_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle_id` | `number` | Async write handle id. |
+| `handle_id` | number | Async write handle id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Completed status, pending marker, or nil depending on async state. |
+| string | Completed status, pending marker, or nil depending on async state. |
 
 **Example**
 
@@ -816,7 +852,6 @@ end
 Polls watched paths and returns paths that changed since the previous poll.
 
 ```lua
--- signature
 lurek.filesystem.pollWatchers()
 ```
 
@@ -824,7 +859,7 @@ lurek.filesystem.pollWatchers()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Changed path strings. |
+| string[] | Changed path strings. |
 
 **Example**
 
@@ -844,7 +879,6 @@ end
 Reads a UTF-8 text file from GameFS.
 
 ```lua
--- signature
 lurek.filesystem.read(path)
 ```
 
@@ -852,13 +886,13 @@ lurek.filesystem.read(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to read. |
+| `path` | string | GameFS path to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | File contents as text. |
+| string | File contents as text. |
 
 **Example**
 
@@ -879,7 +913,6 @@ end
 Starts an asynchronous file load request.
 
 ```lua
--- signature
 lurek.filesystem.readAsync(path)
 ```
 
@@ -887,13 +920,13 @@ lurek.filesystem.readAsync(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to read asynchronously. |
+| `path` | string | GameFS path to read asynchronously. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Async load handle id. |
+| number | Async load handle id. |
 
 **Example**
 
@@ -912,7 +945,6 @@ end
 Reads a binary file from GameFS and returns the bytes as a Lua string.
 
 ```lua
--- signature
 lurek.filesystem.readBytes(path)
 ```
 
@@ -920,13 +952,13 @@ lurek.filesystem.readBytes(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to read. |
+| `path` | string | GameFS path to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Raw file bytes. |
+| string | Raw file bytes. |
 
 **Example**
 
@@ -945,7 +977,6 @@ end
 Reads a JSON document as text from GameFS.
 
 ```lua
--- signature
 lurek.filesystem.readJson(path)
 ```
 
@@ -953,13 +984,13 @@ lurek.filesystem.readJson(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to read. |
+| `path` | string | GameFS path to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | JSON text. |
+| string | JSON text. |
 
 **Example**
 
@@ -980,7 +1011,6 @@ end
 Reads a JSON file or writes and returns default JSON when the file is absent.
 
 ```lua
--- signature
 lurek.filesystem.readOrWriteJson(path, default_json)
 ```
 
@@ -988,14 +1018,14 @@ lurek.filesystem.readOrWriteJson(path, default_json)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to read. |
-| `default_json` | `string` | JSON text written when the path does not exist. |
+| `path` | string | GameFS path to read. |
+| `default_json` | string | JSON text written when the path does not exist. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Existing or newly written JSON text. |
+| string | Existing or newly written JSON text. |
 
 **Example**
 
@@ -1015,7 +1045,6 @@ end
 Removes a GameFS file or supported path.
 
 ```lua
--- signature
 lurek.filesystem.remove(path)
 ```
 
@@ -1023,7 +1052,7 @@ lurek.filesystem.remove(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Path to remove. |
+| `path` | string | Path to remove. |
 
 **Example**
 
@@ -1042,7 +1071,6 @@ end
 Removes a GameFS directory by its path.
 
 ```lua
--- signature
 lurek.filesystem.removeDir(path)
 ```
 
@@ -1050,7 +1078,7 @@ lurek.filesystem.removeDir(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Directory path to remove. |
+| `path` | string | Directory path to remove. |
 
 **Example**
 
@@ -1069,7 +1097,6 @@ end
 Sets the filesystem identity string used by save paths.
 
 ```lua
--- signature
 lurek.filesystem.setIdentity(name)
 ```
 
@@ -1077,7 +1104,7 @@ lurek.filesystem.setIdentity(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | New filesystem identity. |
+| `name` | string | New filesystem identity. |
 
 **Example**
 
@@ -1095,7 +1122,6 @@ end
 Returns size and file/directory flags for a GameFS path.
 
 ```lua
--- signature
 lurek.filesystem.stat(path)
 ```
 
@@ -1103,13 +1129,13 @@ lurek.filesystem.stat(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Path to inspect. |
+| `path` | string | Path to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `FilesystemStatResult` | Table with `size`, `isFile`, and `isDir` fields. |
+| LFilesystemStatResult | Table with `size`, `isFile`, and `isDir` fields. |
 
 **Example**
 
@@ -1131,7 +1157,6 @@ end
 Resolves a GameFS-relative path against the filesystem base directory.
 
 ```lua
--- signature
 lurek.filesystem.toAbsolutePath(path)
 ```
 
@@ -1139,13 +1164,13 @@ lurek.filesystem.toAbsolutePath(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to resolve. |
+| `path` | string | Relative path to resolve. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Absolute filesystem path string. |
+| string | Absolute filesystem path string. |
 
 **Example**
 
@@ -1163,7 +1188,6 @@ end
 Removes a GameFS mount point by its name.
 
 ```lua
--- signature
 lurek.filesystem.unmount(mp)
 ```
 
@@ -1171,13 +1195,13 @@ lurek.filesystem.unmount(mp)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mp` | `string` | Virtual mount point to remove. |
+| `mp` | string | Virtual mount point to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a mount was removed. |
+| boolean | True when a mount was removed. |
 
 **Example**
 
@@ -1195,7 +1219,6 @@ end
 Removes a path from the module-local file watcher.
 
 ```lua
--- signature
 lurek.filesystem.unwatchPath(path)
 ```
 
@@ -1203,7 +1226,7 @@ lurek.filesystem.unwatchPath(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Watched path to remove. |
+| `path` | string | Watched path to remove. |
 
 **Example**
 
@@ -1221,7 +1244,6 @@ end
 Adds a path to the module-local file watcher.
 
 ```lua
--- signature
 lurek.filesystem.watchPath(path)
 ```
 
@@ -1229,7 +1251,7 @@ lurek.filesystem.watchPath(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Path to watch for changes. |
+| `path` | string | Path to watch for changes. |
 
 **Example**
 
@@ -1247,7 +1269,6 @@ end
 Writes a UTF-8 text file through GameFS.
 
 ```lua
--- signature
 lurek.filesystem.write(path, data)
 ```
 
@@ -1255,8 +1276,8 @@ lurek.filesystem.write(path, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to write. |
-| `data` | `string` | Text contents. |
+| `path` | string | GameFS path to write. |
+| `data` | string | Text contents. |
 
 **Example**
 
@@ -1275,7 +1296,6 @@ end
 Starts an asynchronous file write request.
 
 ```lua
--- signature
 lurek.filesystem.writeAsync(path, data)
 ```
 
@@ -1283,14 +1303,14 @@ lurek.filesystem.writeAsync(path, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to write. |
-| `data` | `string` | Raw bytes stored in a Lua string. |
+| `path` | string | GameFS path to write. |
+| `data` | string | Raw bytes stored in a Lua string. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Async write handle id. |
+| number | Async write handle id. |
 
 **Example**
 
@@ -1308,7 +1328,6 @@ end
 Writes binary data through GameFS.
 
 ```lua
--- signature
 lurek.filesystem.writeBytes(path, data)
 ```
 
@@ -1316,8 +1335,8 @@ lurek.filesystem.writeBytes(path, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to write. |
-| `data` | `string` | Raw bytes stored in a Lua string. |
+| `path` | string | GameFS path to write. |
+| `data` | string | Raw bytes stored in a Lua string. |
 
 **Example**
 
@@ -1335,7 +1354,6 @@ end
 Writes JSON text through the GameFS layer.
 
 ```lua
--- signature
 lurek.filesystem.writeJson(path, json)
 ```
 
@@ -1343,8 +1361,8 @@ lurek.filesystem.writeJson(path, json)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to write. |
-| `json` | `string` | JSON text to store. |
+| `path` | string | GameFS path to write. |
+| `json` | string | JSON text to store. |
 
 **Example**
 
@@ -1358,14 +1376,37 @@ end
 
 ---
 
-## LFileData
+## Module Fields
 
-### `LFileData:getFilename`
+*No module-level fields documented.*
+
+## Types
+
+- [LFileData Handle](#lfiledata-handle)
+- [LFileHandle Handle](#lfilehandle-handle)
+- [LZipMount Handle](#lzipmount-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LFileData Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFileData:getFilename`
 
 Returns the path associated with this file data object.
 
 ```lua
--- signature
 LFileData:getFilename()
 ```
 
@@ -1373,7 +1414,7 @@ LFileData:getFilename()
 
 | Type | Description |
 |------|-------------|
-| `string` | Original file path. |
+| string | Original file path. |
 
 **Example**
 
@@ -1387,12 +1428,11 @@ end
 
 ---
 
-### `LFileData:getSize`
+#### `LFileData:getSize`
 
 Returns the byte length of this file data.
 
 ```lua
--- signature
 LFileData:getSize()
 ```
 
@@ -1400,7 +1440,7 @@ LFileData:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | File data size in bytes. |
+| number | File data size in bytes. |
 
 **Example**
 
@@ -1414,12 +1454,11 @@ end
 
 ---
 
-### `LFileData:getString`
+#### `LFileData:getString`
 
 Returns file data bytes as a Lua string without UTF-8 validation.
 
 ```lua
--- signature
 LFileData:getString()
 ```
 
@@ -1427,7 +1466,7 @@ LFileData:getString()
 
 | Type | Description |
 |------|-------------|
-| `string` | Lua string containing the raw file bytes. |
+| string | Lua string containing the raw file bytes. |
 
 **Example**
 
@@ -1442,12 +1481,11 @@ end
 
 ---
 
-### `LFileData:type`
+#### `LFileData:type`
 
 Returns the Lua-visible type name for this file data handle.
 
 ```lua
--- signature
 LFileData:type()
 ```
 
@@ -1455,7 +1493,7 @@ LFileData:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LFileData`. |
+| string | The string `[LFileData](#lfiledata-handle)`. |
 
 **Example**
 
@@ -1469,12 +1507,11 @@ end
 
 ---
 
-### `LFileData:typeOf`
+#### `LFileData:typeOf`
 
 Returns whether this file data handle matches a supported type name.
 
 ```lua
--- signature
 LFileData:typeOf(name)
 ```
 
@@ -1482,13 +1519,13 @@ LFileData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LFileData` and `Object`. |
+| `name` | string | Type name to compare against `[LFileData](#lfiledata-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1502,14 +1539,19 @@ end
 
 ---
 
-## LFileHandle
+## LFileHandle Handle
 
-### `LFileHandle:close`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFileHandle:close`
 
 Closes this file handle on this object.
 
 ```lua
--- signature
 LFileHandle:close()
 ```
 
@@ -1526,12 +1568,11 @@ end
 
 ---
 
-### `LFileHandle:flush`
+#### `LFileHandle:flush`
 
 Flushes pending writes on this file handle.
 
 ```lua
--- signature
 LFileHandle:flush()
 ```
 
@@ -1549,12 +1590,11 @@ end
 
 ---
 
-### `LFileHandle:getMode`
+#### `LFileHandle:getMode`
 
 Returns the mode used to open this file handle.
 
 ```lua
--- signature
 LFileHandle:getMode()
 ```
 
@@ -1562,7 +1602,7 @@ LFileHandle:getMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | File mode string. |
+| string | File mode string. |
 
 **Example**
 
@@ -1577,12 +1617,11 @@ end
 
 ---
 
-### `LFileHandle:getSize`
+#### `LFileHandle:getSize`
 
 Returns the size of the open file in bytes.
 
 ```lua
--- signature
 LFileHandle:getSize()
 ```
 
@@ -1590,7 +1629,7 @@ LFileHandle:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | File size in bytes. |
+| number | File size in bytes. |
 
 **Example**
 
@@ -1605,12 +1644,11 @@ end
 
 ---
 
-### `LFileHandle:isEOF`
+#### `LFileHandle:isEOF`
 
 Returns whether the file cursor is at end of file.
 
 ```lua
--- signature
 LFileHandle:isEOF()
 ```
 
@@ -1618,7 +1656,7 @@ LFileHandle:isEOF()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when no more bytes remain. |
+| boolean | True when no more bytes remain. |
 
 **Example**
 
@@ -1634,12 +1672,11 @@ end
 
 ---
 
-### `LFileHandle:read`
+#### `LFileHandle:read`
 
 Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
 
 ```lua
--- signature
 LFileHandle:read(count)
 ```
 
@@ -1647,13 +1684,13 @@ LFileHandle:read(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Optional maximum number of bytes to read. |
+| `count?` | number | Optional maximum number of bytes to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | String decoded from the bytes that were read. |
+| string | String decoded from the bytes that were read. |
 
 **Example**
 
@@ -1669,12 +1706,11 @@ end
 
 ---
 
-### `LFileHandle:readLine`
+#### `LFileHandle:readLine`
 
 Reads the next line from this file handle.
 
 ```lua
--- signature
 LFileHandle:readLine()
 ```
 
@@ -1682,7 +1718,7 @@ LFileHandle:readLine()
 
 | Type | Description |
 |------|-------------|
-| `string` | Line string when available, or nil at EOF. |
+| string | Line string when available, or nil at EOF. |
 
 **Example**
 
@@ -1698,12 +1734,11 @@ end
 
 ---
 
-### `LFileHandle:seek`
+#### `LFileHandle:seek`
 
 Moves the file cursor to an absolute byte position.
 
 ```lua
--- signature
 LFileHandle:seek(pos)
 ```
 
@@ -1711,7 +1746,7 @@ LFileHandle:seek(pos)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pos` | `number` | Absolute byte offset. |
+| `pos` | number | Absolute byte offset. |
 
 **Example**
 
@@ -1728,12 +1763,11 @@ end
 
 ---
 
-### `LFileHandle:tell`
+#### `LFileHandle:tell`
 
 Returns the current file cursor position.
 
 ```lua
--- signature
 LFileHandle:tell()
 ```
 
@@ -1741,7 +1775,7 @@ LFileHandle:tell()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current absolute byte offset. |
+| number | Current absolute byte offset. |
 
 **Example**
 
@@ -1758,12 +1792,11 @@ end
 
 ---
 
-### `LFileHandle:type`
+#### `LFileHandle:type`
 
 Returns the Lua-visible type name for this file handle.
 
 ```lua
--- signature
 LFileHandle:type()
 ```
 
@@ -1771,7 +1804,7 @@ LFileHandle:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LFileHandle`. |
+| string | The string `[LFileHandle](#lfilehandle-handle)`. |
 
 **Example**
 
@@ -1786,12 +1819,11 @@ end
 
 ---
 
-### `LFileHandle:typeOf`
+#### `LFileHandle:typeOf`
 
 Returns whether this file handle matches a supported type name.
 
 ```lua
--- signature
 LFileHandle:typeOf(name)
 ```
 
@@ -1799,13 +1831,13 @@ LFileHandle:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LFileHandle` and `Object`. |
+| `name` | string | Type name to compare against `[LFileHandle](#lfilehandle-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1820,12 +1852,11 @@ end
 
 ---
 
-### `LFileHandle:write`
+#### `LFileHandle:write`
 
 Writes a string to this file handle.
 
 ```lua
--- signature
 LFileHandle:write(data)
 ```
 
@@ -1833,7 +1864,7 @@ LFileHandle:write(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `string` | Text bytes to write. |
+| `data` | string | Text bytes to write. |
 
 **Example**
 
@@ -1849,14 +1880,19 @@ end
 
 ---
 
-## LZipMount
+## LZipMount Handle
 
-### `LZipMount:contains`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LZipMount:contains`
 
 Returns whether a virtual path exists in the ZIP mount.
 
 ```lua
--- signature
 LZipMount:contains(virtual_path)
 ```
 
@@ -1864,13 +1900,13 @@ LZipMount:contains(virtual_path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `virtual_path` | `string` | Path inside the mount prefix. |
+| `virtual_path` | string | Path inside the mount prefix. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the file exists in the archive. |
+| boolean | True when the file exists in the archive. |
 
 **Example**
 
@@ -1883,12 +1919,11 @@ end
 
 ---
 
-### `LZipMount:listFiles`
+#### `LZipMount:listFiles`
 
 Returns every virtual file path in the ZIP mount.
 
 ```lua
--- signature
 LZipMount:listFiles()
 ```
 
@@ -1896,7 +1931,7 @@ LZipMount:listFiles()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Mounted file paths. |
+| string[] | Mounted file paths. |
 
 **Example**
 
@@ -1910,12 +1945,11 @@ end
 
 ---
 
-### `LZipMount:prefix`
+#### `LZipMount:prefix`
 
 Returns the virtual prefix used by this ZIP mount.
 
 ```lua
--- signature
 LZipMount:prefix()
 ```
 
@@ -1923,7 +1957,7 @@ LZipMount:prefix()
 
 | Type | Description |
 |------|-------------|
-| `string` | Mount prefix. |
+| string | Mount prefix. |
 
 **Example**
 
@@ -1936,12 +1970,11 @@ end
 
 ---
 
-### `LZipMount:readFile`
+#### `LZipMount:readFile`
 
 Reads a file from the ZIP mount by virtual path.
 
 ```lua
--- signature
 LZipMount:readFile(virtual_path)
 ```
 
@@ -1949,13 +1982,13 @@ LZipMount:readFile(virtual_path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `virtual_path` | `string` | Path inside the mount prefix. |
+| `virtual_path` | string | Path inside the mount prefix. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Raw file bytes as a Lua string. |
+| string | Raw file bytes as a Lua string. |
 
 **Example**
 
@@ -1969,12 +2002,11 @@ end
 
 ---
 
-### `LZipMount:type`
+#### `LZipMount:type`
 
 Returns the Lua-visible type name for this ZIP mount handle.
 
 ```lua
--- signature
 LZipMount:type()
 ```
 
@@ -1982,7 +2014,7 @@ LZipMount:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LZipMount`. |
+| string | The string `[LZipMount](#lzipmount-handle)`. |
 
 **Example**
 
@@ -1995,12 +2027,11 @@ end
 
 ---
 
-### `LZipMount:typeOf`
+#### `LZipMount:typeOf`
 
 Returns whether this ZIP mount handle matches a supported type name.
 
 ```lua
--- signature
 LZipMount:typeOf(name)
 ```
 
@@ -2008,13 +2039,13 @@ LZipMount:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LZipMount` and `Object`. |
+| `name` | string | Type name to compare against `[LZipMount](#lzipmount-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

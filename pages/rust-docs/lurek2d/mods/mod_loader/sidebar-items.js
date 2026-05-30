@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["FieldValue"],"fn":["load_instances_from_toml"],"struct":["ModInstance"]};

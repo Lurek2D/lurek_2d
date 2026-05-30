@@ -1,12 +1,126 @@
 # Mapblock
 
-- The `mapblock` module provides a scripted, constraint-based procedural map assembly system that composes reusable tile-block prefabs into fully rendered TileMaps.
+## Summary
 
 The `mapblock` module implements a Carcassonne-inspired map assembly pipeline where discrete `MapBlock` prefabs — each a grid of `MapTile` slots with typed edges — are placed on a `PlacementGrid` according to `EdgeConstraint` rules that ensure neighboring blocks share compatible socket types (e.g., `"road"`, `"river"`). Block placement is driven by a `MapScript`: an ordered sequence of typed `ScriptStep` operations including `Fill` (flood-fill a region with a block group), `PlaceGroup` (weighted random selection from a named `BlockGroup`), `PlaceBlock` (explicit placement), `ApplyLayer` (copy a layer from another block), and `Repeat` (nested sub-sequence with its own RNG advance). The `MapBlockGenerator` executes these steps in order with backtrack support, capped by a configurable `retry_limit`.
 
 Blocks are organized into named `BlockGroup` sets using alias-method weighted sampling, enabling biome-zone filling where a single script step populates an entire region with contextually appropriate tiles. Each block references a `TilesetRef` that maps its tile slot IDs to world tile IDs via a `base_id` offset, allowing multiple blocks to share the same tileset texture. Tile slots are typed (`floor`, `roof`, `object`, `wall`, or custom), which maps directly to `TileMap` layer indices in the output.
 
 Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelMap`) that maintains independent `MapBlockGrid` instances per Z-level. Both top-down and isometric projection orientations are supported via `MapOrientation`, applied by the tilemap renderer. The final assembly step calls `grid_to_tilemap`, converting the block grid into a standard `TileMap` owned by the caller and decoupled from the generator. The `lurek.mapblock.*` Lua API exposes block definition, group registration, script construction, and generation entry points.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### block.rs
+
+- Fundamental mapblock unit combining tile payloads, edge sockets, and metadata.
+- Carries the data needed to match blocks during procedural placement.
+- Stores selection weighting, naming, and tileset references for later output.
+- Encodes the local shape and slot content that downstream stages consume.
+- Keeps neighbor semantics alongside the block so validation stays data-driven.
+- Acts as the atomic building piece for the entire mapblock pipeline.
+
+### config.rs
+
+- Runtime configuration for mapblock generation shape, slots, and randomness.
+- Holds grid dimensions, layer limits, and placement behavior flags.
+- Stores seed and retry controls for deterministic or exploratory runs.
+- Defines the slot schema that orders per-tile payload interpretation.
+- Serves as the canonical loaded settings object for assembly routines.
+
+### constraints.rs
+
+- Edge compatibility rules that decide whether neighboring blocks can connect.
+- Describes socket-style match data per edge for fine-grained placement checks.
+- Provides opposite-edge helpers for two-sided adjacency validation.
+- Keeps connection semantics data-driven instead of hard-coded.
+- Powers fast local legality checks during generator execution.
+
+### generator.rs
+
+- Operational core for scripted mapblock assembly over a block grid.
+- Owns block registries, multi-level placement state, and RNG progression.
+- Executes fill, targeted placement, random placement, and repeat steps.
+- Applies neighbor constraints to keep layouts structurally coherent.
+- Threads orientation and config context through the build process.
+- Converts intermediate placements into renderer-ready output structures.
+- Supports deterministic runs through seeded randomness and explicit step ordering.
+- Serves as the main execution engine behind mapblock authoring tools.
+
+### group.rs
+
+- Named block group for themed procedural generation passes.
+- Carries weighted selection metadata for controlled randomness.
+- Lets scripts reference semantic groups instead of numeric ids.
+- Supports biome-style or region-style content curation.
+
+### layer.rs
+
+- Per-level tile storage for multi-storey mapblock outputs.
+- Manages independent 2D block layers indexed by non-negative vertical levels.
+- Provides bounds-aware tile access and mutation for placement operations.
+- Keeps slot counts and layer dimensions aligned with global config.
+- Supplies the layered container used by multilevel map assembly.
+
+### maptile.rs
+
+- Atomic tile payload composed from configurable slot values and metadata.
+- Encodes tile-slot identifiers that point at tileset entries for rendering and logic.
+- Distinguishes slot roles so ordered drawing stays consistent.
+- Serves as the smallest content unit stored inside mapblock grids.
+
+### mod.rs
+
+- High-level mapblock module that wires blocks, scripts, constraints, and output conversion together.
+- Exposes the procedural assembly surface used to build tilemaps from authored content.
+- Keeps layered generation, orientation handling, and placement validation under one namespace.
+
+### multilevel.rs
+
+- Multilevel container for placed blocks across vertical storeys.
+- Tracks level metadata and block placements with bounds-safe access patterns.
+- Supports mutation and query by level and grid coordinate during generation.
+- Preserves structure needed for serialization and output transformation.
+- Bridges layered placement logic with final map export.
+
+### orientation.rs
+
+- Orientation modes for interpreting generated mapblock layouts.
+- Provides top-down and isometric variants for different presentation styles.
+- Supplies parsing and helpers used by config-driven renderer integration.
+
+### output.rs
+
+- Final mapblock conversion layer that turns placements into tile data outputs.
+- Translates layered slot payloads into ordered tile layers and resolved tileset ids.
+- Applies orientation and level handling so exports match runtime presentation.
+- Produces owned result structures detached from mutable generator state.
+- Serves as the last step in the mapblock build pipeline.
+
+### placement.rs
+
+- Placement-grid state and legality checks for mapblock assembly operations.
+- Tracks occupied cells and placed-block metadata used by scripted steps.
+- Evaluates candidates against edge constraints and neighborhood compatibility rules.
+- Enumerates valid placements for deterministic or random selection passes.
+- Records coordinates and orientation details for downstream processing.
+- Acts as the spatial validation core inside the generator loop.
+
+### script.rs
+
+- Scripted step language that drives procedural mapblock generation flow.
+- Encodes fill, targeted placement, random placement, and repeat operations.
+- Stores ordered step sequences consumed directly by the execution engine.
+- Supports data-driven authoring and runtime construction of generation programs.
+- Provides the control plane for deterministic and expressive map assembly.
+
+### tileset_ref.rs
+
+- Tileset reference metadata used to resolve slot values into concrete tile resources.
+- Stores tileset identity, sizing, and index-offset data shared across blocks.
+- Supports reuse of one tileset with different offset conventions per content group.
+- Serves as lookup glue between authored blocks and runtime tilemap output.
 
 ## Functions
 
@@ -15,7 +129,6 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 Create a new map block exposed by the lurek engine.
 
 ```lua
--- signature
 lurek.mapblock.newBlock(width, height, layers, config)
 ```
 
@@ -23,16 +136,16 @@ lurek.mapblock.newBlock(width, height, layers, config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Block width in tiles. |
-| `height` | `number` | Block height in tiles. |
-| `layers` | `number` | Number of layers. |
-| `config` | `MapBlockConfig` | Configuration to use. |
+| `width` | number | Block width in tiles. |
+| `height` | number | Block height in tiles. |
+| `layers` | number | Number of layers. |
+| `config` | [LMapBlockConfig](#lmapblockconfig-handle) | Configuration to use. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `MapBlock` | New block. |
+| [LMapBlock](#lmapblock-handle) | New block. |
 
 **Example**
 
@@ -51,7 +164,6 @@ end
 Create a new map block configuration with default slots.
 
 ```lua
--- signature
 lurek.mapblock.newConfig()
 ```
 
@@ -59,7 +171,7 @@ lurek.mapblock.newConfig()
 
 | Type | Description |
 |------|-------------|
-| `MapBlockConfig` | New configuration. |
+| [LMapBlockConfig](#lmapblockconfig-handle) | New configuration. |
 
 **Example**
 
@@ -77,7 +189,6 @@ end
 Create an empty config with no predefined slots.
 
 ```lua
--- signature
 lurek.mapblock.newEmptyConfig()
 ```
 
@@ -85,7 +196,7 @@ lurek.mapblock.newEmptyConfig()
 
 | Type | Description |
 |------|-------------|
-| `MapBlockConfig` | Empty configuration. |
+| [LMapBlockConfig](#lmapblockconfig-handle) | Empty configuration. |
 
 **Example**
 
@@ -104,7 +215,6 @@ end
 Create an empty placement grid (for arbitrary shapes).
 
 ```lua
--- signature
 lurek.mapblock.newEmptyGrid()
 ```
 
@@ -112,7 +222,7 @@ lurek.mapblock.newEmptyGrid()
 
 | Type | Description |
 |------|-------------|
-| `PlacementGrid` | Empty grid. |
+| [LPlacementGrid](#lplacementgrid-handle) | Empty grid. |
 
 **Example**
 
@@ -131,7 +241,6 @@ end
 Create a new procedural map block generator instance.
 
 ```lua
--- signature
 lurek.mapblock.newGenerator(config)
 ```
 
@@ -139,13 +248,13 @@ lurek.mapblock.newGenerator(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | `MapBlockConfig` | Configuration. |
+| `config` | [LMapBlockConfig](#lmapblockconfig-handle) | Configuration. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `MapBlockGenerator` | New generator. |
+| [LMapBlockGenerator](#lmapblockgenerator-handle) | New generator. |
 
 **Example**
 
@@ -165,7 +274,6 @@ end
 Create a rectangular placement grid.
 
 ```lua
--- signature
 lurek.mapblock.newGrid(width, height)
 ```
 
@@ -173,14 +281,14 @@ lurek.mapblock.newGrid(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Grid width. |
-| `height` | `number` | Grid height. |
+| `width` | number | Grid width. |
+| `height` | number | Grid height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `PlacementGrid` | New grid. |
+| [LPlacementGrid](#lplacementgrid-handle) | New grid. |
 
 **Example**
 
@@ -199,7 +307,6 @@ end
 Create a new map group exposed by the lurek engine.
 
 ```lua
--- signature
 lurek.mapblock.newGroup(name)
 ```
 
@@ -207,13 +314,13 @@ lurek.mapblock.newGroup(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Group name. |
+| `name` | string | Group name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `MapGroup` | New group. |
+| [LMapGroup](#lmapgroup-handle) | New group. |
 
 **Example**
 
@@ -231,7 +338,6 @@ end
 Create new neighbor rules exposed by the lurek engine.
 
 ```lua
--- signature
 lurek.mapblock.newRules()
 ```
 
@@ -239,7 +345,7 @@ lurek.mapblock.newRules()
 
 | Type | Description |
 |------|-------------|
-| `NeighborRules` | New rules. |
+| [LNeighborRules](#lneighborrules-handle) | New rules. |
 
 **Example**
 
@@ -258,7 +364,6 @@ end
 Create a new map script exposed by the lurek engine.
 
 ```lua
--- signature
 lurek.mapblock.newScript(name)
 ```
 
@@ -266,13 +371,13 @@ lurek.mapblock.newScript(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Script name. |
+| `name?` | string | Script name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `MapScript` | New script. |
+| [LMapScript](#lmapscript-handle) | New script. |
 
 **Example**
 
@@ -292,7 +397,6 @@ end
 Create a tileset reference exposed by the lurek engine.
 
 ```lua
--- signature
 lurek.mapblock.newTilesetRef(id, name, tile_count, columns, tile_width, tile_height)
 ```
 
@@ -300,18 +404,18 @@ lurek.mapblock.newTilesetRef(id, name, tile_count, columns, tile_width, tile_hei
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Tileset ID. |
-| `name` | `string` | Tileset name. |
-| `tile_count` | `number` | Number of tiles. |
-| `columns` | `number` | Columns in tileset image. |
-| `tile_width` | `number` | Tile pixel width. |
-| `tile_height` | `number` | Tile pixel height. |
+| `id` | number | Tileset ID. |
+| `name` | string | Tileset name. |
+| `tile_count` | number | Number of tiles. |
+| `columns` | number | Columns in tileset image. |
+| `tile_width` | number | Tile pixel width. |
+| `tile_height` | number | Tile pixel height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilesetRef` | New tileset reference. |
+| [LTilesetRef](#ltilesetref-handle) | New tileset reference. |
 
 **Example**
 
@@ -325,14 +429,43 @@ end
 
 ---
 
-## LMapBlock
+## Module Fields
 
-### `LMapBlock:getDimensions`
+*No module-level fields documented.*
+
+## Types
+
+- [LMapBlock Handle](#lmapblock-handle)
+- [LMapBlockConfig Handle](#lmapblockconfig-handle)
+- [LMapBlockGenerator Handle](#lmapblockgenerator-handle)
+- [LMapBlockResult Handle](#lmapblockresult-handle)
+- [LMapGroup Handle](#lmapgroup-handle)
+- [LMapScript Handle](#lmapscript-handle)
+- [LNeighborRules Handle](#lneighborrules-handle)
+- [LPlacementGrid Handle](#lplacementgrid-handle)
+- [LTilesetRef Handle](#ltilesetref-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LMapBlock Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapBlock:getDimensions`
 
 Returns both width and height of the block in tiles.
 
 ```lua
--- signature
 LMapBlock:getDimensions()
 ```
 
@@ -340,17 +473,16 @@ LMapBlock:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width. |
-| `number` | b Height. |
+| number | Width. |
+| number | Height. |
 
 ---
 
-### `LMapBlock:getHeight`
+#### `LMapBlock:getHeight`
 
 Get height in tiles for this object.
 
 ```lua
--- signature
 LMapBlock:getHeight()
 ```
 
@@ -358,7 +490,7 @@ LMapBlock:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Block height. |
+| number | Block height. |
 
 **Example**
 
@@ -372,12 +504,11 @@ end
 
 ---
 
-### `LMapBlock:getHeightInSegments`
+#### `LMapBlock:getHeightInSegments`
 
 Returns the block height measured in segments.
 
 ```lua
--- signature
 LMapBlock:getHeightInSegments()
 ```
 
@@ -385,16 +516,15 @@ LMapBlock:getHeightInSegments()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in segments. |
+| number | Height in segments. |
 
 ---
 
-### `LMapBlock:getLayerCount`
+#### `LMapBlock:getLayerCount`
 
 Get the number of tile layers in this map block.
 
 ```lua
--- signature
 LMapBlock:getLayerCount()
 ```
 
@@ -402,7 +532,7 @@ LMapBlock:getLayerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of layers. |
+| number | Number of layers. |
 
 **Example**
 
@@ -416,12 +546,11 @@ end
 
 ---
 
-### `LMapBlock:getName`
+#### `LMapBlock:getName`
 
 Get the map block's display or lookup name string value.
 
 ```lua
--- signature
 LMapBlock:getName()
 ```
 
@@ -429,7 +558,7 @@ LMapBlock:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Block name. |
+| string | Block name. |
 
 **Example**
 
@@ -444,12 +573,11 @@ end
 
 ---
 
-### `LMapBlock:getSegmentSize`
+#### `LMapBlock:getSegmentSize`
 
 Returns the segment size used for edge matching.
 
 ```lua
--- signature
 LMapBlock:getSegmentSize()
 ```
 
@@ -457,16 +585,15 @@ LMapBlock:getSegmentSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Segment size in tiles. |
+| number | Segment size in tiles. |
 
 ---
 
-### `LMapBlock:getSide`
+#### `LMapBlock:getSide`
 
 Returns the side ID for an edge segment.
 
 ```lua
--- signature
 LMapBlock:getSide(edge, segment)
 ```
 
@@ -474,23 +601,22 @@ LMapBlock:getSide(edge, segment)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge` | `string` | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
-| `segment` | `number` | Segment index along the edge (1-based). |
+| `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
+| `segment` | number | Segment index along the edge (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Side identifier. |
+| number | Side identifier. |
 
 ---
 
-### `LMapBlock:getTile`
+#### `LMapBlock:getTile`
 
 Get the tile GID at a specified row and column position.
 
 ```lua
--- signature
 LMapBlock:getTile(layer, x, y, slot)
 ```
 
@@ -498,16 +624,16 @@ LMapBlock:getTile(layer, x, y, slot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index. |
-| `x` | `number` | Tile X. |
-| `y` | `number` | Tile Y. |
-| `slot` | `number` | Slot index. |
+| `layer` | number | Layer index. |
+| `x` | number | Tile X. |
+| `y` | number | Tile Y. |
+| `slot` | number | Slot index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile GID. |
+| number | Tile GID. |
 
 **Example**
 
@@ -524,12 +650,11 @@ end
 
 ---
 
-### `LMapBlock:getWeight`
+#### `LMapBlock:getWeight`
 
 Returns the current selection weight.
 
 ```lua
--- signature
 LMapBlock:getWeight()
 ```
 
@@ -537,16 +662,15 @@ LMapBlock:getWeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Weight value. |
+| number | Weight value. |
 
 ---
 
-### `LMapBlock:getWidth`
+#### `LMapBlock:getWidth`
 
 Get the block width measured in tile grid units.
 
 ```lua
--- signature
 LMapBlock:getWidth()
 ```
 
@@ -554,7 +678,7 @@ LMapBlock:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Block width. |
+| number | Block width. |
 
 **Example**
 
@@ -568,12 +692,11 @@ end
 
 ---
 
-### `LMapBlock:getWidthInSegments`
+#### `LMapBlock:getWidthInSegments`
 
 Returns the block width measured in segments.
 
 ```lua
--- signature
 LMapBlock:getWidthInSegments()
 ```
 
@@ -581,16 +704,15 @@ LMapBlock:getWidthInSegments()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in segments. |
+| number | Width in segments. |
 
 ---
 
-### `LMapBlock:setEdge`
+#### `LMapBlock:setEdge`
 
 Set edge type for a side and segment.
 
 ```lua
--- signature
 LMapBlock:setEdge(edge, segment, edge_type)
 ```
 
@@ -598,9 +720,9 @@ LMapBlock:setEdge(edge, segment, edge_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge` | `string` | Edge direction: "north", "east", "south", "west". |
-| `segment` | `number` | Segment index along the edge. |
-| `edge_type` | `number` | Edge type identifier. |
+| `edge` | string | Edge direction: "north", "east", "south", "west". |
+| `segment` | number | Segment index along the edge. |
+| `edge_type` | number | Edge type identifier. |
 
 **Example**
 
@@ -616,12 +738,11 @@ end
 
 ---
 
-### `LMapBlock:setEdgeOnly`
+#### `LMapBlock:setEdgeOnly`
 
 Set whether block must be on map edge.
 
 ```lua
--- signature
 LMapBlock:setEdgeOnly(edge_only)
 ```
 
@@ -629,7 +750,7 @@ LMapBlock:setEdgeOnly(edge_only)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge_only` | `boolean` | True if edge-only. |
+| `edge_only` | boolean | True if edge-only. |
 
 **Example**
 
@@ -644,12 +765,11 @@ end
 
 ---
 
-### `LMapBlock:setInteriorOnly`
+#### `LMapBlock:setInteriorOnly`
 
 Set whether block must be in interior.
 
 ```lua
--- signature
 LMapBlock:setInteriorOnly(interior_only)
 ```
 
@@ -657,7 +777,7 @@ LMapBlock:setInteriorOnly(interior_only)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `interior_only` | `boolean` | True if interior-only. |
+| `interior_only` | boolean | True if interior-only. |
 
 **Example**
 
@@ -672,12 +792,11 @@ end
 
 ---
 
-### `LMapBlock:setLevelSpan`
+#### `LMapBlock:setLevelSpan`
 
 Set multi-level span for this object.
 
 ```lua
--- signature
 LMapBlock:setLevelSpan(levels)
 ```
 
@@ -685,7 +804,7 @@ LMapBlock:setLevelSpan(levels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `levels` | `number` | Number of levels this block spans. |
+| `levels` | number | Number of levels this block spans. |
 
 **Example**
 
@@ -700,12 +819,11 @@ end
 
 ---
 
-### `LMapBlock:setName`
+#### `LMapBlock:setName`
 
 Set the map block's display or lookup name string value.
 
 ```lua
--- signature
 LMapBlock:setName(name)
 ```
 
@@ -713,7 +831,7 @@ LMapBlock:setName(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Block name. |
+| `name` | string | Block name. |
 
 **Example**
 
@@ -728,12 +846,11 @@ end
 
 ---
 
-### `LMapBlock:setSide`
+#### `LMapBlock:setSide`
 
 Sets the side ID for an edge segment, used for edge matching in map generation.
 
 ```lua
--- signature
 LMapBlock:setSide(edge, segment, sideId)
 ```
 
@@ -741,18 +858,17 @@ LMapBlock:setSide(edge, segment, sideId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge` | `string` | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
-| `segment` | `number` | Segment index along the edge (1-based). |
-| `sideId` | `number` | Side identifier for matching. |
+| `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
+| `segment` | number | Segment index along the edge (1-based). |
+| `sideId` | number | Side identifier for matching. |
 
 ---
 
-### `LMapBlock:setTile`
+#### `LMapBlock:setTile`
 
-Set a tile slot value — Lua userdata object exposed by the engine.
+Set a tile slot value â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
 ```
 
@@ -760,12 +876,12 @@ LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (0-based). |
-| `x` | `number` | Tile X position. |
-| `y` | `number` | Tile Y position. |
-| `slot` | `number` | Slot index. |
-| `tileset_id` | `number` | Tileset ID. |
-| `gid` | `number` | Tile GID. |
+| `layer` | number | Layer index (0-based). |
+| `x` | number | Tile X position. |
+| `y` | number | Tile Y position. |
+| `slot` | number | Slot index. |
+| `tileset_id` | number | Tileset ID. |
+| `gid` | number | Tile GID. |
 
 **Example**
 
@@ -781,12 +897,11 @@ end
 
 ---
 
-### `LMapBlock:setWeight`
+#### `LMapBlock:setWeight`
 
 Set block weight for random selection.
 
 ```lua
--- signature
 LMapBlock:setWeight(weight)
 ```
 
@@ -794,7 +909,7 @@ LMapBlock:setWeight(weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `weight` | `number` | Weight value (higher = more likely). |
+| `weight` | number | Weight value (higher = more likely). |
 
 **Example**
 
@@ -809,12 +924,11 @@ end
 
 ---
 
-### `LMapBlock:type`
+#### `LMapBlock:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapBlock:type()
 ```
 
@@ -822,16 +936,15 @@ LMapBlock:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapBlock"`. |
+| string | Always `"[LMapBlock](#lmapblock-handle)"`. |
 
 ---
 
-### `LMapBlock:typeOf`
+#### `LMapBlock:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapBlock:typeOf(name)
 ```
 
@@ -839,24 +952,29 @@ LMapBlock:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapBlock"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapBlock](#lmapblock-handle)"` or `"Object"`. |
 
 ---
 
-## LMapBlockConfig
+## LMapBlockConfig Handle
 
-### `LMapBlockConfig:addSlot`
+### Fields
 
-Add a slot definition — Lua userdata object exposed by the engine.
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapBlockConfig:addSlot`
+
+Add a slot definition â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapBlockConfig:addSlot(name, required, default_gid)
 ```
 
@@ -864,9 +982,9 @@ LMapBlockConfig:addSlot(name, required, default_gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Slot name. |
-| `required?` | `boolean` | Whether this slot is required. |
-| `default_gid?` | `number` | Default GID when empty. |
+| `name` | string | Slot name. |
+| `required?` | boolean | Whether this slot is required. |
+| `default_gid?` | number | Default GID when empty. |
 
 **Example**
 
@@ -881,12 +999,11 @@ end
 
 ---
 
-### `LMapBlockConfig:getSlotCount`
+#### `LMapBlockConfig:getSlotCount`
 
 Get the number of slots for this object.
 
 ```lua
--- signature
 LMapBlockConfig:getSlotCount()
 ```
 
@@ -894,7 +1011,7 @@ LMapBlockConfig:getSlotCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Slot count. |
+| number | Slot count. |
 
 **Example**
 
@@ -910,12 +1027,11 @@ end
 
 ---
 
-### `LMapBlockConfig:removeSlot`
+#### `LMapBlockConfig:removeSlot`
 
 Remove a slot by name for this object.
 
 ```lua
--- signature
 LMapBlockConfig:removeSlot(name)
 ```
 
@@ -923,13 +1039,13 @@ LMapBlockConfig:removeSlot(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Slot name to remove. |
+| `name` | string | Slot name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if removed. |
+| boolean | True if removed. |
 
 **Example**
 
@@ -944,12 +1060,11 @@ end
 
 ---
 
-### `LMapBlockConfig:setDefaultSegmentSize`
+#### `LMapBlockConfig:setDefaultSegmentSize`
 
 Set default segment size for this object.
 
 ```lua
--- signature
 LMapBlockConfig:setDefaultSegmentSize(size)
 ```
 
@@ -957,7 +1072,7 @@ LMapBlockConfig:setDefaultSegmentSize(size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Segment size in tiles. |
+| `size` | number | Segment size in tiles. |
 
 **Example**
 
@@ -971,12 +1086,11 @@ end
 
 ---
 
-### `LMapBlockConfig:setMaxLayers`
+#### `LMapBlockConfig:setMaxLayers`
 
 Set maximum layers per block for this object.
 
 ```lua
--- signature
 LMapBlockConfig:setMaxLayers(max)
 ```
 
@@ -984,7 +1098,7 @@ LMapBlockConfig:setMaxLayers(max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max` | `number` | Max layers (1-10). |
+| `max` | number | Max layers (1-10). |
 
 **Example**
 
@@ -999,14 +1113,19 @@ end
 
 ---
 
-## LMapBlockGenerator
+## LMapBlockGenerator Handle
 
-### `LMapBlockGenerator:addGroup`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapBlockGenerator:addGroup`
 
 Add a named block group definition to this map generator.
 
 ```lua
--- signature
 LMapBlockGenerator:addGroup(group)
 ```
 
@@ -1014,7 +1133,7 @@ LMapBlockGenerator:addGroup(group)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group` | `MapGroup` | Group of blocks. |
+| `group` | [LMapGroup](#lmapgroup-handle) | Group of blocks. |
 
 **Example**
 
@@ -1030,12 +1149,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:generate`
+#### `LMapBlockGenerator:generate`
 
 Generate map using a script for this object.
 
 ```lua
--- signature
 LMapBlockGenerator:generate(script)
 ```
 
@@ -1043,13 +1161,13 @@ LMapBlockGenerator:generate(script)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `script` | `MapScript` | Script to execute. |
+| `script` | [LMapScript](#lmapscript-handle) | Script to execute. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `MapBlockResult` | Generation result. |
+| [LMapBlockResult](#lmapblockresult-handle) | Generation result. |
 
 **Example**
 
@@ -1069,12 +1187,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:getLastPlacedCount`
+#### `LMapBlockGenerator:getLastPlacedCount`
 
 Get last placement count for this object.
 
 ```lua
--- signature
 LMapBlockGenerator:getLastPlacedCount()
 ```
 
@@ -1082,7 +1199,7 @@ LMapBlockGenerator:getLastPlacedCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Blocks placed in last generation. |
+| number | Blocks placed in last generation. |
 
 **Example**
 
@@ -1101,12 +1218,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setMaxLevels`
+#### `LMapBlockGenerator:setMaxLevels`
 
 Set the number of vertical levels or storeys to generate.
 
 ```lua
--- signature
 LMapBlockGenerator:setMaxLevels(levels)
 ```
 
@@ -1114,7 +1230,7 @@ LMapBlockGenerator:setMaxLevels(levels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `levels` | `number` | Max levels (1-10). |
+| `levels` | number | Max levels (1-10). |
 
 **Example**
 
@@ -1129,12 +1245,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setOrientation`
+#### `LMapBlockGenerator:setOrientation`
 
 Set rendering orientation for this object.
 
 ```lua
--- signature
 LMapBlockGenerator:setOrientation(orientation)
 ```
 
@@ -1142,7 +1257,7 @@ LMapBlockGenerator:setOrientation(orientation)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `orientation` | `string` | "topdown" or "isometric". |
+| `orientation` | string | "topdown" or "isometric". |
 
 **Example**
 
@@ -1157,12 +1272,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setRectShape`
+#### `LMapBlockGenerator:setRectShape`
 
-Set rectangular map shape — Lua userdata object exposed by the engine.
+Set rectangular map shape â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapBlockGenerator:setRectShape(width, height)
 ```
 
@@ -1170,8 +1284,8 @@ LMapBlockGenerator:setRectShape(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Grid width. |
-| `height` | `number` | Grid height. |
+| `width` | number | Grid width. |
+| `height` | number | Grid height. |
 
 **Example**
 
@@ -1186,12 +1300,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setRules`
+#### `LMapBlockGenerator:setRules`
 
 Set neighbor matching rules for this object.
 
 ```lua
--- signature
 LMapBlockGenerator:setRules(rules)
 ```
 
@@ -1199,7 +1312,7 @@ LMapBlockGenerator:setRules(rules)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rules` | `NeighborRules` | Rules object. |
+| `rules` | [LNeighborRules](#lneighborrules-handle) | Rules object. |
 
 **Example**
 
@@ -1216,12 +1329,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setSeed`
+#### `LMapBlockGenerator:setSeed`
 
 Set RNG seed for deterministic generation.
 
 ```lua
--- signature
 LMapBlockGenerator:setSeed(seed)
 ```
 
@@ -1229,7 +1341,7 @@ LMapBlockGenerator:setSeed(seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seed` | `number` | Seed value. |
+| `seed` | number | Seed value. |
 
 **Example**
 
@@ -1244,12 +1356,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setShape`
+#### `LMapBlockGenerator:setShape`
 
 Set the generator map shape using a list of tile positions.
 
 ```lua
--- signature
 LMapBlockGenerator:setShape(positions)
 ```
 
@@ -1257,7 +1368,7 @@ LMapBlockGenerator:setShape(positions)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `positions` | `table` | Array of {x, y} positions. |
+| `positions` | table | Array of {x, y} positions. |
 
 **Example**
 
@@ -1272,12 +1383,11 @@ end
 
 ---
 
-### `LMapBlockGenerator:setTileSize`
+#### `LMapBlockGenerator:setTileSize`
 
 Set tile pixel dimensions for this object.
 
 ```lua
--- signature
 LMapBlockGenerator:setTileSize(w, h)
 ```
 
@@ -1285,8 +1395,8 @@ LMapBlockGenerator:setTileSize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Pixel width. |
-| `h` | `number` | Pixel height. |
+| `w` | number | Pixel width. |
+| `h` | number | Pixel height. |
 
 **Example**
 
@@ -1301,14 +1411,19 @@ end
 
 ---
 
-## LMapBlockResult
+## LMapBlockResult Handle
 
-### `LMapBlockResult:getBlocksPlaced`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapBlockResult:getBlocksPlaced`
 
 Get number of blocks placed for this object.
 
 ```lua
--- signature
 LMapBlockResult:getBlocksPlaced()
 ```
 
@@ -1316,7 +1431,7 @@ LMapBlockResult:getBlocksPlaced()
 
 | Type | Description |
 |------|-------------|
-| `number` | Blocks placed. |
+| number | Blocks placed. |
 
 **Example**
 
@@ -1335,12 +1450,11 @@ end
 
 ---
 
-### `LMapBlockResult:getGid`
+#### `LMapBlockResult:getGid`
 
 Get tile GID at position for this object.
 
 ```lua
--- signature
 LMapBlockResult:getGid(level, layer, x, y, slot)
 ```
 
@@ -1348,17 +1462,17 @@ LMapBlockResult:getGid(level, layer, x, y, slot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level` | `number` | Level index. |
-| `layer` | `number` | Layer index. |
-| `x` | `number` | Tile X. |
-| `y` | `number` | Tile Y. |
-| `slot` | `number` | Slot index. |
+| `level` | number | Level index. |
+| `layer` | number | Layer index. |
+| `x` | number | Tile X. |
+| `y` | number | Tile Y. |
+| `slot` | number | Slot index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | GID value. |
+| number | GID value. |
 
 **Example**
 
@@ -1377,12 +1491,11 @@ end
 
 ---
 
-### `LMapBlockResult:getHeight`
+#### `LMapBlockResult:getHeight`
 
-Get total height in tiles — Lua userdata object exposed by the engine.
+Get total height in tiles â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapBlockResult:getHeight()
 ```
 
@@ -1390,7 +1503,7 @@ LMapBlockResult:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height. |
+| number | Height. |
 
 **Example**
 
@@ -1408,12 +1521,11 @@ end
 
 ---
 
-### `LMapBlockResult:getLayerCount`
+#### `LMapBlockResult:getLayerCount`
 
 Get number of layers for this object.
 
 ```lua
--- signature
 LMapBlockResult:getLayerCount()
 ```
 
@@ -1421,7 +1533,7 @@ LMapBlockResult:getLayerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Layer count. |
+| number | Layer count. |
 
 **Example**
 
@@ -1439,12 +1551,11 @@ end
 
 ---
 
-### `LMapBlockResult:getLevelCount`
+#### `LMapBlockResult:getLevelCount`
 
 Get number of levels for this object.
 
 ```lua
--- signature
 LMapBlockResult:getLevelCount()
 ```
 
@@ -1452,7 +1563,7 @@ LMapBlockResult:getLevelCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Level count. |
+| number | Level count. |
 
 **Example**
 
@@ -1471,12 +1582,11 @@ end
 
 ---
 
-### `LMapBlockResult:getWidth`
+#### `LMapBlockResult:getWidth`
 
 Get total width in tiles for this object.
 
 ```lua
--- signature
 LMapBlockResult:getWidth()
 ```
 
@@ -1484,7 +1594,7 @@ LMapBlockResult:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width. |
+| number | Width. |
 
 **Example**
 
@@ -1502,12 +1612,11 @@ end
 
 ---
 
-### `LMapBlockResult:isEmpty`
+#### `LMapBlockResult:isEmpty`
 
 Check if result is empty for this object.
 
 ```lua
--- signature
 LMapBlockResult:isEmpty()
 ```
 
@@ -1515,7 +1624,7 @@ LMapBlockResult:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if no blocks placed. |
+| boolean | True if no blocks placed. |
 
 **Example**
 
@@ -1532,14 +1641,19 @@ end
 
 ---
 
-## LMapGroup
+## LMapGroup Handle
 
-### `LMapGroup:addBlock`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapGroup:addBlock`
 
 Add a block to this group for this object.
 
 ```lua
--- signature
 LMapGroup:addBlock(block)
 ```
 
@@ -1547,7 +1661,7 @@ LMapGroup:addBlock(block)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `block` | `MapBlock` | Block to add. |
+| `block` | [LMapBlock](#lmapblock-handle) | Block to add. |
 
 **Example**
 
@@ -1563,12 +1677,11 @@ end
 
 ---
 
-### `LMapGroup:addScript`
+#### `LMapGroup:addScript`
 
 Add a script to this group for this object.
 
 ```lua
--- signature
 LMapGroup:addScript(script)
 ```
 
@@ -1576,7 +1689,7 @@ LMapGroup:addScript(script)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `script` | `MapScript` | Script to add. |
+| `script` | [LMapScript](#lmapscript-handle) | Script to add. |
 
 **Example**
 
@@ -1592,12 +1705,11 @@ end
 
 ---
 
-### `LMapGroup:getBlockCount`
+#### `LMapGroup:getBlockCount`
 
 Get the number of blocks for this object.
 
 ```lua
--- signature
 LMapGroup:getBlockCount()
 ```
 
@@ -1605,7 +1717,7 @@ LMapGroup:getBlockCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Block count. |
+| number | Block count. |
 
 **Example**
 
@@ -1621,12 +1733,11 @@ end
 
 ---
 
-### `LMapGroup:getName`
+#### `LMapGroup:getName`
 
 Get the display name of this map group object.
 
 ```lua
--- signature
 LMapGroup:getName()
 ```
 
@@ -1634,7 +1745,7 @@ LMapGroup:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Group name. |
+| string | Group name. |
 
 **Example**
 
@@ -1647,12 +1758,11 @@ end
 
 ---
 
-### `LMapGroup:getScriptCount`
+#### `LMapGroup:getScriptCount`
 
 Returns how many scripts are attached to this group.
 
 ```lua
--- signature
 LMapGroup:getScriptCount()
 ```
 
@@ -1660,16 +1770,15 @@ LMapGroup:getScriptCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Script count. |
+| number | Script count. |
 
 ---
 
-### `LMapGroup:removeBlock`
+#### `LMapGroup:removeBlock`
 
 Removes a block from the group by index.
 
 ```lua
--- signature
 LMapGroup:removeBlock(idx)
 ```
 
@@ -1677,16 +1786,15 @@ LMapGroup:removeBlock(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Block index (1-based). |
+| `idx` | number | Block index (1-based). |
 
 ---
 
-### `LMapGroup:type`
+#### `LMapGroup:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapGroup:type()
 ```
 
@@ -1694,16 +1802,15 @@ LMapGroup:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapGroup"`. |
+| string | Always `"[LMapGroup](#lmapgroup-handle)"`. |
 
 ---
 
-### `LMapGroup:typeOf`
+#### `LMapGroup:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapGroup:typeOf(name)
 ```
 
@@ -1711,24 +1818,29 @@ LMapGroup:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapGroup"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapGroup](#lmapgroup-handle)"` or `"Object"`. |
 
 ---
 
-## LMapScript
+## LMapScript Handle
 
-### `LMapScript:addStep`
+### Fields
 
-Add a generation step — Lua userdata object exposed by the engine.
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapScript:addStep`
+
+Add a generation step â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapScript:addStep(step_type, opts)
 ```
 
@@ -1736,8 +1848,8 @@ LMapScript:addStep(step_type, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `step_type` | `string` | Step type name. |
-| `opts?` | `table` | Step configuration options. |
+| `step_type` | string | Step type name. |
+| `opts?` | table | Step configuration options. |
 
 **Example**
 
@@ -1751,12 +1863,11 @@ end
 
 ---
 
-### `LMapScript:clear`
+#### `LMapScript:clear`
 
 Clear all queued script steps from this map script.
 
 ```lua
--- signature
 LMapScript:clear()
 ```
 
@@ -1774,12 +1885,11 @@ end
 
 ---
 
-### `LMapScript:getName`
+#### `LMapScript:getName`
 
 Get the script name for this object.
 
 ```lua
--- signature
 LMapScript:getName()
 ```
 
@@ -1787,7 +1897,7 @@ LMapScript:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Script name. |
+| string | Script name. |
 
 **Example**
 
@@ -1800,12 +1910,11 @@ end
 
 ---
 
-### `LMapScript:getStepCount`
+#### `LMapScript:getStepCount`
 
 Get the number of steps for this object.
 
 ```lua
--- signature
 LMapScript:getStepCount()
 ```
 
@@ -1813,7 +1922,7 @@ LMapScript:getStepCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Step count. |
+| number | Step count. |
 
 **Example**
 
@@ -1828,12 +1937,11 @@ end
 
 ---
 
-### `LMapScript:type`
+#### `LMapScript:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapScript:type()
 ```
 
@@ -1841,16 +1949,15 @@ LMapScript:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapScript"`. |
+| string | Always `"[LMapScript](#lmapscript-handle)"`. |
 
 ---
 
-### `LMapScript:typeOf`
+#### `LMapScript:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapScript:typeOf(name)
 ```
 
@@ -1858,24 +1965,29 @@ LMapScript:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapScript"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapScript](#lmapscript-handle)"` or `"Object"`. |
 
 ---
 
-## LNeighborRules
+## LNeighborRules Handle
 
-### `LNeighborRules:addCompatible`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNeighborRules:addCompatible`
 
 Add bidirectional compatibility between two edge types.
 
 ```lua
--- signature
 LNeighborRules:addCompatible(type_a, type_b)
 ```
 
@@ -1883,8 +1995,8 @@ LNeighborRules:addCompatible(type_a, type_b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `type_a` | `number` | First edge type. |
-| `type_b` | `number` | Second edge type. |
+| `type_a` | number | First edge type. |
+| `type_b` | number | Second edge type. |
 
 **Example**
 
@@ -1899,12 +2011,11 @@ end
 
 ---
 
-### `LNeighborRules:addCompatibleOneWay`
+#### `LNeighborRules:addCompatibleOneWay`
 
 Add one-way compatibility for this object.
 
 ```lua
--- signature
 LNeighborRules:addCompatibleOneWay(type_a, type_b)
 ```
 
@@ -1912,8 +2023,8 @@ LNeighborRules:addCompatibleOneWay(type_a, type_b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `type_a` | `number` | Source edge type. |
-| `type_b` | `number` | Target edge type. |
+| `type_a` | number | Source edge type. |
+| `type_b` | number | Target edge type. |
 
 **Example**
 
@@ -1928,12 +2039,11 @@ end
 
 ---
 
-### `LNeighborRules:clear`
+#### `LNeighborRules:clear`
 
 Clear all neighbor placement rules from this rule set.
 
 ```lua
--- signature
 LNeighborRules:clear()
 ```
 
@@ -1950,12 +2060,11 @@ end
 
 ---
 
-### `LNeighborRules:isCompatible`
+#### `LNeighborRules:isCompatible`
 
 Check if two edge types are compatible.
 
 ```lua
--- signature
 LNeighborRules:isCompatible(type_a, type_b)
 ```
 
@@ -1963,14 +2072,14 @@ LNeighborRules:isCompatible(type_a, type_b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `type_a` | `number` | First edge type. |
-| `type_b` | `number` | Second edge type. |
+| `type_a` | number | First edge type. |
+| `type_b` | number | Second edge type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if compatible. |
+| boolean | True if compatible. |
 
 **Example**
 
@@ -1984,14 +2093,19 @@ end
 
 ---
 
-## LPlacementGrid
+## LPlacementGrid Handle
 
-### `LPlacementGrid:addPosition`
+### Fields
 
-Add a position to the grid — Lua userdata object exposed by the engine.
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPlacementGrid:addPosition`
+
+Add a position to the grid â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LPlacementGrid:addPosition(x, y)
 ```
 
@@ -1999,8 +2113,8 @@ LPlacementGrid:addPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
 
 **Example**
 
@@ -2014,12 +2128,11 @@ end
 
 ---
 
-### `LPlacementGrid:clear`
+#### `LPlacementGrid:clear`
 
 Clear all positions and placed blocks.
 
 ```lua
--- signature
 LPlacementGrid:clear()
 ```
 
@@ -2036,12 +2149,11 @@ end
 
 ---
 
-### `LPlacementGrid:getAvailableCount`
+#### `LPlacementGrid:getAvailableCount`
 
 Get available position count for this object.
 
 ```lua
--- signature
 LPlacementGrid:getAvailableCount()
 ```
 
@@ -2049,7 +2161,7 @@ LPlacementGrid:getAvailableCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of available positions. |
+| number | Number of available positions. |
 
 **Example**
 
@@ -2065,12 +2177,11 @@ end
 
 ---
 
-### `LPlacementGrid:isAvailable`
+#### `LPlacementGrid:isAvailable`
 
 Check whether a placement grid position is currently available.
 
 ```lua
--- signature
 LPlacementGrid:isAvailable(x, y)
 ```
 
@@ -2078,14 +2189,14 @@ LPlacementGrid:isAvailable(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if available. |
+| boolean | True if available. |
 
 **Example**
 
@@ -2099,14 +2210,19 @@ end
 
 ---
 
-## LTilesetRef
+## LTilesetRef Handle
 
-### `LTilesetRef:getId`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTilesetRef:getId`
 
 Get the numeric tileset ID for this tileset reference.
 
 ```lua
--- signature
 LTilesetRef:getId()
 ```
 
@@ -2114,7 +2230,7 @@ LTilesetRef:getId()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tileset ID. |
+| number | Tileset ID. |
 
 **Example**
 
@@ -2127,12 +2243,11 @@ end
 
 ---
 
-### `LTilesetRef:getName`
+#### `LTilesetRef:getName`
 
-Get tileset name — Lua userdata object exposed by the engine.
+Get tileset name â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LTilesetRef:getName()
 ```
 
@@ -2140,7 +2255,7 @@ LTilesetRef:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Tileset name. |
+| string | Tileset name. |
 
 **Example**
 
@@ -2153,12 +2268,11 @@ end
 
 ---
 
-### `LTilesetRef:setImagePath`
+#### `LTilesetRef:setImagePath`
 
 Set the image file path for this tileset reference.
 
 ```lua
--- signature
 LTilesetRef:setImagePath(path)
 ```
 
@@ -2166,7 +2280,7 @@ LTilesetRef:setImagePath(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Image file path. |
+| `path` | string | Image file path. |
 
 **Example**
 

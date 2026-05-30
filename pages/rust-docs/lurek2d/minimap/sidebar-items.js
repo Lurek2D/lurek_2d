@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["minimap","province_adapter","raycaster_overlay","render","types"]};

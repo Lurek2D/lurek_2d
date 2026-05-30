@@ -1,12 +1,44 @@
 # Event
 
-- The `event` module resides in the Core Runtime tier and provides the centralized event queue and signal dispatch backbone necessary for decoupled inter-system communication.
+## Summary
 
-At the engine level, it acts as the primary data exchange conduit, ensuring thread-safe synchronization and orderly event processing. The foundational structure is `EventQueue`, a dual-lane FIFO buffer implemented with a `VecDeque` that separates events into high and normal priority lanes. During polling (`poll()`), the queue prioritizes the high-priority lane while strictly maintaining insertion order within each priority level. It also supports condvar-based blocking (`wait(timeout_ms)`) to prevent CPU spin-looping when threads need to synchronize on event arrival.
+The `event` module provides priority-aware runtime event queuing and signal subscription primitives. Its core role is decoupled communication: producers push typed payloads, consumers poll or subscribe by name/wildcard, and delivery semantics preserve ordering guarantees within priority lanes.
 
-Event payloads are encapsulated within an `Event` struct containing a `Vec<EventArg>`, which safely handles scalar types (strings, numbers, booleans, nil) and dynamically clones shallow Lua table payloads. This allows rich event data to securely cross the Rust-Lua boundary without creating tight coupling. Additionally, to resolve issues with event mutation during loop iteration, the module features a deferred event buffer. Deferred events (`pushDeferred`) queue safely in the background and are delivered on the next frame (`flushDeferred`), enabling safe emission during active table iteration.
+`event_queue` owns queue storage, event structures, priority behavior, and Lua payload conversion helpers. `signal` owns subscriber registration and matching semantics. The module then re-exports these types so runtime and scripting layers can integrate without binding to submodule internals.
 
-Beyond the global queue, the module implements a robust publish-subscribe pattern via the `Signal` type. `Signal` serves as a typed pub-sub dispatcher where subscribers register Lua closures that execute synchronously upon emission (`emit()`). It uniquely supports glob-style wildcard subscriptions (`*`, `?`), allowing flexible pattern matching alongside exact-name callbacks. To support tooling and debug replay, global event history can be optionally enabled (`enableHistory`) with a bounded retention capacity. The entire suite of functionality, including engine lifecycle commands like `quit` and `restart`, is exposed natively to scripts via the `lurek.event.*` API.
+Design emphasis is predictable dispatch behavior and safe payload bridging to Lua. Conversion helpers ensure event arguments can cross the Rust-Lua boundary without ad-hoc per-system glue.
+
+As a core runtime messaging surface, this module should remain deterministic, minimal, and explicit about queue/priority semantics. Domain-specific event meanings belong to caller modules, not to the queue itself.
+
+Implementation detail and boundary guarantees for event: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: event_queue.rs: Dual-priority FIFO event queue (high and normal) with priority-based polling.; mod.rs: Priority queue with ordered dispatch and Lua payload conversion for runtime events.; signal.rs: Named signal subscription registry with exact-name and wildcard pattern matching.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### event_queue.rs
+
+- Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic.
+- Defines portable event payload shapes that carry scalar and shallow table data across boundaries.
+- Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns.
+- Converts queued payloads between Rust and Lua value domains using predictable marshalling rules.
+- Preserves insertion order inside each priority lane to keep event flow behavior deterministic.
+- Encapsulates push, poll, peek, and wait operations in one reusable runtime messaging primitive.
+- Delivers the queue core used by event-driven systems that need ordered asynchronous signaling.
+
+### mod.rs
+
+- Provides the high-level event module boundary for queued dispatch and signal-based subscription routing.
+- Connects payload conversion, priority handling, and listener registration into one communication layer.
+- Delivers a stable event-facing surface for systems that need decoupled runtime messaging.
+
+### signal.rs
+
+- Provides named signal subscription storage with support for exact and wildcard pattern matching.
+- Allocates stable handle ids so listeners can be removed or inspected through explicit lifecycle control.
+- Resolves matching subscribers with deterministic behavior for both direct names and glob-style patterns.
+- Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection.
+- Delivers the subscription registry used by event publishers to find active listeners efficiently.
 
 ## Functions
 
@@ -15,7 +47,6 @@ Beyond the global queue, the module implements a robust publish-subscribe patter
 Clears all pending events from the shared event queue.
 
 ```lua
--- signature
 lurek.event.clear()
 ```
 
@@ -36,7 +67,6 @@ end
 Clears retained pushed event history.
 
 ```lua
--- signature
 lurek.event.clearHistory()
 ```
 
@@ -56,7 +86,6 @@ end
 Enables event push history with a maximum retained capacity.
 
 ```lua
--- signature
 lurek.event.enableHistory(capacity)
 ```
 
@@ -64,7 +93,7 @@ lurek.event.enableHistory(capacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `capacity` | `number` | Maximum number of pushed events to keep; zero disables retention. |
+| `capacity` | number | Maximum number of pushed events to keep; zero disables retention. |
 
 **Example**
 
@@ -82,7 +111,6 @@ end
 Requests engine shutdown with an optional process exit code.
 
 ```lua
--- signature
 lurek.event.exit(code)
 ```
 
@@ -90,7 +118,7 @@ lurek.event.exit(code)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `code?` | `number` | Optional exit code, defaulting to 0. |
+| `code?` | number | Optional exit code, defaulting to 0. |
 
 **Example**
 
@@ -108,7 +136,6 @@ end
 Moves all deferred events into the shared event queue and clears the deferred buffer.
 
 ```lua
--- signature
 lurek.event.flushDeferred()
 ```
 
@@ -116,7 +143,7 @@ lurek.event.flushDeferred()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of events flushed. |
+| number | Number of events flushed. |
 
 **Example**
 
@@ -136,7 +163,6 @@ end
 Returns retained pushed event history entries.
 
 ```lua
--- signature
 lurek.event.getHistory()
 ```
 
@@ -144,7 +170,7 @@ lurek.event.getHistory()
 
 | Type | Description |
 |------|-------------|
-| `EventGetHistoryResult` | Array of entries with `name` and `args` fields. |
+| LEventGetHistoryResult | Array of entries with `name` and `args` fields. |
 
 **Example**
 
@@ -167,7 +193,6 @@ end
 Creates an isolated signal dispatcher for Lua callbacks.
 
 ```lua
--- signature
 lurek.event.newSignal()
 ```
 
@@ -175,7 +200,7 @@ lurek.event.newSignal()
 
 | Type | Description |
 |------|-------------|
-| `LSignal` | New signal handle. |
+| [LSignal](#lsignal-handle) | New signal handle. |
 
 **Example**
 
@@ -193,7 +218,6 @@ end
 Creates a polling function that returns the next queued event each time it is called.
 
 ```lua
--- signature
 lurek.event.poll()
 ```
 
@@ -201,7 +225,7 @@ lurek.event.poll()
 
 | Type | Description |
 |------|-------------|
-| `function` | Poll function returning event values, or no values when the queue is empty. |
+| function | Poll function returning event values, or no values when the queue is empty. |
 
 **Example**
 
@@ -222,7 +246,6 @@ end
 Pumps the shared event queue without removing events for Lua.
 
 ```lua
--- signature
 lurek.event.pump()
 ```
 
@@ -242,7 +265,6 @@ end
 Pushes a normal-priority event into the shared event queue and optional history.
 
 ```lua
--- signature
 lurek.event.push(name, ...)
 ```
 
@@ -250,7 +272,7 @@ lurek.event.push(name, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Event name. |
+| `name` | string | Event name. |
 | — | — | @param ... any Additional event arguments. |
 
 **Example**
@@ -270,7 +292,6 @@ end
 Adds a normal-priority event to the deferred buffer instead of the live queue.
 
 ```lua
--- signature
 lurek.event.pushDeferred(name, ...)
 ```
 
@@ -278,7 +299,7 @@ lurek.event.pushDeferred(name, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Event name to enqueue later. |
+| `name` | string | Event name to enqueue later. |
 | — | — | @param ... any Additional event arguments stored with the event. |
 
 **Example**
@@ -298,7 +319,6 @@ end
 Adds an event with explicit priority to the deferred buffer.
 
 ```lua
--- signature
 lurek.event.pushDeferredPriority(name, priority, ...)
 ```
 
@@ -306,8 +326,8 @@ lurek.event.pushDeferredPriority(name, priority, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Event name to enqueue later. |
-| `priority` | `string` | Priority string `high` or `normal`. |
+| `name` | string | Event name to enqueue later. |
+| `priority` | string | Priority string `high` or `normal`. |
 | — | — | @param ... any Additional event arguments stored with the event. |
 
 **Example**
@@ -327,7 +347,6 @@ end
 Pushes an event with explicit priority into the shared event queue and optional history.
 
 ```lua
--- signature
 lurek.event.pushPriority(name, priority, ...)
 ```
 
@@ -335,8 +354,8 @@ lurek.event.pushPriority(name, priority, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Event name. |
-| `priority` | `string` | Priority string `high` or `normal`. |
+| `name` | string | Event name. |
+| `priority` | string | Priority string `high` or `normal`. |
 | — | — | @param ... any Additional event arguments. |
 
 **Example**
@@ -356,7 +375,6 @@ end
 Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 
 ```lua
--- signature
 lurek.event.quit()
 ```
 
@@ -376,7 +394,6 @@ end
 Requests a full engine restart cycle from the runtime.
 
 ```lua
--- signature
 lurek.event.restart()
 ```
 
@@ -396,7 +413,6 @@ end
 Waits for the next queued event and returns success, name, and argument table.
 
 ```lua
--- signature
 lurek.event.wait(timeout)
 ```
 
@@ -404,15 +420,15 @@ lurek.event.wait(timeout)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `timeout?` | `number` | Optional timeout in seconds. |
+| `timeout?` | number | Optional timeout in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True when an event was received before timeout. |
-| `string` | b Event name, or an empty string on timeout. |
-| `table` | c Array of event arguments; element types depend on the emitted event. |
+| boolean | True when an event was received before timeout. |
+| string | Event name; or an empty string on timeout. |
+| table | Array of event arguments; element types depend on the emitted event. |
 
 **Example**
 
@@ -430,14 +446,35 @@ end
 
 ---
 
-## LSignal
+## Module Fields
 
-### `LSignal:clear`
+*No module-level fields documented.*
+
+## Types
+
+- [LSignal Handle](#lsignal-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LSignal Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSignal:clear`
 
 Removes all callbacks registered for one exact signal event name.
 
 ```lua
--- signature
 LSignal:clear(name)
 ```
 
@@ -445,13 +482,13 @@ LSignal:clear(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Signal event name to clear. |
+| `name` | string | Signal event name to clear. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of callbacks removed. |
+| number | Number of callbacks removed. |
 
 **Example**
 
@@ -467,12 +504,11 @@ end
 
 ---
 
-### `LSignal:clearAll`
+#### `LSignal:clearAll`
 
 Removes every callback from this signal object.
 
 ```lua
--- signature
 LSignal:clearAll()
 ```
 
@@ -480,7 +516,7 @@ LSignal:clearAll()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of callbacks removed. |
+| number | Number of callbacks removed. |
 
 **Example**
 
@@ -496,12 +532,11 @@ end
 
 ---
 
-### `LSignal:connect`
+#### `LSignal:connect`
 
 Registers a callback for an exact name or wildcard signal pattern.
 
 ```lua
--- signature
 LSignal:connect(name, func)
 ```
 
@@ -509,14 +544,14 @@ LSignal:connect(name, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Exact signal event name or wildcard pattern. |
-| `func` | `function` | Lua function invoked with emitted signal arguments. |
+| `name` | string | Exact signal event name or wildcard pattern. |
+| `func` | function | Lua function invoked with emitted signal arguments. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Subscription handle used for removal. |
+| number | Subscription handle used for removal. |
 
 **Example**
 
@@ -532,12 +567,11 @@ end
 
 ---
 
-### `LSignal:emit`
+#### `LSignal:emit`
 
 Emits a signal event and invokes matching callbacks with the remaining arguments.
 
 ```lua
--- signature
 LSignal:emit(name, ...)
 ```
 
@@ -545,14 +579,14 @@ LSignal:emit(name, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Signal event name to emit. |
+| `name` | string | Signal event name to emit. |
 | — | — | @param ... any Additional arguments passed to matching callbacks. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | Fires callbacks synchronously; no value is returned. |
+| nil | Fires callbacks synchronously; no value is returned. |
 
 **Example**
 
@@ -568,12 +602,11 @@ end
 
 ---
 
-### `LSignal:getCount`
+#### `LSignal:getCount`
 
 Returns the callback count for one exact signal event name.
 
 ```lua
--- signature
 LSignal:getCount(name)
 ```
 
@@ -581,13 +614,13 @@ LSignal:getCount(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Signal event name. |
+| `name` | string | Signal event name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of callbacks registered for the event. |
+| number | Number of callbacks registered for the event. |
 
 **Example**
 
@@ -602,12 +635,11 @@ end
 
 ---
 
-### `LSignal:getTotalCount`
+#### `LSignal:getTotalCount`
 
 Returns the total callback count across all signal event names.
 
 ```lua
--- signature
 LSignal:getTotalCount()
 ```
 
@@ -615,7 +647,7 @@ LSignal:getTotalCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total callback count. |
+| number | Total callback count. |
 
 **Example**
 
@@ -631,12 +663,11 @@ end
 
 ---
 
-### `LSignal:once`
+#### `LSignal:once`
 
 Registers a callback that is removed after its next matching emission.
 
 ```lua
--- signature
 LSignal:once(name, callback)
 ```
 
@@ -644,14 +675,14 @@ LSignal:once(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Signal event name. |
-| `callback` | `function` | Lua function invoked once with emitted signal arguments. |
+| `name` | string | Signal event name. |
+| `callback` | function | Lua function invoked once with emitted signal arguments. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Subscription handle used for removal before it fires. |
+| number | Subscription handle used for removal before it fires. |
 
 **Example**
 
@@ -667,12 +698,11 @@ end
 
 ---
 
-### `LSignal:register`
+#### `LSignal:register`
 
 Registers a callback for an exact signal event name.
 
 ```lua
--- signature
 LSignal:register(name, callback)
 ```
 
@@ -680,14 +710,14 @@ LSignal:register(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Signal event name. |
-| `callback` | `function` | Lua function invoked with emitted signal arguments. |
+| `name` | string | Signal event name. |
+| `callback` | function | Lua function invoked with emitted signal arguments. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Subscription handle used for removal. |
+| number | Subscription handle used for removal. |
 
 **Example**
 
@@ -703,12 +733,11 @@ end
 
 ---
 
-### `LSignal:registerWithFilter`
+#### `LSignal:registerWithFilter`
 
 Registers a callback that runs only when a filter callback returns true.
 
 ```lua
--- signature
 LSignal:registerWithFilter(name, callback, filter)
 ```
 
@@ -716,15 +745,15 @@ LSignal:registerWithFilter(name, callback, filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Signal event name. |
-| `callback` | `function` | Lua function invoked after the filter accepts the signal. |
-| `filter` | `function` | Lua predicate called with emitted arguments. |
+| `name` | string | Signal event name. |
+| `callback` | function | Lua function invoked after the filter accepts the signal. |
+| `filter` | function | Lua predicate called with emitted arguments. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Subscription handle used for removal. |
+| number | Subscription handle used for removal. |
 
 **Example**
 
@@ -742,12 +771,11 @@ end
 
 ---
 
-### `LSignal:remove`
+#### `LSignal:remove`
 
 Removes a signal callback by subscription handle.
 
 ```lua
--- signature
 LSignal:remove(handle)
 ```
 
@@ -755,13 +783,13 @@ LSignal:remove(handle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle` | `number` | Subscription handle returned by registration. |
+| `handle` | number | Subscription handle returned by registration. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a callback was removed. |
+| boolean | True when a callback was removed. |
 
 **Example**
 
@@ -776,12 +804,11 @@ end
 
 ---
 
-### `LSignal:type`
+#### `LSignal:type`
 
 Returns the Lua-visible type name for this signal handle.
 
 ```lua
--- signature
 LSignal:type()
 ```
 
@@ -789,7 +816,7 @@ LSignal:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LSignal`. |
+| string | The string `[LSignal](#lsignal-handle)`. |
 
 **Example**
 
@@ -802,12 +829,11 @@ end
 
 ---
 
-### `LSignal:typeOf`
+#### `LSignal:typeOf`
 
 Returns whether this signal handle matches a supported type name.
 
 ```lua
--- signature
 LSignal:typeOf(name)
 ```
 
@@ -815,13 +841,13 @@ LSignal:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LSignal`, `Signal`, and `Object`. |
+| `name` | string | Type name to compare against `[LSignal](#lsignal-handle)`, `Signal`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

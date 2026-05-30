@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["virtual_dpad"],"struct":["GamepadMappings","GamepadState","GamepadVibrationRequest"]};

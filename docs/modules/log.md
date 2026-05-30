@@ -1,12 +1,41 @@
 # Log
 
-- The `log` module is a vital Foundations tier component that implements a highly efficient, structured logging facade for Lurek2D.
+## Summary
 
 It provides a unified system for capturing, filtering, and dispatching diagnostic messages across the entire engine and Lua scripting environment. At its core, the module utilizes a level-gated emission system. The global log level acts as an initial filter, ensuring that messages below the active threshold incur near-zero performance cost—they are suppressed before any formatting or string allocation occurs. This allows developers to instrument code heavily with debug and trace messages without impacting production performance.
 
 When a message passes the global filter, it is dispatched via the `SinkRegistry` to one or more registered `Sink` destinations. The module supports several powerful sink types. The `MemoryEntry` sink utilizes a bounded, in-memory ring buffer, perfectly suited for powering in-game developer consoles or debug overlays where recent logs must be rapidly accessible. The `RotatingFileSink` writes output to disk, automatically managing file sizes and backups to prevent unbounded storage consumption, while buffering writes to minimize OS syscall overhead. Furthermore, a callback sink allows log messages to be routed back into the Lua runtime for custom handling.
 
 Logging is highly structured, allowing messages to carry not only severity levels and optional tags, but also complex key-value `LogFields`. This structured approach enables sophisticated log analysis and filtering downstream. Each individual sink maintains its own `SinkLevel` threshold and tag-based allow-list, meaning a single game instance can simultaneously write all `Trace` messages to a rotating file while only displaying `Warning` and `Error` messages in the on-screen console. The entire logging pipeline is fully configurable dynamically at runtime and exposed to scripts via the `lurek.log.*` namespace.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### facade.rs
+
+- Provides the structured logging facade used to emit level-tagged messages with fields.
+- Handles runtime level queries and updates while enforcing fast level gating before dispatch.
+- Exposes compact log-entry helpers consumed by Lua and Rust call sites.
+
+### mod.rs
+
+- High-level logging module that combines facade APIs with sink implementations.
+- Re-exports level control and sink types for centralized runtime log configuration.
+- Defines the boundary for structured log routing to memory and file backends.
+
+### sinks.rs
+
+- Implements logging sink backends, severity filters, and output formatting infrastructure.
+- Defines sink-level enums and parsing rules used to gate message delivery.
+- Provides in-memory capture sinks for runtime inspection and diagnostic tooling.
+- Supports plain, JSON, and NDJSON output styles for machine and human consumers.
+- Manages timestamp and optional color formatting for readable terminal and file logs.
+- Implements rotating file sinks with size limits and backup retention control.
+- Uses buffered writes and filtering hooks to keep output efficient and configurable.
+- Offers callback-style sink integration for forwarding logs to external handlers.
+- Unifies sink behavior under shared abstractions for consistent dispatch semantics.
+- Exposes registry orchestration for broadcasting structured and plain messages to many sinks.
 
 ## Functions
 
@@ -15,7 +44,6 @@ Logging is highly structured, allowing messages to carry not only severity level
 Adds a memory, file, rotating, or callback sink from a config table.
 
 ```lua
--- signature
 lurek.log.addSink(config)
 ```
 
@@ -23,13 +51,13 @@ lurek.log.addSink(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | `table` | Sink config with `type`, `level`, format, tag, path, capacity, or callback fields. |
+| `config` | table | Sink config with `type`, `level`, format, tag, path, capacity, or callback fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sink id. |
+| number | Sink id. |
 
 **Example**
 
@@ -48,7 +76,6 @@ end
 Removes all sinks and releases callback registry keys.
 
 ```lua
--- signature
 lurek.log.clearSinks()
 ```
 
@@ -71,7 +98,6 @@ end
 Logs a debug message with an optional tag.
 
 ```lua
--- signature
 lurek.log.debug(message, tag)
 ```
 
@@ -79,8 +105,8 @@ lurek.log.debug(message, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `tag?` | `string` | Log tag shown in the sink output (default `"Lua"`). |
+| `message` | string | Message text. |
+| `tag?` | string | Log tag shown in the sink output (default `"Lua"`). |
 
 **Example**
 
@@ -98,7 +124,6 @@ end
 Logs a debug message with structured fields.
 
 ```lua
--- signature
 lurek.log.debug_fields(message, fields_tbl)
 ```
 
@@ -106,8 +131,8 @@ lurek.log.debug_fields(message, fields_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `fields_tbl` | `table` | Scalar field table converted to strings. |
+| `message` | string | Message text. |
+| `fields_tbl` | table | Scalar field table converted to strings. |
 
 **Example**
 
@@ -125,7 +150,6 @@ end
 Logs an error message with an optional tag.
 
 ```lua
--- signature
 lurek.log.error(message, tag)
 ```
 
@@ -133,8 +157,8 @@ lurek.log.error(message, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `tag?` | `string` | Log tag shown in the sink output (default `"Lua"`). |
+| `message` | string | Message text. |
+| `tag?` | string | Log tag shown in the sink output (default `"Lua"`). |
 
 **Example**
 
@@ -153,7 +177,6 @@ end
 Logs an error message with structured fields.
 
 ```lua
--- signature
 lurek.log.error_fields(message, fields_tbl)
 ```
 
@@ -161,8 +184,8 @@ lurek.log.error_fields(message, fields_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `fields_tbl` | `table` | Scalar field table converted to strings. |
+| `message` | string | Message text. |
+| `fields_tbl` | table | Scalar field table converted to strings. |
 
 **Example**
 
@@ -180,7 +203,6 @@ end
 Flushes a file-backed sink by id when it exists.
 
 ```lua
--- signature
 lurek.log.flushFile(id)
 ```
 
@@ -188,7 +210,7 @@ lurek.log.flushFile(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Sink id. |
+| `id` | number | Sink id. |
 
 **Example**
 
@@ -209,7 +231,6 @@ end
 Returns the global log level string.
 
 ```lua
--- signature
 lurek.log.getLevel()
 ```
 
@@ -217,7 +238,7 @@ lurek.log.getLevel()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current global log level. |
+| string | Current global log level. |
 
 **Example**
 
@@ -237,7 +258,6 @@ end
 Logs an info message with an optional tag.
 
 ```lua
--- signature
 lurek.log.info(message, tag)
 ```
 
@@ -245,8 +265,8 @@ lurek.log.info(message, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `tag?` | `string` | Log tag shown in the sink output (default `"Lua"`). |
+| `message` | string | Message text. |
+| `tag?` | string | Log tag shown in the sink output (default `"Lua"`). |
 
 **Example**
 
@@ -265,7 +285,6 @@ end
 Logs an info message with structured fields.
 
 ```lua
--- signature
 lurek.log.info_fields(message, fields_tbl)
 ```
 
@@ -273,8 +292,8 @@ lurek.log.info_fields(message, fields_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `fields_tbl` | `table` | Scalar field table converted to strings. |
+| `message` | string | Message text. |
+| `fields_tbl` | table | Scalar field table converted to strings. |
 
 **Example**
 
@@ -292,7 +311,6 @@ end
 Returns metadata for all registered sinks.
 
 ```lua
--- signature
 lurek.log.listSinks()
 ```
 
@@ -300,7 +318,7 @@ lurek.log.listSinks()
 
 | Type | Description |
 |------|-------------|
-| `LogListSinksResult` | Array of sink records with id, type, level, and optional path. |
+| LLogListSinksResult | Array of sink records with id, type, level, and optional path. |
 
 **Example**
 
@@ -322,7 +340,6 @@ end
 Logs a message at a runtime-selected level with an optional tag.
 
 ```lua
--- signature
 lurek.log.print(level, message, tag)
 ```
 
@@ -330,9 +347,9 @@ lurek.log.print(level, message, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level` | `string` | Log level string. |
-| `message` | `string` | Message text. |
-| `tag?` | `string` | Optional tag, defaulting to `Lua`. |
+| `level` | string | Log level string. |
+| `message` | string | Message text. |
+| `tag?` | string | Optional tag, defaulting to `Lua`. |
 
 **Example**
 
@@ -351,7 +368,6 @@ end
 Reads entries from a memory sink and optionally drains them.
 
 ```lua
--- signature
 lurek.log.readMemory(id, drain)
 ```
 
@@ -359,14 +375,14 @@ lurek.log.readMemory(id, drain)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Memory sink id. |
-| `drain?` | `boolean` | Optional drain flag, defaulting to false. |
+| `id` | number | Memory sink id. |
+| `drain?` | boolean | Optional drain flag, defaulting to false. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LogReadMemoryResult` | Array table of memory log entries. |
+| LLogReadMemoryResult | Array table of memory log entries. |
 
 **Example**
 
@@ -387,7 +403,6 @@ end
 Removes a sink by id and releases any callback registry key.
 
 ```lua
--- signature
 lurek.log.removeSink(id)
 ```
 
@@ -395,13 +410,13 @@ lurek.log.removeSink(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Sink id. |
+| `id` | number | Sink id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a sink was removed. |
+| boolean | True when a sink was removed. |
 
 **Example**
 
@@ -421,7 +436,6 @@ end
 Sets the global log level. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.log.setLevel(level)
 ```
 
@@ -429,7 +443,7 @@ lurek.log.setLevel(level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level` | `string` | Level `error`, `warn`, `info`, `debug`, `trace`, `off`, or `none`. |
+| `level` | string | Level `error`, `warn`, `info`, `debug`, `trace`, `off`, or `none`. |
 
 **Example**
 
@@ -449,7 +463,6 @@ end
 Logs a structured message at a runtime-selected level.
 
 ```lua
--- signature
 lurek.log.struct(level_str, message, fields_tbl)
 ```
 
@@ -457,9 +470,9 @@ lurek.log.struct(level_str, message, fields_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level_str` | `string` | Log level string. |
-| `message` | `string` | Message text. |
-| `fields_tbl` | `table` | Scalar field table converted to strings. |
+| `level_str` | string | Log level string. |
+| `message` | string | Message text. |
+| `fields_tbl` | table | Scalar field table converted to strings. |
 
 **Example**
 
@@ -477,7 +490,6 @@ end
 Logs a warning message with an optional tag.
 
 ```lua
--- signature
 lurek.log.warn(message, tag)
 ```
 
@@ -485,8 +497,8 @@ lurek.log.warn(message, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `tag?` | `string` | Log tag shown in the sink output (default `"Lua"`). |
+| `message` | string | Message text. |
+| `tag?` | string | Log tag shown in the sink output (default `"Lua"`). |
 
 **Example**
 
@@ -505,7 +517,6 @@ end
 Logs a warning message with structured fields.
 
 ```lua
--- signature
 lurek.log.warn_fields(message, fields_tbl)
 ```
 
@@ -513,8 +524,8 @@ lurek.log.warn_fields(message, fields_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text. |
-| `fields_tbl` | `table` | Scalar field table converted to strings. |
+| `message` | string | Message text. |
+| `fields_tbl` | table | Scalar field table converted to strings. |
 
 **Example**
 
@@ -526,3 +537,19 @@ end
 ```
 
 ---
+
+## Module Fields
+
+*No module-level fields documented.*
+
+## Types
+
+*No Lua userdata types detected for this module.*
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*

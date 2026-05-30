@@ -1,6 +1,6 @@
 # Overlay
 
-- The `overlay` module manages all screen-space visual effects drawn between the game world and the player: weather particles, atmospheric effects, screen flashes, camera shake, scene transitions, ambient tinting, and water distortion.
+## Summary
 
 The `overlay` module provides a self-contained screen-space effects layer that sits above world rendering and below the HUD. The central `Overlay` struct owns every subsystem and drives their per-frame update via a single `update(dt)` call. It handles five distinct effect categories.
 
@@ -16,6 +16,73 @@ The `overlay` module provides a self-contained screen-space effects layer that s
 
 All active layers emit `RenderCommand` entries built by `build_render_commands` for compositor integration. Debug visualization helpers render state panels and trigger previews into `ImageData` buffers. The full suite is accessible via `lurek.overlay.*`.
 
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### ambient.rs
+
+- Global ambient tint state driven by a time-of-day curve.
+- Maps day phases into scene-wide color changes for lighting control.
+- Supplies the ambient baseline consumed by the overlay renderer.
+
+### atmosphere.rs
+
+- State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning.
+- Carries per-effect enable flags plus density, intensity, color, and speed parameters.
+- Keeps overlay features opt-in so scenes can select only the layers they need.
+- Provides the data model for long-lived atmospheric presentation effects.
+- Separates configuration from rendering so effect logic stays lightweight.
+
+### controller.rs
+
+- Central overlay controller owning every screen-space effect state block.
+- Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame.
+- Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen.
+- Triggers flash, shake, fade, and lightning events through a simple runtime API.
+- Reports shake offset, flash alpha, lightning alpha, and active state to callers.
+- Builds render commands for flash, fade, lightning, and vignette overlays.
+- Resets every subsystem back to a clean inactive state when needed.
+- Supports debug visualisation of internal timing and offset trails.
+- Keeps presentation effects together so higher-level scene code stays thin.
+- Acts as the single screen-space effect scheduler for the renderer.
+
+### mod.rs
+
+- Screen-space overlay subsystem for ambient lighting, atmosphere, and scene transitions.
+- Groups the state and render paths for weather, water, flash, fog, and fade effects.
+- Keeps screen-space presentation logic under one runtime namespace.
+
+### screen_effects.rs
+
+- Full-screen effect state machines for flash, shake, and fade.
+- Keeps each state focused on timing, activation, and per-frame parameters.
+- Uses a deterministic PRNG for shake offsets without extra RNG plumbing.
+- Provides the short-lived effect core used by the overlay controller.
+
+### transition.rs
+
+- Full-screen transition effects for fade, wipe, iris wipe, and dissolve.
+- Supports string-based kind parsing with canonical name round-tripping.
+- Runs with time-based forward and reverse playback modes.
+- Exposes normalized progress for renderer consumption.
+- Gives scene changes a compact state model with predictable timing.
+
+### water.rs
+
+- Animated water distortion overlay with configurable amplitude, frequency, and speed.
+- Adds shallow-water tint and depth-based color shift with independent blend strengths.
+- Advances the wave pattern through a time-accumulating update loop.
+- Serves as the water-specific screen-space effect for overlays.
+
+### weather.rs
+
+- Weather particle simulation state and management for screen-space overlays.
+- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
+- Tracks particle pools, wind parameters, and an internal PRNG.
+- Keeps weather spawning and motion separated from the main scene model.
+- Provides reusable state for long-lived atmospheric weather effects.
+
 ## Functions
 
 ### `lurek.overlay.new`
@@ -23,7 +90,6 @@ All active layers emit `RenderCommand` entries built by `build_render_commands` 
 Creates an overlay controller for screen effects using optional dimensions.
 
 ```lua
--- signature
 lurek.overlay.new(w, h)
 ```
 
@@ -31,14 +97,14 @@ lurek.overlay.new(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w?` | `number` | Overlay width in pixels, defaulting to 800. |
-| `h?` | `number` | Overlay height in pixels, defaulting to 600. |
+| `w?` | number | Overlay width in pixels, defaulting to 800. |
+| `h?` | number | Overlay height in pixels, defaulting to 600. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LOverlay` | New overlay handle. |
+| [LOverlay](#loverlay-handle) | New overlay handle. |
 
 **Example**
 
@@ -58,7 +124,6 @@ end
 Creates a timed screen transition with optional kind, duration, and color.
 
 ```lua
--- signature
 lurek.overlay.newTransition(kind, duration, color_tbl)
 ```
 
@@ -66,15 +131,15 @@ lurek.overlay.newTransition(kind, duration, color_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kind?` | `string` | Transition kind name, defaulting to `fade`. |
-| `duration?` | `number` | Duration in seconds, defaulting to 1.0. |
-| `color_tbl?` | `table` | Numeric RGBA table using indices 1 through 4. |
+| `kind?` | string | Transition kind name, defaulting to `fade`. |
+| `duration?` | number | Duration in seconds, defaulting to 1.0. |
+| `color_tbl?` | table | Numeric RGBA table using indices 1 through 4. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LScreenTransition` | New screen transition handle. |
+| [LScreenTransition](#lscreentransition-handle) | New screen transition handle. |
 
 **Example**
 
@@ -88,14 +153,36 @@ end
 
 ---
 
-## LOverlay
+## Module Fields
 
-### `LOverlay:clear`
+*No module-level fields documented.*
+
+## Types
+
+- [LOverlay Handle](#loverlay-handle)
+- [LScreenTransition Handle](#lscreentransition-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LOverlay Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LOverlay:clear`
 
 Clears active overlay effects and resets transient state.
 
 ```lua
--- signature
 LOverlay:clear()
 ```
 
@@ -113,12 +200,11 @@ end
 
 ---
 
-### `LOverlay:drawToImage`
+#### `LOverlay:drawToImage`
 
 Renders overlay state into an image object of the requested size.
 
 ```lua
--- signature
 LOverlay:drawToImage(w, h)
 ```
 
@@ -126,14 +212,14 @@ LOverlay:drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Target image width in pixels. |
-| `h` | `number` | Target image height in pixels. |
+| `w` | number | Target image width in pixels. |
+| `h` | number | Target image height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `Image` | Image containing the overlay draw state. |
+| LImage | Image containing the overlay draw state. |
 
 **Example**
 
@@ -149,12 +235,11 @@ end
 
 ---
 
-### `LOverlay:fade`
+#### `LOverlay:fade`
 
 Starts a fade overlay with optional alpha and duration.
 
 ```lua
--- signature
 LOverlay:fade(r, g, b, a, dur)
 ```
 
@@ -162,11 +247,11 @@ LOverlay:fade(r, g, b, a, dur)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Target alpha, defaulting to 1.0. |
-| `dur?` | `number` | Duration in seconds, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Target alpha, defaulting to 1.0. |
+| `dur?` | number | Duration in seconds, defaulting to 1.0. |
 
 **Example**
 
@@ -181,12 +266,11 @@ end
 
 ---
 
-### `LOverlay:flash`
+#### `LOverlay:flash`
 
 Starts a short flash overlay with optional alpha and duration.
 
 ```lua
--- signature
 LOverlay:flash(r, g, b, a, dur)
 ```
 
@@ -194,11 +278,11 @@ LOverlay:flash(r, g, b, a, dur)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
-| `dur?` | `number` | Duration in seconds, defaulting to 0.2. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
+| `dur?` | number | Duration in seconds, defaulting to 0.2. |
 
 **Example**
 
@@ -213,12 +297,11 @@ end
 
 ---
 
-### `LOverlay:getAmbientColor`
+#### `LOverlay:getAmbientColor`
 
 Returns overlay ambient RGBA color.
 
 ```lua
--- signature
 LOverlay:getAmbientColor()
 ```
 
@@ -226,10 +309,10 @@ LOverlay:getAmbientColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -244,12 +327,11 @@ end
 
 ---
 
-### `LOverlay:getCloudCount`
+#### `LOverlay:getCloudCount`
 
 Returns the overlay cloud shadow count.
 
 ```lua
--- signature
 LOverlay:getCloudCount()
 ```
 
@@ -257,7 +339,7 @@ LOverlay:getCloudCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cloud shadow count. |
+| number | Cloud shadow count. |
 
 **Example**
 
@@ -271,12 +353,11 @@ end
 
 ---
 
-### `LOverlay:getCloudOpacity`
+#### `LOverlay:getCloudOpacity`
 
 Returns cloud shadow opacity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getCloudOpacity()
 ```
 
@@ -284,7 +365,7 @@ LOverlay:getCloudOpacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cloud opacity value. |
+| number | Cloud opacity value. |
 
 **Example**
 
@@ -298,12 +379,11 @@ end
 
 ---
 
-### `LOverlay:getCloudScale`
+#### `LOverlay:getCloudScale`
 
 Returns cloud shadow scale. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getCloudScale()
 ```
 
@@ -311,7 +391,7 @@ LOverlay:getCloudScale()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cloud scale value. |
+| number | Cloud scale value. |
 
 **Example**
 
@@ -325,12 +405,11 @@ end
 
 ---
 
-### `LOverlay:getCloudSpeed`
+#### `LOverlay:getCloudSpeed`
 
 Returns cloud shadow movement speed.
 
 ```lua
--- signature
 LOverlay:getCloudSpeed()
 ```
 
@@ -338,7 +417,7 @@ LOverlay:getCloudSpeed()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cloud speed value. |
+| number | Cloud speed value. |
 
 **Example**
 
@@ -352,12 +431,11 @@ end
 
 ---
 
-### `LOverlay:getDimensions`
+#### `LOverlay:getDimensions`
 
 Returns the overlay dimensions. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getDimensions()
 ```
 
@@ -365,8 +443,8 @@ LOverlay:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Overlay width in pixels. |
-| `number` | b Overlay height in pixels. |
+| number | Overlay width in pixels. |
+| number | Overlay height in pixels. |
 
 **Example**
 
@@ -380,12 +458,11 @@ end
 
 ---
 
-### `LOverlay:getFilmGrainIntensity`
+#### `LOverlay:getFilmGrainIntensity`
 
 Returns overlay film grain intensity.
 
 ```lua
--- signature
 LOverlay:getFilmGrainIntensity()
 ```
 
@@ -393,7 +470,7 @@ LOverlay:getFilmGrainIntensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current film grain intensity. |
+| number | Current film grain intensity. |
 
 **Example**
 
@@ -407,12 +484,11 @@ end
 
 ---
 
-### `LOverlay:getFlashAlpha`
+#### `LOverlay:getFlashAlpha`
 
 Returns the current flash alpha. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getFlashAlpha()
 ```
 
@@ -420,7 +496,7 @@ LOverlay:getFlashAlpha()
 
 | Type | Description |
 |------|-------------|
-| `number` | Flash alpha value. |
+| number | Flash alpha value. |
 
 **Example**
 
@@ -434,12 +510,11 @@ end
 
 ---
 
-### `LOverlay:getFogColor`
+#### `LOverlay:getFogColor`
 
 Returns overlay fog RGBA color. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getFogColor()
 ```
 
@@ -447,10 +522,10 @@ LOverlay:getFogColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -465,12 +540,11 @@ end
 
 ---
 
-### `LOverlay:getFogDensity`
+#### `LOverlay:getFogDensity`
 
 Returns overlay fog density. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getFogDensity()
 ```
 
@@ -478,7 +552,7 @@ LOverlay:getFogDensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current fog density. |
+| number | Current fog density. |
 
 **Example**
 
@@ -492,12 +566,11 @@ end
 
 ---
 
-### `LOverlay:getHeatHazeIntensity`
+#### `LOverlay:getHeatHazeIntensity`
 
 Returns overlay heat haze intensity.
 
 ```lua
--- signature
 LOverlay:getHeatHazeIntensity()
 ```
 
@@ -505,7 +578,7 @@ LOverlay:getHeatHazeIntensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current heat haze intensity. |
+| number | Current heat haze intensity. |
 
 **Example**
 
@@ -519,12 +592,11 @@ end
 
 ---
 
-### `LOverlay:getHeight`
+#### `LOverlay:getHeight`
 
 Returns the overlay height. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getHeight()
 ```
 
@@ -532,7 +604,7 @@ LOverlay:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Overlay height in pixels. |
+| number | Overlay height in pixels. |
 
 **Example**
 
@@ -545,12 +617,11 @@ end
 
 ---
 
-### `LOverlay:getLightningAlpha`
+#### `LOverlay:getLightningAlpha`
 
 Returns the current lightning alpha.
 
 ```lua
--- signature
 LOverlay:getLightningAlpha()
 ```
 
@@ -558,7 +629,7 @@ LOverlay:getLightningAlpha()
 
 | Type | Description |
 |------|-------------|
-| `number` | Lightning alpha value. |
+| number | Lightning alpha value. |
 
 **Example**
 
@@ -572,12 +643,11 @@ end
 
 ---
 
-### `LOverlay:getLightningColor`
+#### `LOverlay:getLightningColor`
 
 Returns overlay lightning RGBA color.
 
 ```lua
--- signature
 LOverlay:getLightningColor()
 ```
 
@@ -585,10 +655,10 @@ LOverlay:getLightningColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -603,12 +673,11 @@ end
 
 ---
 
-### `LOverlay:getShakeOffset`
+#### `LOverlay:getShakeOffset`
 
 Returns the current screen shake offset.
 
 ```lua
--- signature
 LOverlay:getShakeOffset()
 ```
 
@@ -616,8 +685,8 @@ LOverlay:getShakeOffset()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Current x offset. |
-| `number` | b Current y offset. |
+| number | Current x offset. |
+| number | Current y offset. |
 
 **Example**
 
@@ -632,12 +701,11 @@ end
 
 ---
 
-### `LOverlay:getTimeOfDay`
+#### `LOverlay:getTimeOfDay`
 
 Returns the overlay time-of-day value.
 
 ```lua
--- signature
 LOverlay:getTimeOfDay()
 ```
 
@@ -645,7 +713,7 @@ LOverlay:getTimeOfDay()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current time-of-day value. |
+| number | Current time-of-day value. |
 
 **Example**
 
@@ -659,12 +727,11 @@ end
 
 ---
 
-### `LOverlay:getVignetteStrength`
+#### `LOverlay:getVignetteStrength`
 
 Returns overlay vignette strength.
 
 ```lua
--- signature
 LOverlay:getVignetteStrength()
 ```
 
@@ -672,7 +739,7 @@ LOverlay:getVignetteStrength()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current vignette strength. |
+| number | Current vignette strength. |
 
 **Example**
 
@@ -686,12 +753,11 @@ end
 
 ---
 
-### `LOverlay:getWater`
+#### `LOverlay:getWater`
 
 Returns a table describing the current water effect settings.
 
 ```lua
--- signature
 LOverlay:getWater()
 ```
 
@@ -699,7 +765,7 @@ LOverlay:getWater()
 
 | Type | Description |
 |------|-------------|
-| `LOverlayGetWaterResult` | Water state table with enabled, wave, tint, depth, and time fields. |
+| LOverlayGetWaterResult | Water state table with enabled, wave, tint, depth, and time fields. |
 
 **Example**
 
@@ -715,12 +781,11 @@ end
 
 ---
 
-### `LOverlay:getWeather`
+#### `LOverlay:getWeather`
 
 Returns the overlay weather type name.
 
 ```lua
--- signature
 LOverlay:getWeather()
 ```
 
@@ -728,7 +793,7 @@ LOverlay:getWeather()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current weather type name. |
+| string | Current weather type name. |
 
 **Example**
 
@@ -742,12 +807,11 @@ end
 
 ---
 
-### `LOverlay:getWeatherIntensity`
+#### `LOverlay:getWeatherIntensity`
 
 Returns weather intensity for the current weather type.
 
 ```lua
--- signature
 LOverlay:getWeatherIntensity()
 ```
 
@@ -755,7 +819,7 @@ LOverlay:getWeatherIntensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Weather intensity value. |
+| number | Weather intensity value. |
 
 **Example**
 
@@ -769,12 +833,11 @@ end
 
 ---
 
-### `LOverlay:getWidth`
+#### `LOverlay:getWidth`
 
 Returns the overlay width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:getWidth()
 ```
 
@@ -782,7 +845,7 @@ LOverlay:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Overlay width in pixels. |
+| number | Overlay width in pixels. |
 
 **Example**
 
@@ -795,12 +858,11 @@ end
 
 ---
 
-### `LOverlay:getWindDirection`
+#### `LOverlay:getWindDirection`
 
 Returns the overlay weather wind direction.
 
 ```lua
--- signature
 LOverlay:getWindDirection()
 ```
 
@@ -808,7 +870,7 @@ LOverlay:getWindDirection()
 
 | Type | Description |
 |------|-------------|
-| `number` | Wind direction value. |
+| number | Wind direction value. |
 
 **Example**
 
@@ -822,12 +884,11 @@ end
 
 ---
 
-### `LOverlay:getWindSpeed`
+#### `LOverlay:getWindSpeed`
 
 Returns the overlay weather wind speed.
 
 ```lua
--- signature
 LOverlay:getWindSpeed()
 ```
 
@@ -835,7 +896,7 @@ LOverlay:getWindSpeed()
 
 | Type | Description |
 |------|-------------|
-| `number` | Wind speed value. |
+| number | Wind speed value. |
 
 **Example**
 
@@ -849,12 +910,11 @@ end
 
 ---
 
-### `LOverlay:isActive`
+#### `LOverlay:isActive`
 
 Returns whether any overlay effect is currently active.
 
 ```lua
--- signature
 LOverlay:isActive()
 ```
 
@@ -862,7 +922,7 @@ LOverlay:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when overlay state should render. |
+| boolean | True when overlay state should render. |
 
 **Example**
 
@@ -876,12 +936,11 @@ end
 
 ---
 
-### `LOverlay:isAmbientEnabled`
+#### `LOverlay:isAmbientEnabled`
 
 Returns whether overlay ambient color rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isAmbientEnabled()
 ```
 
@@ -889,7 +948,7 @@ LOverlay:isAmbientEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when ambient rendering is enabled. |
+| boolean | True when ambient rendering is enabled. |
 
 **Example**
 
@@ -903,12 +962,11 @@ end
 
 ---
 
-### `LOverlay:isCloudShadowsEnabled`
+#### `LOverlay:isCloudShadowsEnabled`
 
 Returns whether overlay cloud shadow rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isCloudShadowsEnabled()
 ```
 
@@ -916,7 +974,7 @@ LOverlay:isCloudShadowsEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when cloud shadow rendering is enabled. |
+| boolean | True when cloud shadow rendering is enabled. |
 
 **Example**
 
@@ -931,12 +989,11 @@ end
 
 ---
 
-### `LOverlay:isFading`
+#### `LOverlay:isFading`
 
 Returns whether the fade overlay is active.
 
 ```lua
--- signature
 LOverlay:isFading()
 ```
 
@@ -944,7 +1001,7 @@ LOverlay:isFading()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True while fade is active. |
+| boolean | True while fade is active. |
 
 **Example**
 
@@ -958,12 +1015,11 @@ end
 
 ---
 
-### `LOverlay:isFilmGrainEnabled`
+#### `LOverlay:isFilmGrainEnabled`
 
 Returns whether overlay film grain rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isFilmGrainEnabled()
 ```
 
@@ -971,7 +1027,7 @@ LOverlay:isFilmGrainEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when film grain rendering is enabled. |
+| boolean | True when film grain rendering is enabled. |
 
 **Example**
 
@@ -985,12 +1041,11 @@ end
 
 ---
 
-### `LOverlay:isFlashing`
+#### `LOverlay:isFlashing`
 
 Returns whether the flash overlay is active.
 
 ```lua
--- signature
 LOverlay:isFlashing()
 ```
 
@@ -998,7 +1053,7 @@ LOverlay:isFlashing()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True while the flash is active. |
+| boolean | True while the flash is active. |
 
 **Example**
 
@@ -1012,12 +1067,11 @@ end
 
 ---
 
-### `LOverlay:isFogEnabled`
+#### `LOverlay:isFogEnabled`
 
 Returns whether overlay fog rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isFogEnabled()
 ```
 
@@ -1025,7 +1079,7 @@ LOverlay:isFogEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when fog rendering is enabled. |
+| boolean | True when fog rendering is enabled. |
 
 **Example**
 
@@ -1039,12 +1093,11 @@ end
 
 ---
 
-### `LOverlay:isHeatHazeEnabled`
+#### `LOverlay:isHeatHazeEnabled`
 
 Returns whether overlay heat haze rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isHeatHazeEnabled()
 ```
 
@@ -1052,7 +1105,7 @@ LOverlay:isHeatHazeEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when heat haze rendering is enabled. |
+| boolean | True when heat haze rendering is enabled. |
 
 **Example**
 
@@ -1066,12 +1119,11 @@ end
 
 ---
 
-### `LOverlay:isShaking`
+#### `LOverlay:isShaking`
 
 Returns whether the screen shake effect is active.
 
 ```lua
--- signature
 LOverlay:isShaking()
 ```
 
@@ -1079,7 +1131,7 @@ LOverlay:isShaking()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True while screen shake is active. |
+| boolean | True while screen shake is active. |
 
 **Example**
 
@@ -1093,12 +1145,11 @@ end
 
 ---
 
-### `LOverlay:isVignetteEnabled`
+#### `LOverlay:isVignetteEnabled`
 
 Returns whether overlay vignette rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isVignetteEnabled()
 ```
 
@@ -1106,7 +1157,7 @@ LOverlay:isVignetteEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when vignette rendering is enabled. |
+| boolean | True when vignette rendering is enabled. |
 
 **Example**
 
@@ -1120,12 +1171,11 @@ end
 
 ---
 
-### `LOverlay:isWeatherEnabled`
+#### `LOverlay:isWeatherEnabled`
 
 Returns whether overlay weather rendering is enabled.
 
 ```lua
--- signature
 LOverlay:isWeatherEnabled()
 ```
 
@@ -1133,7 +1183,7 @@ LOverlay:isWeatherEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when weather rendering is enabled. |
+| boolean | True when weather rendering is enabled. |
 
 **Example**
 
@@ -1147,12 +1197,11 @@ end
 
 ---
 
-### `LOverlay:pullAmbientFromLight`
+#### `LOverlay:pullAmbientFromLight`
 
 Copies ambient color from the shared light world into this overlay.
 
 ```lua
--- signature
 LOverlay:pullAmbientFromLight()
 ```
 
@@ -1173,12 +1222,11 @@ end
 
 ---
 
-### `LOverlay:pushAmbientToLight`
+#### `LOverlay:pushAmbientToLight`
 
 Copies this overlay ambient color into the shared light world.
 
 ```lua
--- signature
 LOverlay:pushAmbientToLight()
 ```
 
@@ -1199,12 +1247,11 @@ end
 
 ---
 
-### `LOverlay:render`
+#### `LOverlay:render`
 
 Queues renderer commands for the overlay's current visual state.
 
 ```lua
--- signature
 LOverlay:render()
 ```
 
@@ -1222,12 +1269,11 @@ end
 
 ---
 
-### `LOverlay:resize`
+#### `LOverlay:resize`
 
 Resizes the overlay target dimensions.
 
 ```lua
--- signature
 LOverlay:resize(w, h)
 ```
 
@@ -1235,8 +1281,8 @@ LOverlay:resize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | New width in pixels. |
-| `h` | `number` | New height in pixels. |
+| `w` | number | New width in pixels. |
+| `h` | number | New height in pixels. |
 
 **Example**
 
@@ -1250,12 +1296,11 @@ end
 
 ---
 
-### `LOverlay:setAmbientColor`
+#### `LOverlay:setAmbientColor`
 
 Sets the overlay ambient color from RGBA channels.
 
 ```lua
--- signature
 LOverlay:setAmbientColor(r, g, b, a)
 ```
 
@@ -1263,10 +1308,10 @@ LOverlay:setAmbientColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -1281,12 +1326,11 @@ end
 
 ---
 
-### `LOverlay:setAmbientEnabled`
+#### `LOverlay:setAmbientEnabled`
 
 Enables or disables overlay ambient color rendering.
 
 ```lua
--- signature
 LOverlay:setAmbientEnabled(v)
 ```
 
@@ -1294,7 +1338,7 @@ LOverlay:setAmbientEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New ambient enabled flag. |
+| `v` | boolean | New ambient enabled flag. |
 
 **Example**
 
@@ -1308,12 +1352,11 @@ end
 
 ---
 
-### `LOverlay:setCloudCount`
+#### `LOverlay:setCloudCount`
 
 Sets the overlay cloud shadow count.
 
 ```lua
--- signature
 LOverlay:setCloudCount(v)
 ```
 
@@ -1321,7 +1364,7 @@ LOverlay:setCloudCount(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Cloud shadow count. |
+| `v` | number | Cloud shadow count. |
 
 **Example**
 
@@ -1335,12 +1378,11 @@ end
 
 ---
 
-### `LOverlay:setCloudOpacity`
+#### `LOverlay:setCloudOpacity`
 
 Sets cloud shadow opacity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:setCloudOpacity(v)
 ```
 
@@ -1348,7 +1390,7 @@ LOverlay:setCloudOpacity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Cloud opacity value. |
+| `v` | number | Cloud opacity value. |
 
 **Example**
 
@@ -1362,12 +1404,11 @@ end
 
 ---
 
-### `LOverlay:setCloudScale`
+#### `LOverlay:setCloudScale`
 
 Sets cloud shadow scale. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:setCloudScale(v)
 ```
 
@@ -1375,7 +1416,7 @@ LOverlay:setCloudScale(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Cloud scale value. |
+| `v` | number | Cloud scale value. |
 
 **Example**
 
@@ -1389,12 +1430,11 @@ end
 
 ---
 
-### `LOverlay:setCloudShadows`
+#### `LOverlay:setCloudShadows`
 
 Enables or disables overlay cloud shadow rendering.
 
 ```lua
--- signature
 LOverlay:setCloudShadows(v)
 ```
 
@@ -1402,7 +1442,7 @@ LOverlay:setCloudShadows(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New cloud shadow enabled flag. |
+| `v` | boolean | New cloud shadow enabled flag. |
 
 **Example**
 
@@ -1416,12 +1456,11 @@ end
 
 ---
 
-### `LOverlay:setCloudSpeed`
+#### `LOverlay:setCloudSpeed`
 
 Sets cloud shadow movement speed. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:setCloudSpeed(v)
 ```
 
@@ -1429,7 +1468,7 @@ LOverlay:setCloudSpeed(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Cloud speed value. |
+| `v` | number | Cloud speed value. |
 
 **Example**
 
@@ -1443,12 +1482,11 @@ end
 
 ---
 
-### `LOverlay:setCustomShader`
+#### `LOverlay:setCustomShader`
 
 Sets or clears the custom overlay shader name.
 
 ```lua
--- signature
 LOverlay:setCustomShader(name)
 ```
 
@@ -1456,7 +1494,7 @@ LOverlay:setCustomShader(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional shader name; nil clears the custom shader. |
+| `name?` | string | Optional shader name; nil clears the custom shader. |
 
 **Example**
 
@@ -1473,12 +1511,11 @@ end
 
 ---
 
-### `LOverlay:setFilmGrainEnabled`
+#### `LOverlay:setFilmGrainEnabled`
 
 Enables or disables overlay film grain rendering.
 
 ```lua
--- signature
 LOverlay:setFilmGrainEnabled(v)
 ```
 
@@ -1486,7 +1523,7 @@ LOverlay:setFilmGrainEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New film grain enabled flag. |
+| `v` | boolean | New film grain enabled flag. |
 
 **Example**
 
@@ -1500,12 +1537,11 @@ end
 
 ---
 
-### `LOverlay:setFilmGrainIntensity`
+#### `LOverlay:setFilmGrainIntensity`
 
 Sets overlay film grain intensity.
 
 ```lua
--- signature
 LOverlay:setFilmGrainIntensity(v)
 ```
 
@@ -1513,7 +1549,7 @@ LOverlay:setFilmGrainIntensity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Film grain intensity value. |
+| `v` | number | Film grain intensity value. |
 
 **Example**
 
@@ -1527,12 +1563,11 @@ end
 
 ---
 
-### `LOverlay:setFogColor`
+#### `LOverlay:setFogColor`
 
 Sets the overlay fog color from RGBA channels.
 
 ```lua
--- signature
 LOverlay:setFogColor(r, g, b, a)
 ```
 
@@ -1540,10 +1575,10 @@ LOverlay:setFogColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -1558,12 +1593,11 @@ end
 
 ---
 
-### `LOverlay:setFogDensity`
+#### `LOverlay:setFogDensity`
 
 Sets overlay fog density. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:setFogDensity(v)
 ```
 
@@ -1571,7 +1605,7 @@ LOverlay:setFogDensity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Fog density value. |
+| `v` | number | Fog density value. |
 
 **Example**
 
@@ -1585,12 +1619,11 @@ end
 
 ---
 
-### `LOverlay:setFogEnabled`
+#### `LOverlay:setFogEnabled`
 
 Enables or disables overlay fog rendering.
 
 ```lua
--- signature
 LOverlay:setFogEnabled(v)
 ```
 
@@ -1598,7 +1631,7 @@ LOverlay:setFogEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New fog enabled flag. |
+| `v` | boolean | New fog enabled flag. |
 
 **Example**
 
@@ -1612,12 +1645,11 @@ end
 
 ---
 
-### `LOverlay:setHeatHazeEnabled`
+#### `LOverlay:setHeatHazeEnabled`
 
 Enables or disables overlay heat haze rendering.
 
 ```lua
--- signature
 LOverlay:setHeatHazeEnabled(v)
 ```
 
@@ -1625,7 +1657,7 @@ LOverlay:setHeatHazeEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New heat haze enabled flag. |
+| `v` | boolean | New heat haze enabled flag. |
 
 **Example**
 
@@ -1639,12 +1671,11 @@ end
 
 ---
 
-### `LOverlay:setHeatHazeIntensity`
+#### `LOverlay:setHeatHazeIntensity`
 
 Sets overlay heat haze intensity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:setHeatHazeIntensity(v)
 ```
 
@@ -1652,7 +1683,7 @@ LOverlay:setHeatHazeIntensity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Heat haze intensity value. |
+| `v` | number | Heat haze intensity value. |
 
 **Example**
 
@@ -1666,12 +1697,11 @@ end
 
 ---
 
-### `LOverlay:setLightningColor`
+#### `LOverlay:setLightningColor`
 
 Sets overlay lightning RGBA color.
 
 ```lua
--- signature
 LOverlay:setLightningColor(r, g, b, a)
 ```
 
@@ -1679,10 +1709,10 @@ LOverlay:setLightningColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -1697,12 +1727,11 @@ end
 
 ---
 
-### `LOverlay:setTimeOfDay`
+#### `LOverlay:setTimeOfDay`
 
 Sets the overlay time-of-day value used by ambient effects.
 
 ```lua
--- signature
 LOverlay:setTimeOfDay(v)
 ```
 
@@ -1710,7 +1739,7 @@ LOverlay:setTimeOfDay(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Time-of-day value stored on the overlay ambient state. |
+| `v` | number | Time-of-day value stored on the overlay ambient state. |
 
 **Example**
 
@@ -1724,12 +1753,11 @@ end
 
 ---
 
-### `LOverlay:setVignetteEnabled`
+#### `LOverlay:setVignetteEnabled`
 
 Enables or disables overlay vignette rendering.
 
 ```lua
--- signature
 LOverlay:setVignetteEnabled(v)
 ```
 
@@ -1737,7 +1765,7 @@ LOverlay:setVignetteEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New vignette enabled flag. |
+| `v` | boolean | New vignette enabled flag. |
 
 **Example**
 
@@ -1751,12 +1779,11 @@ end
 
 ---
 
-### `LOverlay:setVignetteStrength`
+#### `LOverlay:setVignetteStrength`
 
 Sets overlay vignette strength. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:setVignetteStrength(v)
 ```
 
@@ -1764,7 +1791,7 @@ LOverlay:setVignetteStrength(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Vignette strength value. |
+| `v` | number | Vignette strength value. |
 
 **Example**
 
@@ -1778,12 +1805,11 @@ end
 
 ---
 
-### `LOverlay:setWater`
+#### `LOverlay:setWater`
 
 Enables water distortion and sets wave amplitude, frequency, and speed.
 
 ```lua
--- signature
 LOverlay:setWater(amplitude, frequency, speed)
 ```
 
@@ -1791,9 +1817,9 @@ LOverlay:setWater(amplitude, frequency, speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `amplitude` | `number` | Water wave amplitude. |
-| `frequency` | `number` | Water wave frequency. |
-| `speed` | `number` | Water animation speed. |
+| `amplitude` | number | Water wave amplitude. |
+| `frequency` | number | Water wave frequency. |
+| `speed` | number | Water animation speed. |
 
 **Example**
 
@@ -1809,12 +1835,11 @@ end
 
 ---
 
-### `LOverlay:setWaterTint`
+#### `LOverlay:setWaterTint`
 
 Sets the water tint color and strength.
 
 ```lua
--- signature
 LOverlay:setWaterTint(r, g, b, strength)
 ```
 
@@ -1822,10 +1847,10 @@ LOverlay:setWaterTint(r, g, b, strength)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `strength` | `number` | Tint strength. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `strength` | number | Tint strength. |
 
 **Example**
 
@@ -1841,12 +1866,11 @@ end
 
 ---
 
-### `LOverlay:setWeather`
+#### `LOverlay:setWeather`
 
 Sets the overlay weather type by name.
 
 ```lua
--- signature
 LOverlay:setWeather(name)
 ```
 
@@ -1854,7 +1878,7 @@ LOverlay:setWeather(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Weather type name recognized by the engine. |
+| `name` | string | Weather type name recognized by the engine. |
 
 **Example**
 
@@ -1868,12 +1892,11 @@ end
 
 ---
 
-### `LOverlay:setWeatherEnabled`
+#### `LOverlay:setWeatherEnabled`
 
 Enables or disables overlay weather rendering.
 
 ```lua
--- signature
 LOverlay:setWeatherEnabled(v)
 ```
 
@@ -1881,7 +1904,7 @@ LOverlay:setWeatherEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | New weather enabled flag. |
+| `v` | boolean | New weather enabled flag. |
 
 **Example**
 
@@ -1895,12 +1918,11 @@ end
 
 ---
 
-### `LOverlay:setWeatherIntensity`
+#### `LOverlay:setWeatherIntensity`
 
 Sets weather intensity for the current weather type.
 
 ```lua
--- signature
 LOverlay:setWeatherIntensity(v)
 ```
 
@@ -1908,7 +1930,7 @@ LOverlay:setWeatherIntensity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Weather intensity value. |
+| `v` | number | Weather intensity value. |
 
 **Example**
 
@@ -1922,12 +1944,11 @@ end
 
 ---
 
-### `LOverlay:setWindDirection`
+#### `LOverlay:setWindDirection`
 
 Sets the overlay weather wind direction.
 
 ```lua
--- signature
 LOverlay:setWindDirection(v)
 ```
 
@@ -1935,7 +1956,7 @@ LOverlay:setWindDirection(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Wind direction value. |
+| `v` | number | Wind direction value. |
 
 **Example**
 
@@ -1949,12 +1970,11 @@ end
 
 ---
 
-### `LOverlay:setWindSpeed`
+#### `LOverlay:setWindSpeed`
 
 Sets the overlay weather wind speed.
 
 ```lua
--- signature
 LOverlay:setWindSpeed(v)
 ```
 
@@ -1962,7 +1982,7 @@ LOverlay:setWindSpeed(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Wind speed value. |
+| `v` | number | Wind speed value. |
 
 **Example**
 
@@ -1976,12 +1996,11 @@ end
 
 ---
 
-### `LOverlay:shake`
+#### `LOverlay:shake`
 
 Starts a screen shake with optional duration.
 
 ```lua
--- signature
 LOverlay:shake(intensity, dur)
 ```
 
@@ -1989,8 +2008,8 @@ LOverlay:shake(intensity, dur)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `intensity` | `number` | Shake intensity. |
-| `dur?` | `number` | Duration in seconds, defaulting to 0.5. |
+| `intensity` | number | Shake intensity. |
+| `dur?` | number | Duration in seconds, defaulting to 0.5. |
 
 **Example**
 
@@ -2004,12 +2023,11 @@ end
 
 ---
 
-### `LOverlay:syncAmbientWithLight`
+#### `LOverlay:syncAmbientWithLight`
 
 Resolves overlay and light ambient colors using a named mode and writes both stores.
 
 ```lua
--- signature
 LOverlay:syncAmbientWithLight(mode)
 ```
 
@@ -2017,7 +2035,7 @@ LOverlay:syncAmbientWithLight(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | One of `light`, `overlay`, `avg`, `max`, or `min`. |
+| `mode` | string | One of `light`, `overlay`, `avg`, `max`, or `min`. |
 
 **Example**
 
@@ -2036,12 +2054,11 @@ end
 
 ---
 
-### `LOverlay:triggerFade`
+#### `LOverlay:triggerFade`
 
 Starts a fade overlay toward a target alpha.
 
 ```lua
--- signature
 LOverlay:triggerFade(r, g, b, target_alpha, duration)
 ```
 
@@ -2049,11 +2066,11 @@ LOverlay:triggerFade(r, g, b, target_alpha, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `target_alpha` | `number` | Target alpha value. |
-| `duration` | `number` | Fade duration in seconds. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `target_alpha` | number | Target alpha value. |
+| `duration` | number | Fade duration in seconds. |
 
 **Example**
 
@@ -2067,12 +2084,11 @@ end
 
 ---
 
-### `LOverlay:triggerFlash`
+#### `LOverlay:triggerFlash`
 
 Starts a screen flash with explicit RGBA color and duration.
 
 ```lua
--- signature
 LOverlay:triggerFlash(r, g, b, a, duration)
 ```
 
@@ -2080,11 +2096,11 @@ LOverlay:triggerFlash(r, g, b, a, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
-| `duration` | `number` | Flash duration in seconds. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+| `duration` | number | Flash duration in seconds. |
 
 **Example**
 
@@ -2098,12 +2114,11 @@ end
 
 ---
 
-### `LOverlay:triggerLightning`
+#### `LOverlay:triggerLightning`
 
 Starts a lightning flash using the overlay lightning state.
 
 ```lua
--- signature
 LOverlay:triggerLightning()
 ```
 
@@ -2119,12 +2134,11 @@ end
 
 ---
 
-### `LOverlay:triggerShake`
+#### `LOverlay:triggerShake`
 
 Starts a screen shake effect. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOverlay:triggerShake(intensity, duration)
 ```
 
@@ -2132,8 +2146,8 @@ LOverlay:triggerShake(intensity, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `intensity` | `number` | Shake intensity. |
-| `duration` | `number` | Shake duration in seconds. |
+| `intensity` | number | Shake intensity. |
+| `duration` | number | Shake duration in seconds. |
 
 **Example**
 
@@ -2147,12 +2161,11 @@ end
 
 ---
 
-### `LOverlay:type`
+#### `LOverlay:type`
 
 Returns the Lua-visible type name for this overlay handle.
 
 ```lua
--- signature
 LOverlay:type()
 ```
 
@@ -2160,7 +2173,7 @@ LOverlay:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LOverlay`. |
+| string | The string `[LOverlay](#loverlay-handle)`. |
 
 **Example**
 
@@ -2173,12 +2186,11 @@ end
 
 ---
 
-### `LOverlay:typeOf`
+#### `LOverlay:typeOf`
 
 Returns whether this overlay handle matches a supported type name.
 
 ```lua
--- signature
 LOverlay:typeOf(name)
 ```
 
@@ -2186,13 +2198,13 @@ LOverlay:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `Overlay` and `Object`. |
+| `name` | string | Type name to compare against `Overlay` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2205,12 +2217,11 @@ end
 
 ---
 
-### `LOverlay:update`
+#### `LOverlay:update`
 
 Advances overlay timers and animated effect state.
 
 ```lua
--- signature
 LOverlay:update(dt)
 ```
 
@@ -2218,7 +2229,7 @@ LOverlay:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -2233,14 +2244,19 @@ end
 
 ---
 
-## LScreenTransition
+## LScreenTransition Handle
 
-### `LScreenTransition:color`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LScreenTransition:color`
 
 Returns the transition RGBA color.
 
 ```lua
--- signature
 LScreenTransition:color()
 ```
 
@@ -2248,10 +2264,10 @@ LScreenTransition:color()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -2265,12 +2281,11 @@ end
 
 ---
 
-### `LScreenTransition:isActive`
+#### `LScreenTransition:isActive`
 
 Returns whether the transition is currently active.
 
 ```lua
--- signature
 LScreenTransition:isActive()
 ```
 
@@ -2278,7 +2293,7 @@ LScreenTransition:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the transition is active. |
+| boolean | True when the transition is active. |
 
 **Example**
 
@@ -2292,12 +2307,11 @@ end
 
 ---
 
-### `LScreenTransition:isDone`
+#### `LScreenTransition:isDone`
 
 Returns whether the transition has finished.
 
 ```lua
--- signature
 LScreenTransition:isDone()
 ```
 
@@ -2305,7 +2319,7 @@ LScreenTransition:isDone()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the transition is complete. |
+| boolean | True when the transition is complete. |
 
 **Example**
 
@@ -2320,12 +2334,11 @@ end
 
 ---
 
-### `LScreenTransition:kind`
+#### `LScreenTransition:kind`
 
 Returns the transition kind name. This method is available to Lua scripts.
 
 ```lua
--- signature
 LScreenTransition:kind()
 ```
 
@@ -2333,7 +2346,7 @@ LScreenTransition:kind()
 
 | Type | Description |
 |------|-------------|
-| `string` | Transition kind name. |
+| string | Transition kind name. |
 
 **Example**
 
@@ -2346,12 +2359,11 @@ end
 
 ---
 
-### `LScreenTransition:play`
+#### `LScreenTransition:play`
 
 Starts this screen transition forward from its current state.
 
 ```lua
--- signature
 LScreenTransition:play()
 ```
 
@@ -2368,12 +2380,11 @@ end
 
 ---
 
-### `LScreenTransition:progress`
+#### `LScreenTransition:progress`
 
 Returns normalized transition progress.
 
 ```lua
--- signature
 LScreenTransition:progress()
 ```
 
@@ -2381,7 +2392,7 @@ LScreenTransition:progress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Progress value between the transition start and end. |
+| number | Progress value between the transition start and end. |
 
 **Example**
 
@@ -2396,12 +2407,11 @@ end
 
 ---
 
-### `LScreenTransition:reverse`
+#### `LScreenTransition:reverse`
 
 Starts this screen transition in reverse from its current state.
 
 ```lua
--- signature
 LScreenTransition:reverse()
 ```
 
@@ -2418,12 +2428,11 @@ end
 
 ---
 
-### `LScreenTransition:setColor`
+#### `LScreenTransition:setColor`
 
 Sets the transition RGBA color from a numeric array table.
 
 ```lua
--- signature
 LScreenTransition:setColor(color)
 ```
 
@@ -2431,7 +2440,7 @@ LScreenTransition:setColor(color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `color` | `table` | Numeric color table using indices 1 through 4. |
+| `color` | table | Numeric color table using indices 1 through 4. |
 
 **Example**
 
@@ -2446,12 +2455,11 @@ end
 
 ---
 
-### `LScreenTransition:type`
+#### `LScreenTransition:type`
 
 Returns the Lua-visible type name for this transition handle.
 
 ```lua
--- signature
 LScreenTransition:type()
 ```
 
@@ -2459,7 +2467,7 @@ LScreenTransition:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LScreenTransition`. |
+| string | The string `[LScreenTransition](#lscreentransition-handle)`. |
 
 **Example**
 
@@ -2472,12 +2480,11 @@ end
 
 ---
 
-### `LScreenTransition:typeOf`
+#### `LScreenTransition:typeOf`
 
 Returns whether this transition handle matches a supported type name.
 
 ```lua
--- signature
 LScreenTransition:typeOf(name)
 ```
 
@@ -2485,13 +2492,13 @@ LScreenTransition:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `ScreenTransition` and `Object`. |
+| `name` | string | Type name to compare against `ScreenTransition` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2504,12 +2511,11 @@ end
 
 ---
 
-### `LScreenTransition:update`
+#### `LScreenTransition:update`
 
 Advances this transition timer and returns whether it remains active.
 
 ```lua
--- signature
 LScreenTransition:update(dt)
 ```
 
@@ -2517,13 +2523,13 @@ LScreenTransition:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the transition is still active after the update. |
+| boolean | True when the transition is still active after the update. |
 
 **Example**
 

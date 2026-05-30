@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["ambient","atmosphere","controller","screen_effects","transition","water","weather"]};

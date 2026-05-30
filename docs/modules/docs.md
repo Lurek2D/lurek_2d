@@ -1,12 +1,62 @@
 # Docs
 
-- The `docs` module is an Edge/Integration tier component responsible for maintaining the engine's runtime documentation catalog.
+## Summary
 
-By scanning and reflecting Lua API metadata upon startup, it provides robust, programmatic access to function signatures, parameter descriptions, return types, and usage examples. The foundational structure of this module is the `DocEntry`, which securely encapsulates the canonical details of one documented API item—from its prose description to structured parameter and return metadata. These entries are efficiently stored and aggregated within an in-memory `Catalog`, fully searchable and indexable by namespace path.
+The `docs` module is the structured documentation infrastructure layer used by generation and tooling pipelines. It defines normalized doc entry models, catalog/query behavior, export builders, validation reporting, and schema contracts, then re-exports these surfaces for higher-level tooling commands.
 
-A key capability of the module is its rigorous validation and quality-reporting system. By comparing the populated catalog against the live, reflected `lurek` API surface, it accurately generates `ValidationReport` and `QualityReport` structures. These tools score documentation completeness, assign letter grades, and identify missing, phantom, or incomplete entries, ensuring that the engine's documentation quality remains consistently high.
+`catalog` manages storage and lookup of documentation records, `entry` defines item-level metadata (including params/returns), `export` produces completion/hover/signature payloads, `report` evaluates quality and validation status, and `schema` stabilizes shared type contracts. This separation keeps ingestion, storage, emission, and grading concerns independent.
 
-Beyond in-engine diagnostics, the `docs` module drives Lurek2D's IDE integration capabilities. It features specialized export functions capable of generating structured JSON payloads for code completions, hover information, and signature help, ready to be consumed directly by editors like VS Code. Furthermore, the module facilitates schema validation by generating typed config documentation from TOML definitions, serving as an access bridge for the `lurek_schema` crate. The entirety of this robust toolset is accessible via the `lurek.docs.*` namespace, allowing scripts and CI pipelines to autonomously validate API coverage, export artifacts, and maintain documentation hygiene.
+The module's value is consistency between source metadata and generated artifacts. By centralizing these models and exporters, the project avoids drift between docs outputs consumed by IDE tooling and validation/audit scripts.
+
+As an integration-facing subsystem, it should prioritize deterministic output formats and explicit quality criteria so downstream generators and validators can rely on stable contracts over time.
+
+Implementation detail and boundary guarantees for docs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: catalog.rs: Provide in-memory catalog storage for documentation entries collected from Rust source.; entry.rs: Define normalized documentation record types for lurek API symbols.; export.rs: Build JSON payloads for IDE completion, hover, and signature help from doc entries.; mod.rs: Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.; report.rs: Compute per-entry quality scores from completeness of description, params, and metadata.; schema.rs: Re-export schema validation types from the lurek_schema crate.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### catalog.rs
+
+- Provides the in-memory documentation catalog used to collect and organize normalized API entries.
+- Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries.
+- Enables merge and dedup workflows for combining multiple documentation sources into one view.
+- Delivers the central container that feeds both export generation and quality analysis stages.
+
+### entry.rs
+
+- Provides normalized documentation record types that represent public API symbols and their metadata.
+- Models parameter and return descriptors so downstream export and reporting stages share one data shape.
+- Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
+- Delivers the common in-memory contract used across collection, transformation, and reporting flows.
+
+### export.rs
+
+- Provides export builders that transform normalized doc entries into IDE-oriented JSON payloads.
+- Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers.
+- Supports compact or rich payload modes to match different integration and footprint constraints.
+- Writes single or bundled artifacts through stable serialization paths for predictable output handling.
+- Delivers the final packaging stage that turns in-memory documentation into distributable files.
+
+### mod.rs
+
+- Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages.
+- Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point.
+- Delivers a coherent module boundary for transforming source metadata into validated documentation artifacts.
+
+### report.rs
+
+- Provides documentation quality evaluation logic that scores completeness and classifies report grades.
+- Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
+- Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
+- Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
+- Delivers consistent quality signals that guide doc cleanup and release readiness checks.
+
+### schema.rs
+
+- Provides the schema bridge that exposes shared validation contracts used by the docs pipeline.
+- Connects documentation tooling with canonical field and type rules defined in the schema crate.
+- Delivers one access point that keeps schema usage consistent across docs modules.
 
 ## Functions
 
@@ -15,7 +65,6 @@ Beyond in-engine diagnostics, the `docs` module drives Lurek2D's IDE integration
 Lists source files in a directory for simple documentation staleness checks.
 
 ```lua
--- signature
 lurek.docs.checkStaleness(catalog_ud, source_dir)
 ```
 
@@ -23,14 +72,14 @@ lurek.docs.checkStaleness(catalog_ud, source_dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog argument accepted for API symmetry with validation helpers. |
-| `source_dir` | `string` | Directory scanned for `.rs` and `.lua` source files. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog argument accepted for API symmetry with validation helpers. |
+| `source_dir` | string | Directory scanned for `.rs` and `.lua` source files. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `DocsCheckStalenessResult` | Table with stale, current, and missing arrays. |
+| LDocsCheckStalenessResult | Table with stale, current, and missing arrays. |
 
 **Example**
 
@@ -49,7 +98,6 @@ end
 Returns documented and live API counts for the full `lurek` table.
 
 ```lua
--- signature
 lurek.docs.coverage(catalog_ud)
 ```
 
@@ -57,14 +105,14 @@ lurek.docs.coverage(catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud?` | `LApiCatalog` | Optional catalog used for documented entry count. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog used for documented entry count. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Number of catalog entries supplied as documented. |
-| `number` | b Number of live APIs found by reflection. |
+| number | Number of catalog entries supplied as documented. |
+| number | Number of live APIs found by reflection. |
 
 **Example**
 
@@ -83,7 +131,6 @@ end
 Returns documented and live API counts for one module.
 
 ```lua
--- signature
 lurek.docs.coverageModule(module_name, catalog_ud)
 ```
 
@@ -91,15 +138,15 @@ lurek.docs.coverageModule(module_name, catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module_name` | `string` | Module name under the `lurek` table. |
-| `catalog_ud?` | `LApiCatalog` | Optional catalog used for documented entry count. |
+| `module_name` | string | Module name under the `lurek` table. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog used for documented entry count. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Number of catalog entries for the module. |
-| `number` | b Number of live APIs found in the module. |
+| number | Number of catalog entries for the module. |
+| number | Number of live APIs found in the module. |
 
 **Example**
 
@@ -118,7 +165,6 @@ end
 Adds or updates the description for one editable catalog entry.
 
 ```lua
--- signature
 lurek.docs.describe(qualified_name, description)
 ```
 
@@ -126,8 +172,8 @@ lurek.docs.describe(qualified_name, description)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qualified_name` | `string` | Full dotted API name to update or create. |
-| `description` | `string` | Description text stored on the catalog entry. |
+| `qualified_name` | string | Full dotted API name to update or create. |
+| `description` | string | Description text stored on the catalog entry. |
 
 **Example**
 
@@ -145,7 +191,6 @@ end
 Exports all editor documentation artifacts for a catalog into a directory.
 
 ```lua
--- signature
 lurek.docs.exportAll(catalog_ud, output_dir)
 ```
 
@@ -153,8 +198,8 @@ lurek.docs.exportAll(catalog_ud, output_dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog whose entries are exported. |
-| `output_dir` | `string` | Directory that receives all generated artifacts. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `output_dir` | string | Directory that receives all generated artifacts. |
 
 **Example**
 
@@ -173,7 +218,6 @@ end
 Writes a compact text cheatsheet from catalog entries.
 
 ```lua
--- signature
 lurek.docs.exportCheatsheet(catalog_ud, path)
 ```
 
@@ -181,8 +225,8 @@ lurek.docs.exportCheatsheet(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog whose entries are written. |
-| `path` | `string` | Output cheatsheet file path. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are written. |
+| `path` | string | Output cheatsheet file path. |
 
 **Example**
 
@@ -201,7 +245,6 @@ end
 Exports catalog completion metadata to a file.
 
 ```lua
--- signature
 lurek.docs.exportCompletions(catalog_ud, path)
 ```
 
@@ -209,8 +252,8 @@ lurek.docs.exportCompletions(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog whose entries are exported. |
-| `path` | `string` | Output file path for completion data. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `path` | string | Output file path for completion data. |
 
 **Example**
 
@@ -229,7 +272,6 @@ end
 Exports catalog hover metadata to a file.
 
 ```lua
--- signature
 lurek.docs.exportHover(catalog_ud, path)
 ```
 
@@ -237,8 +279,8 @@ lurek.docs.exportHover(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog whose entries are exported. |
-| `path` | `string` | Output file path for hover data. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `path` | string | Output file path for hover data. |
 
 **Example**
 
@@ -257,7 +299,6 @@ end
 Writes a Markdown API reference from catalog entries.
 
 ```lua
--- signature
 lurek.docs.exportMarkdown(catalog_ud, path)
 ```
 
@@ -265,8 +306,8 @@ lurek.docs.exportMarkdown(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog whose entries are written. |
-| `path` | `string` | Output Markdown file path. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are written. |
+| `path` | string | Output Markdown file path. |
 
 **Example**
 
@@ -285,7 +326,6 @@ end
 Exports catalog signature metadata to a file.
 
 ```lua
--- signature
 lurek.docs.exportSignatures(catalog_ud, path)
 ```
 
@@ -293,8 +333,8 @@ lurek.docs.exportSignatures(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | `LApiCatalog` | Catalog whose entries are exported. |
-| `path` | `string` | Output file path for signature data. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `path` | string | Output file path for signature data. |
 
 **Example**
 
@@ -313,7 +353,6 @@ end
 Returns the editable in-memory documentation catalog.
 
 ```lua
--- signature
 lurek.docs.getCatalog()
 ```
 
@@ -321,7 +360,7 @@ lurek.docs.getCatalog()
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | Catalog containing entries built by the editing functions. |
+| [LApiCatalog](#lapicatalog-handle) | Catalog containing entries built by the editing functions. |
 
 **Example**
 
@@ -339,7 +378,6 @@ end
 Loads all TOML documentation catalog files from a directory and combines their entries.
 
 ```lua
--- signature
 lurek.docs.loadAll(directory)
 ```
 
@@ -347,13 +385,13 @@ lurek.docs.loadAll(directory)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `directory` | `string` | Directory scanned for `.toml` catalog files. |
+| `directory` | string | Directory scanned for `.toml` catalog files. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | Catalog containing entries parsed from every readable TOML file. |
+| [LApiCatalog](#lapicatalog-handle) | Catalog containing entries parsed from every readable TOML file. |
 
 **Example**
 
@@ -373,7 +411,6 @@ end
 Loads a TOML documentation catalog file and converts its entries into an API catalog.
 
 ```lua
--- signature
 lurek.docs.loadToml(path)
 ```
 
@@ -381,13 +418,13 @@ lurek.docs.loadToml(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Path to a TOML file containing an `entries` table. |
+| `path` | string | Path to a TOML file containing an `entries` table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | Catalog loaded from the TOML file. |
+| [LApiCatalog](#lapicatalog-handle) | Catalog loaded from the TOML file. |
 
 **Example**
 
@@ -407,7 +444,6 @@ end
 Computes documentation quality for a supplied catalog or the editable in-memory catalog.
 
 ```lua
--- signature
 lurek.docs.quality(catalog_ud)
 ```
 
@@ -415,13 +451,13 @@ lurek.docs.quality(catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud?` | `LApiCatalog` | Optional catalog to score; omitted scores the editable catalog. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog to score; omitted scores the editable catalog. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LQualityReport` | Quality report with overall and module-level scores. |
+| [LQualityReport](#lqualityreport-handle) | Quality report with overall and module-level scores. |
 
 **Example**
 
@@ -440,7 +476,6 @@ end
 Computes documentation quality for entries belonging to one module.
 
 ```lua
--- signature
 lurek.docs.qualityModule(module_name, catalog_ud)
 ```
 
@@ -448,14 +483,14 @@ lurek.docs.qualityModule(module_name, catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module_name` | `string` | Module name used to filter entries before scoring. |
-| `catalog_ud?` | `LApiCatalog` | Optional catalog to score; omitted scores the editable catalog. |
+| `module_name` | string | Module name used to filter entries before scoring. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog to score; omitted scores the editable catalog. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LQualityReport` | Quality report for the filtered module entries. |
+| [LQualityReport](#lqualityreport-handle) | Quality report for the filtered module entries. |
 
 **Example**
 
@@ -474,7 +509,6 @@ end
 Reflects live `lurek` module tables into plain name and type rows.
 
 ```lua
--- signature
 lurek.docs.reflectLive(ns)
 ```
 
@@ -482,13 +516,13 @@ lurek.docs.reflectLive(ns)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ns?` | `string` | Optional module name to reflect; omitted reflects every table-valued module. |
+| `ns?` | string | Optional module name to reflect; omitted reflects every table-valued module. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Reflection table keyed by module name or containing the requested module entry. |
+| table | Reflection table keyed by module name or containing the requested module entry. |
 
 **Example**
 
@@ -506,7 +540,6 @@ end
 Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
 
 ```lua
--- signature
 lurek.docs.reflectTable(tbl, name)
 ```
 
@@ -514,14 +547,14 @@ lurek.docs.reflectTable(tbl, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tbl` | `table` | Lua table to inspect without recursion. |
-| `name?` | `string` | Optional prefix used to build qualifiedName values. |
+| `tbl` | table | Lua table to inspect without recursion. |
+| `name?` | string | Optional prefix used to build qualifiedName values. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `DocsReflectTableResult` | Array table of reflected item rows. |
+| LDocsReflectTableResult | Array table of reflected item rows. |
 
 **Example**
 
@@ -540,7 +573,6 @@ end
 Clears the editable in-memory documentation catalog.
 
 ```lua
--- signature
 lurek.docs.resetCatalog()
 ```
 
@@ -562,7 +594,6 @@ end
 Reflects the live `lurek` table and builds a catalog of callable APIs.
 
 ```lua
--- signature
 lurek.docs.scan(opts)
 ```
 
@@ -570,13 +601,13 @@ lurek.docs.scan(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts?` | `table` | Optional scan options table reserved for future filters. |
+| `opts?` | table | Optional scan options table reserved for future filters. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | Catalog populated from the currently registered `lurek` table. |
+| [LApiCatalog](#lapicatalog-handle) | Catalog populated from the currently registered `lurek` table. |
 
 **Example**
 
@@ -594,7 +625,6 @@ end
 Reflects one live `lurek.<module>` table and builds a catalog for that module.
 
 ```lua
--- signature
 lurek.docs.scanModule(module_name)
 ```
 
@@ -602,13 +632,13 @@ lurek.docs.scanModule(module_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module_name` | `string` | Module name under the `lurek` table. |
+| `module_name` | string | Module name under the `lurek` table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | Catalog populated from the live module table. |
+| [LApiCatalog](#lapicatalog-handle) | Catalog populated from the live module table. |
 
 **Example**
 
@@ -626,7 +656,6 @@ end
 Builds a schema validator from Lua table rules.
 
 ```lua
--- signature
 lurek.docs.schema(rules, name)
 ```
 
@@ -634,14 +663,14 @@ lurek.docs.schema(rules, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rules` | `table` | Rule table keyed by field name; `__strict` enables strict validation. |
-| `name?` | `string` | Optional schema name; defaults to `schema`. |
+| `rules` | table | Rule table keyed by field name; `__strict` enables strict validation. |
+| `name?` | string | Optional schema name; defaults to `schema`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSchema` | Schema handle that can validate Lua tables. |
+| [LSchema](#lschema-handle) | Schema handle that can validate Lua tables. |
 
 **Example**
 
@@ -659,7 +688,6 @@ end
 Builds a schema validator from TOML schema text.
 
 ```lua
--- signature
 lurek.docs.schemaFromToml(toml_text)
 ```
 
@@ -667,13 +695,13 @@ lurek.docs.schemaFromToml(toml_text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `toml_text` | `string` | TOML text parsed by the docs schema backend. |
+| `toml_text` | string | TOML text parsed by the docs schema backend. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSchema` | Schema handle parsed from the TOML text. |
+| [LSchema](#lschema-handle) | Schema handle parsed from the TOML text. |
 
 **Example**
 
@@ -699,7 +727,6 @@ end
 Replaces parameter metadata for one editable catalog entry.
 
 ```lua
--- signature
 lurek.docs.setParamInfo(qualified_name, params)
 ```
 
@@ -707,8 +734,8 @@ lurek.docs.setParamInfo(qualified_name, params)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qualified_name` | `string` | Full dotted API name whose parameters are updated. |
-| `params` | `table` | Array table of parameter rows with name, type, description, optional, and optional default fields. |
+| `qualified_name` | string | Full dotted API name whose parameters are updated. |
+| `params` | table | Array table of parameter rows with name, type, description, optional, and optional default fields. |
 
 **Example**
 
@@ -731,7 +758,6 @@ end
 Replaces return-value metadata for one editable catalog entry.
 
 ```lua
--- signature
 lurek.docs.setReturnInfo(qualified_name, returns)
 ```
 
@@ -739,8 +765,8 @@ lurek.docs.setReturnInfo(qualified_name, returns)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qualified_name` | `string` | Full dotted API name whose return metadata is updated. |
-| `returns` | `table` | Array table of return rows with type and description fields. |
+| `qualified_name` | string | Full dotted API name whose return metadata is updated. |
+| `returns` | table | Array table of return rows with type and description fields. |
 
 **Example**
 
@@ -763,7 +789,6 @@ end
 Compares a documentation catalog with the live reflected `lurek` API table.
 
 ```lua
--- signature
 lurek.docs.validate(catalog_ud)
 ```
 
@@ -771,13 +796,13 @@ lurek.docs.validate(catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud?` | `LApiCatalog` | Optional catalog to validate against live reflection; omitted validates an empty catalog. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog to validate against live reflection; omitted validates an empty catalog. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LValidationReport` | Report containing missing, phantom, and incomplete API names. |
+| [LValidationReport](#lvalidationreport-handle) | Report containing missing, phantom, and incomplete API names. |
 
 **Example**
 
@@ -796,7 +821,6 @@ end
 Compares one module's documentation catalog entries with the live reflected module table.
 
 ```lua
--- signature
 lurek.docs.validateModule(module_name, catalog_ud)
 ```
 
@@ -804,14 +828,14 @@ lurek.docs.validateModule(module_name, catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module_name` | `string` | Module name under the `lurek` table. |
-| `catalog_ud?` | `LApiCatalog` | Optional catalog whose entries are filtered to the module. |
+| `module_name` | string | Module name under the `lurek` table. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog whose entries are filtered to the module. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LValidationReport` | Report containing missing, phantom, and incomplete API names for the module. |
+| [LValidationReport](#lvalidationreport-handle) | Report containing missing, phantom, and incomplete API names for the module. |
 
 **Example**
 
@@ -825,14 +849,39 @@ end
 
 ---
 
-## LApiCatalog
+## Module Fields
 
-### `LApiCatalog:entryCount`
+*No module-level fields documented.*
+
+## Types
+
+- [LApiCatalog Handle](#lapicatalog-handle)
+- [LDocEntry Handle](#ldocentry-handle)
+- [LQualityReport Handle](#lqualityreport-handle)
+- [LSchema Handle](#lschema-handle)
+- [LValidationReport Handle](#lvalidationreport-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LApiCatalog Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LApiCatalog:entryCount`
 
 Counts entries in the catalog, optionally for one module.
 
 ```lua
--- signature
 LApiCatalog:entryCount(module)
 ```
 
@@ -840,13 +889,13 @@ LApiCatalog:entryCount(module)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module?` | `string` | Optional module name used to limit the count. |
+| `module?` | string | Optional module name used to limit the count. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of matching entries. |
+| number | Number of matching entries. |
 
 **Example**
 
@@ -861,12 +910,11 @@ end
 
 ---
 
-### `LApiCatalog:filter`
+#### `LApiCatalog:filter`
 
 Builds a new catalog containing entries accepted by a Lua predicate.
 
 ```lua
--- signature
 LApiCatalog:filter(predicate)
 ```
 
@@ -874,13 +922,13 @@ LApiCatalog:filter(predicate)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `predicate` | `function` | Callback called with each `LDocEntry`; truthy return keeps the entry. |
+| `predicate` | function | Callback called with each `[LDocEntry](#ldocentry-handle)`; truthy return keeps the entry. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | New catalog containing only entries accepted by the predicate. |
+| [LApiCatalog](#lapicatalog-handle) | New catalog containing only entries accepted by the predicate. |
 
 **Example**
 
@@ -894,12 +942,11 @@ end
 
 ---
 
-### `LApiCatalog:getEntries`
+#### `LApiCatalog:getEntries`
 
 Returns catalog entries, optionally limited to one module.
 
 ```lua
--- signature
 LApiCatalog:getEntries(module)
 ```
 
@@ -907,13 +954,13 @@ LApiCatalog:getEntries(module)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module?` | `string` | Optional module name used to filter entries. |
+| `module?` | string | Optional module name used to filter entries. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry[]` | `LDocEntry` handles. |
+| [LDocEntry](#ldocentry-handle)[] | `[LDocEntry](#ldocentry-handle)` handles. |
 
 **Example**
 
@@ -928,12 +975,11 @@ end
 
 ---
 
-### `LApiCatalog:getEntry`
+#### `LApiCatalog:getEntry`
 
 Returns one catalog entry by qualified API name.
 
 ```lua
--- signature
 LApiCatalog:getEntry(qualified_name)
 ```
 
@@ -941,13 +987,13 @@ LApiCatalog:getEntry(qualified_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qualified_name` | `string` | Full dotted API name to find. |
+| `qualified_name` | string | Full dotted API name to find. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry` | The matching catalog entry. |
+| [LDocEntry](#ldocentry-handle) | The matching catalog entry. |
 
 **Example**
 
@@ -960,12 +1006,11 @@ end
 
 ---
 
-### `LApiCatalog:getModules`
+#### `LApiCatalog:getModules`
 
 Returns every module represented in this catalog.
 
 ```lua
--- signature
 LApiCatalog:getModules()
 ```
 
@@ -973,7 +1018,7 @@ LApiCatalog:getModules()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Sorted array table of module names. |
+| string[] | Sorted array table of module names. |
 
 **Example**
 
@@ -987,12 +1032,11 @@ end
 
 ---
 
-### `LApiCatalog:getTypeMethods`
+#### `LApiCatalog:getTypeMethods`
 
 Returns method entries associated with a qualified type name.
 
 ```lua
--- signature
 LApiCatalog:getTypeMethods(qualified_name)
 ```
 
@@ -1000,13 +1044,13 @@ LApiCatalog:getTypeMethods(qualified_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qualified_name` | `string` | Qualified type name used as the method prefix. |
+| `qualified_name` | string | Qualified type name used as the method prefix. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry[]` | `LDocEntry` method entries. |
+| [LDocEntry](#ldocentry-handle)[] | `[LDocEntry](#ldocentry-handle)` method entries. |
 
 **Example**
 
@@ -1020,12 +1064,11 @@ end
 
 ---
 
-### `LApiCatalog:getTypes`
+#### `LApiCatalog:getTypes`
 
 Returns type names documented for one module.
 
 ```lua
--- signature
 LApiCatalog:getTypes(module_name)
 ```
 
@@ -1033,13 +1076,13 @@ LApiCatalog:getTypes(module_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `module_name` | `string` | Module name to inspect. |
+| `module_name` | string | Module name to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Documented type names. |
+| string[] | Documented type names. |
 
 **Example**
 
@@ -1053,12 +1096,11 @@ end
 
 ---
 
-### `LApiCatalog:merge`
+#### `LApiCatalog:merge`
 
 Merges another catalog into this catalog and returns a new catalog value.
 
 ```lua
--- signature
 LApiCatalog:merge(other)
 ```
 
@@ -1066,13 +1108,13 @@ LApiCatalog:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LApiCatalog` | Catalog whose entries replace matching qualified names or append new entries. |
+| `other` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries replace matching qualified names or append new entries. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalog` | New catalog containing merged entries. |
+| [LApiCatalog](#lapicatalog-handle) | New catalog containing merged entries. |
 
 **Example**
 
@@ -1087,12 +1129,11 @@ end
 
 ---
 
-### `LApiCatalog:search`
+#### `LApiCatalog:search`
 
 Searches names, qualified names, and descriptions with a case-insensitive substring query.
 
 ```lua
--- signature
 LApiCatalog:search(query)
 ```
 
@@ -1100,13 +1141,13 @@ LApiCatalog:search(query)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `query` | `string` | Search text matched against catalog metadata. |
+| `query` | string | Search text matched against catalog metadata. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry[]` | Matching `LDocEntry` handles. |
+| [LDocEntry](#ldocentry-handle)[] | Matching `[LDocEntry](#ldocentry-handle)` handles. |
 
 **Example**
 
@@ -1120,12 +1161,11 @@ end
 
 ---
 
-### `LApiCatalog:toJSON`
+#### `LApiCatalog:toJSON`
 
 Serializes this catalog to formatted JSON.
 
 ```lua
--- signature
 LApiCatalog:toJSON()
 ```
 
@@ -1133,7 +1173,7 @@ LApiCatalog:toJSON()
 
 | Type | Description |
 |------|-------------|
-| `string` | Pretty-printed JSON array of catalog entries. |
+| string | Pretty-printed JSON array of catalog entries. |
 
 **Example**
 
@@ -1147,12 +1187,11 @@ end
 
 ---
 
-### `LApiCatalog:toTable`
+#### `LApiCatalog:toTable`
 
 Converts this catalog into plain Lua tables for lightweight inspection.
 
 ```lua
--- signature
 LApiCatalog:toTable()
 ```
 
@@ -1160,7 +1199,7 @@ LApiCatalog:toTable()
 
 | Type | Description |
 |------|-------------|
-| `LApiCatalogToTableResult` | Array of rows with name, qualifiedName, module, kind, description, and score fields. |
+| LApiCatalogToTableResult | Array of rows with name, qualifiedName, module, kind, description, and score fields. |
 
 **Example**
 
@@ -1174,12 +1213,11 @@ end
 
 ---
 
-### `LApiCatalog:type`
+#### `LApiCatalog:type`
 
 Returns the Lua-visible type name for this API catalog handle.
 
 ```lua
--- signature
 LApiCatalog:type()
 ```
 
@@ -1187,7 +1225,7 @@ LApiCatalog:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LApiCatalog`. |
+| string | The string `[LApiCatalog](#lapicatalog-handle)`. |
 
 **Example**
 
@@ -1200,12 +1238,11 @@ end
 
 ---
 
-### `LApiCatalog:typeOf`
+#### `LApiCatalog:typeOf`
 
 Returns whether this API catalog handle matches a supported type name.
 
 ```lua
--- signature
 LApiCatalog:typeOf(name)
 ```
 
@@ -1213,13 +1250,13 @@ LApiCatalog:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LApiCatalog` and `Object`. |
+| `name` | string | Type name to compare against `[LApiCatalog](#lapicatalog-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1232,14 +1269,19 @@ end
 
 ---
 
-## LDocEntry
+## LDocEntry Handle
 
-### `LDocEntry:getDeprecated`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDocEntry:getDeprecated`
 
 Returns this entry's deprecation text when one was recorded.
 
 ```lua
--- signature
 LDocEntry:getDeprecated()
 ```
 
@@ -1247,7 +1289,7 @@ LDocEntry:getDeprecated()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Deprecation string, or nil when the entry is not marked deprecated. |
+| LuaValue | Deprecation string, or nil when the entry is not marked deprecated. |
 
 **Example**
 
@@ -1260,12 +1302,11 @@ end
 
 ---
 
-### `LDocEntry:getDescription`
+#### `LDocEntry:getDescription`
 
 Returns the prose description recorded for this entry.
 
 ```lua
--- signature
 LDocEntry:getDescription()
 ```
 
@@ -1273,7 +1314,7 @@ LDocEntry:getDescription()
 
 | Type | Description |
 |------|-------------|
-| `string` | Documentation description text. |
+| string | Documentation description text. |
 
 **Example**
 
@@ -1286,12 +1327,11 @@ end
 
 ---
 
-### `LDocEntry:getExample`
+#### `LDocEntry:getExample`
 
 Returns this entry's example text when one was recorded.
 
 ```lua
--- signature
 LDocEntry:getExample()
 ```
 
@@ -1299,7 +1339,7 @@ LDocEntry:getExample()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Example string, or nil when no example exists. |
+| LuaValue | Example string, or nil when no example exists. |
 
 **Example**
 
@@ -1312,12 +1352,11 @@ end
 
 ---
 
-### `LDocEntry:getKind`
+#### `LDocEntry:getKind`
 
 Returns the documentation kind recorded for this entry.
 
 ```lua
--- signature
 LDocEntry:getKind()
 ```
 
@@ -1325,7 +1364,7 @@ LDocEntry:getKind()
 
 | Type | Description |
 |------|-------------|
-| `string` | Entry kind such as `function`, `method`, `type`, or `value`. |
+| string | Entry kind such as `function`, `method`, `type`, or `value`. |
 
 **Example**
 
@@ -1338,12 +1377,11 @@ end
 
 ---
 
-### `LDocEntry:getModule`
+#### `LDocEntry:getModule`
 
 Returns the module name associated with this documentation entry.
 
 ```lua
--- signature
 LDocEntry:getModule()
 ```
 
@@ -1351,7 +1389,7 @@ LDocEntry:getModule()
 
 | Type | Description |
 |------|-------------|
-| `string` | Module name. |
+| string | Module name. |
 
 **Example**
 
@@ -1364,12 +1402,11 @@ end
 
 ---
 
-### `LDocEntry:getName`
+#### `LDocEntry:getName`
 
 Returns the short API name stored by this documentation entry.
 
 ```lua
--- signature
 LDocEntry:getName()
 ```
 
@@ -1377,7 +1414,7 @@ LDocEntry:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Entry name without module prefix. |
+| string | Entry name without module prefix. |
 
 **Example**
 
@@ -1390,12 +1427,11 @@ end
 
 ---
 
-### `LDocEntry:getParameters`
+#### `LDocEntry:getParameters`
 
 Returns parameter metadata recorded for this entry.
 
 ```lua
--- signature
 LDocEntry:getParameters()
 ```
 
@@ -1403,7 +1439,7 @@ LDocEntry:getParameters()
 
 | Type | Description |
 |------|-------------|
-| `LDocEntryGetParametersResult` | Array of parameter rows with name, type, description, optional, and optional default fields. |
+| LDocEntryGetParametersResult | Array of parameter rows with name, type, description, optional, and optional default fields. |
 
 **Example**
 
@@ -1416,12 +1452,11 @@ end
 
 ---
 
-### `LDocEntry:getQualifiedName`
+#### `LDocEntry:getQualifiedName`
 
 Returns the full dotted API name stored by this documentation entry.
 
 ```lua
--- signature
 LDocEntry:getQualifiedName()
 ```
 
@@ -1429,7 +1464,7 @@ LDocEntry:getQualifiedName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Qualified API name. |
+| string | Qualified API name. |
 
 **Example**
 
@@ -1442,12 +1477,11 @@ end
 
 ---
 
-### `LDocEntry:getReturns`
+#### `LDocEntry:getReturns`
 
 Returns return-value metadata recorded for this entry.
 
 ```lua
--- signature
 LDocEntry:getReturns()
 ```
 
@@ -1455,7 +1489,7 @@ LDocEntry:getReturns()
 
 | Type | Description |
 |------|-------------|
-| `LDocEntryGetReturnsResult` | Array table of return rows with type and description fields. |
+| LDocEntryGetReturnsResult | Array table of return rows with type and description fields. |
 
 **Example**
 
@@ -1468,12 +1502,11 @@ end
 
 ---
 
-### `LDocEntry:getScore`
+#### `LDocEntry:getScore`
 
 Returns the documentation quality score calculated for this entry.
 
 ```lua
--- signature
 LDocEntry:getScore()
 ```
 
@@ -1481,7 +1514,7 @@ LDocEntry:getScore()
 
 | Type | Description |
 |------|-------------|
-| `number` | Quality score in the range used by the docs scoring backend. |
+| number | Quality score in the range used by the docs scoring backend. |
 
 **Example**
 
@@ -1494,12 +1527,11 @@ end
 
 ---
 
-### `LDocEntry:getSince`
+#### `LDocEntry:getSince`
 
 Returns this entry's since-version text when one was recorded.
 
 ```lua
--- signature
 LDocEntry:getSince()
 ```
 
@@ -1507,7 +1539,7 @@ LDocEntry:getSince()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Since-version string, or nil when no value exists. |
+| LuaValue | Since-version string, or nil when no value exists. |
 
 **Example**
 
@@ -1520,12 +1552,11 @@ end
 
 ---
 
-### `LDocEntry:hasDescription`
+#### `LDocEntry:hasDescription`
 
 Returns whether this entry has non-empty description text.
 
 ```lua
--- signature
 LDocEntry:hasDescription()
 ```
 
@@ -1533,7 +1564,7 @@ LDocEntry:hasDescription()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the description is present. |
+| boolean | True when the description is present. |
 
 **Example**
 
@@ -1546,12 +1577,11 @@ end
 
 ---
 
-### `LDocEntry:hasExample`
+#### `LDocEntry:hasExample`
 
 Returns whether this entry has example text.
 
 ```lua
--- signature
 LDocEntry:hasExample()
 ```
 
@@ -1559,7 +1589,7 @@ LDocEntry:hasExample()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an example is recorded. |
+| boolean | True when an example is recorded. |
 
 **Example**
 
@@ -1572,12 +1602,11 @@ end
 
 ---
 
-### `LDocEntry:hasParameters`
+#### `LDocEntry:hasParameters`
 
 Returns whether this entry has parameter metadata.
 
 ```lua
--- signature
 LDocEntry:hasParameters()
 ```
 
@@ -1585,7 +1614,7 @@ LDocEntry:hasParameters()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when at least one parameter is recorded. |
+| boolean | True when at least one parameter is recorded. |
 
 **Example**
 
@@ -1598,12 +1627,11 @@ end
 
 ---
 
-### `LDocEntry:hasReturnType`
+#### `LDocEntry:hasReturnType`
 
 Returns whether this entry has return-value metadata.
 
 ```lua
--- signature
 LDocEntry:hasReturnType()
 ```
 
@@ -1611,7 +1639,7 @@ LDocEntry:hasReturnType()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when at least one return row is recorded. |
+| boolean | True when at least one return row is recorded. |
 
 **Example**
 
@@ -1624,12 +1652,11 @@ end
 
 ---
 
-### `LDocEntry:type`
+#### `LDocEntry:type`
 
 Returns the Lua-visible type name for this documentation entry handle.
 
 ```lua
--- signature
 LDocEntry:type()
 ```
 
@@ -1637,7 +1664,7 @@ LDocEntry:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LDocEntry`. |
+| string | The string `[LDocEntry](#ldocentry-handle)`. |
 
 **Example**
 
@@ -1650,12 +1677,11 @@ end
 
 ---
 
-### `LDocEntry:typeOf`
+#### `LDocEntry:typeOf`
 
 Returns whether this documentation entry handle matches a supported type name.
 
 ```lua
--- signature
 LDocEntry:typeOf(name)
 ```
 
@@ -1663,13 +1689,13 @@ LDocEntry:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LDocEntry` and `Object`. |
+| `name` | string | Type name to compare against `[LDocEntry](#ldocentry-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1682,14 +1708,19 @@ end
 
 ---
 
-## LQualityReport
+## LQualityReport Handle
 
-### `LQualityReport:getBest`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LQualityReport:getBest`
 
 Returns the highest-scoring documentation entries.
 
 ```lua
--- signature
 LQualityReport:getBest(count)
 ```
 
@@ -1697,13 +1728,13 @@ LQualityReport:getBest(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Optional maximum number of entries to return; defaults to 10. |
+| `count?` | number | Optional maximum number of entries to return; defaults to 10. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry[]` | Best-scoring `LDocEntry` handles. |
+| [LDocEntry](#ldocentry-handle)[] | Best-scoring `[LDocEntry](#ldocentry-handle)` handles. |
 
 **Example**
 
@@ -1718,12 +1749,11 @@ end
 
 ---
 
-### `LQualityReport:getByGrade`
+#### `LQualityReport:getByGrade`
 
 Returns documentation entries whose calculated grade matches a grade string.
 
 ```lua
--- signature
 LQualityReport:getByGrade(grade)
 ```
 
@@ -1731,13 +1761,13 @@ LQualityReport:getByGrade(grade)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grade` | `string` | Grade string produced by the docs quality backend. |
+| `grade` | string | Grade string produced by the docs quality backend. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry[]` | Matching `LDocEntry` handles. |
+| [LDocEntry](#ldocentry-handle)[] | Matching `[LDocEntry](#ldocentry-handle)` handles. |
 
 **Example**
 
@@ -1752,12 +1782,11 @@ end
 
 ---
 
-### `LQualityReport:getGrade`
+#### `LQualityReport:getGrade`
 
 Returns the letter grade derived from the aggregate documentation score.
 
 ```lua
--- signature
 LQualityReport:getGrade()
 ```
 
@@ -1765,7 +1794,7 @@ LQualityReport:getGrade()
 
 | Type | Description |
 |------|-------------|
-| `string` | Quality grade text. |
+| string | Quality grade text. |
 
 **Example**
 
@@ -1779,12 +1808,11 @@ end
 
 ---
 
-### `LQualityReport:getModuleScores`
+#### `LQualityReport:getModuleScores`
 
 Returns per-module documentation quality scores.
 
 ```lua
--- signature
 LQualityReport:getModuleScores()
 ```
 
@@ -1792,7 +1820,7 @@ LQualityReport:getModuleScores()
 
 | Type | Description |
 |------|-------------|
-| `table` | Map table keyed by module name with numeric scores. |
+| table | Map table keyed by module name with numeric scores. |
 
 **Example**
 
@@ -1807,12 +1835,11 @@ end
 
 ---
 
-### `LQualityReport:getOverallScore`
+#### `LQualityReport:getOverallScore`
 
 Returns the aggregate documentation quality score.
 
 ```lua
--- signature
 LQualityReport:getOverallScore()
 ```
 
@@ -1820,7 +1847,7 @@ LQualityReport:getOverallScore()
 
 | Type | Description |
 |------|-------------|
-| `number` | Overall score in the range used by the docs scoring backend. |
+| number | Overall score in the range used by the docs scoring backend. |
 
 **Example**
 
@@ -1834,12 +1861,11 @@ end
 
 ---
 
-### `LQualityReport:getSummary`
+#### `LQualityReport:getSummary`
 
 Returns a human-readable summary of overall and per-module quality scores.
 
 ```lua
--- signature
 LQualityReport:getSummary()
 ```
 
@@ -1847,7 +1873,7 @@ LQualityReport:getSummary()
 
 | Type | Description |
 |------|-------------|
-| `string` | Multiline quality summary text. |
+| string | Multiline quality summary text. |
 
 **Example**
 
@@ -1861,12 +1887,11 @@ end
 
 ---
 
-### `LQualityReport:getWorst`
+#### `LQualityReport:getWorst`
 
 Returns the lowest-scoring documentation entries.
 
 ```lua
--- signature
 LQualityReport:getWorst(count)
 ```
 
@@ -1874,13 +1899,13 @@ LQualityReport:getWorst(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Optional maximum number of entries to return; defaults to 10. |
+| `count?` | number | Optional maximum number of entries to return; defaults to 10. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDocEntry[]` | Worst-scoring `LDocEntry` handles. |
+| [LDocEntry](#ldocentry-handle)[] | Worst-scoring `[LDocEntry](#ldocentry-handle)` handles. |
 
 **Example**
 
@@ -1895,12 +1920,11 @@ end
 
 ---
 
-### `LQualityReport:toJSON`
+#### `LQualityReport:toJSON`
 
 Serializes this quality report to formatted JSON.
 
 ```lua
--- signature
 LQualityReport:toJSON()
 ```
 
@@ -1908,7 +1932,7 @@ LQualityReport:toJSON()
 
 | Type | Description |
 |------|-------------|
-| `string` | Pretty-printed JSON object for the quality report. |
+| string | Pretty-printed JSON object for the quality report. |
 
 **Example**
 
@@ -1923,12 +1947,11 @@ end
 
 ---
 
-### `LQualityReport:toTable`
+#### `LQualityReport:toTable`
 
 Converts this quality report into a plain Lua table.
 
 ```lua
--- signature
 LQualityReport:toTable()
 ```
 
@@ -1936,7 +1959,7 @@ LQualityReport:toTable()
 
 | Type | Description |
 |------|-------------|
-| `LQualityReportToTableResult` | Table with overallScore, grade, and moduleScores fields. |
+| LQualityReportToTableResult | Table with overallScore, grade, and moduleScores fields. |
 
 **Example**
 
@@ -1951,12 +1974,11 @@ end
 
 ---
 
-### `LQualityReport:type`
+#### `LQualityReport:type`
 
 Returns the Lua-visible type name for this quality report handle.
 
 ```lua
--- signature
 LQualityReport:type()
 ```
 
@@ -1964,7 +1986,7 @@ LQualityReport:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LQualityReport`. |
+| string | The string `[LQualityReport](#lqualityreport-handle)`. |
 
 **Example**
 
@@ -1978,12 +2000,11 @@ end
 
 ---
 
-### `LQualityReport:typeOf`
+#### `LQualityReport:typeOf`
 
 Returns whether this quality report handle matches a supported type name.
 
 ```lua
--- signature
 LQualityReport:typeOf(name)
 ```
 
@@ -1991,13 +2012,13 @@ LQualityReport:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LQualityReport` and `Object`. |
+| `name` | string | Type name to compare against `[LQualityReport](#lqualityreport-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2011,14 +2032,19 @@ end
 
 ---
 
-## LSchema
+## LSchema Handle
 
-### `LSchema:assert`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSchema:assert`
 
 Validates a Lua table and raises a Lua error when schema checks fail.
 
 ```lua
--- signature
 LSchema:assert(data)
 ```
 
@@ -2026,7 +2052,7 @@ LSchema:assert(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | Table whose fields are checked against this schema. |
+| `data` | table | Table whose fields are checked against this schema. |
 
 **Example**
 
@@ -2040,12 +2066,11 @@ end
 
 ---
 
-### `LSchema:check`
+#### `LSchema:check`
 
 Validates a Lua table and returns only the boolean result.
 
 ```lua
--- signature
 LSchema:check(data)
 ```
 
@@ -2053,13 +2078,13 @@ LSchema:check(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | Table whose fields are checked against this schema. |
+| `data` | table | Table whose fields are checked against this schema. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the table satisfies the schema rules. |
+| boolean | True when the table satisfies the schema rules. |
 
 **Example**
 
@@ -2072,12 +2097,11 @@ end
 
 ---
 
-### `LSchema:getFields`
+#### `LSchema:getFields`
 
 Returns the field names declared by this schema.
 
 ```lua
--- signature
 LSchema:getFields()
 ```
 
@@ -2085,7 +2109,7 @@ LSchema:getFields()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Sorted array table of field names. |
+| string[] | Sorted array table of field names. |
 
 **Example**
 
@@ -2099,12 +2123,11 @@ end
 
 ---
 
-### `LSchema:getName`
+#### `LSchema:getName`
 
 Returns this schema's display name.
 
 ```lua
--- signature
 LSchema:getName()
 ```
 
@@ -2112,7 +2135,7 @@ LSchema:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Schema name. |
+| string | Schema name. |
 
 **Example**
 
@@ -2125,12 +2148,11 @@ end
 
 ---
 
-### `LSchema:type`
+#### `LSchema:type`
 
 Returns the Lua-visible type name for this schema handle.
 
 ```lua
--- signature
 LSchema:type()
 ```
 
@@ -2138,7 +2160,7 @@ LSchema:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LSchema`. |
+| string | The string `[LSchema](#lschema-handle)`. |
 
 **Example**
 
@@ -2151,12 +2173,11 @@ end
 
 ---
 
-### `LSchema:typeOf`
+#### `LSchema:typeOf`
 
 Returns whether this schema handle matches a supported type name.
 
 ```lua
--- signature
 LSchema:typeOf(name)
 ```
 
@@ -2164,13 +2185,13 @@ LSchema:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LSchema` and `Object`. |
+| `name` | string | Type name to compare against `[LSchema](#lschema-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2183,12 +2204,11 @@ end
 
 ---
 
-### `LSchema:validate`
+#### `LSchema:validate`
 
 Validates a Lua table and returns a success flag plus structured error rows.
 
 ```lua
--- signature
 LSchema:validate(data)
 ```
 
@@ -2196,14 +2216,14 @@ LSchema:validate(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | Table whose fields are checked against this schema. |
+| `data` | table | Table whose fields are checked against this schema. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True when every provided field satisfies the schema rules. |
-| `LSchemaValidateResult` | b Array table of validation errors with field and message fields. |
+| boolean | True when every provided field satisfies the schema rules. |
+| LSchemaValidateResult | Array table of validation errors with field and message fields. |
 
 **Example**
 
@@ -2217,14 +2237,19 @@ end
 
 ---
 
-## LValidationReport
+## LValidationReport Handle
 
-### `LValidationReport:getIncomplete`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LValidationReport:getIncomplete`
 
 Returns catalog APIs whose documentation was incomplete.
 
 ```lua
--- signature
 LValidationReport:getIncomplete()
 ```
 
@@ -2232,7 +2257,7 @@ LValidationReport:getIncomplete()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Incomplete qualified names. |
+| string[] | Incomplete qualified names. |
 
 **Example**
 
@@ -2247,12 +2272,11 @@ end
 
 ---
 
-### `LValidationReport:getMissing`
+#### `LValidationReport:getMissing`
 
 Returns live APIs that were missing from the checked catalog.
 
 ```lua
--- signature
 LValidationReport:getMissing()
 ```
 
@@ -2260,7 +2284,7 @@ LValidationReport:getMissing()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Missing qualified names. |
+| string[] | Missing qualified names. |
 
 **Example**
 
@@ -2275,12 +2299,11 @@ end
 
 ---
 
-### `LValidationReport:getPhantom`
+#### `LValidationReport:getPhantom`
 
 Returns catalog APIs that were not present in the live Lua table.
 
 ```lua
--- signature
 LValidationReport:getPhantom()
 ```
 
@@ -2288,7 +2311,7 @@ LValidationReport:getPhantom()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Phantom qualified names. |
+| string[] | Phantom qualified names. |
 
 **Example**
 
@@ -2303,12 +2326,11 @@ end
 
 ---
 
-### `LValidationReport:getSummary`
+#### `LValidationReport:getSummary`
 
 Returns a compact text summary of missing, phantom, and incomplete counts.
 
 ```lua
--- signature
 LValidationReport:getSummary()
 ```
 
@@ -2316,7 +2338,7 @@ LValidationReport:getSummary()
 
 | Type | Description |
 |------|-------------|
-| `string` | Human-readable validation summary. |
+| string | Human-readable validation summary. |
 
 **Example**
 
@@ -2330,12 +2352,11 @@ end
 
 ---
 
-### `LValidationReport:incompleteCount`
+#### `LValidationReport:incompleteCount`
 
 Returns the number of catalog APIs with incomplete documentation.
 
 ```lua
--- signature
 LValidationReport:incompleteCount()
 ```
 
@@ -2343,7 +2364,7 @@ LValidationReport:incompleteCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Incomplete API count. |
+| number | Incomplete API count. |
 
 **Example**
 
@@ -2357,12 +2378,11 @@ end
 
 ---
 
-### `LValidationReport:isValid`
+#### `LValidationReport:isValid`
 
 Returns whether the validation report has no missing live APIs.
 
 ```lua
--- signature
 LValidationReport:isValid()
 ```
 
@@ -2370,7 +2390,7 @@ LValidationReport:isValid()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when no live APIs are missing from the catalog. |
+| boolean | True when no live APIs are missing from the catalog. |
 
 **Example**
 
@@ -2384,12 +2404,11 @@ end
 
 ---
 
-### `LValidationReport:missingCount`
+#### `LValidationReport:missingCount`
 
 Returns the number of live APIs missing from the catalog.
 
 ```lua
--- signature
 LValidationReport:missingCount()
 ```
 
@@ -2397,7 +2416,7 @@ LValidationReport:missingCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Missing API count. |
+| number | Missing API count. |
 
 **Example**
 
@@ -2411,12 +2430,11 @@ end
 
 ---
 
-### `LValidationReport:phantomCount`
+#### `LValidationReport:phantomCount`
 
 Returns the number of catalog APIs absent from live reflection.
 
 ```lua
--- signature
 LValidationReport:phantomCount()
 ```
 
@@ -2424,7 +2442,7 @@ LValidationReport:phantomCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Phantom API count. |
+| number | Phantom API count. |
 
 **Example**
 
@@ -2438,12 +2456,11 @@ end
 
 ---
 
-### `LValidationReport:toJSON`
+#### `LValidationReport:toJSON`
 
 Serializes this validation report to formatted JSON.
 
 ```lua
--- signature
 LValidationReport:toJSON()
 ```
 
@@ -2451,7 +2468,7 @@ LValidationReport:toJSON()
 
 | Type | Description |
 |------|-------------|
-| `string` | Pretty-printed JSON object for the report. |
+| string | Pretty-printed JSON object for the report. |
 
 **Example**
 
@@ -2466,12 +2483,11 @@ end
 
 ---
 
-### `LValidationReport:toTable`
+#### `LValidationReport:toTable`
 
 Converts this validation report into a plain Lua table.
 
 ```lua
--- signature
 LValidationReport:toTable()
 ```
 
@@ -2479,7 +2495,7 @@ LValidationReport:toTable()
 
 | Type | Description |
 |------|-------------|
-| `LValidationReportToTableResult` | Table with missing, phantom, and incomplete array fields. |
+| LValidationReportToTableResult | Table with missing, phantom, and incomplete array fields. |
 
 **Example**
 
@@ -2494,12 +2510,11 @@ end
 
 ---
 
-### `LValidationReport:type`
+#### `LValidationReport:type`
 
 Returns the Lua-visible type name for this validation report handle.
 
 ```lua
--- signature
 LValidationReport:type()
 ```
 
@@ -2507,7 +2522,7 @@ LValidationReport:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LValidationReport`. |
+| string | The string `[LValidationReport](#lvalidationreport-handle)`. |
 
 **Example**
 
@@ -2521,12 +2536,11 @@ end
 
 ---
 
-### `LValidationReport:typeOf`
+#### `LValidationReport:typeOf`
 
 Returns whether this validation report handle matches a supported type name.
 
 ```lua
--- signature
 LValidationReport:typeOf(name)
 ```
 
@@ -2534,13 +2548,13 @@ LValidationReport:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LValidationReport` and `Object`. |
+| `name` | string | Type name to compare against `[LValidationReport](#lvalidationreport-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

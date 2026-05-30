@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["great_circle_distance","great_circle_path","lat_lon_to_unit","ray_sphere_intersect","unit_to_lat_lon"],"struct":["Mat3x3"]};

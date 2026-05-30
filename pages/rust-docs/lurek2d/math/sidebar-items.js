@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["aabb_tree","bezier","circle","easing","facade","geometry","loot_table","mat3","polygon","random","rect","spatial_hash","spline","transform","vec2","vec3","voronoi"]};

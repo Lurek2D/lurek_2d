@@ -7,14 +7,14 @@ content from src/<module>/AGENT.md or src/<module>/AGENT.legacy.md, but after
 that transition it continues to work from the existing spec plus source code.
 
 Manual sections preserved from the existing spec when present:
-- General Info
+- TL;DR
 - Summary
-- Notes
 
 Auto-collected sections rebuilt from source code and Lua binding data:
+- General Info
+- Imports
 - Files
 - Lua API Ref
-- References
 
 Usage:
 ```
@@ -125,7 +125,7 @@ SECTION_ALIASES = {
     "types": ["Types", "Key Types"],
     "functions": ["Methods", "Functions"],
     "lua_api": ["Lua API Ref", "Lua API Reference", "Lua API", "Lua API Summary"],
-    "references": ["References"],
+    "references": ["Imports", "References"],
     "notes": ["Notes", "Constraints"],
     "tldr": ["TL;DR"],
 }
@@ -160,6 +160,12 @@ LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 LUA_API_MODULE_ALIASES: dict[str, list[str]] = {
     "runtime": ["system", "engine"],
 }
+
+# `lua_api` is a thin wrapper layer and should not have a standalone module
+# spec; callback contracts are documented in docs/specs/callbacks.md generated
+# from engine callback metadata.
+MODULE_SPEC_EXCLUDE = {"lua_api"}
+SPECIAL_SPECS = ["callbacks"]
 
 
 def load_lua_parser():
@@ -492,10 +498,13 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
     module_enums: list[dict] = []
     module_constants: list[dict] = []
     namespace_prefixes: list[str] = []
+    global_callbacks: list[dict] = []
 
     if LUA_API_JSON.exists():
         data = json.loads(read_text(LUA_API_JSON))
         all_modules = (data.get("lua_api", {}).get("modules", {}) or {})
+        if module == "lua_api":
+            global_callbacks = data.get("engine_callbacks") or []
         module_names = [module] + LUA_API_MODULE_ALIASES.get(module, [])
 
         for module_name in module_names:
@@ -630,6 +639,7 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
         "module_functions": sorted(module_functions, key=lambda item: item["lua_name"] or item["name"]),
         "module_constants": sorted(module_constants, key=lambda item: item["name"]),
         "module_enums": sorted(module_enums, key=lambda item: item["name"]),
+        "global_callbacks": sorted(global_callbacks, key=lambda item: item.get("name", "")),
         "classes": {
             k: {
                 "description": v.get("description") or "Lua-visible object type.",
@@ -801,12 +811,16 @@ def resolve_item_description(overrides: dict[str, str], *keys: str, fallback: st
 def format_general_info(module: str, group: str, rust_tests: str, lua_tests: str, lua_api: dict) -> str:
     lua_paths = f"`{lua_api['binding_path']}`" if lua_api["binding_path"] else "None direct"
     namespace = f"`{lua_api['namespace']}`" if lua_api["namespace"] else "None direct"
+    function_count = len(lua_api.get("module_functions", []))
+    type_count = len(lua_api.get("classes", {}))
+    method_count = sum(len(meta.get("methods", [])) for meta in lua_api.get("classes", {}).values())
     return "\n".join(
         [
             f"- Module group: `{strip_backticks(group)}`",
             f"- Source path: `src/{module}/`",
-            f"- Lua API path(s): {lua_paths}",
-            f"- Primary Lua namespace: {namespace}",
+            f"- Binding: {lua_paths}",
+            f"- Namespace: {namespace}",
+            f"- Lua API surface: `{function_count}` functions, `{type_count}` types, `{method_count}` methods",
             f"- Rust test path(s): {strip_backticks(rust_tests) or 'None found in the workspace'}",
             f"- Lua test path(s): {strip_backticks(lua_tests) or 'None found in the workspace'}",
         ]
@@ -888,6 +902,92 @@ def format_functions(module: str, file_rows: list[dict], functions_by_file: dict
     return "\n".join(lines)
 
 
+def extract_callback_entries_from_doc(full_doc: str) -> list[dict[str, str]]:
+    """Extract callback-like params from pipe-tag @param lines.
+
+    A callback is currently inferred from parameter type tokens that include
+    `function` (including optional forms like `function?`).
+    """
+    if not full_doc:
+        return []
+
+    out: list[dict[str, str]] = []
+    for raw_line in full_doc.splitlines():
+        line = raw_line.strip()
+        match = re.match(r"^@param\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+)$", line)
+        if not match:
+            continue
+        param_name = match.group(1).strip()
+        param_type = match.group(2).strip()
+        description = match.group(3).strip()
+        if "function" not in param_type.lower():
+            continue
+        invocation = ""
+        invoke_match = re.search(r"(callback\([^)]*\))", description, flags=re.IGNORECASE)
+        if invoke_match:
+            invocation = invoke_match.group(1)
+        out.append(
+            {
+                "name": param_name,
+                "type": param_type,
+                "description": description,
+                "invocation": invocation,
+            }
+        )
+    return out
+
+
+def collect_lua_callbacks(lua_api: dict) -> list[dict[str, str]]:
+    """Collect callback parameter contracts from module functions and methods."""
+    rows: list[dict[str, str]] = []
+
+    for fn in lua_api.get("module_functions", []) or []:
+        label = (fn.get("lua_name") or fn.get("name") or "").strip()
+        if not label:
+            continue
+        for cb in extract_callback_entries_from_doc(fn.get("full_doc") or ""):
+            rows.append(
+                {
+                    "owner": label,
+                    "param": cb.get("name", "callback"),
+                    "type": cb.get("type", "function"),
+                    "description": cb.get("description", "Callback parameter."),
+                    "invocation": cb.get("invocation", ""),
+                }
+            )
+
+    for class_name, class_meta in (lua_api.get("classes") or {}).items():
+        for method in class_meta.get("methods", []) or []:
+            label = (method.get("lua_name") or "").strip()
+            if not label:
+                method_name = (method.get("name") or "").strip()
+                if method_name:
+                    label = f"{class_name}:{method_name}"
+            if not label:
+                continue
+            for cb in extract_callback_entries_from_doc(method.get("full_doc") or ""):
+                rows.append(
+                    {
+                        "owner": label,
+                        "param": cb.get("name", "callback"),
+                        "type": cb.get("type", "function"),
+                        "description": cb.get("description", "Callback parameter."),
+                        "invocation": cb.get("invocation", ""),
+                    }
+                )
+
+    # Deduplicate while preserving stable order.
+    deduped: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str, str]] = set()
+    for row in sorted(rows, key=lambda r: (r["owner"], r["param"])):
+        key = (row["owner"], row["param"], row["type"], row["description"])
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(row)
+    return deduped
+
+
 def format_lua_api(lua_api: dict) -> str:
     if (
         not lua_api["namespace"]
@@ -899,16 +999,42 @@ def format_lua_api(lua_api: dict) -> str:
         return "- No dedicated direct `lurek.*` namespace is exposed by this module."
 
     lines: list[str] = []
-    lines.append(f"- Binding: `{lua_api['binding_path']}`" if lua_api["binding_path"] else "- Binding: None direct")
-    lines.append(f"- Namespace: `{lua_api['namespace']}`" if lua_api["namespace"] else "- Namespace: None direct")
+    global_callbacks = lua_api.get("global_callbacks", []) or []
+    if global_callbacks:
+        lines.extend(["### Global Callbacks", ""])
+        for cb in global_callbacks:
+            name = cb.get("name", "")
+            signature = cb.get("signature") or (f"function lurek.{name}()" if name else "function lurek.<callback>()")
+            description = cb.get("description") or "Engine callback."
+            lines.append(f"- `{signature}`: {description}")
+            params = cb.get("parameters") or []
+            for param in params:
+                pname = param.get("name", "arg")
+                ptype = param.get("type", "any")
+                pdesc = param.get("description", "")
+                popt = "?" if param.get("optional") else ""
+                detail = f" — {pdesc}" if pdesc else ""
+                lines.append(f"  - `{pname}` (`{ptype}{popt}`){detail}")
+        lines.append("")
 
-    lines.extend(["", "### Functions", ""])
+    lines.extend(["### Functions", ""])
     if lua_api["module_functions"]:
         for fn in lua_api["module_functions"]:
             label = fn["lua_name"] or fn["name"]
             lines.append(f"- `{label}`: {fn['description']}")
     else:
         lines.append("- No documented module-level functions.")
+
+    lines.extend(["", "### Callbacks", ""])
+    callback_rows = collect_lua_callbacks(lua_api)
+    if callback_rows:
+        for cb in callback_rows:
+            tail = f" Invocation: `{cb['invocation']}`." if cb.get("invocation") else ""
+            lines.append(
+                f"- `{cb['owner']}` param `{cb['param']}` (`{cb['type']}`): {cb['description']}{tail}"
+            )
+    else:
+        lines.append("- No documented callback parameters in this module.")
 
     lines.extend(["", "### Enums", ""])
     emitted_any_enum_like = False
@@ -1054,6 +1180,10 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {summary_text}
 
+## Imports
+
+{references_text}
+
 ## Files
 
 {files_text}
@@ -1061,10 +1191,6 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 ## Lua API Ref
 
 {lua_api_text}
-
-## References
-
-{references_text}
 """
 
     inventory = {
@@ -1077,6 +1203,109 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
         "type_count": sum(len(items) for items in source["types_by_file"].values()),
         "function_count": sum(len(items) for items in source["functions_by_file"].values()),
         "lua_api_count": len(lua_api["module_functions"]) + sum(len(v) for v in lua_api["classes"].values()),
+    }
+    return content, inventory
+
+
+def load_engine_callbacks() -> list[dict]:
+    if not LUA_API_JSON.exists():
+        return []
+    try:
+        data = json.loads(read_text(LUA_API_JSON))
+    except Exception:
+        return []
+    callbacks = data.get("engine_callbacks") or []
+    if not isinstance(callbacks, list):
+        return []
+    return sorted(
+        [cb for cb in callbacks if isinstance(cb, dict) and cb.get("name")],
+        key=lambda cb: cb.get("name", ""),
+    )
+
+
+def build_callbacks_spec() -> tuple[str, dict]:
+    callbacks = load_engine_callbacks()
+
+    general_info = "\n".join(
+        [
+            "- Module group: `Edge/Integration`",
+            "- Source path: `src/app/`",
+            "- Binding: Global engine callback registration (no dedicated `src/lua_api/<module>_api.rs` spec target)",
+            "- Namespace: `lurek.<callback>` (global callbacks)",
+            f"- Callback surface: `{len(callbacks)}` engine callbacks",
+            "- Rust test path(s): None found in the workspace",
+            "- Lua test path(s): None found in the workspace",
+        ]
+    )
+
+    summary = (
+        "This spec documents global `lurek.*` lifecycle/input/render callbacks exposed by the engine runtime. "
+        "It is generated from `logs/data/lua_api_data.json` (`engine_callbacks`) so callback contracts stay in sync "
+        "with Rust+Lua API extraction without hardcoded lists.\n\n"
+        "Scope boundary: this file owns only callback inventory and ownership context. "
+        "Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`)."
+    )
+
+    callback_lines: list[str] = []
+    if callbacks:
+        callback_lines.extend(["### Callback Inventory", ""])
+        for cb in callbacks:
+            name = cb.get("name") or "<callback>"
+            description = cb.get("description") or "Engine callback."
+            callback_lines.append(f"- `lurek.{name}`: {description}")
+        callback_lines.append("")
+    else:
+        callback_lines.append("- No callback metadata available in `logs/data/lua_api_data.json`.")
+
+    callback_lines.extend(
+        [
+            "### API Details",
+            "",
+            "- Full signatures and parameter contracts are intentionally kept in generated API docs:",
+            "  - `docs/api/lurek.md`",
+            "  - `docs/api/lurek.lua`",
+        ]
+    )
+
+    content = f"""# callbacks
+
+## TL;DR
+
+Global `lurek.*` callbacks are documented here as a dedicated generated spec, independent from thin-wrapper module specs.
+
+## General Info
+
+{general_info}
+
+## Summary
+
+{summary}
+
+## Imports
+
+- Global callback contracts are sourced from `logs/data/lua_api_data.json` (`engine_callbacks`).
+
+## Files
+
+### callback contracts
+
+- Generated from engine callback metadata extracted during Lua API data generation.
+
+## Lua API Ref
+
+{"\n".join(callback_lines).strip()}
+"""
+
+    inventory = {
+        "group": "Edge/Integration",
+        "namespace": "lurek.<callback>",
+        "rust_tests": "None found in the workspace",
+        "lua_tests": "None found in the workspace",
+        "references": [],
+        "file_count": 1,
+        "type_count": 0,
+        "function_count": 0,
+        "lua_api_count": len(callbacks),
     }
     return content, inventory
 
@@ -1110,10 +1339,15 @@ Examples:
     args = parser.parse_args()
 
     lua_parser = load_lua_parser()
-    modules = sorted(p.name for p in SRC.iterdir() if p.is_dir())
+    modules = sorted(
+        p.name for p in SRC.iterdir() if p.is_dir() and p.name not in MODULE_SPEC_EXCLUDE
+    )
     if args.module:
         selected = set(args.module)
         modules = [module for module in modules if module in selected]
+        emit_callbacks_spec = "callbacks" in selected
+    else:
+        emit_callbacks_spec = True
 
     SPECS.mkdir(parents=True, exist_ok=True)
     SESSION_DATA.parent.mkdir(parents=True, exist_ok=True)
@@ -1124,8 +1358,22 @@ Examples:
         (SPECS / f"{module}.md").write_text(content.rstrip() + "\n", encoding="utf-8")
         inventory[module] = meta
 
+    if emit_callbacks_spec:
+        callbacks_content, callbacks_meta = build_callbacks_spec()
+        (SPECS / "callbacks.md").write_text(callbacks_content.rstrip() + "\n", encoding="utf-8")
+        inventory["callbacks"] = callbacks_meta
+
+    # Ensure deprecated thin-wrapper spec is removed and not reintroduced.
+    deprecated_spec = SPECS / "lua_api.md"
+    if deprecated_spec.exists() and (not args.module or "lua_api" in (set(args.module) if args.module else set())):
+        deprecated_spec.unlink()
+
     if not args.module:
-        rewrite_readme(sorted(p.name for p in SRC.iterdir() if p.is_dir()))
+        readme_modules = sorted(
+            [p.name for p in SRC.iterdir() if p.is_dir() and p.name not in MODULE_SPEC_EXCLUDE]
+            + SPECIAL_SPECS
+        )
+        rewrite_readme(readme_modules)
 
     SESSION_DATA.write_text(json.dumps(inventory, indent=2, sort_keys=True), encoding="utf-8")
     print(f"Generated {len(modules)} module spec files.")

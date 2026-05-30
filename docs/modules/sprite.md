@@ -1,12 +1,60 @@
 # Sprite
 
-- The `sprite` module is a powerful Feature Systems tier component dedicated to 2D texture rendering primitives.
+## Summary
 
 It provides the essential building blocks for 2D game visuals, encompassing sprite sheets, texture atlases, scalable UI panels, and high-performance batch rendering. At its most basic level, the `Sprite` struct defines a single textured unit with properties for position, scale, rotation, and color tint. To manage animation frames, the `SpriteSheet` divides a single texture into a uniform grid. It supports precomputed frame rectangles, named frame groups for animation sequences, and specific layouts for directional character sprites (such as the standard RPG Maker 3x4 layout). 
 
 For more complex texture packing, the module features a comprehensive `SpriteAtlas` system. It parses standard texture atlas formats, specifically supporting JSON exports from popular tools like TexturePacker and Aseprite. The atlas stores named regions (`AtlasEntry`) complete with pixel rectangles and flags for rotation or flipping, allowing for O(1) name lookups and seamless integration with existing art pipelines. The module also includes `NineSlice`, a specialized struct that generates 9-patch geometry. This enables the creation of scalable UI elements—such as dialog boxes, health bars, or menu panels—that preserve their corner and edge pixel ratios while stretching to fit target dimensions.
 
 To ensure optimal rendering performance, the module provides the `SpriteBatch` mechanism. A `SpriteBatch` acts as a deferred draw-call collector bound to a single texture atlas. Instead of submitting individual sprites to the GPU one by one, developers can accumulate hundreds of positioned, rotated, and scaled sprite entries into a single batch. This approach drastically reduces state changes and GPU draw calls, making it highly efficient for rendering dense tile layers, complex UI screens, or large swarms of characters. Fully accessible via the `lurek.sprite.*` Lua API, this module is indispensable for performant 2D game development in Lurek2D.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### atlas.rs
+
+- This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
+- It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
+- Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
+- Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
+- Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
+- The file is the naming and region-mapping layer for packed sprite content.
+
+### mod.rs
+
+- This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
+- It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
+- At the highest level this is the feature layer that turns textures into reusable 2D presentation pieces.
+
+### nine_slice.rs
+
+- This file defines nine-slice scaling logic for UI panels and framed elements that must resize without destroying border fidelity.
+- It splits one source region into corners, edges, and center pieces whose destination layout can adapt to arbitrary target sizes.
+- Corner preservation and controlled edge stretching are the core visual promises of this file.
+- It is the geometry helper behind scalable textured panels in the engine.
+
+### sprite.rs
+
+- This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
+- It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
+- The type is the simplest textured presentation unit in the sprite subsystem.
+
+### sprite_batch.rs
+
+- This file implements sprite batching for cases where many textured quads share one source texture and should travel together through rendering.
+- It accumulates per-instance transform and source-region data so callers can build dense draw groups without issuing one command per sprite.
+- Capacity limits are part of the design because some workloads want explicit control over how much batch data is retained per frame.
+- The file is the performance-oriented collection layer of the sprite subsystem.
+
+### sprite_sheet.rs
+
+- This file turns a texture divided into repeated cells into a navigable sprite-sheet structure for frame-based animation and lookup.
+- Frame rectangles are precomputed so callers can move through rows, columns, ranges, and named groups without recalculating geometry each time.
+- Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
+- Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
+- Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
+- The file is the animation-frame organization layer of the sprite module.
 
 ## Functions
 
@@ -15,7 +63,6 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
 
 ```lua
--- signature
 lurek.sprite.newAtlasSheet(atlas, sw, sh)
 ```
 
@@ -23,15 +70,15 @@ lurek.sprite.newAtlasSheet(atlas, sw, sh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `atlas` | `LSpriteAtlas` | A previously parsed sprite atlas. |
-| `sw` | `number` | Sheet texture width in pixels. |
-| `sh` | `number` | Sheet texture height in pixels. |
+| `atlas` | [LSpriteAtlas](#lspriteatlas-handle) | A previously parsed sprite atlas. |
+| `sw` | number | Sheet texture width in pixels. |
+| `sh` | number | Sheet texture height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheet` | A new sprite sheet derived from the atlas entries. |
+| [LSpriteSheet](#lspritesheet-handle) | A new sprite sheet derived from the atlas entries. |
 
 **Example**
 
@@ -48,10 +95,9 @@ end
 
 ### `lurek.sprite.newRPGMakerSheet`
 
-Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
+Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 
 ```lua
--- signature
 lurek.sprite.newRPGMakerSheet(tw, th)
 ```
 
@@ -59,14 +105,14 @@ lurek.sprite.newRPGMakerSheet(tw, th)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tw` | `number` | Full texture width in pixels. |
-| `th` | `number` | Full texture height in pixels. |
+| `tw` | number | Full texture width in pixels. |
+| `th` | number | Full texture height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheet` | A new sprite sheet configured for RPG Maker character sprites. |
+| [LSpriteSheet](#lspritesheet-handle) | A new sprite sheet configured for RPG Maker character sprites. |
 
 **Example**
 
@@ -87,7 +133,6 @@ end
 Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 
 ```lua
--- signature
 lurek.sprite.newSheet(tw, th, fw, fh)
 ```
 
@@ -95,16 +140,16 @@ lurek.sprite.newSheet(tw, th, fw, fh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tw` | `number` | Full texture width in pixels. |
-| `th` | `number` | Full texture height in pixels. |
-| `fw` | `number` | Single frame width in pixels. |
-| `fh` | `number` | Single frame height in pixels. |
+| `tw` | number | Full texture width in pixels. |
+| `th` | number | Full texture height in pixels. |
+| `fw` | number | Single frame width in pixels. |
+| `fh` | number | Single frame height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheet` | A new sprite sheet object. |
+| [LSpriteSheet](#lspritesheet-handle) | A new sprite sheet object. |
 
 **Example**
 
@@ -124,7 +169,6 @@ end
 Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 
 ```lua
--- signature
 lurek.sprite.parseAsepriteAtlas(json_str)
 ```
 
@@ -132,13 +176,13 @@ lurek.sprite.parseAsepriteAtlas(json_str)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `json_str` | `string` | Raw JSON content of the Aseprite export atlas file. |
+| `json_str` | string | Raw JSON content of the Aseprite export atlas file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteAtlas` | A new atlas with named sprite regions from Aseprite frames. |
+| [LSpriteAtlas](#lspriteatlas-handle) | A new atlas with named sprite regions from Aseprite frames. |
 
 **Example**
 
@@ -159,7 +203,6 @@ end
 Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
 
 ```lua
--- signature
 lurek.sprite.parseAtlas(json_str)
 ```
 
@@ -167,13 +210,13 @@ lurek.sprite.parseAtlas(json_str)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `json_str` | `string` | Raw JSON content of the TexturePacker atlas file. |
+| `json_str` | string | Raw JSON content of the TexturePacker atlas file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteAtlas` | A new atlas with named sprite regions. |
+| [LSpriteAtlas](#lspriteatlas-handle) | A new atlas with named sprite regions. |
 
 **Example**
 
@@ -189,14 +232,36 @@ end
 
 ---
 
-## LSpriteAtlas
+## Module Fields
 
-### `LSpriteAtlas:entryCount`
+*No module-level fields documented.*
+
+## Types
+
+- [LSpriteAtlas Handle](#lspriteatlas-handle)
+- [LSpriteSheet Handle](#lspritesheet-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LSpriteAtlas Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpriteAtlas:entryCount`
 
 Returns the total number of entries (sprite regions) in the atlas.
 
 ```lua
--- signature
 LSpriteAtlas:entryCount()
 ```
 
@@ -204,7 +269,7 @@ LSpriteAtlas:entryCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Entry count. |
+| number | Entry count. |
 
 **Example**
 
@@ -218,12 +283,11 @@ end
 
 ---
 
-### `LSpriteAtlas:entryNames`
+#### `LSpriteAtlas:entryNames`
 
 Returns an array of all entry names in the atlas.
 
 ```lua
--- signature
 LSpriteAtlas:entryNames()
 ```
 
@@ -231,7 +295,7 @@ LSpriteAtlas:entryNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Name strings. |
+| string[] | Name strings. |
 
 **Example**
 
@@ -247,12 +311,11 @@ end
 
 ---
 
-### `LSpriteAtlas:getByIndex`
+#### `LSpriteAtlas:getByIndex`
 
 Returns a sprite region by its 1-based index in the atlas.
 
 ```lua
--- signature
 LSpriteAtlas:getByIndex(index)
 ```
 
@@ -260,13 +323,13 @@ LSpriteAtlas:getByIndex(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based entry index. |
+| `index` | number | 1-based entry index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteAtlasGetByIndexResult` | Entry table `{name, x, y, w, h, rotated}`, or nil if the index is out of range. |
+| LSpriteAtlasGetByIndexResult | Entry table `{name, x, y, w, h, rotated}`, or nil if the index is out of range. |
 
 **Example**
 
@@ -281,12 +344,11 @@ end
 
 ---
 
-### `LSpriteAtlas:getEntry`
+#### `LSpriteAtlas:getEntry`
 
 Looks up a named sprite region in the atlas by its original filename or tag.
 
 ```lua
--- signature
 LSpriteAtlas:getEntry(name)
 ```
 
@@ -294,13 +356,13 @@ LSpriteAtlas:getEntry(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Entry name (e.g. `"player_idle_0"`). |
+| `name` | string | Entry name (e.g. `"player_idle_0"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteAtlasGetEntryResult` | Entry table `{name, x, y, w, h, rotated}`, or nil if the entry is not found. |
+| LSpriteAtlasGetEntryResult | Entry table `{name, x, y, w, h, rotated}`, or nil if the entry is not found. |
 
 **Example**
 
@@ -316,12 +378,11 @@ end
 
 ---
 
-### `LSpriteAtlas:getFlipped`
+#### `LSpriteAtlas:getFlipped`
 
 Returns a copy of a named atlas entry with the specified flip flags applied.
 
 ```lua
--- signature
 LSpriteAtlas:getFlipped(name, flip_x, flip_y)
 ```
 
@@ -329,15 +390,15 @@ LSpriteAtlas:getFlipped(name, flip_x, flip_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Entry name to look up. |
-| `flip_x` | `boolean` | Mirror horizontally. |
-| `flip_y` | `boolean` | Mirror vertically. |
+| `name` | string | Entry name to look up. |
+| `flip_x` | boolean | Mirror horizontally. |
+| `flip_y` | boolean | Mirror vertically. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteAtlasGetFlippedResult` | Entry table with added `flip_x` and `flip_y` fields, or nil if the entry is not found. |
+| LSpriteAtlasGetFlippedResult | Entry table with added `flip_x` and `flip_y` fields, or nil if the entry is not found. |
 
 **Example**
 
@@ -353,12 +414,11 @@ end
 
 ---
 
-### `LSpriteAtlas:type`
+#### `LSpriteAtlas:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LSpriteAtlas:type()
 ```
 
@@ -366,7 +426,7 @@ LSpriteAtlas:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LSpriteAtlas"`. |
+| string | Always `"[LSpriteAtlas](#lspriteatlas-handle)"`. |
 
 **Example**
 
@@ -380,12 +440,11 @@ end
 
 ---
 
-### `LSpriteAtlas:typeOf`
+#### `LSpriteAtlas:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSpriteAtlas:typeOf(name)
 ```
 
@@ -393,13 +452,13 @@ LSpriteAtlas:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. `"LSpriteAtlas"` or `"Object"`). |
+| `name` | string | Type name to check (e.g. `"[LSpriteAtlas](#lspriteatlas-handle)"` or `"Object"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object is the given type. |
+| boolean | True if the object is the given type. |
 
 **Example**
 
@@ -413,14 +472,19 @@ end
 
 ---
 
-## LSpriteSheet
+## LSpriteSheet Handle
 
-### `LSpriteSheet:drawToImage`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpriteSheet:drawToImage`
 
 Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
 
 ```lua
--- signature
 LSpriteSheet:drawToImage(w, h)
 ```
 
@@ -428,14 +492,14 @@ LSpriteSheet:drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Output image width in pixels. |
-| `h` | `number` | Output image height in pixels. |
+| `w` | number | Output image width in pixels. |
+| `h` | number | Output image height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImage` | A new image containing the rendered sprite sheet. |
+| LImage | A new image containing the rendered sprite sheet. |
 
 **Example**
 
@@ -451,12 +515,11 @@ end
 
 ---
 
-### `LSpriteSheet:getColumn`
+#### `LSpriteSheet:getColumn`
 
 Returns all frame quads in the given column of the sprite sheet grid.
 
 ```lua
--- signature
 LSpriteSheet:getColumn(col)
 ```
 
@@ -464,13 +527,13 @@ LSpriteSheet:getColumn(col)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | 0-based column index. |
+| `col` | number | 0-based column index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheetGetColumnResult` | Array of quad tables `{x, y, w, h}`. |
+| LSpriteSheetGetColumnResult | Array of quad tables `{x, y, w, h}`. |
 
 **Example**
 
@@ -485,12 +548,11 @@ end
 
 ---
 
-### `LSpriteSheet:getFrame`
+#### `LSpriteSheet:getFrame`
 
 Returns the UV quad for a single frame by its 1-based index.
 
 ```lua
--- signature
 LSpriteSheet:getFrame(index)
 ```
 
@@ -498,13 +560,13 @@ LSpriteSheet:getFrame(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based frame index in the sprite sheet. |
+| `index` | number | 1-based frame index in the sprite sheet. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheetGetFrameResult` | Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if the index is out of range. |
+| LSpriteSheetGetFrameResult | Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if the index is out of range. |
 
 **Example**
 
@@ -519,12 +581,11 @@ end
 
 ---
 
-### `LSpriteSheet:getFrameCount`
+#### `LSpriteSheet:getFrameCount`
 
 Returns the total number of frames in this sprite sheet.
 
 ```lua
--- signature
 LSpriteSheet:getFrameCount()
 ```
 
@@ -532,7 +593,7 @@ LSpriteSheet:getFrameCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total frame count (columns × rows). |
+| number | Total frame count (columns Ă— rows). |
 
 **Example**
 
@@ -545,12 +606,11 @@ end
 
 ---
 
-### `LSpriteSheet:getFrameSize`
+#### `LSpriteSheet:getFrameSize`
 
 Returns the pixel dimensions of a single frame cell.
 
 ```lua
--- signature
 LSpriteSheet:getFrameSize()
 ```
 
@@ -558,8 +618,8 @@ LSpriteSheet:getFrameSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Frame width in pixels. |
-| `number` | b Frame height in pixels. |
+| number | Frame width in pixels. |
+| number | Frame height in pixels. |
 
 **Example**
 
@@ -573,12 +633,11 @@ end
 
 ---
 
-### `LSpriteSheet:getGridSize`
+#### `LSpriteSheet:getGridSize`
 
 Returns the number of columns and rows in the sprite sheet grid.
 
 ```lua
--- signature
 LSpriteSheet:getGridSize()
 ```
 
@@ -586,8 +645,8 @@ LSpriteSheet:getGridSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Number of columns. |
-| `number` | b Number of rows. |
+| number | Number of columns. |
+| number | Number of rows. |
 
 **Example**
 
@@ -601,12 +660,11 @@ end
 
 ---
 
-### `LSpriteSheet:getGroupFrames`
+#### `LSpriteSheet:getGroupFrames`
 
 Returns the frame quads for a named animation group.
 
 ```lua
--- signature
 LSpriteSheet:getGroupFrames(name)
 ```
 
@@ -614,13 +672,13 @@ LSpriteSheet:getGroupFrames(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the animation group (e.g. "walk", "idle"). |
+| `name` | string | Name of the animation group (e.g. "walk", "idle"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheetGetGroupFramesResult` | Array of quad tables for the group, or nil if the group does not exist. |
+| LSpriteSheetGetGroupFramesResult | Array of quad tables for the group, or nil if the group does not exist. |
 
 **Example**
 
@@ -636,12 +694,11 @@ end
 
 ---
 
-### `LSpriteSheet:getGroupNames`
+#### `LSpriteSheet:getGroupNames`
 
 Returns an array of all named animation group names defined on this sheet.
 
 ```lua
--- signature
 LSpriteSheet:getGroupNames()
 ```
 
@@ -649,7 +706,7 @@ LSpriteSheet:getGroupNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Group name strings. |
+| string[] | Group name strings. |
 
 **Example**
 
@@ -666,12 +723,11 @@ end
 
 ---
 
-### `LSpriteSheet:getRow`
+#### `LSpriteSheet:getRow`
 
 Returns all frame quads in the given row of the sprite sheet grid.
 
 ```lua
--- signature
 LSpriteSheet:getRow(row)
 ```
 
@@ -679,13 +735,13 @@ LSpriteSheet:getRow(row)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | `number` | 0-based row index. |
+| `row` | number | 0-based row index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpriteSheetGetRowResult` | Array of quad tables `{x, y, w, h}`. |
+| LSpriteSheetGetRowResult | Array of quad tables `{x, y, w, h}`. |
 
 **Example**
 
@@ -700,12 +756,11 @@ end
 
 ---
 
-### `LSpriteSheet:nameGroup`
+#### `LSpriteSheet:nameGroup`
 
 Defines a named animation group as a contiguous range of frames.
 
 ```lua
--- signature
 LSpriteSheet:nameGroup(name, start, count)
 ```
 
@@ -713,9 +768,9 @@ LSpriteSheet:nameGroup(name, start, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name for the group (e.g. "attack"). |
-| `start` | `number` | 1-based start frame index. |
-| `count` | `number` | Number of frames in the group. |
+| `name` | string | Name for the group (e.g. "attack"). |
+| `start` | number | 1-based start frame index. |
+| `count` | number | Number of frames in the group. |
 
 **Example**
 
@@ -730,12 +785,11 @@ end
 
 ---
 
-### `LSpriteSheet:type`
+#### `LSpriteSheet:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LSpriteSheet:type()
 ```
 
@@ -743,7 +797,7 @@ LSpriteSheet:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LSpriteSheet"`. |
+| string | Always `"[LSpriteSheet](#lspritesheet-handle)"`. |
 
 **Example**
 
@@ -756,12 +810,11 @@ end
 
 ---
 
-### `LSpriteSheet:typeOf`
+#### `LSpriteSheet:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSpriteSheet:typeOf(name)
 ```
 
@@ -769,13 +822,13 @@ LSpriteSheet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. `"LSpriteSheet"` or `"Object"`). |
+| `name` | string | Type name to check (e.g. `"[LSpriteSheet](#lspritesheet-handle)"` or `"Object"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the object is the given type. |
+| boolean | True if the object is the given type. |
 
 **Example**
 

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["effects","multi","path","render","types","viewport","viewport_scale"],"type":["CameraFollowEasing"]};

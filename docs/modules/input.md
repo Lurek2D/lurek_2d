@@ -1,12 +1,87 @@
 # Input
 
-- The `input` module is a core Platform Services tier component that aggregates and processes hardware inputs across keyboard, mouse, gamepad, and multi-touch devices.
+## Summary
 
 Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
 
 The `MouseState` system offers comprehensive tracking of cursor coordinates, scroll-wheel deltas, and multi-button states. It allows developers to customize the cursor by selecting from system icons, providing raw RGBA pixel data, or toggling visibility and window-grab confinement (relative mode) for first-person control schemes. Gamepad support is exceptionally robust via the `GamepadState` struct, which tracks up to four connected controllers simultaneously. It manages analog sticks, triggers, button presses, connection lifecycles, and OS force-feedback vibration requests, synthesizing virtual D-pads and providing SDL2 GameControllerDB GUID mapping for maximum compatibility. `TouchState` similarly handles multi-point contact tracking for mobile or touchscreen interfaces, capturing press, move, and release lifecycles.
 
 To support complex game mechanics, the module includes a highly capable `ComboDetector` designed to recognize fighting-game-style multi-step input sequences, complete with configurable per-step and total-sequence timeout windows. Furthermore, the module implements an `InputRecorder` that can capture sparse frame-by-frame event streams into versioned JSON envelopes. These recordings can be loaded and played back deterministically, facilitating automated testing, replay systems, and automated demo loops. All of these features are seamlessly exposed to the scripting engine via the `lurek.input.*` Lua namespace.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### action_def.rs
+
+- Defines action-binding data shapes used to map logical actions onto multiple physical inputs.
+- Stores ordered binding strings and optional category grouping for tooling and menu presentation.
+- Provides serializable action-map structures for loading, saving, and sharing binding presets.
+
+### combo.rs
+
+- Implements sequential combo recognition for multi-step input patterns with timing constraints.
+- Tracks progress state across key feeds, validating per-step gaps and whole-sequence deadlines.
+- Emits explicit advanced, completed, and broken states to simplify caller-side response logic.
+- Resets predictably after failures or completion to support repeated combo attempts.
+- Powers gameplay and scripting features that require ordered gesture-style key sequences.
+
+### events.rs
+
+- Declares normalized input event names and payload types emitted from the platform event loop.
+- Defines keyboard, mouse, wheel, text, and gamepad event variants for unified downstream handling.
+- Serves as the shared event contract consumed by runtime queues and Lua-facing dispatch paths.
+
+### gamepad.rs
+
+- Manages gamepad device state per slot, including buttons, axes, and connection lifecycle changes.
+- Tracks per-frame deltas for press and release transitions so polling remains deterministic.
+- Queues rumble requests with normalized motor strengths for runtime delivery to OS backends.
+- Parses and stores mapping profiles using GUID-keyed formats compatible with common controller data.
+- Bridges backend-specific button and axis identities into stable engine-facing naming.
+- Synthesizes virtual directional output from analog sticks with deadzone-aware interpretation.
+- Exposes hat and direction queries used by gameplay code and Lua input APIs.
+
+### keyboard.rs
+
+- Implements per-frame keyboard state with held keys, transition deltas, and modifier tracking.
+- Separates logical key identity from physical scancode paths for layout-aware and layout-agnostic input.
+- Updates modifier bitmasks on each event to keep control-state queries cheap and consistent.
+- Maintains optional key-repeat and text-input buffering for UI fields and chat-like interactions.
+- Performs translation from backend key enums into stable engine key naming conventions.
+- Clears transient deltas at frame boundaries while preserving held-state continuity.
+- Supports binding workflows that combine textual key names with physical scan-code fallback semantics.
+
+### mod.rs
+
+- High-level input module that groups keyboard, mouse, gamepad, touch, and recording components.
+- Re-exports action and state types so caller code can consume one coherent input surface.
+- Defines the composition boundary where platform events become gameplay-usable input state.
+
+### mouse.rs
+
+- Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics.
+- Stores held, pressed, and released button sets for deterministic polling across gameplay systems.
+- Supports system cursor variants and custom cursor image metadata with hotspot offsets.
+- Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration.
+- Preserves smooth pointer-control behavior while separating transient and persistent state.
+- Serves as the central mouse state source for UI interaction and gameplay input checks.
+
+### recorder.rs
+
+- Records and replays input timelines as frame-indexed event sequences for automation and debugging.
+- Captures sparse frame data so silent periods do not inflate stored replay size.
+- Serializes recordings through versioned JSON envelopes for stable persistence and interchange.
+- Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression.
+- Supports deterministic test scenarios by emitting recorded events on their original frame numbers.
+- Unifies recording and playback behavior in one stateful component used by runtime and tools.
+
+### touch.rs
+
+- Tracks multi-touch contacts with active-point state and per-frame transition sets.
+- Stores per-contact position and pressure values keyed by stable touch identifiers.
+- Clears transient pressed and released markers at frame boundaries while preserving active points.
+- Provides touch lifecycle mutation paths for start, move, and end events from the platform layer.
 
 ## Functions
 
@@ -15,7 +90,6 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 Advances playback by one frame and returns events for that frame.
 
 ```lua
--- signature
 lurek.input.advancePlayback()
 ```
 
@@ -23,7 +97,7 @@ lurek.input.advancePlayback()
 
 | Type | Description |
 |------|-------------|
-| `InputAdvancePlaybackResult` | Array of event records with `kind` and `name` fields. |
+| LInputAdvancePlaybackResult | Array of event records with `kind` and `name` fields. |
 
 **Example**
 
@@ -48,7 +122,6 @@ end
 Adds one or more keyboard/gamepad bindings to an action.
 
 ```lua
--- signature
 lurek.input.bind(action, keys)
 ```
 
@@ -56,8 +129,8 @@ lurek.input.bind(action, keys)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Action name. |
-| `keys` | `any` | Binding string or array table of binding strings. |
+| `action` | string | Action name. |
+| `keys` | any | Binding string or array table of binding strings. |
 
 **Example**
 
@@ -76,7 +149,6 @@ end
 Removes all action bindings from the map.
 
 ```lua
--- signature
 lurek.input.clearBindings()
 ```
 
@@ -98,7 +170,6 @@ end
 Defines an action with a full set of bindings and an optional category, replacing any prior definition.
 
 ```lua
--- signature
 lurek.input.define(name, bindings, category)
 ```
 
@@ -106,9 +177,9 @@ lurek.input.define(name, bindings, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Action name. |
-| `bindings` | `any` | Binding string or array of binding strings. |
-| `category?` | `string` | Category label for grouping (default empty string). |
+| `name` | string | Action name. |
+| `bindings` | any | Binding string or array of binding strings. |
+| `category?` | string | Category label for grouping (default empty string). |
 
 **Example**
 
@@ -127,7 +198,6 @@ end
 Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
 
 ```lua
--- signature
 lurek.input.deserializeBindings(json)
 ```
 
@@ -135,13 +205,13 @@ lurek.input.deserializeBindings(json)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `json` | `string` | JSON string with action definitions. |
+| `json` | string | JSON string with action definitions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True on success. |
+| boolean | True on success. |
 
 **Example**
 
@@ -163,7 +233,6 @@ end
 Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.
 
 ```lua
--- signature
 lurek.input.getAxis(name)
 ```
 
@@ -171,13 +240,13 @@ lurek.input.getAxis(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Action name. |
+| `name` | string | Action name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Axis value: +1.0, -1.0, or 0.0. |
+| number | Axis value: +1.0, -1.0, or 0.0. |
 
 **Example**
 
@@ -197,7 +266,6 @@ end
 Returns all registered action bindings.
 
 ```lua
--- signature
 lurek.input.getBindings()
 ```
 
@@ -205,7 +273,7 @@ lurek.input.getBindings()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Map table from action names to arrays of binding strings. |
+| string[] | Map table from action names to arrays of binding strings. |
 
 **Example**
 
@@ -226,7 +294,6 @@ end
 Returns action names belonging to the given category.
 
 ```lua
--- signature
 lurek.input.getByCategory(category)
 ```
 
@@ -234,13 +301,13 @@ lurek.input.getByCategory(category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `category` | `string` | Category label. |
+| `category` | string | Category label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Array of matching action names. |
+| string[] | Array of matching action names. |
 
 **Example**
 
@@ -260,7 +327,6 @@ end
 Returns a table mapping each binding key to the action names that share it; only keys with two or more actions are included.
 
 ```lua
--- signature
 lurek.input.getConflicts()
 ```
 
@@ -268,7 +334,7 @@ lurek.input.getConflicts()
 
 | Type | Description |
 |------|-------------|
-| `table` | Map of binding string to array of conflicting action names. |
+| table | Map of binding string to array of conflicting action names. |
 
 **Example**
 
@@ -289,7 +355,6 @@ end
 Returns the current playback frame index.
 
 ```lua
--- signature
 lurek.input.getPlaybackFrame()
 ```
 
@@ -297,7 +362,7 @@ lurek.input.getPlaybackFrame()
 
 | Type | Description |
 |------|-------------|
-| `number` | Playback frame index. |
+| number | Playback frame index. |
 
 **Example**
 
@@ -315,7 +380,6 @@ end
 Returns a 2D axis vector from two named actions.
 
 ```lua
--- signature
 lurek.input.getVector(hname, vname)
 ```
 
@@ -323,15 +387,15 @@ lurek.input.getVector(hname, vname)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `hname` | `string` | Horizontal action name (positive = right). |
-| `vname` | `string` | Vertical action name (positive = down). |
+| `hname` | string | Horizontal action name (positive = right). |
+| `vname` | string | Vertical action name (positive = down). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Horizontal axis value. |
-| `number` | b Vertical axis value. |
+| number | Horizontal axis value. |
+| number | Vertical axis value. |
 
 **Example**
 
@@ -352,7 +416,6 @@ end
 Returns whether any binding for an action is currently down.
 
 ```lua
--- signature
 lurek.input.isActionDown(action)
 ```
 
@@ -360,13 +423,13 @@ lurek.input.isActionDown(action)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Action name. |
+| `action` | string | Action name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any binding is down. |
+| boolean | True when any binding is down. |
 
 **Example**
 
@@ -385,7 +448,6 @@ end
 Returns whether any bound key for this mapping is currently down.
 
 ```lua
--- signature
 lurek.input.isDown()
 ```
 
@@ -393,7 +455,7 @@ lurek.input.isDown()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any bound key is down. |
+| boolean | True when any bound key is down. |
 
 **Example**
 
@@ -413,7 +475,6 @@ end
 Returns whether the module recorder is currently playing back.
 
 ```lua
--- signature
 lurek.input.isPlayingBack()
 ```
 
@@ -421,7 +482,7 @@ lurek.input.isPlayingBack()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when playback is active. |
+| boolean | True when playback is active. |
 
 **Example**
 
@@ -445,7 +506,6 @@ end
 Returns whether the module recorder is currently recording.
 
 ```lua
--- signature
 lurek.input.isRecording()
 ```
 
@@ -453,7 +513,7 @@ lurek.input.isRecording()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when recording is active. |
+| boolean | True when recording is active. |
 
 **Example**
 
@@ -471,7 +531,6 @@ end
 Loads recording JSON into the module recorder.
 
 ```lua
--- signature
 lurek.input.loadRecording(json)
 ```
 
@@ -479,7 +538,7 @@ lurek.input.loadRecording(json)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `json` | `string` | Recording JSON. |
+| `json` | string | Recording JSON. |
 
 **Example**
 
@@ -499,7 +558,6 @@ end
 Creates a combo detector from string steps or step tables with optional timing.
 
 ```lua
--- signature
 lurek.input.newCombo(steps, opts)
 ```
 
@@ -507,14 +565,14 @@ lurek.input.newCombo(steps, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `steps` | `table` | Array table of key strings or `{key, gap}` step tables. |
-| `opts?` | `table` | Options table with `total_gap` in milliseconds. |
+| `steps` | table | Array table of key strings or `{key, gap}` step tables. |
+| `opts?` | table | Options table with `total_gap` in milliseconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCombo` | New combo detector handle. |
+| [LCombo](#lcombo-handle) | New combo detector handle. |
 
 **Example**
 
@@ -534,7 +592,6 @@ end
 Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
 
 ```lua
--- signature
 lurek.input.newMapping(name, keys)
 ```
 
@@ -542,14 +599,14 @@ lurek.input.newMapping(name, keys)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Action name. |
-| `keys` | `any` | Binding string or array table of binding strings. |
+| `name` | string | Action name. |
+| `keys` | any | Binding string or array table of binding strings. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `InputNewMappingResult` | Mapping table with action query closures. |
+| LInputNewMappingResult | Mapping table with action query closures. |
 
 **Example**
 
@@ -570,7 +627,6 @@ end
 Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
 
 ```lua
--- signature
 lurek.input.onRebind(callback)
 ```
 
@@ -578,7 +634,7 @@ lurek.input.onRebind(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | `function` | function(action_name, new_keys) called on any change. |
+| `callback` | function | function(action_name, new_keys) called on any change. |
 
 **Example**
 
@@ -598,7 +654,6 @@ end
 Removes bindings for one action by name, or all actions when name is nil.
 
 ```lua
--- signature
 lurek.input.reset(name)
 ```
 
@@ -606,7 +661,7 @@ lurek.input.reset(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Action name. When nil, all actions are removed. |
+| `name?` | string | Action name. When nil, all actions are removed. |
 
 **Example**
 
@@ -627,7 +682,6 @@ end
 Serialises all action definitions to a JSON string.
 
 ```lua
--- signature
 lurek.input.serializeBindings()
 ```
 
@@ -635,7 +689,7 @@ lurek.input.serializeBindings()
 
 | Type | Description |
 |------|-------------|
-| `string` | JSON representation of all action definitions. |
+| string | JSON representation of all action definitions. |
 
 **Example**
 
@@ -655,7 +709,6 @@ end
 Starts playback of the loaded recording.
 
 ```lua
--- signature
 lurek.input.startPlayback()
 ```
 
@@ -681,7 +734,6 @@ end
 Starts recording input events into the module recorder.
 
 ```lua
--- signature
 lurek.input.startRecording()
 ```
 
@@ -702,7 +754,6 @@ end
 Stops playback of the loaded recording.
 
 ```lua
--- signature
 lurek.input.stopPlayback()
 ```
 
@@ -725,7 +776,6 @@ end
 Stops input recording and returns the captured recording when one is active.
 
 ```lua
--- signature
 lurek.input.stopRecording()
 ```
 
@@ -733,7 +783,7 @@ lurek.input.stopRecording()
 
 | Type | Description |
 |------|-------------|
-| `LInputRecording` | Recording handle, or nil when recording was not active. |
+| [LInputRecording](#linputrecording-handle) | Recording handle, or nil when recording was not active. |
 
 **Example**
 
@@ -752,7 +802,6 @@ end
 Removes all bindings for an action.
 
 ```lua
--- signature
 lurek.input.unbind(action)
 ```
 
@@ -760,13 +809,13 @@ lurek.input.unbind(action)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Action name. |
+| `action` | string | Action name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the action had bindings. |
+| boolean | True when the action had bindings. |
 
 **Example**
 
@@ -785,7 +834,6 @@ end
 Returns whether any binding for an action was pressed this frame and records the frame.
 
 ```lua
--- signature
 lurek.input.wasActionPressed(action)
 ```
 
@@ -793,13 +841,13 @@ lurek.input.wasActionPressed(action)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Action name. |
+| `action` | string | Action name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any binding was pressed this frame. |
+| boolean | True when any binding was pressed this frame. |
 
 **Example**
 
@@ -818,7 +866,6 @@ end
 Returns whether an action was pressed within a recent frame window.
 
 ```lua
--- signature
 lurek.input.wasActionPressedWithin(action, frames)
 ```
 
@@ -826,14 +873,14 @@ lurek.input.wasActionPressedWithin(action, frames)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Action name. |
-| `frames` | `number` | Number of frames allowed since the last press. |
+| `action` | string | Action name. |
+| `frames` | number | Number of frames allowed since the last press. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the action was pressed within the window. |
+| boolean | True when the action was pressed within the window. |
 
 **Example**
 
@@ -852,7 +899,6 @@ end
 Returns whether any binding for an action was released this frame.
 
 ```lua
--- signature
 lurek.input.wasActionReleased(action)
 ```
 
@@ -860,13 +906,13 @@ lurek.input.wasActionReleased(action)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action` | `string` | Action name. |
+| `action` | string | Action name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any binding was released this frame. |
+| boolean | True when any binding was released this frame. |
 
 **Example**
 
@@ -885,7 +931,6 @@ end
 Returns whether any bound key for this mapping was pressed this frame.
 
 ```lua
--- signature
 lurek.input.wasPressed()
 ```
 
@@ -893,7 +938,7 @@ lurek.input.wasPressed()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any bound key was pressed. |
+| boolean | True when any bound key was pressed. |
 
 **Example**
 
@@ -913,7 +958,6 @@ end
 Returns whether any bound key for this mapping was released this frame.
 
 ```lua
--- signature
 lurek.input.wasReleased()
 ```
 
@@ -921,14 +965,14 @@ lurek.input.wasReleased()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any bound key was released. |
+| boolean | True when any bound key was released. |
 
 **Example**
 
 ```lua
 do
     -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased("space")
+    local v = lurek.input.wasReleased()
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
     print("space released = " .. tostring(v))
 end
@@ -936,14 +980,37 @@ end
 
 ---
 
-## LCombo
+## Module Fields
 
-### `LCombo:feed`
+*No module-level fields documented.*
+
+## Types
+
+- [LCombo Handle](#lcombo-handle)
+- [LCursor Handle](#lcursor-handle)
+- [LInputRecording Handle](#linputrecording-handle)
+
+## Callbacks
+
+- `lurek.input.onRebind` param `callback` (`function`): function(action_name, new_keys) called on any change.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LCombo Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCombo:feed`
 
 Feeds one key into the combo detector and returns progress status.
 
 ```lua
--- signature
 LCombo:feed(key)
 ```
 
@@ -951,13 +1018,13 @@ LCombo:feed(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Key name to feed into the combo sequence. |
+| `key` | string | Key name to feed into the combo sequence. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | `completed`, `advanced`, `broken`, or `idle`. |
+| string | `completed`, `advanced`, `broken`, or `idle`. |
 
 **Example**
 
@@ -971,12 +1038,11 @@ end
 
 ---
 
-### `LCombo:getStep`
+#### `LCombo:getStep`
 
 Returns step data by one-based index.
 
 ```lua
--- signature
 LCombo:getStep(index)
 ```
 
@@ -984,13 +1050,13 @@ LCombo:getStep(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based combo step index. |
+| `index` | number | One-based combo step index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LComboGetStepResult` | Step table with `key` and `gap_ms`, or nil when out of range. |
+| LComboGetStepResult | Step table with `key` and `gap_ms`, or nil when out of range. |
 
 **Example**
 
@@ -1004,12 +1070,11 @@ end
 
 ---
 
-### `LCombo:isInProgress`
+#### `LCombo:isInProgress`
 
 Returns whether the combo sequence is partially matched.
 
 ```lua
--- signature
 LCombo:isInProgress()
 ```
 
@@ -1017,7 +1082,7 @@ LCombo:isInProgress()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the combo is in progress. |
+| boolean | True when the combo is in progress. |
 
 **Example**
 
@@ -1032,12 +1097,11 @@ end
 
 ---
 
-### `LCombo:progress`
+#### `LCombo:progress`
 
 Returns the current combo step index reached.
 
 ```lua
--- signature
 LCombo:progress()
 ```
 
@@ -1045,7 +1109,7 @@ LCombo:progress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of completed combo steps. |
+| number | Number of completed combo steps. |
 
 **Example**
 
@@ -1061,12 +1125,11 @@ end
 
 ---
 
-### `LCombo:reset`
+#### `LCombo:reset`
 
 Resets combo progress and elapsed time.
 
 ```lua
--- signature
 LCombo:reset()
 ```
 
@@ -1083,12 +1146,11 @@ end
 
 ---
 
-### `LCombo:tick`
+#### `LCombo:tick`
 
 Advances combo timeout state and returns progress status.
 
 ```lua
--- signature
 LCombo:tick(dt)
 ```
 
@@ -1096,13 +1158,13 @@ LCombo:tick(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | `expired`, `in_progress`, or `idle`. |
+| string | `expired`, `in_progress`, or `idle`. |
 
 **Example**
 
@@ -1116,12 +1178,11 @@ end
 
 ---
 
-### `LCombo:totalSteps`
+#### `LCombo:totalSteps`
 
 Returns the number of steps in this combo sequence.
 
 ```lua
--- signature
 LCombo:totalSteps()
 ```
 
@@ -1129,7 +1190,7 @@ LCombo:totalSteps()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total combo step count. |
+| number | Total combo step count. |
 
 **Example**
 
@@ -1144,12 +1205,11 @@ end
 
 ---
 
-### `LCombo:type`
+#### `LCombo:type`
 
 Returns the Lua-visible type name for this combo handle.
 
 ```lua
--- signature
 LCombo:type()
 ```
 
@@ -1157,7 +1217,7 @@ LCombo:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LCombo`. |
+| string | The string `[LCombo](#lcombo-handle)`. |
 
 **Example**
 
@@ -1171,12 +1231,11 @@ end
 
 ---
 
-### `LCombo:typeOf`
+#### `LCombo:typeOf`
 
 Returns whether this combo handle matches a supported type name.
 
 ```lua
--- signature
 LCombo:typeOf(name)
 ```
 
@@ -1184,13 +1243,13 @@ LCombo:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LCombo` and `Object`. |
+| `name` | string | Type name to compare against `[LCombo](#lcombo-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1204,14 +1263,19 @@ end
 
 ---
 
-## LCursor
+## LCursor Handle
 
-### `LCursor:getType`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCursor:getType`
 
 Returns whether this cursor is a system cursor or custom cursor.
 
 ```lua
--- signature
 LCursor:getType()
 ```
 
@@ -1219,7 +1283,7 @@ LCursor:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | `system` or `custom`. |
+| string | `system` or `custom`. |
 
 **Example**
 
@@ -1235,12 +1299,11 @@ end
 
 ---
 
-### `LCursor:release`
+#### `LCursor:release`
 
 Releases cursor resources; currently a no-op for managed cursor handles.
 
 ```lua
--- signature
 LCursor:release()
 ```
 
@@ -1258,12 +1321,11 @@ end
 
 ---
 
-### `LCursor:type`
+#### `LCursor:type`
 
 Returns the Lua-visible type name for this cursor handle.
 
 ```lua
--- signature
 LCursor:type()
 ```
 
@@ -1271,7 +1333,7 @@ LCursor:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LCursor`. |
+| string | The string `[LCursor](#lcursor-handle)`. |
 
 **Example**
 
@@ -1287,12 +1349,11 @@ end
 
 ---
 
-### `LCursor:typeOf`
+#### `LCursor:typeOf`
 
 Returns whether this cursor handle matches a supported type name.
 
 ```lua
--- signature
 LCursor:typeOf(name)
 ```
 
@@ -1300,13 +1361,13 @@ LCursor:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LCursor` and `Object`. |
+| `name` | string | Type name to compare against `[LCursor](#lcursor-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1322,14 +1383,19 @@ end
 
 ---
 
-## LInputRecording
+## LInputRecording Handle
 
-### `LInputRecording:frameCount`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LInputRecording:frameCount`
 
 Returns the number of event frames stored in this recording.
 
 ```lua
--- signature
 LInputRecording:frameCount()
 ```
 
@@ -1337,7 +1403,7 @@ LInputRecording:frameCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Stored event frame count. |
+| number | Stored event frame count. |
 
 **Example**
 
@@ -1351,12 +1417,11 @@ end
 
 ---
 
-### `LInputRecording:toJson`
+#### `LInputRecording:toJson`
 
 Serializes this input recording to JSON text.
 
 ```lua
--- signature
 LInputRecording:toJson()
 ```
 
@@ -1364,7 +1429,7 @@ LInputRecording:toJson()
 
 | Type | Description |
 |------|-------------|
-| `string` | Recording JSON. |
+| string | Recording JSON. |
 
 **Example**
 
@@ -1379,12 +1444,11 @@ end
 
 ---
 
-### `LInputRecording:totalFrames`
+#### `LInputRecording:totalFrames`
 
 Returns total frame count stored in this recording.
 
 ```lua
--- signature
 LInputRecording:totalFrames()
 ```
 
@@ -1392,7 +1456,7 @@ LInputRecording:totalFrames()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total recorded frames. |
+| number | Total recorded frames. |
 
 **Example**
 
@@ -1406,12 +1470,11 @@ end
 
 ---
 
-### `LInputRecording:type`
+#### `LInputRecording:type`
 
 Returns the Lua-visible type name for this input recording handle.
 
 ```lua
--- signature
 LInputRecording:type()
 ```
 
@@ -1419,7 +1482,7 @@ LInputRecording:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LInputRecording`. |
+| string | The string `[LInputRecording](#linputrecording-handle)`. |
 
 **Example**
 
@@ -1433,12 +1496,11 @@ end
 
 ---
 
-### `LInputRecording:typeOf`
+#### `LInputRecording:typeOf`
 
 Returns whether this input recording handle matches a supported type name.
 
 ```lua
--- signature
 LInputRecording:typeOf(name)
 ```
 
@@ -1446,13 +1508,13 @@ LInputRecording:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LInputRecording` and `Object`. |
+| `name` | string | Type name to compare against `[LInputRecording](#linputrecording-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

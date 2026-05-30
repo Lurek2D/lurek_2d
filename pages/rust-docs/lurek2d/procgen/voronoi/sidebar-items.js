@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["voronoi_diagram"],"struct":["VoronoiOpts"]};

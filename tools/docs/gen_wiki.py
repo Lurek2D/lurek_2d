@@ -344,7 +344,7 @@ def parse_specs() -> dict[str, SpecInfo]:
                 purpose=strip_links(cells[2]),
             )
     for spec_path in sorted(SPEC_DIR.glob("*.md")):
-        if spec_path.name in {"README.md", "SPEC_TEMPLATE.md"}:
+        if spec_path.name in {"README.md"}:
             continue
         module = spec_path.stem
         text = read(spec_path)
@@ -352,7 +352,7 @@ def parse_specs() -> dict[str, SpecInfo]:
         info.summary = first_paragraphs(section(text, "Summary"), 2)
         general = section(text, "General Info")
         group_match = re.search(r"^- Module group:\s*`?([^`\n]+)`?", general, re.MULTILINE)
-        namespace_match = re.search(r"^- Primary Lua namespace:\s*`?([^`\n]+)`?", general, re.MULTILINE)
+        namespace_match = re.search(r"^- (?:Namespace|Primary Lua namespace):\s*`?([^`\n]+)`?", general, re.MULTILINE)
         info.group = info.group or (group_match.group(1).strip() if group_match else "")
         info.namespace = namespace_match.group(1).strip() if namespace_match else f"lurek.{module}"
         info.source_docs = parse_source_docs(text)

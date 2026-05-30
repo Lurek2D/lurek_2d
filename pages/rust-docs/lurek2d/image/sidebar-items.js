@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["compressed","effects","image_data","layers","palette_lut","rect_packing","render","serial","texture","texture_atlas","visualization"]};

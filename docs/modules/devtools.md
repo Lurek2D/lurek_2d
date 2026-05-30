@@ -1,14 +1,76 @@
 # Devtools
 
-- The `devtools` module provides an extensive suite of development-time diagnostic utilities intended for runtime inspection, profiling, and debugging in Lurek2D.
+## Summary
 
-Situated within the Edge/Integration tier, this module empowers developers to analyze performance and iteratively refine game code without interrupting execution. Key among its features is the `Logger`, which provides structured, severity-leveled logging with sophisticated sink routing—allowing logs to be mirrored to in-memory bounded buffers, standard error, or append-only log files. It natively supports severity filtering and prefix-based category filtering.
+The `devtools` module aggregates developer-facing runtime instrumentation: frame statistics, structured logging, hierarchical profiling, REPL interaction, and file-watcher support. It is an operational toolkit for diagnosis and iteration, not a gameplay feature module.
 
-For performance analysis, the `Profiler` implements a hierarchical, push/pop zone-based timing system. It captures execution durations per named scope (zone), segregating total elapsed time from exclusive 'self-time'. The data is collected on a per-frame basis and stored in a rolling frame history, facilitating deep CPU-cost inspection across consecutive frames. Working alongside the profiler is `FrameStats`, which translates raw per-frame CPU and GPU timing deltas into actionable metrics, including FPS aggregates, minimums, maximums, and percentiles.
+Each submodule owns a clear diagnostic surface: `frame_stats` for timing snapshots and aggregates, `logger` for filtered message capture, `profiler` for nested timing zones, `repl` for interactive scripting flows, `watcher` for file-change tracking, and `time_anchor` for stable elapsed-time references. `lua_display` normalizes value formatting for user-visible debug output.
 
-To accelerate the development workflow, `devtools` integrates hot-reload capabilities through the `FileWatcher`. This component watches directories for changes using native operating system notification backends, triggering Lua callbacks on file creation, modification, or deletion. Additionally, the `ReplConsole` provides an interactive in-game Read-Eval-Print Loop (REPL), wrapping the release-safe core REPL to offer an integrated environment for executing Lua expressions on the fly while retaining bounded command history.
+The design goal is composable instrumentation with minimal disruption to runtime behavior. Tools should be callable from scripting and runtime integration points without introducing tight coupling to specific game systems.
 
-All these diagnostic tools are designed to be 'headless-safe' and lightweight, importing only core dependencies such as `runtime` and `log`. The module's comprehensive feature set is made accessible to the engine via the `lurek.devtools.*` Lua API namespace, where developers can programmatically inject logs, define profiler zones, query performance aggregates, handle file watches, and even execute Lua snippets directly within the running application.
+As an Edge/Integration module, it should preserve clear contracts for output structure, history bounds, and performance overhead, so diagnostics remain useful under both local iteration and automated quality checks.
+
+Implementation detail and boundary guarantees for devtools: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: frame_stats.rs: Collect bounded rolling history of frame-delta samples - Compute aggregate metrics: FPS, average, min, max, and percentiles - Produce immutable snapshots summarizing recent frame performance; logger.rs: Define ordered severity levels with case-insensitive parsing - Store bounded in-memory log history with timestamped entries - Filter log output by minimum severity and optional category prefix - Mirror accepted entries to stderr and optional append-only file - Provide tail and ca; lua_display.rs: Convert Lua values to human-readable text for REPL and debug display - Handle nil, boolean, number, string, table, function, and userdata variants - Return safe fallback labels for unrecognized value kinds; mod.rs: Aggregate frame-time statistics and FPS percentile snapshots - Structured logging with severity filtering, file output, and history - Hierarchical profiler with zone stacking and per-frame capture - Interactive Lua REPL console with bounded command history - File-watcher polling; profiler.rs: Record hierarchical profiling zones with push/pop stack semantics - Compute total and self (exclusive) duration per zone - Capture per-frame zone trees into bounded rolling history - Retrieve frames by positive or negative index - Flatten nested zone trees for aggregate reporting; repl.rs: Compatibility wrapper around the release-safe REPL core - Preserves the devtools ReplConsole API and bounded history behavior - Returns expression results, success markers, command text, or formatted error text; time_anchor.rs: Capture a monotonic instant at construction time - Compute elapsed seconds from that anchor on demand - Provide a shared timing primitive for logger and profiler; watcher.rs: Track watched file paths with last-observed modification timestamps - Poll for mtime changes and report modified paths on each tick - Integrate native notify backend when devtools-plugin feature is enabled - Support forced-stale marking, path registration, and full clear - Dedupl. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### frame_stats.rs
+
+- Implements bounded rolling frame-timing history used for live performance telemetry.
+- Computes aggregate metrics including FPS, mean, min, max, and percentile summaries.
+- Produces immutable snapshot views for diagnostics overlays and developer reporting paths.
+- Serves as the frame-statistics data source for devtools performance introspection.
+- Keeps sample retention bounded to maintain predictable memory usage in long sessions.
+
+### logger.rs
+
+- Implements structured developer logging with severity levels and bounded in-memory retention.
+- Parses level labels case-insensitively and applies configurable minimum-level filtering.
+- Supports optional category filtering and tail-style retrieval over retained log entries.
+- Mirrors accepted records to stderr and optional append-only file outputs.
+- Serves as the local devtools logging backbone for runtime diagnostics.
+
+### lua_display.rs
+
+- Implements Lua value pretty-print conversion for REPL and debug-facing display output.
+- Handles scalar and structured value variants with stable human-readable formatting behavior.
+- Returns safe fallback labels for unrecognized or unsupported value representations.
+
+### mod.rs
+
+- Defines the devtools module boundary for profiling, logging, REPL, and file-watch diagnostics.
+- Groups developer instrumentation utilities into one cohesive runtime helper surface.
+- Serves as the composition entry for non-production debugging and observability workflows.
+
+### profiler.rs
+
+- Implements hierarchical runtime profiling with nested push-pop zone timing semantics.
+- Computes total and exclusive durations per zone for accurate hotspot attribution.
+- Captures per-frame profiling trees into bounded rolling history collections.
+- Supports indexed frame access and flattened traversal for aggregate performance reporting.
+- Serves as the profiling core for devtools runtime instrumentation.
+
+### repl.rs
+
+- Implements a compatibility wrapper around the release-safe REPL session core.
+- Preserves devtools console API shape with bounded command-history behavior.
+- Returns evaluation outcomes as success markers, value strings, or formatted errors.
+
+### time_anchor.rs
+
+- Implements a monotonic timing anchor used to compute elapsed seconds on demand.
+- Provides shared timestamp base behavior for logger and profiler instrumentation.
+- Serves as a lightweight time-reference primitive for devtools subsystems.
+
+### watcher.rs
+
+- Implements watched-file tracking with mtime snapshots for change-detection workflows.
+- Polls registered paths and reports deterministic modified-path sets per update tick.
+- Integrates optional native notify backend when feature-gated devtools plugin support is enabled.
+- Supports path registration, stale marking, and complete watch-state reset operations.
+- Deduplicates and orders change reports for stable hot-reload consumption.
 
 ## Functions
 
@@ -17,7 +79,6 @@ All these diagnostic tools are designed to be 'headless-safe' and lightweight, i
 Clears all in-memory devtools log entries.
 
 ```lua
--- signature
 lurek.devtools.clearLog()
 ```
 
@@ -38,7 +99,6 @@ end
 Removes every path from the module-level file watcher.
 
 ```lua
--- signature
 lurek.devtools.clearWatches()
 ```
 
@@ -59,7 +119,6 @@ end
 Adds a debug-level diagnostic message to the devtools log.
 
 ```lua
--- signature
 lurek.devtools.debug(message)
 ```
 
@@ -67,7 +126,7 @@ lurek.devtools.debug(message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -85,7 +144,6 @@ end
 Adds an error-level diagnostic message to the devtools log.
 
 ```lua
--- signature
 lurek.devtools.error(message)
 ```
 
@@ -93,7 +151,7 @@ lurek.devtools.error(message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -111,7 +169,6 @@ end
 Evaluates Lua code in the current state and returns success plus values or failure plus an error message.
 
 ```lua
--- signature
 lurek.devtools.eval(code)
 ```
 
@@ -119,13 +176,13 @@ lurek.devtools.eval(code)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `code` | `string` | Lua source code evaluated through the current Lua VM. |
+| `code` | string | Lua source code evaluated through the current Lua VM. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Multi-return where the first value is a boolean success flag followed by result values or an error string. |
+| LuaValue | Multi-return where the first value is a boolean success flag followed by result values or an error string. |
 
 **Example**
 
@@ -144,7 +201,6 @@ end
 Registers a watch expression callback for snapshots and watch panels.
 
 ```lua
--- signature
 lurek.devtools.exposeWatch(name, getter, category)
 ```
 
@@ -152,15 +208,15 @@ lurek.devtools.exposeWatch(name, getter, category)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Display name for the watch entry. |
-| `getter` | `function` | Callback invoked with no arguments when watch values are collected. |
-| `category?` | `string` | Optional category label used by devtools UIs. |
+| `name` | string | Display name for the watch entry. |
+| `getter` | function | Callback invoked with no arguments when watch values are collected. |
+| `category?` | string | Optional category label used by devtools UIs. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Numeric watch id that can be passed to `removeWatch`. |
+| number | Numeric watch id that can be passed to `removeWatch`. |
 
 **Example**
 
@@ -178,7 +234,6 @@ end
 Adds a fatal-level diagnostic message to the devtools log.
 
 ```lua
--- signature
 lurek.devtools.fatal(message)
 ```
 
@@ -186,7 +241,7 @@ lurek.devtools.fatal(message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -204,7 +259,6 @@ end
 Returns Lua call stack frames using the Lua debug library.
 
 ```lua
--- signature
 lurek.devtools.getCallStack(max_depth)
 ```
 
@@ -212,13 +266,13 @@ lurek.devtools.getCallStack(max_depth)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_depth?` | `number` | Optional maximum number of frames to return; defaults to 20 and is capped at 100. |
+| `max_depth?` | number | Optional maximum number of frames to return; defaults to 20 and is capped at 100. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields. |
+| table | Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields. |
 
 **Example**
 
@@ -236,7 +290,6 @@ end
 Returns retained CPU frame duration samples in insertion order.
 
 ```lua
--- signature
 lurek.devtools.getFrameHistory()
 ```
 
@@ -244,7 +297,7 @@ lurek.devtools.getFrameHistory()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of CPU frame durations in seconds. |
+| number[] | Array table of CPU frame durations in seconds. |
 
 **Example**
 
@@ -263,7 +316,6 @@ end
 Returns the current CPU frame history capacity.
 
 ```lua
--- signature
 lurek.devtools.getFrameHistorySize()
 ```
 
@@ -271,7 +323,7 @@ lurek.devtools.getFrameHistorySize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum number of retained CPU frame duration samples. |
+| number | Maximum number of retained CPU frame duration samples. |
 
 **Example**
 
@@ -289,7 +341,6 @@ end
 Returns aggregate CPU frame timing statistics from recorded samples.
 
 ```lua
--- signature
 lurek.devtools.getFrameStats()
 ```
 
@@ -297,7 +348,7 @@ lurek.devtools.getFrameStats()
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsGetFrameStatsResult` | Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields. |
+| LDevtoolsGetFrameStatsResult | Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields. |
 
 **Example**
 
@@ -318,7 +369,6 @@ end
 Returns aggregate GPU frame timing statistics from recorded samples.
 
 ```lua
--- signature
 lurek.devtools.getGpuFrameStats()
 ```
 
@@ -326,7 +376,7 @@ lurek.devtools.getGpuFrameStats()
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsGetGpuFrameStatsResult` | Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields. |
+| LDevtoolsGetGpuFrameStatsResult | Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields. |
 
 **Example**
 
@@ -347,7 +397,6 @@ end
 Returns whether devtools log entries are mirrored to the console.
 
 ```lua
--- signature
 lurek.devtools.getLogConsole()
 ```
 
@@ -355,7 +404,7 @@ lurek.devtools.getLogConsole()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when console logging is enabled. |
+| boolean | True when console logging is enabled. |
 
 **Example**
 
@@ -373,7 +422,6 @@ end
 Returns the file path currently stored as the devtools log target.
 
 ```lua
--- signature
 lurek.devtools.getLogFile()
 ```
 
@@ -381,7 +429,7 @@ lurek.devtools.getLogFile()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current log file path. |
+| string | Current log file path. |
 
 **Example**
 
@@ -399,7 +447,6 @@ end
 Returns recent devtools log entries as structured tables.
 
 ```lua
--- signature
 lurek.devtools.getLogHistory(count)
 ```
 
@@ -407,13 +454,13 @@ lurek.devtools.getLogHistory(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Optional number of newest entries to return; omitted returns the logger default. |
+| `count?` | number | Optional number of newest entries to return; omitted returns the logger default. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsGetLogHistoryResult` | Array table containing level, timestamp, message, source, line, and optional category fields. |
+| LDevtoolsGetLogHistoryResult | Array table containing level, timestamp, message, source, line, and optional category fields. |
 
 **Example**
 
@@ -432,7 +479,6 @@ end
 Returns the minimum severity currently used by devtools log output.
 
 ```lua
--- signature
 lurek.devtools.getLogLevel()
 ```
 
@@ -440,7 +486,7 @@ lurek.devtools.getLogLevel()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current minimum log level name. |
+| string | Current minimum log level name. |
 
 **Example**
 
@@ -458,7 +504,6 @@ end
 Returns the profiler zone tree for a retained frame.
 
 ```lua
--- signature
 lurek.devtools.getProfileData(frame)
 ```
 
@@ -466,13 +511,13 @@ lurek.devtools.getProfileData(frame)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `frame?` | `number` | Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend. |
+| `frame?` | number | Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsGetProfileDataResult` | Array of profiler zones with name, time, selfTime, startTime, and children fields. |
+| LDevtoolsGetProfileDataResult | Array of profiler zones with name, time, selfTime, startTime, and children fields. |
 
 **Example**
 
@@ -497,7 +542,6 @@ end
 Returns how many profiling frames are currently stored.
 
 ```lua
--- signature
 lurek.devtools.getProfileFrameCount()
 ```
 
@@ -505,7 +549,7 @@ lurek.devtools.getProfileFrameCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of retained profiler frames. |
+| number | Number of retained profiler frames. |
 
 **Example**
 
@@ -523,7 +567,6 @@ end
 Returns the polling interval hint used by devtools watch UIs.
 
 ```lua
--- signature
 lurek.devtools.getWatchInterval()
 ```
 
@@ -531,7 +574,7 @@ lurek.devtools.getWatchInterval()
 
 | Type | Description |
 |------|-------------|
-| `number` | Watch interval in seconds. |
+| number | Watch interval in seconds. |
 
 **Example**
 
@@ -549,7 +592,6 @@ end
 Returns all paths currently watched by the module-level file watcher.
 
 ```lua
--- signature
 lurek.devtools.getWatchedPaths()
 ```
 
@@ -557,7 +599,7 @@ lurek.devtools.getWatchedPaths()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Sorted array table of watched path strings. |
+| string[] | Sorted array table of watched path strings. |
 
 **Example**
 
@@ -576,7 +618,6 @@ end
 Evaluates exposed watch callbacks and returns their current values.
 
 ```lua
--- signature
 lurek.devtools.getWatches()
 ```
 
@@ -584,7 +625,7 @@ lurek.devtools.getWatches()
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsGetWatchesResult` | Array of watch rows with name, category, and value fields. |
+| LDevtoolsGetWatchesResult | Array of watch rows with name, category, and value fields. |
 
 **Example**
 
@@ -603,7 +644,6 @@ end
 Adds an info-level diagnostic message to the devtools log.
 
 ```lua
--- signature
 lurek.devtools.info(message)
 ```
 
@@ -611,7 +651,7 @@ lurek.devtools.info(message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -629,7 +669,6 @@ end
 Returns whether the devtools console is marked open.
 
 ```lua
--- signature
 lurek.devtools.isConsoleOpen()
 ```
 
@@ -637,7 +676,7 @@ lurek.devtools.isConsoleOpen()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the console-open flag is set. |
+| boolean | True when the console-open flag is set. |
 
 **Example**
 
@@ -655,7 +694,6 @@ end
 Returns whether the devtools entity inspector is marked open.
 
 ```lua
--- signature
 lurek.devtools.isEntityInspectorOpen()
 ```
 
@@ -663,7 +701,7 @@ lurek.devtools.isEntityInspectorOpen()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the entity-inspector-open flag is set. |
+| boolean | True when the entity-inspector-open flag is set. |
 
 **Example**
 
@@ -681,7 +719,6 @@ end
 Returns whether CPU profiling zone collection is currently enabled.
 
 ```lua
--- signature
 lurek.devtools.isProfilingEnabled()
 ```
 
@@ -689,7 +726,7 @@ lurek.devtools.isProfilingEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when profiler recording is enabled. |
+| boolean | True when profiler recording is enabled. |
 
 **Example**
 
@@ -707,7 +744,6 @@ end
 Adds a message to the devtools log using an explicit severity level.
 
 ```lua
--- signature
 lurek.devtools.log(level, message)
 ```
 
@@ -715,8 +751,8 @@ lurek.devtools.log(level, message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level` | `string` | Log level name such as `trace`, `debug`, `info`, `warn`, `error`, or `fatal`. |
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `level` | string | Log level name such as `trace`, `debug`, `info`, `warn`, `error`, or `fatal`. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -734,7 +770,6 @@ end
 Creates a dedicated file watcher userdata for one path.
 
 ```lua
--- signature
 lurek.devtools.newFileWatcher(path)
 ```
 
@@ -742,13 +777,13 @@ lurek.devtools.newFileWatcher(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | File or directory path watched by the returned handle. |
+| `path` | string | File or directory path watched by the returned handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFileWatcher` | File watcher handle with polling and callback methods. |
+| [LFileWatcher](#lfilewatcher-handle) | File watcher handle with polling and callback methods. |
 
 **Example**
 
@@ -766,7 +801,6 @@ end
 Creates a REPL console userdata with bounded command history.
 
 ```lua
--- signature
 lurek.devtools.newRepl(max_history)
 ```
 
@@ -774,13 +808,13 @@ lurek.devtools.newRepl(max_history)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_history?` | `number` | Optional maximum number of history entries; defaults to 200. |
+| `max_history?` | number | Optional maximum number of history entries; defaults to 200. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LReplConsole` | REPL console handle for eval and history management. |
+| [LReplConsole](#lreplconsole-handle) | REPL console handle for eval and history management. |
 
 **Example**
 
@@ -800,7 +834,6 @@ end
 Marks the devtools console as open for UI state tracking.
 
 ```lua
--- signature
 lurek.devtools.openConsole()
 ```
 
@@ -808,7 +841,7 @@ lurek.devtools.openConsole()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Always returns true after setting the console-open flag. |
+| boolean | Always returns true after setting the console-open flag. |
 
 **Example**
 
@@ -826,7 +859,6 @@ end
 Marks the devtools entity inspector as open for UI state tracking.
 
 ```lua
--- signature
 lurek.devtools.openEntityInspector()
 ```
 
@@ -834,7 +866,7 @@ lurek.devtools.openEntityInspector()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Always returns true after setting the entity-inspector flag. |
+| boolean | Always returns true after setting the entity-inspector flag. |
 
 **Example**
 
@@ -852,7 +884,6 @@ end
 Closes the current profiling frame and stores its zone tree for later inspection.
 
 ```lua
--- signature
 lurek.devtools.profileFrame()
 ```
 
@@ -875,7 +906,6 @@ end
 Ends the current profiling zone on the profiler stack.
 
 ```lua
--- signature
 lurek.devtools.profilePop(name)
 ```
 
@@ -883,7 +913,7 @@ lurek.devtools.profilePop(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional zone name accepted for API compatibility and ignored by the profiler. |
+| `name?` | string | Optional zone name accepted for API compatibility and ignored by the profiler. |
 
 **Example**
 
@@ -903,7 +933,6 @@ end
 Starts a named profiling zone on the current profiler stack.
 
 ```lua
--- signature
 lurek.devtools.profilePush(name)
 ```
 
@@ -911,7 +940,7 @@ lurek.devtools.profilePush(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Profiling zone name shown in reports and snapshots. |
+| `name` | string | Profiling zone name shown in reports and snapshots. |
 
 **Example**
 
@@ -930,7 +959,6 @@ end
 Aggregates retained profiler frames into per-zone timing rows.
 
 ```lua
--- signature
 lurek.devtools.profilerReport()
 ```
 
@@ -938,7 +966,7 @@ lurek.devtools.profilerReport()
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsProfilerReportResult` | Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields. |
+| LDevtoolsProfilerReportResult | Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields. |
 
 **Example**
 
@@ -963,7 +991,6 @@ end
 Records one CPU frame duration sample for devtools frame statistics.
 
 ```lua
--- signature
 lurek.devtools.recordFrameTime(dt_val)
 ```
 
@@ -971,7 +998,7 @@ lurek.devtools.recordFrameTime(dt_val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt_val` | `number` | Frame duration in seconds. |
+| `dt_val` | number | Frame duration in seconds. |
 
 **Example**
 
@@ -990,7 +1017,6 @@ end
 Records one GPU frame duration sample for devtools frame statistics.
 
 ```lua
--- signature
 lurek.devtools.recordGpuFrameTime(dt_val)
 ```
 
@@ -998,7 +1024,7 @@ lurek.devtools.recordGpuFrameTime(dt_val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt_val` | `number` | GPU frame duration in seconds. |
+| `dt_val` | number | GPU frame duration in seconds. |
 
 **Example**
 
@@ -1016,7 +1042,6 @@ end
 Removes a previously exposed watch expression by id.
 
 ```lua
--- signature
 lurek.devtools.removeWatch(id)
 ```
 
@@ -1024,13 +1049,13 @@ lurek.devtools.removeWatch(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Watch id returned by `exposeWatch`. |
+| `id` | number | Watch id returned by `exposeWatch`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a watch entry was removed. |
+| boolean | True when a watch entry was removed. |
 
 **Example**
 
@@ -1049,7 +1074,6 @@ end
 Clears profiler state, active zones, and retained profiling frames.
 
 ```lua
--- signature
 lurek.devtools.resetProfile()
 ```
 
@@ -1069,7 +1093,6 @@ end
 Polls module-level file watches and returns paths that changed since the previous scan.
 
 ```lua
--- signature
 lurek.devtools.scan()
 ```
 
@@ -1077,7 +1100,7 @@ lurek.devtools.scan()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Changed path strings. |
+| string[] | Changed path strings. |
 
 **Example**
 
@@ -1097,7 +1120,6 @@ end
 Sets the maximum number of CPU frame duration samples retained by devtools.
 
 ```lua
--- signature
 lurek.devtools.setFrameHistorySize(size)
 ```
 
@@ -1105,7 +1127,7 @@ lurek.devtools.setFrameHistorySize(size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Maximum number of frame samples to keep. |
+| `size` | number | Maximum number of frame samples to keep. |
 
 **Example**
 
@@ -1123,7 +1145,6 @@ end
 Enables or disables mirroring devtools log entries to the console.
 
 ```lua
--- signature
 lurek.devtools.setLogConsole(enabled)
 ```
 
@@ -1131,7 +1152,7 @@ lurek.devtools.setLogConsole(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to emit future log entries to console output. |
+| `enabled` | boolean | True to emit future log entries to console output. |
 
 **Example**
 
@@ -1149,7 +1170,6 @@ end
 Sets the file path used by devtools file logging state.
 
 ```lua
--- signature
 lurek.devtools.setLogFile(path)
 ```
 
@@ -1157,7 +1177,7 @@ lurek.devtools.setLogFile(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | File path recorded as the active devtools log target. |
+| `path` | string | File path recorded as the active devtools log target. |
 
 **Example**
 
@@ -1175,7 +1195,6 @@ end
 Sets the minimum severity that remains visible in devtools log output.
 
 ```lua
--- signature
 lurek.devtools.setLogLevel(level)
 ```
 
@@ -1183,7 +1202,7 @@ lurek.devtools.setLogLevel(level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level` | `string` | Log level name parsed by the devtools logger; unknown names are ignored. |
+| `level` | string | Log level name parsed by the devtools logger; unknown names are ignored. |
 
 **Example**
 
@@ -1201,7 +1220,6 @@ end
 Enables or disables collection of CPU profiling zones.
 
 ```lua
--- signature
 lurek.devtools.setProfilingEnabled(enabled)
 ```
 
@@ -1209,7 +1227,7 @@ lurek.devtools.setProfilingEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to record profiling zones into future profiler frames. |
+| `enabled` | boolean | True to record profiling zones into future profiler frames. |
 
 **Example**
 
@@ -1227,7 +1245,6 @@ end
 Sets the polling interval hint used by devtools watch UIs.
 
 ```lua
--- signature
 lurek.devtools.setWatchInterval(interval)
 ```
 
@@ -1235,7 +1252,7 @@ lurek.devtools.setWatchInterval(interval)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `interval` | `number` | Watch interval in seconds, clamped to at least 0.01. |
+| `interval` | number | Watch interval in seconds, clamped to at least 0.01. |
 
 **Example**
 
@@ -1253,7 +1270,6 @@ end
 Captures a combined devtools snapshot containing frame stats, watch values, profile data, and recent logs.
 
 ```lua
--- signature
 lurek.devtools.snapshot()
 ```
 
@@ -1261,7 +1277,7 @@ lurek.devtools.snapshot()
 
 | Type | Description |
 |------|-------------|
-| `DevtoolsSnapshotResult` | Snapshot table with frameStats, watches, profile, log, and watchCount fields. |
+| LDevtoolsSnapshotResult | Snapshot table with frameStats, watches, profile, log, and watchCount fields. |
 
 **Example**
 
@@ -1285,7 +1301,6 @@ end
 Adds a trace-level diagnostic message to the devtools log.
 
 ```lua
--- signature
 lurek.devtools.trace(message)
 ```
 
@@ -1293,7 +1308,7 @@ lurek.devtools.trace(message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -1311,7 +1326,6 @@ end
 Removes a path from the module-level devtools file watcher.
 
 ```lua
--- signature
 lurek.devtools.unwatch(path)
 ```
 
@@ -1319,13 +1333,13 @@ lurek.devtools.unwatch(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Previously watched file or directory path. |
+| `path` | string | Previously watched file or directory path. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the path was removed. |
+| boolean | True when the path was removed. |
 
 **Example**
 
@@ -1344,7 +1358,6 @@ end
 Adds a warning-level diagnostic message to the devtools log.
 
 ```lua
--- signature
 lurek.devtools.warn(message)
 ```
 
@@ -1352,7 +1365,7 @@ lurek.devtools.warn(message)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message` | `string` | Message text stored in the in-memory log history. |
+| `message` | string | Message text stored in the in-memory log history. |
 
 **Example**
 
@@ -1370,7 +1383,6 @@ end
 Adds a path to the module-level devtools file watcher.
 
 ```lua
--- signature
 lurek.devtools.watch(path)
 ```
 
@@ -1378,13 +1390,13 @@ lurek.devtools.watch(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | File or directory path to poll for changes. |
+| `path` | string | File or directory path to poll for changes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the path was newly added; false when it was already watched. |
+| boolean | True when the path was newly added; false when it was already watched. |
 
 **Example**
 
@@ -1397,14 +1409,36 @@ end
 
 ---
 
-## LFileWatcher
+## Module Fields
 
-### `LFileWatcher:cancel`
+*No module-level fields documented.*
+
+## Types
+
+- [LFileWatcher Handle](#lfilewatcher-handle)
+- [LReplConsole Handle](#lreplconsole-handle)
+
+## Callbacks
+
+- `lurek.devtools.exposeWatch` param `getter` (`function`): Callback invoked with no arguments when watch values are collected.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LFileWatcher Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFileWatcher:cancel`
 
 Cancels this watcher and removes its callback.
 
 ```lua
--- signature
 LFileWatcher:cancel()
 ```
 
@@ -1420,12 +1454,11 @@ end
 
 ---
 
-### `LFileWatcher:check`
+#### `LFileWatcher:check`
 
 Polls the watcher and invokes the change callback when a change is found.
 
 ```lua
--- signature
 LFileWatcher:check()
 ```
 
@@ -1433,7 +1466,7 @@ LFileWatcher:check()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when at least one change was detected. |
+| boolean | True when at least one change was detected. |
 
 **Example**
 
@@ -1447,12 +1480,11 @@ end
 
 ---
 
-### `LFileWatcher:getPath`
+#### `LFileWatcher:getPath`
 
 Returns the watched path. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFileWatcher:getPath()
 ```
 
@@ -1460,7 +1492,7 @@ LFileWatcher:getPath()
 
 | Type | Description |
 |------|-------------|
-| `string` | Watched path string. |
+| string | Watched path string. |
 
 **Example**
 
@@ -1473,12 +1505,11 @@ end
 
 ---
 
-### `LFileWatcher:onChanged`
+#### `LFileWatcher:onChanged`
 
 Sets the callback invoked when this watcher observes a change.
 
 ```lua
--- signature
 LFileWatcher:onChanged(func)
 ```
 
@@ -1486,7 +1517,7 @@ LFileWatcher:onChanged(func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Callback called with no arguments after a change is detected. |
+| `func` | function | Callback called with no arguments after a change is detected. |
 
 **Example**
 
@@ -1502,12 +1533,11 @@ end
 
 ---
 
-### `LFileWatcher:type`
+#### `LFileWatcher:type`
 
 Returns the Lua-visible type name for this file watcher handle.
 
 ```lua
--- signature
 LFileWatcher:type()
 ```
 
@@ -1515,7 +1545,7 @@ LFileWatcher:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LFileWatcher`. |
+| string | The string `[LFileWatcher](#lfilewatcher-handle)`. |
 
 **Example**
 
@@ -1528,12 +1558,11 @@ end
 
 ---
 
-### `LFileWatcher:typeOf`
+#### `LFileWatcher:typeOf`
 
 Returns whether this file watcher handle matches a supported type name.
 
 ```lua
--- signature
 LFileWatcher:typeOf(name)
 ```
 
@@ -1541,13 +1570,13 @@ LFileWatcher:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LFileWatcher` and `Object`. |
+| `name` | string | Type name to compare against `[LFileWatcher](#lfilewatcher-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1560,14 +1589,19 @@ end
 
 ---
 
-## LReplConsole
+## LReplConsole Handle
 
-### `LReplConsole:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LReplConsole:clear`
 
 Clears this REPL console's command history.
 
 ```lua
--- signature
 LReplConsole:clear()
 ```
 
@@ -1584,12 +1618,11 @@ end
 
 ---
 
-### `LReplConsole:eval`
+#### `LReplConsole:eval`
 
 Evaluates Lua code through this REPL console and records it in history.
 
 ```lua
--- signature
 LReplConsole:eval(code)
 ```
 
@@ -1597,13 +1630,13 @@ LReplConsole:eval(code)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `code` | `string` | Lua source code evaluated in the active Lua VM. |
+| `code` | string | Lua source code evaluated in the active Lua VM. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Evaluation result shape produced by the devtools REPL backend. |
+| LuaValue | Evaluation result shape produced by the devtools REPL backend. |
 
 **Example**
 
@@ -1618,12 +1651,11 @@ end
 
 ---
 
-### `LReplConsole:history`
+#### `LReplConsole:history`
 
 Returns this REPL console's recorded command history.
 
 ```lua
--- signature
 LReplConsole:history()
 ```
 
@@ -1631,7 +1663,7 @@ LReplConsole:history()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | History entry strings. |
+| string[] | History entry strings. |
 
 **Example**
 
@@ -1647,12 +1679,11 @@ end
 
 ---
 
-### `LReplConsole:len`
+#### `LReplConsole:len`
 
 Returns the number of entries stored in this REPL console history.
 
 ```lua
--- signature
 LReplConsole:len()
 ```
 
@@ -1660,7 +1691,7 @@ LReplConsole:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | History entry count. |
+| number | History entry count. |
 
 **Example**
 
@@ -1675,12 +1706,11 @@ end
 
 ---
 
-### `LReplConsole:type`
+#### `LReplConsole:type`
 
 Returns the Lua-visible type name for this REPL console handle.
 
 ```lua
--- signature
 LReplConsole:type()
 ```
 
@@ -1688,7 +1718,7 @@ LReplConsole:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LReplConsole`. |
+| string | The string `[LReplConsole](#lreplconsole-handle)`. |
 
 **Example**
 
@@ -1701,12 +1731,11 @@ end
 
 ---
 
-### `LReplConsole:typeOf`
+#### `LReplConsole:typeOf`
 
 Returns whether this REPL console handle matches a supported type name.
 
 ```lua
--- signature
 LReplConsole:typeOf(name)
 ```
 
@@ -1714,13 +1743,13 @@ LReplConsole:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LReplConsole` and `Object`. |
+| `name` | string | Type name to compare against `[LReplConsole](#lreplconsole-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

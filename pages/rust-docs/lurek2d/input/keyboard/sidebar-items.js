@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["MOD_ALT","MOD_CTRL","MOD_META","MOD_SHIFT"],"fn":["winit_key_to_string","winit_scancode_to_string"],"struct":["KeyboardState"]};

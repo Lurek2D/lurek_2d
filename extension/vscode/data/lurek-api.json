@@ -1,10 +1,10 @@
 {
   "version": "auto-generated",
-  "generated": "2026-05-29",
+  "generated": "2026-05-30",
   "modules": [
     {
       "name": "agent",
-      "description": "`lurek.agent` -- Agent bindings for LLM and VM integration.\n\n- Registers `lurek.agent.*` functions and types via `register()`.\n- Bridges 43 Lua-callable methods via `mlua`.\n- See `docs/specs/agent.md` for the full API specification.",
+      "description": "File: src/lua_api/agent_api.rs",
       "functions": [
         {
           "name": "new",
@@ -281,7 +281,7 @@
     },
     {
       "name": "ai",
-      "description": "`lurek.ai` - Lua bindings for AI worlds, agents, blackboards, behavior trees, steering, planning, learning, and simulation helpers.\n\n- Registers `lurek.ai.*` functions and types via `register()`.\n- Userdata types: `LuaAIWorld`, `LuaAgent`, `LuaAIBlackboard`.\n- Userdata types: `LuaStateMachine`, `LuaBehaviorTree`, `LuaBTNode`.\n- Userdata types: `LuaSteeringManager`, `LuaUtilityAI`, `LuaGOAPPlanner`.\n- Userdata types: `LuaInfluenceMap`, `LuaSquad`, `LuaCommandQueue`.\n- Userdata types: `LuaTraitProfile`, `LuaStimulusWorld`, `LuaContextSteering`.\n- Userdata types: `LuaNeedSystem`, `LuaAIDirector`, `LuaHTNDomain`.\n- Userdata types: `LuaMCTSEngine`, `LuaEmotionModel`, `LuaORCASolver`.",
+      "description": "File: src/lua_api/ai_api.rs",
       "functions": [
         {
           "name": "newWorld",
@@ -879,7 +879,7 @@
     },
     {
       "name": "animation",
-      "description": "`lurek.animation` -- Animation bindings for sprite clips, state machines, blend layers, curves, sync groups, and Aseprite import helpers.\n\n- Registers `lurek.animation.*` functions and types via `register()`.\n- `LuaAnimation`: userdata type exposed to Lua.\n- `LuaAnimStateMachine`: userdata type exposed to Lua.\n- `LuaBlendLayerSet`: userdata type exposed to Lua.\n- `LuaAnimCurve`: userdata type exposed to Lua.\n- `LuaAnimSyncGroup`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/animation_api.rs",
       "functions": [
         {
           "name": "new",
@@ -990,7 +990,7 @@
     },
     {
       "name": "asset",
-      "description": "`lurek.asset` — asset registry and ref-counted media cache bindings.\n\nRegisters `lurek.asset.*` into the global `lurek` table via `register()`.\nBridges 23 Lua-callable functions and 2 `LAssetHandle` methods via `mlua`.\n\nSupported asset types: `image`, `font`, `audio`, `music`, `text`, `toml`,\n`json`, `obj`, `shader`, `lua`. Text-like types have their file content\nread and cached; binary types store a path reference only.\n\nAssets can be annotated with a display name, a group label, and a tag set.\nQuery functions (`findByName`, `findByGroup`, `findByTag`, `findByType`)\nreturn arrays of `LAssetHandle` values that can be iterated by scripts.\n\nSee `docs/specs/asset.md` for the full API specification.",
+      "description": "File: src/lua_api/asset_api.rs",
       "functions": [
         {
           "name": "load",
@@ -1067,7 +1067,7 @@
             {
               "name": "paths",
               "type": "table",
-              "description": "Array of `{path, type}` pairs (or `{path=…, type=…}` tables).",
+              "description": "Array of `{path, type}` pairs (or `{path=â€¦, type=â€¦}` tables).",
               "optional": false
             },
             {
@@ -1445,7 +1445,7 @@
     },
     {
       "name": "audio",
-      "description": "`lurek.audio` - Audio playback, mixing, spatial sound, MIDI, and DSP processing for 2D games.\n\n- Registers `lurek.audio.*` functions and types via `register()`.\n- `LuaSource`: userdata type exposed to Lua.\n- `LuaBus`: userdata type exposed to Lua.\n- `LuaMidiPlayer`: userdata type exposed to Lua.\n- `LuaSoundPool`: userdata type exposed to Lua.\n- `LuaDecoder`: userdata type exposed to Lua.\n- Bridges 205 Lua-callable methods via `mlua`.\n- See `docs/specs/audio.md` for the full API specification.",
+      "description": "File: src/lua_api/audio_api.rs",
       "functions": [
         {
           "name": "newSource",
@@ -3211,7 +3211,7 @@
     },
     {
       "name": "automation",
-      "description": "`lurek.automation` -- Automation bindings for loading simulator scripts, controlling playback, inspecting state, saving macros, and waiting on Lua predicates.\n\n- Registers `lurek.automation.*` functions and types via `register()`.\n- Bridges 32 Lua-callable methods via `mlua`.\n- See `docs/specs/automation.md` for the full API specification.",
+      "description": "File: src/lua_api/automation_api.rs",
       "functions": [
         {
           "name": "load",
@@ -3718,7 +3718,7 @@
     },
     {
       "name": "binary",
-      "description": "`lurek.binary` -- Binary bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.\n\n- Registers `lurek.binary.*` functions and types via `register()`.\n- `LuaRingBuffer`: userdata type exposed to Lua.\n- `LuaDataView`: userdata type exposed to Lua.\n- `LuaDataWriter`: userdata type exposed to Lua.\n- Bridges 72 Lua-callable methods via `mlua`.\n- See `docs/specs/binary.md` for the full API specification.",
+      "description": "File: src/lua_api/binary_api.rs",
       "functions": [
         {
           "name": "pack",
@@ -4222,7 +4222,7 @@
     },
     {
       "name": "camera",
-      "description": "`lurek.camera` -- Camera bindings for 2D transforms, targets, bounds, screen conversion, paths, zoom tweens, parallax factors, effects, constraints, presets, and camera rigs.\n\n- Registers `lurek.camera.*` functions and types via `register()`.\n- `LuaCamera2D`: userdata type exposed to Lua.\n- `LuaCameraRig`: userdata type exposed to Lua.\n- Bridges 88 Lua-callable methods via `mlua`.\n- See `docs/specs/camera.md` for the full API specification.",
+      "description": "File: src/lua_api/camera_api.rs",
       "functions": [
         {
           "name": "new",
@@ -4288,7 +4288,7 @@
     },
     {
       "name": "charts",
-      "description": "`lurek.charts` -- Chart creation, configuration, and rendering bindings.\n\n- Registers `lurek.charts.*` functions and types via `register()`.\n- Userdata types: `LuaLineChart`, `LuaBarChart`, `LuaScatterPlot`.\n- Userdata types: `LuaPieChart`, `LuaAreaChart`.\n- Bridges 39 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/charts_api.rs",
       "functions": [
         {
           "name": "newLine",
@@ -4414,36 +4414,36 @@
     },
     {
       "name": "color",
-      "description": "`lurek.color` -- Color bindings for RGBA construction, color-space conversions, blending modes, palettes, and utility operations.\n\n- Registers `lurek.color.*` functions and types via `register()`.\n- Bridges 19 Lua-callable methods via `mlua`.\n- See `docs/specs/color.md` for the full API specification.",
+      "description": "File: src/lua_api/color_api.rs",
       "functions": [
         {
           "name": "new",
           "fullPath": "lurek.color.new",
           "signature": "(r, g, b, [a])",
-          "description": "Creates an RGBA color from 0–1 float components. Alpha defaults to 1.0.",
+          "description": "Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.",
           "parameters": [
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
               "name": "a",
               "type": "number",
-              "description": "Alpha channel (0–1); defaults to 1.0.",
+              "description": "Alpha channel (0â€“1); defaults to 1.0.",
               "optional": true
             }
           ],
@@ -4456,30 +4456,30 @@
           "name": "fromU8",
           "fullPath": "lurek.color.fromU8",
           "signature": "(r, g, b, [a])",
-          "description": "Creates a color from 0–255 integer components. Alpha defaults to 255.",
+          "description": "Creates a color from 0â€“255 integer components. Alpha defaults to 255.",
           "parameters": [
             {
               "name": "r",
               "type": "integer",
-              "description": "Red channel (0–255).",
+              "description": "Red channel (0â€“255).",
               "optional": false
             },
             {
               "name": "g",
               "type": "integer",
-              "description": "Green channel (0–255).",
+              "description": "Green channel (0â€“255).",
               "optional": false
             },
             {
               "name": "b",
               "type": "integer",
-              "description": "Blue channel (0–255).",
+              "description": "Blue channel (0â€“255).",
               "optional": false
             },
             {
               "name": "a",
               "type": "integer",
-              "description": "Alpha channel (0–255); defaults to 255.",
+              "description": "Alpha channel (0â€“255); defaults to 255.",
               "optional": true
             }
           ],
@@ -4515,19 +4515,19 @@
             {
               "name": "h",
               "type": "number",
-              "description": "Hue in degrees (0–360).",
+              "description": "Hue in degrees (0â€“360).",
               "optional": false
             },
             {
               "name": "s",
               "type": "number",
-              "description": "Saturation (0–1).",
+              "description": "Saturation (0â€“1).",
               "optional": false
             },
             {
               "name": "l",
               "type": "number",
-              "description": "Lightness (0–1).",
+              "description": "Lightness (0â€“1).",
               "optional": false
             }
           ],
@@ -4545,19 +4545,19 @@
             {
               "name": "h",
               "type": "number",
-              "description": "Hue in degrees (0–360).",
+              "description": "Hue in degrees (0â€“360).",
               "optional": false
             },
             {
               "name": "s",
               "type": "number",
-              "description": "Saturation (0–1).",
+              "description": "Saturation (0â€“1).",
               "optional": false
             },
             {
               "name": "v",
               "type": "number",
-              "description": "Value/brightness (0–1).",
+              "description": "Value/brightness (0â€“1).",
               "optional": false
             }
           ],
@@ -4575,19 +4575,19 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             }
           ],
@@ -4605,25 +4605,25 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
               "name": "a",
               "type": "number",
-              "description": "Alpha channel (0–1); defaults to 1.0.",
+              "description": "Alpha channel (0â€“1); defaults to 1.0.",
               "optional": true
             }
           ],
@@ -4636,7 +4636,7 @@
           "name": "lerp",
           "fullPath": "lurek.color.lerp",
           "signature": "(c1, c2, t)",
-          "description": "Linearly interpolates between two color tables by factor t (clamped to 0–1).",
+          "description": "Linearly interpolates between two color tables by factor t (clamped to 0â€“1).",
           "parameters": [
             {
               "name": "c1",
@@ -4653,7 +4653,7 @@
             {
               "name": "t",
               "type": "number",
-              "description": "Interpolation factor (0–1).",
+              "description": "Interpolation factor (0â€“1).",
               "optional": false
             }
           ],
@@ -4738,7 +4738,7 @@
           "name": "additive",
           "fullPath": "lurek.color.additive",
           "signature": "(c1, c2)",
-          "description": "Additive blend of two colors (clamped to 0–1 per channel).",
+          "description": "Additive blend of two colors (clamped to 0â€“1 per channel).",
           "parameters": [
             {
               "name": "c1",
@@ -4791,25 +4791,25 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
               "name": "a",
               "type": "number",
-              "description": "Alpha channel (0–1); defaults to 1.0.",
+              "description": "Alpha channel (0â€“1); defaults to 1.0.",
               "optional": true
             }
           ],
@@ -4827,19 +4827,19 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             }
           ],
@@ -4857,19 +4857,19 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
@@ -4881,7 +4881,7 @@
             {
               "name": "newAlpha",
               "type": "number",
-              "description": "New alpha channel value (0–1).",
+              "description": "New alpha channel value (0â€“1).",
               "optional": false
             }
           ],
@@ -4899,7 +4899,7 @@
             {
               "name": "c",
               "type": "number",
-              "description": "Gamma-encoded value (0–1).",
+              "description": "Gamma-encoded value (0â€“1).",
               "optional": false
             }
           ],
@@ -4917,7 +4917,7 @@
             {
               "name": "c",
               "type": "number",
-              "description": "Linear value (0–1).",
+              "description": "Linear value (0â€“1).",
               "optional": false
             }
           ],
@@ -4949,7 +4949,7 @@
     },
     {
       "name": "compute",
-      "description": "`lurek.compute` -- Compute bindings for multidimensional arrays, numeric operations, reductions, spatial filters, analytics, linear algebra, FFT helpers, and parallel threshold tuning.\n\n- Registers `lurek.compute.*` functions and types via `register()`.\n- `LuaArray`: userdata type exposed to Lua.\n- Bridges 84 Lua-callable methods via `mlua`.\n- See `docs/specs/compute.md` for the full API specification.",
+      "description": "File: src/lua_api/compute_api.rs",
       "functions": [
         {
           "name": "newArray",
@@ -5261,7 +5261,7 @@
     },
     {
       "name": "cursor",
-      "description": "`lurek.cursor` - Cursor appearance, system cursors, custom image cursors, animated cursors, and context-sensitive switching.\n\n- Registers `lurek.cursor.*` functions and types via `register()`.\n- `LuaCursorManager`: userdata type exposed to Lua.\n- `LuaCustomCursor`: userdata type exposed to Lua.\n- `LuaAnimatedCursor`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/cursor_api.rs",
       "functions": [
         {
           "name": "newManager",
@@ -5344,7 +5344,7 @@
     },
     {
       "name": "dataframe",
-      "description": "`lurek.dataframe` -- DataFrame bindings for tabular rows, columns, grouping, joins, SQL queries, lazy pipelines, databases, vectorized frames, serialization, and statistics.\n\n- Registers `lurek.dataframe.*` functions and types via `register()`.\n- `LuaGroupedFrame`: userdata type exposed to Lua.\n- `LuaDataFrameTask`: userdata type exposed to Lua.\n- `LuaDataFrame`: userdata type exposed to Lua.\n- `LuaLazyQuery`: userdata type exposed to Lua.\n- `LuaDatabase`: userdata type exposed to Lua.\n- `LuaVecFrame`: userdata type exposed to Lua.\n- Bridges 159 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/dataframe_api.rs",
       "functions": [
         {
           "name": "newDataFrame",
@@ -5655,7 +5655,7 @@
     },
     {
       "name": "debugbridge",
-      "description": "`lurek.debugbridge` -- Debug bridge bindings for starting the local TCP bridge, polling debugger requests, print capture, performance data, screenshots, protocol metadata, and hot reload flags.\n\n- Registers `lurek.debugbridge.*` functions and types via `register()`.\n- Bridges 16 Lua-callable methods via `mlua`.\n- See `docs/specs/debugbridge.md` for the full API specification.",
+      "description": "File: src/lua_api/debugbridge_api.rs",
       "functions": [
         {
           "name": "start",
@@ -5898,7 +5898,7 @@
     },
     {
       "name": "devtools",
-      "description": "`lurek.devtools` -- Developer tooling bindings for logs, profiling, frame stats, file watching, console state, watch expressions, snapshots, REPL, and debugger-style eval helpers.\n\n- Registers `lurek.devtools.*` functions and types via `register()`.\n- `LuaFileWatcher`: userdata type exposed to Lua.\n- `LuaReplConsole`: userdata type exposed to Lua.\n- Bridges 62 Lua-callable methods via `mlua`.\n- See `docs/specs/devtools.md` for the full API specification.",
+      "description": "File: src/lua_api/devtools_api.rs",
       "functions": [
         {
           "name": "log",
@@ -6662,7 +6662,7 @@
     },
     {
       "name": "dialog",
-      "description": "`lurek.dialog` — Lua bindings for the dialog system (topics, branches, state, speakers).\n\n- Registers `lurek.dialog.*` functions and types via `register()`.\n- Userdata types: `LuaDialogueAI`, `LuaDialogueState`, `LuaSpeakerRegistry`.\n- Bridges 33 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/dialog_api.rs",
       "functions": [
         {
           "name": "newAI",
@@ -6702,7 +6702,7 @@
     },
     {
       "name": "docs",
-      "description": "`lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata.\n\n- Registers `lurek.docs.*` functions and types via `register()`.\n- `LuaSchema`: userdata type exposed to Lua.\n- `DocEntry`: userdata type exposed to Lua.\n- `ApiCatalog`: userdata type exposed to Lua.\n- `ValidationReport`: userdata type exposed to Lua.\n- `QualityReport`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/docs_api.rs",
       "functions": [
         {
           "name": "scan",
@@ -7253,7 +7253,7 @@
     },
     {
       "name": "dsp",
-      "description": "`lurek.dsp` - Digital signal processing: effects, offline batch processing, and audio visualization.\n\n- Registers `lurek.dsp.*` functions and types via `register()`.\n- Userdata types: `LuaLevelDetector`, `LuaSpectrumAnalyzer`, `LuaWaveform`.\n- Userdata types: `LuaAdsrEnvelope`, `LuaSynthesizer`, `LuaDspNode`.\n- Userdata type: `LuaDspGraph`.\n- Bridges 55 Lua-callable methods via `mlua`.\n- See `docs/specs/dsp.md` for the full API specification.",
+      "description": "File: src/lua_api/dsp_api.rs",
       "functions": [
         {
           "name": "newEffectParams",
@@ -8081,7 +8081,7 @@
     },
     {
       "name": "ecs",
-      "description": "`lurek.ecs` -- Entity-component-system bindings for creating universes, managing entities and components, running Lua systems, querying tags and blueprints, serializing state, and tracking hierarchy and relation data.\n\n- Registers `lurek.ecs.*` functions and types via `register()`.\n- `LuaUniverse`: userdata type exposed to Lua.\n- Bridges 69 Lua-callable methods via `mlua`.\n- See `docs/specs/ecs.md` for the full API specification.",
+      "description": "File: src/lua_api/ecs_api.rs",
       "functions": [
         {
           "name": "newUniverse",
@@ -8099,7 +8099,7 @@
     },
     {
       "name": "effect",
-      "description": "`lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, and image effect chains used by the renderer command queue.\n\n- Registers `lurek.effect.*` functions and types via `register()`.\n- `LuaPostFxEffect`: userdata type exposed to Lua.\n- `LuaPostFxStack`: userdata type exposed to Lua.\n- `LuaImageEffect`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/effect_api.rs",
       "functions": [
         {
           "name": "newEffect",
@@ -8289,7 +8289,7 @@
     },
     {
       "name": "engine",
-      "description": "`lurek.engine` -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.\n\n- Registers `lurek.engine.*` functions and types via `register()`.\n- Bridges 13 Lua-callable methods via `mlua`.\n- See `docs/specs/engine.md` for the full API specification.",
+      "description": "File: src/lua_api/engine_api.rs",
       "functions": [
         {
           "name": "getVersion",
@@ -8446,7 +8446,7 @@
     },
     {
       "name": "event",
-      "description": "`lurek.event` -- Event queue and signal bindings for quit/restart requests, polling, waiting, immediate and deferred event pushes, priority delivery, optional history capture, and Lua callback signal dispatch.\n\n- Registers `lurek.event.*` functions and types via `register()`.\n- `LuaSignal`: userdata type exposed to Lua.\n- Bridges 29 Lua-callable methods via `mlua`.\n- See `docs/specs/event.md` for the full API specification.",
+      "description": "File: src/lua_api/event_api.rs",
       "functions": [
         {
           "name": "exit",
@@ -8714,7 +8714,7 @@
     },
     {
       "name": "filesystem",
-      "description": "`lurek.filesystem` -- GameFS bindings for text, binary, JSON, directory, metadata, async IO, mount, ZIP archive, file handle, file data, watcher, path conversion, and script chunk loading operations available to Lua.\n\n- Registers `lurek.filesystem.*` functions and types via `register()`.\n- `LuaFileData`: userdata type exposed to Lua.\n- `LuaFileHandle`: userdata type exposed to Lua.\n- `LuaZipMount`: userdata type exposed to Lua.\n- Bridges 68 Lua-callable methods via `mlua`.\n- See `docs/specs/filesystem.md` for the full API specification.",
+      "description": "File: src/lua_api/filesystem_api.rs",
       "functions": [
         {
           "name": "mountZip",
@@ -9537,7 +9537,7 @@
     },
     {
       "name": "flownet",
-      "description": "`lurek.flownet` -- Logistics flow-network bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.\n\n- Registers `lurek.flownet.*` functions and types via `register()`.\n- `LuaGraphItem`: userdata type exposed to Lua.\n- `LuaEdge`: userdata type exposed to Lua.\n- `LuaNode`: userdata type exposed to Lua.\n- `LuaGraph`: userdata type exposed to Lua.\n- Bridges 131 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/flownet_api.rs",
       "functions": [
         {
           "name": "newGraph",
@@ -9555,7 +9555,7 @@
     },
     {
       "name": "font",
-      "description": "`lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping.\n\n- Registers `lurek.font.*` functions and types via `register()`.\n- `LuaFont`: userdata type exposed to Lua.\n- Helper function: `register_font_api`.\n- Bridges 19 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/font_api.rs",
       "functions": [
         {
           "name": "getDefault",
@@ -9847,7 +9847,7 @@
     },
     {
       "name": "globe",
-      "description": "`lurek.globe` -- Spherical province-map bindings for globe registries, province graphs, sectors, heat layers, camera controls, picking, fog of war, markers, labels, render layers, arcs, pathfinding, exports, and coordinate math.\n\n- Registers `lurek.globe.*` functions and types via `register()`.\n- `LuaGlobe`: userdata type exposed to Lua.\n- `LuaGlobeRegistry`: userdata type exposed to Lua.\n- Bridges 83 Lua-callable methods via `mlua`.\n- See `docs/specs/globe.md` for the full API specification.",
+      "description": "File: src/lua_api/globe_api.rs",
       "functions": [
         {
           "name": "new",
@@ -10190,7 +10190,7 @@
     },
     {
       "name": "grep",
-      "description": "`lurek.grep` - Pattern-based file search across game content: literal, regex, multi-pattern, and log search.\n\n- Registers `lurek.grep.*` functions and types via `register()`.\n- `LuaGrepEngine`: userdata type exposed to Lua.\n- `LuaFileFilter`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/grep_api.rs",
       "functions": [
         {
           "name": "newEngine",
@@ -10326,7 +10326,7 @@
     },
     {
       "name": "html",
-      "description": "`lurek.html` -- HTML document bindings for markup and CSS loading, layout, rendering into engine draw commands, DOM element selection and mutation, input forwarding, event listeners, and feature support checks.\n\n- Registers `lurek.html.*` functions and types via `register()`.\n- `LuaHtmlDocument`: userdata type exposed to Lua.\n- `LuaHtmlElement`: userdata type exposed to Lua.\n- Bridges 60 Lua-callable methods via `mlua`.\n- See `docs/specs/html.md` for the full API specification.",
+      "description": "File: src/lua_api/html_api.rs",
       "functions": [
         {
           "name": "preventDefault",
@@ -10432,7 +10432,7 @@
     },
     {
       "name": "i18n",
-      "description": "`lurek.i18n` -- Localization bindings for in-memory catalogs, locale selection, fallback lists, translation lookup, interpolation, plural and gender variants, search indexes, formatting helpers, locale validation, and coverage gap reports.\n\n- Registers `lurek.i18n.*` functions and types via `register()`.\n- Bridges 36 Lua-callable methods via `mlua`.\n- See `docs/specs/i18n.md` for the full API specification.",
+      "description": "File: src/lua_api/i18n_api.rs",
       "functions": [
         {
           "name": "loadTable",
@@ -11099,7 +11099,7 @@
     },
     {
       "name": "image",
-      "description": "`lurek.image` -- Image bindings for pixel buffers, encoded image load/save, layered image stacks, DDS compressed metadata, palette lookup tables, province color grids, polygon extraction, shape rendering, and screen capture handoff.\n\n- Registers `lurek.image.*` functions and types via `register()`.\n- `LuaProvinceGrid`: userdata type exposed to Lua.\n- `LuaLayeredImage`: userdata type exposed to Lua.\n- `LuaCompressedImageData`: userdata type exposed to Lua.\n- `LuaPaletteLUT`: userdata type exposed to Lua.\n- Bridges 102 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/image_api.rs",
       "functions": [
         {
           "name": "newImageData",
@@ -11344,7 +11344,7 @@
     },
     {
       "name": "input",
-      "description": "`lurek.input` -- Input bindings for keyboard, mouse, cursor objects, gamepads, touch points, action mappings, combo detection, virtual d-pad conversion, input recording, and playback state exposed through nested Lua tables.\n\n- Registers `lurek.input.*` functions and types via `register()`.\n- `LuaCursor`: userdata type exposed to Lua.\n- `LuaCombo`: userdata type exposed to Lua.\n- `LuaInputRecording`: userdata type exposed to Lua.\n- Bridges 98 Lua-callable methods via `mlua`.\n- See `docs/specs/input.md` for the full API specification.",
+      "description": "File: src/lua_api/input_api.rs",
       "functions": [
         {
           "name": "isDown",
@@ -12885,7 +12885,7 @@
     },
     {
       "name": "layout",
-      "description": "`lurek.layout` — Lua bindings for graph/tree/DAG layout algorithms.\n\n- Registers `lurek.layout.*` functions and types via `register()`.\n- Bridges 5 Lua-callable methods via `mlua`.\n- See `docs/specs/layout.md` for the full API specification.",
+      "description": "File: src/lua_api/layout_api.rs",
       "functions": [
         {
           "name": "tree",
@@ -13042,7 +13042,7 @@
     },
     {
       "name": "learning",
-      "description": "`lurek.learning` - Lua bindings for machine learning and evolutionary computation algorithms.\n\n- Registers `lurek.learning.*` functions and types via `register()`.\n- Userdata types: `LuaQLearner`, `LuaNeuralNet`, `LuaGeneticAlgorithm`.\n- Userdata types: `LuaBandit`, `LuaNeuroevolution`, `LuaModel`.\n- Bridges 67 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/learning_api.rs",
       "functions": [
         {
           "name": "newQLearner",
@@ -13582,7 +13582,7 @@
     },
     {
       "name": "light",
-      "description": "`lurek.light` -- 2D lighting bindings for light handles, occluders, ambient color, shadows, masks, groups, flicker animation, transitions, cookies, normal-map hints, and renderer-facing lighting world state.\n\n- Registers `lurek.light.*` functions and types via `register()`.\n- `LuaLight`: userdata type exposed to Lua.\n- `LuaOccluder`: userdata type exposed to Lua.\n- Bridges 99 Lua-callable methods via `mlua`.\n- See `docs/specs/light.md` for the full API specification.",
+      "description": "File: src/lua_api/light_api.rs",
       "functions": [
         {
           "name": "newLight",
@@ -13970,7 +13970,7 @@
     },
     {
       "name": "log",
-      "description": "`lurek.log` -- Logging bindings for severity helpers, global level control, memory/file/rotating/callback sinks, sink listing and flushing, memory reads, structured field logs, tag filters, and Lua callback dispatch.\n\n- Registers `lurek.log.*` functions and types via `register()`.\n- Bridges 18 Lua-callable methods via `mlua`.\n- See `docs/specs/log.md` for the full API specification.",
+      "description": "File: src/lua_api/log_api.rs",
       "functions": [
         {
           "name": "debug",
@@ -14358,7 +14358,7 @@
     },
     {
       "name": "mapblock",
-      "description": "`lurek.mapblock` — Block-based map assembly system.\n\n- Registers `lurek.mapblock.*` functions and types via `register()`.\n- Userdata types: `LuaMapBlockConfig`, `LuaMapBlock`, `LuaMapGroup`.\n- Userdata types: `LuaMapScript`, `LuaNeighborRules`, `LuaPlacementGrid`.\n- Userdata types: `LuaMapBlockGenerator`, `LuaMapBlockResult`, `LuaTilesetRef`.",
+      "description": "File: src/lua_api/mapblock_api.rs",
       "functions": [
         {
           "name": "newConfig",
@@ -14571,7 +14571,7 @@
     },
     {
       "name": "math",
-      "description": "`lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers.\n\n- Registers `lurek.math.*` functions and types via `register()`.\n- Userdata types: `LuaVec2`, `LuaVec3`, `LuaCatmullRom`.\n- Userdata types: `LuaHermite`, `LuaRandomGenerator`, `LuaTransform`.\n- Userdata types: `LuaBezierCurve`, `LuaTween`, `LuaSpatialHash`.\n- Userdata types: `LuaCircle`, `LuaRectPacker`, `LuaAabbTree`.\n- Bridges 233 Lua-callable methods via `mlua`.\n- See `docs/specs/math.md` for the full API specification.",
+      "description": "File: src/lua_api/math_api.rs",
       "functions": [
         {
           "name": "newRandomGenerator",
@@ -17078,7 +17078,7 @@
     },
     {
       "name": "midi",
-      "description": "`lurek.midi` - MIDI playback and SoundFont management.\n\n- Registers `lurek.midi.*` functions and types via `register()`.",
+      "description": "File: src/lua_api/midi_api.rs",
       "functions": [
         {
           "name": "newPlayer",
@@ -17143,7 +17143,7 @@
     },
     {
       "name": "minimap",
-      "description": "`lurek.minimap` -- Lua bindings for grid minimaps, terrain colors, fog, object markers, overlays, layers, hover conversion, and render command output.\n\n- Registers `lurek.minimap.*` functions and types via `register()`.\n- `LuaMinimap`: userdata type exposed to Lua.\n- Bridges 87 Lua-callable methods via `mlua`.\n- See `docs/specs/minimap.md` for the full API specification.",
+      "description": "File: src/lua_api/minimap_api.rs",
       "functions": [
         {
           "name": "newMinimap",
@@ -17186,7 +17186,7 @@
     },
     {
       "name": "mods",
-      "description": "`lurek.mods` -- Lua bindings for mod metadata, mod manager load order/dependency helpers, content registries, and API version checks.\n\n- Registers `lurek.mods.*` functions and types via `register()`.\n- `LuaMod`: userdata type exposed to Lua.\n- `LuaModManager`: userdata type exposed to Lua.\n- `LuaContentRegistry`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/mods_api.rs",
       "functions": [
         {
           "name": "newMod",
@@ -17257,7 +17257,7 @@
     },
     {
       "name": "network",
-      "description": "`lurek.network` -- Lua bindings for ENet-style hosts, async network runtime, message packing, lobby helpers, relay tickets, and snapshot prediction.\n\n- Registers `lurek.network.*` functions and types via `register()`.\n- `LuaNetworkHost`: userdata type exposed to Lua.\n- `LuaNetworkRuntime`: userdata type exposed to Lua.\n- Bridges 64 Lua-callable methods via `mlua`.\n- See `docs/specs/network.md` for the full API specification.",
+      "description": "File: src/lua_api/network_api.rs",
       "functions": [
         {
           "name": "newHost",
@@ -17724,7 +17724,7 @@
     },
     {
       "name": "overlay",
-      "description": "`lurek.overlay` -- Lua bindings for the overlay system: weather, atmosphere, screen flash/shake/fade, transitions, and ambient controls.\n\n- Registers `lurek.overlay.*` functions and types via `register()`.\n- `LuaOverlay`: userdata type exposed to Lua.\n- Bridges 90 Lua-callable methods via `mlua`.\n- See `docs/specs/overlay.md` for the full API specification.",
+      "description": "File: src/lua_api/overlay_api.rs",
       "functions": [
         {
           "name": "new",
@@ -17785,7 +17785,7 @@
     },
     {
       "name": "parallax",
-      "description": "`lurek.parallax` -- Lua bindings for parallax layers, parallax sets, presets, automatic camera rendering, tiling, blend modes, and effect chains.\n\n- Registers `lurek.parallax.*` functions and types via `register()`.\n- `LuaParallaxLayer`: userdata type exposed to Lua.\n- `LuaParallaxSet`: userdata type exposed to Lua.\n- Bridges 51 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/parallax_api.rs",
       "functions": [
         {
           "name": "newLayer",
@@ -17852,7 +17852,7 @@
     },
     {
       "name": "particle",
-      "description": "`lurek.particle` -- Lua bindings for particle systems, trails, presets, TOML configs, physics collision, custom emission callbacks, death callbacks, and module-level forwarding helpers.\n\n- Registers `lurek.particle.*` functions and types via `register()`.\n- `LuaParticleSystem`: userdata type exposed to Lua.\n- `LuaTrail`: userdata type exposed to Lua.\n- Bridges 111 Lua-callable methods via `mlua`.\n- See `docs/specs/particle.md` for the full API specification.",
+      "description": "File: src/lua_api/particle_api.rs",
       "functions": [
         {
           "name": "newSystem",
@@ -17973,7 +17973,7 @@
     },
     {
       "name": "pathfind",
-      "description": "`lurek.pathfind` - Lua bindings for navigation grids, unit pathfinding, flow fields, path grids, hex grids, JPS grids, nav meshes, range maps, and tilemap-derived path data.\n\n- Registers `lurek.pathfind.*` functions and types via `register()`.\n- Userdata types: `LuaNavGrid`, `LuaUnitPathfinder`, `LuaFlowField`.\n- Userdata types: `LuaPathGrid`, `LuaAiFlowField`, `LuaHexGrid`.\n- Userdata types: `LuaJpsGrid`, `LuaNavMesh`.\n- Bridges 102 Lua-callable methods via `mlua`.\n- See `docs/specs/pathfind.md` for the full API specification.",
+      "description": "File: src/lua_api/pathfind_api.rs",
       "functions": [
         {
           "name": "newNavGrid",
@@ -18254,7 +18254,7 @@
     },
     {
       "name": "patterns",
-      "description": "`lurek.patterns` — Design pattern utilities: event buses, object pools, state machines, command stacks, observers, mediators, factories, data structures, behavior trees, and graphs.\n\n- Registers `lurek.patterns.*` functions and types via `register()`.\n- Userdata types: `LuaEventBus`, `LuaObjectPool`, `LuaCommandStack`.\n- Userdata types: `LuaServiceLocator`, `LuaFactory`, `LuaSimpleState`.\n- Userdata types: `LuaBlackboard`, `LuaObserver`, `LuaThrottle`.\n- Userdata types: `LuaDebounce`, `LuaPriorityQueue`, `LuaRing`.\n- Userdata types: `LuaFunnel`, `LuaRelationshipManager`, `LuaMediator`.\n- Userdata types: `LuaStrategy`, `LuaStack`, `LuaQueue`.\n- Userdata types: `LuaList`, `LuaSet`, `LuaMap`.",
+      "description": "File: src/lua_api/patterns_api.rs",
       "functions": [
         {
           "name": "newEventBus",
@@ -18627,7 +18627,7 @@
     },
     {
       "name": "physics",
-      "description": "`lurek.physics` -- Lua bindings for 2D rigid-body physics systems and helpers.\nCovers worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.\n\n- Registers `lurek.physics.*` functions and types via `register()`.\n- `LuaWorld`: userdata type exposed to Lua.\n- `LuaZone`: userdata type exposed to Lua.\n- `LuaTerrain`: userdata type exposed to Lua.\n- `LuaCellular`: userdata type exposed to Lua.\n- `LuaBody`: userdata type exposed to Lua.\n- `LuaPhysicsShape`: userdata type exposed to Lua.\n- Bridges 205 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/physics_api.rs",
       "functions": [
         {
           "name": "newWorld",
@@ -19300,7 +19300,7 @@
     },
     {
       "name": "pipeline",
-      "description": "`lurek.pipeline` — Declarative task pipelines with dependency ordering, retry logic, branching, and async coroutine execution.\n\n- Registers `lurek.pipeline.*` functions and types via `register()`.\n- `LuaStep`: userdata type exposed to Lua.\n- `LuaPipeline`: userdata type exposed to Lua.\n- Helper functions: `pipeline_result_to_lua`, `cancel_remaining_steps`, `fire_step_callbacks`, `finalize_pipeline_result`.\n- Bridges 70 Lua-callable methods via `mlua`.\n- See `docs/specs/pipeline.md` for the full API specification.",
+      "description": "File: src/lua_api/pipeline_api.rs",
       "functions": [
         {
           "name": "newStep",
@@ -19367,7 +19367,7 @@
     },
     {
       "name": "procgen",
-      "description": "`lurek.procgen` — Procedural generation tools: noise, dungeon generators, wave function collapse, heightmaps, L-systems, name generation, voronoi, biomes, world graphs, and cellular world simulation.\n\n- Registers `lurek.procgen.*` functions and types via `register()`.\n- `LuaBiomeClassifier`: userdata type exposed to Lua.\n- `LuaNoiseGenerator`: userdata type exposed to Lua.\n- `LuaCellular`: userdata type exposed to Lua.\n- Bridges 67 Lua-callable methods via `mlua`.\n- See `docs/specs/procgen.md` for the full API specification.",
+      "description": "File: src/lua_api/procgen_api.rs",
       "functions": [
         {
           "name": "cellularAutomata",
@@ -19390,7 +19390,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Options: fill (0.0–1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.",
+              "description": "Options: fill (0.0â€“1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.",
               "optional": true
             }
           ],
@@ -20346,7 +20346,7 @@
     },
     {
       "name": "province",
-      "description": "`lurek.province` — Province-based strategic map system with grid regions, borders, ownership tracking, adjacency queries, and map-mode rendering.\n\n- Registers `lurek.province.*` functions and types via `register()`.\n- `LuaProvinceRegistry`: userdata type exposed to Lua.\n- Bridges 54 Lua-callable methods via `mlua`.\n- See `docs/specs/province.md` for the full API specification.",
+      "description": "File: src/lua_api/province_api.rs",
       "functions": [
         {
           "name": "newFromPng",
@@ -20645,7 +20645,7 @@
           "name": "setFlag",
           "fullPath": "lurek.province.setFlag",
           "signature": "(id, bit, value)",
-          "description": "Sets a single flag bit (0–63) on a province.",
+          "description": "Sets a single flag bit (0â€“63) on a province.",
           "parameters": [
             {
               "name": "id",
@@ -20656,7 +20656,7 @@
             {
               "name": "bit",
               "type": "integer",
-              "description": "Flag bit index (0–63).",
+              "description": "Flag bit index (0â€“63).",
               "optional": false
             },
             {
@@ -20686,7 +20686,7 @@
             {
               "name": "bit",
               "type": "integer",
-              "description": "Flag bit index (0–63).",
+              "description": "Flag bit index (0â€“63).",
               "optional": false
             }
           ],
@@ -20718,7 +20718,7 @@
     },
     {
       "name": "raycaster",
-      "description": "`lurek.raycaster` - Provides a pseudo-3D raycasting engine for first-person dungeon crawlers with textured walls, floors, and ceilings.\n\n- Registers `lurek.raycaster.*` functions and types via `register()`.\n- `LuaDoorManager`: userdata type exposed to Lua.\n- `LuaHeightMap`: userdata type exposed to Lua.\n- `LuaPointLight`: userdata type exposed to Lua.\n- `LuaRaycaster`: userdata type exposed to Lua.\n- `LuaSpriteManager`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/raycaster_api.rs",
       "functions": [
         {
           "name": "new",
@@ -20963,7 +20963,7 @@
     },
     {
       "name": "render",
-      "description": "`lurek.render` - Provides 2D drawing primitives, texture rendering, text output, blend modes, and render state management.\n\n- Registers `lurek.render.*` functions and types via `register()`.\n- Userdata types: `LuaImageData`, `LuaNineSlice`, `LuaImage`.\n- Userdata types: `LuaFont`, `LuaCanvas`, `LuaSpriteBatch`.\n- Userdata types: `LuaMesh`, `LuaShader`, `LuaQuad`.\n- Userdata types: `LuaShape`, `LuaDrawLayer`, `LObjModel`.\n- Bridges 217 Lua-callable methods via `mlua`.\n- See `docs/specs/render.md` for the full API specification.",
+      "description": "File: src/lua_api/render_api.rs",
       "functions": [
         {
           "name": "setColor",
@@ -20974,25 +20974,25 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
               "name": "a",
               "type": "number",
-              "description": "Alpha channel (0–1, default 1).",
+              "description": "Alpha channel (0â€“1, default 1).",
               "optional": true
             }
           ],
@@ -21021,19 +21021,19 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             }
           ],
@@ -23629,7 +23629,7 @@
             {
               "name": "alpha",
               "type": "number",
-              "description": "Layer opacity (0–1, default 1).",
+              "description": "Layer opacity (0â€“1, default 1).",
               "optional": true
             },
             {
@@ -24103,7 +24103,7 @@
             {
               "name": "alpha",
               "type": "number",
-              "description": "Layer opacity (0–1, default 1).",
+              "description": "Layer opacity (0â€“1, default 1).",
               "optional": true
             },
             {
@@ -24325,7 +24325,7 @@
     },
     {
       "name": "repl",
-      "description": "`lurek.repl` -- Release-safe Lua REPL session bindings for interactive evaluation.\n\n- Registers `lurek.repl.*` functions and types via `register()`.\n- `LReplSession`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/repl_api.rs",
       "functions": [
         {
           "name": "new",
@@ -24350,7 +24350,7 @@
     },
     {
       "name": "save",
-      "description": "`lurek.save` — Persistent game save/load system with named slots, schema versioning, auto-save, compression, and migration support.\n\n- Registers `lurek.save.*` functions and types via `register()`.\n- `LuaSaveManager`: userdata type exposed to Lua.\n- Bridges 28 Lua-callable methods via `mlua`.\n- See `docs/specs/save.md` for the full API specification.",
+      "description": "File: src/lua_api/save_api.rs",
       "functions": [
         {
           "name": "newSaveManager",
@@ -24368,7 +24368,7 @@
     },
     {
       "name": "scene",
-      "description": "`lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`.\n\n- Registers `lurek.scene.*` functions and types via `register()`.\n- `LuaDepthSorter`: userdata type exposed to Lua.\n- Bridges 70 Lua-callable methods via `mlua`.\n- See `docs/specs/scene.md` for the full API specification.",
+      "description": "File: src/lua_api/scene_api.rs",
       "functions": [
         {
           "name": "push",
@@ -24446,7 +24446,7 @@
           "name": "switchTo",
           "fullPath": "lurek.scene.switchTo",
           "signature": "lurek.scene.switchTo(scene, [transition], [duration], [easing], [params])",
-          "description": "Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack — the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 → level 2).",
+          "description": "Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack â€” the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 â†’ level 2).",
           "parameters": [
             {
               "name": "scene",
@@ -24829,7 +24829,7 @@
           "name": "unregisterScene",
           "fullPath": "lurek.scene.unregisterScene",
           "signature": "(name)",
-          "description": "Remove a scene registration by name. Does not pop the scene if it is currently active on the stack — it only removes the name mapping.",
+          "description": "Remove a scene registration by name. Does not pop the scene if it is currently active on the stack â€” it only removes the name mapping.",
           "parameters": [
             {
               "name": "name",
@@ -24858,7 +24858,7 @@
           "name": "setData",
           "fullPath": "lurek.scene.setData",
           "signature": "(key, value)",
-          "description": "Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references — for example, passing a selected level index from a menu scene to a gameplay scene.",
+          "description": "Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references â€” for example, passing a selected level index from a menu scene to a gameplay scene.",
           "parameters": [
             {
               "name": "key",
@@ -25012,7 +25012,7 @@
           "name": "pushOverlay",
           "fullPath": "lurek.scene.pushOverlay",
           "signature": "lurek.scene.pushOverlay(scene, [transition], [duration], [easing], [params])",
-          "description": "Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.",
+          "description": "Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused â€” it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.",
           "parameters": [
             {
               "name": "scene",
@@ -25255,7 +25255,7 @@
           "name": "preload",
           "fullPath": "lurek.scene.preload",
           "signature": "(name, loader)",
-          "description": "Register a deferred-loading function for a scene. The loader function is NOT called immediately — it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.",
+          "description": "Register a deferred-loading function for a scene. The loader function is NOT called immediately â€” it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.",
           "parameters": [
             {
               "name": "name",
@@ -25458,7 +25458,7 @@
     },
     {
       "name": "serialize",
-      "description": "`lurek.serialize` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.\n\n- Registers `lurek.serialize.*` functions and types via `register()`.\n- Bridges 15 Lua-callable methods via `mlua`.\n- See `docs/specs/serialize.md` for the full API specification.",
+      "description": "File: src/lua_api/serialize_api.rs",
       "functions": [
         {
           "name": "fromJson",
@@ -25801,7 +25801,7 @@
     },
     {
       "name": "spine",
-      "description": "`lurek.spine` — Spine-like skeletal animation with bones, slots, attachments, IK constraints, and skin mixing.\n\n- Registers `lurek.spine.*` functions and types via `register()`.\n- `LuaSkeleton`: userdata type exposed to Lua.\n- `LuaSkeletonAnimation`: userdata type exposed to Lua.\n- Bridges 37 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/spine_api.rs",
       "functions": [
         {
           "name": "newSkeleton",
@@ -25868,7 +25868,7 @@
     },
     {
       "name": "sprite",
-      "description": "`lurek.sprite` - Provides sprite batch rendering, sprite sheets, quad management, and texture atlas operations for efficient 2D rendering.\n\n- Registers `lurek.sprite.*` functions and types via `register()`.\n- `LuaSpriteSheet`: userdata type exposed to Lua.\n- `LuaSpriteAtlas`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/sprite_api.rs",
       "functions": [
         {
           "name": "newSheet",
@@ -25910,7 +25910,7 @@
           "name": "newRPGMakerSheet",
           "fullPath": "lurek.sprite.newRPGMakerSheet",
           "signature": "(tw, th)",
-          "description": "Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).",
+          "description": "Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).",
           "parameters": [
             {
               "name": "tw",
@@ -26001,7 +26001,7 @@
     },
     {
       "name": "system",
-      "description": "`lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.\n\n- Registers `lurek.system.*` functions and types via `register()`.\n- Bridges 28 Lua-callable methods via `mlua`.\n- See `docs/specs/system.md` for the full API specification.",
+      "description": "File: src/lua_api/system_api.rs",
       "functions": [
         {
           "name": "getOS",
@@ -26412,7 +26412,7 @@
     },
     {
       "name": "terminal",
-      "description": "`lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.\n\n- Registers `lurek.terminal.*` functions and types via `register()`.\n- `LuaTerminal`: userdata type exposed to Lua.\n- `LuaWidget`: userdata type exposed to Lua.\n- Bridges 88 Lua-callable methods via `mlua`.\n- See `docs/specs/terminal.md` for the full API specification.",
+      "description": "File: src/lua_api/terminal_api.rs",
       "functions": [
         {
           "name": "newTerminal",
@@ -27099,7 +27099,7 @@
     },
     {
       "name": "thread",
-      "description": "`lurek.thread` - Provides multi-threaded Lua worker VMs with typed channel messaging for parallel game logic execution.\n\n- Registers `lurek.thread.*` functions and types via `register()`.\n- Userdata types: `LuaThreadHandle`, `LuaThreadPool`, `LuaPromise`.\n- Userdata type: `LuaChannel`.\n- Bridges 41 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/thread_api.rs",
       "functions": [
         {
           "name": "newThread",
@@ -27230,7 +27230,7 @@
     },
     {
       "name": "tilemap",
-      "description": "`lurek.tilemap` - Provides tile-based map rendering with layers, animated tiles, auto-tiling, collision maps, and TMX/Tiled import.\n\n- Registers `lurek.tilemap.*` functions and types via `register()`.\n- Userdata types: `LuaTileSet`, `LuaTileMap`, `LuaAutoTileSheet`.\n- Userdata types: `LuaChunkMap`, `LuaLargeMapRenderer`, `LuaIsoMap`.\n- Userdata types: `LuaMapBlock`, `LuaMapGroup`, `LuaMapScript`.\n- Userdata type: `LuaMapGen`.\n- Bridges 190 Lua-callable methods via `mlua`.\n- See `docs/specs/tilemap.md` for the full API specification.",
+      "description": "File: src/lua_api/tilemap_api.rs",
       "functions": [
         {
           "name": "newTileSet",
@@ -28070,7 +28070,7 @@
     },
     {
       "name": "timer",
-      "description": "`lurek.timer` - Provides time management with delta time, fixed timestep, cooldowns, delays, intervals, and frame counting.\n\n- Registers `lurek.timer.*` functions and types via `register()`.\n- `LuaScheduler`: userdata type exposed to Lua.\n- Bridges 49 Lua-callable methods via `mlua`.\n- See `docs/specs/timer.md` for the full API specification.",
+      "description": "File: src/lua_api/timer_api.rs",
       "functions": [
         {
           "name": "getDelta",
@@ -28211,7 +28211,7 @@
           "name": "sleep",
           "fullPath": "lurek.timer.sleep",
           "signature": "(seconds)",
-          "description": "Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.",
+          "description": "Blocks the current thread for the given number of seconds. Use sparingly â€” this halts the entire game loop. Intended for loading screens or synchronization.",
           "parameters": [
             {
               "name": "seconds",
@@ -28370,7 +28370,7 @@
     },
     {
       "name": "tween",
-      "description": "`lurek.tween` - Provides value tweening with easing functions, sequences, parallel groups, and property animation for smooth game transitions.\n\n- Registers `lurek.tween.*` functions and types via `register()`.\n- `LuaTweenState`: userdata type exposed to Lua.\n- `LuaTween`: userdata type exposed to Lua.\n- `LuaTweenSequence`: userdata type exposed to Lua.\n- `LuaTweenParallel`: userdata type exposed to Lua.\n- `LuaSpring`: userdata type exposed to Lua.",
+      "description": "File: src/lua_api/tween_api.rs",
       "functions": [
         {
           "name": "update",
@@ -28696,7 +28696,7 @@
     },
     {
       "name": "ui",
-      "description": "`lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.\n\n- Registers `lurek.ui.*` functions and types via `register()`.\n- `LuaTheme`: userdata type exposed to Lua.\n- `LuaLineChart`: userdata type exposed to Lua.\n- `LuaBarChart`: userdata type exposed to Lua.\n- `LuaScatterPlot`: userdata type exposed to Lua.\n- `LuaPieChart`: userdata type exposed to Lua.\n- `LuaAreaChart`: userdata type exposed to Lua.\n- Bridges 429 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/ui_api.rs",
       "functions": [
         {
           "name": "newButton",
@@ -30320,7 +30320,7 @@
     },
     {
       "name": "validator",
-      "description": "`lurek.validator` - Schema and constraint validation for Lua files, assets, imports, and custom rules.\n\n- Registers `lurek.validator.*` functions and types via `register()`.\n- `LuaValidationEngine`: userdata type exposed to Lua.\n- Bridges 12 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/validator_api.rs",
       "functions": [
         {
           "name": "newEngine",
@@ -30381,7 +30381,7 @@
     },
     {
       "name": "visibility",
-      "description": "`lurek.visibility` -- Lua bindings for universal fog-of-war, discovery, and line-of-sight.\n\n- Registers `lurek.visibility.*` functions and types via `register()`.\n- `LuaVisibilityGrid`: userdata type exposed to Lua.\n- Bridges 16 Lua-callable methods via `mlua`.",
+      "description": "File: src/lua_api/visibility_api.rs",
       "functions": [
         {
           "name": "new",
@@ -30424,7 +30424,7 @@
     },
     {
       "name": "window",
-      "description": "`lurek.window` - Provides window management with resizing, fullscreen, title, icon, DPI scaling, and display mode control.\n\n- Registers `lurek.window.*` functions and types via `register()`.\n- Bridges 55 Lua-callable methods via `mlua`.\n- See `docs/specs/window.md` for the full API specification.",
+      "description": "File: src/lua_api/window_api.rs",
       "functions": [
         {
           "name": "setTitle",
@@ -34628,7 +34628,7 @@
             {
               "name": "values",
               "type": "table",
-              "description": "Map of key → string substitutions.",
+              "description": "Map of key Ă˘â€ â€™ string substitutions.",
               "optional": false
             }
           ],
@@ -39842,7 +39842,7 @@
             {
               "name": "bpm",
               "type": "number",
-              "description": "New BPM (clamped to ≥1).",
+              "description": "New BPM (clamped to â‰Ą1).",
               "optional": false
             }
           ],
@@ -39913,7 +39913,7 @@
             {
               "name": "beats",
               "type": "integer",
-              "description": "New beats per bar (clamped to ≥1).",
+              "description": "New beats per bar (clamped to â‰Ą1).",
               "optional": false
             }
           ],
@@ -40424,7 +40424,7 @@
           "name": "addInverter",
           "fullPath": "LBehaviorTree:addInverter",
           "signature": "([label])",
-          "description": "Create a decorator node that inverts its child's result (success ↔ failure).",
+          "description": "Create a decorator node that inverts its child's result (success â†” failure).",
           "parameters": [
             {
               "name": "label",
@@ -40919,19 +40919,19 @@
             {
               "name": "height",
               "type": "number",
-              "description": "Elevation value (0.0–1.0) of the terrain point.",
+              "description": "Elevation value (0.0â€“1.0) of the terrain point.",
               "optional": false
             },
             {
               "name": "moisture",
               "type": "number",
-              "description": "Moisture level (0.0–1.0) at the point.",
+              "description": "Moisture level (0.0â€“1.0) at the point.",
               "optional": false
             },
             {
               "name": "temperature",
               "type": "number",
-              "description": "Temperature value (0.0–1.0) at the point.",
+              "description": "Temperature value (0.0â€“1.0) at the point.",
               "optional": false
             }
           ],
@@ -41654,7 +41654,7 @@
             {
               "name": "restitution",
               "type": "number",
-              "description": "New restitution (0Ă˘â‚¬â€ś1).",
+              "description": "New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).",
               "optional": false
             }
           ],
@@ -52114,7 +52114,7 @@
           "name": "setPixel",
           "fullPath": "LCustomCursor:setPixel",
           "signature": "(x, y, r, g, b, a)",
-          "description": "Set a pixel color — Lua userdata object exposed by the engine.",
+          "description": "Set a pixel color â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "x",
@@ -53432,7 +53432,7 @@
           "name": "parFilter",
           "fullPath": "LDataFrame:parFilter",
           "signature": "(col, op, val)",
-          "description": "Parallel filter — automatically parallelizes when frame has 10,000+ rows.",
+          "description": "Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.",
           "parameters": [
             {
               "name": "col",
@@ -53462,7 +53462,7 @@
           "name": "parGroupAgg",
           "fullPath": "LDataFrame:parGroupAgg",
           "signature": "(group_col, agg_col, fn_name)",
-          "description": "Parallel group-by aggregation — partitions and aggregates in parallel.",
+          "description": "Parallel group-by aggregation â€” partitions and aggregates in parallel.",
           "parameters": [
             {
               "name": "group_col",
@@ -55029,7 +55029,7 @@
             {
               "name": "depth",
               "type": "number",
-              "description": "Numeric z-depth controlling draw order — lower values are drawn behind higher values.",
+              "description": "Numeric z-depth controlling draw order â€” lower values are drawn behind higher values.",
               "optional": false
             }
           ],
@@ -55071,7 +55071,7 @@
           "name": "flush",
           "fullPath": "LDepthSorter:flush",
           "signature": "()",
-          "description": "Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path — call it once per frame inside your scene's `draw` or `render` callback.",
+          "description": "Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -59595,7 +59595,7 @@
           "name": "addExtension",
           "fullPath": "LFileFilter:addExtension",
           "signature": "(ext)",
-          "description": "Add allowed file extensions — Lua userdata object exposed by the engine.",
+          "description": "Add allowed file extensions â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "ext",
@@ -72318,7 +72318,7 @@
             {
               "name": "callback",
               "type": "function",
-              "description": "Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.",
+              "description": "Called as callback(x, y, r, g, b, a) â†’ (r, g, b, a) for each pixel.",
               "optional": false
             }
           ],
@@ -83198,7 +83198,7 @@
           "name": "setTile",
           "fullPath": "LMapBlock:setTile",
           "signature": "(layer, x, y, slot, tileset_id, gid)",
-          "description": "Set a tile slot value — Lua userdata object exposed by the engine.",
+          "description": "Set a tile slot value â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "layer",
@@ -83736,7 +83736,7 @@
           "name": "addSlot",
           "fullPath": "LMapBlockConfig:addSlot",
           "signature": "(name, [required], [default_gid])",
-          "description": "Add a slot definition — Lua userdata object exposed by the engine.",
+          "description": "Add a slot definition â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "name",
@@ -83837,7 +83837,7 @@
           "name": "setRectShape",
           "fullPath": "LMapBlockGenerator:setRectShape",
           "signature": "(w, h)",
-          "description": "Set rectangular map shape — Lua userdata object exposed by the engine.",
+          "description": "Set rectangular map shape â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "width",
@@ -84039,7 +84039,7 @@
           "name": "getHeight",
           "fullPath": "LMapBlockResult:getHeight",
           "signature": "()",
-          "description": "Get total height in tiles — Lua userdata object exposed by the engine.",
+          "description": "Get total height in tiles â€” Lua userdata object exposed by the engine.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -84387,7 +84387,7 @@
           "name": "addStep",
           "fullPath": "LMapScript:addStep",
           "signature": "(step_type_str, [opts])",
-          "description": "Add a generation step — Lua userdata object exposed by the engine.",
+          "description": "Add a generation step â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "step_type",
@@ -90846,7 +90846,7 @@
             {
               "name": "cost",
               "type": "integer",
-              "description": "Movement cost (0–255).",
+              "description": "Movement cost (0â€“255).",
               "optional": false
             }
           ],
@@ -90972,7 +90972,7 @@
             {
               "name": "cost",
               "type": "integer",
-              "description": "Movement cost (0–255).",
+              "description": "Movement cost (0â€“255).",
               "optional": false
             }
           ],
@@ -91014,7 +91014,7 @@
             {
               "name": "cost",
               "type": "integer",
-              "description": "Movement cost (0–255).",
+              "description": "Movement cost (0â€“255).",
               "optional": false
             }
           ],
@@ -94875,7 +94875,7 @@
             {
               "name": "rotation",
               "type": "number",
-              "description": "Rotation step (0–3, each step = 90 degrees, default 0).",
+              "description": "Rotation step (0â€“3, each step = 90 degrees, default 0).",
               "optional": true
             }
           ],
@@ -98607,25 +98607,25 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
               "name": "a",
               "type": "number",
-              "description": "Alpha channel (0–1).",
+              "description": "Alpha channel (0â€“1).",
               "optional": false
             }
           ],
@@ -101319,7 +101319,7 @@
           "name": "addSlice",
           "fullPath": "LPieChart:addSlice",
           "signature": "(label, value, [color])",
-          "description": "Add a slice to the pie chart â€” Lua userdata object exposed by the engine.",
+          "description": "Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "label",
@@ -102675,7 +102675,7 @@
           "name": "addPosition",
           "fullPath": "LPlacementGrid:addPosition",
           "signature": "(x, y)",
-          "description": "Add a position to the grid — Lua userdata object exposed by the engine.",
+          "description": "Add a position to the grid â€” Lua userdata object exposed by the engine.",
           "parameters": [
             {
               "name": "x",
@@ -106021,19 +106021,19 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red component (0.0–1.0).",
+              "description": "Red component (0.0â€“1.0).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green component (0.0–1.0).",
+              "description": "Green component (0.0â€“1.0).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue component (0.0–1.0).",
+              "description": "Blue component (0.0â€“1.0).",
               "optional": false
             },
             {
@@ -111209,7 +111209,7 @@
           "name": "setSummary",
           "fullPath": "LSaveManager:setSummary",
           "signature": "(summary)",
-          "description": "Set a human-readable summary string stored alongside save metadata (e.g. \"Level 5 – Forest\").",
+          "description": "Set a human-readable summary string stored alongside save metadata (e.g. \"Level 5 â€“ Forest\").",
           "parameters": [
             {
               "name": "summary",
@@ -115226,7 +115226,7 @@
     },
     {
       "name": "LSemanticMemory",
-      "description": "Lua-side handle for an unbounded key → value fact store.",
+      "description": "Lua-side handle for an unbounded key Ă˘â€ â€™ value fact store.",
       "methods": [
         {
           "name": "learn",
@@ -116977,25 +116977,25 @@
             {
               "name": "r",
               "type": "number",
-              "description": "Red channel (0–1).",
+              "description": "Red channel (0â€“1).",
               "optional": false
             },
             {
               "name": "g",
               "type": "number",
-              "description": "Green channel (0–1).",
+              "description": "Green channel (0â€“1).",
               "optional": false
             },
             {
               "name": "b",
               "type": "number",
-              "description": "Blue channel (0–1).",
+              "description": "Blue channel (0â€“1).",
               "optional": false
             },
             {
               "name": "a",
               "type": "number",
-              "description": "Alpha channel (0–1, default 1).",
+              "description": "Alpha channel (0â€“1, default 1).",
               "optional": true
             }
           ],
@@ -135546,7 +135546,7 @@
           "name": "getName",
           "fullPath": "LTilesetRef:getName",
           "signature": "()",
-          "description": "Get tileset name — Lua userdata object exposed by the engine.",
+          "description": "Get tileset name â€” Lua userdata object exposed by the engine.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -149700,7 +149700,7 @@
             {
               "name": "friction",
               "type": "number",
-              "description": "New friction value (0Ă˘â‚¬â€ś1 typical range).",
+              "description": "New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range).",
               "optional": false
             }
           ],
@@ -150114,7 +150114,7 @@
             {
               "name": "factor",
               "type": "number",
-              "description": "Correction factor (0Ă˘â‚¬â€ś1), higher = faster convergence.",
+              "description": "Correction factor (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1), higher = faster convergence.",
               "optional": false
             }
           ],
@@ -151066,7 +151066,7 @@
             {
               "name": "n",
               "type": "integer",
-              "description": "Number of iterations (default is typically 4Ă˘â‚¬â€ś8).",
+              "description": "Number of iterations (default is typically 4Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›8).",
               "optional": false
             }
           ],
@@ -151671,144 +151671,81 @@
     {
       "name": "draw",
       "signature": "function lurek.draw()",
-      "description": "Called every frame for rendering. All draw calls must happen here.",
+      "description": "Called every frame for world rendering.",
       "parameters": []
     },
     {
-      "name": "keypressed",
-      "signature": "function lurek.keypressed(key)",
-      "description": "Called when a keyboard key is pressed.",
+      "name": "draw_ui",
+      "signature": "function lurek.draw_ui()",
+      "description": "Called every frame after `draw` for UI rendering.",
+      "parameters": []
+    },
+    {
+      "name": "errorhandler",
+      "signature": "function lurek.errorhandler(msg)",
+      "description": "Called for unhandled Lua errors.",
       "parameters": [
         {
-          "name": "key",
+          "name": "msg",
           "type": "string",
-          "description": "Key name",
+          "description": "Error message text.",
           "optional": false
         }
       ]
     },
     {
-      "name": "keyreleased",
-      "signature": "function lurek.keyreleased(key)",
-      "description": "Called when a keyboard key is released.",
+      "name": "exit",
+      "signature": "function lurek.exit()",
+      "description": "Called when the engine is shutting down.",
+      "parameters": []
+    },
+    {
+      "name": "fixedUpdate",
+      "signature": "function lurek.fixedUpdate(dt)",
+      "description": "Deprecated alias for `process_physics`.",
       "parameters": [
         {
-          "name": "key",
+          "name": "dt",
+          "type": "number",
+          "description": "Fixed-step delta time in seconds.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "focus",
+      "signature": "function lurek.focus(has_focus)",
+      "description": "Called when window focus changes.",
+      "parameters": [
+        {
+          "name": "has_focus",
+          "type": "boolean",
+          "description": "True when focused.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "gamepadaxis",
+      "signature": "function lurek.gamepadaxis(id, axis, value)",
+      "description": "Called when a gamepad axis value changes.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "Gamepad id.",
+          "optional": false
+        },
+        {
+          "name": "axis",
           "type": "string",
-          "description": "Key name",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "textinput",
-      "signature": "function lurek.textinput(text)",
-      "description": "Called when text input is received.",
-      "parameters": [
-        {
-          "name": "text",
-          "type": "string",
-          "description": "Input character(s)",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "mousepressed",
-      "signature": "function lurek.mousepressed(x, y, button)",
-      "description": "Called when a mouse button is pressed.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Mouse X",
+          "description": "Axis name.",
           "optional": false
         },
         {
-          "name": "y",
+          "name": "value",
           "type": "number",
-          "description": "Mouse Y",
-          "optional": false
-        },
-        {
-          "name": "button",
-          "type": "number",
-          "description": "Button index (1=left, 2=right, 3=middle)",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "mousereleased",
-      "signature": "function lurek.mousereleased(x, y, button)",
-      "description": "Called when a mouse button is released.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Mouse X",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Mouse Y",
-          "optional": false
-        },
-        {
-          "name": "button",
-          "type": "number",
-          "description": "Button index",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "mousemoved",
-      "signature": "function lurek.mousemoved(x, y, dx, dy)",
-      "description": "Called when the mouse cursor moves.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "X",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Y",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "X delta",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Y delta",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "wheelmoved",
-      "signature": "function lurek.wheelmoved(x, y)",
-      "description": "Called on mouse wheel scroll.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Horizontal scroll",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Vertical scroll",
+          "description": "Axis value in range -1..1.",
           "optional": false
         }
       ]
@@ -151821,13 +151758,13 @@
         {
           "name": "id",
           "type": "number",
-          "description": "Gamepad ID",
+          "description": "Gamepad id.",
           "optional": false
         },
         {
           "name": "button",
           "type": "string",
-          "description": "Button name",
+          "description": "Button name.",
           "optional": false
         }
       ]
@@ -151840,41 +151777,22 @@
         {
           "name": "id",
           "type": "number",
-          "description": "Gamepad ID",
+          "description": "Gamepad id.",
           "optional": false
         },
         {
           "name": "button",
           "type": "string",
-          "description": "Button name",
+          "description": "Button name.",
           "optional": false
         }
       ]
     },
     {
-      "name": "gamepadaxis",
-      "signature": "function lurek.gamepadaxis(id, axis, value)",
-      "description": "Called when a gamepad axis changes.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Gamepad ID",
-          "optional": false
-        },
-        {
-          "name": "axis",
-          "type": "string",
-          "description": "Axis name",
-          "optional": false
-        },
-        {
-          "name": "value",
-          "type": "number",
-          "description": "Axis value",
-          "optional": false
-        }
-      ]
+      "name": "init",
+      "signature": "function lurek.init()",
+      "description": "Called once when the engine initialises.",
+      "parameters": []
     },
     {
       "name": "joystickadded",
@@ -151884,7 +151802,7 @@
         {
           "name": "id",
           "type": "number",
-          "description": "Device ID",
+          "description": "Gamepad id.",
           "optional": false
         }
       ]
@@ -151897,83 +151815,145 @@
         {
           "name": "id",
           "type": "number",
-          "description": "Device ID",
+          "description": "Gamepad id.",
           "optional": false
         }
       ]
     },
     {
-      "name": "focus",
-      "signature": "function lurek.focus(has_focus)",
-      "description": "Called when window gains or loses focus.",
+      "name": "keypressed",
+      "signature": "function lurek.keypressed(key, scancode, isrepeat)",
+      "description": "Called when a keyboard key is pressed.",
       "parameters": [
         {
-          "name": "has_focus",
-          "type": "boolean",
-          "description": "True if focused",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "visible",
-      "signature": "function lurek.visible(is_visible)",
-      "description": "Called when window visibility changes.",
-      "parameters": [
-        {
-          "name": "is_visible",
-          "type": "boolean",
-          "description": "True if visible",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "resize",
-      "signature": "function lurek.resize(w, h)",
-      "description": "Called when the window is resized.",
-      "parameters": [
-        {
-          "name": "w",
-          "type": "number",
-          "description": "New width",
+          "name": "key",
+          "type": "string",
+          "description": "Key name.",
           "optional": false
         },
         {
-          "name": "h",
-          "type": "number",
-          "description": "New height",
+          "name": "scancode",
+          "type": "string",
+          "description": "Platform scancode.",
+          "optional": false
+        },
+        {
+          "name": "isrepeat",
+          "type": "boolean",
+          "description": "True when key repeat generated the event.",
           "optional": false
         }
       ]
     },
     {
-      "name": "quit",
-      "signature": "function lurek.quit()",
-      "description": "Called when the window is about to close. Return true to cancel.",
-      "parameters": []
+      "name": "keyreleased",
+      "signature": "function lurek.keyreleased(key, scancode)",
+      "description": "Called when a keyboard key is released.",
+      "parameters": [
+        {
+          "name": "key",
+          "type": "string",
+          "description": "Key name.",
+          "optional": false
+        },
+        {
+          "name": "scancode",
+          "type": "string",
+          "description": "Platform scancode.",
+          "optional": false
+        }
+      ]
     },
     {
-      "name": "init",
-      "signature": "function lurek.init()",
-      "description": "Called once when the engine initialises, before the first frame.",
-      "parameters": []
+      "name": "mousemoved",
+      "signature": "function lurek.mousemoved(x, y, dx, dy)",
+      "description": "Called when the mouse cursor moves.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Mouse x coordinate.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Mouse y coordinate.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Horizontal delta.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Vertical delta.",
+          "optional": false
+        }
+      ]
     },
     {
-      "name": "ready",
-      "signature": "function lurek.ready()",
-      "description": "Called once after init, when the window and GPU are ready.",
-      "parameters": []
+      "name": "mousepressed",
+      "signature": "function lurek.mousepressed(x, y, button)",
+      "description": "Called when a mouse button is pressed.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Mouse x coordinate.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Mouse y coordinate.",
+          "optional": false
+        },
+        {
+          "name": "button",
+          "type": "number",
+          "description": "Button index.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "mousereleased",
+      "signature": "function lurek.mousereleased(x, y, button)",
+      "description": "Called when a mouse button is released.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Mouse x coordinate.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Mouse y coordinate.",
+          "optional": false
+        },
+        {
+          "name": "button",
+          "type": "number",
+          "description": "Button index.",
+          "optional": false
+        }
+      ]
     },
     {
       "name": "process",
       "signature": "function lurek.process(dt)",
-      "description": "Called every frame for game logic. `dt` is elapsed seconds.",
+      "description": "Called every frame for variable-step gameplay logic.",
       "parameters": [
         {
           "name": "dt",
           "type": "number",
-          "description": "Delta time in seconds",
+          "description": "Delta time in seconds.",
           "optional": false
         }
       ]
@@ -151981,12 +151961,12 @@
     {
       "name": "process_late",
       "signature": "function lurek.process_late(dt)",
-      "description": "Called every frame after process, for late updates (camera follow, etc).",
+      "description": "Called every frame after `process`.",
       "parameters": [
         {
           "name": "dt",
           "type": "number",
-          "description": "Delta time in seconds",
+          "description": "Delta time in seconds.",
           "optional": false
         }
       ]
@@ -151994,166 +151974,43 @@
     {
       "name": "process_physics",
       "signature": "function lurek.process_physics(dt)",
-      "description": "Called at fixed physics timestep rate.",
+      "description": "Called on the fixed physics step.",
       "parameters": [
         {
           "name": "dt",
           "type": "number",
-          "description": "Fixed delta time",
+          "description": "Fixed-step delta time in seconds.",
           "optional": false
         }
       ]
     },
     {
-      "name": "fixedUpdate",
-      "signature": "function lurek.fixedUpdate(dt)",
-      "description": "Deprecated alias for process_physics. Use lurek.process_physics(dt).",
-      "parameters": [
-        {
-          "name": "dt",
-          "type": "number",
-          "description": "Fixed delta time",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "draw_ui",
-      "signature": "function lurek.draw_ui()",
-      "description": "Called every frame after draw, for UI overlay rendering.",
+      "name": "quit",
+      "signature": "function lurek.quit()",
+      "description": "Called before shutdown; return true to cancel quit.",
       "parameters": []
     },
     {
-      "name": "exit",
-      "signature": "function lurek.exit()",
-      "description": "Called when the engine is shutting down, after quit.",
+      "name": "ready",
+      "signature": "function lurek.ready()",
+      "description": "Called once after init, when runtime state is ready.",
       "parameters": []
     },
     {
-      "name": "touchpressed",
-      "signature": "function lurek.touchpressed(id, x, y, dx, dy, pressure)",
-      "description": "Called when a touch begins.",
+      "name": "resize",
+      "signature": "function lurek.resize(w, h)",
+      "description": "Called when window size changes.",
       "parameters": [
         {
-          "name": "id",
+          "name": "w",
           "type": "number",
-          "description": "Touch ID",
+          "description": "New window width.",
           "optional": false
         },
         {
-          "name": "x",
+          "name": "h",
           "type": "number",
-          "description": "X",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Y",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "X delta",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Y delta",
-          "optional": false
-        },
-        {
-          "name": "pressure",
-          "type": "number",
-          "description": "Pressure",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "touchmoved",
-      "signature": "function lurek.touchmoved(id, x, y, dx, dy, pressure)",
-      "description": "Called when a touch point moves.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Touch ID",
-          "optional": false
-        },
-        {
-          "name": "x",
-          "type": "number",
-          "description": "X",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Y",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "X delta",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Y delta",
-          "optional": false
-        },
-        {
-          "name": "pressure",
-          "type": "number",
-          "description": "Pressure",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "touchreleased",
-      "signature": "function lurek.touchreleased(id, x, y, dx, dy, pressure)",
-      "description": "Called when a touch ends.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Touch ID",
-          "optional": false
-        },
-        {
-          "name": "x",
-          "type": "number",
-          "description": "X",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Y",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "X delta",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Y delta",
-          "optional": false
-        },
-        {
-          "name": "pressure",
-          "type": "number",
-          "description": "Pressure",
+          "description": "New window height.",
           "optional": false
         }
       ]
@@ -152166,19 +152023,193 @@
         {
           "name": "text",
           "type": "string",
-          "description": "Composition text",
+          "description": "Composition text.",
           "optional": false
         },
         {
           "name": "start",
           "type": "number",
-          "description": "Cursor start",
+          "description": "Cursor start offset.",
           "optional": false
         },
         {
           "name": "length",
           "type": "number",
-          "description": "Selection length",
+          "description": "Selection length.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "textinput",
+      "signature": "function lurek.textinput(text)",
+      "description": "Called when text input is received.",
+      "parameters": [
+        {
+          "name": "text",
+          "type": "string",
+          "description": "Input text fragment.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "touchmoved",
+      "signature": "function lurek.touchmoved(id, x, y, dx, dy, pressure)",
+      "description": "Called when a touch point moves.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "Touch id.",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Touch x coordinate.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Touch y coordinate.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Horizontal delta.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Vertical delta.",
+          "optional": false
+        },
+        {
+          "name": "pressure",
+          "type": "number",
+          "description": "Touch pressure.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "touchpressed",
+      "signature": "function lurek.touchpressed(id, x, y, dx, dy, pressure)",
+      "description": "Called when a touch begins.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "Touch id.",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Touch x coordinate.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Touch y coordinate.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Horizontal delta.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Vertical delta.",
+          "optional": false
+        },
+        {
+          "name": "pressure",
+          "type": "number",
+          "description": "Touch pressure.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "touchreleased",
+      "signature": "function lurek.touchreleased(id, x, y, dx, dy, pressure)",
+      "description": "Called when a touch ends.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "number",
+          "description": "Touch id.",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Touch x coordinate.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Touch y coordinate.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Horizontal delta.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Vertical delta.",
+          "optional": false
+        },
+        {
+          "name": "pressure",
+          "type": "number",
+          "description": "Touch pressure.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "visible",
+      "signature": "function lurek.visible(is_visible)",
+      "description": "Called when window visibility changes.",
+      "parameters": [
+        {
+          "name": "is_visible",
+          "type": "boolean",
+          "description": "True when visible.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "wheelmoved",
+      "signature": "function lurek.wheelmoved(x, y)",
+      "description": "Called when the mouse wheel moves.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Horizontal wheel delta.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Vertical wheel delta.",
           "optional": false
         }
       ]

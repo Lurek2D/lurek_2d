@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["highlight_spans"],"struct":["ColoredSpan","HighlightRule"]};

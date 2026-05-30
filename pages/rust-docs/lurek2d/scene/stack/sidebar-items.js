@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["SceneStack"],"type":["SceneId"]};

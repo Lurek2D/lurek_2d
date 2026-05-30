@@ -3,118 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LReplSession - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LReplSession Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/repl.html#lreplsession-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a class="active" href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LReplSession</h1>
-  <p>Lua-side REPL session handle with bounded history.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/repl.html">lurek.repl</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · repl.lua</summary><pre><code>do
-    ---@type LReplSession
-    local repl = lurek.repl.new()
-    repl:eval(&quot;local total = 2 + 2&quot;)
-    local result = repl:eval(&quot;return total * 3&quot;)
-    print(&quot;eval result = &quot; .. result)
-    print(&quot;history len = &quot; .. repl:len())
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LReplSession userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LReplSession:clear()</pre><p>Clears all entries from this REPL session history.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:40</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    local repl = lurek.repl.new()
-    repl:eval(&quot;return 1&quot;)
-    repl:eval(&quot;return 2&quot;)
-    repl:clear()
-    print(&quot;after clear = &quot; .. repl:len() .. &quot; history=&quot; .. #repl:history())
-end</code></pre></details></article><article class="item-row api-row" id="method-complete"><div class="item-row-main"><h3>complete</h3><pre class="inline-signature">LReplSession:complete(prefix: string) -&gt; string[]</pre><p>Returns completion candidates that begin with the supplied prefix.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:52</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    ---@type LReplSession
-    local repl = lurek.repl.new()
-    local completions = repl:complete(&quot;lurek.re&quot;)
-    print(&quot;completions for &#x27;lurek.re&#x27; = &quot; .. #completions)
-    print(&quot;first match = &quot; .. tostring(completions[1]))
-end</code></pre></details></article><article class="item-row api-row" id="method-eval"><div class="item-row-main"><h3>eval</h3><pre class="inline-signature">LReplSession:eval(code: string) -&gt; string</pre><p>Evaluates Lua code and records the input in this REPL history.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:25</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    ---@type LReplSession
-    local repl = lurek.repl.new()
-    repl:eval(&quot;local total = 2 + 2&quot;)
-    local result = repl:eval(&quot;return total * 3&quot;)
-    print(&quot;eval result = &quot; .. result)
-    print(&quot;history len = &quot; .. repl:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-history"><div class="item-row-main"><h3>history</h3><pre class="inline-signature">LReplSession:history() -&gt; string[]</pre><p>Returns the recorded REPL input history in oldest-first order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:31</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    local repl = lurek.repl.new()
-    repl:eval(&quot;return &#x27;first&#x27;&quot;)
-    repl:eval(&quot;return &#x27;second&#x27;&quot;)
-    local hist = repl:history()
-    print(&quot;history entries = &quot; .. #hist)
-    print(&quot;last entry = &quot; .. hist[#hist])
-end</code></pre></details></article><article class="item-row api-row" id="method-len"><div class="item-row-main"><h3>len</h3><pre class="inline-signature">LReplSession:len() -&gt; integer</pre><p>Returns the number of entries stored in this REPL history.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:47</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    local repl = lurek.repl.new()
-    repl:eval(&quot;return &#x27;a&#x27;&quot;)
-    repl:eval(&quot;return &#x27;b&#x27;&quot;)
-    print(&quot;len = &quot; .. repl:len())
-    repl:clear()
-    print(&quot;after clear = &quot; .. repl:len())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LReplSession:type() -&gt; string</pre><p>Returns the Lua-visible type name for this REPL session handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:67</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    ---@type LReplSession
-    local sess = lurek.repl.new()
-    print(&quot;type = &quot; .. sess:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LReplSession:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this REPL session handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/repl_api.rs:72</span></div><details class="example-block"><summary>Example · Exact example · repl.lua</summary><pre><code>do
-    ---@type LReplSession
-    local sess = lurek.repl.new()
-    print(&quot;is session = &quot; .. tostring(sess:typeOf(&quot;LReplSession&quot;)))
-    print(&quot;is object = &quot; .. tostring(sess:typeOf(&quot;LObject&quot;)))
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/repl.html#lreplsession-handle">../../modules/repl.html#lreplsession-handle</a>…</p>
 </body>
 </html>

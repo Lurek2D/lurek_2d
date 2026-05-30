@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["interpolate_alphas","interpolate_colors","interpolate_sizes"]};

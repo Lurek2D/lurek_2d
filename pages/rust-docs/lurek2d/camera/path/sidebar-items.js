@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["CameraPath","CameraZoomTween"],"type":["CameraTweenEasing","ZoomTween"]};

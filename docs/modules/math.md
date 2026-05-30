@@ -1,12 +1,175 @@
 # Math
 
-- The `math` module is the most pervasive Foundations tier component in Lurek2D, providing an expansive suite of 2D mathematics, geometry, procedural generation, and spatial utility types.
+## Summary
 
 As the foundational leaf of the engine's dependency graph, it is imported and utilized by nearly every other subsystem. The core vector mathematics are handled by highly optimized `Vec2` and `Vec3` types, which offer a complete set of arithmetic operations, geometric helpers (dot, cross, normalize, distance), and angle conversions. Complex transformations are managed by the `Transform` struct, backed by a row-major 3x3 affine matrix (`Mat3`), facilitating chainable translation, rotation, scale, and shear operations.
 
 Beyond basic vectors, the module implements a robust set of geometric primitives and intersection algorithms. `Rect` and `Circle` structs provide foundational AABB and radial collision checks. The `geometry` submodule extends this with advanced operations: signed polygon area (shoelace formula), centroid calculation, point-in-polygon ray casting, line and segment intersection, Ear-clipping triangulation, Sutherland-Hodgman polygon clipping, and Andrew's monotone chain convex hull generation. To accelerate geometric queries, the module provides dynamic spatial indexing structures: an `AabbTree` for broad-phase hierarchical queries and a `SpatialHash` for uniform grid lookups, scaling efficiently with entity density rather than raw count.
 
 The module also excels in procedural generation and animation. It features a sophisticated `NoiseGenerator` offering Perlin, Simplex, and Worley (cellular) noise, layered with Fractional Brownian Motion (fBm) or turbulence for organic terrain synthesis. For animation, it provides an extensive library of over 50 named easing functions and multi-channel numeric interpolators via the `Tween` system. Pathing and curves are supported through `BezierCurve` (quadratic/cubic) and `CatmullRomSpline` implementations. Additionally, it handles deterministic, seedable random number generation (`RandomGenerator`) and texture atlas rectangle packing. This immense mathematical toolkit is entirely exposed to the scripting environment via the `lurek.math.*` API.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### aabb_tree.rs
+
+- Dynamic broad-phase spatial index for 2D world queries and overlap culling.
+- Stores moving bounds in a hierarchy that stays tight as entries shift each frame.
+- Serves fast insert, remove, move, and query flows for dynamic actors.
+- Reuses nodes through an internal pool to reduce allocation churn.
+- Chooses sibling branches with a cost heuristic that keeps the tree balanced.
+- Answers rectangle, point, circle, and segment tests from one entry map.
+- Exposes helper bound math so callers can combine and compare leaves efficiently.
+- Fits game-style workloads where many objects move but only a subset interact.
+- Gives predictable query latency for proximity, visibility, and broad-phase passes.
+- Keeps the data model leaf-centric so Lua-side handles stay simple and stable.
+
+### bezier.rs
+
+- Flexible Bézier curve utility for smooth motion paths and procedural shaping.
+- Supports dynamic control points, clamped evaluation, and partial-segment sampling.
+- Provides tangent and derivative queries for orientation and velocity-aware effects.
+- Can be transformed in place with translate, rotate, and scale operations.
+- Designed for path authoring, easing-like shaping, and motion interpolation use cases.
+
+### circle.rs
+
+- Circle primitive for radius-based collision and containment checks.
+- Keeps radius non-negative and treats the center as the shape anchor.
+- Answers point, circle, and AABB overlap queries for gameplay geometry.
+- Includes area and perimeter helpers for higher-level math routines.
+
+### easing.rs
+
+- Curated easing family for animation curves and tween response shaping.
+- Covers the standard in, out, and in-out variants across common motion families.
+- Handles edge clamping for curves that need explicit start and end behavior.
+- Exposes name-based resolution for data-driven animation systems.
+- Includes linear passthrough for identity interpolation.
+- Keeps the API focused on normalized t in [0,1] inputs and outputs.
+- Lets higher-level systems drive motion with consistent curve semantics.
+
+### facade.rs
+
+- Small scalar helper layer for interpolation and numeric remapping.
+- Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior.
+- Operates on f32 values only and stays side-effect free.
+- Acts as the lightweight math front door for common numeric tasks.
+
+### geometry.rs
+
+- Standalone geometry toolbox for flat coordinate math and polygon routines.
+- Covers circle, segment, line, and point queries used by gameplay systems.
+- Computes polygon area, centroid, convex hull, and point inclusion tests.
+- Provides line rasterization for grid traversal and tile-based effects.
+- Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep.
+- Uses f32 for engine-facing work and f64 where triangulation precision matters.
+- Exposes plain free functions with no shape ownership or scene coupling.
+- Serves as the shared low-level layer for collision, map, and generation code.
+
+### loot_table.rs
+
+- Weighted loot sampling and pity tracking for deterministic drop systems.
+- Uses the alias method for O(1) draws after an O(n) build step.
+- Keeps the raw weight table and RNG state serializable for save files.
+- Supports guaranteed outcomes once a pity threshold is reached.
+- Lets callers combine normal sampling with tracked fail counters.
+- Preserves fast runtime lookups without hiding the probability model.
+- Fits reward tables, gacha-style drops, and event-driven item rolls.
+- Restores exactly to the previous random state when deserialized.
+- Keeps the core data structure simple enough for Lua-driven gameplay flows.
+- Exposes predictable sampling behavior under both normal and pity paths.
+
+### mat3.rs
+
+- Row-major 3x3 matrix for 2D affine transforms and coordinate mapping.
+- Builds identity, translation, rotation, scale, and shear matrices.
+- Supports inversion and multiplication for transform composition.
+- Maps points through a compact linear algebra core.
+- Serves as the numeric backbone for higher-level 2D transform code.
+
+### mod.rs
+
+- Core math module wiring the vector, matrix, shape, curve, and utility submodules.
+- Collects the primitives that other engine systems build on for motion, collision, and mapping.
+- Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace.
+- Keeps the public math surface compact while exposing the full foundation layer.
+
+### polygon.rs
+
+- Polygon toolkit for clipping, hull building, triangulation, and winding cleanup.
+- Handles simple and concave shapes with routines aimed at gameplay geometry.
+- Provides intersection and boolean-style operations for shape processing.
+- Computes signed area and point-in-triangle tests for structural checks.
+- Normalizes vertex order so downstream consumers can rely on consistent winding.
+- Supplies the low-level machinery behind map, collision, and editor-style geometry flows.
+
+### random.rs
+
+- Seedable pseudo-random generator wrapper for deterministic gameplay and replay.
+- Produces uniform integer, float, and Gaussian samples from one stateful source.
+- Serializes and restores seed state so saves can resume the same sequence.
+- Gives higher-level systems a simple random facade without exposing backend details.
+- Fits any flow that needs reproducible chance, noise, or procedural variation.
+
+### rect.rs
+
+- Axis-aligned rectangle helper for layout, bounds, and collision checks.
+- Stores top-left position plus size under the engine's y-down convention.
+- Supports containment, overlap, union, and bounding-box construction.
+- Offers both corner-based and center-based creation paths.
+- Acts as the basic 2D box type used across spatial code.
+
+### spatial_hash.rs
+
+- Uniform-grid spatial hash for broad-phase collision and proximity search.
+- Buckets moving bounds into cells so query cost follows local density, not world size.
+- Supports insert, remove, update, and deduplicated multi-shape queries.
+- Handles rectangle, circle, and segment probes with shared cell traversal logic.
+- Uses slab-style segment tests for fast box intersection checks.
+- Works best when many objects stay sparse across a large playfield.
+
+### spline.rs
+
+- Multi-segment spline helper for smooth interpolation across control points.
+- Bridges Catmull-Rom and Hermite style curve handling under one shape.
+- Supports normalized sampling across full paths or individual segments.
+- Tracks control points dynamically so paths can be edited at runtime.
+- Useful for motion trails, camera rails, and other smooth route logic.
+
+### transform.rs
+
+- Mutable 2D affine transform that accumulates position, rotation, scale, and shear.
+- Wraps a 3x3 matrix so chained edits stay compact and composable.
+- Exposes forward and inverse point mapping for world and local space conversion.
+- Includes SRT decomposition for systems that need readable transform components.
+- Bridges low-level matrix math with runtime spatial manipulation.
+
+### vec2.rs
+
+- Fundamental 2D float vector for position, velocity, direction, and offsets.
+- Covers arithmetic, normalization, projection, and distance-style helpers.
+- Adds rotation, reflection, and angle conversion support for gameplay math.
+- Offers interpolation and unit-direction construction from radians.
+- Serves as the common scalar pair used throughout the engine.
+
+### vec3.rs
+
+- 3D float vector for cross products, directions, and other compact spatial math.
+- Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work.
+- Supports projection, interpolation, distance, and length queries.
+- Acts as the small 3D companion to the 2D math core.
+- Useful for normals, ray direction math, and procedural inputs.
+
+### voronoi.rs
+
+- Voronoi cell builder from 2D point sets using incremental Delaunay construction.
+- Produces closed polygonal cells with stable point deduplication and cleanup.
+- Relies on circumcircle predicates to drive triangulation updates.
+- Extracts boundary edges and orders vertices counter-clockwise for each region.
+- Handles coincident sites gracefully instead of failing the whole diagram.
+- Gives procedural generation and spatial partitioning code a ready-made diagram source.
 
 ## Functions
 
@@ -15,7 +178,6 @@ The module also excels in procedural generation and animation. It features a sop
 Creates a 2D vector. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.Vec2(x, y)
 ```
 
@@ -23,14 +185,14 @@ lurek.math.Vec2(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X component. |
-| `y` | `number` | Y component. |
+| `x` | number | X component. |
+| `y` | number | Y component. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | New vector handle. |
+| [LVec2](#lvec2-handle) | New vector handle. |
 
 **Example**
 
@@ -48,7 +210,6 @@ end
 Creates a 3D vector. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.Vec3(x, y, z)
 ```
 
@@ -56,15 +217,15 @@ lurek.math.Vec3(x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X component. |
-| `y` | `number` | Y component. |
-| `z` | `number` | Z component. |
+| `x` | number | X component. |
+| `y` | number | Y component. |
+| `z` | number | Z component. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | New vector handle. |
+| [LVec3](#lvec3-handle) | New vector handle. |
 
 **Example**
 
@@ -82,7 +243,6 @@ end
 Creates an empty AABB tree. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.aabbTree()
 ```
 
@@ -90,7 +250,7 @@ lurek.math.aabbTree()
 
 | Type | Description |
 |------|-------------|
-| `LAabbTree` | New AABB tree handle. |
+| [LAabbTree](#laabbtree-handle) | New AABB tree handle. |
 
 **Example**
 
@@ -111,7 +271,6 @@ end
 Returns absolute value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.abs(x)
 ```
 
@@ -119,13 +278,13 @@ lurek.math.abs(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Absolute value. |
+| number | Absolute value. |
 
 **Example**
 
@@ -143,7 +302,6 @@ end
 Returns arccosine of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.acos(x)
 ```
 
@@ -151,13 +309,13 @@ lurek.math.acos(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -175,7 +333,6 @@ end
 Returns the angle between two points.
 
 ```lua
--- signature
 lurek.math.angleBetween(x1, y1, x2, y2)
 ```
 
@@ -183,16 +340,16 @@ lurek.math.angleBetween(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First point x coordinate. |
-| `y1` | `number` | First point y coordinate. |
-| `x2` | `number` | Second point x coordinate. |
-| `y2` | `number` | Second point y coordinate. |
+| `x1` | number | First point x coordinate. |
+| `y1` | number | First point y coordinate. |
+| `x2` | number | Second point x coordinate. |
+| `y2` | number | Second point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle between points. |
+| number | Angle between points. |
 
 **Example**
 
@@ -212,7 +369,6 @@ end
 Applies a named easing function to a normalized value.
 
 ```lua
--- signature
 lurek.math.applyEasing(name, t)
 ```
 
@@ -220,14 +376,14 @@ lurek.math.applyEasing(name, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Easing function name. |
-| `t` | `number` | Normalized input value. |
+| `name` | string | Easing function name. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -247,7 +403,6 @@ end
 Returns arcsine of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.asin(x)
 ```
 
@@ -255,13 +410,13 @@ lurek.math.asin(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -279,7 +434,6 @@ end
 Returns arctangent or two-argument arctangent.
 
 ```lua
--- signature
 lurek.math.atan(y, x)
 ```
 
@@ -287,14 +441,14 @@ lurek.math.atan(y, x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `y` | `number` | Input value or y coordinate. |
-| `x?` | `number` | X coordinate for atan2 behavior. |
+| `y` | number | Input value or y coordinate. |
+| `x?` | number | X coordinate for atan2 behavior. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -312,7 +466,6 @@ end
 Returns two-argument arctangent.
 
 ```lua
--- signature
 lurek.math.atan2(y, x)
 ```
 
@@ -320,14 +473,14 @@ lurek.math.atan2(y, x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `y` | `number` | Y coordinate. |
-| `x` | `number` | X coordinate. |
+| `y` | number | Y coordinate. |
+| `x` | number | X coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -345,7 +498,6 @@ end
 Returns integer grid points along a Bresenham line.
 
 ```lua
--- signature
 lurek.math.bresenham(x1, y1, x2, y2)
 ```
 
@@ -353,16 +505,16 @@ lurek.math.bresenham(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Start x coordinate. |
-| `y1` | `number` | Start y coordinate. |
-| `x2` | `number` | End x coordinate. |
-| `y2` | `number` | End y coordinate. |
+| `x1` | number | Start x coordinate. |
+| `y1` | number | Start y coordinate. |
+| `x2` | number | End x coordinate. |
+| `y2` | number | End y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `MathBresenhamResult` | Array table of `{x, y}` point tables. |
+| LMathBresenhamResult | Array table of `{x, y}` point tables. |
 
 **Example**
 
@@ -383,7 +535,6 @@ end
 Creates a Catmull-Rom spline from point tables.
 
 ```lua
--- signature
 lurek.math.catmullRom(points)
 ```
 
@@ -391,13 +542,13 @@ lurek.math.catmullRom(points)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `points` | `table` | Array table of points with `x`/`y` fields or numeric indices. |
+| `points` | table | Array table of points with `x`/`y` fields or numeric indices. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCatmullRom` | New spline handle. |
+| [LCatmullRom](#lcatmullrom-handle) | New spline handle. |
 
 **Example**
 
@@ -417,7 +568,6 @@ end
 Returns ceiling of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.ceil(x)
 ```
 
@@ -425,13 +575,13 @@ lurek.math.ceil(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Ceiling value. |
+| number | Ceiling value. |
 
 **Example**
 
@@ -449,7 +599,6 @@ end
 Returns whether a circle contains a point.
 
 ```lua
--- signature
 lurek.math.circleContainsPoint(cx, cy, r, px, py)
 ```
 
@@ -457,17 +606,17 @@ lurek.math.circleContainsPoint(cx, cy, r, px, py)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Circle center x coordinate. |
-| `cy` | `number` | Circle center y coordinate. |
-| `r` | `number` | Circle radius. |
-| `px` | `number` | Point x coordinate. |
-| `py` | `number` | Point y coordinate. |
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `r` | number | Circle radius. |
+| `px` | number | Point x coordinate. |
+| `py` | number | Point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the point is inside the circle. |
+| boolean | True when the point is inside the circle. |
 
 **Example**
 
@@ -485,7 +634,6 @@ end
 Returns whether two circles intersect.
 
 ```lua
--- signature
 lurek.math.circleIntersectsCircle(x1, y1, r1, x2, y2, r2)
 ```
 
@@ -493,18 +641,18 @@ lurek.math.circleIntersectsCircle(x1, y1, r1, x2, y2, r2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First circle center x coordinate. |
-| `y1` | `number` | First circle center y coordinate. |
-| `r1` | `number` | First circle radius. |
-| `x2` | `number` | Second circle center x coordinate. |
-| `y2` | `number` | Second circle center y coordinate. |
-| `r2` | `number` | Second circle radius. |
+| `x1` | number | First circle center x coordinate. |
+| `y1` | number | First circle center y coordinate. |
+| `r1` | number | First circle radius. |
+| `x2` | number | Second circle center x coordinate. |
+| `y2` | number | Second circle center y coordinate. |
+| `r2` | number | Second circle radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the circles intersect. |
+| boolean | True when the circles intersect. |
 
 **Example**
 
@@ -522,7 +670,6 @@ end
 Returns circle-line intersection state and hit points when present.
 
 ```lua
--- signature
 lurek.math.circleIntersectsLine(cx, cy, r, lx1, ly1, lx2, ly2)
 ```
 
@@ -530,23 +677,23 @@ lurek.math.circleIntersectsLine(cx, cy, r, lx1, ly1, lx2, ly2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Circle center x coordinate. |
-| `cy` | `number` | Circle center y coordinate. |
-| `r` | `number` | Circle radius. |
-| `lx1` | `number` | Line start x coordinate. |
-| `ly1` | `number` | Line start y coordinate. |
-| `lx2` | `number` | Line end x coordinate. |
-| `ly2` | `number` | Line end y coordinate. |
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `r` | number | Circle radius. |
+| `lx1` | number | Line start x coordinate. |
+| `ly1` | number | Line start y coordinate. |
+| `lx2` | number | Line end x coordinate. |
+| `ly2` | number | Line end y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True when the line intersects the circle. |
-| `number` | b First hit x coordinate, or nil. |
-| `number` | c First hit y coordinate, or nil. |
-| `number` | d Second hit x coordinate, or nil. |
-| `number` | e Second hit y coordinate, or nil. |
+| boolean | True when the line intersects the circle. |
+| number | First hit x coordinate; or nil. |
+| number | First hit y coordinate; or nil. |
+| number | Second hit x coordinate; or nil. |
+| number | Second hit y coordinate; or nil. |
 
 **Example**
 
@@ -566,7 +713,6 @@ end
 Returns circle-segment intersection state and hit points when present.
 
 ```lua
--- signature
 lurek.math.circleIntersectsSegment(cx, cy, r, sx1, sy1, sx2, sy2)
 ```
 
@@ -574,23 +720,23 @@ lurek.math.circleIntersectsSegment(cx, cy, r, sx1, sy1, sx2, sy2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Circle center x coordinate. |
-| `cy` | `number` | Circle center y coordinate. |
-| `r` | `number` | Circle radius. |
-| `sx1` | `number` | Segment start x coordinate. |
-| `sy1` | `number` | Segment start y coordinate. |
-| `sx2` | `number` | Segment end x coordinate. |
-| `sy2` | `number` | Segment end y coordinate. |
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `r` | number | Circle radius. |
+| `sx1` | number | Segment start x coordinate. |
+| `sy1` | number | Segment start y coordinate. |
+| `sx2` | number | Segment end x coordinate. |
+| `sy2` | number | Segment end y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True when the segment intersects the circle. |
-| `number` | b First hit x coordinate, or nil. |
-| `number` | c First hit y coordinate, or nil. |
-| `number` | d Second hit x coordinate, or nil. |
-| `number` | e Second hit y coordinate, or nil. |
+| boolean | True when the segment intersects the circle. |
+| number | First hit x coordinate; or nil. |
+| number | First hit y coordinate; or nil. |
+| number | Second hit x coordinate; or nil. |
+| number | Second hit y coordinate; or nil. |
 
 **Example**
 
@@ -611,7 +757,6 @@ end
 Clamps a value to a range. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.clamp(v, min, max)
 ```
 
@@ -619,15 +764,15 @@ lurek.math.clamp(v, min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Input value. |
-| `min` | `number` | Minimum value. |
-| `max` | `number` | Maximum value. |
+| `v` | number | Input value. |
+| `min` | number | Minimum value. |
+| `max` | number | Maximum value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Clamped value. |
+| number | Clamped value. |
 
 **Example**
 
@@ -646,7 +791,6 @@ end
 Returns the closest point on a segment to an input point.
 
 ```lua
--- signature
 lurek.math.closestPointOnSegment(px, py, x1, y1, x2, y2)
 ```
 
@@ -654,19 +798,19 @@ lurek.math.closestPointOnSegment(px, py, x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Point x coordinate. |
-| `py` | `number` | Point y coordinate. |
-| `x1` | `number` | Segment start x coordinate. |
-| `y1` | `number` | Segment start y coordinate. |
-| `x2` | `number` | Segment end x coordinate. |
-| `y2` | `number` | Segment end y coordinate. |
+| `px` | number | Point x coordinate. |
+| `py` | number | Point y coordinate. |
+| `x1` | number | Segment start x coordinate. |
+| `y1` | number | Segment start y coordinate. |
+| `x2` | number | Segment end x coordinate. |
+| `y2` | number | Segment end y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Closest point x coordinate. |
-| `number` | b Closest point y coordinate. |
+| number | Closest point x coordinate. |
+| number | Closest point y coordinate. |
 
 **Example**
 
@@ -684,7 +828,6 @@ end
 Computes the convex hull for a flat point table.
 
 ```lua
--- signature
 lurek.math.convexHull(pts)
 ```
 
@@ -692,13 +835,13 @@ lurek.math.convexHull(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric point table. |
+| `pts` | table | Flat numeric point table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat numeric hull point table (x1,y1,x2,y2,...). |
+| number[] | Flat numeric hull point table (x1,y1,x2,y2,...). |
 
 **Example**
 
@@ -717,7 +860,6 @@ end
 Returns cosine of an angle. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.cos(x)
 ```
 
@@ -725,13 +867,13 @@ lurek.math.cos(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Angle in radians. |
+| `x` | number | Angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Cosine value. |
+| number | Cosine value. |
 
 **Example**
 
@@ -744,12 +886,46 @@ end
 
 ---
 
+### `lurek.math.cubicBezier`
+
+Computes the CSS cubic-bezier Y value at input t (0..1).
+
+```lua
+lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `p1x` | number | First control point X. | |
+| `p1y` | number | First control point Y. | |
+| `p2x` | number | Second control point X. | |
+| `p2y` | number | Second control point Y. | |
+| `t` | number | Input time (0..1). | |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The eased Y value. | |
+
+**Example**
+
+```lua
+do
+    local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
+    print("cubicBezier(0.5) = " .. y)
+end
+```
+
+---
+
 ### `lurek.math.deg`
 
 Converts radians to degrees. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.deg(rad)
 ```
 
@@ -757,13 +933,13 @@ lurek.math.deg(rad)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rad` | `number` | Angle in radians. |
+| `rad` | number | Angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in degrees. |
+| number | Angle in degrees. |
 
 **Example**
 
@@ -781,7 +957,6 @@ end
 Computes Delaunay triangles for a flat point table.
 
 ```lua
--- signature
 lurek.math.delaunayTriangulate(pts)
 ```
 
@@ -789,13 +964,13 @@ lurek.math.delaunayTriangulate(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric point table. |
+| `pts` | table | Flat numeric point table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices). |
+| LMathDelaunayTriangulateResult | Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices). |
 
 **Example**
 
@@ -814,7 +989,6 @@ end
 Returns Euclidean distance between two points.
 
 ```lua
--- signature
 lurek.math.distance(x1, y1, x2, y2)
 ```
 
@@ -822,16 +996,16 @@ lurek.math.distance(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First point x coordinate. |
-| `y1` | `number` | First point y coordinate. |
-| `x2` | `number` | Second point x coordinate. |
-| `y2` | `number` | Second point y coordinate. |
+| `x1` | number | First point x coordinate. |
+| `y1` | number | First point y coordinate. |
+| `x2` | number | Second point x coordinate. |
+| `y2` | number | Second point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Distance. |
+| number | Distance. |
 
 **Example**
 
@@ -849,7 +1023,6 @@ end
 Returns squared Euclidean distance between two points.
 
 ```lua
--- signature
 lurek.math.distanceSq(x1, y1, x2, y2)
 ```
 
@@ -857,16 +1030,16 @@ lurek.math.distanceSq(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First point x coordinate. |
-| `y1` | `number` | First point y coordinate. |
-| `x2` | `number` | Second point x coordinate. |
-| `y2` | `number` | Second point y coordinate. |
+| `x1` | number | First point x coordinate. |
+| `y1` | number | First point y coordinate. |
+| `x2` | number | Second point x coordinate. |
+| `y2` | number | Second point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Squared distance. |
+| number | Squared distance. |
 
 **Example**
 
@@ -879,12 +1052,36 @@ end
 
 ---
 
+### `lurek.math.easingNames`
+
+Returns an array of all built-in easing function names.
+
+```lua
+lurek.math.easingNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | List of easing names. | |
+
+**Example**
+
+```lua
+do
+    local names = lurek.math.easingNames()
+    print("easing count = " .. #names)
+end
+```
+
+---
+
 ### `lurek.math.exp`
 
 Returns exponential of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.exp(x)
 ```
 
@@ -892,13 +1089,13 @@ lurek.math.exp(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Exponential value. |
+| number | Exponential value. |
 
 **Example**
 
@@ -916,7 +1113,6 @@ end
 Returns floor of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.floor(x)
 ```
 
@@ -924,13 +1120,13 @@ lurek.math.floor(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Floored value. |
+| number | Floored value. |
 
 **Example**
 
@@ -948,7 +1144,6 @@ end
 Returns floating-point remainder.
 
 ```lua
--- signature
 lurek.math.fmod(x, y)
 ```
 
@@ -956,14 +1151,14 @@ lurek.math.fmod(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Dividend. |
-| `y` | `number` | Divisor. |
+| `x` | number | Dividend. |
+| `y` | number | Divisor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Remainder. |
+| number | Remainder. |
 
 **Example**
 
@@ -981,7 +1176,6 @@ end
 Creates a Hermite spline from endpoints and tangents.
 
 ```lua
--- signature
 lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y)
 ```
 
@@ -989,20 +1183,20 @@ lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p0x` | `number` | Start point x coordinate. |
-| `p0y` | `number` | Start point y coordinate. |
-| `p1x` | `number` | End point x coordinate. |
-| `p1y` | `number` | End point y coordinate. |
-| `m0x` | `number` | Start tangent x component. |
-| `m0y` | `number` | Start tangent y component. |
-| `m1x` | `number` | End tangent x component. |
-| `m1y` | `number` | End tangent y component. |
+| `p0x` | number | Start point x coordinate. |
+| `p0y` | number | Start point y coordinate. |
+| `p1x` | number | End point x coordinate. |
+| `p1y` | number | End point y coordinate. |
+| `m0x` | number | Start tangent x component. |
+| `m0y` | number | Start tangent y component. |
+| `m1x` | number | End tangent x component. |
+| `m1y` | number | End tangent y component. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHermite` | New Hermite spline handle. |
+| [LHermite](#lhermite-handle) | New Hermite spline handle. |
 
 **Example**
 
@@ -1025,7 +1219,6 @@ end
 Applies back ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inBack(t)
 ```
 
@@ -1033,13 +1226,13 @@ lurek.math.inBack(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1057,7 +1250,6 @@ end
 Applies bounce ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inBounce(t)
 ```
 
@@ -1065,13 +1257,13 @@ lurek.math.inBounce(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1089,7 +1281,6 @@ end
 Applies cubic ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inCubic(t)
 ```
 
@@ -1097,13 +1288,13 @@ lurek.math.inCubic(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1121,7 +1312,6 @@ end
 Applies elastic ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inElastic(t)
 ```
 
@@ -1129,13 +1319,13 @@ lurek.math.inElastic(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1153,7 +1343,6 @@ end
 Applies exponential ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inExpo(t)
 ```
 
@@ -1161,13 +1350,13 @@ lurek.math.inExpo(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1185,7 +1374,6 @@ end
 Applies back ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutBack(t)
 ```
 
@@ -1193,13 +1381,13 @@ lurek.math.inOutBack(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1217,7 +1405,6 @@ end
 Applies bounce ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutBounce(t)
 ```
 
@@ -1225,13 +1412,13 @@ lurek.math.inOutBounce(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1249,7 +1436,6 @@ end
 Applies cubic ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutCubic(t)
 ```
 
@@ -1257,13 +1443,13 @@ lurek.math.inOutCubic(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1281,7 +1467,6 @@ end
 Applies elastic ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutElastic(t)
 ```
 
@@ -1289,13 +1474,13 @@ lurek.math.inOutElastic(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1313,7 +1498,6 @@ end
 Applies exponential ease-in-out.
 
 ```lua
--- signature
 lurek.math.inOutExpo(t)
 ```
 
@@ -1321,13 +1505,13 @@ lurek.math.inOutExpo(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1345,7 +1529,6 @@ end
 Applies quadratic ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutQuad(t)
 ```
 
@@ -1353,13 +1536,13 @@ lurek.math.inOutQuad(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1377,7 +1560,6 @@ end
 Applies quartic ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutQuart(t)
 ```
 
@@ -1385,13 +1567,13 @@ lurek.math.inOutQuart(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1409,7 +1591,6 @@ end
 Applies sine ease-in-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inOutSine(t)
 ```
 
@@ -1417,13 +1598,13 @@ lurek.math.inOutSine(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1441,7 +1622,6 @@ end
 Applies quadratic ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inQuad(t)
 ```
 
@@ -1449,13 +1629,13 @@ lurek.math.inQuad(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1473,7 +1653,6 @@ end
 Applies quartic ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inQuart(t)
 ```
 
@@ -1481,13 +1660,13 @@ lurek.math.inQuart(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1505,7 +1684,6 @@ end
 Applies sine ease-in. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.inSine(t)
 ```
 
@@ -1513,13 +1691,13 @@ lurek.math.inSine(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1537,7 +1715,6 @@ end
 Returns the interpolation factor of a value between two bounds.
 
 ```lua
--- signature
 lurek.math.inverseLerp(a, b, v)
 ```
 
@@ -1545,15 +1722,15 @@ lurek.math.inverseLerp(a, b, v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | Start value. |
-| `b` | `number` | End value. |
-| `v` | `number` | Input value. |
+| `a` | number | Start value. |
+| `b` | number | End value. |
+| `v` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Interpolation factor. |
+| number | Interpolation factor. |
 
 **Example**
 
@@ -1571,7 +1748,6 @@ end
 Returns whether a flat polygon point table is convex.
 
 ```lua
--- signature
 lurek.math.isConvex(pts)
 ```
 
@@ -1579,13 +1755,13 @@ lurek.math.isConvex(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric table `{x1, y1, x2, y2, ...}`. |
+| `pts` | table | Flat numeric table `{x1, y1, x2, y2, ...}`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the polygon is convex. |
+| boolean | True when the polygon is convex. |
 
 **Example**
 
@@ -1605,7 +1781,6 @@ end
 Linearly interpolates between two values.
 
 ```lua
--- signature
 lurek.math.lerp(a, b, t)
 ```
 
@@ -1613,15 +1788,15 @@ lurek.math.lerp(a, b, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | Start value. |
-| `b` | `number` | End value. |
-| `t` | `number` | Interpolation factor. |
+| `a` | number | Start value. |
+| `b` | number | End value. |
+| `t` | number | Interpolation factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Interpolated value. |
+| number | Interpolated value. |
 
 **Example**
 
@@ -1639,7 +1814,6 @@ end
 Returns intersection point for two infinite lines when present.
 
 ```lua
--- signature
 lurek.math.lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
 ```
 
@@ -1647,21 +1821,21 @@ lurek.math.lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First line start x coordinate. |
-| `y1` | `number` | First line start y coordinate. |
-| `x2` | `number` | First line end x coordinate. |
-| `y2` | `number` | First line end y coordinate. |
-| `x3` | `number` | Second line start x coordinate. |
-| `y3` | `number` | Second line start y coordinate. |
-| `x4` | `number` | Second line end x coordinate. |
-| `y4` | `number` | Second line end y coordinate. |
+| `x1` | number | First line start x coordinate. |
+| `y1` | number | First line start y coordinate. |
+| `x2` | number | First line end x coordinate. |
+| `y2` | number | First line end y coordinate. |
+| `x3` | number | Second line start x coordinate. |
+| `y3` | number | Second line start y coordinate. |
+| `x4` | number | Second line end x coordinate. |
+| `y4` | number | Second line end y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Intersection x coordinate, or nil. |
-| `number` | b Intersection y coordinate, or nil. |
+| number | Intersection x coordinate; or nil. |
+| number | Intersection y coordinate; or nil. |
 
 **Example**
 
@@ -1679,7 +1853,6 @@ end
 Applies linear easing. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.linear(t)
 ```
 
@@ -1687,13 +1860,13 @@ lurek.math.linear(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -1711,7 +1884,6 @@ end
 Returns natural logarithm or logarithm with a supplied base.
 
 ```lua
--- signature
 lurek.math.log(x, b)
 ```
 
@@ -1719,14 +1891,14 @@ lurek.math.log(x, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
-| `b?` | `number` | Logarithm base. |
+| `x` | number | Input value. |
+| `b?` | number | Logarithm base. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Logarithm value. |
+| number | Logarithm value. |
 
 **Example**
 
@@ -1739,12 +1911,76 @@ end
 
 ---
 
+### `lurek.math.lootFromList`
+
+Creates a loot table from a Lua list of entry tables.
+
+```lua
+lurek.math.lootFromList(entries)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `entries` | table | Array of `{ id=string, weight=number, meta=table? }`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLootTable](#lloottable-handle) | New loot table handle. |
+
+**Example**
+
+```lua
+do
+    local loot = lurek.math.lootFromList({
+        { id = "gold", weight = 20.0, meta = { kind = "currency" } },
+        { id = "gem", weight = 2.0, meta = { kind = "currency" } },
+    })
+    print("fromList count = " .. loot:entryCount())
+end
+```
+
+---
+
+### `lurek.math.lootFromToml`
+
+Loads a loot table from a TOML file path.
+
+```lua
+lurek.math.lootFromToml(path)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | TOML file path. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLootTable](#lloottable-handle) | New loot table handle. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.lootFromToml("save/loot_table_unit_test.toml")
+    print("lootFromToml entries = " .. tostring(tbl:entryCount()))
+end
+```
+
+---
+
 ### `lurek.math.max`
 
 Returns the largest supplied value.
 
 ```lua
--- signature
 lurek.math.max(...)
 ```
 
@@ -1758,7 +1994,7 @@ lurek.math.max(...)
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum value. |
+| number | Maximum value. |
 
 **Example**
 
@@ -1776,7 +2012,6 @@ end
 Returns the smallest supplied value.
 
 ```lua
--- signature
 lurek.math.min(...)
 ```
 
@@ -1790,7 +2025,7 @@ lurek.math.min(...)
 
 | Type | Description |
 |------|-------------|
-| `number` | Minimum value. |
+| number | Minimum value. |
 
 **Example**
 
@@ -1808,7 +2043,6 @@ end
 Creates a Bezier curve from a flat point table.
 
 ```lua
--- signature
 lurek.math.newBezierCurve(points)
 ```
 
@@ -1816,13 +2050,13 @@ lurek.math.newBezierCurve(points)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `points` | `table` | Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points. |
+| `points` | table | Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBezierCurve` | New Bezier curve handle. |
+| [LBezierCurve](#lbeziercurve-handle) | New Bezier curve handle. |
 
 **Example**
 
@@ -1842,7 +2076,6 @@ end
 Creates a circle primitive. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.newCircle(x, y, radius)
 ```
 
@@ -1850,15 +2083,15 @@ lurek.math.newCircle(x, y, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Center x coordinate. |
-| `y` | `number` | Center y coordinate. |
-| `radius` | `number` | Circle radius. |
+| `x` | number | Center x coordinate. |
+| `y` | number | Center y coordinate. |
+| `radius` | number | Circle radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCircle` | New circle handle. |
+| [LCircle](#lcircle-handle) | New circle handle. |
 
 **Example**
 
@@ -1871,12 +2104,86 @@ end
 
 ---
 
+### `lurek.math.newLootTable`
+
+Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.
+
+```lua
+lurek.math.newLootTable(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | any | Optional nil, non-negative seed number, or options table `{ seed = integer }`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLootTable](#lloottable-handle) | New loot table handle. |
+
+**Example**
+
+```lua
+do
+    local loot = lurek.math.newLootTable({ seed = 42 })
+    loot:add("common", 10.0, { tier = "c" })
+    loot:add("rare", 1.0, { tier = "r" })
+    loot:build()
+    local pick = loot:sample()
+    print("loot pick = " .. tostring(pick and pick.id))
+end
+```
+
+---
+
+### `lurek.math.newPityTracker`
+
+Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.
+
+```lua
+lurek.math.newPityTracker(target_id, threshold)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target_id` | string | Item id that resets the miss counter on a hit. |
+| `threshold` | number | Number of consecutive misses before the tracker primes. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LPityTracker](#lpitytracker-handle) | New pity tracker handle. |
+
+**Example**
+
+```lua
+do
+    local loot = lurek.math.newLootTable(7)
+    loot:add("common", 100.0)
+    loot:add("rare", 0.0, { tier = "r" })
+    loot:build()
+
+    local pity = lurek.math.newPityTracker("rare", 2)
+    pity:notice("common")
+    pity:notice("common")
+    local id = lurek.math.sampleWithPity(loot, pity)
+    print("pity sample = " .. tostring(id))
+end
+```
+
+---
+
 ### `lurek.math.newRandomGenerator`
 
 Creates a deterministic random generator with an optional seed.
 
 ```lua
--- signature
 lurek.math.newRandomGenerator(seed)
 ```
 
@@ -1884,13 +2191,13 @@ lurek.math.newRandomGenerator(seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seed?` | `number` | Seed value. |
+| `seed?` | number | Seed value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRandomGenerator` | New random generator handle. |
+| [LRandomGenerator](#lrandomgenerator-handle) | New random generator handle. |
 
 **Example**
 
@@ -1908,7 +2215,6 @@ end
 Creates a rectangle packer. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.newRectPacker(width, height, padding)
 ```
 
@@ -1916,15 +2222,15 @@ lurek.math.newRectPacker(width, height, padding)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Packer width. |
-| `height` | `number` | Packer height. |
-| `padding?` | `number` | Padding between rectangles (default 0). |
+| `width` | number | Packer width. |
+| `height` | number | Packer height. |
+| `padding?` | number | Padding between rectangles (default 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRectPacker` | New rectangle packer handle. |
+| [LRectPacker](#lrectpacker-handle) | New rectangle packer handle. |
 
 **Example**
 
@@ -1944,7 +2250,6 @@ end
 Creates a spatial hash index with a cell size.
 
 ```lua
--- signature
 lurek.math.newSpatialHash(cell_size)
 ```
 
@@ -1952,13 +2257,13 @@ lurek.math.newSpatialHash(cell_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cell_size` | `number` | Spatial hash cell size. |
+| `cell_size` | number | Spatial hash cell size. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpatialHash` | New spatial hash handle. |
+| [LSpatialHash](#lspatialhash-handle) | New spatial hash handle. |
 
 **Example**
 
@@ -1978,7 +2283,6 @@ end
 Creates a 2D transform. All components are optional; omitting all returns an identity transform.
 
 ```lua
--- signature
 lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky)
 ```
 
@@ -1986,21 +2290,21 @@ lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x?` | `number` | X translation (default 0). |
-| `y?` | `number` | Y translation (default 0). |
-| `angle?` | `number` | Rotation angle in radians (default 0). |
-| `sx?` | `number` | X scale factor (default 1). |
-| `sy?` | `number` | Y scale factor (defaults to `sx`). |
-| `ox?` | `number` | X origin offset for rotation/scale (default 0). |
-| `oy?` | `number` | Y origin offset for rotation/scale (default 0). |
-| `kx?` | `number` | X shear factor (default 0). |
-| `ky?` | `number` | Y shear factor (default 0). |
+| `x?` | number | X translation (default 0). |
+| `y?` | number | Y translation (default 0). |
+| `angle?` | number | Rotation angle in radians (default 0). |
+| `sx?` | number | X scale factor (default 1). |
+| `sy?` | number | Y scale factor (defaults to `sx`). |
+| `ox?` | number | X origin offset for rotation/scale (default 0). |
+| `oy?` | number | Y origin offset for rotation/scale (default 0). |
+| `kx?` | number | X shear factor (default 0). |
+| `ky?` | number | Y shear factor (default 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTransform` | New transform handle. |
+| [LTransform](#ltransform-handle) | New transform handle. |
 
 **Example**
 
@@ -2019,7 +2323,6 @@ end
 Creates a tween with a duration and optional easing name.
 
 ```lua
--- signature
 lurek.math.newTween(duration, easing_name)
 ```
 
@@ -2027,14 +2330,14 @@ lurek.math.newTween(duration, easing_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `duration` | `number` | Tween duration in seconds. |
-| `easing_name?` | `string` | Easing name (default `linear`). |
+| `duration` | number | Tween duration in seconds. |
+| `easing_name?` | string | Easing name (default `linear`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | New tween handle. |
+| [LTween](#ltween-handle) | New tween handle. |
 
 **Example**
 
@@ -2053,7 +2356,6 @@ end
 Applies back ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outBack(t)
 ```
 
@@ -2061,13 +2363,13 @@ lurek.math.outBack(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2085,7 +2387,6 @@ end
 Applies bounce ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outBounce(t)
 ```
 
@@ -2093,13 +2394,13 @@ lurek.math.outBounce(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2117,7 +2418,6 @@ end
 Applies cubic ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outCubic(t)
 ```
 
@@ -2125,13 +2425,13 @@ lurek.math.outCubic(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2149,7 +2449,6 @@ end
 Applies elastic ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outElastic(t)
 ```
 
@@ -2157,13 +2456,13 @@ lurek.math.outElastic(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2181,7 +2480,6 @@ end
 Applies exponential ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outExpo(t)
 ```
 
@@ -2189,13 +2487,13 @@ lurek.math.outExpo(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2213,7 +2511,6 @@ end
 Applies quadratic ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outQuad(t)
 ```
 
@@ -2221,13 +2518,13 @@ lurek.math.outQuad(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2245,7 +2542,6 @@ end
 Applies quartic ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outQuart(t)
 ```
 
@@ -2253,13 +2549,13 @@ lurek.math.outQuart(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2277,7 +2573,6 @@ end
 Applies sine ease-out. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.outSine(t)
 ```
 
@@ -2285,13 +2580,13 @@ lurek.math.outSine(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized input value. |
+| `t` | number | Normalized input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value. |
+| number | Eased value. |
 
 **Example**
 
@@ -2309,7 +2604,6 @@ end
 Returns whether a point lies inside a polygon.
 
 ```lua
--- signature
 lurek.math.pointInPolygon(pts, px, py)
 ```
 
@@ -2317,15 +2611,15 @@ lurek.math.pointInPolygon(pts, px, py)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric polygon point table. |
-| `px` | `number` | Point x coordinate. |
-| `py` | `number` | Point y coordinate. |
+| `pts` | table | Flat numeric polygon point table. |
+| `px` | number | Point x coordinate. |
+| `py` | number | Point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the point is inside the polygon. |
+| boolean | True when the point is inside the polygon. |
 
 **Example**
 
@@ -2345,7 +2639,6 @@ end
 Computes signed area for a flat polygon point table.
 
 ```lua
--- signature
 lurek.math.polygonArea(pts)
 ```
 
@@ -2353,13 +2646,13 @@ lurek.math.polygonArea(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric polygon point table. |
+| `pts` | table | Flat numeric polygon point table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Polygon area. |
+| number | Polygon area. |
 
 **Example**
 
@@ -2378,7 +2671,6 @@ end
 Computes the centroid for a flat polygon point table.
 
 ```lua
--- signature
 lurek.math.polygonCentroid(pts)
 ```
 
@@ -2386,14 +2678,14 @@ lurek.math.polygonCentroid(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric polygon point table. |
+| `pts` | table | Flat numeric polygon point table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Centroid x coordinate. |
-| `number` | b Centroid y coordinate. |
+| number | Centroid x coordinate. |
+| number | Centroid y coordinate. |
 
 **Example**
 
@@ -2412,7 +2704,6 @@ end
 Clips a flat polygon point table against a plane.
 
 ```lua
--- signature
 lurek.math.polygonClip(pts, nx, ny, d)
 ```
 
@@ -2420,16 +2711,16 @@ lurek.math.polygonClip(pts, nx, ny, d)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric polygon point table. |
-| `nx` | `number` | Plane normal x component. |
-| `ny` | `number` | Plane normal y component. |
-| `d` | `number` | Plane distance from origin. |
+| `pts` | table | Flat numeric polygon point table. |
+| `nx` | number | Plane normal x component. |
+| `ny` | number | Plane normal y component. |
+| `d` | number | Plane distance from origin. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat numeric clipped polygon point table (x1,y1,x2,y2,...). |
+| number[] | Flat numeric clipped polygon point table (x1,y1,x2,y2,...). |
 
 **Example**
 
@@ -2448,7 +2739,6 @@ end
 Returns polygon difference points for two polygon tables.
 
 ```lua
--- signature
 lurek.math.polygonDifference(a, b)
 ```
 
@@ -2456,14 +2746,14 @@ lurek.math.polygonDifference(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `table` | First polygon table of `{x, y}` points. |
-| `b` | `table` | Second polygon table of `{x, y}` points. |
+| `a` | table | First polygon table of `{x, y}` points. |
+| `b` | table | Second polygon table of `{x, y}` points. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat array of polygon difference result points (x1,y1,x2,y2,...). |
+| number[] | Flat array of polygon difference result points (x1,y1,x2,y2,...). |
 
 **Example**
 
@@ -2483,7 +2773,6 @@ end
 Returns polygon intersection points for two polygon tables.
 
 ```lua
--- signature
 lurek.math.polygonIntersection(a, b)
 ```
 
@@ -2491,14 +2780,14 @@ lurek.math.polygonIntersection(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `table` | First polygon table of `{x, y}` points. |
-| `b` | `table` | Second polygon table of `{x, y}` points. |
+| `a` | table | First polygon table of `{x, y}` points. |
+| `b` | table | Second polygon table of `{x, y}` points. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat array of polygon intersection result points (x1,y1,x2,y2,...). |
+| number[] | Flat array of polygon intersection result points (x1,y1,x2,y2,...). |
 
 **Example**
 
@@ -2518,7 +2807,6 @@ end
 Returns polygon union points for two polygon tables.
 
 ```lua
--- signature
 lurek.math.polygonUnion(a, b)
 ```
 
@@ -2526,14 +2814,14 @@ lurek.math.polygonUnion(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `table` | First polygon table of `{x, y}` points. |
-| `b` | `table` | Second polygon table of `{x, y}` points. |
+| `a` | table | First polygon table of `{x, y}` points. |
+| `b` | table | Second polygon table of `{x, y}` points. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat array of polygon union result points (x1,y1,x2,y2,...). |
+| number[] | Flat array of polygon union result points (x1,y1,x2,y2,...). |
 
 **Example**
 
@@ -2553,7 +2841,6 @@ end
 Raises a value to a power. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.pow(x, y)
 ```
 
@@ -2561,14 +2848,14 @@ lurek.math.pow(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Base value. |
-| `y` | `number` | Exponent value. |
+| `x` | number | Base value. |
+| `y` | number | Exponent value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Power result. |
+| number | Power result. |
 
 **Example**
 
@@ -2586,7 +2873,6 @@ end
 Converts degrees to radians. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.rad(deg)
 ```
 
@@ -2594,13 +2880,13 @@ lurek.math.rad(deg)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `deg` | `number` | Angle in degrees. |
+| `deg` | number | Angle in degrees. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -2618,7 +2904,6 @@ end
 Returns a Lua math random value, optionally scaled to one or two bounds.
 
 ```lua
--- signature
 lurek.math.random(a, b)
 ```
 
@@ -2626,14 +2911,14 @@ lurek.math.random(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a?` | `number` | Upper bound, or lower bound when `b` is given. |
-| `b?` | `number` | Upper bound. |
+| `a?` | number | Upper bound, or lower bound when `b` is given. |
+| `b?` | number | Upper bound. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Random value. |
+| number | Random value. |
 
 **Example**
 
@@ -2653,7 +2938,6 @@ end
 Returns a Lua math random integer in an inclusive range.
 
 ```lua
--- signature
 lurek.math.randomInt(lo, hi)
 ```
 
@@ -2661,14 +2945,14 @@ lurek.math.randomInt(lo, hi)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lo` | `number` | Lower bound. |
-| `hi` | `number` | Upper bound. |
+| `lo` | number | Lower bound. |
+| `hi` | number | Upper bound. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Random integer. |
+| number | Random integer. |
 
 **Example**
 
@@ -2686,7 +2970,6 @@ end
 Creates a rectangle tuple from center coordinates and size.
 
 ```lua
--- signature
 lurek.math.rectFromCenter(cx, cy, w, h)
 ```
 
@@ -2694,19 +2977,19 @@ lurek.math.rectFromCenter(cx, cy, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Center x coordinate. |
-| `cy` | `number` | Center y coordinate. |
-| `w` | `number` | Rectangle width. |
-| `h` | `number` | Rectangle height. |
+| `cx` | number | Center x coordinate. |
+| `cy` | number | Center y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Rectangle x coordinate. |
-| `number` | b Rectangle y coordinate. |
-| `number` | c Rectangle width. |
-| `number` | d Rectangle height. |
+| number | Rectangle x coordinate. |
+| number | Rectangle y coordinate. |
+| number | Rectangle width. |
+| number | Rectangle height. |
 
 **Example**
 
@@ -2724,7 +3007,6 @@ end
 Returns the union rectangle for two rectangles.
 
 ```lua
--- signature
 lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2)
 ```
 
@@ -2732,23 +3014,23 @@ lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First rectangle x coordinate. |
-| `y1` | `number` | First rectangle y coordinate. |
-| `w1` | `number` | First rectangle width. |
-| `h1` | `number` | First rectangle height. |
-| `x2` | `number` | Second rectangle x coordinate. |
-| `y2` | `number` | Second rectangle y coordinate. |
-| `w2` | `number` | Second rectangle width. |
-| `h2` | `number` | Second rectangle height. |
+| `x1` | number | First rectangle x coordinate. |
+| `y1` | number | First rectangle y coordinate. |
+| `w1` | number | First rectangle width. |
+| `h1` | number | First rectangle height. |
+| `x2` | number | Second rectangle x coordinate. |
+| `y2` | number | Second rectangle y coordinate. |
+| `w2` | number | Second rectangle width. |
+| `h2` | number | Second rectangle height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Union x coordinate. |
-| `number` | b Union y coordinate. |
-| `number` | c Union width. |
-| `number` | d Union height. |
+| number | Union x coordinate. |
+| number | Union y coordinate. |
+| number | Union width. |
+| number | Union height. |
 
 **Example**
 
@@ -2766,7 +3048,6 @@ end
 Remaps a value from one range to another.
 
 ```lua
--- signature
 lurek.math.remap(v, in_min, in_max, out_min, out_max)
 ```
 
@@ -2774,17 +3055,17 @@ lurek.math.remap(v, in_min, in_max, out_min, out_max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Input value. |
-| `in_min` | `number` | Input range minimum. |
-| `in_max` | `number` | Input range maximum. |
-| `out_min` | `number` | Output range minimum. |
-| `out_max` | `number` | Output range maximum. |
+| `v` | number | Input value. |
+| `in_min` | number | Input range minimum. |
+| `in_max` | number | Input range maximum. |
+| `out_min` | number | Output range minimum. |
+| `out_max` | number | Output range maximum. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Remapped value. |
+| number | Remapped value. |
 
 **Example**
 
@@ -2802,7 +3083,6 @@ end
 Returns rounded value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.round(x)
 ```
 
@@ -2810,13 +3090,13 @@ lurek.math.round(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Rounded value. |
+| number | Rounded value. |
 
 **Example**
 
@@ -2829,12 +3109,48 @@ end
 
 ---
 
+### `lurek.math.sampleWithPity`
+
+Samples loot table with pity behavior: forced target when tracker is primed.
+
+```lua
+lurek.math.sampleWithPity(loot_table, pity)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `loot_table` | [LLootTable](#lloottable-handle) | Loot table handle. |
+| `pity` | [LPityTracker](#lpitytracker-handle) | Pity tracker handle. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Selected item id when present; nil when table is empty. |
+| table | Selected metadata table when present; nil when table is empty. |
+
+**Example**
+
+```lua
+do
+    local loot = lurek.math.newLootTable(9)
+    loot:add("a", 1.0)
+    loot:build()
+    local pity = lurek.math.newPityTracker("a", 1)
+    local id = lurek.math.sampleWithPity(loot, pity)
+    print("sampleWithPity = " .. tostring(id))
+end
+```
+
+---
+
 ### `lurek.math.segmentIntersectsSegment`
 
 Returns whether two segments intersect and their intersection point when present.
 
 ```lua
--- signature
 lurek.math.segmentIntersectsSegment(x1, y1, x2, y2, x3, y3, x4, y4)
 ```
 
@@ -2842,22 +3158,22 @@ lurek.math.segmentIntersectsSegment(x1, y1, x2, y2, x3, y3, x4, y4)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | First segment start x coordinate. |
-| `y1` | `number` | First segment start y coordinate. |
-| `x2` | `number` | First segment end x coordinate. |
-| `y2` | `number` | First segment end y coordinate. |
-| `x3` | `number` | Second segment start x coordinate. |
-| `y3` | `number` | Second segment start y coordinate. |
-| `x4` | `number` | Second segment end x coordinate. |
-| `y4` | `number` | Second segment end y coordinate. |
+| `x1` | number | First segment start x coordinate. |
+| `y1` | number | First segment start y coordinate. |
+| `x2` | number | First segment end x coordinate. |
+| `y2` | number | First segment end y coordinate. |
+| `x3` | number | Second segment start x coordinate. |
+| `y3` | number | Second segment start y coordinate. |
+| `x4` | number | Second segment end x coordinate. |
+| `y4` | number | Second segment end y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True when the segments intersect. |
-| `number` | b Intersection x coordinate, or nil. |
-| `number` | c Intersection y coordinate, or nil. |
+| boolean | True when the segments intersect. |
+| number | Intersection x coordinate; or nil. |
+| number | Intersection y coordinate; or nil. |
 
 **Example**
 
@@ -2875,7 +3191,6 @@ end
 Returns the sign of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.sign(v)
 ```
 
@@ -2883,13 +3198,13 @@ lurek.math.sign(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Input value. |
+| `v` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sign value. |
+| number | Sign value. |
 
 **Example**
 
@@ -2908,7 +3223,6 @@ end
 Returns sine of an angle. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.sin(x)
 ```
 
@@ -2916,13 +3230,13 @@ lurek.math.sin(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Angle in radians. |
+| `x` | number | Angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sine value. |
+| number | Sine value. |
 
 **Example**
 
@@ -2940,7 +3254,6 @@ end
 Applies smoothstep interpolation between two edges.
 
 ```lua
--- signature
 lurek.math.smoothstep(edge0, edge1, x)
 ```
 
@@ -2948,15 +3261,15 @@ lurek.math.smoothstep(edge0, edge1, x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge0` | `number` | Lower edge. |
-| `edge1` | `number` | Upper edge. |
-| `x` | `number` | Input value. |
+| `edge0` | number | Lower edge. |
+| `edge1` | number | Upper edge. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Smoothstep value. |
+| number | Smoothstep value. |
 
 **Example**
 
@@ -2975,7 +3288,6 @@ end
 Returns square root of a value. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.sqrt(x)
 ```
 
@@ -2983,13 +3295,13 @@ lurek.math.sqrt(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input value. |
+| `x` | number | Input value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Square root. |
+| number | Square root. |
 
 **Example**
 
@@ -3007,7 +3319,6 @@ end
 Returns tangent of an angle. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.tan(x)
 ```
 
@@ -3015,13 +3326,13 @@ lurek.math.tan(x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Angle in radians. |
+| `x` | number | Angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tangent value. |
+| number | Tangent value. |
 
 **Example**
 
@@ -3039,7 +3350,6 @@ end
 Triangulates a flat polygon point table.
 
 ```lua
--- signature
 lurek.math.triangulate(pts)
 ```
 
@@ -3047,13 +3357,13 @@ lurek.math.triangulate(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `table` | Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points. |
+| `pts` | table | Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`. |
+| LMathTriangulateResult | Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`. |
 
 **Example**
 
@@ -3072,7 +3382,6 @@ end
 Creates a 2D vector. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.vec2(x, y)
 ```
 
@@ -3080,14 +3389,14 @@ lurek.math.vec2(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X component. |
-| `y` | `number` | Y component. |
+| `x` | number | X component. |
+| `y` | number | Y component. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | New vector handle. |
+| [LVec2](#lvec2-handle) | New vector handle. |
 
 **Example**
 
@@ -3105,7 +3414,6 @@ end
 Creates a 3D vector. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.math.vec3(x, y, z)
 ```
 
@@ -3113,15 +3421,15 @@ lurek.math.vec3(x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X component. |
-| `y` | `number` | Y component. |
-| `z` | `number` | Z component. |
+| `x` | number | X component. |
+| `y` | number | Y component. |
+| `z` | number | Z component. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | New vector handle. |
+| [LVec3](#lvec3-handle) | New vector handle. |
 
 **Example**
 
@@ -3134,14 +3442,48 @@ end
 
 ---
 
-## LAabbTree
+## Module Fields
 
-### `LAabbTree:clear`
+*No module-level fields documented.*
+
+## Types
+
+- [LAabbTree Handle](#laabbtree-handle)
+- [LBezierCurve Handle](#lbeziercurve-handle)
+- [LCatmullRom Handle](#lcatmullrom-handle)
+- [LCircle Handle](#lcircle-handle)
+- [LHermite Handle](#lhermite-handle)
+- [LLootTable Handle](#lloottable-handle)
+- [LPityTracker Handle](#lpitytracker-handle)
+- [LRandomGenerator Handle](#lrandomgenerator-handle)
+- [LRectPacker Handle](#lrectpacker-handle)
+- [LSpatialHash Handle](#lspatialhash-handle)
+- [LTransform Handle](#ltransform-handle)
+- [LTween Handle](#ltween-handle)
+- [LVec2 Handle](#lvec2-handle)
+- [LVec3 Handle](#lvec3-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAabbTree Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAabbTree:clear`
 
 Clears all items from the tree. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAabbTree:clear()
 ```
 
@@ -3158,12 +3500,11 @@ end
 
 ---
 
-### `LAabbTree:contains`
+#### `LAabbTree:contains`
 
 Returns whether the tree contains an id.
 
 ```lua
--- signature
 LAabbTree:contains(id)
 ```
 
@@ -3171,13 +3512,13 @@ LAabbTree:contains(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Item id. |
+| `id` | number | Item id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the id exists. |
+| boolean | True when the id exists. |
 
 **Example**
 
@@ -3191,12 +3532,11 @@ end
 
 ---
 
-### `LAabbTree:insert`
+#### `LAabbTree:insert`
 
 Inserts an AABB by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAabbTree:insert(id, min_x, min_y, max_x, max_y)
 ```
 
@@ -3204,11 +3544,11 @@ LAabbTree:insert(id, min_x, min_y, max_x, max_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Item id. |
-| `min_x` | `number` | Minimum x coordinate. |
-| `min_y` | `number` | Minimum y coordinate. |
-| `max_x` | `number` | Maximum x coordinate. |
-| `max_y` | `number` | Maximum y coordinate. |
+| `id` | number | Item id. |
+| `min_x` | number | Minimum x coordinate. |
+| `min_y` | number | Minimum y coordinate. |
+| `max_x` | number | Maximum x coordinate. |
+| `max_y` | number | Maximum y coordinate. |
 
 **Example**
 
@@ -3222,12 +3562,11 @@ end
 
 ---
 
-### `LAabbTree:isEmpty`
+#### `LAabbTree:isEmpty`
 
 Returns whether the tree has no items.
 
 ```lua
--- signature
 LAabbTree:isEmpty()
 ```
 
@@ -3235,7 +3574,7 @@ LAabbTree:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when empty. |
+| boolean | True when empty. |
 
 **Example**
 
@@ -3248,12 +3587,11 @@ end
 
 ---
 
-### `LAabbTree:len`
+#### `LAabbTree:len`
 
 Returns the number of items in the tree.
 
 ```lua
--- signature
 LAabbTree:len()
 ```
 
@@ -3261,7 +3599,7 @@ LAabbTree:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -3276,12 +3614,11 @@ end
 
 ---
 
-### `LAabbTree:query`
+#### `LAabbTree:query`
 
 Queries ids intersecting an AABB. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAabbTree:query(min_x, min_y, max_x, max_y)
 ```
 
@@ -3289,16 +3626,16 @@ LAabbTree:query(min_x, min_y, max_x, max_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min_x` | `number` | Minimum x coordinate. |
-| `min_y` | `number` | Minimum y coordinate. |
-| `max_x` | `number` | Maximum x coordinate. |
-| `max_y` | `number` | Maximum y coordinate. |
+| `min_x` | number | Minimum x coordinate. |
+| `min_y` | number | Minimum y coordinate. |
+| `max_x` | number | Maximum x coordinate. |
+| `max_y` | number | Maximum y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Item ids. |
+| number[] | Item ids. |
 
 **Example**
 
@@ -3314,12 +3651,11 @@ end
 
 ---
 
-### `LAabbTree:queryPoint`
+#### `LAabbTree:queryPoint`
 
 Queries ids containing a point. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAabbTree:queryPoint(x, y)
 ```
 
@@ -3327,14 +3663,14 @@ LAabbTree:queryPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Point x coordinate. |
-| `y` | `number` | Point y coordinate. |
+| `x` | number | Point x coordinate. |
+| `y` | number | Point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Item ids. |
+| number[] | Item ids. |
 
 **Example**
 
@@ -3350,12 +3686,11 @@ end
 
 ---
 
-### `LAabbTree:remove`
+#### `LAabbTree:remove`
 
 Removes an AABB by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAabbTree:remove(id)
 ```
 
@@ -3363,13 +3698,13 @@ LAabbTree:remove(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Item id. |
+| `id` | number | Item id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item existed. |
+| boolean | True when the item existed. |
 
 **Example**
 
@@ -3385,12 +3720,11 @@ end
 
 ---
 
-### `LAabbTree:type`
+#### `LAabbTree:type`
 
 Returns the Lua-visible type name for this AABB tree handle.
 
 ```lua
--- signature
 LAabbTree:type()
 ```
 
@@ -3398,7 +3732,7 @@ LAabbTree:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAabbTree`. |
+| string | The string `[LAabbTree](#laabbtree-handle)`. |
 
 **Example**
 
@@ -3411,12 +3745,11 @@ end
 
 ---
 
-### `LAabbTree:typeOf`
+#### `LAabbTree:typeOf`
 
 Returns whether this AABB tree handle matches a supported type name.
 
 ```lua
--- signature
 LAabbTree:typeOf(name)
 ```
 
@@ -3424,13 +3757,13 @@ LAabbTree:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAabbTree` and `Object`. |
+| `name` | string | Type name to compare against `[LAabbTree](#laabbtree-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -3443,12 +3776,11 @@ end
 
 ---
 
-### `LAabbTree:update`
+#### `LAabbTree:update`
 
 Updates an AABB by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAabbTree:update(id, min_x, min_y, max_x, max_y)
 ```
 
@@ -3456,17 +3788,17 @@ LAabbTree:update(id, min_x, min_y, max_x, max_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Item id. |
-| `min_x` | `number` | Minimum x coordinate. |
-| `min_y` | `number` | Minimum y coordinate. |
-| `max_x` | `number` | Maximum x coordinate. |
-| `max_y` | `number` | Maximum y coordinate. |
+| `id` | number | Item id. |
+| `min_x` | number | Minimum x coordinate. |
+| `min_y` | number | Minimum y coordinate. |
+| `max_x` | number | Maximum x coordinate. |
+| `max_y` | number | Maximum y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the item existed. |
+| boolean | True when the item existed. |
 
 **Example**
 
@@ -3482,14 +3814,19 @@ end
 
 ---
 
-## LBezierCurve
+## LBezierCurve Handle
 
-### `LBezierCurve:evaluate`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBezierCurve:evaluate`
 
 Evaluates this curve at normalized parameter `t`.
 
 ```lua
--- signature
 LBezierCurve:evaluate(t)
 ```
 
@@ -3497,14 +3834,14 @@ LBezierCurve:evaluate(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized curve parameter. |
+| `t` | number | Normalized curve parameter. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Point x coordinate. |
-| `number` | b Point y coordinate. |
+| number | Point x coordinate. |
+| number | Point y coordinate. |
 
 **Example**
 
@@ -3518,12 +3855,11 @@ end
 
 ---
 
-### `LBezierCurve:evaluateAtDistance`
+#### `LBezierCurve:evaluateAtDistance`
 
 Evaluates this curve at an approximate distance along the curve.
 
 ```lua
--- signature
 LBezierCurve:evaluateAtDistance(distance, samples)
 ```
 
@@ -3531,15 +3867,15 @@ LBezierCurve:evaluateAtDistance(distance, samples)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `distance` | `number` | Distance along the curve. |
-| `samples?` | `number` | Sample count (default 128). |
+| `distance` | number | Distance along the curve. |
+| `samples?` | number | Sample count (default 128). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Point x coordinate. |
-| `number` | b Point y coordinate. |
+| number | Point x coordinate. |
+| number | Point y coordinate. |
 
 **Example**
 
@@ -3555,12 +3891,11 @@ end
 
 ---
 
-### `LBezierCurve:getControlPoint`
+#### `LBezierCurve:getControlPoint`
 
 Returns a control point by one-based index.
 
 ```lua
--- signature
 LBezierCurve:getControlPoint(index)
 ```
 
@@ -3568,14 +3903,14 @@ LBezierCurve:getControlPoint(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based control point index. |
+| `index` | number | One-based control point index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X coordinate, or nil when out of range. |
-| `number` | b Y coordinate, or nil when out of range. |
+| number | X coordinate; or nil when out of range. |
+| number | Y coordinate; or nil when out of range. |
 
 **Example**
 
@@ -3589,12 +3924,11 @@ end
 
 ---
 
-### `LBezierCurve:getControlPointCount`
+#### `LBezierCurve:getControlPointCount`
 
 Returns the number of control points in this curve.
 
 ```lua
--- signature
 LBezierCurve:getControlPointCount()
 ```
 
@@ -3602,7 +3936,7 @@ LBezierCurve:getControlPointCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Control point count. |
+| number | Control point count. |
 
 **Example**
 
@@ -3615,12 +3949,11 @@ end
 
 ---
 
-### `LBezierCurve:getDerivative`
+#### `LBezierCurve:getDerivative`
 
 Returns the derivative curve for this Bezier curve.
 
 ```lua
--- signature
 LBezierCurve:getDerivative()
 ```
 
@@ -3628,7 +3961,7 @@ LBezierCurve:getDerivative()
 
 | Type | Description |
 |------|-------------|
-| `LBezierCurve` | Derivative curve handle. |
+| [LBezierCurve](#lbeziercurve-handle) | Derivative curve handle. |
 
 **Example**
 
@@ -3644,12 +3977,11 @@ end
 
 ---
 
-### `LBezierCurve:insertControlPoint`
+#### `LBezierCurve:insertControlPoint`
 
 Inserts a control point, optionally before a one-based index.
 
 ```lua
--- signature
 LBezierCurve:insertControlPoint(x, y, index)
 ```
 
@@ -3657,9 +3989,9 @@ LBezierCurve:insertControlPoint(x, y, index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Point x coordinate. |
-| `y` | `number` | Point y coordinate. |
-| `index?` | `number` | One-based insertion index. |
+| `x` | number | Point x coordinate. |
+| `y` | number | Point y coordinate. |
+| `index?` | number | One-based insertion index. |
 
 **Example**
 
@@ -3676,12 +4008,11 @@ end
 
 ---
 
-### `LBezierCurve:length`
+#### `LBezierCurve:length`
 
 Returns the approximate curve length.
 
 ```lua
--- signature
 LBezierCurve:length()
 ```
 
@@ -3689,7 +4020,7 @@ LBezierCurve:length()
 
 | Type | Description |
 |------|-------------|
-| `number` | Curve length. |
+| number | Curve length. |
 
 **Example**
 
@@ -3702,12 +4033,11 @@ end
 
 ---
 
-### `LBezierCurve:removeControlPoint`
+#### `LBezierCurve:removeControlPoint`
 
 Removes a control point by one-based index.
 
 ```lua
--- signature
 LBezierCurve:removeControlPoint(index)
 ```
 
@@ -3715,13 +4045,13 @@ LBezierCurve:removeControlPoint(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based control point index. |
+| `index` | number | One-based control point index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a control point was removed. |
+| boolean | True when a control point was removed. |
 
 **Example**
 
@@ -3736,12 +4066,11 @@ end
 
 ---
 
-### `LBezierCurve:render`
+#### `LBezierCurve:render`
 
 Returns sampled points along this curve.
 
 ```lua
--- signature
 LBezierCurve:render(segments)
 ```
 
@@ -3749,13 +4078,13 @@ LBezierCurve:render(segments)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `segments` | `number` | Number of curve segments to sample. |
+| `segments` | number | Number of curve segments to sample. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBezierCurveRenderResult` | Array table of `{x, y}` point arrays. |
+| LBezierCurveRenderResult | Array table of `{x, y}` point arrays. |
 
 **Example**
 
@@ -3771,12 +4100,11 @@ end
 
 ---
 
-### `LBezierCurve:rotate`
+#### `LBezierCurve:rotate`
 
 Rotates all control points around an origin.
 
 ```lua
--- signature
 LBezierCurve:rotate(angle, ox, oy)
 ```
 
@@ -3784,9 +4112,9 @@ LBezierCurve:rotate(angle, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle` | `number` | Rotation angle. |
-| `ox` | `number` | Origin x coordinate. |
-| `oy` | `number` | Origin y coordinate. |
+| `angle` | number | Rotation angle. |
+| `ox` | number | Origin x coordinate. |
+| `oy` | number | Origin y coordinate. |
 
 **Example**
 
@@ -3801,12 +4129,11 @@ end
 
 ---
 
-### `LBezierCurve:scale`
+#### `LBezierCurve:scale`
 
 Scales all control points around an origin.
 
 ```lua
--- signature
 LBezierCurve:scale(s, ox, oy)
 ```
 
@@ -3814,9 +4141,9 @@ LBezierCurve:scale(s, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `s` | `number` | Scale factor. |
-| `ox` | `number` | Origin x coordinate. |
-| `oy` | `number` | Origin y coordinate. |
+| `s` | number | Scale factor. |
+| `ox` | number | Origin x coordinate. |
+| `oy` | number | Origin y coordinate. |
 
 **Example**
 
@@ -3831,12 +4158,11 @@ end
 
 ---
 
-### `LBezierCurve:setControlPoint`
+#### `LBezierCurve:setControlPoint`
 
 Sets a control point by one-based index.
 
 ```lua
--- signature
 LBezierCurve:setControlPoint(index, x, y)
 ```
 
@@ -3844,15 +4170,15 @@ LBezierCurve:setControlPoint(index, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based control point index. |
-| `x` | `number` | New x coordinate. |
-| `y` | `number` | New y coordinate. |
+| `index` | number | One-based control point index. |
+| `x` | number | New x coordinate. |
+| `y` | number | New y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the control point exists. |
+| boolean | True when the control point exists. |
 
 **Example**
 
@@ -3869,12 +4195,11 @@ end
 
 ---
 
-### `LBezierCurve:translate`
+#### `LBezierCurve:translate`
 
 Translates all control points. This method is available to Lua scripts.
 
 ```lua
--- signature
 LBezierCurve:translate(dx, dy)
 ```
 
@@ -3882,8 +4207,8 @@ LBezierCurve:translate(dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dx` | `number` | X translation. |
-| `dy` | `number` | Y translation. |
+| `dx` | number | X translation. |
+| `dy` | number | Y translation. |
 
 **Example**
 
@@ -3900,12 +4225,11 @@ end
 
 ---
 
-### `LBezierCurve:type`
+#### `LBezierCurve:type`
 
 Returns the Lua-visible type name for this Bezier curve handle.
 
 ```lua
--- signature
 LBezierCurve:type()
 ```
 
@@ -3913,7 +4237,7 @@ LBezierCurve:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LBezierCurve`. |
+| string | The string `[LBezierCurve](#lbeziercurve-handle)`. |
 
 **Example**
 
@@ -3926,12 +4250,11 @@ end
 
 ---
 
-### `LBezierCurve:typeOf`
+#### `LBezierCurve:typeOf`
 
 Returns whether this Bezier curve handle matches a supported type name.
 
 ```lua
--- signature
 LBezierCurve:typeOf(name)
 ```
 
@@ -3939,13 +4262,13 @@ LBezierCurve:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LBezierCurve` and `Object`. |
+| `name` | string | Type name to compare against `[LBezierCurve](#lbeziercurve-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -3958,14 +4281,19 @@ end
 
 ---
 
-## LCatmullRom
+## LCatmullRom Handle
 
-### `LCatmullRom:addPoint`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCatmullRom:addPoint`
 
 Adds a point to the spline. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCatmullRom:addPoint(x, y)
 ```
 
@@ -3973,8 +4301,8 @@ LCatmullRom:addPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Point x coordinate. |
-| `y` | `number` | Point y coordinate. |
+| `x` | number | Point x coordinate. |
+| `y` | number | Point y coordinate. |
 
 **Example**
 
@@ -3989,12 +4317,11 @@ end
 
 ---
 
-### `LCatmullRom:len`
+#### `LCatmullRom:len`
 
 Returns the number of points in the spline.
 
 ```lua
--- signature
 LCatmullRom:len()
 ```
 
@@ -4002,7 +4329,7 @@ LCatmullRom:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Point count. |
+| number | Point count. |
 
 **Example**
 
@@ -4015,12 +4342,11 @@ end
 
 ---
 
-### `LCatmullRom:removePoint`
+#### `LCatmullRom:removePoint`
 
 Removes a point by zero-based index and returns its coordinates.
 
 ```lua
--- signature
 LCatmullRom:removePoint(idx)
 ```
 
@@ -4028,14 +4354,14 @@ LCatmullRom:removePoint(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Zero-based point index. |
+| `idx` | number | Zero-based point index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Removed point x coordinate. |
-| `number` | b Removed point y coordinate. |
+| number | Removed point x coordinate. |
+| number | Removed point y coordinate. |
 
 **Example**
 
@@ -4050,12 +4376,11 @@ end
 
 ---
 
-### `LCatmullRom:sample`
+#### `LCatmullRom:sample`
 
 Samples the spline at normalized parameter `t`.
 
 ```lua
--- signature
 LCatmullRom:sample(t)
 ```
 
@@ -4063,14 +4388,14 @@ LCatmullRom:sample(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized spline parameter. |
+| `t` | number | Normalized spline parameter. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Sample x coordinate. |
-| `number` | b Sample y coordinate. |
+| number | Sample x coordinate. |
+| number | Sample y coordinate. |
 
 **Example**
 
@@ -4084,12 +4409,11 @@ end
 
 ---
 
-### `LCatmullRom:sampleSegment`
+#### `LCatmullRom:sampleSegment`
 
 Samples one spline segment at local parameter `t`.
 
 ```lua
--- signature
 LCatmullRom:sampleSegment(seg, t)
 ```
 
@@ -4097,15 +4421,15 @@ LCatmullRom:sampleSegment(seg, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seg` | `number` | Zero-based segment index. |
-| `t` | `number` | Segment-local parameter. |
+| `seg` | number | Zero-based segment index. |
+| `t` | number | Segment-local parameter. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Sample x coordinate. |
-| `number` | b Sample y coordinate. |
+| number | Sample x coordinate. |
+| number | Sample y coordinate. |
 
 **Example**
 
@@ -4119,12 +4443,11 @@ end
 
 ---
 
-### `LCatmullRom:type`
+#### `LCatmullRom:type`
 
 Returns the Lua-visible type name for this spline handle.
 
 ```lua
--- signature
 LCatmullRom:type()
 ```
 
@@ -4132,7 +4455,7 @@ LCatmullRom:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LCatmullRom`. |
+| string | The string `[LCatmullRom](#lcatmullrom-handle)`. |
 
 **Example**
 
@@ -4145,12 +4468,11 @@ end
 
 ---
 
-### `LCatmullRom:typeOf`
+#### `LCatmullRom:typeOf`
 
 Returns whether this spline handle matches a supported type name.
 
 ```lua
--- signature
 LCatmullRom:typeOf(name)
 ```
 
@@ -4158,13 +4480,13 @@ LCatmullRom:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LCatmullRom` and `Object`. |
+| `name` | string | Type name to compare against `[LCatmullRom](#lcatmullrom-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4177,14 +4499,19 @@ end
 
 ---
 
-## LCircle
+## LCircle Handle
 
-### `LCircle:aabb`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCircle:aabb`
 
 Returns this circle axis-aligned bounding box.
 
 ```lua
--- signature
 LCircle:aabb()
 ```
 
@@ -4192,10 +4519,10 @@ LCircle:aabb()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum x coordinate. |
-| `number` | b Minimum y coordinate. |
-| `number` | c Maximum x coordinate. |
-| `number` | d Maximum y coordinate. |
+| number | Minimum x coordinate. |
+| number | Minimum y coordinate. |
+| number | Maximum x coordinate. |
+| number | Maximum y coordinate. |
 
 **Example**
 
@@ -4209,12 +4536,11 @@ end
 
 ---
 
-### `LCircle:area`
+#### `LCircle:area`
 
 Returns this circle area. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCircle:area()
 ```
 
@@ -4222,7 +4548,7 @@ LCircle:area()
 
 | Type | Description |
 |------|-------------|
-| `number` | Circle area. |
+| number | Circle area. |
 
 **Example**
 
@@ -4235,12 +4561,11 @@ end
 
 ---
 
-### `LCircle:contains`
+#### `LCircle:contains`
 
 Returns whether this circle contains a point.
 
 ```lua
--- signature
 LCircle:contains(px, py)
 ```
 
@@ -4248,14 +4573,14 @@ LCircle:contains(px, py)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Point x coordinate. |
-| `py` | `number` | Point y coordinate. |
+| `px` | number | Point x coordinate. |
+| `py` | number | Point y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the point is inside the circle. |
+| boolean | True when the point is inside the circle. |
 
 **Example**
 
@@ -4268,12 +4593,11 @@ end
 
 ---
 
-### `LCircle:intersects`
+#### `LCircle:intersects`
 
 Returns whether this circle intersects another circle.
 
 ```lua
--- signature
 LCircle:intersects(other)
 ```
 
@@ -4281,13 +4605,13 @@ LCircle:intersects(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LCircle` | Other circle handle. |
+| `other` | [LCircle](#lcircle-handle) | Other circle handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the circles intersect. |
+| boolean | True when the circles intersect. |
 
 **Example**
 
@@ -4301,12 +4625,11 @@ end
 
 ---
 
-### `LCircle:perimeter`
+#### `LCircle:perimeter`
 
 Returns this circle perimeter. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCircle:perimeter()
 ```
 
@@ -4314,7 +4637,7 @@ LCircle:perimeter()
 
 | Type | Description |
 |------|-------------|
-| `number` | Circle perimeter. |
+| number | Circle perimeter. |
 
 **Example**
 
@@ -4327,12 +4650,11 @@ end
 
 ---
 
-### `LCircle:radius`
+#### `LCircle:radius`
 
 Returns this circle radius. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCircle:radius()
 ```
 
@@ -4340,7 +4662,7 @@ LCircle:radius()
 
 | Type | Description |
 |------|-------------|
-| `number` | Radius. |
+| number | Radius. |
 
 **Example**
 
@@ -4353,12 +4675,11 @@ end
 
 ---
 
-### `LCircle:type`
+#### `LCircle:type`
 
 Returns the Lua-visible type name for this circle handle.
 
 ```lua
--- signature
 LCircle:type()
 ```
 
@@ -4366,7 +4687,7 @@ LCircle:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LCircle`. |
+| string | The string `[LCircle](#lcircle-handle)`. |
 
 **Example**
 
@@ -4379,12 +4700,11 @@ end
 
 ---
 
-### `LCircle:typeOf`
+#### `LCircle:typeOf`
 
 Returns whether this circle handle matches a supported type name.
 
 ```lua
--- signature
 LCircle:typeOf(name)
 ```
 
@@ -4392,13 +4712,13 @@ LCircle:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LCircle` and `Object`. |
+| `name` | string | Type name to compare against `[LCircle](#lcircle-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4411,12 +4731,11 @@ end
 
 ---
 
-### `LCircle:x`
+#### `LCircle:x`
 
 Returns this circle center x coordinate.
 
 ```lua
--- signature
 LCircle:x()
 ```
 
@@ -4424,7 +4743,7 @@ LCircle:x()
 
 | Type | Description |
 |------|-------------|
-| `number` | Center x coordinate. |
+| number | Center x coordinate. |
 
 **Example**
 
@@ -4437,12 +4756,11 @@ end
 
 ---
 
-### `LCircle:y`
+#### `LCircle:y`
 
 Returns this circle center y coordinate.
 
 ```lua
--- signature
 LCircle:y()
 ```
 
@@ -4450,7 +4768,7 @@ LCircle:y()
 
 | Type | Description |
 |------|-------------|
-| `number` | Center y coordinate. |
+| number | Center y coordinate. |
 
 **Example**
 
@@ -4463,14 +4781,19 @@ end
 
 ---
 
-## LHermite
+## LHermite Handle
 
-### `LHermite:sample`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LHermite:sample`
 
 Samples the spline at normalized parameter `t`.
 
 ```lua
--- signature
 LHermite:sample(t)
 ```
 
@@ -4478,14 +4801,14 @@ LHermite:sample(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Normalized spline parameter. |
+| `t` | number | Normalized spline parameter. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Sample x coordinate. |
-| `number` | b Sample y coordinate. |
+| number | Sample x coordinate. |
+| number | Sample y coordinate. |
 
 **Example**
 
@@ -4499,12 +4822,11 @@ end
 
 ---
 
-### `LHermite:type`
+#### `LHermite:type`
 
 Returns the Lua-visible type name for this spline handle.
 
 ```lua
--- signature
 LHermite:type()
 ```
 
@@ -4512,7 +4834,7 @@ LHermite:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LHermite`. |
+| string | The string `[LHermite](#lhermite-handle)`. |
 
 **Example**
 
@@ -4525,12 +4847,11 @@ end
 
 ---
 
-### `LHermite:typeOf`
+#### `LHermite:typeOf`
 
 Returns whether this spline handle matches a supported type name.
 
 ```lua
--- signature
 LHermite:typeOf(name)
 ```
 
@@ -4538,13 +4859,13 @@ LHermite:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LHermite` and `Object`. |
+| `name` | string | Type name to compare against `[LHermite](#lhermite-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4557,14 +4878,710 @@ end
 
 ---
 
-## LRandomGenerator
+## LLootTable Handle
 
-### `LRandomGenerator:chance`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLootTable:add`
+
+Adds an entry to the table. Re-build is required before the next sample.
+
+```lua
+LLootTable:add(id, weight, meta)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | string | Unique item identifier. |
+| `weight` | number | Relative drop weight (positive). |
+| `meta?` | table | Optional key-value metadata table. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    print("add ok")
+end
+```
+
+---
+
+#### `LLootTable:build`
+
+Rebuilds the alias table after mutations. Call before sampling.
+
+```lua
+LLootTable:build()
+```
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:build()
+    print("build ok")
+end
+```
+
+---
+
+#### `LLootTable:entryCount`
+
+Returns the number of entries in the table.
+
+```lua
+LLootTable:entryCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Entry count. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    print("entryCount = " .. tostring(tbl:entryCount()))
+end
+```
+
+---
+
+#### `LLootTable:merge`
+
+Merges entries from another loot table into this one.
+
+```lua
+LLootTable:merge(other)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other` | [LLootTable](#lloottable-handle) | Source loot table. |
+
+**Example**
+
+```lua
+do
+    local a = lurek.math.newLootTable(9)
+    local b = lurek.math.newLootTable(10)
+    a:add("a", 1.0)
+    b:add("b", 1.0)
+    a:merge(b)
+    a:build()
+    print("merged entries = " .. tostring(a:entryCount()))
+end
+```
+
+---
+
+#### `LLootTable:remove`
+
+Removes an entry by id. Returns true when found.
+
+```lua
+LLootTable:remove(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | string | Item identifier. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when removed. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:remove("wood")
+    print("remove ok")
+end
+```
+
+---
+
+#### `LLootTable:restore`
+
+Restores loot table state from a blob produced by `save`.
+
+```lua
+LLootTable:restore(blob)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `blob` | string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local a = lurek.math.newLootTable(9)
+    a:add("a", 1.0)
+    a:build()
+    local blob = a:save()
+    local restored = lurek.math.newLootTable()
+    restored:restore(blob)
+    print("restore count = " .. tostring(restored:entryCount()))
+end
+```
+
+---
+
+#### `LLootTable:sample`
+
+Samples one entry in O(1), returning nil instead of a table when empty.
+
+```lua
+LLootTable:sample()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with `id` (string) and `weight` (number) fields when present. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:build()
+    print("sample = " .. tostring(tbl:sample()))
+end
+```
+
+---
+
+#### `LLootTable:sampleN`
+
+Samples n entries with replacement. Returns an array table.
+
+```lua
+LLootTable:sampleN(n)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | number | Number of samples. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of entry tables. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:add("stone", 1.0)
+    tbl:build()
+    local picks = tbl:sampleN(2)
+    print("sampleN = " .. tostring(#picks))
+end
+```
+
+---
+
+#### `LLootTable:sampleUnique`
+
+Samples up to n unique entries (by id). Returns an array table.
+
+```lua
+LLootTable:sampleUnique(n)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | number | Maximum number of unique entries. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of unique entry tables. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:add("stone", 1.0)
+    tbl:build()
+    local picks = tbl:sampleUnique(2)
+    print("sampleUnique = " .. tostring(#picks))
+end
+```
+
+---
+
+#### `LLootTable:save`
+
+Serialises loot table state to a binary blob.
+
+```lua
+LLootTable:save()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local a = lurek.math.newLootTable(9)
+    a:add("a", 1.0)
+    a:build()
+    local blob = a:save()
+    print("save blob = " .. tostring(blob))
+end
+```
+
+---
+
+#### `LLootTable:setSeed`
+
+Sets the RNG seed. The alias table remains valid.
+
+```lua
+LLootTable:setSeed(seed)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `seed` | number | New seed value. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:setSeed(7)
+    print("setSeed ok")
+end
+```
+
+---
+
+#### `LLootTable:setWeight`
+
+Updates the weight of an existing entry. Returns true when found.
+
+```lua
+LLootTable:setWeight(id, weight)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | string | Item identifier. |
+| `weight` | number | New weight. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when found. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:setWeight("wood", 2.0)
+    print("setWeight ok")
+end
+```
+
+---
+
+#### `LLootTable:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LLootTable:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LLootTable](#lloottable-handle)`. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    print("type = " .. tostring(tbl:type()))
+end
+```
+
+---
+
+#### `LLootTable:typeOf`
+
+Returns whether this handle matches the given type name.
+
+```lua
+LLootTable:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when matched. |
+
+**Example**
+
+```lua
+do
+    local tbl = lurek.math.newLootTable(1)
+    print("typeOf = " .. tostring(tbl:typeOf("LLootTable")))
+end
+```
+
+---
+
+## LPityTracker Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPityTracker:counter`
+
+Returns the current miss counter used by pity-prime progression logic.
+
+```lua
+LPityTracker:counter()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current miss count. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    print("counter = " .. tostring(pity:counter()))
+end
+```
+
+---
+
+#### `LPityTracker:export`
+
+Compatibility alias for `save` that exports the same binary payload.
+
+```lua
+LPityTracker:export()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    local snapshot = pity:export()
+    print("export ok = " .. tostring(snapshot ~= nil))
+end
+```
+
+---
+
+#### `LPityTracker:import`
+
+Compatibility alias for `restore`.
+
+```lua
+LPityTracker:import(blob)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `blob` | string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    local snapshot = pity:export()
+    pity:import(snapshot)
+    print("import ok")
+end
+```
+
+---
+
+#### `LPityTracker:isPrimed`
+
+Returns true when the guaranteed drop is due.
+
+```lua
+LPityTracker:isPrimed()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when primed. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 1)
+    pity:notice("common")
+    print("isPrimed = " .. tostring(pity:isPrimed()))
+end
+```
+
+---
+
+#### `LPityTracker:notice`
+
+Notifies the tracker of a sample result id.
+
+```lua
+LPityTracker:notice(result_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `result_id` | string | The item id that was sampled. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when just primed. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    pity:notice("common")
+    print("notice ok")
+end
+```
+
+---
+
+#### `LPityTracker:reset`
+
+Resets the miss counter and clears primed guaranteed-drop state.
+
+```lua
+LPityTracker:reset()
+```
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    pity:notice("common")
+    pity:reset()
+    print("reset counter = " .. tostring(pity:counter()))
+end
+```
+
+---
+
+#### `LPityTracker:restore`
+
+Restores pity state from a blob produced by `save`.
+
+```lua
+LPityTracker:restore(blob)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `blob` | string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("b", 1)
+    local pity_blob = pity:save()
+    pity:restore(pity_blob)
+    print("pity restore ok")
+end
+```
+
+---
+
+#### `LPityTracker:save`
+
+Serialises pity state to a binary blob.
+
+```lua
+LPityTracker:save()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary blob. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("b", 1)
+    local pity_blob = pity:save()
+    print("pity save blob = " .. tostring(pity_blob))
+end
+```
+
+---
+
+#### `LPityTracker:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LPityTracker:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LPityTracker](#lpitytracker-handle)`. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    print("type = " .. tostring(pity:type()))
+end
+```
+
+---
+
+#### `LPityTracker:typeOf`
+
+Returns whether this handle matches the given type name.
+
+```lua
+LPityTracker:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when matched. |
+
+**Example**
+
+```lua
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    print("typeOf = " .. tostring(pity:typeOf("LPityTracker")))
+end
+```
+
+---
+
+## LRandomGenerator Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRandomGenerator:chance`
 
 Returns true with the given probability (0.0 = never, 1.0 = always).
 
 ```lua
--- signature
 LRandomGenerator:chance(probability)
 ```
 
@@ -4572,13 +5589,13 @@ LRandomGenerator:chance(probability)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `probability` | `number` | Probability in range [0.0, 1.0]. |
+| `probability` | number | Probability in range [0.0, 1.0]. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the random check passes. |
+| boolean | True when the random check passes. |
 
 **Example**
 
@@ -4592,12 +5609,11 @@ end
 
 ---
 
-### `LRandomGenerator:countSuccesses`
+#### `LRandomGenerator:countSuccesses`
 
 Rolls N dice and counts how many results are >= the target number.
 
 ```lua
--- signature
 LRandomGenerator:countSuccesses(count, sides, target)
 ```
 
@@ -4605,15 +5621,15 @@ LRandomGenerator:countSuccesses(count, sides, target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of dice to roll. |
-| `sides` | `number` | Number of sides per die. |
-| `target` | `number` | Minimum value to count as a success. |
+| `count` | number | Number of dice to roll. |
+| `sides` | number | Number of sides per die. |
+| `target` | number | Minimum value to count as a success. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of successful dice. |
+| number | Number of successful dice. |
 
 **Example**
 
@@ -4627,12 +5643,11 @@ end
 
 ---
 
-### `LRandomGenerator:getSeed`
+#### `LRandomGenerator:getSeed`
 
 Returns this generator seed. This method is available to Lua scripts.
 
 ```lua
--- signature
 LRandomGenerator:getSeed()
 ```
 
@@ -4640,7 +5655,7 @@ LRandomGenerator:getSeed()
 
 | Type | Description |
 |------|-------------|
-| `number` | Seed value. |
+| number | Seed value. |
 
 **Example**
 
@@ -4653,12 +5668,11 @@ end
 
 ---
 
-### `LRandomGenerator:getState`
+#### `LRandomGenerator:getState`
 
 Returns this generator serialized state string.
 
 ```lua
--- signature
 LRandomGenerator:getState()
 ```
 
@@ -4666,7 +5680,7 @@ LRandomGenerator:getState()
 
 | Type | Description |
 |------|-------------|
-| `string` | Generator state. |
+| string | Generator state. |
 
 **Example**
 
@@ -4679,12 +5693,11 @@ end
 
 ---
 
-### `LRandomGenerator:random`
+#### `LRandomGenerator:random`
 
 Returns a random floating-point value from the generator.
 
 ```lua
--- signature
 LRandomGenerator:random()
 ```
 
@@ -4692,7 +5705,7 @@ LRandomGenerator:random()
 
 | Type | Description |
 |------|-------------|
-| `number` | Random value. |
+| number | Random value. |
 
 **Example**
 
@@ -4705,12 +5718,11 @@ end
 
 ---
 
-### `LRandomGenerator:randomFloat`
+#### `LRandomGenerator:randomFloat`
 
 Returns a random floating-point value in a range.
 
 ```lua
--- signature
 LRandomGenerator:randomFloat(min, max)
 ```
 
@@ -4718,14 +5730,14 @@ LRandomGenerator:randomFloat(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum value. |
-| `max` | `number` | Maximum value. |
+| `min` | number | Minimum value. |
+| `max` | number | Maximum value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Random value in range. |
+| number | Random value in range. |
 
 **Example**
 
@@ -4738,12 +5750,11 @@ end
 
 ---
 
-### `LRandomGenerator:randomInt`
+#### `LRandomGenerator:randomInt`
 
 Returns a random integer in a range.
 
 ```lua
--- signature
 LRandomGenerator:randomInt(min, max)
 ```
 
@@ -4751,14 +5762,14 @@ LRandomGenerator:randomInt(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum value. |
-| `max` | `number` | Maximum value. |
+| `min` | number | Minimum value. |
+| `max` | number | Maximum value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Random integer in range. |
+| number | Random integer in range. |
 
 **Example**
 
@@ -4771,12 +5782,11 @@ end
 
 ---
 
-### `LRandomGenerator:randomNormal`
+#### `LRandomGenerator:randomNormal`
 
 Returns a normally distributed random value.
 
 ```lua
--- signature
 LRandomGenerator:randomNormal(stddev, mean)
 ```
 
@@ -4784,14 +5794,14 @@ LRandomGenerator:randomNormal(stddev, mean)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `stddev?` | `number` | Standard deviation (default 1.0). |
-| `mean?` | `number` | Mean value (default 0.0). |
+| `stddev?` | number | Standard deviation (default 1.0). |
+| `mean?` | number | Mean value (default 0.0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Random normal value. |
+| number | Random normal value. |
 
 **Example**
 
@@ -4804,12 +5814,11 @@ end
 
 ---
 
-### `LRandomGenerator:roll`
+#### `LRandomGenerator:roll`
 
 Rolls a single die with the given number of sides.
 
 ```lua
--- signature
 LRandomGenerator:roll(sides)
 ```
 
@@ -4817,13 +5826,13 @@ LRandomGenerator:roll(sides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sides` | `number` | Number of sides (minimum 1). |
+| `sides` | number | Number of sides (minimum 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Result in range [1, sides]. |
+| number | Result in range [1, sides]. |
 
 **Example**
 
@@ -4837,12 +5846,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollAdvantage`
+#### `LRandomGenerator:rollAdvantage`
 
 Rolls two dice and returns the higher result (advantage mechanic).
 
 ```lua
--- signature
 LRandomGenerator:rollAdvantage(sides)
 ```
 
@@ -4850,13 +5858,13 @@ LRandomGenerator:rollAdvantage(sides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sides` | `number` | Number of sides per die. |
+| `sides` | number | Number of sides per die. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Higher of the two rolls. |
+| number | Higher of the two rolls. |
 
 **Example**
 
@@ -4870,12 +5878,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollDisadvantage`
+#### `LRandomGenerator:rollDisadvantage`
 
 Rolls two dice and returns the lower result (disadvantage mechanic).
 
 ```lua
--- signature
 LRandomGenerator:rollDisadvantage(sides)
 ```
 
@@ -4883,13 +5890,13 @@ LRandomGenerator:rollDisadvantage(sides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sides` | `number` | Number of sides per die. |
+| `sides` | number | Number of sides per die. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Lower of the two rolls. |
+| number | Lower of the two rolls. |
 
 **Example**
 
@@ -4903,12 +5910,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollExploding`
+#### `LRandomGenerator:rollExploding`
 
 Rolls N exploding dice: when a die shows its maximum value, roll again and add.
 
 ```lua
--- signature
 LRandomGenerator:rollExploding(count, sides)
 ```
 
@@ -4916,14 +5922,14 @@ LRandomGenerator:rollExploding(count, sides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of dice to roll. |
-| `sides` | `number` | Number of sides per die. |
+| `count` | number | Number of dice to roll. |
+| `sides` | number | Number of sides per die. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Total sum including all explosion rerolls. |
+| number | Total sum including all explosion rerolls. |
 
 **Example**
 
@@ -4937,12 +5943,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollKeepHighest`
+#### `LRandomGenerator:rollKeepHighest`
 
 Rolls N dice and returns the sum of the highest K results.
 
 ```lua
--- signature
 LRandomGenerator:rollKeepHighest(count, sides, keep)
 ```
 
@@ -4950,15 +5955,15 @@ LRandomGenerator:rollKeepHighest(count, sides, keep)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of dice to roll. |
-| `sides` | `number` | Number of sides per die. |
-| `keep` | `number` | How many highest results to sum. |
+| `count` | number | Number of dice to roll. |
+| `sides` | number | Number of sides per die. |
+| `keep` | number | How many highest results to sum. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sum of the highest keep results. |
+| number | Sum of the highest keep results. |
 
 **Example**
 
@@ -4972,12 +5977,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollKeepLowest`
+#### `LRandomGenerator:rollKeepLowest`
 
 Rolls N dice and returns the sum of the lowest K results.
 
 ```lua
--- signature
 LRandomGenerator:rollKeepLowest(count, sides, keep)
 ```
 
@@ -4985,15 +5989,15 @@ LRandomGenerator:rollKeepLowest(count, sides, keep)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of dice to roll. |
-| `sides` | `number` | Number of sides per die. |
-| `keep` | `number` | How many lowest results to sum. |
+| `count` | number | Number of dice to roll. |
+| `sides` | number | Number of sides per die. |
+| `keep` | number | How many lowest results to sum. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sum of the lowest keep results. |
+| number | Sum of the lowest keep results. |
 
 **Example**
 
@@ -5007,12 +6011,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollN`
+#### `LRandomGenerator:rollN`
 
 Rolls N dice with the given number of sides and returns all results.
 
 ```lua
--- signature
 LRandomGenerator:rollN(count, sides)
 ```
 
@@ -5020,14 +6023,14 @@ LRandomGenerator:rollN(count, sides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of dice (clamped to [1, 1000]). |
-| `sides` | `number` | Number of sides per die (minimum 1). |
+| `count` | number | Number of dice (clamped to [1, 1000]). |
+| `sides` | number | Number of sides per die (minimum 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of individual die results. |
+| number[] | Array of individual die results. |
 
 **Example**
 
@@ -5041,12 +6044,11 @@ end
 
 ---
 
-### `LRandomGenerator:rollSum`
+#### `LRandomGenerator:rollSum`
 
 Rolls N dice and returns the sum of all results.
 
 ```lua
--- signature
 LRandomGenerator:rollSum(count, sides)
 ```
 
@@ -5054,14 +6056,14 @@ LRandomGenerator:rollSum(count, sides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of dice (clamped to [1, 1000]). |
-| `sides` | `number` | Number of sides per die (minimum 1). |
+| `count` | number | Number of dice (clamped to [1, 1000]). |
+| `sides` | number | Number of sides per die (minimum 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sum of all die results. |
+| number | Sum of all die results. |
 
 **Example**
 
@@ -5075,12 +6077,11 @@ end
 
 ---
 
-### `LRandomGenerator:setSeed`
+#### `LRandomGenerator:setSeed`
 
 Resets this generator to a seed value.
 
 ```lua
--- signature
 LRandomGenerator:setSeed(seed)
 ```
 
@@ -5088,7 +6089,7 @@ LRandomGenerator:setSeed(seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seed` | `number` | Seed value. |
+| `seed` | number | Seed value. |
 
 **Example**
 
@@ -5102,12 +6103,11 @@ end
 
 ---
 
-### `LRandomGenerator:setState`
+#### `LRandomGenerator:setState`
 
 Restores this generator from a serialized state string.
 
 ```lua
--- signature
 LRandomGenerator:setState(state)
 ```
 
@@ -5115,7 +6115,7 @@ LRandomGenerator:setState(state)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `state` | `string` | Generator state string. |
+| `state` | string | Generator state string. |
 
 **Example**
 
@@ -5134,12 +6134,11 @@ end
 
 ---
 
-### `LRandomGenerator:type`
+#### `LRandomGenerator:type`
 
 Returns the Lua-visible type name for this random generator handle.
 
 ```lua
--- signature
 LRandomGenerator:type()
 ```
 
@@ -5147,7 +6146,7 @@ LRandomGenerator:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LRandomGenerator`. |
+| string | The string `[LRandomGenerator](#lrandomgenerator-handle)`. |
 
 **Example**
 
@@ -5160,12 +6159,11 @@ end
 
 ---
 
-### `LRandomGenerator:typeOf`
+#### `LRandomGenerator:typeOf`
 
 Returns whether this random generator handle matches a supported type name.
 
 ```lua
--- signature
 LRandomGenerator:typeOf(name)
 ```
 
@@ -5173,13 +6171,13 @@ LRandomGenerator:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LRandomGenerator` and `Object`. |
+| `name` | string | Type name to compare against `[LRandomGenerator](#lrandomgenerator-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -5192,14 +6190,19 @@ end
 
 ---
 
-## LRectPacker
+## LRectPacker Handle
 
-### `LRectPacker:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRectPacker:clear`
 
 Clears packed rectangles from this packer.
 
 ```lua
--- signature
 LRectPacker:clear()
 ```
 
@@ -5216,12 +6219,11 @@ end
 
 ---
 
-### `LRectPacker:getPacked`
+#### `LRectPacker:getPacked`
 
 Returns packed rectangle records.
 
 ```lua
--- signature
 LRectPacker:getPacked()
 ```
 
@@ -5229,7 +6231,7 @@ LRectPacker:getPacked()
 
 | Type | Description |
 |------|-------------|
-| `LRectPackerGetPackedResult` | Array table with `x`, `y`, `w`, `h`, and optional `id` fields. |
+| LRectPackerGetPackedResult | Array table with `x`, `y`, `w`, `h`, and optional `id` fields. |
 
 **Example**
 
@@ -5244,12 +6246,11 @@ end
 
 ---
 
-### `LRectPacker:occupancy`
+#### `LRectPacker:occupancy`
 
 Returns occupied area ratio. This method is available to Lua scripts.
 
 ```lua
--- signature
 LRectPacker:occupancy()
 ```
 
@@ -5257,7 +6258,7 @@ LRectPacker:occupancy()
 
 | Type | Description |
 |------|-------------|
-| `number` | Occupancy ratio. |
+| number | Occupancy ratio. |
 
 **Example**
 
@@ -5271,12 +6272,11 @@ end
 
 ---
 
-### `LRectPacker:pack`
+#### `LRectPacker:pack`
 
 Attempts to pack a rectangle and returns its placement coordinates.
 
 ```lua
--- signature
 LRectPacker:pack(w, h, id)
 ```
 
@@ -5284,16 +6284,16 @@ LRectPacker:pack(w, h, id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Rectangle width. |
-| `h` | `number` | Rectangle height. |
-| `id?` | `string` | Rectangle id. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `id?` | string | Rectangle id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X coordinate, or nil when packing fails. |
-| `number` | b Y coordinate, or nil when packing fails. |
+| number | X coordinate; or nil when packing fails. |
+| number | Y coordinate; or nil when packing fails. |
 
 **Example**
 
@@ -5307,14 +6307,19 @@ end
 
 ---
 
-## LSpatialHash
+## LSpatialHash Handle
 
-### `LSpatialHash:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpatialHash:clear`
 
 Clears all items from the spatial hash.
 
 ```lua
--- signature
 LSpatialHash:clear()
 ```
 
@@ -5331,12 +6336,11 @@ end
 
 ---
 
-### `LSpatialHash:getCellSize`
+#### `LSpatialHash:getCellSize`
 
 Returns the spatial hash cell size.
 
 ```lua
--- signature
 LSpatialHash:getCellSize()
 ```
 
@@ -5344,7 +6348,7 @@ LSpatialHash:getCellSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell size. |
+| number | Cell size. |
 
 **Example**
 
@@ -5357,12 +6361,11 @@ end
 
 ---
 
-### `LSpatialHash:getItemCount`
+#### `LSpatialHash:getItemCount`
 
 Returns the number of items in the spatial hash.
 
 ```lua
--- signature
 LSpatialHash:getItemCount()
 ```
 
@@ -5370,7 +6373,7 @@ LSpatialHash:getItemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -5384,12 +6387,11 @@ end
 
 ---
 
-### `LSpatialHash:insert`
+#### `LSpatialHash:insert`
 
 Inserts an item rectangle into the spatial hash.
 
 ```lua
--- signature
 LSpatialHash:insert(id, x, y, w, h)
 ```
 
@@ -5397,11 +6399,11 @@ LSpatialHash:insert(id, x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | Item id. |
-| `x` | `number` | Rectangle x coordinate. |
-| `y` | `number` | Rectangle y coordinate. |
-| `w` | `number` | Rectangle width. |
-| `h` | `number` | Rectangle height. |
+| `id` | string | Item id. |
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
 
 **Example**
 
@@ -5415,12 +6417,11 @@ end
 
 ---
 
-### `LSpatialHash:queryCircle`
+#### `LSpatialHash:queryCircle`
 
 Returns ids intersecting a query circle.
 
 ```lua
--- signature
 LSpatialHash:queryCircle(cx, cy, radius)
 ```
 
@@ -5428,15 +6429,15 @@ LSpatialHash:queryCircle(cx, cy, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Circle center x coordinate. |
-| `cy` | `number` | Circle center y coordinate. |
-| `radius` | `number` | Circle radius. |
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Item ids. |
+| number[] | Item ids. |
 
 **Example**
 
@@ -5452,12 +6453,11 @@ end
 
 ---
 
-### `LSpatialHash:queryRect`
+#### `LSpatialHash:queryRect`
 
 Returns ids intersecting a query rectangle.
 
 ```lua
--- signature
 LSpatialHash:queryRect(x, y, w, h)
 ```
 
@@ -5465,16 +6465,16 @@ LSpatialHash:queryRect(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Query x coordinate. |
-| `y` | `number` | Query y coordinate. |
-| `w` | `number` | Query width. |
-| `h` | `number` | Query height. |
+| `x` | number | Query x coordinate. |
+| `y` | number | Query y coordinate. |
+| `w` | number | Query width. |
+| `h` | number | Query height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Item ids. |
+| number[] | Item ids. |
 
 **Example**
 
@@ -5490,12 +6490,11 @@ end
 
 ---
 
-### `LSpatialHash:querySegment`
+#### `LSpatialHash:querySegment`
 
 Returns ids intersecting a query line segment.
 
 ```lua
--- signature
 LSpatialHash:querySegment(x1, y1, x2, y2)
 ```
 
@@ -5503,16 +6502,16 @@ LSpatialHash:querySegment(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Segment start x coordinate. |
-| `y1` | `number` | Segment start y coordinate. |
-| `x2` | `number` | Segment end x coordinate. |
-| `y2` | `number` | Segment end y coordinate. |
+| `x1` | number | Segment start x coordinate. |
+| `y1` | number | Segment start y coordinate. |
+| `x2` | number | Segment end x coordinate. |
+| `y2` | number | Segment end y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Item ids. |
+| number[] | Item ids. |
 
 **Example**
 
@@ -5528,12 +6527,11 @@ end
 
 ---
 
-### `LSpatialHash:remove`
+#### `LSpatialHash:remove`
 
 Removes an item from the spatial hash.
 
 ```lua
--- signature
 LSpatialHash:remove(id)
 ```
 
@@ -5541,7 +6539,7 @@ LSpatialHash:remove(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | Item id. |
+| `id` | string | Item id. |
 
 **Example**
 
@@ -5557,12 +6555,11 @@ end
 
 ---
 
-### `LSpatialHash:type`
+#### `LSpatialHash:type`
 
 Returns the Lua-visible type name for this spatial hash handle.
 
 ```lua
--- signature
 LSpatialHash:type()
 ```
 
@@ -5570,7 +6567,7 @@ LSpatialHash:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LSpatialHash`. |
+| string | The string `[LSpatialHash](#lspatialhash-handle)`. |
 
 **Example**
 
@@ -5583,12 +6580,11 @@ end
 
 ---
 
-### `LSpatialHash:typeOf`
+#### `LSpatialHash:typeOf`
 
 Returns whether this spatial hash handle matches a supported type name.
 
 ```lua
--- signature
 LSpatialHash:typeOf(name)
 ```
 
@@ -5596,13 +6592,13 @@ LSpatialHash:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LSpatialHash` and `Object`. |
+| `name` | string | Type name to compare against `[LSpatialHash](#lspatialhash-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -5615,12 +6611,11 @@ end
 
 ---
 
-### `LSpatialHash:update`
+#### `LSpatialHash:update`
 
 Updates an item rectangle in the spatial hash.
 
 ```lua
--- signature
 LSpatialHash:update(id, x, y, w, h)
 ```
 
@@ -5628,11 +6623,11 @@ LSpatialHash:update(id, x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | Item id. |
-| `x` | `number` | Rectangle x coordinate. |
-| `y` | `number` | Rectangle y coordinate. |
-| `w` | `number` | Rectangle width. |
-| `h` | `number` | Rectangle height. |
+| `id` | string | Item id. |
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
 
 **Example**
 
@@ -5648,14 +6643,19 @@ end
 
 ---
 
-## LTransform
+## LTransform Handle
 
-### `LTransform:clone`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTransform:clone`
 
 Returns a copy of this transform. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTransform:clone()
 ```
 
@@ -5663,7 +6663,7 @@ LTransform:clone()
 
 | Type | Description |
 |------|-------------|
-| `LTransform` | Cloned transform handle. |
+| [LTransform](#ltransform-handle) | Cloned transform handle. |
 
 **Example**
 
@@ -5678,12 +6678,11 @@ end
 
 ---
 
-### `LTransform:decompose`
+#### `LTransform:decompose`
 
 Decomposes this transform into component values.
 
 ```lua
--- signature
 LTransform:decompose()
 ```
 
@@ -5691,11 +6690,11 @@ LTransform:decompose()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X translation. |
-| `number` | b Y translation. |
-| `number` | c Rotation angle in radians. |
-| `number` | d X scale. |
-| `number` | e Y scale. |
+| number | X translation. |
+| number | Y translation. |
+| number | Rotation angle in radians. |
+| number | X scale. |
+| number | Y scale. |
 
 **Example**
 
@@ -5709,12 +6708,11 @@ end
 
 ---
 
-### `LTransform:getMatrix`
+#### `LTransform:getMatrix`
 
 Returns this transform matrix as a flat array table.
 
 ```lua
--- signature
 LTransform:getMatrix()
 ```
 
@@ -5722,7 +6720,7 @@ LTransform:getMatrix()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat matrix values in row-major order. |
+| number[] | Flat matrix values in row-major order. |
 
 **Example**
 
@@ -5737,12 +6735,11 @@ end
 
 ---
 
-### `LTransform:inverse`
+#### `LTransform:inverse`
 
 Returns this transform's inverse.
 
 ```lua
--- signature
 LTransform:inverse()
 ```
 
@@ -5750,7 +6747,7 @@ LTransform:inverse()
 
 | Type | Description |
 |------|-------------|
-| `LTransform` | Inverse transform handle. |
+| [LTransform](#ltransform-handle) | Inverse transform handle. |
 
 **Example**
 
@@ -5766,12 +6763,11 @@ end
 
 ---
 
-### `LTransform:inverseTransformPoint`
+#### `LTransform:inverseTransformPoint`
 
 Transforms a point by this transform's inverse.
 
 ```lua
--- signature
 LTransform:inverseTransformPoint(x, y)
 ```
 
@@ -5779,15 +6775,15 @@ LTransform:inverseTransformPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input x coordinate. |
-| `y` | `number` | Input y coordinate. |
+| `x` | number | Input x coordinate. |
+| `y` | number | Input y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Inverse-transformed x coordinate. |
-| `number` | b Inverse-transformed y coordinate. |
+| number | Inverse-transformed x coordinate. |
+| number | Inverse-transformed y coordinate. |
 
 **Example**
 
@@ -5803,12 +6799,11 @@ end
 
 ---
 
-### `LTransform:reset`
+#### `LTransform:reset`
 
 Resets this transform to identity.
 
 ```lua
--- signature
 LTransform:reset()
 ```
 
@@ -5825,12 +6820,11 @@ end
 
 ---
 
-### `LTransform:rotate`
+#### `LTransform:rotate`
 
 Applies a rotation to this transform.
 
 ```lua
--- signature
 LTransform:rotate(angle)
 ```
 
@@ -5838,7 +6832,7 @@ LTransform:rotate(angle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle` | `number` | Rotation angle. |
+| `angle` | number | Rotation angle. |
 
 **Example**
 
@@ -5853,12 +6847,11 @@ end
 
 ---
 
-### `LTransform:scale`
+#### `LTransform:scale`
 
 Applies scale to this transform. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTransform:scale(sx, sy)
 ```
 
@@ -5866,8 +6859,8 @@ LTransform:scale(sx, sy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | X scale. |
-| `sy?` | `number` | Y scale (defaults to `sx`). |
+| `sx` | number | X scale. |
+| `sy?` | number | Y scale (defaults to `sx`). |
 
 **Example**
 
@@ -5882,12 +6875,11 @@ end
 
 ---
 
-### `LTransform:setTransformation`
+#### `LTransform:setTransformation`
 
 Replaces this transform from position, rotation, scale, origin, and shear components.
 
 ```lua
--- signature
 LTransform:setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky)
 ```
 
@@ -5895,15 +6887,15 @@ LTransform:setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X translation. |
-| `y` | `number` | Y translation. |
-| `angle?` | `number` | Rotation angle (default 0). |
-| `sx?` | `number` | X scale (default 1). |
-| `sy?` | `number` | Y scale (defaults to `sx`). |
-| `ox?` | `number` | Origin x offset (default 0). |
-| `oy?` | `number` | Origin y offset (default 0). |
-| `kx?` | `number` | X shear (default 0). |
-| `ky?` | `number` | Y shear (default 0). |
+| `x` | number | X translation. |
+| `y` | number | Y translation. |
+| `angle?` | number | Rotation angle (default 0). |
+| `sx?` | number | X scale (default 1). |
+| `sy?` | number | Y scale (defaults to `sx`). |
+| `ox?` | number | Origin x offset (default 0). |
+| `oy?` | number | Origin y offset (default 0). |
+| `kx?` | number | X shear (default 0). |
+| `ky?` | number | Y shear (default 0). |
 
 **Example**
 
@@ -5918,12 +6910,11 @@ end
 
 ---
 
-### `LTransform:shear`
+#### `LTransform:shear`
 
 Applies shear to this transform. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTransform:shear(kx, ky)
 ```
 
@@ -5931,8 +6922,8 @@ LTransform:shear(kx, ky)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kx` | `number` | X shear. |
-| `ky` | `number` | Y shear. |
+| `kx` | number | X shear. |
+| `ky` | number | Y shear. |
 
 **Example**
 
@@ -5947,12 +6938,11 @@ end
 
 ---
 
-### `LTransform:transformPoint`
+#### `LTransform:transformPoint`
 
 Transforms a point by this transform.
 
 ```lua
--- signature
 LTransform:transformPoint(x, y)
 ```
 
@@ -5960,15 +6950,15 @@ LTransform:transformPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Input x coordinate. |
-| `y` | `number` | Input y coordinate. |
+| `x` | number | Input x coordinate. |
+| `y` | number | Input y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Transformed x coordinate. |
-| `number` | b Transformed y coordinate. |
+| number | Transformed x coordinate. |
+| number | Transformed y coordinate. |
 
 **Example**
 
@@ -5984,12 +6974,11 @@ end
 
 ---
 
-### `LTransform:translate`
+#### `LTransform:translate`
 
 Applies a translation to this transform.
 
 ```lua
--- signature
 LTransform:translate(dx, dy)
 ```
 
@@ -5997,8 +6986,8 @@ LTransform:translate(dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dx` | `number` | X translation. |
-| `dy` | `number` | Y translation. |
+| `dx` | number | X translation. |
+| `dy` | number | Y translation. |
 
 **Example**
 
@@ -6013,12 +7002,11 @@ end
 
 ---
 
-### `LTransform:type`
+#### `LTransform:type`
 
 Returns the Lua-visible type name for this transform handle.
 
 ```lua
--- signature
 LTransform:type()
 ```
 
@@ -6026,7 +7014,7 @@ LTransform:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LTransform`. |
+| string | The string `[LTransform](#ltransform-handle)`. |
 
 **Example**
 
@@ -6039,12 +7027,11 @@ end
 
 ---
 
-### `LTransform:typeOf`
+#### `LTransform:typeOf`
 
 Returns whether this transform handle matches a supported type name.
 
 ```lua
--- signature
 LTransform:typeOf(name)
 ```
 
@@ -6052,13 +7039,13 @@ LTransform:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LTransform` and `Object`. |
+| `name` | string | Type name to compare against `[LTransform](#ltransform-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -6071,14 +7058,19 @@ end
 
 ---
 
-## LTween
+## LTween Handle
 
-### `LTween:addValue`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTween:addValue`
 
 Adds a value track to this tween. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:addValue(start, target)
 ```
 
@@ -6086,14 +7078,14 @@ LTween:addValue(start, target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | Start value. |
-| `target` | `number` | Target value. |
+| `start` | number | Start value. |
+| `target` | number | Target value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based index of the new value track. |
+| number | One-based index of the new value track. |
 
 **Example**
 
@@ -6108,34 +7100,31 @@ end
 
 ---
 
-### `LTween:await`
+#### `LTween:await`
 
 Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
 
 ```lua
--- signature
 LTween:await()
 ```
 
 ---
 
-### `LTween:cancel`
+#### `LTween:cancel`
 
 Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
 
 ```lua
--- signature
 LTween:cancel()
 ```
 
 ---
 
-### `LTween:getAllValues`
+#### `LTween:getAllValues`
 
 Returns all current tween values. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getAllValues()
 ```
 
@@ -6143,7 +7132,7 @@ LTween:getAllValues()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Numeric tween values. |
+| number[] | Numeric tween values. |
 
 **Example**
 
@@ -6161,12 +7150,11 @@ end
 
 ---
 
-### `LTween:getClock`
+#### `LTween:getClock`
 
 Returns this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getClock()
 ```
 
@@ -6174,7 +7162,7 @@ LTween:getClock()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current time in seconds. |
+| number | Current time in seconds. |
 
 **Example**
 
@@ -6189,12 +7177,11 @@ end
 
 ---
 
-### `LTween:getDuration`
+#### `LTween:getDuration`
 
 Returns this tween duration. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getDuration()
 ```
 
@@ -6202,16 +7189,15 @@ LTween:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 ---
 
-### `LTween:getEasingName`
+#### `LTween:getEasingName`
 
 Returns this tween easing function name.
 
 ```lua
--- signature
 LTween:getEasingName()
 ```
 
@@ -6219,16 +7205,15 @@ LTween:getEasingName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Easing function name. |
+| string | Easing function name. |
 
 ---
 
-### `LTween:getElapsed`
+#### `LTween:getElapsed`
 
 Returns the number of seconds that have elapsed since the tween started.
 
 ```lua
--- signature
 LTween:getElapsed()
 ```
 
@@ -6236,16 +7221,15 @@ LTween:getElapsed()
 
 | Type | Description |
 |------|-------------|
-| `number` | Elapsed time in seconds. |
+| number | Elapsed time in seconds. |
 
 ---
 
-### `LTween:getFields`
+#### `LTween:getFields`
 
 Returns an array of field names being tweened on the target table.
 
 ```lua
--- signature
 LTween:getFields()
 ```
 
@@ -6253,16 +7237,15 @@ LTween:getFields()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Field name strings. |
+| string[] | Field name strings. |
 
 ---
 
-### `LTween:getProgress`
+#### `LTween:getProgress`
 
 Returns the eased progress of this tween as a value from 0.0 to 1.0.
 
 ```lua
--- signature
 LTween:getProgress()
 ```
 
@@ -6270,16 +7253,15 @@ LTween:getProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased progress ratio. |
+| number | Eased progress ratio. |
 
 ---
 
-### `LTween:getRemaining`
+#### `LTween:getRemaining`
 
 Returns the number of seconds remaining until this tween completes.
 
 ```lua
--- signature
 LTween:getRemaining()
 ```
 
@@ -6287,16 +7269,15 @@ LTween:getRemaining()
 
 | Type | Description |
 |------|-------------|
-| `number` | Remaining time in seconds. |
+| number | Remaining time in seconds. |
 
 ---
 
-### `LTween:getTime`
+#### `LTween:getTime`
 
 Returns this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getTime()
 ```
 
@@ -6304,7 +7285,7 @@ LTween:getTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current time in seconds. |
+| number | Current time in seconds. |
 
 **Example**
 
@@ -6319,12 +7300,11 @@ end
 
 ---
 
-### `LTween:getValue`
+#### `LTween:getValue`
 
 Returns one tween value by one-based index or all values when no index is provided.
 
 ```lua
--- signature
 LTween:getValue(index)
 ```
 
@@ -6332,13 +7312,13 @@ LTween:getValue(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index?` | `number` | One-based value index; omit to return all values as a table. |
+| `index?` | number | One-based value index; omit to return all values as a table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tween value at the given index, or a table of all values when index is omitted. |
+| number | Tween value at the given index, or a table of all values when index is omitted. |
 
 **Example**
 
@@ -6353,12 +7333,11 @@ end
 
 ---
 
-### `LTween:getValueCount`
+#### `LTween:getValueCount`
 
 Returns the number of values animated by this tween.
 
 ```lua
--- signature
 LTween:getValueCount()
 ```
 
@@ -6366,7 +7345,7 @@ LTween:getValueCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tween value count. |
+| number | Tween value count. |
 
 **Example**
 
@@ -6381,12 +7360,11 @@ end
 
 ---
 
-### `LTween:isActive`
+#### `LTween:isActive`
 
 Returns whether this tween is still running (not cancelled or completed).
 
 ```lua
--- signature
 LTween:isActive()
 ```
 
@@ -6394,16 +7372,15 @@ LTween:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the tween is active. |
+| boolean | `true` if the tween is active. |
 
 ---
 
-### `LTween:isComplete`
+#### `LTween:isComplete`
 
 Returns whether this tween is complete.
 
 ```lua
--- signature
 LTween:isComplete()
 ```
 
@@ -6411,7 +7388,7 @@ LTween:isComplete()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when complete. |
+| boolean | True when complete. |
 
 **Example**
 
@@ -6426,12 +7403,11 @@ end
 
 ---
 
-### `LTween:onCancel`
+#### `LTween:onCancel`
 
 Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
 
 ```lua
--- signature
 LTween:onCancel(f)
 ```
 
@@ -6439,22 +7415,21 @@ LTween:onCancel(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback fired when the tween is cancelled. |
+| `f` | function | Callback fired when the tween is cancelled. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 ---
 
-### `LTween:onComplete`
+#### `LTween:onComplete`
 
 Sets a callback to fire when the tween completes. Returns the tween for chaining.
 
 ```lua
--- signature
 LTween:onComplete(f)
 ```
 
@@ -6462,22 +7437,21 @@ LTween:onComplete(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback fired when the tween finishes. |
+| `f` | function | Callback fired when the tween finishes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 ---
 
-### `LTween:onUpdate`
+#### `LTween:onUpdate`
 
 Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
 
 ```lua
--- signature
 LTween:onUpdate(f)
 ```
 
@@ -6485,33 +7459,31 @@ LTween:onUpdate(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback fired each frame with the current progress `t` (0..1). |
+| `f` | function | Callback fired each frame with the current progress `t` (0..1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 ---
 
-### `LTween:pause`
+#### `LTween:pause`
 
 Pauses this tween so it stops advancing until resumed.
 
 ```lua
--- signature
 LTween:pause()
 ```
 
 ---
 
-### `LTween:relative`
+#### `LTween:relative`
 
 Chainable version of `setRelative`. Returns the tween for fluent API usage.
 
 ```lua
--- signature
 LTween:relative(enabled)
 ```
 
@@ -6519,22 +7491,21 @@ LTween:relative(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | `true` for relative mode, `false` for absolute. |
+| `enabled` | boolean | `true` for relative mode, `false` for absolute. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 ---
 
-### `LTween:reset`
+#### `LTween:reset`
 
 Resets the tween clock to the beginning.
 
 ```lua
--- signature
 LTween:reset()
 ```
 
@@ -6552,23 +7523,21 @@ end
 
 ---
 
-### `LTween:resume`
+#### `LTween:resume`
 
 Resumes a paused tween so it continues advancing.
 
 ```lua
--- signature
 LTween:resume()
 ```
 
 ---
 
-### `LTween:set`
+#### `LTween:set`
 
 Sets this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:set(t)
 ```
 
@@ -6576,7 +7545,7 @@ LTween:set(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | New time in seconds. |
+| `t` | number | New time in seconds. |
 
 **Example**
 
@@ -6591,12 +7560,11 @@ end
 
 ---
 
-### `LTween:setRelative`
+#### `LTween:setRelative`
 
 Sets whether the tween end values are relative to the start values instead of absolute.
 
 ```lua
--- signature
 LTween:setRelative(enabled)
 ```
 
@@ -6604,16 +7572,15 @@ LTween:setRelative(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | `true` for relative mode, `false` for absolute. |
+| `enabled` | boolean | `true` for relative mode, `false` for absolute. |
 
 ---
 
-### `LTween:setRepeat`
+#### `LTween:setRepeat`
 
 Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
 
 ```lua
--- signature
 LTween:setRepeat(n)
 ```
 
@@ -6621,16 +7588,15 @@ LTween:setRepeat(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of additional repeats (0 = play once, -1 = infinite). |
+| `n` | number | Number of additional repeats (0 = play once, -1 = infinite). |
 
 ---
 
-### `LTween:setTime`
+#### `LTween:setTime`
 
 Sets this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:setTime(t)
 ```
 
@@ -6638,7 +7604,7 @@ LTween:setTime(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | New time in seconds. |
+| `t` | number | New time in seconds. |
 
 **Example**
 
@@ -6653,12 +7619,11 @@ end
 
 ---
 
-### `LTween:setYoyo`
+#### `LTween:setYoyo`
 
 Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
 
 ```lua
--- signature
 LTween:setYoyo(enabled)
 ```
 
@@ -6666,16 +7631,15 @@ LTween:setYoyo(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | `true` to enable yoyo, `false` to disable. |
+| `enabled` | boolean | `true` to enable yoyo, `false` to disable. |
 
 ---
 
-### `LTween:type`
+#### `LTween:type`
 
 Returns the Lua-visible type name for this tween handle.
 
 ```lua
--- signature
 LTween:type()
 ```
 
@@ -6683,16 +7647,15 @@ LTween:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LTween`. |
+| string | The string `[LTween](#ltween-handle)`. |
 
 ---
 
-### `LTween:typeOf`
+#### `LTween:typeOf`
 
 Returns whether this tween handle matches a supported type name.
 
 ```lua
--- signature
 LTween:typeOf(name)
 ```
 
@@ -6700,22 +7663,21 @@ LTween:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LTween` and `Object`. |
+| `name` | string | Type name to compare against `[LTween](#ltween-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 ---
 
-### `LTween:update`
+#### `LTween:update`
 
 Advances the tween clock and returns whether it is complete.
 
 ```lua
--- signature
 LTween:update(dt)
 ```
 
@@ -6723,13 +7685,13 @@ LTween:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the tween is complete. |
+| boolean | True when the tween is complete. |
 
 **Example**
 
@@ -6745,14 +7707,22 @@ end
 
 ---
 
-## LVec2
+## LVec2 Handle
 
-### `LVec2:angle`
+### Fields
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+
+### Methods
+
+#### `LVec2:angle`
 
 Returns this vector angle. This method is available to Lua scripts.
 
 ```lua
--- signature
 LVec2:angle()
 ```
 
@@ -6760,7 +7730,7 @@ LVec2:angle()
 
 | Type | Description |
 |------|-------------|
-| `number` | Angle in radians. |
+| number | Angle in radians. |
 
 **Example**
 
@@ -6773,12 +7743,11 @@ end
 
 ---
 
-### `LVec2:cross`
+#### `LVec2:cross`
 
 Returns the scalar 2D cross product with another vector.
 
 ```lua
--- signature
 LVec2:cross(other)
 ```
 
@@ -6786,13 +7755,13 @@ LVec2:cross(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec2` | Other vector handle. |
+| `other` | [LVec2](#lvec2-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Cross product. |
+| number | Cross product. |
 
 **Example**
 
@@ -6806,12 +7775,11 @@ end
 
 ---
 
-### `LVec2:distance`
+#### `LVec2:distance`
 
 Returns distance to another vector.
 
 ```lua
--- signature
 LVec2:distance(other)
 ```
 
@@ -6819,13 +7787,13 @@ LVec2:distance(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec2` | Other vector handle. |
+| `other` | [LVec2](#lvec2-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Distance. |
+| number | Distance. |
 
 **Example**
 
@@ -6839,12 +7807,11 @@ end
 
 ---
 
-### `LVec2:dot`
+#### `LVec2:dot`
 
 Returns the dot product with another vector.
 
 ```lua
--- signature
 LVec2:dot(other)
 ```
 
@@ -6852,13 +7819,13 @@ LVec2:dot(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec2` | Other vector handle. |
+| `other` | [LVec2](#lvec2-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Dot product. |
+| number | Dot product. |
 
 **Example**
 
@@ -6872,12 +7839,11 @@ end
 
 ---
 
-### `LVec2:fromAngle`
+#### `LVec2:fromAngle`
 
 Creates a unit vector from an angle.
 
 ```lua
--- signature
 LVec2:fromAngle(radians)
 ```
 
@@ -6885,13 +7851,13 @@ LVec2:fromAngle(radians)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `radians` | `number` | Angle in radians. |
+| `radians` | number | Angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | New vector handle. |
+| [LVec2](#lvec2-handle) | New vector handle. |
 
 **Example**
 
@@ -6905,12 +7871,11 @@ end
 
 ---
 
-### `LVec2:length`
+#### `LVec2:length`
 
 Returns this vector length. This method is available to Lua scripts.
 
 ```lua
--- signature
 LVec2:length()
 ```
 
@@ -6918,7 +7883,7 @@ LVec2:length()
 
 | Type | Description |
 |------|-------------|
-| `number` | Vector length. |
+| number | Vector length. |
 
 **Example**
 
@@ -6931,12 +7896,11 @@ end
 
 ---
 
-### `LVec2:lengthSquared`
+#### `LVec2:lengthSquared`
 
 Returns this vector squared length.
 
 ```lua
--- signature
 LVec2:lengthSquared()
 ```
 
@@ -6944,7 +7908,7 @@ LVec2:lengthSquared()
 
 | Type | Description |
 |------|-------------|
-| `number` | Squared vector length. |
+| number | Squared vector length. |
 
 **Example**
 
@@ -6957,12 +7921,11 @@ end
 
 ---
 
-### `LVec2:lerp`
+#### `LVec2:lerp`
 
 Returns a vector interpolated toward another vector.
 
 ```lua
--- signature
 LVec2:lerp(other, t)
 ```
 
@@ -6970,14 +7933,14 @@ LVec2:lerp(other, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec2` | Target vector handle. |
-| `t` | `number` | Interpolation factor. |
+| `other` | [LVec2](#lvec2-handle) | Target vector handle. |
+| `t` | number | Interpolation factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | Interpolated vector handle. |
+| [LVec2](#lvec2-handle) | Interpolated vector handle. |
 
 **Example**
 
@@ -6992,12 +7955,11 @@ end
 
 ---
 
-### `LVec2:normalize`
+#### `LVec2:normalize`
 
 Returns a normalized copy of this vector.
 
 ```lua
--- signature
 LVec2:normalize()
 ```
 
@@ -7005,7 +7967,7 @@ LVec2:normalize()
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | Normalized vector handle. |
+| [LVec2](#lvec2-handle) | Normalized vector handle. |
 
 **Example**
 
@@ -7019,12 +7981,11 @@ end
 
 ---
 
-### `LVec2:normalized`
+#### `LVec2:normalized`
 
 Returns a normalized copy of this vector.
 
 ```lua
--- signature
 LVec2:normalized()
 ```
 
@@ -7032,7 +7993,7 @@ LVec2:normalized()
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | Normalized vector handle. |
+| [LVec2](#lvec2-handle) | Normalized vector handle. |
 
 **Example**
 
@@ -7046,12 +8007,11 @@ end
 
 ---
 
-### `LVec2:perpendicular`
+#### `LVec2:perpendicular`
 
 Returns a perpendicular vector. This method is available to Lua scripts.
 
 ```lua
--- signature
 LVec2:perpendicular()
 ```
 
@@ -7059,7 +8019,7 @@ LVec2:perpendicular()
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | Perpendicular vector handle. |
+| [LVec2](#lvec2-handle) | Perpendicular vector handle. |
 
 **Example**
 
@@ -7073,12 +8033,11 @@ end
 
 ---
 
-### `LVec2:reflect`
+#### `LVec2:reflect`
 
 Returns this vector reflected around a normal vector.
 
 ```lua
--- signature
 LVec2:reflect(normal)
 ```
 
@@ -7086,13 +8045,13 @@ LVec2:reflect(normal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `normal` | `LVec2` | Normal vector handle. |
+| `normal` | [LVec2](#lvec2-handle) | Normal vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | Reflected vector handle. |
+| [LVec2](#lvec2-handle) | Reflected vector handle. |
 
 **Example**
 
@@ -7107,12 +8066,11 @@ end
 
 ---
 
-### `LVec2:rotate`
+#### `LVec2:rotate`
 
 Returns this vector rotated by an angle.
 
 ```lua
--- signature
 LVec2:rotate(angle)
 ```
 
@@ -7120,13 +8078,13 @@ LVec2:rotate(angle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle` | `number` | Rotation angle in radians. |
+| `angle` | number | Rotation angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec2` | Rotated vector handle. |
+| [LVec2](#lvec2-handle) | Rotated vector handle. |
 
 **Example**
 
@@ -7140,12 +8098,11 @@ end
 
 ---
 
-### `LVec2:type`
+#### `LVec2:type`
 
 Returns the Lua-visible type name for this vector handle.
 
 ```lua
--- signature
 LVec2:type()
 ```
 
@@ -7153,7 +8110,7 @@ LVec2:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LVec2`. |
+| string | The string `[LVec2](#lvec2-handle)`. |
 
 **Example**
 
@@ -7166,12 +8123,11 @@ end
 
 ---
 
-### `LVec2:typeOf`
+#### `LVec2:typeOf`
 
 Returns whether this vector handle matches a supported type name.
 
 ```lua
--- signature
 LVec2:typeOf(name)
 ```
 
@@ -7179,13 +8135,13 @@ LVec2:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LVec2` and `Object`. |
+| `name` | string | Type name to compare against `[LVec2](#lvec2-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -7198,12 +8154,11 @@ end
 
 ---
 
-### `LVec2:x`
+#### `LVec2:x`
 
 Returns this vector x component. This method is available to Lua scripts.
 
 ```lua
--- signature
 LVec2:x()
 ```
 
@@ -7211,7 +8166,7 @@ LVec2:x()
 
 | Type | Description |
 |------|-------------|
-| `number` | X component. |
+| number | X component. |
 
 **Example**
 
@@ -7224,12 +8179,11 @@ end
 
 ---
 
-### `LVec2:y`
+#### `LVec2:y`
 
 Returns this vector y component. This method is available to Lua scripts.
 
 ```lua
--- signature
 LVec2:y()
 ```
 
@@ -7237,7 +8191,7 @@ LVec2:y()
 
 | Type | Description |
 |------|-------------|
-| `number` | Y component. |
+| number | Y component. |
 
 **Example**
 
@@ -7250,14 +8204,23 @@ end
 
 ---
 
-## LVec3
+## LVec3 Handle
 
-### `LVec3:add`
+### Fields
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z` | any |  |
+
+### Methods
+
+#### `LVec3:add`
 
 Returns the sum with another vector.
 
 ```lua
--- signature
 LVec3:add(other)
 ```
 
@@ -7265,13 +8228,13 @@ LVec3:add(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec3` | Other vector handle. |
+| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | Sum vector handle. |
+| [LVec3](#lvec3-handle) | Sum vector handle. |
 
 **Example**
 
@@ -7286,12 +8249,11 @@ end
 
 ---
 
-### `LVec3:cross`
+#### `LVec3:cross`
 
 Returns the 3D cross product with another vector.
 
 ```lua
--- signature
 LVec3:cross(other)
 ```
 
@@ -7299,13 +8261,13 @@ LVec3:cross(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec3` | Other vector handle. |
+| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | Cross product vector handle. |
+| [LVec3](#lvec3-handle) | Cross product vector handle. |
 
 **Example**
 
@@ -7320,12 +8282,11 @@ end
 
 ---
 
-### `LVec3:distance`
+#### `LVec3:distance`
 
 Returns distance to another vector.
 
 ```lua
--- signature
 LVec3:distance(other)
 ```
 
@@ -7333,13 +8294,13 @@ LVec3:distance(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec3` | Other vector handle. |
+| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Distance. |
+| number | Distance. |
 
 **Example**
 
@@ -7353,12 +8314,11 @@ end
 
 ---
 
-### `LVec3:dot`
+#### `LVec3:dot`
 
 Returns the dot product with another vector.
 
 ```lua
--- signature
 LVec3:dot(other)
 ```
 
@@ -7366,13 +8326,13 @@ LVec3:dot(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec3` | Other vector handle. |
+| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Dot product. |
+| number | Dot product. |
 
 **Example**
 
@@ -7386,12 +8346,11 @@ end
 
 ---
 
-### `LVec3:length`
+#### `LVec3:length`
 
 Returns this vector length. This method is available to Lua scripts.
 
 ```lua
--- signature
 LVec3:length()
 ```
 
@@ -7399,7 +8358,7 @@ LVec3:length()
 
 | Type | Description |
 |------|-------------|
-| `number` | Vector length. |
+| number | Vector length. |
 
 **Example**
 
@@ -7412,12 +8371,11 @@ end
 
 ---
 
-### `LVec3:lengthSquared`
+#### `LVec3:lengthSquared`
 
 Returns this vector squared length.
 
 ```lua
--- signature
 LVec3:lengthSquared()
 ```
 
@@ -7425,7 +8383,7 @@ LVec3:lengthSquared()
 
 | Type | Description |
 |------|-------------|
-| `number` | Squared vector length. |
+| number | Squared vector length. |
 
 **Example**
 
@@ -7438,12 +8396,11 @@ end
 
 ---
 
-### `LVec3:lerp`
+#### `LVec3:lerp`
 
 Returns a vector interpolated toward another vector.
 
 ```lua
--- signature
 LVec3:lerp(other, t)
 ```
 
@@ -7451,14 +8408,14 @@ LVec3:lerp(other, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec3` | Target vector handle. |
-| `t` | `number` | Interpolation factor. |
+| `other` | [LVec3](#lvec3-handle) | Target vector handle. |
+| `t` | number | Interpolation factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | Interpolated vector handle. |
+| [LVec3](#lvec3-handle) | Interpolated vector handle. |
 
 **Example**
 
@@ -7473,12 +8430,11 @@ end
 
 ---
 
-### `LVec3:normalize`
+#### `LVec3:normalize`
 
 Returns a normalized copy of this vector.
 
 ```lua
--- signature
 LVec3:normalize()
 ```
 
@@ -7486,7 +8442,7 @@ LVec3:normalize()
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | Normalized vector handle. |
+| [LVec3](#lvec3-handle) | Normalized vector handle. |
 
 **Example**
 
@@ -7500,12 +8456,11 @@ end
 
 ---
 
-### `LVec3:scale`
+#### `LVec3:scale`
 
 Returns this vector multiplied by a scalar.
 
 ```lua
--- signature
 LVec3:scale(s)
 ```
 
@@ -7513,13 +8468,13 @@ LVec3:scale(s)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `s` | `number` | Scale factor. |
+| `s` | number | Scale factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | Scaled vector handle. |
+| [LVec3](#lvec3-handle) | Scaled vector handle. |
 
 **Example**
 
@@ -7533,12 +8488,11 @@ end
 
 ---
 
-### `LVec3:splat`
+#### `LVec3:splat`
 
 Creates a vector with all components set to one value.
 
 ```lua
--- signature
 LVec3:splat(v)
 ```
 
@@ -7546,13 +8500,13 @@ LVec3:splat(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Component value. |
+| `v` | number | Component value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | New vector handle. |
+| [LVec3](#lvec3-handle) | New vector handle. |
 
 **Example**
 
@@ -7566,12 +8520,11 @@ end
 
 ---
 
-### `LVec3:sub`
+#### `LVec3:sub`
 
 Returns the difference from another vector.
 
 ```lua
--- signature
 LVec3:sub(other)
 ```
 
@@ -7579,13 +8532,13 @@ LVec3:sub(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LVec3` | Other vector handle. |
+| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LVec3` | Difference vector handle. |
+| [LVec3](#lvec3-handle) | Difference vector handle. |
 
 **Example**
 
@@ -7600,12 +8553,11 @@ end
 
 ---
 
-### `LVec3:type`
+#### `LVec3:type`
 
 Returns the Lua-visible type name for this vector handle.
 
 ```lua
--- signature
 LVec3:type()
 ```
 
@@ -7613,7 +8565,7 @@ LVec3:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LVec3`. |
+| string | The string `[LVec3](#lvec3-handle)`. |
 
 **Example**
 
@@ -7626,12 +8578,11 @@ end
 
 ---
 
-### `LVec3:typeOf`
+#### `LVec3:typeOf`
 
 Returns whether this vector handle matches a supported type name.
 
 ```lua
--- signature
 LVec3:typeOf(name)
 ```
 
@@ -7639,13 +8590,13 @@ LVec3:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LVec3` and `Object`. |
+| `name` | string | Type name to compare against `[LVec3](#lvec3-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

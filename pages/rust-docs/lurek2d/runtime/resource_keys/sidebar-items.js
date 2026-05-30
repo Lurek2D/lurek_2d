@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["BusKey","CanvasKey","FontKey","LightKey","MeshKey","MidiPlayerKey","OccluderKey","ParticleKey","QueueableKey","ShaderKey","ShapeKey","SoundKey","SpriteBatchKey","TextureKey"]};

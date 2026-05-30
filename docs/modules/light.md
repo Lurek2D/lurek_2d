@@ -1,12 +1,93 @@
 # Light
 
-- The `light` module is a comprehensive Platform Services tier component that provides a robust 2D lighting data model for Lurek2D.
+## Summary
 
 It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
 
 The central orchestration of these lighting primitives is handled by the `LightWorld`. This scene-level container holds pools of active lights and `Occluder` shapes (convex polygons that block light propagation to generate shadows). It provides an efficient slotmap-backed architecture for adding, removing, and querying these entities, as well as applying batch operations like intensity or color changes across named light groups. The lighting model supports sophisticated attenuation, allowing for quadratic, linear, and inverse-square falloff models, alongside custom coefficient tuples to precisely control how light decays over distance. Blend modes (additive, subtractive, alpha-mix) dictate how each light composited into the final accumulation buffer.
 
 Beyond static illumination, the module excels in dynamic effects. It features a robust `FlickerConfig` system that drives procedural, noise-based intensity variation over time—ideal for simulating torches, candles, or unstable neon signs. To ensure optimal performance, the flicker system utilizes a lazy-indexed advance loop that only evaluates lights with active flicker states. The module also supports time-based linear transitions for smoothly animating light color, intensity, and radius. Additionally, it offers advanced shadow filtering presets (from hard shadows to various PCF soft-shadow kernels) and normal-map integration for surface shading. The entire feature set is extensively exposed to the scripting environment via the `lurek.light.*` API.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### attenuation.rs
+
+- Defines quadratic attenuation math controlling how light intensity decays with distance.
+- Encapsulates constant, linear, and quadratic coefficients in a compact reusable configuration.
+- Computes attenuation factors used by runtime light contribution evaluation.
+- Includes simple visualization support for tuning falloff curve behavior.
+
+### blend_mode.rs
+
+- Defines compositing modes that control how each light contribution merges into accumulated lighting.
+- Encodes additive, subtractive, and mixed behaviors for different artistic lighting goals.
+- Provides compact blend-mode discriminants shared across lighting evaluation and rendering paths.
+
+### falloff.rs
+
+- Defines radial falloff profiles that shape brightness between light center and radius boundary.
+- Provides linear, smooth, and constant decay modes for distinct lighting aesthetics.
+- Supplies simple mode flags combined with distance attenuation during light evaluation.
+
+### flicker.rs
+
+- Defines sine-based flicker state that modulates light intensity across time.
+- Tracks oscillation phase, speed, and strength for controllable temporal variation.
+- Supports deterministic per-frame advancement with wrapped phase continuity.
+- Enables torch, candle, and neon style animation without custom update code.
+
+### light2d.rs
+
+- Defines the full per-light data model covering transform, color, energy, and shading behavior.
+- Encapsulates light geometry, blend mode, falloff, attenuation, and layer-mask participation.
+- Stores spot-cone, shadow, normal-map, and volumetric options in one configurable runtime object.
+- Provides constructor defaults tuned for immediate point-light usage without extra setup.
+- Exposes field access patterns used by world management and Lua-facing controls.
+- Supports optional flicker and grouping metadata for batched animation and edits.
+- Includes debug-oriented helpers that visualize key lighting parameter effects.
+
+### light_type.rs
+
+- Defines geometric light models used by the 2D lighting pipeline.
+- Distinguishes point, directional, and spot semantics for illumination behavior.
+- Supplies compact type discriminants used during shading and shadow evaluation.
+
+### light_world.rs
+
+- Implements scene-level light management for `Light2D` and occluder collections keyed by stable handles.
+- Supports creation, removal, lookup, and bulk mutation of lighting entities across runtime updates.
+- Applies group-based operations for coordinated enable, color, and intensity adjustments.
+- Advances active flicker states efficiently to animate selected lights over time.
+- Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates.
+- Provides debug preview rasterization to inspect approximate light-map outcomes.
+
+### mod.rs
+
+- High-level lighting module that groups light types, occluders, world state, and transition utilities.
+- Re-exports core enums and structs used to configure 2D illumination behavior across the engine.
+- Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration.
+
+### occluder.rs
+
+- Defines convex polygon occluders that block light and contribute to shadow casting.
+- Stores local vertices with world offset and opacity controls for flexible scene placement.
+- Supports runtime vertex replacement from typed points or flat coordinate inputs.
+- Applies layer-mask and enable flags to scope occluder influence across light groups.
+
+### shadow.rs
+
+- Defines shadow filtering quality presets used by soft-shadow evaluation paths.
+- Encodes hard-shadow and PCF-based options with different sampling costs.
+- Provides a compact quality enum consumed by light shadow configuration.
+
+### transition.rs
+
+- Implements time-based linear transitions for light color, intensity, and radius values.
+- Tracks elapsed progress against duration to produce deterministic interpolated states.
+- Clamps timing parameters to safe bounds for stable update behavior.
+- Supports per-frame stepping until transitions reach their configured targets.
 
 ## Functions
 
@@ -15,7 +96,6 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 Advances flicker animation for all indexed flickering lights.
 
 ```lua
--- signature
 lurek.light.advanceFlickers(dt)
 ```
 
@@ -23,7 +103,7 @@ lurek.light.advanceFlickers(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -44,7 +124,6 @@ end
 Removes all lights and occluders from the light world.
 
 ```lua
--- signature
 lurek.light.clear()
 ```
 
@@ -65,7 +144,6 @@ end
 Renders an approximate light-map preview of this world into an ImageData.
 
 ```lua
--- signature
 lurek.light.drawToImage(width, height)
 ```
 
@@ -73,14 +151,14 @@ lurek.light.drawToImage(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Image width. |
-| `height` | `number` | Image height. |
+| `width` | number | Image width. |
+| `height` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Rendered light map. |
+| [LImageData](#limagedata-handle) | Rendered light map. |
 
 **Example**
 
@@ -102,7 +180,6 @@ end
 Returns global ambient light color.
 
 ```lua
--- signature
 lurek.light.getAmbient()
 ```
 
@@ -110,10 +187,10 @@ lurek.light.getAmbient()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -131,7 +208,6 @@ end
 Returns directional light hints for god-ray style effects.
 
 ```lua
--- signature
 lurek.light.getGodRayHints()
 ```
 
@@ -139,7 +215,7 @@ lurek.light.getGodRayHints()
 
 | Type | Description |
 |------|-------------|
-| `LightGetGodRayHintsResult` | Array table of hint records with `x`, `y`, and `angle` fields. |
+| LLightGetGodRayHintsResult | Array table of hint records with `x`, `y`, and `angle` fields. |
 
 **Example**
 
@@ -162,7 +238,6 @@ end
 Returns the number of lights in a group.
 
 ```lua
--- signature
 lurek.light.getGroupCount(group_id)
 ```
 
@@ -170,13 +245,13 @@ lurek.light.getGroupCount(group_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group_id` | `number` | Light group id. |
+| `group_id` | number | Light group id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of lights in the group. |
+| number | Number of lights in the group. |
 
 **Example**
 
@@ -197,7 +272,6 @@ end
 Returns the number of live lights. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.light.getLightCount()
 ```
 
@@ -205,7 +279,7 @@ lurek.light.getLightCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Light count. |
+| number | Light count. |
 
 **Example**
 
@@ -225,7 +299,6 @@ end
 Returns the maximum configured light count.
 
 ```lua
--- signature
 lurek.light.getMaxLights()
 ```
 
@@ -233,7 +306,7 @@ lurek.light.getMaxLights()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum light count. |
+| number | Maximum light count. |
 
 **Example**
 
@@ -251,7 +324,6 @@ end
 Returns light hints that reference normal maps.
 
 ```lua
--- signature
 lurek.light.getNormalMapHints()
 ```
 
@@ -259,7 +331,7 @@ lurek.light.getNormalMapHints()
 
 | Type | Description |
 |------|-------------|
-| `LightGetNormalMapHintsResult` | Array table of normal-map light hint records. |
+| LLightGetNormalMapHintsResult | Array table of normal-map light hint records. |
 
 **Example**
 
@@ -282,7 +354,6 @@ end
 Returns the number of live occluders.
 
 ```lua
--- signature
 lurek.light.getOccluderCount()
 ```
 
@@ -290,7 +361,7 @@ lurek.light.getOccluderCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Occluder count. |
+| number | Occluder count. |
 
 **Example**
 
@@ -310,7 +381,6 @@ end
 Returns whether the shared light world is enabled.
 
 ```lua
--- signature
 lurek.light.isEnabled()
 ```
 
@@ -318,7 +388,7 @@ lurek.light.isEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when lighting is enabled. |
+| boolean | True when lighting is enabled. |
 
 **Example**
 
@@ -336,7 +406,6 @@ end
 Creates a light and applies optional light settings.
 
 ```lua
--- signature
 lurek.light.newLight(x, y, radius, opts)
 ```
 
@@ -344,16 +413,16 @@ lurek.light.newLight(x, y, radius, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Light x coordinate. |
-| `y` | `number` | Light y coordinate. |
-| `radius` | `number` | Light radius. |
-| `opts?` | `table` | Table of light settings. |
+| `x` | number | Light x coordinate. |
+| `y` | number | Light y coordinate. |
+| `radius` | number | Light radius. |
+| `opts?` | table | Table of light settings. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLight` | New light handle. |
+| [LLight](#llight-handle) | New light handle. |
 
 **Example**
 
@@ -371,7 +440,6 @@ end
 Creates an occluder from a flat vertex coordinate table and optional settings.
 
 ```lua
--- signature
 lurek.light.newOccluder(vtbl, opts)
 ```
 
@@ -379,14 +447,14 @@ lurek.light.newOccluder(vtbl, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vtbl` | `table` | Flat numeric array `[x1, y1, x2, y2, ...]`. |
-| `opts?` | `table` | Table of occluder settings. |
+| `vtbl` | table | Flat numeric array `[x1, y1, x2, y2, ...]`. |
+| `opts?` | table | Table of occluder settings. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LOccluder` | New occluder handle. |
+| [LOccluder](#loccluder-handle) | New occluder handle. |
 
 **Example**
 
@@ -405,7 +473,6 @@ end
 Sets global ambient light color. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.light.setAmbient(r, g, b, a)
 ```
 
@@ -413,10 +480,10 @@ lurek.light.setAmbient(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -435,7 +502,6 @@ end
 Enables or disables the shared light world.
 
 ```lua
--- signature
 lurek.light.setEnabled(enabled)
 ```
 
@@ -443,7 +509,7 @@ lurek.light.setEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | New enabled flag. |
+| `enabled` | boolean | New enabled flag. |
 
 **Example**
 
@@ -461,7 +527,6 @@ end
 Sets color for all lights in a group.
 
 ```lua
--- signature
 lurek.light.setGroupColor(group_id, r, g, b, a)
 ```
 
@@ -469,11 +534,11 @@ lurek.light.setGroupColor(group_id, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group_id` | `number` | Light group id. |
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `group_id` | number | Light group id. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -498,7 +563,6 @@ end
 Enables or disables all lights in a group.
 
 ```lua
--- signature
 lurek.light.setGroupEnabled(group_id, enabled)
 ```
 
@@ -506,8 +570,8 @@ lurek.light.setGroupEnabled(group_id, enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group_id` | `number` | Light group id. |
-| `enabled` | `boolean` | New enabled flag for the group. |
+| `group_id` | number | Light group id. |
+| `enabled` | boolean | New enabled flag for the group. |
 
 **Example**
 
@@ -531,7 +595,6 @@ end
 Sets intensity for all lights in a group.
 
 ```lua
--- signature
 lurek.light.setGroupIntensity(group_id, intensity)
 ```
 
@@ -539,8 +602,8 @@ lurek.light.setGroupIntensity(group_id, intensity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group_id` | `number` | Light group id. |
-| `intensity` | `number` | New intensity value. |
+| `group_id` | number | Light group id. |
+| `intensity` | number | New intensity value. |
 
 **Example**
 
@@ -564,7 +627,6 @@ end
 Sets the maximum configured light count, clamped to 1 through 256.
 
 ```lua
--- signature
 lurek.light.setMaxLights(n)
 ```
 
@@ -572,7 +634,7 @@ lurek.light.setMaxLights(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Requested maximum light count. |
+| `n` | number | Requested maximum light count. |
 
 **Example**
 
@@ -590,7 +652,6 @@ end
 Returns the light world's ambient color hint.
 
 ```lua
--- signature
 lurek.light.syncAmbient()
 ```
 
@@ -598,10 +659,10 @@ lurek.light.syncAmbient()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -615,14 +676,841 @@ end
 
 ---
 
-## LLight
+## Module Fields
 
-### `LLight:addFlicker`
+*No module-level fields documented.*
+
+## Types
+
+- [LImageData Handle](#limagedata-handle)
+- [LLight Handle](#llight-handle)
+- [LOccluder Handle](#loccluder-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LImageData Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageData:alphaMask`
+
+Multiplies this image alpha channel by a factor in place.
+
+```lua
+LImageData:alphaMask(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Alpha multiplier. |
+
+---
+
+#### `LImageData:applyPaletteLut`
+
+Applies a palette lookup table to this image in place.
+
+```lua
+LImageData:applyPaletteLut(lut_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+
+---
+
+#### `LImageData:blit`
+
+Copies a source image into this image at a destination coordinate.
+
+```lua
+LImageData:blit(src_ud, dst_x, dst_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:blur`
+
+Returns a blurred copy of this image.
+
+```lua
+LImageData:blur(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Blur radius. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Blurred image data handle. |
+
+---
+
+#### `LImageData:brightness`
+
+Applies a brightness factor to this image in place.
+
+```lua
+LImageData:brightness(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Brightness multiplier or adjustment factor. |
+
+---
+
+#### `LImageData:contrast`
+
+Applies a contrast factor to this image in place.
+
+```lua
+LImageData:contrast(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Contrast factor. |
+
+---
+
+#### `LImageData:convolve`
+
+Applies a convolution kernel and returns the filtered image.
+
+```lua
+LImageData:convolve(kernel_t, ksize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Convolved image data handle. |
+
+---
+
+#### `LImageData:crop`
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+```lua
+LImageData:crop(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Cropped image data handle. |
+
+---
+
+#### `LImageData:diff`
+
+Computes a difference metric against another image.
+
+```lua
+LImageData:diff(other_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Difference score. |
+
+---
+
+#### `LImageData:drawCircle`
+
+Draws a filled circle into this image.
+
+```lua
+LImageData:drawCircle(cx, cy, radius, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawLine`
+
+Draws a line into this image. This method is available to Lua scripts.
+
+```lua
+LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawNineSlice`
+
+Draws a nine-slice region from a source image into this image.
+
+```lua
+LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_x` | number | Source region x coordinate. |
+| `src_y` | number | Source region y coordinate. |
+| `src_w` | number | Source region width. |
+| `src_h` | number | Source region height. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+| `dst_w` | number | Destination width. |
+| `dst_h` | number | Destination height. |
+| `inset_left` | number | Left inset width. |
+| `inset_right` | number | Right inset width. |
+| `inset_top` | number | Top inset height. |
+| `inset_bottom` | number | Bottom inset height. |
+
+---
+
+#### `LImageData:drawRect`
+
+Draws a filled rectangle into this image.
+
+```lua
+LImageData:drawRect(x, y, w, h, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:encode`
+
+Encodes image data in a supported format.
+
+```lua
+LImageData:encode(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Format name; currently `png`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded image bytes. |
+
+---
+
+#### `LImageData:fill`
+
+Fills the whole image with one RGBA color.
+
+```lua
+LImageData:fill(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:flipHorizontal`
+
+Flips this image horizontally in place.
+
+```lua
+LImageData:flipHorizontal()
+```
+
+---
+
+#### `LImageData:flipVertical`
+
+Flips this image vertically in place.
+
+```lua
+LImageData:flipVertical()
+```
+
+---
+
+#### `LImageData:gamma`
+
+Applies gamma correction to this image in place.
+
+```lua
+LImageData:gamma(gamma)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gamma` | number | Gamma value. |
+
+---
+
+#### `LImageData:getDimensions`
+
+Returns image dimensions. This method is available to Lua scripts.
+
+```lua
+LImageData:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getHeight`
+
+Returns image height. This method is available to Lua scripts.
+
+```lua
+LImageData:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getPixel`
+
+Returns RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:getPixel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LImageData:getRawBytes`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getRawBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getRegion`
+
+Returns an image region when the requested rectangle is inside bounds.
+
+```lua
+LImageData:getRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+
+---
+
+#### `LImageData:getString`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getString()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getWidth`
+
+Returns image width. This method is available to Lua scripts.
+
+```lua
+LImageData:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LImageData:grayscale`
+
+Converts this image to grayscale in place.
+
+```lua
+LImageData:grayscale()
+```
+
+---
+
+#### `LImageData:invert`
+
+Inverts image color channels in place.
+
+```lua
+LImageData:invert()
+```
+
+---
+
+#### `LImageData:mapPixel`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixel(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:mapPixels`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixels(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:noise`
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+```lua
+LImageData:noise(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Noise amount. |
+
+---
+
+#### `LImageData:paste`
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+```lua
+LImageData:paste(src_ud, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:posterize`
+
+Reduces image colors to a fixed number of levels in place.
+
+```lua
+LImageData:posterize(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels` | number | Number of posterization levels. |
+
+---
+
+#### `LImageData:resize`
+
+Returns a resized image using an optional named filter.
+
+```lua
+LImageData:resize(width, height, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+
+---
+
+#### `LImageData:resizeNearest`
+
+Returns a resized image using nearest-neighbor sampling.
+
+```lua
+LImageData:resizeNearest(new_w, new_h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Resized image data handle. |
+
+---
+
+#### `LImageData:rotate90cw`
+
+Returns a new image rotated ninety degrees clockwise.
+
+```lua
+LImageData:rotate90cw()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Rotated image data handle. |
+
+---
+
+#### `LImageData:saturation`
+
+Applies a saturation factor to this image in place.
+
+```lua
+LImageData:saturation(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Saturation factor. |
+
+---
+
+#### `LImageData:sepia`
+
+Applies a sepia filter to this image in place.
+
+```lua
+LImageData:sepia()
+```
+
+---
+
+#### `LImageData:setPixel`
+
+Sets RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:setPixel(x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:setRawData`
+
+Replaces the image byte buffer with raw bytes.
+
+```lua
+LImageData:setRawData(bytes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bytes` | string | Raw byte string matching the image storage size. |
+
+---
+
+#### `LImageData:sharpen`
+
+Returns a sharpened copy of this image.
+
+```lua
+LImageData:sharpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+
+---
+
+#### `LImageData:threshold`
+
+Applies a threshold filter to this image in place.
+
+```lua
+LImageData:threshold(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | number | Threshold channel value. |
+
+---
+
+#### `LImageData:tint`
+
+Blends this image toward a tint color in place.
+
+```lua
+LImageData:tint(tr, tg, tb, factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:type`
+
+Returns the Lua-visible type name for this image data handle.
+
+```lua
+LImageData:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LImageData](#limagedata-handle)`. |
+
+---
+
+#### `LImageData:typeOf`
+
+Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+
+```lua
+LImageData:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+---
+
+## LLight Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLight:addFlicker`
 
 Adds flicker from min/max intensity range and frequency.
 
 ```lua
--- signature
 LLight:addFlicker(min, max, hz)
 ```
 
@@ -630,9 +1518,9 @@ LLight:addFlicker(min, max, hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum flicker range value. |
-| `max` | `number` | Maximum flicker range value. |
-| `hz` | `number` | Flicker frequency in hertz. |
+| `min` | number | Minimum flicker range value. |
+| `max` | number | Maximum flicker range value. |
+| `hz` | number | Flicker frequency in hertz. |
 
 **Example**
 
@@ -648,12 +1536,11 @@ end
 
 ---
 
-### `LLight:clearCookie`
+#### `LLight:clearCookie`
 
 Clears the cookie texture path stored on this Lua light handle.
 
 ```lua
--- signature
 LLight:clearCookie()
 ```
 
@@ -670,12 +1557,11 @@ end
 
 ---
 
-### `LLight:clearNormalMap`
+#### `LLight:clearNormalMap`
 
 Clears the normal map path used by this light.
 
 ```lua
--- signature
 LLight:clearNormalMap()
 ```
 
@@ -692,12 +1578,11 @@ end
 
 ---
 
-### `LLight:getAttenuation`
+#### `LLight:getAttenuation`
 
 Returns this light attenuation coefficients.
 
 ```lua
--- signature
 LLight:getAttenuation()
 ```
 
@@ -705,9 +1590,9 @@ LLight:getAttenuation()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Constant coefficient. |
-| `number` | b Linear coefficient. |
-| `number` | c Quadratic coefficient. |
+| number | Constant coefficient. |
+| number | Linear coefficient. |
+| number | Quadratic coefficient. |
 
 **Example**
 
@@ -722,12 +1607,11 @@ end
 
 ---
 
-### `LLight:getBlendMode`
+#### `LLight:getBlendMode`
 
 Returns this light blend mode string.
 
 ```lua
--- signature
 LLight:getBlendMode()
 ```
 
@@ -735,7 +1619,7 @@ LLight:getBlendMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | Blend mode `add`, `sub`, or `mix`. |
+| string | Blend mode `add`, `sub`, or `mix`. |
 
 **Example**
 
@@ -749,12 +1633,11 @@ end
 
 ---
 
-### `LLight:getColor`
+#### `LLight:getColor`
 
 Returns this light RGBA color. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getColor()
 ```
 
@@ -762,10 +1645,10 @@ LLight:getColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -780,12 +1663,11 @@ end
 
 ---
 
-### `LLight:getCookie`
+#### `LLight:getCookie`
 
 Returns the cookie texture path stored on this Lua light handle.
 
 ```lua
--- signature
 LLight:getCookie()
 ```
 
@@ -793,7 +1675,7 @@ LLight:getCookie()
 
 | Type | Description |
 |------|-------------|
-| `string` | Cookie texture path, or nil when absent. |
+| string | Cookie texture path, or nil when absent. |
 
 **Example**
 
@@ -807,12 +1689,11 @@ end
 
 ---
 
-### `LLight:getDirection`
+#### `LLight:getDirection`
 
 Returns this light direction angle.
 
 ```lua
--- signature
 LLight:getDirection()
 ```
 
@@ -820,7 +1701,7 @@ LLight:getDirection()
 
 | Type | Description |
 |------|-------------|
-| `number` | Direction angle. |
+| number | Direction angle. |
 
 **Example**
 
@@ -835,12 +1716,11 @@ end
 
 ---
 
-### `LLight:getEnergy`
+#### `LLight:getEnergy`
 
 Returns this light energy value. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getEnergy()
 ```
 
@@ -848,7 +1728,7 @@ LLight:getEnergy()
 
 | Type | Description |
 |------|-------------|
-| `number` | Energy value. |
+| number | Energy value. |
 
 **Example**
 
@@ -862,12 +1742,11 @@ end
 
 ---
 
-### `LLight:getFalloff`
+#### `LLight:getFalloff`
 
 Returns this light falloff mode string.
 
 ```lua
--- signature
 LLight:getFalloff()
 ```
 
@@ -875,7 +1754,7 @@ LLight:getFalloff()
 
 | Type | Description |
 |------|-------------|
-| `string` | Falloff mode `linear`, `smooth`, or `constant`. |
+| string | Falloff mode `linear`, `smooth`, or `constant`. |
 
 **Example**
 
@@ -889,12 +1768,11 @@ end
 
 ---
 
-### `LLight:getFlicker`
+#### `LLight:getFlicker`
 
 Returns this light flicker speed and strength.
 
 ```lua
--- signature
 LLight:getFlicker()
 ```
 
@@ -902,8 +1780,8 @@ LLight:getFlicker()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Flicker speed. |
-| `number` | b Flicker strength. |
+| number | Flicker speed. |
+| number | Flicker strength. |
 
 **Example**
 
@@ -918,12 +1796,11 @@ end
 
 ---
 
-### `LLight:getGroupId`
+#### `LLight:getGroupId`
 
 Returns this light group id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getGroupId()
 ```
 
@@ -931,7 +1808,7 @@ LLight:getGroupId()
 
 | Type | Description |
 |------|-------------|
-| `number` | Group id. |
+| number | Group id. |
 
 **Example**
 
@@ -945,12 +1822,11 @@ end
 
 ---
 
-### `LLight:getInnerAngle`
+#### `LLight:getInnerAngle`
 
 Returns this spot light inner cone angle.
 
 ```lua
--- signature
 LLight:getInnerAngle()
 ```
 
@@ -958,7 +1834,7 @@ LLight:getInnerAngle()
 
 | Type | Description |
 |------|-------------|
-| `number` | Inner angle. |
+| number | Inner angle. |
 
 **Example**
 
@@ -974,12 +1850,11 @@ end
 
 ---
 
-### `LLight:getIntensity`
+#### `LLight:getIntensity`
 
 Returns this light intensity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getIntensity()
 ```
 
@@ -987,7 +1862,7 @@ LLight:getIntensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Intensity value. |
+| number | Intensity value. |
 
 **Example**
 
@@ -1001,12 +1876,11 @@ end
 
 ---
 
-### `LLight:getLightMask`
+#### `LLight:getLightMask`
 
 Returns this light's inclusion mask.
 
 ```lua
--- signature
 LLight:getLightMask()
 ```
 
@@ -1014,7 +1888,7 @@ LLight:getLightMask()
 
 | Type | Description |
 |------|-------------|
-| `number` | Light mask bits. |
+| number | Light mask bits. |
 
 **Example**
 
@@ -1028,12 +1902,11 @@ end
 
 ---
 
-### `LLight:getLightType`
+#### `LLight:getLightType`
 
 Returns this light type string. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getLightType()
 ```
 
@@ -1041,7 +1914,7 @@ LLight:getLightType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Light type `point`, `directional`, or `spot`. |
+| string | Light type `point`, `directional`, or `spot`. |
 
 **Example**
 
@@ -1055,12 +1928,11 @@ end
 
 ---
 
-### `LLight:getNormalMap`
+#### `LLight:getNormalMap`
 
 Returns the normal map path used by this light.
 
 ```lua
--- signature
 LLight:getNormalMap()
 ```
 
@@ -1068,7 +1940,7 @@ LLight:getNormalMap()
 
 | Type | Description |
 |------|-------------|
-| `string` | Normal map path, or nil when absent. |
+| string | Normal map path, or nil when absent. |
 
 **Example**
 
@@ -1082,12 +1954,11 @@ end
 
 ---
 
-### `LLight:getNormalStrength`
+#### `LLight:getNormalStrength`
 
 Returns this light's normal map strength.
 
 ```lua
--- signature
 LLight:getNormalStrength()
 ```
 
@@ -1095,7 +1966,7 @@ LLight:getNormalStrength()
 
 | Type | Description |
 |------|-------------|
-| `number` | Normal map strength. |
+| number | Normal map strength. |
 
 **Example**
 
@@ -1109,12 +1980,11 @@ end
 
 ---
 
-### `LLight:getOuterAngle`
+#### `LLight:getOuterAngle`
 
 Returns this spot light outer cone angle.
 
 ```lua
--- signature
 LLight:getOuterAngle()
 ```
 
@@ -1122,7 +1992,7 @@ LLight:getOuterAngle()
 
 | Type | Description |
 |------|-------------|
-| `number` | Outer angle. |
+| number | Outer angle. |
 
 **Example**
 
@@ -1138,12 +2008,11 @@ end
 
 ---
 
-### `LLight:getPosition`
+#### `LLight:getPosition`
 
 Returns this light position. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getPosition()
 ```
 
@@ -1151,8 +2020,8 @@ LLight:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Light x coordinate. |
-| `number` | b Light y coordinate. |
+| number | Light x coordinate. |
+| number | Light y coordinate. |
 
 **Example**
 
@@ -1167,12 +2036,11 @@ end
 
 ---
 
-### `LLight:getRadius`
+#### `LLight:getRadius`
 
 Returns this light radius. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:getRadius()
 ```
 
@@ -1180,7 +2048,7 @@ LLight:getRadius()
 
 | Type | Description |
 |------|-------------|
-| `number` | Radius value. |
+| number | Radius value. |
 
 **Example**
 
@@ -1194,12 +2062,11 @@ end
 
 ---
 
-### `LLight:getShadowColor`
+#### `LLight:getShadowColor`
 
 Returns this light shadow RGBA color.
 
 ```lua
--- signature
 LLight:getShadowColor()
 ```
 
@@ -1207,10 +2074,10 @@ LLight:getShadowColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -1226,12 +2093,11 @@ end
 
 ---
 
-### `LLight:getShadowFilter`
+#### `LLight:getShadowFilter`
 
 Returns this light shadow filter string.
 
 ```lua
--- signature
 LLight:getShadowFilter()
 ```
 
@@ -1239,7 +2105,7 @@ LLight:getShadowFilter()
 
 | Type | Description |
 |------|-------------|
-| `string` | Shadow filter `none`, `pcf5`, or `pcf13`. |
+| string | Shadow filter `none`, `pcf5`, or `pcf13`. |
 
 **Example**
 
@@ -1254,12 +2120,11 @@ end
 
 ---
 
-### `LLight:getShadowMask`
+#### `LLight:getShadowMask`
 
 Returns this light's shadow receiver mask.
 
 ```lua
--- signature
 LLight:getShadowMask()
 ```
 
@@ -1267,7 +2132,7 @@ LLight:getShadowMask()
 
 | Type | Description |
 |------|-------------|
-| `number` | Shadow mask bits. |
+| number | Shadow mask bits. |
 
 **Example**
 
@@ -1281,12 +2146,11 @@ end
 
 ---
 
-### `LLight:getShadowSmooth`
+#### `LLight:getShadowSmooth`
 
 Returns this light shadow smoothing value.
 
 ```lua
--- signature
 LLight:getShadowSmooth()
 ```
 
@@ -1294,7 +2158,7 @@ LLight:getShadowSmooth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Shadow smoothing value. |
+| number | Shadow smoothing value. |
 
 **Example**
 
@@ -1309,12 +2173,11 @@ end
 
 ---
 
-### `LLight:getShadowSoftness`
+#### `LLight:getShadowSoftness`
 
 Returns this light shadow softness value.
 
 ```lua
--- signature
 LLight:getShadowSoftness()
 ```
 
@@ -1322,7 +2185,7 @@ LLight:getShadowSoftness()
 
 | Type | Description |
 |------|-------------|
-| `number` | Shadow softness value. |
+| number | Shadow softness value. |
 
 **Example**
 
@@ -1337,12 +2200,11 @@ end
 
 ---
 
-### `LLight:isEnabled`
+#### `LLight:isEnabled`
 
 Returns whether this light is enabled.
 
 ```lua
--- signature
 LLight:isEnabled()
 ```
 
@@ -1350,7 +2212,7 @@ LLight:isEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the light is enabled. |
+| boolean | True when the light is enabled. |
 
 **Example**
 
@@ -1364,12 +2226,11 @@ end
 
 ---
 
-### `LLight:isFlickerEnabled`
+#### `LLight:isFlickerEnabled`
 
 Returns whether this light flicker is enabled.
 
 ```lua
--- signature
 LLight:isFlickerEnabled()
 ```
 
@@ -1377,7 +2238,7 @@ LLight:isFlickerEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when flicker is enabled. |
+| boolean | True when flicker is enabled. |
 
 **Example**
 
@@ -1392,12 +2253,11 @@ end
 
 ---
 
-### `LLight:isShadowEnabled`
+#### `LLight:isShadowEnabled`
 
 Returns whether this light casts shadows.
 
 ```lua
--- signature
 LLight:isShadowEnabled()
 ```
 
@@ -1405,7 +2265,7 @@ LLight:isShadowEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when shadows are enabled. |
+| boolean | True when shadows are enabled. |
 
 **Example**
 
@@ -1419,12 +2279,11 @@ end
 
 ---
 
-### `LLight:isValid`
+#### `LLight:isValid`
 
 Returns whether this light handle still points to a live light.
 
 ```lua
--- signature
 LLight:isValid()
 ```
 
@@ -1432,7 +2291,7 @@ LLight:isValid()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the light still exists. |
+| boolean | True when the light still exists. |
 
 **Example**
 
@@ -1447,12 +2306,11 @@ end
 
 ---
 
-### `LLight:isVolumetric`
+#### `LLight:isVolumetric`
 
 Returns whether this light is volumetric.
 
 ```lua
--- signature
 LLight:isVolumetric()
 ```
 
@@ -1460,7 +2318,7 @@ LLight:isVolumetric()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when volumetric behavior is enabled. |
+| boolean | True when volumetric behavior is enabled. |
 
 **Example**
 
@@ -1474,12 +2332,11 @@ end
 
 ---
 
-### `LLight:remove`
+#### `LLight:remove`
 
 Removes this light from the shared light world.
 
 ```lua
--- signature
 LLight:remove()
 ```
 
@@ -1496,12 +2353,11 @@ end
 
 ---
 
-### `LLight:setAttenuation`
+#### `LLight:setAttenuation`
 
 Sets this light attenuation coefficients.
 
 ```lua
--- signature
 LLight:setAttenuation(c, l, q)
 ```
 
@@ -1509,9 +2365,9 @@ LLight:setAttenuation(c, l, q)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | `number` | Constant coefficient. |
-| `l` | `number` | Linear coefficient. |
-| `q` | `number` | Quadratic coefficient. |
+| `c` | number | Constant coefficient. |
+| `l` | number | Linear coefficient. |
+| `q` | number | Quadratic coefficient. |
 
 **Example**
 
@@ -1526,12 +2382,11 @@ end
 
 ---
 
-### `LLight:setBlendMode`
+#### `LLight:setBlendMode`
 
 Sets this light blend mode. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setBlendMode(mode)
 ```
 
@@ -1539,7 +2394,7 @@ LLight:setBlendMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Blend mode `add`, `sub`, or `mix`. |
+| `mode` | string | Blend mode `add`, `sub`, or `mix`. |
 
 **Example**
 
@@ -1553,12 +2408,11 @@ end
 
 ---
 
-### `LLight:setColor`
+#### `LLight:setColor`
 
 Sets this light RGBA color. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setColor(r, g, b, a)
 ```
 
@@ -1566,10 +2420,10 @@ LLight:setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -1584,12 +2438,11 @@ end
 
 ---
 
-### `LLight:setCookie`
+#### `LLight:setCookie`
 
 Stores a cookie texture path on this Lua light handle.
 
 ```lua
--- signature
 LLight:setCookie(path)
 ```
 
@@ -1597,7 +2450,7 @@ LLight:setCookie(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Cookie texture path. |
+| `path` | string | Cookie texture path. |
 
 **Example**
 
@@ -1611,12 +2464,11 @@ end
 
 ---
 
-### `LLight:setDirection`
+#### `LLight:setDirection`
 
 Sets this light direction angle. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setDirection(dir)
 ```
 
@@ -1624,7 +2476,7 @@ LLight:setDirection(dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dir` | `number` | Direction angle in radians or engine units. |
+| `dir` | number | Direction angle in radians or engine units. |
 
 **Example**
 
@@ -1639,12 +2491,11 @@ end
 
 ---
 
-### `LLight:setEnabled`
+#### `LLight:setEnabled`
 
 Enables or disables this light. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setEnabled(b)
 ```
 
@@ -1652,7 +2503,7 @@ LLight:setEnabled(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `boolean` | New enabled flag. |
+| `b` | boolean | New enabled flag. |
 
 **Example**
 
@@ -1666,12 +2517,11 @@ end
 
 ---
 
-### `LLight:setEnergy`
+#### `LLight:setEnergy`
 
 Sets this light energy value. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setEnergy(e)
 ```
 
@@ -1679,7 +2529,7 @@ LLight:setEnergy(e)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `e` | `number` | Energy value. |
+| `e` | number | Energy value. |
 
 **Example**
 
@@ -1693,12 +2543,11 @@ end
 
 ---
 
-### `LLight:setFalloff`
+#### `LLight:setFalloff`
 
 Sets this light falloff mode. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setFalloff(mode)
 ```
 
@@ -1706,7 +2555,7 @@ LLight:setFalloff(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Falloff mode `linear`, `smooth`, or `constant`. |
+| `mode` | string | Falloff mode `linear`, `smooth`, or `constant`. |
 
 **Example**
 
@@ -1720,12 +2569,11 @@ end
 
 ---
 
-### `LLight:setFlicker`
+#### `LLight:setFlicker`
 
 Configures flicker speed and strength for this light.
 
 ```lua
--- signature
 LLight:setFlicker(speed, strength)
 ```
 
@@ -1733,8 +2581,8 @@ LLight:setFlicker(speed, strength)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `speed` | `number` | Flicker speed. |
-| `strength` | `number` | Flicker strength. |
+| `speed` | number | Flicker speed. |
+| `strength` | number | Flicker strength. |
 
 **Example**
 
@@ -1749,12 +2597,11 @@ end
 
 ---
 
-### `LLight:setFlickerEnabled`
+#### `LLight:setFlickerEnabled`
 
 Enables or disables this light flicker state.
 
 ```lua
--- signature
 LLight:setFlickerEnabled(b)
 ```
 
@@ -1762,7 +2609,7 @@ LLight:setFlickerEnabled(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `boolean` | New flicker enabled flag. |
+| `b` | boolean | New flicker enabled flag. |
 
 **Example**
 
@@ -1777,12 +2624,11 @@ end
 
 ---
 
-### `LLight:setGroupId`
+#### `LLight:setGroupId`
 
 Sets this light group id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setGroupId(id)
 ```
 
@@ -1790,7 +2636,7 @@ LLight:setGroupId(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Group id. |
+| `id` | number | Group id. |
 
 **Example**
 
@@ -1804,12 +2650,11 @@ end
 
 ---
 
-### `LLight:setInnerAngle`
+#### `LLight:setInnerAngle`
 
 Sets this spot light inner cone angle.
 
 ```lua
--- signature
 LLight:setInnerAngle(a)
 ```
 
@@ -1817,7 +2662,7 @@ LLight:setInnerAngle(a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | Inner angle. |
+| `a` | number | Inner angle. |
 
 **Example**
 
@@ -1833,12 +2678,11 @@ end
 
 ---
 
-### `LLight:setIntensity`
+#### `LLight:setIntensity`
 
 Sets this light intensity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setIntensity(i)
 ```
 
@@ -1846,7 +2690,7 @@ LLight:setIntensity(i)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `i` | `number` | Intensity value. |
+| `i` | number | Intensity value. |
 
 **Example**
 
@@ -1860,12 +2704,11 @@ end
 
 ---
 
-### `LLight:setLightMask`
+#### `LLight:setLightMask`
 
 Sets this light's inclusion mask. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setLightMask(mask)
 ```
 
@@ -1873,7 +2716,7 @@ LLight:setLightMask(mask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | `number` | Light mask bits. |
+| `mask` | number | Light mask bits. |
 
 **Example**
 
@@ -1887,12 +2730,11 @@ end
 
 ---
 
-### `LLight:setLightType`
+#### `LLight:setLightType`
 
 Sets this light type. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setLightType(t)
 ```
 
@@ -1900,7 +2742,7 @@ LLight:setLightType(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `string` | Light type `point`, `directional`, or `spot`. |
+| `t` | string | Light type `point`, `directional`, or `spot`. |
 
 **Example**
 
@@ -1914,12 +2756,11 @@ end
 
 ---
 
-### `LLight:setNormalMap`
+#### `LLight:setNormalMap`
 
 Sets the normal map path used by this light.
 
 ```lua
--- signature
 LLight:setNormalMap(path)
 ```
 
@@ -1927,7 +2768,7 @@ LLight:setNormalMap(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Normal map path. |
+| `path` | string | Normal map path. |
 
 **Example**
 
@@ -1941,12 +2782,11 @@ end
 
 ---
 
-### `LLight:setNormalStrength`
+#### `LLight:setNormalStrength`
 
 Sets this light's normal map strength.
 
 ```lua
--- signature
 LLight:setNormalStrength(strength)
 ```
 
@@ -1954,7 +2794,7 @@ LLight:setNormalStrength(strength)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `strength` | `number` | Normal map strength. |
+| `strength` | number | Normal map strength. |
 
 **Example**
 
@@ -1968,12 +2808,11 @@ end
 
 ---
 
-### `LLight:setOuterAngle`
+#### `LLight:setOuterAngle`
 
 Sets this spot light outer cone angle.
 
 ```lua
--- signature
 LLight:setOuterAngle(a)
 ```
 
@@ -1981,7 +2820,7 @@ LLight:setOuterAngle(a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | Outer angle. |
+| `a` | number | Outer angle. |
 
 **Example**
 
@@ -1997,12 +2836,11 @@ end
 
 ---
 
-### `LLight:setPosition`
+#### `LLight:setPosition`
 
 Sets this light position. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setPosition(x, y)
 ```
 
@@ -2010,8 +2848,8 @@ LLight:setPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Light x coordinate. |
-| `y` | `number` | Light y coordinate. |
+| `x` | number | Light x coordinate. |
+| `y` | number | Light y coordinate. |
 
 **Example**
 
@@ -2026,12 +2864,11 @@ end
 
 ---
 
-### `LLight:setRadius`
+#### `LLight:setRadius`
 
 Sets this light radius. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setRadius(r)
 ```
 
@@ -2039,7 +2876,7 @@ LLight:setRadius(r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Radius value. |
+| `r` | number | Radius value. |
 
 **Example**
 
@@ -2053,12 +2890,11 @@ end
 
 ---
 
-### `LLight:setShadowColor`
+#### `LLight:setShadowColor`
 
 Sets this light shadow RGBA color. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setShadowColor(r, g, b, a)
 ```
 
@@ -2066,10 +2902,10 @@ LLight:setShadowColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel, defaulting to 1.0. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
 
 **Example**
 
@@ -2085,12 +2921,11 @@ end
 
 ---
 
-### `LLight:setShadowEnabled`
+#### `LLight:setShadowEnabled`
 
 Enables or disables shadow casting for this light.
 
 ```lua
--- signature
 LLight:setShadowEnabled(b)
 ```
 
@@ -2098,7 +2933,7 @@ LLight:setShadowEnabled(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `boolean` | New shadow enabled flag. |
+| `b` | boolean | New shadow enabled flag. |
 
 **Example**
 
@@ -2112,12 +2947,11 @@ end
 
 ---
 
-### `LLight:setShadowFilter`
+#### `LLight:setShadowFilter`
 
 Sets this light shadow filter. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLight:setShadowFilter(filter)
 ```
 
@@ -2125,7 +2959,7 @@ LLight:setShadowFilter(filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filter` | `string` | Shadow filter `none`, `pcf5`, or `pcf13`. |
+| `filter` | string | Shadow filter `none`, `pcf5`, or `pcf13`. |
 
 **Example**
 
@@ -2140,12 +2974,11 @@ end
 
 ---
 
-### `LLight:setShadowMask`
+#### `LLight:setShadowMask`
 
 Sets this light's shadow receiver mask.
 
 ```lua
--- signature
 LLight:setShadowMask(mask)
 ```
 
@@ -2153,7 +2986,7 @@ LLight:setShadowMask(mask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | `number` | Shadow mask bits. |
+| `mask` | number | Shadow mask bits. |
 
 **Example**
 
@@ -2167,12 +3000,11 @@ end
 
 ---
 
-### `LLight:setShadowSmooth`
+#### `LLight:setShadowSmooth`
 
 Sets this light shadow smoothing value.
 
 ```lua
--- signature
 LLight:setShadowSmooth(s)
 ```
 
@@ -2180,7 +3012,7 @@ LLight:setShadowSmooth(s)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `s` | `number` | Shadow smoothing value. |
+| `s` | number | Shadow smoothing value. |
 
 **Example**
 
@@ -2195,12 +3027,11 @@ end
 
 ---
 
-### `LLight:setShadowSoftness`
+#### `LLight:setShadowSoftness`
 
 Sets this light shadow softness value.
 
 ```lua
--- signature
 LLight:setShadowSoftness(softness)
 ```
 
@@ -2208,7 +3039,7 @@ LLight:setShadowSoftness(softness)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `softness` | `number` | Shadow softness value. |
+| `softness` | number | Shadow softness value. |
 
 **Example**
 
@@ -2223,12 +3054,11 @@ end
 
 ---
 
-### `LLight:setVolumetric`
+#### `LLight:setVolumetric`
 
 Enables or disables volumetric behavior for this light.
 
 ```lua
--- signature
 LLight:setVolumetric(b)
 ```
 
@@ -2236,7 +3066,7 @@ LLight:setVolumetric(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `boolean` | New volumetric flag. |
+| `b` | boolean | New volumetric flag. |
 
 **Example**
 
@@ -2250,12 +3080,11 @@ end
 
 ---
 
-### `LLight:stopTransition`
+#### `LLight:stopTransition`
 
 Stops and clears this light's active transition.
 
 ```lua
--- signature
 LLight:stopTransition()
 ```
 
@@ -2272,12 +3101,11 @@ end
 
 ---
 
-### `LLight:transitionProgress`
+#### `LLight:transitionProgress`
 
 Returns active transition progress or 1.0 when no transition is active.
 
 ```lua
--- signature
 LLight:transitionProgress()
 ```
 
@@ -2285,7 +3113,7 @@ LLight:transitionProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Transition progress. |
+| number | Transition progress. |
 
 **Example**
 
@@ -2300,12 +3128,11 @@ end
 
 ---
 
-### `LLight:transitionTo`
+#### `LLight:transitionTo`
 
 Starts a transition toward target color, intensity, and radius values.
 
 ```lua
--- signature
 LLight:transitionTo(target, duration)
 ```
 
@@ -2313,8 +3140,8 @@ LLight:transitionTo(target, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `table` | Target table with optional `color`, `intensity`, and `radius` fields. |
-| `duration` | `number` | Transition duration in seconds. |
+| `target` | table | Target table with optional `color`, `intensity`, and `radius` fields. |
+| `duration` | number | Transition duration in seconds. |
 
 **Example**
 
@@ -2330,12 +3157,11 @@ end
 
 ---
 
-### `LLight:type`
+#### `LLight:type`
 
 Returns the Lua-visible type name for this light handle.
 
 ```lua
--- signature
 LLight:type()
 ```
 
@@ -2343,7 +3169,7 @@ LLight:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LLight`. |
+| string | The string `[LLight](#llight-handle)`. |
 
 **Example**
 
@@ -2357,12 +3183,11 @@ end
 
 ---
 
-### `LLight:typeOf`
+#### `LLight:typeOf`
 
 Returns whether this light handle matches a supported type name.
 
 ```lua
--- signature
 LLight:typeOf(name)
 ```
 
@@ -2370,13 +3195,13 @@ LLight:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LLight` and `Object`. |
+| `name` | string | Type name to compare against `[LLight](#llight-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2391,12 +3216,11 @@ end
 
 ---
 
-### `LLight:updateTransition`
+#### `LLight:updateTransition`
 
 Advances this light's active transition and applies interpolated values.
 
 ```lua
--- signature
 LLight:updateTransition(dt)
 ```
 
@@ -2404,13 +3228,13 @@ LLight:updateTransition(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a transition value was applied. |
+| boolean | True when a transition value was applied. |
 
 **Example**
 
@@ -2425,14 +3249,19 @@ end
 
 ---
 
-## LOccluder
+## LOccluder Handle
 
-### `LOccluder:getLightMask`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LOccluder:getLightMask`
 
 Returns this occluder's light mask.
 
 ```lua
--- signature
 LOccluder:getLightMask()
 ```
 
@@ -2440,7 +3269,7 @@ LOccluder:getLightMask()
 
 | Type | Description |
 |------|-------------|
-| `number` | Light mask bits. |
+| number | Light mask bits. |
 
 **Example**
 
@@ -2454,12 +3283,11 @@ end
 
 ---
 
-### `LOccluder:getOpacity`
+#### `LOccluder:getOpacity`
 
 Returns this occluder opacity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOccluder:getOpacity()
 ```
 
@@ -2467,7 +3295,7 @@ LOccluder:getOpacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Opacity value. |
+| number | Opacity value. |
 
 **Example**
 
@@ -2481,12 +3309,11 @@ end
 
 ---
 
-### `LOccluder:getPosition`
+#### `LOccluder:getPosition`
 
 Returns this occluder position offset.
 
 ```lua
--- signature
 LOccluder:getPosition()
 ```
 
@@ -2494,8 +3321,8 @@ LOccluder:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X coordinate. |
-| `number` | b Y coordinate. |
+| number | X coordinate. |
+| number | Y coordinate. |
 
 **Example**
 
@@ -2510,12 +3337,11 @@ end
 
 ---
 
-### `LOccluder:getVertices`
+#### `LOccluder:getVertices`
 
 Returns this occluder's flat vertex coordinate list.
 
 ```lua
--- signature
 LOccluder:getVertices()
 ```
 
@@ -2523,7 +3349,7 @@ LOccluder:getVertices()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat numeric array `[x1, y1, x2, y2, ...]`. |
+| number[] | Flat numeric array `[x1, y1, x2, y2, ...]`. |
 
 **Example**
 
@@ -2538,12 +3364,11 @@ end
 
 ---
 
-### `LOccluder:isEnabled`
+#### `LOccluder:isEnabled`
 
 Returns whether this occluder is enabled.
 
 ```lua
--- signature
 LOccluder:isEnabled()
 ```
 
@@ -2551,7 +3376,7 @@ LOccluder:isEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when enabled. |
+| boolean | True when enabled. |
 
 **Example**
 
@@ -2565,12 +3390,11 @@ end
 
 ---
 
-### `LOccluder:isValid`
+#### `LOccluder:isValid`
 
 Returns whether this occluder handle still points to a live occluder.
 
 ```lua
--- signature
 LOccluder:isValid()
 ```
 
@@ -2578,7 +3402,7 @@ LOccluder:isValid()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the occluder still exists. |
+| boolean | True when the occluder still exists. |
 
 **Example**
 
@@ -2593,12 +3417,11 @@ end
 
 ---
 
-### `LOccluder:remove`
+#### `LOccluder:remove`
 
 Removes this occluder from the shared light world.
 
 ```lua
--- signature
 LOccluder:remove()
 ```
 
@@ -2616,12 +3439,11 @@ end
 
 ---
 
-### `LOccluder:setEnabled`
+#### `LOccluder:setEnabled`
 
 Enables or disables this occluder.
 
 ```lua
--- signature
 LOccluder:setEnabled(b)
 ```
 
@@ -2629,7 +3451,7 @@ LOccluder:setEnabled(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `boolean` | New enabled flag. |
+| `b` | boolean | New enabled flag. |
 
 **Example**
 
@@ -2643,12 +3465,11 @@ end
 
 ---
 
-### `LOccluder:setLightMask`
+#### `LOccluder:setLightMask`
 
 Sets this occluder's light mask. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOccluder:setLightMask(mask)
 ```
 
@@ -2656,7 +3477,7 @@ LOccluder:setLightMask(mask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | `number` | Light mask bits. |
+| `mask` | number | Light mask bits. |
 
 **Example**
 
@@ -2670,12 +3491,11 @@ end
 
 ---
 
-### `LOccluder:setOpacity`
+#### `LOccluder:setOpacity`
 
 Sets this occluder opacity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LOccluder:setOpacity(o)
 ```
 
@@ -2683,7 +3503,7 @@ LOccluder:setOpacity(o)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `o` | `number` | Opacity value. |
+| `o` | number | Opacity value. |
 
 **Example**
 
@@ -2697,12 +3517,11 @@ end
 
 ---
 
-### `LOccluder:setPosition`
+#### `LOccluder:setPosition`
 
 Sets this occluder position offset.
 
 ```lua
--- signature
 LOccluder:setPosition(x, y)
 ```
 
@@ -2710,8 +3529,8 @@ LOccluder:setPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
 
 **Example**
 
@@ -2726,12 +3545,11 @@ end
 
 ---
 
-### `LOccluder:setVertices`
+#### `LOccluder:setVertices`
 
 Replaces this occluder's flat vertex coordinate list.
 
 ```lua
--- signature
 LOccluder:setVertices(tbl)
 ```
 
@@ -2739,7 +3557,7 @@ LOccluder:setVertices(tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tbl` | `table` | Flat numeric array `[x1, y1, x2, y2, ...]`. |
+| `tbl` | table | Flat numeric array `[x1, y1, x2, y2, ...]`. |
 
 **Example**
 
@@ -2754,12 +3572,11 @@ end
 
 ---
 
-### `LOccluder:type`
+#### `LOccluder:type`
 
 Returns the Lua-visible type name for this occluder handle.
 
 ```lua
--- signature
 LOccluder:type()
 ```
 
@@ -2767,7 +3584,7 @@ LOccluder:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LOccluder`. |
+| string | The string `[LOccluder](#loccluder-handle)`. |
 
 **Example**
 
@@ -2781,12 +3598,11 @@ end
 
 ---
 
-### `LOccluder:typeOf`
+#### `LOccluder:typeOf`
 
 Returns whether this occluder handle matches a supported type name.
 
 ```lua
--- signature
 LOccluder:typeOf(name)
 ```
 
@@ -2794,13 +3610,13 @@ LOccluder:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LOccluder` and `Object`. |
+| `name` | string | Type name to compare against `[LOccluder](#loccluder-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["BTNode","BTStatus","ParallelPolicy"],"struct":["BehaviorTree","BtDebugState"]};

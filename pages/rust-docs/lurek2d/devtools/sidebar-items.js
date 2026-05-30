@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["frame_stats","logger","lua_display","profiler","repl","time_anchor","watcher"]};

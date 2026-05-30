@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["gamma_to_linear","hsl_to_rgb","hsv_to_rgb","linear_to_gamma"],"struct":["Color"]};

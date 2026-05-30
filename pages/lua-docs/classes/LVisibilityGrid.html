@@ -3,136 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LVisibilityGrid - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LVisibilityGrid Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/visibility.html#lvisibilitygrid-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a class="active" href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LVisibilityGrid</h1>
-  <p>Lua-side wrapper for a visibility grid instance.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/visibility.html">lurek.visibility</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:reveal(0, 5, 3)
-    print(&quot;LVisibilityGrid:reveal state=&quot; .. vg:getState(0, 5))
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LVisibilityGrid userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-drainevents"><div class="item-row-main"><h3>drainEvents</h3><pre class="inline-signature">LVisibilityGrid:drainEvents() -&gt; table</pre><p>Drains and returns all pending visibility events.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:145</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 100, players = 2 })
-    vg:reveal(0, 3, 2)
-    local events = vg:drainEvents()
-    print(&quot;LVisibilityGrid:drainEvents count=&quot; .. #events)
-end</code></pre></details></article><article class="item-row api-row" id="method-getcost"><div class="item-row-main"><h3>getCost</h3><pre class="inline-signature">LVisibilityGrid:getCost(region_id: integer) -&gt; number</pre><p>Gets the discovery cost for a region.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:78</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:setCost(7, 3.5)
-    print(&quot;LVisibilityGrid:getCost=&quot; .. vg:getCost(7))
-end</code></pre></details></article><article class="item-row api-row" id="method-getfogintensity"><div class="item-row-main"><h3>getFogIntensity</h3><pre class="inline-signature">LVisibilityGrid:getFogIntensity(player_id: integer, region_id: integer) -&gt; number</pre><p>Gets the fog intensity for a region from a player&#x27;s perspective.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:61</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    local fog = vg:getFogIntensity(0, 0)
-    print(&quot;LVisibilityGrid:getFogIntensity=&quot; .. fog)
-end</code></pre></details></article><article class="item-row api-row" id="method-getstate"><div class="item-row-main"><h3>getState</h3><pre class="inline-signature">LVisibilityGrid:getState(player_id: integer, region_id: integer) -&gt; string</pre><p>Gets the visibility state for a player at a region.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:45</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:reveal(1, 42, 2)
-    print(&quot;LVisibilityGrid:getState=&quot; .. vg:getState(1, 42))
-end</code></pre></details></article><article class="item-row api-row" id="method-hasflag"><div class="item-row-main"><h3>hasFlag</h3><pre class="inline-signature">LVisibilityGrid:hasFlag(region_id: integer, bit: integer) -&gt; boolean</pre><p>Checks if a visibility flag bit is set on a region.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:100</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:setFlag(4, 4, true)
-    print(&quot;LVisibilityGrid:hasFlag=&quot; .. tostring(vg:hasFlag(4, 4)))
-end</code></pre></details></article><article class="item-row api-row" id="method-hide"><div class="item-row-main"><h3>hide</h3><pre class="inline-signature">LVisibilityGrid:hide(player_id: integer, region_id: integer)</pre><p>Hides a region for a player (moves from Visible to Discovered).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:35</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:revealAll(0)
-    vg:hide(0, 3)
-    print(&quot;LVisibilityGrid:hide state=&quot; .. vg:getState(0, 3))
-end</code></pre></details></article><article class="item-row api-row" id="method-playercount"><div class="item-row-main"><h3>playerCount</h3><pre class="inline-signature">LVisibilityGrid:playerCount() -&gt; integer</pre><p>Returns the total number of players in the grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:193</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 100, players = 2 })
-    vg:setGroup({ 0, 1 })
-    print(&quot;LVisibilityGrid:playerCount=&quot; .. vg:playerCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-regioncount"><div class="item-row-main"><h3>regionCount</h3><pre class="inline-signature">LVisibilityGrid:regionCount() -&gt; integer</pre><p>Returns the total number of regions in the grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:186</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 100, players = 2 })
-    print(&quot;LVisibilityGrid:regionCount=&quot; .. vg:regionCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LVisibilityGrid:reset(player_id: integer)</pre><p>Resets all visibility to Hidden for a player.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:137</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 100, players = 2 })
-    vg:revealAll(0)
-    vg:reset(0)
-    print(&quot;LVisibilityGrid:reset state=&quot; .. vg:getState(0, 5))
-end</code></pre></details></article><article class="item-row api-row" id="method-reveal"><div class="item-row-main"><h3>reveal</h3><pre class="inline-signature">LVisibilityGrid:reveal(player_id: integer, region_id: integer, flags: integer?)</pre><p>Reveals a region for a player (and their allies). Optional flags argument.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:25</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:reveal(0, 5, 3)
-    print(&quot;LVisibilityGrid:reveal state=&quot; .. vg:getState(0, 5))
-end</code></pre></details></article><article class="item-row api-row" id="method-revealall"><div class="item-row-main"><h3>revealAll</h3><pre class="inline-signature">LVisibilityGrid:revealAll(player_id: integer)</pre><p>Reveals all regions for a player (debug/cheat).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:129</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 100, players = 2 })
-    vg:revealAll(0)
-    print(&quot;LVisibilityGrid:revealAll state=&quot; .. vg:getState(0, 5))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcost"><div class="item-row-main"><h3>setCost</h3><pre class="inline-signature">LVisibilityGrid:setCost(region_id: integer, cost: number)</pre><p>Sets the discovery cost for a region.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:69</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:setCost(5, 2.0)
-    print(&quot;LVisibilityGrid:setCost=&quot; .. vg:getCost(5))
-end</code></pre></details></article><article class="item-row api-row" id="method-setflag"><div class="item-row-main"><h3>setFlag</h3><pre class="inline-signature">LVisibilityGrid:setFlag(region_id: integer, bit: integer, value: boolean)</pre><p>Sets a visibility flag bit on a region.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:87</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:setFlag(8, 6, true)
-    print(&quot;LVisibilityGrid:setFlag=&quot; .. tostring(vg:hasFlag(8, 6)))
-end</code></pre></details></article><article class="item-row api-row" id="method-setgroup"><div class="item-row-main"><h3>setGroup</h3><pre class="inline-signature">LVisibilityGrid:setGroup(players: table) -&gt; integer</pre><p>Sets an alliance group for a list of players (shared visibility).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:108</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    local groupId = vg:setGroup({ 0, 1 })
-    print(&quot;LVisibilityGrid:setGroup id=&quot; .. groupId)
-end</code></pre></details></article><article class="item-row api-row" id="method-sharesvisibility"><div class="item-row-main"><h3>sharesVisibility</h3><pre class="inline-signature">LVisibilityGrid:sharesVisibility(player_a: integer, player_b: integer) -&gt; boolean</pre><p>Checks if two players share visibility (same alliance group or same player).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:122</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
-    local vg = lurek.visibility.new({ regions = 300, players = 4 })
-    vg:setGroup({ 1, 2 })
-    local shared = vg:sharesVisibility(1, 2)
-    print(&quot;LVisibilityGrid:sharesVisibility=&quot; .. tostring(shared))
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/visibility.html#lvisibilitygrid-handle">../../modules/visibility.html#lvisibilitygrid-handle</a>…</p>
 </body>
 </html>

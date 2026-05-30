@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["attenuation","blend_mode","falloff","flicker","light2d","light_type","light_world","occluder","shadow","transition"]};

@@ -1,12 +1,188 @@
 # Raycaster
 
-- The `raycaster` module is a powerful Feature Systems tier component that provides a complete Wolfenstein-style 2D grid raycasting engine for Lurek2D.
+## Summary
 
 It projects a grid-based 2D map into a textured, first-person 3D perspective using Digital Differential Analyzer (DDA) ray-stepping. At the core is the `Raycaster2D` struct, which maintains the tile grid. Each cell in the grid can be assigned per-face wall textures (North, South, East, West), floor/ceiling textures, alpha transparency overrides, and unique height modifiers via the `HeightMap` system (allowing for variable-height floors, ceilings, and lowered pits). The DDA stepper casts rays for each screen column, applies perpendicular distance corrections (to fix "fish-eye" distortion), and emits texture-sampled wall slices.
 
 The rendering pipeline is robust and feature-rich. Floor and ceiling rendering utilizes perspective-correct per-pixel texture mapping with per-tile UV generation and lighting calculations. Transparent and semi-transparent walls are natively supported via multi-hit ray casting (`cast_ray_multi`), which penetrates transparent tiles until an opaque wall is hit. The module also features a fully animated sliding door system (`DoorManager`), and a `SpriteManager` that projects world-space billboard sprites (such as enemies or items) into the camera view. Sprites are correctly distance-sorted and depth-culled against a per-column `DepthBuffer` populated during the wall-casting phase. Furthermore, dynamic 3D OBJ models can be projected into the scene alongside flat sprites.
 
 Lighting and visibility are deeply integrated into the raycaster. It supports a point-light model with Bresenham line-of-sight occlusion, distance-based shading (fog/darkness attenuation), and FOV-aware visibility polygon generation. A comprehensive suite of software-rendered visualization helpers is also included, allowing developers to draw top-down grid maps, minimap overlays, depth maps, line-of-sight rays, and even first-person sweeps directly into `ImageData` buffers for debugging or UI overlays. The scene builder synthesizes all these elements—walls, floors, ceilings, doors, sprites, and models—into a GPU-ready `RaycasterScene` composed of textured quads, which is then handed off to the main renderer. The entire engine is fully scriptable via the `lurek.raycaster.*` Lua API.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### build_scene.rs
+
+- This file assembles the full per-frame raycaster scene from camera state, grid hits, texture routing, and lighting inputs.
+- It turns wall contacts into screen-space quads whose geometry already matches the perspective rules expected by the render stage.
+- Floor and ceiling strips are expanded into textured spans with stable UVs so long corridors and open rooms keep coherent surface motion.
+- Lowered cells become pits with visible bottoms, side faces, and transitions that preserve depth cues instead of flattening into one plane.
+- Roofed regions are darkened differently from open regions so covered space reads denser even before dynamic lights are applied.
+- Point lights, ambient light, and distance falloff are blended here so every emitted surface leaves this file with its final light tint.
+- Billboard sprites are projected into the same camera space as walls, which keeps monsters, props, and pickups aligned with corridor depth.
+- Static meshes can be injected beside billboarded elements without asking later stages to reconstruct world-space context.
+- Ground projection helpers convert world corners into screen corners for both top and bottom planes with near-plane rejection baked in.
+- UV helpers keep repeated strips and axis-aligned quads visually stable when the camera rotates or grazes a tile boundary.
+- Half-pixel snapping is applied where needed to reduce shimmer along long floor edges and thin seam lines.
+- The file also decides how visible boundaries around solid cells become roof lips, pit walls, and other secondary surfaces.
+- Output is a dense scene description rather than immediate pixels, so later stages can sort, batch, or rasterize without redoing math.
+- Most of the expensive spatial reasoning for textured raycast presentation lives here, not in the draw backends.
+- In practice this is the bridge between raw DDA hit data and a believable first-person space built from quads and light.
+
+### column_batch.rs
+
+- This file stores the compact per-column output that the raycaster produces before any richer scene assembly begins.
+- It keeps wall slice projection, depth, and screen span data in a shape that is cheap to fill for an entire frame at once.
+- Frame-level metadata for colors and dimensions rides next to the columns so downstream code can treat one batch as a complete column pass.
+- Packed ray input is unpacked here into stable per-column records that preserve shading and visibility decisions from the DDA stage.
+- The result is a narrow transport format between hit collection and later wall, floor, or sprite composition work.
+
+### dda.rs
+
+- This file owns the grid-backed DDA marcher that turns a 2D tile map into ray hits, corrected distances, and wall sampling coordinates.
+- It handles both single-hit and layered traversal so partially transparent cells can be marched through without losing the final solid contact.
+- Wide fan casts for a whole screen are derived from the same stepping rules, which keeps column rendering consistent with ad hoc queries.
+- Line-of-sight checks reuse the same grid logic, so lighting, AI, and visibility questions follow the same blocking semantics as rendering.
+- The map storage stays simple and row-major, with safe fallback behavior for out-of-range reads and silent rejection of invalid writes.
+- Sprite projection helpers live beside ray stepping so billboard placement uses the same camera conventions as wall casting.
+- Floor and ceiling sampling utilities expose screen-to-world relationships without forcing higher layers to re-derive projection math.
+- This file is the computational core of the raycaster, where map occupancy becomes reliable spatial hits and camera-facing depth data.
+
+### depth_buffer.rs
+
+- This file keeps the narrow depth memory that tells the raycaster which wall distance currently owns each screen column.
+- It exists so later sprite and overlay work can reject fragments that should remain hidden behind already projected geometry.
+- The structure is intentionally simple because it is cleared, written, and read every frame on the hottest render path.
+
+### doors.rs
+
+- This file models raycaster doors as animated grid occupants whose openness changes continuously while their tile identity stays stable.
+- Each door carries movement direction, travel progress, and a small phase machine so gameplay code can request transitions without manual timing.
+- The manager keeps doors in one indexed registry, making updates and spatial queries deterministic for the rest of the raycaster.
+- Because door openness is tracked separately from base map cells, rendering and collision code can read evolving passage state without duplicating logic.
+- The overall effect is a lightweight moving-boundary system that fits the same tile world used by walls, sprites, and picking.
+
+### draw.rs
+
+- This file turns a prepared raycaster scene into software pixels when GPU command generation is not the chosen output path.
+- It fills ceilings, floors, walls, and sprite shapes directly into image memory using the scene ordering established earlier in the pipeline.
+- Draw order stays deliberately simple so layered surfaces read correctly even without a richer hardware depth workflow.
+- The result is useful for offline images, debug previews, and tool-facing render outputs that need first-person content in CPU memory.
+
+### grid_motion.rs
+
+- This file provides grid-locked locomotion rules for games that want raycaster movement to snap cleanly from tile to tile.
+- Facing direction is reduced to stable cardinal deltas so movement input stays predictable for dungeon crawlers and similar designs.
+- Collision checks are delegated through a caller-provided blocking rule, which lets map logic stay external while motion rules stay reusable.
+- The emphasis is on deterministic tile traversal rather than smooth analog movement, matching classic first-person grid exploration.
+
+### heightmap.rs
+
+- This file stores per-tile floor and ceiling offsets so a raycast map can express steps, pits, and varied room volumes.
+- Height data can be assigned cell by cell or across rectangular regions, which makes authored layouts and procedural stamping equally convenient.
+- Reads always yield a stable answer and invalid writes are ignored, keeping spatial queries predictable when tools or scripts probe edges.
+- It is the lightweight elevation layer that feeds richer scene building without forcing the base map storage to change shape.
+
+### level_render.rs
+
+- This file handles the column-wise drawing logic for stacked raycaster levels where openings can reveal space above or below the current slice.
+- It decides which neighboring cells remain visible through holes so multi-level layouts feel connected instead of collapsing into isolated layers.
+- Framebuffer output is written directly in software, with floor and ceiling sampling tuned for readable textured planes in narrow screen columns.
+- The file therefore acts as the specialized draw path for vertical level relationships that are more complex than the flat scene builder alone.
+
+### lighting.rs
+
+- This file applies simple but readable local lighting to raycast space using colored point emitters and ambient fill.
+- Visibility between a light and a sample point is checked against blocking tiles so illumination respects corridor walls and corners.
+- Contributions from multiple emitters are accumulated into one tint that later scene builders can stamp onto walls, floors, and sprites.
+- The model favors clear spatial mood and cheap evaluation over physically exact light transport.
+
+### mod.rs
+
+- This module delivers the raycast feature stack that turns a 2D tile field into a readable first-person space with walls, floors, ceilings, sprites, and moving doors.
+- It combines DDA stepping, projection, scene building, visibility, lighting, and helper render paths so game code can ask for either gameplay queries or full presentation output.
+- Support code for elevation, multilevel layouts, picking, depth, and debug visualization lives beside the core marcher so the subsystem keeps one camera model end to end.
+- At the highest level, this is the part of the engine that gives Lua and Rust callers a classic grid-based 3D view without leaving the 2D runtime architecture.
+
+### multilevel.rs
+
+- This file extends the flat raycaster into stacked slices so one map position can participate in a multi-storey layout.
+- Each slice carries its own vertical span and tile layer, allowing bridges, overhead rooms, shafts, and similar structures to share horizontal space.
+- The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
+- Special transitions can move the viewer between slices without inventing a separate world format or renderer.
+- The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline.
+
+### projection.rs
+
+- This file contains the compact projection math that turns a ray distance into a visible wall span on screen.
+- It also derives distance falloff values so farther geometry can darken smoothly as space recedes from the camera.
+- The formulas here keep screen bounds clamped and predictable for the rest of the raycaster pipeline.
+
+### ray_hit.rs
+
+- This file defines the hit record that carries everything a marched ray learned when it touched visible map geometry.
+- It preserves both geometric contact details and render-facing details such as sampled side, distance flavor, opacity, and tile identity.
+- The struct is the shared currency between stepping, scene building, shading, and any caller that needs precise impact information.
+
+### render.rs
+
+- This file converts the prepared raycaster scene into renderer commands that the broader engine command stream already understands.
+- It emits textured or flat-colored quads in the ordering expected for ceilings, floors, walls, and billboard content.
+- Because the scene already carries geometry, UVs, light, and depth intent, this step mostly translates instead of recomputing presentation logic.
+- The file is therefore the handoff point where raycast-specific scene data becomes generic render work for the engine backend.
+
+### scene.rs
+
+- This file defines the transient geometry language that the raycaster uses between spatial reasoning and final drawing.
+- Walls, floors, ceilings, sprites, and injected meshes all share a quad-oriented representation so later stages can sort and emit them uniformly.
+- Each record carries the texture routing, light tint, depth meaning, and UV state needed to survive the trip from world logic to renderer.
+- The scene container groups one frame of these surfaces into a single package sized to the active viewport.
+- In practice it is the raycaster's staging area for everything the camera can currently see.
+
+### segment.rs
+
+- This file provides a minimal 2D segment representation for ray-style queries that are easier to express against explicit line geometry.
+- It computes nearest segment intersections from an origin and direction so callers can reason about wall-like boundaries outside the grid marcher.
+- The focus is geometric clarity for helper queries, not a full alternate rendering pipeline.
+
+### sprite_manager.rs
+
+- This file manages world-space billboard content that should appear inside the raycast view without becoming part of the wall grid.
+- It keeps sprite placement, identity, and visibility data in one registry so gameplay systems can add props, pickups, or actors cheaply.
+- When the camera needs them, sprites are exposed in depth-aware order that fits alpha-friendly first-person rendering.
+- The registry therefore acts as the dynamic object layer that rides on top of static map geometry.
+
+### sprite_projection.rs
+
+- This file stores the screen-facing projection result for a billboard after world position has been interpreted through the raycaster camera.
+- It captures where the sprite should land, how large it should read, and whether it remains meaningfully visible to the viewer.
+- That compact record lets later passes sort, cull, and clip billboard content against wall depth without repeating camera math.
+
+### tile_picker.rs
+
+- This file maps a screen interaction back into raycaster grid space so UI clicks can target the world the player is looking at.
+- It replays the essential camera and stepping assumptions of the view transform instead of relying on a separate picking representation.
+- Screen size, camera pose, and tile scale are all part of the picker state, which keeps repeated queries stable across a frame.
+- The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
+- This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
+
+### visibility.rs
+
+- This file computes a radial visibility fan from a source point against segment obstacles in the plane.
+- Rays are aimed around segment endpoints with slight angular offsets so the resulting contour closes gaps that naive sampling would miss.
+- The output is shaped for immediate drawing or further masking work wherever a 2D field of view needs explicit polygon points.
+
+### visualization.rs
+
+- This file provides software visualizers that expose how the raycaster sees, marches, shades, and composes space without requiring the main renderer.
+- It can paint overhead maps, first-person wall bands, line-of-sight traces, depth previews, and sweep atlases directly into image buffers.
+- Procedural material coloring is embedded here so diagnostic or demo output can still look spatially rich without loading authored textures.
+- The helpers are useful when tuning collision, sampling, map layout, or visibility because they make invisible intermediate state immediately legible.
+- Outputs stay in plain image memory, which makes them easy to save, inspect in tools, or present inside UI overlays.
+- Several views deliberately trade physical correctness for fast explanation, prioritizing readable spatial evidence over final-game polish.
+- This file therefore acts as the observability layer for the raycaster subsystem, not just a collection of screenshots.
+- It is where engine authors can inspect the behavior of rays, walls, and depth as pictures instead of logs.
 
 ## Functions
 
@@ -15,7 +191,6 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 Applies an RGB light color to a scalar shade value.
 
 ```lua
--- signature
 lurek.raycaster.applyLitShade(baseShade, r, g, b)
 ```
 
@@ -23,18 +198,18 @@ lurek.raycaster.applyLitShade(baseShade, r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `baseShade` | `number` | Base shade multiplier. |
-| `r` | `number` | Red light channel. |
-| `g` | `number` | Green light channel. |
-| `b` | `number` | Blue light channel. |
+| `baseShade` | number | Base shade multiplier. |
+| `r` | number | Red light channel. |
+| `g` | number | Green light channel. |
+| `b` | number | Blue light channel. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Shaded red channel. |
-| `number` | b Shaded green channel. |
-| `number` | c Shaded blue channel. |
+| number | Shaded red channel. |
+| number | Shaded green channel. |
+| number | Shaded blue channel. |
 
 **Example**
 
@@ -53,7 +228,6 @@ end
 Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 
 ```lua
--- signature
 lurek.raycaster.distanceShade(distance, maxDistance)
 ```
 
@@ -61,14 +235,14 @@ lurek.raycaster.distanceShade(distance, maxDistance)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `distance` | `number` | Distance to shade. |
-| `maxDistance` | `number` | Distance at which shade reaches zero. |
+| `distance` | number | Distance to shade. |
+| `maxDistance` | number | Distance at which shade reaches zero. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance). |
+| number | Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance). |
 
 **Example**
 
@@ -91,7 +265,6 @@ end
 Creates a new raycaster map with the given grid dimensions.
 
 ```lua
--- signature
 lurek.raycaster.new(w, h)
 ```
 
@@ -99,14 +272,14 @@ lurek.raycaster.new(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Map width in cells. |
-| `h` | `number` | Map height in cells. |
+| `w` | number | Map width in cells. |
+| `h` | number | Map height in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycaster` | A new raycaster map instance. |
+| [LRaycaster](#lraycaster-handle) | A new raycaster map instance. |
 
 **Example**
 
@@ -125,7 +298,6 @@ end
 Creates a new door manager for tracking and animating sliding doors.
 
 ```lua
--- signature
 lurek.raycaster.newDoorManager()
 ```
 
@@ -133,7 +305,7 @@ lurek.raycaster.newDoorManager()
 
 | Type | Description |
 |------|-------------|
-| `LDoorManager` | A new empty door manager. |
+| [LDoorManager](#ldoormanager-handle) | A new empty door manager. |
 
 **Example**
 
@@ -156,7 +328,6 @@ end
 Creates a new height map for variable floor/ceiling heights across the grid.
 
 ```lua
--- signature
 lurek.raycaster.newHeightMap(w, h)
 ```
 
@@ -164,14 +335,14 @@ lurek.raycaster.newHeightMap(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width in cells. |
-| `h` | `number` | Height in cells. |
+| `w` | number | Width in cells. |
+| `h` | number | Height in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHeightMap` | A new height map initialized to zero. |
+| [LHeightMap](#lheightmap-handle) | A new height map initialized to zero. |
 
 **Example**
 
@@ -195,7 +366,6 @@ end
 Creates a new raycaster map (alias for `new`).
 
 ```lua
--- signature
 lurek.raycaster.newMap(w, h)
 ```
 
@@ -203,14 +373,14 @@ lurek.raycaster.newMap(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Map width in cells. |
-| `h` | `number` | Map height in cells. |
+| `w` | number | Map width in cells. |
+| `h` | number | Map height in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycaster` | A new raycaster map instance. |
+| [LRaycaster](#lraycaster-handle) | A new raycaster map instance. |
 
 **Example**
 
@@ -229,7 +399,6 @@ end
 Creates a new point light with position, color, radius, and intensity.
 
 ```lua
--- signature
 lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity)
 ```
 
@@ -237,19 +406,19 @@ lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | World X position. |
-| `y` | `number` | World Y position. |
-| `r` | `number` | Red channel (0.0..1.0). |
-| `g` | `number` | Green channel (0.0..1.0). |
-| `b` | `number` | Blue channel (0.0..1.0). |
-| `radius` | `number` | Light falloff radius in world units. |
-| `intensity` | `number` | Brightness multiplier. |
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `r` | number | Red channel (0.0..1.0). |
+| `g` | number | Green channel (0.0..1.0). |
+| `b` | number | Blue channel (0.0..1.0). |
+| `radius` | number | Light falloff radius in world units. |
+| `intensity` | number | Brightness multiplier. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPointLight` | A new point light instance. |
+| [LPointLight](#lpointlight-handle) | A new point light instance. |
 
 **Example**
 
@@ -271,7 +440,6 @@ end
 Creates a new sprite manager for tracking and projecting billboard sprites.
 
 ```lua
--- signature
 lurek.raycaster.newSpriteManager()
 ```
 
@@ -279,7 +447,7 @@ lurek.raycaster.newSpriteManager()
 
 | Type | Description |
 |------|-------------|
-| `LSpriteManager` | A new empty sprite manager. |
+| [LSpriteManager](#lspritemanager-handle) | A new empty sprite manager. |
 
 **Example**
 
@@ -306,7 +474,6 @@ end
 Computes the projected wall-column height for a given distance, FOV, and screen height.
 
 ```lua
--- signature
 lurek.raycaster.projectColumn(distance, fov, screenHeight)
 ```
 
@@ -314,15 +481,15 @@ lurek.raycaster.projectColumn(distance, fov, screenHeight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `distance` | `number` | Perpendicular distance to the wall. |
-| `fov` | `number` | Field of view in radians. |
-| `screenHeight` | `number` | Screen height in pixels. |
+| `distance` | number | Perpendicular distance to the wall. |
+| `fov` | number | Field of view in radians. |
+| `screenHeight` | number | Screen height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Projected column height in pixels. |
+| number | Projected column height in pixels. |
 
 **Example**
 
@@ -338,14 +505,39 @@ end
 
 ---
 
-## LDoorManager
+## Module Fields
 
-### `LDoorManager:addDoor`
+*No module-level fields documented.*
+
+## Types
+
+- [LDoorManager Handle](#ldoormanager-handle)
+- [LHeightMap Handle](#lheightmap-handle)
+- [LPointLight Handle](#lpointlight-handle)
+- [LRaycaster Handle](#lraycaster-handle)
+- [LSpriteManager Handle](#lspritemanager-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LDoorManager Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDoorManager:addDoor`
 
 Registers a new sliding door at the given grid cell.
 
 ```lua
--- signature
 LDoorManager:addDoor(x, y, direction, speed)
 ```
 
@@ -353,16 +545,16 @@ LDoorManager:addDoor(x, y, direction, speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column of the door cell. |
-| `y` | `number` | Grid row of the door cell. |
-| `direction` | `string` | Slide axis: "horizontal" or "vertical". |
-| `speed` | `number` | How fast the door opens/closes (units per second). |
+| `x` | number | Grid column of the door cell. |
+| `y` | number | Grid row of the door cell. |
+| `direction` | string | Slide axis: "horizontal" or "vertical". |
+| `speed` | number | How fast the door opens/closes (units per second). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based index of the newly added door. |
+| number | Zero-based index of the newly added door. |
 
 **Example**
 
@@ -379,12 +571,11 @@ end
 
 ---
 
-### `LDoorManager:closeDoor`
+#### `LDoorManager:closeDoor`
 
 Begins closing the door at the given index. The door animates over time via `update()`.
 
 ```lua
--- signature
 LDoorManager:closeDoor(index)
 ```
 
@@ -392,7 +583,7 @@ LDoorManager:closeDoor(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | Zero-based index of the door to close. |
+| `index` | number | Zero-based index of the door to close. |
 
 **Example**
 
@@ -414,12 +605,11 @@ end
 
 ---
 
-### `LDoorManager:count`
+#### `LDoorManager:count`
 
 Returns the total number of registered doors.
 
 ```lua
--- signature
 LDoorManager:count()
 ```
 
@@ -427,7 +617,7 @@ LDoorManager:count()
 
 | Type | Description |
 |------|-------------|
-| `number` | Door count. |
+| number | Door count. |
 
 **Example**
 
@@ -443,12 +633,11 @@ end
 
 ---
 
-### `LDoorManager:getDoor`
+#### `LDoorManager:getDoor`
 
 Returns a table describing the door at the given index, or nil if index is out of range.
 
 ```lua
--- signature
 LDoorManager:getDoor(index)
 ```
 
@@ -456,13 +645,13 @@ LDoorManager:getDoor(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | Zero-based index of the door to query. |
+| `index` | number | Zero-based index of the door to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDoorManagerGetDoorResult` | Door info table, or nil if not found. |
+| LDoorManagerGetDoorResult | Door info table, or nil if not found. |
 
 **Example**
 
@@ -485,12 +674,11 @@ end
 
 ---
 
-### `LDoorManager:openDoor`
+#### `LDoorManager:openDoor`
 
 Begins opening the door at the given index. The door animates over time via `update()`.
 
 ```lua
--- signature
 LDoorManager:openDoor(index)
 ```
 
@@ -498,7 +686,7 @@ LDoorManager:openDoor(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | Zero-based index of the door to open. |
+| `index` | number | Zero-based index of the door to open. |
 
 **Example**
 
@@ -518,12 +706,11 @@ end
 
 ---
 
-### `LDoorManager:type`
+#### `LDoorManager:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LDoorManager:type()
 ```
 
@@ -531,7 +718,7 @@ LDoorManager:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LDoorManager". |
+| string | Always "[LDoorManager](#ldoormanager-handle)". |
 
 **Example**
 
@@ -544,12 +731,11 @@ end
 
 ---
 
-### `LDoorManager:typeOf`
+#### `LDoorManager:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LDoorManager:typeOf(name)
 ```
 
@@ -557,13 +743,13 @@ LDoorManager:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -577,12 +763,11 @@ end
 
 ---
 
-### `LDoorManager:update`
+#### `LDoorManager:update`
 
 Advances all door animations by the given delta time. Call once per frame.
 
 ```lua
--- signature
 LDoorManager:update(dt)
 ```
 
@@ -590,7 +775,7 @@ LDoorManager:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds since last frame. |
+| `dt` | number | Delta time in seconds since last frame. |
 
 **Example**
 
@@ -610,14 +795,19 @@ end
 
 ---
 
-## LHeightMap
+## LHeightMap Handle
 
-### `LHeightMap:ceilingAt`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LHeightMap:ceilingAt`
 
 Returns the ceiling height offset at a given grid cell.
 
 ```lua
--- signature
 LHeightMap:ceilingAt(x, y)
 ```
 
@@ -625,14 +815,14 @@ LHeightMap:ceilingAt(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Ceiling height offset at that cell. |
+| number | Ceiling height offset at that cell. |
 
 **Example**
 
@@ -648,12 +838,11 @@ end
 
 ---
 
-### `LHeightMap:floorAt`
+#### `LHeightMap:floorAt`
 
 Returns the floor height offset at a given grid cell.
 
 ```lua
--- signature
 LHeightMap:floorAt(x, y)
 ```
 
@@ -661,14 +850,14 @@ LHeightMap:floorAt(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Floor height offset at that cell. |
+| number | Floor height offset at that cell. |
 
 **Example**
 
@@ -684,12 +873,11 @@ end
 
 ---
 
-### `LHeightMap:setCeiling`
+#### `LHeightMap:setCeiling`
 
 Sets the ceiling height offset at a specific grid cell.
 
 ```lua
--- signature
 LHeightMap:setCeiling(x, y, h)
 ```
 
@@ -697,9 +885,9 @@ LHeightMap:setCeiling(x, y, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
-| `h` | `number` | Ceiling height offset (0.0 = default ceiling level). |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `h` | number | Ceiling height offset (0.0 = default ceiling level). |
 
 **Example**
 
@@ -714,12 +902,11 @@ end
 
 ---
 
-### `LHeightMap:setFloor`
+#### `LHeightMap:setFloor`
 
 Sets the floor height offset at a specific grid cell.
 
 ```lua
--- signature
 LHeightMap:setFloor(x, y, h)
 ```
 
@@ -727,9 +914,9 @@ LHeightMap:setFloor(x, y, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
-| `h` | `number` | Floor height offset (0.0 = default floor level). |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `h` | number | Floor height offset (0.0 = default floor level). |
 
 **Example**
 
@@ -744,12 +931,11 @@ end
 
 ---
 
-### `LHeightMap:type`
+#### `LHeightMap:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LHeightMap:type()
 ```
 
@@ -757,7 +943,7 @@ LHeightMap:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LHeightMap". |
+| string | Always "[LHeightMap](#lheightmap-handle)". |
 
 **Example**
 
@@ -770,12 +956,11 @@ end
 
 ---
 
-### `LHeightMap:typeOf`
+#### `LHeightMap:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LHeightMap:typeOf(name)
 ```
 
@@ -783,13 +968,13 @@ LHeightMap:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -803,14 +988,19 @@ end
 
 ---
 
-## LPointLight
+## LPointLight Handle
 
-### `LPointLight:color`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPointLight:color`
 
 Returns the RGB color components of this light.
 
 ```lua
--- signature
 LPointLight:color()
 ```
 
@@ -818,9 +1008,9 @@ LPointLight:color()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel (0.0..1.0). |
-| `number` | b Green channel (0.0..1.0). |
-| `number` | c Blue channel (0.0..1.0). |
+| number | Red channel (0.0..1.0). |
+| number | Green channel (0.0..1.0). |
+| number | Blue channel (0.0..1.0). |
 
 **Example**
 
@@ -835,12 +1025,11 @@ end
 
 ---
 
-### `LPointLight:intensity`
+#### `LPointLight:intensity`
 
 Returns the brightness multiplier of this light.
 
 ```lua
--- signature
 LPointLight:intensity()
 ```
 
@@ -848,7 +1037,7 @@ LPointLight:intensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Intensity. |
+| number | Intensity. |
 
 **Example**
 
@@ -862,12 +1051,11 @@ end
 
 ---
 
-### `LPointLight:radius`
+#### `LPointLight:radius`
 
 Returns the light's falloff radius in world units.
 
 ```lua
--- signature
 LPointLight:radius()
 ```
 
@@ -875,7 +1063,7 @@ LPointLight:radius()
 
 | Type | Description |
 |------|-------------|
-| `number` | Radius. |
+| number | Radius. |
 
 **Example**
 
@@ -889,12 +1077,11 @@ end
 
 ---
 
-### `LPointLight:set`
+#### `LPointLight:set`
 
 Overwrites all properties of this point light in a single call.
 
 ```lua
--- signature
 LPointLight:set(x, y, r, g, b, radius, intensity)
 ```
 
@@ -902,13 +1089,13 @@ LPointLight:set(x, y, r, g, b, radius, intensity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | New X world position. |
-| `y` | `number` | New Y world position. |
-| `r` | `number` | Red color channel (0.0..1.0). |
-| `g` | `number` | Green color channel (0.0..1.0). |
-| `b` | `number` | Blue color channel (0.0..1.0). |
-| `radius` | `number` | Falloff radius in world units. |
-| `intensity` | `number` | Brightness multiplier. |
+| `x` | number | New X world position. |
+| `y` | number | New Y world position. |
+| `r` | number | Red color channel (0.0..1.0). |
+| `g` | number | Green color channel (0.0..1.0). |
+| `b` | number | Blue color channel (0.0..1.0). |
+| `radius` | number | Falloff radius in world units. |
+| `intensity` | number | Brightness multiplier. |
 
 **Example**
 
@@ -926,12 +1113,11 @@ end
 
 ---
 
-### `LPointLight:type`
+#### `LPointLight:type`
 
-Returns the type name of this object ("LPointLight").
+Returns the type name of this object ("[LPointLight](#lpointlight-handle)").
 
 ```lua
--- signature
 LPointLight:type()
 ```
 
@@ -939,7 +1125,7 @@ LPointLight:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Type name string. |
+| string | Type name string. |
 
 **Example**
 
@@ -952,12 +1138,11 @@ end
 
 ---
 
-### `LPointLight:typeOf`
+#### `LPointLight:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LPointLight:typeOf(name)
 ```
 
@@ -965,13 +1150,13 @@ LPointLight:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to test against. |
+| `name` | string | Type name to test against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object is of the given type. |
+| boolean | True if this object is of the given type. |
 
 **Example**
 
@@ -985,12 +1170,11 @@ end
 
 ---
 
-### `LPointLight:x`
+#### `LPointLight:x`
 
 Returns the X world position of this light.
 
 ```lua
--- signature
 LPointLight:x()
 ```
 
@@ -998,7 +1182,7 @@ LPointLight:x()
 
 | Type | Description |
 |------|-------------|
-| `number` | X coordinate. |
+| number | X coordinate. |
 
 **Example**
 
@@ -1012,12 +1196,11 @@ end
 
 ---
 
-### `LPointLight:y`
+#### `LPointLight:y`
 
 Returns the Y world position of this light.
 
 ```lua
--- signature
 LPointLight:y()
 ```
 
@@ -1025,7 +1208,7 @@ LPointLight:y()
 
 | Type | Description |
 |------|-------------|
-| `number` | Y coordinate. |
+| number | Y coordinate. |
 
 **Example**
 
@@ -1039,14 +1222,19 @@ end
 
 ---
 
-## LRaycaster
+## LRaycaster Handle
 
-### `LRaycaster:buildMinimapWindow`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRaycaster:buildMinimapWindow`
 
 Generates a grid of minimap tile samples around a center point with lighting info.
 
 ```lua
--- signature
 LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights)
 ```
 
@@ -1054,17 +1242,17 @@ LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `centerX` | `number` | Center X in world coordinates. |
-| `centerY` | `number` | Center Y in world coordinates. |
-| `radius` | `number` | Tile radius around the center to sample. |
-| `ambient` | `number` | Ambient light level (0.0..1.0). |
-| `lights?` | `table` | Array of point-light tables. |
+| `centerX` | number | Center X in world coordinates. |
+| `centerY` | number | Center Y in world coordinates. |
+| `radius` | number | Tile radius around the center to sample. |
+| `ambient` | number | Ambient light level (0.0..1.0). |
+| `lights?` | table | Array of point-light tables. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterBuildMinimapWindowResult` | Array of {x, y, blocked, visible, r, g, b, luma} tables. |
+| LRaycasterBuildMinimapWindowResult | Array of {x, y, blocked, visible, r, g, b, luma} tables. |
 
 **Example**
 
@@ -1094,12 +1282,11 @@ end
 
 ---
 
-### `LRaycaster:buildScene`
+#### `LRaycaster:buildScene`
 
 Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 
 ```lua
--- signature
 LRaycaster:buildScene(params, lights, sprites, wallTextures)
 ```
 
@@ -1107,16 +1294,16 @@ LRaycaster:buildScene(params, lights, sprites, wallTextures)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `params` | `table` | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}. |
-| `lights?` | `table` | Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}. |
-| `sprites?` | `table` | Array of sprite tables {x, y, texture, size?}. |
-| `wallTextures?` | `table` | Map of cell_value -> texture for wall surfaces. |
+| `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}. |
+| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}. |
+| `sprites?` | table | Array of sprite tables {x, y, texture, size?}. |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Total number of quads in the built scene. |
+| number | Total number of quads in the built scene. |
 
 **Example**
 
@@ -1160,12 +1347,11 @@ end
 
 ---
 
-### `LRaycaster:buildSceneWithModels`
+#### `LRaycaster:buildSceneWithModels`
 
 Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
 
 ```lua
--- signature
 LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models)
 ```
 
@@ -1173,17 +1359,17 @@ LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `params` | `table` | Scene params (same as buildScene). |
-| `lights?` | `table` | Array of point-light tables. |
-| `sprites?` | `table` | Array of sprite tables. |
-| `wallTextures?` | `table` | Map of cell_value -> texture. |
-| `models?` | `table` | Array of model instance tables {model, x, y, rotation?, scale?}. |
+| `params` | table | Scene params (same as buildScene). |
+| `lights?` | table | Array of point-light tables. |
+| `sprites?` | table | Array of sprite tables. |
+| `wallTextures?` | table | Map of cell_value -> texture. |
+| `models?` | table | Array of model instance tables {model, x, y, rotation?, scale?}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Total number of quads in the built scene. |
+| number | Total number of quads in the built scene. |
 
 **Example**
 
@@ -1208,12 +1394,11 @@ end
 
 ---
 
-### `LRaycaster:castFloorRow`
+#### `LRaycaster:castFloorRow`
 
 Computes floor/ceiling texture UV coordinates for a single scanline row.
 
 ```lua
--- signature
 LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row)
 ```
 
@@ -1221,19 +1406,19 @@ LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `camX` | `number` | Camera X position. |
-| `camY` | `number` | Camera Y position. |
-| `dirX` | `number` | Camera forward direction X. |
-| `dirY` | `number` | Camera forward direction Y. |
-| `planeX` | `number` | Camera plane X (half-width of FOV). |
-| `planeY` | `number` | Camera plane Y (half-width of FOV). |
-| `row` | `number` | Scanline row offset from screen center. |
+| `camX` | number | Camera X position. |
+| `camY` | number | Camera Y position. |
+| `dirX` | number | Camera forward direction X. |
+| `dirY` | number | Camera forward direction Y. |
+| `planeX` | number | Camera plane X (half-width of FOV). |
+| `planeY` | number | Camera plane Y (half-width of FOV). |
+| `row` | number | Scanline row offset from screen center. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterCastFloorRowResult` | Array of {u, v} tables for each pixel in the row. |
+| LRaycasterCastFloorRowResult | Array of {u, v} tables for each pixel in the row. |
 
 **Example**
 
@@ -1251,12 +1436,11 @@ end
 
 ---
 
-### `LRaycaster:castRay`
+#### `LRaycaster:castRay`
 
 Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
 
 ```lua
--- signature
 LRaycaster:castRay(ox, oy, angle, maxDist)
 ```
 
@@ -1264,16 +1448,16 @@ LRaycaster:castRay(ox, oy, angle, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Ray origin X. |
-| `oy` | `number` | Ray origin Y. |
-| `angle` | `number` | Ray direction in radians. |
-| `maxDist` | `number` | Maximum cast distance. |
+| `ox` | number | Ray origin X. |
+| `oy` | number | Ray origin Y. |
+| `angle` | number | Ray direction in radians. |
+| `maxDist` | number | Maximum cast distance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterCastRayResult` | Hit table {distance, raw_distance, cell_value, alpha, side, tex_u, hit_x, hit_y, hit} or nil. |
+| LRaycasterCastRayResult | Hit table {distance, raw_distance, cell_value, alpha, side, tex_u, hit_x, hit_y, hit} or nil. |
 
 **Example**
 
@@ -1298,12 +1482,11 @@ end
 
 ---
 
-### `LRaycaster:castRayMulti`
+#### `LRaycaster:castRayMulti`
 
 Casts a single ray that passes through transparent walls, returning multiple hits.
 
 ```lua
--- signature
 LRaycaster:castRayMulti(ox, oy, angle, maxDist, maxHits)
 ```
 
@@ -1311,17 +1494,17 @@ LRaycaster:castRayMulti(ox, oy, angle, maxDist, maxHits)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Ray origin X. |
-| `oy` | `number` | Ray origin Y. |
-| `angle` | `number` | Ray direction in radians. |
-| `maxDist` | `number` | Maximum cast distance. |
-| `maxHits?` | `number` | Maximum number of hits to collect (default 4, max 8). |
+| `ox` | number | Ray origin X. |
+| `oy` | number | Ray origin Y. |
+| `angle` | number | Ray direction in radians. |
+| `maxDist` | number | Maximum cast distance. |
+| `maxHits?` | number | Maximum number of hits to collect (default 4, max 8). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterCastRayMultiResult` | Array of hit tables in distance order. |
+| LRaycasterCastRayMultiResult | Array of hit tables in distance order. |
 
 **Example**
 
@@ -1344,12 +1527,11 @@ end
 
 ---
 
-### `LRaycaster:castRays`
+#### `LRaycaster:castRays`
 
 Casts multiple rays across a field of view and returns an array of hit tables.
 
 ```lua
--- signature
 LRaycaster:castRays(ox, oy, angle, fov, count, maxDist)
 ```
 
@@ -1357,18 +1539,18 @@ LRaycaster:castRays(ox, oy, angle, fov, count, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Ray origin X. |
-| `oy` | `number` | Ray origin Y. |
-| `angle` | `number` | Center angle in radians. |
-| `fov` | `number` | Field of view in radians. |
-| `count` | `number` | Number of rays to cast. |
-| `maxDist` | `number` | Maximum cast distance per ray. |
+| `ox` | number | Ray origin X. |
+| `oy` | number | Ray origin Y. |
+| `angle` | number | Center angle in radians. |
+| `fov` | number | Field of view in radians. |
+| `count` | number | Number of rays to cast. |
+| `maxDist` | number | Maximum cast distance per ray. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterCastRaysResult` | Array of hit tables (same fields as castRay). |
+| LRaycasterCastRaysResult | Array of hit tables (same fields as castRay). |
 
 **Example**
 
@@ -1393,12 +1575,11 @@ end
 
 ---
 
-### `LRaycaster:castRaysFlat`
+#### `LRaycaster:castRaysFlat`
 
 Casts multiple rays and returns only the corrected distances as a flat array.
 
 ```lua
--- signature
 LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist)
 ```
 
@@ -1406,18 +1587,18 @@ LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Ray origin X. |
-| `oy` | `number` | Ray origin Y. |
-| `angle` | `number` | Center angle in radians. |
-| `fov` | `number` | Field of view in radians. |
-| `count` | `number` | Number of rays to cast. |
-| `maxDist` | `number` | Maximum cast distance per ray. |
+| `ox` | number | Ray origin X. |
+| `oy` | number | Ray origin Y. |
+| `angle` | number | Center angle in radians. |
+| `fov` | number | Field of view in radians. |
+| `count` | number | Number of rays to cast. |
+| `maxDist` | number | Maximum cast distance per ray. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Flat array of corrected distance values. |
+| number[] | Flat array of corrected distance values. |
 
 **Example**
 
@@ -1441,12 +1622,11 @@ end
 
 ---
 
-### `LRaycaster:computeTileLight`
+#### `LRaycaster:computeTileLight`
 
 Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
 
 ```lua
--- signature
 LRaycaster:computeTileLight(x, y, ambient, lights)
 ```
 
@@ -1454,19 +1634,19 @@ LRaycaster:computeTileLight(x, y, ambient, lights)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Tile grid column. |
-| `y` | `number` | Tile grid row. |
-| `ambient` | `number` | Base ambient light level (0.0..1.0). |
-| `lights?` | `table` | Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}. |
+| `x` | number | Tile grid column. |
+| `y` | number | Tile grid row. |
+| `ambient` | number | Base ambient light level (0.0..1.0). |
+| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red light channel. |
-| `number` | b Green light channel. |
-| `number` | c Blue light channel. |
-| `number` | d Average luminance. |
+| number | Red light channel. |
+| number | Green light channel. |
+| number | Blue light channel. |
+| number | Average luminance. |
 
 **Example**
 
@@ -1487,12 +1667,11 @@ end
 
 ---
 
-### `LRaycaster:drawCameraSweep`
+#### `LRaycaster:drawCameraSweep`
 
 Renders multiple frames of a rotating camera sweep as a single combined image.
 
 ```lua
--- signature
 LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh)
 ```
 
@@ -1500,19 +1679,19 @@ LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Camera X position. |
-| `y` | `number` | Camera Y position. |
-| `fov` | `number` | Field of view in radians. |
-| `maxDist` | `number` | Maximum render distance. |
-| `numFrames` | `number` | Number of rotation steps. |
-| `fw` | `number` | Frame width in pixels. |
-| `fh` | `number` | Frame height in pixels. |
+| `x` | number | Camera X position. |
+| `y` | number | Camera Y position. |
+| `fov` | number | Field of view in radians. |
+| `maxDist` | number | Maximum render distance. |
+| `numFrames` | number | Number of rotation steps. |
+| `fw` | number | Frame width in pixels. |
+| `fh` | number | Frame height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Raw image data for all frames. |
+| LImageData | Raw image data for all frames. |
 
 **Example**
 
@@ -1535,12 +1714,11 @@ end
 
 ---
 
-### `LRaycaster:drawDepthMap`
+#### `LRaycaster:drawDepthMap`
 
 Renders a grayscale depth map showing distance-to-wall for each column.
 
 ```lua
--- signature
 LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist)
 ```
 
@@ -1548,20 +1726,20 @@ LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Player X position. |
-| `py` | `number` | Player Y position. |
-| `angle` | `number` | Player facing angle in radians. |
-| `fov` | `number` | Field of view in radians. |
-| `numRays` | `number` | Number of rays (columns) to cast. |
-| `w` | `number` | Output image width in pixels. |
-| `h` | `number` | Output image height in pixels. |
-| `maxDist` | `number` | Maximum render distance. |
+| `px` | number | Player X position. |
+| `py` | number | Player Y position. |
+| `angle` | number | Player facing angle in radians. |
+| `fov` | number | Field of view in radians. |
+| `numRays` | number | Number of rays (columns) to cast. |
+| `w` | number | Output image width in pixels. |
+| `h` | number | Output image height in pixels. |
+| `maxDist` | number | Maximum render distance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Raw depth-map image data. |
+| LImageData | Raw depth-map image data. |
 
 **Example**
 
@@ -1584,12 +1762,11 @@ end
 
 ---
 
-### `LRaycaster:drawLineOfSight`
+#### `LRaycaster:drawLineOfSight`
 
 Renders a debug image showing the line-of-sight ray between two world points.
 
 ```lua
--- signature
 LRaycaster:drawLineOfSight(ax, ay, bx, by, scale)
 ```
 
@@ -1597,17 +1774,17 @@ LRaycaster:drawLineOfSight(ax, ay, bx, by, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ax` | `number` | Start X. |
-| `ay` | `number` | Start Y. |
-| `bx` | `number` | End X. |
-| `by` | `number` | End Y. |
-| `scale` | `number` | Pixels per grid cell. |
+| `ax` | number | Start X. |
+| `ay` | number | Start Y. |
+| `bx` | number | End X. |
+| `by` | number | End Y. |
+| `scale` | number | Pixels per grid cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Raw image data for this view. |
+| LImageData | Raw image data for this view. |
 
 **Example**
 
@@ -1625,12 +1802,11 @@ end
 
 ---
 
-### `LRaycaster:drawTopDown`
+#### `LRaycaster:drawTopDown`
 
 Renders a top-down debug view of the map with the player's position and direction.
 
 ```lua
--- signature
 LRaycaster:drawTopDown(px, py, angle, scale)
 ```
 
@@ -1638,16 +1814,16 @@ LRaycaster:drawTopDown(px, py, angle, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Player X position. |
-| `py` | `number` | Player Y position. |
-| `angle` | `number` | Player facing angle in radians. |
-| `scale` | `number` | Pixels per grid cell. |
+| `px` | number | Player X position. |
+| `py` | number | Player Y position. |
+| `angle` | number | Player facing angle in radians. |
+| `scale` | number | Pixels per grid cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Raw image data. |
+| LImageData | Raw image data. |
 
 **Example**
 
@@ -1672,12 +1848,11 @@ end
 
 ---
 
-### `LRaycaster:drawView`
+#### `LRaycaster:drawView`
 
 Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
 
 ```lua
--- signature
 LRaycaster:drawView(px, py, angle, fov, w, h, maxDist)
 ```
 
@@ -1685,19 +1860,19 @@ LRaycaster:drawView(px, py, angle, fov, w, h, maxDist)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Player X position. |
-| `py` | `number` | Player Y position. |
-| `angle` | `number` | Player facing angle in radians. |
-| `fov` | `number` | Field of view in radians. |
-| `w` | `number` | Output image width in pixels. |
-| `h` | `number` | Output image height in pixels. |
-| `maxDist` | `number` | Maximum render distance. |
+| `px` | number | Player X position. |
+| `py` | number | Player Y position. |
+| `angle` | number | Player facing angle in radians. |
+| `fov` | number | Field of view in radians. |
+| `w` | number | Output image width in pixels. |
+| `h` | number | Output image height in pixels. |
+| `maxDist` | number | Maximum render distance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Raw image data. |
+| LImageData | Raw image data. |
 
 **Example**
 
@@ -1720,12 +1895,11 @@ end
 
 ---
 
-### `LRaycaster:extractMinimap`
+#### `LRaycaster:extractMinimap`
 
 Extracts a pixel minimap image centered on the player from this raycaster map.
 
 ```lua
--- signature
 LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize)
 ```
 
@@ -1733,17 +1907,17 @@ LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `playerX` | `number` | Player x position in world space. |
-| `playerY` | `number` | Player y position in world space. |
-| `playerAngle` | `number` | Player facing angle in radians. |
-| `viewRadius` | `number` | Visible tile radius around the player. |
-| `cellSize` | `number` | Pixel size of each minimap cell. |
+| `playerX` | number | Player x position in world space. |
+| `playerY` | number | Player y position in world space. |
+| `playerAngle` | number | Player facing angle in radians. |
+| `viewRadius` | number | Visible tile radius around the player. |
+| `cellSize` | number | Pixel size of each minimap cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the extracted minimap. |
+| LImageData | Image data containing the extracted minimap. |
 
 **Example**
 
@@ -1761,12 +1935,11 @@ end
 
 ---
 
-### `LRaycaster:getCeilingTextureCell`
+#### `LRaycaster:getCeilingTextureCell`
 
 Returns the raw texture id assigned to this ceiling cell, or nil if none.
 
 ```lua
--- signature
 LRaycaster:getCeilingTextureCell(x, y)
 ```
 
@@ -1774,14 +1947,14 @@ LRaycaster:getCeilingTextureCell(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Raw texture id or nil. |
+| number | Raw texture id or nil. |
 
 **Example**
 
@@ -1799,12 +1972,11 @@ end
 
 ---
 
-### `LRaycaster:getCell`
+#### `LRaycaster:getCell`
 
 Returns the wall type value at a grid cell.
 
 ```lua
--- signature
 LRaycaster:getCell(x, y)
 ```
 
@@ -1812,14 +1984,14 @@ LRaycaster:getCell(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell value (0 = empty, 1+ = wall type). |
+| number | Cell value (0 = empty, 1+ = wall type). |
 
 **Example**
 
@@ -1837,12 +2009,11 @@ end
 
 ---
 
-### `LRaycaster:getFloorTextureCell`
+#### `LRaycaster:getFloorTextureCell`
 
 Returns the raw texture id assigned to this floor cell, or nil if none.
 
 ```lua
--- signature
 LRaycaster:getFloorTextureCell(x, y)
 ```
 
@@ -1850,14 +2021,14 @@ LRaycaster:getFloorTextureCell(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Raw texture id or nil. |
+| number | Raw texture id or nil. |
 
 **Example**
 
@@ -1875,12 +2046,11 @@ end
 
 ---
 
-### `LRaycaster:getLoweredFloorCell`
+#### `LRaycaster:getLoweredFloorCell`
 
 Returns the lowered floor configuration at a cell, or nil if the cell is normal.
 
 ```lua
--- signature
 LRaycaster:getLoweredFloorCell(x, y)
 ```
 
@@ -1888,14 +2058,14 @@ LRaycaster:getLoweredFloorCell(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterGetLoweredFloorCellResult` | Table {texture, depth, r, g, b, blocked} or nil. |
+| LRaycasterGetLoweredFloorCellResult | Table {texture, depth, r, g, b, blocked} or nil. |
 
 **Example**
 
@@ -1925,12 +2095,11 @@ end
 
 ---
 
-### `LRaycaster:getWallAlpha`
+#### `LRaycaster:getWallAlpha`
 
 Returns the current transparency value for a wall tile type.
 
 ```lua
--- signature
 LRaycaster:getWallAlpha(tileType)
 ```
 
@@ -1938,13 +2107,13 @@ LRaycaster:getWallAlpha(tileType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileType` | `number` | The cell value to query. |
+| `tileType` | number | The cell value to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Alpha value (0.0..1.0). |
+| number | Alpha value (0.0..1.0). |
 
 **Example**
 
@@ -1960,12 +2129,11 @@ end
 
 ---
 
-### `LRaycaster:gridMove`
+#### `LRaycaster:gridMove`
 
 Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
 
 ```lua
--- signature
 LRaycaster:gridMove(px, py, dir, action, step)
 ```
 
@@ -1973,19 +2141,19 @@ LRaycaster:gridMove(px, py, dir, action, step)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Current X position. |
-| `py` | `number` | Current Y position. |
-| `dir` | `number` | Facing direction 1..4 (1=N, 2=E, 3=S, 4=W). |
-| `action` | `string` | Movement action: "forward", "back", "left", or "right". |
-| `step` | `number` | Step distance in world units (typically 1.0). |
+| `px` | number | Current X position. |
+| `py` | number | Current Y position. |
+| `dir` | number | Facing direction 1..4 (1=N, 2=E, 3=S, 4=W). |
+| `action` | string | Movement action: "forward", "back", "left", or "right". |
+| `step` | number | Step distance in world units (typically 1.0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Final X position. |
-| `number` | b Final Y position. |
-| `boolean` | c Whether the move succeeded. |
+| number | Final X position. |
+| number | Final Y position. |
+| boolean | Whether the move succeeded. |
 
 **Example**
 
@@ -2009,12 +2177,11 @@ end
 
 ---
 
-### `LRaycaster:height`
+#### `LRaycaster:height`
 
 Returns the map height in grid cells.
 
 ```lua
--- signature
 LRaycaster:height()
 ```
 
@@ -2022,7 +2189,7 @@ LRaycaster:height()
 
 | Type | Description |
 |------|-------------|
-| `number` | Map height. |
+| number | Map height. |
 
 **Example**
 
@@ -2037,12 +2204,11 @@ end
 
 ---
 
-### `LRaycaster:isBlocked`
+#### `LRaycaster:isBlocked`
 
 Returns true if the grid cell is a solid wall (non-zero value).
 
 ```lua
--- signature
 LRaycaster:isBlocked(x, y)
 ```
 
@@ -2050,14 +2216,14 @@ LRaycaster:isBlocked(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if cell blocks movement and rays. |
+| boolean | True if cell blocks movement and rays. |
 
 **Example**
 
@@ -2073,12 +2239,11 @@ end
 
 ---
 
-### `LRaycaster:isWalkBlocked`
+#### `LRaycaster:isWalkBlocked`
 
 Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
 
 ```lua
--- signature
 LRaycaster:isWalkBlocked(x, y)
 ```
 
@@ -2086,14 +2251,14 @@ LRaycaster:isWalkBlocked(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the cell cannot be walked through. |
+| boolean | True if the cell cannot be walked through. |
 
 **Example**
 
@@ -2115,12 +2280,11 @@ end
 
 ---
 
-### `LRaycaster:lineOfSight`
+#### `LRaycaster:lineOfSight`
 
 Tests whether there is a clear line of sight between two world points (no walls in between).
 
 ```lua
--- signature
 LRaycaster:lineOfSight(x1, y1, x2, y2)
 ```
 
@@ -2128,16 +2292,16 @@ LRaycaster:lineOfSight(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | Start X. |
-| `y1` | `number` | Start Y. |
-| `x2` | `number` | End X. |
-| `y2` | `number` | End Y. |
+| `x1` | number | Start X. |
+| `y1` | number | Start Y. |
+| `x2` | number | End X. |
+| `y2` | number | End Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the path is unobstructed. |
+| boolean | True if the path is unobstructed. |
 
 **Example**
 
@@ -2156,12 +2320,11 @@ end
 
 ---
 
-### `LRaycaster:projectSprite`
+#### `LRaycaster:projectSprite`
 
 Projects a world-space sprite to screen coordinates for billboard rendering.
 
 ```lua
--- signature
 LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW)
 ```
 
@@ -2169,19 +2332,19 @@ LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Sprite world X. |
-| `sy` | `number` | Sprite world Y. |
-| `px` | `number` | Player X position. |
-| `py` | `number` | Player Y position. |
-| `pa` | `number` | Player angle in radians. |
-| `fov` | `number` | Field of view in radians. |
-| `screenW` | `number` | Screen width in pixels. |
+| `sx` | number | Sprite world X. |
+| `sy` | number | Sprite world Y. |
+| `px` | number | Player X position. |
+| `py` | number | Player Y position. |
+| `pa` | number | Player angle in radians. |
+| `fov` | number | Field of view in radians. |
+| `screenW` | number | Screen width in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterProjectSpriteResult` | Projection info {screen_x, scale, distance, visible}. |
+| LRaycasterProjectSpriteResult | Projection info {screen_x, scale, distance, visible}. |
 
 **Example**
 
@@ -2198,12 +2361,11 @@ end
 
 ---
 
-### `LRaycaster:revealCellsFromRays`
+#### `LRaycaster:revealCellsFromRays`
 
 Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
 
 ```lua
--- signature
 LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, step)
 ```
 
@@ -2211,19 +2373,19 @@ LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, step)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Ray origin X. |
-| `oy` | `number` | Ray origin Y. |
-| `angle` | `number` | Center angle in radians. |
-| `fov` | `number` | Field of view in radians. |
-| `count` | `number` | Number of rays. |
-| `maxDist` | `number` | Maximum ray distance. |
-| `step?` | `number` | Walk step along each ray (default 0.2). |
+| `ox` | number | Ray origin X. |
+| `oy` | number | Ray origin Y. |
+| `angle` | number | Center angle in radians. |
+| `fov` | number | Field of view in radians. |
+| `count` | number | Number of rays. |
+| `maxDist` | number | Maximum ray distance. |
+| `step?` | number | Walk step along each ray (default 0.2). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRaycasterRevealCellsFromRaysResult` | Array of {x, y} tables representing revealed grid cells. |
+| LRaycasterRevealCellsFromRaysResult | Array of {x, y} tables representing revealed grid cells. |
 
 **Example**
 
@@ -2249,12 +2411,11 @@ end
 
 ---
 
-### `LRaycaster:setCeilingTextureCell`
+#### `LRaycaster:setCeilingTextureCell`
 
 Assigns a per-cell ceiling texture override. Pass nil to remove the override.
 
 ```lua
--- signature
 LRaycaster:setCeilingTextureCell(x, y, texture)
 ```
 
@@ -2262,9 +2423,9 @@ LRaycaster:setCeilingTextureCell(x, y, texture)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
-| `texture?` | `LImage` | Texture image, integer id, or nil to clear. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `texture?` | LImage | Texture image, integer id, or nil to clear. |
 
 **Example**
 
@@ -2281,12 +2442,11 @@ end
 
 ---
 
-### `LRaycaster:setCell`
+#### `LRaycaster:setCell`
 
 Sets the wall type value at a grid cell. Non-zero values are solid walls.
 
 ```lua
--- signature
 LRaycaster:setCell(x, y, val)
 ```
 
@@ -2294,9 +2454,9 @@ LRaycaster:setCell(x, y, val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
-| `val` | `number` | Wall type (0 = empty, 1+ = wall texture index). |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `val` | number | Wall type (0 = empty, 1+ = wall texture index). |
 
 **Example**
 
@@ -2311,12 +2471,11 @@ end
 
 ---
 
-### `LRaycaster:setCells`
+#### `LRaycaster:setCells`
 
 Replaces the entire map grid with a flat array of cell values (row-major order).
 
 ```lua
--- signature
 LRaycaster:setCells(cells)
 ```
 
@@ -2324,7 +2483,7 @@ LRaycaster:setCells(cells)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cells` | `table` | Flat array of numbers with width*height elements. |
+| `cells` | table | Flat array of numbers with width*height elements. |
 
 **Example**
 
@@ -2349,12 +2508,11 @@ end
 
 ---
 
-### `LRaycaster:setFloorTextureCell`
+#### `LRaycaster:setFloorTextureCell`
 
 Assigns a per-cell floor texture override. Pass nil to remove the override.
 
 ```lua
--- signature
 LRaycaster:setFloorTextureCell(x, y, texture)
 ```
 
@@ -2362,9 +2520,9 @@ LRaycaster:setFloorTextureCell(x, y, texture)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
-| `texture?` | `LImage` | Texture image, integer id, or nil to clear. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `texture?` | LImage | Texture image, integer id, or nil to clear. |
 
 **Example**
 
@@ -2381,12 +2539,11 @@ end
 
 ---
 
-### `LRaycaster:setLoweredFloorCell`
+#### `LRaycaster:setLoweredFloorCell`
 
 Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 
 ```lua
--- signature
 LRaycaster:setLoweredFloorCell(x, y, opts)
 ```
 
@@ -2394,9 +2551,9 @@ LRaycaster:setLoweredFloorCell(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Grid column. |
-| `y` | `number` | Grid row. |
-| `opts?` | `table` | Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear. |
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `opts?` | table | Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear. |
 
 **Example**
 
@@ -2423,12 +2580,11 @@ end
 
 ---
 
-### `LRaycaster:setWallAlpha`
+#### `LRaycaster:setWallAlpha`
 
 Sets the transparency for a specific wall tile type, enabling see-through walls.
 
 ```lua
--- signature
 LRaycaster:setWallAlpha(tileType, alpha)
 ```
 
@@ -2436,8 +2592,8 @@ LRaycaster:setWallAlpha(tileType, alpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileType` | `number` | The cell value (1..255) whose alpha to change. |
-| `alpha` | `number` | Opacity (0.0 = fully transparent, 1.0 = fully opaque). |
+| `tileType` | number | The cell value (1..255) whose alpha to change. |
+| `alpha` | number | Opacity (0.0 = fully transparent, 1.0 = fully opaque). |
 
 **Example**
 
@@ -2452,12 +2608,11 @@ end
 
 ---
 
-### `LRaycaster:tryMove`
+#### `LRaycaster:tryMove`
 
 Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
 
 ```lua
--- signature
 LRaycaster:tryMove(px, py, dx, dy)
 ```
 
@@ -2465,18 +2620,18 @@ LRaycaster:tryMove(px, py, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Current X position in world space. |
-| `py` | `number` | Current Y position in world space. |
-| `dx` | `number` | Desired X movement delta. |
-| `dy` | `number` | Desired Y movement delta. |
+| `px` | number | Current X position in world space. |
+| `py` | number | Current Y position in world space. |
+| `dx` | number | Desired X movement delta. |
+| `dy` | number | Desired Y movement delta. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Final X position. |
-| `number` | b Final Y position. |
-| `boolean` | c Whether any movement occurred. |
+| number | Final X position. |
+| number | Final Y position. |
+| boolean | Whether any movement occurred. |
 
 **Example**
 
@@ -2500,12 +2655,11 @@ end
 
 ---
 
-### `LRaycaster:type`
+#### `LRaycaster:type`
 
-Returns the type name of this object ("LRaycaster").
+Returns the type name of this object ("[LRaycaster](#lraycaster-handle)").
 
 ```lua
--- signature
 LRaycaster:type()
 ```
 
@@ -2513,7 +2667,7 @@ LRaycaster:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Type name string. |
+| string | Type name string. |
 
 **Example**
 
@@ -2526,12 +2680,11 @@ end
 
 ---
 
-### `LRaycaster:typeOf`
+#### `LRaycaster:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LRaycaster:typeOf(name)
 ```
 
@@ -2539,13 +2692,13 @@ LRaycaster:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to test against. |
+| `name` | string | Type name to test against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object is of the given type. |
+| boolean | True if this object is of the given type. |
 
 **Example**
 
@@ -2559,12 +2712,11 @@ end
 
 ---
 
-### `LRaycaster:width`
+#### `LRaycaster:width`
 
 Returns the map width in grid cells.
 
 ```lua
--- signature
 LRaycaster:width()
 ```
 
@@ -2572,7 +2724,7 @@ LRaycaster:width()
 
 | Type | Description |
 |------|-------------|
-| `number` | Map width. |
+| number | Map width. |
 
 **Example**
 
@@ -2587,14 +2739,19 @@ end
 
 ---
 
-## LSpriteManager
+## LSpriteManager Handle
 
-### `LSpriteManager:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpriteManager:add`
 
 Adds a new sprite to the manager at a world position with a texture name and optional scale.
 
 ```lua
--- signature
 LSpriteManager:add(x, y, texture, scale)
 ```
 
@@ -2602,16 +2759,16 @@ LSpriteManager:add(x, y, texture, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | World X position. |
-| `y` | `number` | World Y position. |
-| `texture` | `string` | Texture asset name. |
-| `scale?` | `number` | Sprite size multiplier (default 1.0). |
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `texture` | string | Texture asset name. |
+| `scale?` | number | Sprite size multiplier (default 1.0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique sprite id for later manipulation. |
+| number | Unique sprite id for later manipulation. |
 
 **Example**
 
@@ -2626,12 +2783,11 @@ end
 
 ---
 
-### `LSpriteManager:clear`
+#### `LSpriteManager:clear`
 
 Removes all sprites from the manager.
 
 ```lua
--- signature
 LSpriteManager:clear()
 ```
 
@@ -2652,12 +2808,11 @@ end
 
 ---
 
-### `LSpriteManager:remove`
+#### `LSpriteManager:remove`
 
 Removes a sprite by its id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LSpriteManager:remove(id)
 ```
 
@@ -2665,7 +2820,7 @@ LSpriteManager:remove(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Sprite id returned by add(). |
+| `id` | number | Sprite id returned by add(). |
 
 **Example**
 
@@ -2683,12 +2838,11 @@ end
 
 ---
 
-### `LSpriteManager:setPosition`
+#### `LSpriteManager:setPosition`
 
 Updates the world position of an existing sprite.
 
 ```lua
--- signature
 LSpriteManager:setPosition(id, x, y)
 ```
 
@@ -2696,9 +2850,9 @@ LSpriteManager:setPosition(id, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Sprite id. |
-| `x` | `number` | New world X. |
-| `y` | `number` | New world Y. |
+| `id` | number | Sprite id. |
+| `x` | number | New world X. |
+| `y` | number | New world Y. |
 
 **Example**
 
@@ -2717,12 +2871,11 @@ end
 
 ---
 
-### `LSpriteManager:setVisible`
+#### `LSpriteManager:setVisible`
 
 Shows or hides a sprite without removing it.
 
 ```lua
--- signature
 LSpriteManager:setVisible(id, visible)
 ```
 
@@ -2730,8 +2883,8 @@ LSpriteManager:setVisible(id, visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Sprite id. |
-| `visible` | `boolean` | Whether the sprite should be rendered. |
+| `id` | number | Sprite id. |
+| `visible` | boolean | Whether the sprite should be rendered. |
 
 **Example**
 
@@ -2749,12 +2902,11 @@ end
 
 ---
 
-### `LSpriteManager:sortAndProject`
+#### `LSpriteManager:sortAndProject`
 
 Sorts all visible sprites by distance from the camera and returns projection data.
 
 ```lua
--- signature
 LSpriteManager:sortAndProject(camX, camY, camAngle)
 ```
 
@@ -2762,15 +2914,15 @@ LSpriteManager:sortAndProject(camX, camY, camAngle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `camX` | `number` | Camera X position. |
-| `camY` | `number` | Camera Y position. |
-| `camAngle` | `number` | Camera facing angle (unused, reserved). |
+| `camX` | number | Camera X position. |
+| `camY` | number | Camera Y position. |
+| `camAngle` | number | Camera facing angle (unused, reserved). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of {id, x, y, texture, scale, distance} sorted back-to-front. |
+| number[] | Array of {id, x, y, texture, scale, distance} sorted back-to-front. |
 
 **Example**
 
@@ -2793,12 +2945,11 @@ end
 
 ---
 
-### `LSpriteManager:type`
+#### `LSpriteManager:type`
 
-Returns the type name of this object ("LSpriteManager").
+Returns the type name of this object ("[LSpriteManager](#lspritemanager-handle)").
 
 ```lua
--- signature
 LSpriteManager:type()
 ```
 
@@ -2806,7 +2957,7 @@ LSpriteManager:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Type name string. |
+| string | Type name string. |
 
 **Example**
 
@@ -2819,12 +2970,11 @@ end
 
 ---
 
-### `LSpriteManager:typeOf`
+#### `LSpriteManager:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSpriteManager:typeOf(name)
 ```
 
@@ -2832,13 +2982,13 @@ LSpriteManager:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to test against. |
+| `name` | string | Type name to test against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object is of the given type. |
+| boolean | True if this object is of the given type. |
 
 **Example**
 

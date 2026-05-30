@@ -233,40 +233,20 @@ def _render_module_section(mod_name: str, mod_data: dict) -> list:
     return out
 
 
-# ── Callbacks section ──────────────────────────────────────────────────────────
-
-_CALLBACKS = [
-    ("lurek.init()", "", "called once when the engine initialises"),
-    ("lurek.ready()", "", "called once after init, when the active runtime is ready"),
-    ("lurek.process_physics(dt)", "", "dt: number; fixed physics step"),
-    ("lurek.fixedUpdate(dt)", "", "dt: number; fixed update step when configured"),
-    ("lurek.process(dt)", "", "dt: number; called every frame before draw"),
-    ("lurek.process_late(dt)", "", "dt: number; called every frame after process"),
-    ("lurek.draw()", "", "called every frame; push draw commands here"),
-    ("lurek.draw_ui()", "", "called every frame after draw for UI overlay"),
-    ("lurek.keypressed(key, scancode, isrepeat)", "", "key: string; isrepeat: bool"),
-    ("lurek.keyreleased(key, scancode)", "", "key: string; scancode: string"),
-    ("lurek.textinput(text)", "", "text: string; Unicode character input"),
-    ("lurek.textedited(text, start, length)", "", "IME composition text changed"),
-    ("lurek.mousepressed(x, y, button)", "", "button: 1=left 2=right 3=middle"),
-    ("lurek.mousereleased(x, y, button)", "", "button: number"),
-    ("lurek.mousemoved(x, y, dx, dy)", "", "dx, dy: mouse delta this frame"),
-    ("lurek.wheelmoved(x, y)", "", "x,y: scroll delta this frame"),
-    ("lurek.gamepadpressed(id, button)", "", "id: number; button: string"),
-    ("lurek.gamepadreleased(id, button)", "", "id: number; button: string"),
-    ("lurek.gamepadaxis(id, axis, value)", "", "value: -1.0 to 1.0"),
-    ("lurek.joystickadded(id)", "", "gamepad connected"),
-    ("lurek.joystickremoved(id)", "", "gamepad disconnected"),
-    ("lurek.touchpressed(id, x, y, dx, dy, pressure)", "", "touch start"),
-    ("lurek.touchmoved(id, x, y, dx, dy, pressure)", "", "touch move"),
-    ("lurek.touchreleased(id, x, y, dx, dy, pressure)", "", "touch end"),
-    ("lurek.focus(focused)", "", "focused: bool; window focus changed"),
-    ("lurek.visible(visible)", "", "visible: bool; window hidden or shown"),
-    ("lurek.resize(w, h)", "", "w, h: new window dimensions"),
-    ("lurek.quit()", "", "return true to cancel shutdown"),
-    ("lurek.exit()", "", "called when the engine is shutting down"),
-    ("lurek.errorhandler(msg)", "", "return replacement string or nil"),
-]
+def _callbacks_from_data(data: dict) -> list[tuple[str, str, str]]:
+    rows: list[tuple[str, str, str]] = []
+    for cb in sorted(data.get("engine_callbacks", []) or [], key=lambda item: item.get("name", "")):
+        signature = (cb.get("signature") or "").strip()
+        description = (cb.get("description") or "").strip()
+        if not signature:
+            continue
+        call = signature
+        if call.startswith("function "):
+            call = call[len("function "):]
+        if call.endswith(" end"):
+            call = call[:-4]
+        rows.append((call, "", description))
+    return rows
 
 
 def generate_wiki(data: dict) -> str:
@@ -315,15 +295,19 @@ def generate_wiki(data: dict) -> str:
     out.append("")
 
     # Callbacks
+    callbacks = _callbacks_from_data(data)
     out.append("## Callbacks")
     out.append("")
     out.append("Define any of these in `main.lua`. All are optional.")
     out.append("")
     out.append("```lua")
-    max_call_len = max(len(c[0]) for c in _CALLBACKS)
-    for call, ret, desc in _CALLBACKS:
-        fn_part = f"function {call:<{max_call_len}} end"
-        out.append(f"  {fn_part}  -- {desc}")
+    if callbacks:
+        max_call_len = max(len(c[0]) for c in callbacks)
+        for call, ret, desc in callbacks:
+            fn_part = f"function {call:<{max_call_len}} end"
+            out.append(f"  {fn_part}  -- {desc}")
+    else:
+        out.append("  -- No documented callbacks found in lua_api_data.json")
     out.append("```")
     out.append("")
     out.append("---")

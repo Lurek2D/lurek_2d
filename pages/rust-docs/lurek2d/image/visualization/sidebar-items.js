@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["animation","audio","camera","easing","facade","geometry","graph","image_ops","noise","procgen","ui"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["CatalogError"],"fn":["detect_system_locale","flat_table_from_json","flat_table_from_toml","is_rtl","is_valid_locale_code"],"struct":["Catalog","CoverageGap"]};

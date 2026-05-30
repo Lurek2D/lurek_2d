@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["AVAILABLE_SIZES","FIRST_CODEPOINT","LAST_CODEPOINT"],"struct":["BitmapFont","BitmapFontAtlas"]};

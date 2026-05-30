@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["distance_shade","project_column"]};

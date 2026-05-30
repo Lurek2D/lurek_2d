@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["scalar_map_to_rgba_bytes"]};

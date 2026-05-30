@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["HashAlgorithm"],"fn":["crc32","hash"]};

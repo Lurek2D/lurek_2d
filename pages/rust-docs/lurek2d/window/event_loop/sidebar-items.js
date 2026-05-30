@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["current_display_index","desktop_dimensions_for_display","display_name_for_display","get_displays"],"struct":["DisplayInfo"]};

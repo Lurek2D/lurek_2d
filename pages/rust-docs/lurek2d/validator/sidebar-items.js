@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["api_check","asset_check","config","engine","import_check","parallel","report","rule","rules_lua","rules_toml"]};

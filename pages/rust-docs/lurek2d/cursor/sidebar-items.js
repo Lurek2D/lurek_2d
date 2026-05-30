@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["animated_cursor","config","context","custom_cursor","system_cursor","trail","zoom"]};

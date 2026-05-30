@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["FileType"],"struct":["FileInfo","GameFS","MountLayer"]};

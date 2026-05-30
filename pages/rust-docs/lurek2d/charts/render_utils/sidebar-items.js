@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["auto_range","draw_circle_filled","draw_line","draw_rect_filled","fill_buffer","set_pixel","world_to_screen"]};

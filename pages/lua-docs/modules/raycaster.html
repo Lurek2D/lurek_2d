@@ -3,141 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>lurek.raycaster - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Module raycaster Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/raycaster.html">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a class="active" href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Module</p>
-  <h1>lurek.raycaster</h1>
-  <p>`lurek.raycaster` - Provides a pseudo-3D raycasting engine for first-person dungeon crawlers with textured walls, floors, and ceilings. - Registers `lurek.raycaster.*` functions and types via `register()`. - `LuaDoorManager`: userdata type exposed to Lua. - `LuaHeightMap`: userdata type exposed to Lua. - `LuaPointLight`: userdata type exposed to Lua. - `LuaRaycaster`: userdata type exposed to Lua. - `LuaSpriteManager`: userdata type exposed to Lua.</p>
-  <div class="api-meta api-meta-header"><span>9 functions</span><span>5 classes</span><span>src/lua_api/raycaster_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 76</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
-</header>
-
-<section class="section-block" id="functions">
-  <div class="section-head">
-    <h2>Functions</h2>
-    <p>Standalone namespace functions registered under lurek.raycaster.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="fn-applylitshade"><div class="item-row-main"><h3>applyLitShade</h3><pre class="inline-signature">lurek.raycaster.applyLitShade(baseShade: number, r: number, g: number, b: number) -&gt; number</pre><p>Applies an RGB light color to a scalar shade value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1615</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local r, g, b = lurek.raycaster.applyLitShade(0.5, 1.0, 0.8, 0.6)
-    print(&quot;lit shade = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b)
-    print(&quot;red positive = &quot; .. tostring(r &gt; 0))
-end</code></pre></details></article><article class="item-row api-row" id="fn-distanceshade"><div class="item-row-main"><h3>distanceShade</h3><pre class="inline-signature">lurek.raycaster.distanceShade(distance: number, maxDistance: number) -&gt; number</pre><p>Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1600</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local near = lurek.raycaster.distanceShade(0, 10)
-    local mid = lurek.raycaster.distanceShade(5, 10)
-    local far = lurek.raycaster.distanceShade(9, 10)
-
-    print(&quot;near = &quot; .. string.format(&quot;%.2f&quot;, near))
-    print(&quot;mid = &quot; .. string.format(&quot;%.2f&quot;, mid))
-    print(&quot;far = &quot; .. string.format(&quot;%.2f&quot;, far))
-end</code></pre></details></article><article class="item-row api-row" id="fn-new"><div class="item-row-main"><h3>new</h3><pre class="inline-signature">lurek.raycaster.new(w: integer, h: integer) -&gt; LRaycaster</pre><p>Creates a new raycaster map with the given grid dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1553</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local map = lurek.raycaster.new(16, 16)
-    print(&quot;width = &quot; .. map:width())
-    print(&quot;height = &quot; .. map:height())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newdoormanager"><div class="item-row-main"><h3>newDoorManager</h3><pre class="inline-signature">lurek.raycaster.newDoorManager() -&gt; LDoorManager</pre><p>Creates a new door manager for tracking and animating sliding doors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1625</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local doors = lurek.raycaster.newDoorManager()
-    local first = doors:addDoor(5, 3, &quot;horizontal&quot;, 2.0)
-    local second = doors:addDoor(8, 6, &quot;vertical&quot;, 1.5)
-
-    print(&quot;first id = &quot; .. first)
-    print(&quot;second id = &quot; .. second)
-    print(&quot;count = &quot; .. doors:count())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newheightmap"><div class="item-row-main"><h3>newHeightMap</h3><pre class="inline-signature">lurek.raycaster.newHeightMap(w: integer, h: integer) -&gt; LHeightMap</pre><p>Creates a new height map for variable floor/ceiling heights across the grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1638</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local hm = lurek.raycaster.newHeightMap(16, 16)
-    hm:setFloor(5, 5, -0.3)
-    hm:setCeiling(5, 5, 0.8)
-    hm:setFloor(10, 10, 0.2)
-    hm:setCeiling(10, 10, 1.5)
-
-    print(&quot;floor(5,5) = &quot; .. hm:floorAt(5, 5))
-    print(&quot;ceiling(10,10) = &quot; .. hm:ceilingAt(10, 10))
-end</code></pre></details></article><article class="item-row api-row" id="fn-newmap"><div class="item-row-main"><h3>newMap</h3><pre class="inline-signature">lurek.raycaster.newMap(w: integer, h: integer) -&gt; LRaycaster</pre><p>Creates a new raycaster map (alias for `new`).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1571</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local map = lurek.raycaster.newMap(32, 32)
-    print(&quot;width = &quot; .. map:width())
-    print(&quot;height = &quot; .. map:height())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newpointlight"><div class="item-row-main"><h3>newPointLight</h3><pre class="inline-signature">lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -&gt; LPointLight</pre><p>Creates a new point light with position, color, radius, and intensity.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1656</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5)
-    local r, g, b = torch:color()
-
-    print(&quot;pos = &quot; .. torch:x() .. &quot;,&quot; .. torch:y())
-    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b)
-    print(&quot;radius = &quot; .. torch:radius() .. &quot; intensity = &quot; .. torch:intensity())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newspritemanager"><div class="item-row-main"><h3>newSpriteManager</h3><pre class="inline-signature">lurek.raycaster.newSpriteManager() -&gt; LSpriteManager</pre><p>Creates a new sprite manager for tracking and projecting billboard sprites.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1675</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local sprites = lurek.raycaster.newSpriteManager()
-    local barrel = sprites:add(5.5, 3.5, &quot;content/examples/assets/images/sample_texture.png&quot;, 1.0)
-    local torch = sprites:add(8.5, 2.5, &quot;content/examples/assets/images/sample_texture.png&quot;, 0.5)
-    local enemy = sprites:add(10.5, 7.5, &quot;content/examples/assets/images/sample_texture.png&quot;, 1.2)
-
-    sprites:setPosition(enemy, 11, 8)
-    sprites:setVisible(torch, false)
-    sprites:remove(barrel)
-
-    print(&quot;torch id = &quot; .. torch)
-    print(&quot;enemy id = &quot; .. enemy)
-end</code></pre></details></article><article class="item-row api-row" id="fn-projectcolumn"><div class="item-row-main"><h3>projectColumn</h3><pre class="inline-signature">lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -&gt; number</pre><p>Computes the projected wall-column height for a given distance, FOV, and screen height.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/raycaster_api.rs:1589</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local height, top, bottom = lurek.raycaster.projectColumn(5.0, math.pi / 3, 200)
-
-    print(&quot;height = &quot; .. string.format(&quot;%.1f&quot;, height))
-    print(&quot;top = &quot; .. string.format(&quot;%.1f&quot;, top))
-    print(&quot;bottom = &quot; .. string.format(&quot;%.1f&quot;, bottom))
-end</code></pre></details></article>
-  </div>
-</section>
-
-<section class="section-block" id="classes">
-  <div class="section-head">
-    <h2>Classes</h2>
-    <p>Lua userdata types that expose methods through this module.</p>
-  </div>
-    <div class="item-list compact-list">
-    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDoorManager.html">LDoorManager</a></h3><p>Lua-visible door manager that controls sliding doors within a raycaster map.</p></div><div class="item-row-meta"><span>8 methods</span><span>module raycaster</span></div><div class="card-note">Example: raycaster.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LHeightMap.html">LHeightMap</a></h3><p>Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.</p></div><div class="item-row-meta"><span>6 methods</span><span>module raycaster</span></div><div class="card-note">Example: raycaster.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPointLight.html">LPointLight</a></h3><p>Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.</p></div><div class="item-row-meta"><span>8 methods</span><span>module raycaster</span></div><div class="card-note">Example: raycaster.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LRaycaster.html">LRaycaster</a></h3><p>Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.</p></div><div class="item-row-meta"><span>37 methods</span><span>module raycaster</span></div><div class="card-note">Example: raycaster.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSpriteManager.html">LSpriteManager</a></h3><p>Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.</p></div><div class="item-row-meta"><span>8 methods</span><span>module raycaster</span></div><div class="card-note">Example: raycaster.lua</div></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/raycaster.html">../../modules/raycaster.html</a>…</p>
 </body>
 </html>

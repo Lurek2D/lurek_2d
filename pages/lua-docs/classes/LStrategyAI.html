@@ -3,119 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LStrategyAI - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LStrategyAI Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/ai.html#lstrategyai-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a class="active" href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LStrategyAI</h1>
-  <p>Lua handle for interval-based strategic goal selection.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/ai.html">lurek.ai</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(5.0)
-    strat:addGoal(&quot;expand&quot;)
-    strat:addGoal(&quot;defend&quot;)
-    strat:addGoal(&quot;research&quot;)
-    print(&quot;goals registered&quot;)
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LStrategyAI userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-activegoal"><div class="item-row-main"><h3>activeGoal</h3><pre class="inline-signature">LStrategyAI:activeGoal() -&gt; LuaValue</pre><p>Returns the currently active strategic goal when one is selected.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2574</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(1.0)
-    strat:addGoal(&quot;idle&quot;)
-    local active = strat:activeGoal()
-    print(&quot;active goal = &quot; .. tostring(active))
-end</code></pre></details></article><article class="item-row api-row" id="method-addgoal"><div class="item-row-main"><h3>addGoal</h3><pre class="inline-signature">LStrategyAI:addGoal(name: string)</pre><p>Adds a named strategic goal. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2534</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(5.0)
-    strat:addGoal(&quot;expand&quot;)
-    strat:addGoal(&quot;defend&quot;)
-    strat:addGoal(&quot;research&quot;)
-    print(&quot;goals registered&quot;)
-end</code></pre></details></article><article class="item-row api-row" id="method-addtag"><div class="item-row-main"><h3>addTag</h3><pre class="inline-signature">LStrategyAI:addTag(tag: string)</pre><p>Adds a context tag to this strategy AI.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2541</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(3.0)
-    strat:addTag(&quot;war_declared&quot;)
-    strat:addTag(&quot;low_resources&quot;)
-    print(&quot;tags added&quot;)
-end</code></pre></details></article><article class="item-row api-row" id="method-forceevaluate"><div class="item-row-main"><h3>forceEvaluate</h3><pre class="inline-signature">LStrategyAI:forceEvaluate(scorer_fn: function)</pre><p>Immediately scores all goals and updates the active goal.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2565</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(10.0)
-    strat:addGoal(&quot;build&quot;)
-    strat:addGoal(&quot;scout&quot;)
-    strat:forceEvaluate(function(goal) if goal == &quot;scout&quot; then return 5.0 end return 1.0 end)
-    print(&quot;forced active = &quot; .. tostring(strat:activeGoal()))
-end</code></pre></details></article><article class="item-row api-row" id="method-removetag"><div class="item-row-main"><h3>removeTag</h3><pre class="inline-signature">LStrategyAI:removeTag(tag: string)</pre><p>Removes a context tag from this strategy AI.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2548</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(3.0)
-    strat:addTag(&quot;peace&quot;)
-    strat:removeTag(&quot;peace&quot;)
-    print(&quot;tag removed&quot;)
-end</code></pre></details></article><article class="item-row api-row" id="method-timeuntilnext"><div class="item-row-main"><h3>timeUntilNext</h3><pre class="inline-signature">LStrategyAI:timeUntilNext() -&gt; number</pre><p>Returns time remaining until the next scheduled strategy evaluation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2580</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(5.0)
-    strat:addGoal(&quot;wait&quot;)
-    strat:update(2.0, function() return 1.0 end)
-    print(&quot;time until next = &quot; .. strat:timeUntilNext())</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LStrategyAI:type() -&gt; string</pre><p>Returns the Lua-visible type name for this strategy AI handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2586</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(1.0)
-    print(&quot;type = &quot; .. strat:type())
-  print(&quot;matches = &quot; .. tostring(strat:typeOf(&quot;LStrategyAI&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LStrategyAI:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this strategy AI handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2591</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(1.0)
-    print(&quot;is LStrategyAI = &quot; .. tostring(strat:typeOf(&quot;LStrategyAI&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LStrategyAI:update(dt: number, scorer_fn: function)</pre><p>Advances strategy timing and scores goals when the update interval has elapsed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:2556</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-    local strat = lurek.ai.newStrategyAI(1.0)
-    strat:addGoal(&quot;attack&quot;)
-    strat:addGoal(&quot;retreat&quot;)
-    strat:update(1.5, function(goal) if goal == &quot;attack&quot; then return 0.8 end return 0.2 end)
-    print(&quot;active = &quot; .. tostring(strat:activeGoal()))
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/ai.html#lstrategyai-handle">../../modules/ai.html#lstrategyai-handle</a>…</p>
 </body>
 </html>

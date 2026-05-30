@@ -1,6 +1,6 @@
 # Animation
 
-- The `animation` module provides a comprehensive sprite and skeletal animation runtime for Lurek2D, managing frame sequences, blend layers, parameter-driven state machines, and synchronization groups.
+## Summary
 
 At its core, the module uses `AnimClip` to hold ordered sequences of `AnimFrame` entries, each specifying a source texture rectangle, an optional per-frame duration, and event triggers. This allows for both uniform and variable-timing animations. Playback is managed by the `Animation` controller, which handles forward, reverse, and ping-pong playback modes, along with looping and playback speed scaling.
 
@@ -12,6 +12,102 @@ The module offers seamless integration with external tools and formats. An Asepr
 
 Finally, the module generates textured draw commands from active frame quads via the `render` utilities, tightly integrating with the engine's graphics pipeline. Lua bindings expose `LAnimation:draw` and `LAnimStateMachine:draw` as ergonomic helpers over the same current-frame rectangle returned by `getQuad`; these helpers queue one draw command when a frame is active, return `false` without mutating playback when no frame is active, and leave broader `lurek.render.draw` polymorphism unchanged. Both `:draw` methods accept two call forms: `draw(image, x, y, opts)` for explicit atlas passing and `draw(x, y, opts)` when a spritesheet has been stored in advance with `:setImage(image)`. The API is thoroughly exposed to Lua via the `lurek.animation` namespace, providing script developers with constructors for state machines, curves, blend layers, and synchronization groups, along with methods to advance playback and poll animation events. By importing only the `math` module and avoiding cyclic dependencies, the animation runtime remains fully headless-testable and architecturally isolated within the Feature Systems group.
 
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### aseprite.rs
+
+- Parses Aseprite export data into engine-ready frame geometry, timing, and clip-tag metadata.
+- Supports multiple JSON frame layout variants while enforcing deterministic playback ordering.
+- Validates structural assumptions early so malformed exports fail before runtime animation usage.
+- Extracts frame rectangles and durations into normalized data consumable by controller pipelines.
+- Serves as the import boundary between external authoring output and internal animation contracts.
+
+### blend.rs
+
+- Implements layered animation blending where multiple clip outputs combine into one final pose.
+- Applies per-layer influence weights to shape how strongly each source contributes over time.
+- Supports optional bone masks for partial-body mixing without disturbing unrelated motion regions.
+- Maintains ordered layer stacking so blend precedence stays explicit and predictable.
+- Serves as the composition core for expressive multi-source character animation behavior.
+
+### clip.rs
+
+- Defines reusable animation clip metadata over frame spans, playback direction, and loop policy.
+- Carries baseline timing settings that playback systems use when frame durations are unspecified.
+- Serves as a compact contract shared by controller, state-machine, and blend-layer orchestration.
+
+### controller.rs
+
+- Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow.
+- Advances playback through forward, reverse, ping-pong, looped, and paused progression modes.
+- Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable.
+- Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata.
+- Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization.
+- Exposes current frame sampling for render-facing systems that require stable quad lookup each tick.
+- Maintains deterministic update behavior so identical input timing yields identical playback state.
+- Supports preview and inspection flows used by tools and debugging overlays.
+- Keeps clip selection, event buffering, and cursor mutation within one cohesive control surface.
+- Serves as the primary animation execution engine for sprite and timeline-driven characters.
+
+### curve.rs
+
+- Implements keyframed property timelines that interpolate numeric animation parameters over time.
+- Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior.
+- Evaluates sparse named tracks into sampled property values at arbitrary timeline positions.
+- Provides both single-property reads and full snapshot sampling for synchronized consumers.
+- Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts.
+- Serves as the parameter animation layer beneath higher-level state and clip orchestration.
+
+### event.rs
+
+- Defines the event payload contract emitted by animation playback state transitions.
+- Captures completion, loop, and frame-change signals as stable timeline reaction points.
+- Serves gameplay and scripting systems that listen to animation progression milestones.
+
+### frame.rs
+
+- Defines the minimal frame payload of source rectangle and optional per-frame timing override.
+- Supports clip timing fallback by allowing zero-duration frames to inherit clip-level FPS behavior.
+- Serves as the shared frame unit across import, playback, preview, and rendering pathways.
+
+### mod.rs
+
+- Defines the animation module boundary that unifies playback, blending, transitions, and render bridging.
+- Groups import, curve, event, sync, and state-control subsystems into one coherent runtime surface.
+- Keeps frame-based and bridge-based animation features accessible through a consistent composition root.
+- Serves as the high-level integration entry for character animation behavior in engine runtime.
+
+### render.rs
+
+- Converts active animation frame state into renderer-ready textured draw command payloads.
+- Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution.
+- Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation.
+- Serves as the bridge between animation runtime output and command-stream based rendering.
+
+### spine_bridge.rs
+
+- Bridges animation state-machine transitions to Spine clip playback through explicit state mapping.
+- Owns skeleton progression and transform refresh so Spine output remains time-synchronized.
+- Keeps external state changes aligned with internal skeleton animation updates each frame.
+- Serves as the integration layer between engine animation logic and Spine runtime evaluation.
+
+### state_machine.rs
+
+- Implements animation finite-state control with typed parameters and condition-driven transitions.
+- Evaluates transition rules each frame to move between clip-bound states deterministically.
+- Parses authored condition expressions into executable checks used during state progression.
+- Activates destination clips immediately on state change to keep visual intent synchronized.
+- Provides parameterized graph control for expressive authored animation behavior.
+- Serves as the transition-governance layer above raw clip playback execution.
+
+### sync_group.rs
+
+- Defines synchronization groups for animation instances that must maintain shared playback phase.
+- Tracks unique membership so timing alignment stays stable across coordinated animated entities.
+- Serves as lightweight grouping state for systems that enforce multi-entity animation sync.
+
 ## Functions
 
 ### `lurek.animation.buildCharacter`
@@ -19,7 +115,6 @@ Finally, the module generates textured draw commands from active frame quads via
 Builds a character animation bundle from grid frame and clip configuration.
 
 ```lua
--- signature
 lurek.animation.buildCharacter(cfg)
 ```
 
@@ -27,13 +122,13 @@ lurek.animation.buildCharacter(cfg)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cfg` | `table` | Configuration table with texture size, frame size, clips, optional states, and optional transitions. |
+| `cfg` | table | Configuration table with texture size, frame size, clips, optional states, and optional transitions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `AnimationBuildCharacterResult` | Table containing `animation` and, when states are supplied, `stateMachine` handles. |
+| LAnimationBuildCharacterResult | Table containing `animation` and, when states are supplied, `stateMachine` handles. |
 
 **Example**
 
@@ -64,7 +159,6 @@ end
 Loads an animation from an Aseprite JSON export string.
 
 ```lua
--- signature
 lurek.animation.fromAseprite(json_str)
 ```
 
@@ -72,13 +166,13 @@ lurek.animation.fromAseprite(json_str)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `json_str` | `string` | Raw Aseprite JSON document contents. |
+| `json_str` | string | Raw Aseprite JSON document contents. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed. |
+| LuaValue | Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed. |
 
 **Example**
 
@@ -100,7 +194,6 @@ end
 Creates an empty animation with no frames or clips.
 
 ```lua
--- signature
 lurek.animation.new()
 ```
 
@@ -108,7 +201,7 @@ lurek.animation.new()
 
 | Type | Description |
 |------|-------------|
-| `LAnimation` | New animation handle. |
+| [LAnimation](#lanimation-handle) | New animation handle. |
 
 **Example**
 
@@ -127,7 +220,6 @@ end
 Creates an empty blend layer set for layered animation playback.
 
 ```lua
--- signature
 lurek.animation.newBlendLayerSet()
 ```
 
@@ -135,7 +227,7 @@ lurek.animation.newBlendLayerSet()
 
 | Type | Description |
 |------|-------------|
-| `LBlendLayerSet` | New blend layer set handle. |
+| [LBlendLayerSet](#lblendlayerset-handle) | New blend layer set handle. |
 
 **Example**
 
@@ -154,7 +246,6 @@ end
 Creates an empty animation curve. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.animation.newCurve()
 ```
 
@@ -162,7 +253,7 @@ lurek.animation.newCurve()
 
 | Type | Description |
 |------|-------------|
-| `LAnimCurve` | New animation curve handle. |
+| [LAnimCurve](#lanimcurve-handle) | New animation curve handle. |
 
 **Example**
 
@@ -181,7 +272,6 @@ end
 Creates an animation state machine by consuming an animation handle.
 
 ```lua
--- signature
 lurek.animation.newStateMachine(anim_ud, initial)
 ```
 
@@ -189,14 +279,14 @@ lurek.animation.newStateMachine(anim_ud, initial)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim_ud` | `LAnimation` | Animation handle moved into the state machine. |
-| `initial` | `string` | Initial state name stored in the state machine. |
+| `anim_ud` | [LAnimation](#lanimation-handle) | Animation handle moved into the state machine. |
+| `initial` | string | Initial state name stored in the state machine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAnimStateMachine` | New animation state machine handle. |
+| [LAnimStateMachine](#lanimstatemachine-handle) | New animation state machine handle. |
 
 **Example**
 
@@ -218,7 +308,6 @@ end
 Creates an empty animation synchronization group.
 
 ```lua
--- signature
 lurek.animation.newSyncGroup()
 ```
 
@@ -226,7 +315,7 @@ lurek.animation.newSyncGroup()
 
 | Type | Description |
 |------|-------------|
-| `LAnimSyncGroup` | New animation sync group handle. |
+| [LAnimSyncGroup](#lanimsyncgroup-handle) | New animation sync group handle. |
 
 **Example**
 
@@ -240,14 +329,39 @@ end
 
 ---
 
-## LAnimCurve
+## Module Fields
 
-### `LAnimCurve:addKeyframe`
+*No module-level fields documented.*
+
+## Types
+
+- [LAnimCurve Handle](#lanimcurve-handle)
+- [LAnimStateMachine Handle](#lanimstatemachine-handle)
+- [LAnimSyncGroup Handle](#lanimsyncgroup-handle)
+- [LAnimation Handle](#lanimation-handle)
+- [LBlendLayerSet Handle](#lblendlayerset-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAnimCurve Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAnimCurve:addKeyframe`
 
 Adds a keyframe to the curve. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAnimCurve:addKeyframe(t, v)
 ```
 
@@ -255,8 +369,8 @@ LAnimCurve:addKeyframe(t, v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Keyframe time or normalized position. |
-| `v` | `number` | Keyframe value. |
+| `t` | number | Keyframe time or normalized position. |
+| `v` | number | Keyframe value. |
 
 **Example**
 
@@ -272,12 +386,11 @@ end
 
 ---
 
-### `LAnimCurve:clear`
+#### `LAnimCurve:clear`
 
 Removes all keyframes from this curve.
 
 ```lua
--- signature
 LAnimCurve:clear()
 ```
 
@@ -295,12 +408,11 @@ end
 
 ---
 
-### `LAnimCurve:eval`
+#### `LAnimCurve:eval`
 
 Evaluates the curve at a time or normalized position.
 
 ```lua
--- signature
 LAnimCurve:eval(t)
 ```
 
@@ -308,13 +420,13 @@ LAnimCurve:eval(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Time or normalized position to evaluate. |
+| `t` | number | Time or normalized position to evaluate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Interpolated curve value. |
+| number | Interpolated curve value. |
 
 **Example**
 
@@ -330,12 +442,11 @@ end
 
 ---
 
-### `LAnimCurve:keyframeCount`
+#### `LAnimCurve:keyframeCount`
 
 Returns the number of keyframes stored in this curve.
 
 ```lua
--- signature
 LAnimCurve:keyframeCount()
 ```
 
@@ -343,7 +454,7 @@ LAnimCurve:keyframeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Keyframe count. |
+| number | Keyframe count. |
 
 **Example**
 
@@ -358,12 +469,11 @@ end
 
 ---
 
-### `LAnimCurve:setCustomEasing`
+#### `LAnimCurve:setCustomEasing`
 
 Sets or clears a Lua callback used to evaluate custom easing.
 
 ```lua
--- signature
 LAnimCurve:setCustomEasing(func)
 ```
 
@@ -371,7 +481,7 @@ LAnimCurve:setCustomEasing(func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Function used as custom easing callback, or nil to clear custom easing. |
+| `func` | function | Function used as custom easing callback, or nil to clear custom easing. |
 
 **Example**
 
@@ -387,12 +497,11 @@ end
 
 ---
 
-### `LAnimCurve:setEasing`
+#### `LAnimCurve:setEasing`
 
 Sets the built-in easing mode used between keyframes.
 
 ```lua
--- signature
 LAnimCurve:setEasing(mode)
 ```
 
@@ -400,7 +509,7 @@ LAnimCurve:setEasing(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Easing mode `step`, `linear`, `ease_in`, `ease_out`, or `ease_in_out`. |
+| `mode` | string | Easing mode `step`, `linear`, `ease_in`, `ease_out`, or `ease_in_out`. |
 
 **Example**
 
@@ -416,12 +525,11 @@ end
 
 ---
 
-### `LAnimCurve:type`
+#### `LAnimCurve:type`
 
 Returns the Lua-visible type name for this animation curve handle.
 
 ```lua
--- signature
 LAnimCurve:type()
 ```
 
@@ -429,7 +537,7 @@ LAnimCurve:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAnimCurve`. |
+| string | The string `[LAnimCurve](#lanimcurve-handle)`. |
 
 **Example**
 
@@ -443,12 +551,11 @@ end
 
 ---
 
-### `LAnimCurve:typeOf`
+#### `LAnimCurve:typeOf`
 
 Returns whether this animation curve handle matches a supported type name.
 
 ```lua
--- signature
 LAnimCurve:typeOf(name)
 ```
 
@@ -456,13 +563,13 @@ LAnimCurve:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAnimCurve` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimCurve](#lanimcurve-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -475,14 +582,19 @@ end
 
 ---
 
-## LAnimStateMachine
+## LAnimStateMachine Handle
 
-### `LAnimStateMachine:addState`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAnimStateMachine:addState`
 
 Adds a state that plays a named animation clip.
 
 ```lua
--- signature
 LAnimStateMachine:addState(name, clip, looping)
 ```
 
@@ -490,9 +602,9 @@ LAnimStateMachine:addState(name, clip, looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | State name. |
-| `clip` | `string` | Clip name to play while this state is active. |
-| `looping` | `boolean` | True when the clip should loop in this state. |
+| `name` | string | State name. |
+| `clip` | string | Clip name to play while this state is active. |
+| `looping` | boolean | True when the clip should loop in this state. |
 
 **Example**
 
@@ -510,12 +622,11 @@ end
 
 ---
 
-### `LAnimStateMachine:addTransition`
+#### `LAnimStateMachine:addTransition`
 
 Adds a named-condition transition between two animation states.
 
 ```lua
--- signature
 LAnimStateMachine:addTransition(from_state, to_state, condition)
 ```
 
@@ -523,9 +634,9 @@ LAnimStateMachine:addTransition(from_state, to_state, condition)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_state` | `string` | Source state name. |
-| `to_state` | `string` | Destination state name. |
-| `condition` | `string` | Parameter condition expression understood by the state machine. |
+| `from_state` | string | Source state name. |
+| `to_state` | string | Destination state name. |
+| `condition` | string | Parameter condition expression understood by the state machine. |
 
 **Example**
 
@@ -545,12 +656,11 @@ end
 
 ---
 
-### `LAnimStateMachine:draw`
+#### `LAnimStateMachine:draw`
 
 Draws the current state-machine animation frame without advancing playback.
 
 ```lua
--- signature
 LAnimStateMachine:draw(image, x, y, opts)
 ```
 
@@ -558,16 +668,16 @@ LAnimStateMachine:draw(image, x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image?` | `LImage` | Texture atlas or spritesheet; omit when an image was stored with setImage. |
-| `x?` | `number` | Destination X position (default 0). |
-| `y?` | `number` | Destination Y position (default 0). |
-| `opts?` | `table` | Optional transform table with numeric `rotation`, `scale`, `scaleX`, `scaleY`, `originX`, and `originY` fields. |
+| `image?` | LImage | Texture atlas or spritesheet; omit when an image was stored with setImage. |
+| `x?` | number | Destination X position (default 0). |
+| `y?` | number | Destination Y position (default 0). |
+| `opts?` | table | Optional transform table with numeric `rotation`, `scale`, `scaleX`, `scaleY`, `originX`, and `originY` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a frame draw command was queued; false when no current frame is active. |
+| boolean | True when a frame draw command was queued; false when no current frame is active. |
 
 **Example**
 
@@ -590,12 +700,11 @@ end
 
 ---
 
-### `LAnimStateMachine:forceState`
+#### `LAnimStateMachine:forceState`
 
 Forces the state machine into a named state.
 
 ```lua
--- signature
 LAnimStateMachine:forceState(name)
 ```
 
@@ -603,13 +712,13 @@ LAnimStateMachine:forceState(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | State name to activate immediately. |
+| `name` | string | State name to activate immediately. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the state exists and was activated. |
+| boolean | True when the state exists and was activated. |
 
 **Example**
 
@@ -629,12 +738,11 @@ end
 
 ---
 
-### `LAnimStateMachine:getQuad`
+#### `LAnimStateMachine:getQuad`
 
 Returns the current frame rectangle from the state machine's owned animation.
 
 ```lua
--- signature
 LAnimStateMachine:getQuad()
 ```
 
@@ -642,7 +750,7 @@ LAnimStateMachine:getQuad()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Table with `x`, `y`, `w`, and `h`, or nil when no frame is active. |
+| LuaValue | Table with `x`, `y`, `w`, and `h`, or nil when no frame is active. |
 
 **Example**
 
@@ -660,12 +768,11 @@ end
 
 ---
 
-### `LAnimStateMachine:getState`
+#### `LAnimStateMachine:getState`
 
 Returns the current animation state name.
 
 ```lua
--- signature
 LAnimStateMachine:getState()
 ```
 
@@ -673,7 +780,7 @@ LAnimStateMachine:getState()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current state name. |
+| string | Current state name. |
 
 **Example**
 
@@ -690,12 +797,11 @@ end
 
 ---
 
-### `LAnimStateMachine:setImage`
+#### `LAnimStateMachine:setImage`
 
 Stores a spritesheet image on this state machine so draw can be called without an explicit image argument.
 
 ```lua
--- signature
 LAnimStateMachine:setImage(image)
 ```
 
@@ -703,7 +809,7 @@ LAnimStateMachine:setImage(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImage` | Texture atlas or spritesheet containing the animation frames. |
+| `image` | LImage | Texture atlas or spritesheet containing the animation frames. |
 
 **Example**
 
@@ -724,12 +830,11 @@ end
 
 ---
 
-### `LAnimStateMachine:setParam`
+#### `LAnimStateMachine:setParam`
 
 Sets a boolean, integer, or numeric state machine parameter.
 
 ```lua
--- signature
 LAnimStateMachine:setParam(name, value)
 ```
 
@@ -737,8 +842,8 @@ LAnimStateMachine:setParam(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Parameter name used by transition conditions. |
-| `value` | `LuaValue` | Boolean, integer, or number value to store. |
+| `name` | string | Parameter name used by transition conditions. |
+| `value` | LuaValue | Boolean, integer, or number value to store. |
 
 **Example**
 
@@ -757,12 +862,11 @@ end
 
 ---
 
-### `LAnimStateMachine:type`
+#### `LAnimStateMachine:type`
 
 Returns the Lua-visible type name for this animation state machine handle.
 
 ```lua
--- signature
 LAnimStateMachine:type()
 ```
 
@@ -770,7 +874,7 @@ LAnimStateMachine:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAnimStateMachine`. |
+| string | The string `[LAnimStateMachine](#lanimstatemachine-handle)`. |
 
 **Example**
 
@@ -787,12 +891,11 @@ end
 
 ---
 
-### `LAnimStateMachine:typeOf`
+#### `LAnimStateMachine:typeOf`
 
 Returns whether this animation state machine handle matches a supported type name.
 
 ```lua
--- signature
 LAnimStateMachine:typeOf(name)
 ```
 
@@ -800,13 +903,13 @@ LAnimStateMachine:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAnimStateMachine` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimStateMachine](#lanimstatemachine-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -822,12 +925,11 @@ end
 
 ---
 
-### `LAnimStateMachine:update`
+#### `LAnimStateMachine:update`
 
 Advances the animation state machine and its owned animation playback.
 
 ```lua
--- signature
 LAnimStateMachine:update(dt)
 ```
 
@@ -835,7 +937,7 @@ LAnimStateMachine:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -853,14 +955,19 @@ end
 
 ---
 
-## LAnimSyncGroup
+## LAnimSyncGroup Handle
 
-### `LAnimSyncGroup:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAnimSyncGroup:add`
 
 Adds an animation-like handle to the sync group.
 
 ```lua
--- signature
 LAnimSyncGroup:add(handle)
 ```
 
@@ -868,7 +975,7 @@ LAnimSyncGroup:add(handle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle` | `number` | Animation handle accepted by future sync group implementations. |
+| `handle` | number | Animation handle accepted by future sync group implementations. |
 
 **Example**
 
@@ -883,12 +990,11 @@ end
 
 ---
 
-### `LAnimSyncGroup:clear`
+#### `LAnimSyncGroup:clear`
 
 Removes all members from the sync group.
 
 ```lua
--- signature
 LAnimSyncGroup:clear()
 ```
 
@@ -905,12 +1011,11 @@ end
 
 ---
 
-### `LAnimSyncGroup:memberCount`
+#### `LAnimSyncGroup:memberCount`
 
 Returns the number of handles tracked by the sync group.
 
 ```lua
--- signature
 LAnimSyncGroup:memberCount()
 ```
 
@@ -918,7 +1023,7 @@ LAnimSyncGroup:memberCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Sync group member count. |
+| number | Sync group member count. |
 
 **Example**
 
@@ -932,12 +1037,11 @@ end
 
 ---
 
-### `LAnimSyncGroup:remove`
+#### `LAnimSyncGroup:remove`
 
 Removes an animation-like handle from the sync group.
 
 ```lua
--- signature
 LAnimSyncGroup:remove(handle)
 ```
 
@@ -945,7 +1049,7 @@ LAnimSyncGroup:remove(handle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `handle` | `number` | Animation handle accepted by future sync group implementations. |
+| `handle` | number | Animation handle accepted by future sync group implementations. |
 
 **Example**
 
@@ -960,12 +1064,11 @@ end
 
 ---
 
-### `LAnimSyncGroup:type`
+#### `LAnimSyncGroup:type`
 
 Returns the Lua-visible type name for this animation sync group handle.
 
 ```lua
--- signature
 LAnimSyncGroup:type()
 ```
 
@@ -973,7 +1076,7 @@ LAnimSyncGroup:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAnimSyncGroup`. |
+| string | The string `[LAnimSyncGroup](#lanimsyncgroup-handle)`. |
 
 **Example**
 
@@ -987,12 +1090,11 @@ end
 
 ---
 
-### `LAnimSyncGroup:typeOf`
+#### `LAnimSyncGroup:typeOf`
 
 Returns whether this animation sync group handle matches a supported type name.
 
 ```lua
--- signature
 LAnimSyncGroup:typeOf(name)
 ```
 
@@ -1000,13 +1102,13 @@ LAnimSyncGroup:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAnimSyncGroup` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimSyncGroup](#lanimsyncgroup-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1019,14 +1121,19 @@ end
 
 ---
 
-## LAnimation
+## LAnimation Handle
 
-### `LAnimation:addClip`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAnimation:addClip`
 
 Adds a named clip using existing frame indices.
 
 ```lua
--- signature
 LAnimation:addClip(name, indices_tbl, fps, looping, mode)
 ```
 
@@ -1034,11 +1141,11 @@ LAnimation:addClip(name, indices_tbl, fps, looping, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Clip name used by playback and state machines. |
-| `indices_tbl` | `table` | Array of frame indices that make up the clip. |
-| `fps` | `number` | Playback speed in frames per second. |
-| `looping` | `boolean` | True when playback should wrap at the end. |
-| `mode?` | `string` | Playback mode `forward`, `reverse`, or `pingpong`; defaults to `forward`. |
+| `name` | string | Clip name used by playback and state machines. |
+| `indices_tbl` | table | Array of frame indices that make up the clip. |
+| `fps` | number | Playback speed in frames per second. |
+| `looping` | boolean | True when playback should wrap at the end. |
+| `mode?` | string | Playback mode `forward`, `reverse`, or `pingpong`; defaults to `forward`. |
 
 **Example**
 
@@ -1054,12 +1161,11 @@ end
 
 ---
 
-### `LAnimation:addClipFromGrid`
+#### `LAnimation:addClipFromGrid`
 
 Adds frames from a texture grid and creates a clip that references the new frames.
 
 ```lua
--- signature
 LAnimation:addClipFromGrid(name, tw, th, fw, fh, start, count, fps, looping)
 ```
 
@@ -1067,15 +1173,15 @@ LAnimation:addClipFromGrid(name, tw, th, fw, fh, start, count, fps, looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Clip name to create. |
-| `tw` | `number` | Texture width in pixels. |
-| `th` | `number` | Texture height in pixels. |
-| `fw` | `number` | Frame width in pixels. |
-| `fh` | `number` | Frame height in pixels. |
-| `start` | `number` | Zero-based grid cell index where import begins. |
-| `count` | `number` | Number of frames to add. |
-| `fps` | `number` | Playback speed in frames per second. |
-| `looping` | `boolean` | True when playback should wrap at the end. |
+| `name` | string | Clip name to create. |
+| `tw` | number | Texture width in pixels. |
+| `th` | number | Texture height in pixels. |
+| `fw` | number | Frame width in pixels. |
+| `fh` | number | Frame height in pixels. |
+| `start` | number | Zero-based grid cell index where import begins. |
+| `count` | number | Number of frames to add. |
+| `fps` | number | Playback speed in frames per second. |
+| `looping` | boolean | True when playback should wrap at the end. |
 
 **Example**
 
@@ -1090,12 +1196,11 @@ end
 
 ---
 
-### `LAnimation:addFrame`
+#### `LAnimation:addFrame`
 
 Adds one frame rectangle to this animation.
 
 ```lua
--- signature
 LAnimation:addFrame(x, y, w, h)
 ```
 
@@ -1103,16 +1208,16 @@ LAnimation:addFrame(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Frame X coordinate in texture pixels. |
-| `y` | `number` | Frame Y coordinate in texture pixels. |
-| `w` | `number` | Frame width in texture pixels. |
-| `h` | `number` | Frame height in texture pixels. |
+| `x` | number | Frame X coordinate in texture pixels. |
+| `y` | number | Frame Y coordinate in texture pixels. |
+| `w` | number | Frame width in texture pixels. |
+| `h` | number | Frame height in texture pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Index of the inserted frame. |
+| number | Index of the inserted frame. |
 
 **Example**
 
@@ -1127,12 +1232,11 @@ end
 
 ---
 
-### `LAnimation:addFramesFromGrid`
+#### `LAnimation:addFramesFromGrid`
 
 Adds frames by slicing a texture grid.
 
 ```lua
--- signature
 LAnimation:addFramesFromGrid(tw, th, fw, fh, start, count)
 ```
 
@@ -1140,18 +1244,18 @@ LAnimation:addFramesFromGrid(tw, th, fw, fh, start, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tw` | `number` | Texture width in pixels. |
-| `th` | `number` | Texture height in pixels. |
-| `fw` | `number` | Frame width in pixels. |
-| `fh` | `number` | Frame height in pixels. |
-| `start` | `number` | Zero-based grid cell index where import begins. |
-| `count` | `number` | Number of frames to add. |
+| `tw` | number | Texture width in pixels. |
+| `th` | number | Texture height in pixels. |
+| `fw` | number | Frame width in pixels. |
+| `fh` | number | Frame height in pixels. |
+| `start` | number | Zero-based grid cell index where import begins. |
+| `count` | number | Number of frames to add. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of frames inserted. |
+| number | Number of frames inserted. |
 
 **Example**
 
@@ -1166,12 +1270,11 @@ end
 
 ---
 
-### `LAnimation:addFramesFromRects`
+#### `LAnimation:addFramesFromRects`
 
 Adds frames from an array of rectangle tables.
 
 ```lua
--- signature
 LAnimation:addFramesFromRects(rects)
 ```
 
@@ -1179,13 +1282,13 @@ LAnimation:addFramesFromRects(rects)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rects` | `table` | Array of tables with numeric `x`, `y`, `w`, and `h` fields. |
+| `rects` | table | Array of tables with numeric `x`, `y`, `w`, and `h` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of frames inserted. |
+| number | Number of frames inserted. |
 
 **Example**
 
@@ -1200,12 +1303,11 @@ end
 
 ---
 
-### `LAnimation:crossfade`
+#### `LAnimation:crossfade`
 
 Starts a crossfade from the current clip to another clip.
 
 ```lua
--- signature
 LAnimation:crossfade(clip_name, duration)
 ```
 
@@ -1213,14 +1315,14 @@ LAnimation:crossfade(clip_name, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `clip_name` | `string` | Destination clip name. |
-| `duration` | `number` | Crossfade duration in seconds. |
+| `clip_name` | string | Destination clip name. |
+| `duration` | number | Crossfade duration in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the destination clip exists and crossfade started. |
+| boolean | True when the destination clip exists and crossfade started. |
 
 **Example**
 
@@ -1239,12 +1341,11 @@ end
 
 ---
 
-### `LAnimation:draw`
+#### `LAnimation:draw`
 
 Draws the current animation frame without advancing playback.
 
 ```lua
--- signature
 LAnimation:draw(image, x, y, opts)
 ```
 
@@ -1252,16 +1353,16 @@ LAnimation:draw(image, x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image?` | `LImage` | Texture atlas or spritesheet; omit when an image was stored with setImage. |
-| `x?` | `number` | Destination X position (default 0). |
-| `y?` | `number` | Destination Y position (default 0). |
-| `opts?` | `table` | Optional transform table with numeric `rotation`, `scale`, `scaleX`, `scaleY`, `originX`, and `originY` fields. |
+| `image?` | LImage | Texture atlas or spritesheet; omit when an image was stored with setImage. |
+| `x?` | number | Destination X position (default 0). |
+| `y?` | number | Destination Y position (default 0). |
+| `opts?` | table | Optional transform table with numeric `rotation`, `scale`, `scaleX`, `scaleY`, `originX`, and `originY` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a frame draw command was queued; false when no current frame is active. |
+| boolean | True when a frame draw command was queued; false when no current frame is active. |
 
 **Example**
 
@@ -1282,12 +1383,11 @@ end
 
 ---
 
-### `LAnimation:drawPreviewGrid`
+#### `LAnimation:drawPreviewGrid`
 
 Rasterizes all animation frames into a preview grid image.
 
 ```lua
--- signature
 LAnimation:drawPreviewGrid(columns, cell_size)
 ```
 
@@ -1295,14 +1395,14 @@ LAnimation:drawPreviewGrid(columns, cell_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `columns` | `number` | Number of columns in the preview grid. |
-| `cell_size` | `number` | Size of each preview cell in pixels. |
+| `columns` | number | Number of columns in the preview grid. |
+| `cell_size` | number | Size of each preview cell in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the preview grid. |
+| LImageData | Image data containing the preview grid. |
 
 **Example**
 
@@ -1317,12 +1417,11 @@ end
 
 ---
 
-### `LAnimation:drawToImage`
+#### `LAnimation:drawToImage`
 
 Rasterizes the current animation frame into an image userdata.
 
 ```lua
--- signature
 LAnimation:drawToImage(w, h)
 ```
 
@@ -1330,14 +1429,14 @@ LAnimation:drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Output image width in pixels. |
-| `h` | `number` | Output image height in pixels. |
+| `w` | number | Output image width in pixels. |
+| `h` | number | Output image height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the rendered frame. |
+| LImageData | Image data containing the rendered frame. |
 
 **Example**
 
@@ -1354,12 +1453,11 @@ end
 
 ---
 
-### `LAnimation:getBlendState`
+#### `LAnimation:getBlendState`
 
 Returns current crossfade rectangles and blend factor when a crossfade is active.
 
 ```lua
--- signature
 LAnimation:getBlendState()
 ```
 
@@ -1367,7 +1465,7 @@ LAnimation:getBlendState()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Table with `from`, `to`, and `blend`, or nil when no blend is active. |
+| LuaValue | Table with `from`, `to`, and `blend`, or nil when no blend is active. |
 
 **Example**
 
@@ -1384,12 +1482,11 @@ end
 
 ---
 
-### `LAnimation:getClip`
+#### `LAnimation:getClip`
 
 Returns the current clip name when a clip is active.
 
 ```lua
--- signature
 LAnimation:getClip()
 ```
 
@@ -1397,7 +1494,7 @@ LAnimation:getClip()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Current clip name, or nil when no clip is active. |
+| LuaValue | Current clip name, or nil when no clip is active. |
 
 **Example**
 
@@ -1413,12 +1510,11 @@ end
 
 ---
 
-### `LAnimation:getClipCount`
+#### `LAnimation:getClipCount`
 
 Returns the number of named clips stored in this animation.
 
 ```lua
--- signature
 LAnimation:getClipCount()
 ```
 
@@ -1426,7 +1522,7 @@ LAnimation:getClipCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Clip count. |
+| number | Clip count. |
 
 **Example**
 
@@ -1442,12 +1538,11 @@ end
 
 ---
 
-### `LAnimation:getClipMode`
+#### `LAnimation:getClipMode`
 
 Returns the playback mode name for a clip when it exists.
 
 ```lua
--- signature
 LAnimation:getClipMode(name)
 ```
 
@@ -1455,13 +1550,13 @@ LAnimation:getClipMode(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Clip name to query. |
+| `name` | string | Clip name to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Playback mode string, or nil when the clip does not exist. |
+| LuaValue | Playback mode string, or nil when the clip does not exist. |
 
 **Example**
 
@@ -1477,12 +1572,11 @@ end
 
 ---
 
-### `LAnimation:getCurrentFrame`
+#### `LAnimation:getCurrentFrame`
 
 Returns the current frame index. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAnimation:getCurrentFrame()
 ```
 
@@ -1490,7 +1584,7 @@ LAnimation:getCurrentFrame()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current frame index. |
+| number | Current frame index. |
 
 **Example**
 
@@ -1506,12 +1600,11 @@ end
 
 ---
 
-### `LAnimation:getFrameCount`
+#### `LAnimation:getFrameCount`
 
 Returns the number of frame rectangles stored in this animation.
 
 ```lua
--- signature
 LAnimation:getFrameCount()
 ```
 
@@ -1519,7 +1612,7 @@ LAnimation:getFrameCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Frame count. |
+| number | Frame count. |
 
 **Example**
 
@@ -1534,12 +1627,11 @@ end
 
 ---
 
-### `LAnimation:getQuad`
+#### `LAnimation:getQuad`
 
 Returns the current frame rectangle as a table.
 
 ```lua
--- signature
 LAnimation:getQuad()
 ```
 
@@ -1547,7 +1639,7 @@ LAnimation:getQuad()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Table with `x`, `y`, `w`, and `h`, or nil when no frame is active. |
+| LuaValue | Table with `x`, `y`, `w`, and `h`, or nil when no frame is active. |
 
 **Example**
 
@@ -1565,12 +1657,11 @@ end
 
 ---
 
-### `LAnimation:getSpeed`
+#### `LAnimation:getSpeed`
 
 Returns the animation playback speed multiplier.
 
 ```lua
--- signature
 LAnimation:getSpeed()
 ```
 
@@ -1578,7 +1669,7 @@ LAnimation:getSpeed()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current playback speed multiplier. |
+| number | Current playback speed multiplier. |
 
 **Example**
 
@@ -1592,12 +1683,11 @@ end
 
 ---
 
-### `LAnimation:isLooping`
+#### `LAnimation:isLooping`
 
 Returns whether the current clip loops.
 
 ```lua
--- signature
 LAnimation:isLooping()
 ```
 
@@ -1605,7 +1695,7 @@ LAnimation:isLooping()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the active clip is looping. |
+| boolean | True when the active clip is looping. |
 
 **Example**
 
@@ -1621,12 +1711,11 @@ end
 
 ---
 
-### `LAnimation:isPlaying`
+#### `LAnimation:isPlaying`
 
 Returns whether this animation is currently playing.
 
 ```lua
--- signature
 LAnimation:isPlaying()
 ```
 
@@ -1634,7 +1723,7 @@ LAnimation:isPlaying()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when playback is active. |
+| boolean | True when playback is active. |
 
 **Example**
 
@@ -1650,12 +1739,11 @@ end
 
 ---
 
-### `LAnimation:pause`
+#### `LAnimation:pause`
 
 Pauses animation playback without changing the current clip.
 
 ```lua
--- signature
 LAnimation:pause()
 ```
 
@@ -1675,12 +1763,11 @@ end
 
 ---
 
-### `LAnimation:play`
+#### `LAnimation:play`
 
 Starts playback of a named clip. This method is available to Lua scripts.
 
 ```lua
--- signature
 LAnimation:play(name)
 ```
 
@@ -1688,13 +1775,13 @@ LAnimation:play(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Clip name to play. |
+| `name` | string | Clip name to play. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the clip exists and playback started. |
+| boolean | True when the clip exists and playback started. |
 
 **Example**
 
@@ -1710,12 +1797,11 @@ end
 
 ---
 
-### `LAnimation:pollEvents`
+#### `LAnimation:pollEvents`
 
 Drains animation events produced since the previous poll.
 
 ```lua
--- signature
 LAnimation:pollEvents()
 ```
 
@@ -1723,7 +1809,7 @@ LAnimation:pollEvents()
 
 | Type | Description |
 |------|-------------|
-| `LAnimationPollEventsResult` | Array of event tables with `type` and optional `frame` fields. |
+| LAnimationPollEventsResult | Array of event tables with `type` and optional `frame` fields. |
 
 **Example**
 
@@ -1741,12 +1827,11 @@ end
 
 ---
 
-### `LAnimation:resume`
+#### `LAnimation:resume`
 
 Resumes playback of a paused animation.
 
 ```lua
--- signature
 LAnimation:resume()
 ```
 
@@ -1767,12 +1852,11 @@ end
 
 ---
 
-### `LAnimation:setClipMode`
+#### `LAnimation:setClipMode`
 
 Changes the playback mode for an existing clip.
 
 ```lua
--- signature
 LAnimation:setClipMode(name, mode)
 ```
 
@@ -1780,14 +1864,14 @@ LAnimation:setClipMode(name, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Clip name to update. |
-| `mode` | `string` | Playback mode `forward`, `reverse`, or `pingpong`. |
+| `name` | string | Clip name to update. |
+| `mode` | string | Playback mode `forward`, `reverse`, or `pingpong`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the clip exists and the mode was changed. |
+| boolean | True when the clip exists and the mode was changed. |
 
 **Example**
 
@@ -1804,12 +1888,11 @@ end
 
 ---
 
-### `LAnimation:setFrame`
+#### `LAnimation:setFrame`
 
 Sets the current frame index directly.
 
 ```lua
--- signature
 LAnimation:setFrame(index)
 ```
 
@@ -1817,7 +1900,7 @@ LAnimation:setFrame(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | Frame index to make current. |
+| `index` | number | Frame index to make current. |
 
 **Example**
 
@@ -1834,12 +1917,11 @@ end
 
 ---
 
-### `LAnimation:setImage`
+#### `LAnimation:setImage`
 
 Stores a spritesheet image on this animation so draw can be called without an explicit image argument.
 
 ```lua
--- signature
 LAnimation:setImage(image)
 ```
 
@@ -1847,7 +1929,7 @@ LAnimation:setImage(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImage` | Texture atlas or spritesheet containing the animation frames. |
+| `image` | LImage | Texture atlas or spritesheet containing the animation frames. |
 
 **Example**
 
@@ -1866,12 +1948,11 @@ end
 
 ---
 
-### `LAnimation:setSpeed`
+#### `LAnimation:setSpeed`
 
 Sets the animation playback speed multiplier.
 
 ```lua
--- signature
 LAnimation:setSpeed(speed)
 ```
 
@@ -1879,7 +1960,7 @@ LAnimation:setSpeed(speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `speed` | `number` | Playback speed multiplier used by future updates. |
+| `speed` | number | Playback speed multiplier used by future updates. |
 
 **Example**
 
@@ -1893,12 +1974,11 @@ end
 
 ---
 
-### `LAnimation:stop`
+#### `LAnimation:stop`
 
 Stops playback and resets animation playback state.
 
 ```lua
--- signature
 LAnimation:stop()
 ```
 
@@ -1918,12 +1998,11 @@ end
 
 ---
 
-### `LAnimation:type`
+#### `LAnimation:type`
 
 Returns the Lua-visible type name for this animation handle.
 
 ```lua
--- signature
 LAnimation:type()
 ```
 
@@ -1931,7 +2010,7 @@ LAnimation:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAnimation`. |
+| string | The string `[LAnimation](#lanimation-handle)`. |
 
 **Example**
 
@@ -1945,12 +2024,11 @@ end
 
 ---
 
-### `LAnimation:typeOf`
+#### `LAnimation:typeOf`
 
 Returns whether this animation handle matches a supported type name.
 
 ```lua
--- signature
 LAnimation:typeOf(name)
 ```
 
@@ -1958,13 +2036,13 @@ LAnimation:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAnimation` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimation](#lanimation-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1977,12 +2055,11 @@ end
 
 ---
 
-### `LAnimation:update`
+#### `LAnimation:update`
 
 Advances animation playback and records any frame or clip events.
 
 ```lua
--- signature
 LAnimation:update(dt)
 ```
 
@@ -1990,7 +2067,7 @@ LAnimation:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -2007,14 +2084,19 @@ end
 
 ---
 
-## LBlendLayerSet
+## LBlendLayerSet Handle
 
-### `LBlendLayerSet:addLayer`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBlendLayerSet:addLayer`
 
 Adds a weighted animation blend layer with an optional bone mask.
 
 ```lua
--- signature
 LBlendLayerSet:addLayer(name, clip_name, weight, bones)
 ```
 
@@ -2022,16 +2104,16 @@ LBlendLayerSet:addLayer(name, clip_name, weight, bones)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique layer name. |
-| `clip_name` | `string` | Animation clip name used by the layer. |
-| `weight` | `number` | Blend weight for this layer. |
-| `bones?` | `table` | Optional array or map table of bone names included in the mask. |
+| `name` | string | Unique layer name. |
+| `clip_name` | string | Animation clip name used by the layer. |
+| `weight` | number | Blend weight for this layer. |
+| `bones?` | table | Optional array or map table of bone names included in the mask. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer was added. |
+| boolean | True when the layer was added. |
 
 **Example**
 
@@ -2046,12 +2128,11 @@ end
 
 ---
 
-### `LBlendLayerSet:getWeight`
+#### `LBlendLayerSet:getWeight`
 
 Returns the weight for a blend layer when it exists.
 
 ```lua
--- signature
 LBlendLayerSet:getWeight(name)
 ```
 
@@ -2059,13 +2140,13 @@ LBlendLayerSet:getWeight(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name to query. |
+| `name` | string | Layer name to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Layer weight, or nil when the layer does not exist. |
+| LuaValue | Layer weight, or nil when the layer does not exist. |
 
 **Example**
 
@@ -2080,12 +2161,11 @@ end
 
 ---
 
-### `LBlendLayerSet:len`
+#### `LBlendLayerSet:len`
 
 Returns the number of blend layers.
 
 ```lua
--- signature
 LBlendLayerSet:len()
 ```
 
@@ -2093,7 +2173,7 @@ LBlendLayerSet:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Blend layer count. |
+| number | Blend layer count. |
 
 **Example**
 
@@ -2108,12 +2188,11 @@ end
 
 ---
 
-### `LBlendLayerSet:listLayers`
+#### `LBlendLayerSet:listLayers`
 
 Returns all blend layers with names, clip names, weights, and bone masks.
 
 ```lua
--- signature
 LBlendLayerSet:listLayers()
 ```
 
@@ -2121,7 +2200,7 @@ LBlendLayerSet:listLayers()
 
 | Type | Description |
 |------|-------------|
-| `LBlendLayerSetListLayersResult` | Array of layer tables with `name`, `clip_name`, `weight`, and `bones` fields. |
+| LBlendLayerSetListLayersResult | Array of layer tables with `name`, `clip_name`, `weight`, and `bones` fields. |
 
 **Example**
 
@@ -2137,12 +2216,11 @@ end
 
 ---
 
-### `LBlendLayerSet:removeLayer`
+#### `LBlendLayerSet:removeLayer`
 
 Removes a blend layer by name. This method is available to Lua scripts.
 
 ```lua
--- signature
 LBlendLayerSet:removeLayer(name)
 ```
 
@@ -2150,13 +2228,13 @@ LBlendLayerSet:removeLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name to remove. |
+| `name` | string | Layer name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer was removed. |
+| boolean | True when the layer was removed. |
 
 **Example**
 
@@ -2172,12 +2250,11 @@ end
 
 ---
 
-### `LBlendLayerSet:setMask`
+#### `LBlendLayerSet:setMask`
 
 Replaces a layer bone mask from a table of bone names.
 
 ```lua
--- signature
 LBlendLayerSet:setMask(name, bones)
 ```
 
@@ -2185,14 +2262,14 @@ LBlendLayerSet:setMask(name, bones)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name to update. |
-| `bones` | `table` | Array or map table of bone names included in the mask. |
+| `name` | string | Layer name to update. |
+| `bones` | table | Array or map table of bone names included in the mask. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists and the mask was changed. |
+| boolean | True when the layer exists and the mask was changed. |
 
 **Example**
 
@@ -2208,12 +2285,11 @@ end
 
 ---
 
-### `LBlendLayerSet:setWeight`
+#### `LBlendLayerSet:setWeight`
 
 Sets the blend weight for an existing layer.
 
 ```lua
--- signature
 LBlendLayerSet:setWeight(name, weight)
 ```
 
@@ -2221,14 +2297,14 @@ LBlendLayerSet:setWeight(name, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name to update. |
-| `weight` | `number` | New layer weight. |
+| `name` | string | Layer name to update. |
+| `weight` | number | New layer weight. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists and the weight was changed. |
+| boolean | True when the layer exists and the weight was changed. |
 
 **Example**
 
@@ -2244,12 +2320,11 @@ end
 
 ---
 
-### `LBlendLayerSet:type`
+#### `LBlendLayerSet:type`
 
 Returns the Lua-visible type name for this blend layer set handle.
 
 ```lua
--- signature
 LBlendLayerSet:type()
 ```
 
@@ -2257,7 +2332,7 @@ LBlendLayerSet:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LBlendLayerSet`. |
+| string | The string `[LBlendLayerSet](#lblendlayerset-handle)`. |
 
 **Example**
 
@@ -2271,12 +2346,11 @@ end
 
 ---
 
-### `LBlendLayerSet:typeOf`
+#### `LBlendLayerSet:typeOf`
 
 Returns whether this blend layer set handle matches a supported type name.
 
 ```lua
--- signature
 LBlendLayerSet:typeOf(name)
 ```
 
@@ -2284,13 +2358,13 @@ LBlendLayerSet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LBlendLayerSet` and `Object`. |
+| `name` | string | Type name to compare against `[LBlendLayerSet](#lblendlayerset-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

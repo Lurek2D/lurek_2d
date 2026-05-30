@@ -1,12 +1,53 @@
 # Timer
 
-- The `timer` module is a fundamental Core Runtime tier component responsible for precise frame timing, fixed-step accumulation, and deferred callback scheduling.
+## Summary
 
 At the core of the engine's main loop sits the `Clock`, which meticulously tracks per-frame delta time, accumulated total elapsed time, and a rolling frames-per-second (FPS) measurement. To ensure smooth gameplay and stable adaptive logic, it calculates a rolling average delta using a fixed-size ring buffer, which mitigates frame-time jitter. Furthermore, its internal microsecond accumulation employs fractional sub-microsecond carry, completely preventing time-drift errors across frames.
 
 Beyond basic timekeeping, the module provides a highly versatile `Scheduler` for managing deferred and recurring logic. The scheduler handles both time-based (seconds) and frame-based (tick counts) events, offering one-shot and repeating modes. Events can be assigned string names, enabling automatic deduplication—where registering a new named event transparently cancels and replaces any existing event with the same name. Developers have fine-grained lifecycle control over scheduled events, with the ability to pause, resume, reset, or mutate the interval of active timers. Crucially, the scheduler supports a global time-scale multiplier, allowing developers to easily implement slow-motion or fast-forward effects that apply universally to all scheduled callbacks without affecting the underlying wall-clock timers.
 
 The module also caters to diverse asynchronous scripting patterns. It provides real-time timers (`afterReal`) that bypass the global time-scale and game pauses, making them ideal for UI animations or system notifications. For coroutine-based scripting, the module offers `waitSeconds` and `waitFrames`, which yield the current coroutine and auto-resume it once the deadline passes, vastly simplifying complex sequence scripting. Supported by swap-remove compaction to maintain O(1) performance even with thousands of active timers, the `lurek.timer.*` API gives developers robust, high-performance control over the flow of time in their games.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### accumulator.rs
+
+- This file provides drift-safe microsecond accumulation for scaled runtime timekeeping.
+- It preserves fractional carry between ticks so long sessions avoid rounding erosion.
+- It clamps negative inputs to keep elapsed time monotonic and scheduler-safe.
+
+### clock.rs
+
+- This file provides the core frame clock that drives delta, elapsed time, and fps metrics.
+- It computes stable per-frame timing and rolling averages for smoother runtime decisions.
+- It maintains one-second fps windows so performance telemetry stays readable and comparable.
+- It exposes one tick-driven timeline that other subsystems can trust each frame.
+- It anchors deterministic game-loop timing for update, scheduling, and diagnostics paths.
+
+### mod.rs
+
+- This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling.
+- It keeps frame progression measurable and controllable across gameplay and engine services.
+- It unifies timing primitives so deferred logic behaves consistently under load.
+
+### scheduler.rs
+
+- This file provides a scheduler for time-based and frame-based deferred execution flows.
+- It supports one-shot and repeating events with stable identifiers for external control.
+- It handles named event replacement so restartable behaviors stay clean and predictable.
+- It applies global time scaling while preserving safe clamping boundaries for runtime stability.
+- It exposes pause, resume, interval mutation, and remaining-time inspection for live orchestration.
+- It removes expired events efficiently to keep update costs steady at larger event counts.
+- It serves as the central dispatch surface for timer callbacks used by Lua bindings.
+- It keeps callback timing coherent even when many scheduled entries mutate concurrently.
+
+### sleep.rs
+
+- This file provides the blocking sleep primitive used by timer-facing runtime code.
+- It treats non-positive durations as no-op calls to preserve predictable behavior.
+- It delegates to standard thread sleeping without busy waiting or spin loops.
 
 ## Functions
 
@@ -15,7 +56,6 @@ The module also caters to diverse asynchronous scripting patterns. It provides r
 Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling. Use for UI fade-outs, notifications, or anything that should run on real time.
 
 ```lua
--- signature
 lurek.timer.afterReal(delay, func)
 ```
 
@@ -23,8 +63,8 @@ lurek.timer.afterReal(delay, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `delay` | `number` | Real-time delay in seconds before the callback fires. |
-| `func` | `function` | Callback to invoke when the real-time deadline is reached. |
+| `delay` | number | Real-time delay in seconds before the callback fires. |
+| `func` | function | Callback to invoke when the real-time deadline is reached. |
 
 **Example**
 
@@ -43,7 +83,6 @@ end
 Creates a scheduler pre-loaded with a sequence of delayed callbacks. Each step is a table with an optional `delay` (seconds) and optional `func` (callback). Delays accumulate so each step fires after the sum of all preceding delays. Returns the scheduler for manual update calls.
 
 ```lua
--- signature
 lurek.timer.chain(steps)
 ```
 
@@ -51,13 +90,13 @@ lurek.timer.chain(steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `steps` | `table` | Array of step tables, each with optional fields `delay` (number) and `func` (function). |
+| `steps` | table | Array of step tables, each with optional fields `delay` (number) and `func` (function). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LScheduler` | A new scheduler pre-loaded with the chained events. |
+| [LScheduler](#lscheduler-handle) | A new scheduler pre-loaded with the chained events. |
 
 **Example**
 
@@ -82,7 +121,6 @@ end
 Returns the smoothed average delta time in seconds over a recent window of frames. More stable than getDelta for display or adaptive logic.
 
 ```lua
--- signature
 lurek.timer.getAverageDelta()
 ```
 
@@ -90,7 +128,7 @@ lurek.timer.getAverageDelta()
 
 | Type | Description |
 |------|-------------|
-| `number` | Average delta time in seconds. |
+| number | Average delta time in seconds. |
 
 **Example**
 
@@ -108,7 +146,6 @@ end
 Returns the time in seconds elapsed since the last frame. Use this to make movement and animations frame-rate independent.
 
 ```lua
--- signature
 lurek.timer.getDelta()
 ```
 
@@ -116,7 +153,7 @@ lurek.timer.getDelta()
 
 | Type | Description |
 |------|-------------|
-| `number` | Delta time in seconds. |
+| number | Delta time in seconds. |
 
 **Example**
 
@@ -134,7 +171,6 @@ end
 Returns the current frames-per-second count. Useful for performance monitoring overlays and debug HUDs.
 
 ```lua
--- signature
 lurek.timer.getFPS()
 ```
 
@@ -142,7 +178,7 @@ lurek.timer.getFPS()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current FPS. |
+| number | Current FPS. |
 
 **Example**
 
@@ -160,7 +196,6 @@ end
 Returns the total number of frames rendered since the engine started.
 
 ```lua
--- signature
 lurek.timer.getFrameCount()
 ```
 
@@ -168,7 +203,7 @@ lurek.timer.getFrameCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total frame count. |
+| number | Total frame count. |
 
 **Example**
 
@@ -186,7 +221,6 @@ end
 Returns high-resolution elapsed time in seconds since engine start. Useful for precise benchmarking and profiling.
 
 ```lua
--- signature
 lurek.timer.getMicroTime()
 ```
 
@@ -194,7 +228,7 @@ lurek.timer.getMicroTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Elapsed time in seconds with sub-microsecond precision. |
+| number | Elapsed time in seconds with sub-microsecond precision. |
 
 **Example**
 
@@ -215,7 +249,6 @@ end
 Returns the fixed timestep used for physics simulation in seconds. The default is typically 1/60.
 
 ```lua
--- signature
 lurek.timer.getPhysicsDelta()
 ```
 
@@ -223,7 +256,7 @@ lurek.timer.getPhysicsDelta()
 
 | Type | Description |
 |------|-------------|
-| `number` | Fixed physics delta time in seconds. |
+| number | Fixed physics delta time in seconds. |
 
 **Example**
 
@@ -241,7 +274,6 @@ end
 Returns the maximum number of physics steps allowed per frame. Prevents the spiral of death when the game runs slowly.
 
 ```lua
--- signature
 lurek.timer.getPhysicsMaxSteps()
 ```
 
@@ -249,7 +281,7 @@ lurek.timer.getPhysicsMaxSteps()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum physics steps per frame. |
+| number | Maximum physics steps per frame. |
 
 **Example**
 
@@ -269,7 +301,6 @@ end
 Returns an exponentially smoothed delta time in seconds, reducing frame-to-frame jitter. Call once per frame for consistent results. The smoothing factor is set via setSmoothingFactor.
 
 ```lua
--- signature
 lurek.timer.getSmoothedDelta()
 ```
 
@@ -277,7 +308,7 @@ lurek.timer.getSmoothedDelta()
 
 | Type | Description |
 |------|-------------|
-| `number` | Smoothed delta time in seconds. |
+| number | Smoothed delta time in seconds. |
 
 **Example**
 
@@ -296,7 +327,6 @@ end
 Returns the total elapsed game time in seconds since the engine started. Useful for time-based animations, effects, and shader uniforms.
 
 ```lua
--- signature
 lurek.timer.getTime()
 ```
 
@@ -304,7 +334,7 @@ lurek.timer.getTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total elapsed time in seconds. |
+| number | Total elapsed time in seconds. |
 
 **Example**
 
@@ -319,10 +349,9 @@ end
 
 ### `lurek.timer.newScheduler`
 
-Creates a new LScheduler instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.
+Creates a new [LScheduler](#lscheduler-handle) instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.
 
 ```lua
--- signature
 lurek.timer.newScheduler()
 ```
 
@@ -330,7 +359,7 @@ lurek.timer.newScheduler()
 
 | Type | Description |
 |------|-------------|
-| `LScheduler` | A new scheduler object. |
+| [LScheduler](#lscheduler-handle) | A new scheduler object. |
 
 **Example**
 
@@ -351,7 +380,6 @@ end
 Sets the fixed timestep for physics simulation. Clamped between 1/240 and 1/10 seconds. Lower values increase accuracy but cost more CPU.
 
 ```lua
--- signature
 lurek.timer.setPhysicsDelta(dt)
 ```
 
@@ -359,7 +387,7 @@ lurek.timer.setPhysicsDelta(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Desired fixed delta time in seconds. |
+| `dt` | number | Desired fixed delta time in seconds. |
 
 **Example**
 
@@ -378,7 +406,6 @@ end
 Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve accuracy under lag but cost more CPU.
 
 ```lua
--- signature
 lurek.timer.setPhysicsMaxSteps(n)
 ```
 
@@ -386,7 +413,7 @@ lurek.timer.setPhysicsMaxSteps(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Maximum physics steps per frame. |
+| `n` | number | Maximum physics steps per frame. |
 
 **Example**
 
@@ -405,7 +432,6 @@ end
 Sets the exponential smoothing factor used by getSmoothedDelta. Lower values produce smoother (more lagged) results; higher values track changes faster. Clamped to [0.01, 1.0].
 
 ```lua
--- signature
 lurek.timer.setSmoothingFactor(alpha)
 ```
 
@@ -413,7 +439,7 @@ lurek.timer.setSmoothingFactor(alpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `alpha` | `number` | Smoothing factor between 0.01 and 1.0. |
+| `alpha` | number | Smoothing factor between 0.01 and 1.0. |
 
 **Example**
 
@@ -429,10 +455,9 @@ end
 
 ### `lurek.timer.sleep`
 
-Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.
+Blocks the current thread for the given number of seconds. Use sparingly â€” this halts the entire game loop. Intended for loading screens or synchronization.
 
 ```lua
--- signature
 lurek.timer.sleep(seconds)
 ```
 
@@ -440,7 +465,7 @@ lurek.timer.sleep(seconds)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seconds` | `number` | Duration to sleep in seconds. |
+| `seconds` | number | Duration to sleep in seconds. |
 
 **Example**
 
@@ -459,7 +484,6 @@ end
 Advances the internal clock by one tick and returns the delta time for that tick. Typically called by the engine loop; game scripts rarely need this.
 
 ```lua
--- signature
 lurek.timer.step()
 ```
 
@@ -467,7 +491,7 @@ lurek.timer.step()
 
 | Type | Description |
 |------|-------------|
-| `number` | Delta time in seconds for the step. |
+| number | Delta time in seconds for the step. |
 
 **Example**
 
@@ -485,7 +509,6 @@ end
 Checks all real-time timers and fires any whose deadline has passed. Returns the number of callbacks that fired. Call this once per frame after afterReal scheduling.
 
 ```lua
--- signature
 lurek.timer.tickRealTimers()
 ```
 
@@ -493,7 +516,7 @@ lurek.timer.tickRealTimers()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of real-time callbacks that fired. |
+| number | Count of real-time callbacks that fired. |
 
 **Example**
 
@@ -511,7 +534,6 @@ end
 Checks all pending waitSeconds and waitFrames coroutines, resumes any whose deadline or frame target has been reached, and cleans up completed entries. Returns the number of coroutines that were resumed. Call once per frame.
 
 ```lua
--- signature
 lurek.timer.tickWaits()
 ```
 
@@ -519,7 +541,7 @@ lurek.timer.tickWaits()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of coroutines resumed. |
+| number | Count of coroutines resumed. |
 
 **Example**
 
@@ -543,7 +565,6 @@ end
 Yields the current coroutine for the given number of frames. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the target frame count has been reached.
 
 ```lua
--- signature
 lurek.timer.waitFrames(frames)
 ```
 
@@ -551,7 +572,7 @@ lurek.timer.waitFrames(frames)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `frames` | `number` | Number of frames to wait. |
+| `frames` | number | Number of frames to wait. |
 
 **Example**
 
@@ -572,7 +593,6 @@ end
 Yields the current coroutine for the given number of real-time seconds. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the deadline has passed.
 
 ```lua
--- signature
 lurek.timer.waitSeconds(seconds)
 ```
 
@@ -580,7 +600,7 @@ lurek.timer.waitSeconds(seconds)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seconds` | `number` | Real-time seconds to wait. |
+| `seconds` | number | Real-time seconds to wait. |
 
 **Example**
 
@@ -595,14 +615,35 @@ end
 
 ---
 
-## LScheduler
+## Module Fields
 
-### `LScheduler:after`
+*No module-level fields documented.*
+
+## Types
+
+- [LScheduler Handle](#lscheduler-handle)
+
+## Callbacks
+
+- `lurek.timer.afterReal` param `func` (`function`): Callback to invoke when the real-time deadline is reached.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LScheduler Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LScheduler:after`
 
 Schedules a one-shot callback to fire after the given delay in seconds. Returns an event ID that can be used to cancel, pause, or query the event.
 
 ```lua
--- signature
 LScheduler:after(delay, func)
 ```
 
@@ -610,14 +651,14 @@ LScheduler:after(delay, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `delay` | `number` | Time in seconds before the callback fires. |
-| `func` | `function` | Callback to invoke when the delay elapses. |
+| `delay` | number | Time in seconds before the callback fires. |
+| `func` | function | Callback to invoke when the delay elapses. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique event ID for this scheduled callback. |
+| number | Unique event ID for this scheduled callback. |
 
 **Example**
 
@@ -631,12 +672,11 @@ end
 
 ---
 
-### `LScheduler:afterFrames`
+#### `LScheduler:afterFrames`
 
 Schedules a one-shot callback to fire after the given number of frames. Returns an event ID for management.
 
 ```lua
--- signature
 LScheduler:afterFrames(n, func)
 ```
 
@@ -644,14 +684,14 @@ LScheduler:afterFrames(n, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of frames to wait before the callback fires. |
-| `func` | `function` | Callback to invoke when the frame count elapses. |
+| `n` | number | Number of frames to wait before the callback fires. |
+| `func` | function | Callback to invoke when the frame count elapses. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique event ID for this scheduled callback. |
+| number | Unique event ID for this scheduled callback. |
 
 **Example**
 
@@ -670,12 +710,11 @@ end
 
 ---
 
-### `LScheduler:afterNamed`
+#### `LScheduler:afterNamed`
 
 Schedules a named one-shot callback after a delay in seconds. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for debouncing or resettable delays.
 
 ```lua
--- signature
 LScheduler:afterNamed(name, delay, func)
 ```
 
@@ -683,15 +722,15 @@ LScheduler:afterNamed(name, delay, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for this scheduled event. |
-| `delay` | `number` | Time in seconds before the callback fires. |
-| `func` | `function` | Callback to invoke when the delay elapses. |
+| `name` | string | Unique name for this scheduled event. |
+| `delay` | number | Time in seconds before the callback fires. |
+| `func` | function | Callback to invoke when the delay elapses. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique event ID for this scheduled callback. |
+| number | Unique event ID for this scheduled callback. |
 
 **Example**
 
@@ -705,12 +744,11 @@ end
 
 ---
 
-### `LScheduler:cancel`
+#### `LScheduler:cancel`
 
 Cancels a scheduled event by its ID. Returns true if the event was found and removed, false if it did not exist.
 
 ```lua
--- signature
 LScheduler:cancel(id)
 ```
 
@@ -718,13 +756,13 @@ LScheduler:cancel(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID returned by after, every, or their variants. |
+| `id` | number | Event ID returned by after, every, or their variants. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the event was found and cancelled. |
+| boolean | True if the event was found and cancelled. |
 
 **Example**
 
@@ -742,12 +780,11 @@ end
 
 ---
 
-### `LScheduler:cancelAll`
+#### `LScheduler:cancelAll`
 
 Cancels all scheduled events in this scheduler and frees their callbacks. Returns the number of events that were removed.
 
 ```lua
--- signature
 LScheduler:cancelAll()
 ```
 
@@ -755,7 +792,7 @@ LScheduler:cancelAll()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of events that were cancelled. |
+| number | Count of events that were cancelled. |
 
 **Example**
 
@@ -773,12 +810,11 @@ end
 
 ---
 
-### `LScheduler:cancelNamed`
+#### `LScheduler:cancelNamed`
 
 Cancels a named scheduled event. Returns true if the named event was found and removed.
 
 ```lua
--- signature
 LScheduler:cancelNamed(name)
 ```
 
@@ -786,13 +822,13 @@ LScheduler:cancelNamed(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The name used when scheduling with afterNamed or everyNamed. |
+| `name` | string | The name used when scheduling with afterNamed or everyNamed. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the named event was found and cancelled. |
+| boolean | True if the named event was found and cancelled. |
 
 **Example**
 
@@ -807,12 +843,11 @@ end
 
 ---
 
-### `LScheduler:every`
+#### `LScheduler:every`
 
 Schedules a repeating callback that fires at a fixed interval in seconds. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
 
 ```lua
--- signature
 LScheduler:every(interval, func, count)
 ```
 
@@ -820,15 +855,15 @@ LScheduler:every(interval, func, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `interval` | `number` | Time in seconds between each invocation. |
-| `func` | `function` | Callback to invoke on each interval tick. |
-| `count?` | `number` | Maximum number of times to fire. Defaults to -1 (infinite). |
+| `interval` | number | Time in seconds between each invocation. |
+| `func` | function | Callback to invoke on each interval tick. |
+| `count?` | number | Maximum number of times to fire. Defaults to -1 (infinite). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique event ID for this repeating callback. |
+| number | Unique event ID for this repeating callback. |
 
 **Example**
 
@@ -845,12 +880,11 @@ end
 
 ---
 
-### `LScheduler:everyFrames`
+#### `LScheduler:everyFrames`
 
 Schedules a repeating callback that fires every N frames. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
 
 ```lua
--- signature
 LScheduler:everyFrames(n, func, count)
 ```
 
@@ -858,15 +892,15 @@ LScheduler:everyFrames(n, func, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of frames between each invocation. |
-| `func` | `function` | Callback to invoke on each frame-interval tick. |
-| `count?` | `number` | Maximum number of times to fire. Defaults to -1 (infinite). |
+| `n` | number | Number of frames between each invocation. |
+| `func` | function | Callback to invoke on each frame-interval tick. |
+| `count?` | number | Maximum number of times to fire. Defaults to -1 (infinite). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique event ID for this repeating callback. |
+| number | Unique event ID for this repeating callback. |
 
 **Example**
 
@@ -885,12 +919,11 @@ end
 
 ---
 
-### `LScheduler:everyNamed`
+#### `LScheduler:everyNamed`
 
 Schedules a named repeating callback at a fixed interval. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for restartable periodic effects like health regeneration or status ticks.
 
 ```lua
--- signature
 LScheduler:everyNamed(name, interval, func, count)
 ```
 
@@ -898,16 +931,16 @@ LScheduler:everyNamed(name, interval, func, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for this repeating event. |
-| `interval` | `number` | Time in seconds between each invocation. |
-| `func` | `function` | Callback to invoke on each interval tick. |
-| `count?` | `number` | Maximum number of times to fire. Defaults to -1 (infinite). |
+| `name` | string | Unique name for this repeating event. |
+| `interval` | number | Time in seconds between each invocation. |
+| `func` | function | Callback to invoke on each interval tick. |
+| `count?` | number | Maximum number of times to fire. Defaults to -1 (infinite). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unique event ID for this repeating callback. |
+| number | Unique event ID for this repeating callback. |
 
 **Example**
 
@@ -924,12 +957,11 @@ end
 
 ---
 
-### `LScheduler:getCount`
+#### `LScheduler:getCount`
 
 Returns the total number of active scheduled events in this scheduler.
 
 ```lua
--- signature
 LScheduler:getCount()
 ```
 
@@ -937,7 +969,7 @@ LScheduler:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of active events. |
+| number | Count of active events. |
 
 **Example**
 
@@ -953,12 +985,11 @@ end
 
 ---
 
-### `LScheduler:getInterval`
+#### `LScheduler:getInterval`
 
 Returns the interval duration in seconds for a repeating event. The first return value indicates whether the event was found; the second is the interval (0.0 if not found).
 
 ```lua
--- signature
 LScheduler:getInterval(id)
 ```
 
@@ -966,14 +997,14 @@ LScheduler:getInterval(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to query. |
+| `id` | number | Event ID to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True if the event exists. |
-| `number` | b Interval in seconds, or 0.0 if not found. |
+| boolean | True if the event exists. |
+| number | Interval in seconds; or 0.0 if not found. |
 
 **Example**
 
@@ -989,12 +1020,11 @@ end
 
 ---
 
-### `LScheduler:getRemaining`
+#### `LScheduler:getRemaining`
 
 Returns the remaining time in seconds before the event fires. The first return value indicates whether the event was found; the second is the remaining time (0.0 if not found).
 
 ```lua
--- signature
 LScheduler:getRemaining(id)
 ```
 
@@ -1002,14 +1032,14 @@ LScheduler:getRemaining(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to query. |
+| `id` | number | Event ID to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True if the event exists. |
-| `number` | b Remaining time in seconds, or 0.0 if not found. |
+| boolean | True if the event exists. |
+| number | Remaining time in seconds; or 0.0 if not found. |
 
 **Example**
 
@@ -1025,12 +1055,11 @@ end
 
 ---
 
-### `LScheduler:getRepeatCount`
+#### `LScheduler:getRepeatCount`
 
 Returns the remaining repeat count for a repeating event. The first return value indicates whether the event was found; the second is the count (0 if not found). A value of -1 means infinite repeats.
 
 ```lua
--- signature
 LScheduler:getRepeatCount(id)
 ```
 
@@ -1038,14 +1067,14 @@ LScheduler:getRepeatCount(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to query. |
+| `id` | number | Event ID to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | a True if the event exists. |
-| `number` | b Remaining repeat count, or 0 if not found. |
+| boolean | True if the event exists. |
+| number | Remaining repeat count; or 0 if not found. |
 
 **Example**
 
@@ -1061,12 +1090,11 @@ end
 
 ---
 
-### `LScheduler:getTimeScale`
+#### `LScheduler:getTimeScale`
 
 Returns the current time scale multiplier for this scheduler.
 
 ```lua
--- signature
 LScheduler:getTimeScale()
 ```
 
@@ -1074,7 +1102,7 @@ LScheduler:getTimeScale()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current time scale (1.0 = normal speed). |
+| number | Current time scale (1.0 = normal speed). |
 
 **Example**
 
@@ -1089,12 +1117,11 @@ end
 
 ---
 
-### `LScheduler:isEmpty`
+#### `LScheduler:isEmpty`
 
 Returns true if the scheduler has no active events.
 
 ```lua
--- signature
 LScheduler:isEmpty()
 ```
 
@@ -1102,7 +1129,7 @@ LScheduler:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when no events are scheduled. |
+| boolean | True when no events are scheduled. |
 
 **Example**
 
@@ -1117,12 +1144,11 @@ end
 
 ---
 
-### `LScheduler:isPaused`
+#### `LScheduler:isPaused`
 
 Checks whether a scheduled event is currently paused.
 
 ```lua
--- signature
 LScheduler:isPaused(id)
 ```
 
@@ -1130,13 +1156,13 @@ LScheduler:isPaused(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to check. |
+| `id` | number | Event ID to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the event is paused, false if running or not found. |
+| boolean | True if the event is paused, false if running or not found. |
 
 **Example**
 
@@ -1151,12 +1177,11 @@ end
 
 ---
 
-### `LScheduler:isPausedNamed`
+#### `LScheduler:isPausedNamed`
 
 Checks whether a named scheduled event is currently paused.
 
 ```lua
--- signature
 LScheduler:isPausedNamed(name)
 ```
 
@@ -1164,13 +1189,13 @@ LScheduler:isPausedNamed(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The name used when scheduling. |
+| `name` | string | The name used when scheduling. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the named event is paused. |
+| boolean | True if the named event is paused. |
 
 **Example**
 
@@ -1185,12 +1210,11 @@ end
 
 ---
 
-### `LScheduler:pause`
+#### `LScheduler:pause`
 
 Pauses a scheduled event so it stops accumulating time. Returns true if the event was found and paused.
 
 ```lua
--- signature
 LScheduler:pause(id)
 ```
 
@@ -1198,13 +1222,13 @@ LScheduler:pause(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to pause. |
+| `id` | number | Event ID to pause. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the event exists and was paused. |
+| boolean | True if the event exists and was paused. |
 
 **Example**
 
@@ -1219,12 +1243,11 @@ end
 
 ---
 
-### `LScheduler:pauseNamed`
+#### `LScheduler:pauseNamed`
 
 Pauses a named scheduled event. Returns true if the named event was found and paused.
 
 ```lua
--- signature
 LScheduler:pauseNamed(name)
 ```
 
@@ -1232,13 +1255,13 @@ LScheduler:pauseNamed(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The name used when scheduling. |
+| `name` | string | The name used when scheduling. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the named event exists and was paused. |
+| boolean | True if the named event exists and was paused. |
 
 **Example**
 
@@ -1253,12 +1276,11 @@ end
 
 ---
 
-### `LScheduler:resetEvent`
+#### `LScheduler:resetEvent`
 
 Resets the elapsed time of a scheduled event back to zero, restarting its delay or interval countdown. Returns true if the event was found and reset.
 
 ```lua
--- signature
 LScheduler:resetEvent(id)
 ```
 
@@ -1266,13 +1288,13 @@ LScheduler:resetEvent(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to reset. |
+| `id` | number | Event ID to reset. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the event was found and reset. |
+| boolean | True if the event was found and reset. |
 
 **Example**
 
@@ -1289,12 +1311,11 @@ end
 
 ---
 
-### `LScheduler:resume`
+#### `LScheduler:resume`
 
 Resumes a previously paused event so it continues accumulating time. Returns true if the event was found and resumed.
 
 ```lua
--- signature
 LScheduler:resume(id)
 ```
 
@@ -1302,13 +1323,13 @@ LScheduler:resume(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID to resume. |
+| `id` | number | Event ID to resume. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the event exists and was resumed. |
+| boolean | True if the event exists and was resumed. |
 
 **Example**
 
@@ -1324,12 +1345,11 @@ end
 
 ---
 
-### `LScheduler:resumeNamed`
+#### `LScheduler:resumeNamed`
 
 Resumes a previously paused named event. Returns true if the named event was found and resumed.
 
 ```lua
--- signature
 LScheduler:resumeNamed(name)
 ```
 
@@ -1337,13 +1357,13 @@ LScheduler:resumeNamed(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The name used when scheduling. |
+| `name` | string | The name used when scheduling. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the named event exists and was resumed. |
+| boolean | True if the named event exists and was resumed. |
 
 **Example**
 
@@ -1360,12 +1380,11 @@ end
 
 ---
 
-### `LScheduler:setInterval`
+#### `LScheduler:setInterval`
 
 Changes the interval duration in seconds for an existing repeating event. Returns true if the event was found and updated.
 
 ```lua
--- signature
 LScheduler:setInterval(id, interval)
 ```
 
@@ -1373,14 +1392,14 @@ LScheduler:setInterval(id, interval)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Event ID of the repeating event. |
-| `interval` | `number` | New interval duration in seconds. |
+| `id` | number | Event ID of the repeating event. |
+| `interval` | number | New interval duration in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the event was found and its interval updated. |
+| boolean | True if the event was found and its interval updated. |
 
 **Example**
 
@@ -1395,12 +1414,11 @@ end
 
 ---
 
-### `LScheduler:setTimeScale`
+#### `LScheduler:setTimeScale`
 
 Sets the time scale multiplier for this scheduler. A value of 2.0 makes events fire twice as fast; 0.5 makes them fire at half speed. Does not affect frame-based events.
 
 ```lua
--- signature
 LScheduler:setTimeScale(scale)
 ```
 
@@ -1408,7 +1426,7 @@ LScheduler:setTimeScale(scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scale` | `number` | Time scale multiplier (1.0 = normal speed). |
+| `scale` | number | Time scale multiplier (1.0 = normal speed). |
 
 **Example**
 
@@ -1423,12 +1441,11 @@ end
 
 ---
 
-### `LScheduler:type`
+#### `LScheduler:type`
 
 Returns the type name of this object as a string.
 
 ```lua
--- signature
 LScheduler:type()
 ```
 
@@ -1436,7 +1453,7 @@ LScheduler:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LScheduler". |
+| string | Always "[LScheduler](#lscheduler-handle)". |
 
 **Example**
 
@@ -1449,12 +1466,11 @@ end
 
 ---
 
-### `LScheduler:typeOf`
+#### `LScheduler:typeOf`
 
-Checks whether this object matches the given type name. Accepts "LScheduler" or "Object".
+Checks whether this object matches the given type name. Accepts "[LScheduler](#lscheduler-handle)" or "Object".
 
 ```lua
--- signature
 LScheduler:typeOf(name)
 ```
 
@@ -1462,13 +1478,13 @@ LScheduler:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -1481,12 +1497,11 @@ end
 
 ---
 
-### `LScheduler:update`
+#### `LScheduler:update`
 
 Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
 
 ```lua
--- signature
 LScheduler:update(dt)
 ```
 
@@ -1494,13 +1509,13 @@ LScheduler:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds since the last update. |
+| `dt` | number | Delta time in seconds since the last update. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of callbacks that fired during this update. |
+| number | Count of callbacks that fired during this update. |
 
 **Example**
 
@@ -1516,12 +1531,11 @@ end
 
 ---
 
-### `LScheduler:updateFrames`
+#### `LScheduler:updateFrames`
 
 Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
 
 ```lua
--- signature
 LScheduler:updateFrames()
 ```
 
@@ -1529,7 +1543,7 @@ LScheduler:updateFrames()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of callbacks that fired during this frame update. |
+| number | Count of callbacks that fired during this frame update. |
 
 **Example**
 

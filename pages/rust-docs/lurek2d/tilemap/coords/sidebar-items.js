@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["from_screen_hex","from_screen_iso","hex_area","hex_distance","hex_line","hex_neighbors","hex_reflect","hex_ring","hex_rotate","hex_round","hex_spiral","iso_direction_from_angle","iso_direction_name","iso_rotate","to_screen_hex","to_screen_iso"]};

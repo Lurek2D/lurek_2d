@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["collect_tiled_positions"]};

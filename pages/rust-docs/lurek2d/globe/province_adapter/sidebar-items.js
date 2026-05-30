@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["apply_political_colors","apply_visibility_to_viewer"]};

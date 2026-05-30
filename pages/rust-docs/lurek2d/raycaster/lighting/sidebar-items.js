@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["apply_lit_shade","compute_lighting"],"struct":["PointLight"]};

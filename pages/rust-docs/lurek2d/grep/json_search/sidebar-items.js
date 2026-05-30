@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["search_json_file","search_json_path"],"struct":["JsonMatch"]};

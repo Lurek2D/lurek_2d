@@ -1,14 +1,87 @@
 # Compute
 
-- The `compute` module is a dense N-dimensional numerical array library forming a core component of the Foundations tier.
+## Summary
 
-Designed specifically for CPU-only matrix, signal processing, and spatial workloads, it provides Lurek2D with robust scientific computing capabilities completely independent of engine-specific logic or GPU dependencies. The heart of the module is the `NdArray` container—a flat-storage, strongly typed array that supports `Float32`, `Float64`, and `Int32` element representations. It efficiently manages shape metadata, multidimensional coordinate indexing, stride computations, and contiguous row-major memory allocation.
+The `compute` module is the CPU numerical workspace for typed n-dimensional array operations and analytics-style transforms. `NdArray` plus `DataType` form the primary data container, while specialized submodules provide FFT, linear algebra, element-wise ops, spatial processing, and aggregate analytics.
 
-The module offers a vast mathematical operations suite accessible via `ops.rs`. This includes element-wise arithmetic, boolean comparisons, bitwise logic, and reduction operations (sum, mean, min, max) that can be applied globally or along specific array axes. Many of these operations feature in-place mutation variants and support row-broadcasting to optimize memory usage. For large array processing, the module leverages the `rayon` crate to automatically dispatch operations concurrently across threads when workloads exceed a tunable parallelization threshold.
+Its architecture is capability-based: `array` handles shape and storage, `ops` handles vectorized/reduction primitives and parallel thresholds, `linalg` handles matrix/transform operations, `fft` handles frequency transforms, and `spatial` handles neighborhood-based processing. `analytics` adds higher-level statistics over these same typed buffers.
 
-Beyond basic arithmetic, `compute` includes specialized submodules for advanced mathematics. `fft.rs` provides Radix-2 in-place Fast Fourier Transforms (FFT) and Inverse FFTs for frequency domain analysis, including magnitude spectrum extraction. `linalg.rs` implements essential linear algebra primitives, offering 2D transformations (rotation, affine matrices), Sobel edge detection, Gaussian convolution kernels, LU decomposition for linear system solving, and dominant eigenpair estimation via power iteration. `spatial.rs` extends these capabilities with 2D image-processing functions such as Manhattan-distance morphological operations (dilate/erode), flood filling, sub-region extraction, and 2D convolution with zero-padded boundary handling.
+This module is intentionally GPU-agnostic and gameplay-agnostic. It exists to provide deterministic numerical kernels that other systems can call, from simulation features to offline tooling.
 
-Finally, the `analytics.rs` module provides statistical and analytical tools, including histogram binning, percentile extraction, cumulative sums, cross-correlation, and data normalization (range scaling and z-score standardization). The entire API surface is fully exposed to Lua via the `lurek.compute.*` namespace, allowing script developers to write highly performant data processing algorithms without leaving Lua. The documentation contract strictly enforces that all polymorphic parameter types and return shapes are meticulously detailed in `src/lua_api/compute_api.rs` to guarantee accurate generated bindings.
+Quality for this module means strong shape/type guarantees, predictable numeric behavior, and transparent performance controls (such as configurable parallel dispatch thresholds) so callers can balance determinism and throughput.
+
+Implementation detail and boundary guarantees for compute: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analytics.rs: Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d) - Histogram binning with configurable range and bin count - Percentile extraction with linear interpolation - Pairwise statistical measures (covariance, Pearson correlation) - Value normalization helpe; array.rs: Dense n-dimensional array container with typed storage (float32, float64, int32) - Shape validation, stride computation, and flat-index addressing - Constructors for zeros, ones, range, and from-slice initialization - Element access by flat index or multidimensional coordinates -; fft.rs: Radix-2 in-place FFT and inverse FFT for power-of-two length buffers - Real-to-complex forward transform with automatic zero-padding - Complex-to-real inverse transform for spectrum reconstruction - Magnitude spectrum extraction from complex bin pairs; linalg.rs: Vector operations (normalize, cross2d, outer product, dot via spatial) - 2D transformation matrices (rotation, affine, point transform) - Convolution kernels (Gaussian) and edge detection (Sobel) - Linear system solving via Gaussian elimination with partial pivoting - LU decompos; mod.rs: N-dimensional array container, element-wise and reduction operations - FFT, linear algebra, spatial filtering, and statistical analytics - Configurable parallel dispatch threshold for large arrays; ops.rs: Element-wise arithmetic, comparison, and bitwise operations on NdArray - Scalar and array binary operations with row-broadcast support - Reduction operations (sum, mean, min, max) globally and along axes - In-place mutation variants for add, sub, mul, div - Reshape, transpose, cl; spatial.rs: 2D convolution with zero-padded boundary handling - Binary morphology operators (dilate, erode) using Manhattan radius - Flood fill with 4-connected BFS propagation - Sub-region extraction and insertion for 2D arrays - Matrix multiplication and 1D dot product. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### analytics.rs
+
+- Implements analytical operations over arrays including cumulative, differential, and distribution metrics.
+- Provides histogram generation with configurable domains and binning resolution control.
+- Computes percentile estimates with interpolation for robust quantile-style inspection workflows.
+- Exposes pairwise statistics such as covariance and correlation for relationship analysis.
+- Includes normalization helpers for range scaling and standardized z-score transformations.
+- Serves as the statistical post-processing layer for compute arrays and derived results.
+
+### array.rs
+
+- Implements the dense n-dimensional array container used by all compute submodules.
+- Stores typed scalar buffers with explicit shape metadata and deterministic stride computation.
+- Validates dimensions and element counts to protect allocation and indexing safety boundaries.
+- Provides constructors for common initialization flows including zeros, ones, ranges, and slices.
+- Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns.
+- Exposes utility mapping, filling, and iteration helpers for transformation pipelines.
+- Serves as the foundational data model for operations, analytics, spatial, and linalg layers.
+
+### fft.rs
+
+- Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths.
+- Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes.
+- Provides inverse reconstruction paths from complex spectra back to real-domain samples.
+- Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis.
+- Serves as the spectral-analysis primitive layer for compute-side signal processing tasks.
+
+### linalg.rs
+
+- Implements linear-algebra and geometric helper operations over compute array structures.
+- Provides vector normalization, cross-style products, and matrix-oriented transformation utilities.
+- Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows.
+- Solves linear systems with Gaussian elimination using pivoting for improved numerical stability.
+- Computes LU decomposition with permutation tracking to support determinant-aware factorization.
+- Exposes dominant eigenpair estimation through iterative power-method style evaluation.
+- Serves as the algebraic backbone for higher-level analytical and spatial compute tasks.
+
+### mod.rs
+
+- Defines the compute module boundary for array math, analytics, transforms, and spatial processing.
+- Groups core numeric submodules under one cohesive surface with shared data contracts.
+- Serves as the composition entry for engine-side compute and numeric utility workflows.
+
+### ops.rs
+
+- Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows.
+- Supports scalar-array and array-array binary operations with bounded broadcast compatibility.
+- Provides global and axis-based reductions including sum, mean, min, max, and related aggregates.
+- Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates.
+- Includes reshape, transpose, cloning, thresholding, and conditional selection utilities.
+- Handles integer and floating operation variants through dtype-aware dispatch behavior.
+- Integrates configurable parallel execution thresholds for rayon-backed large-array workloads.
+- Returns deterministic error messages on shape mismatch, invalid axis, or unsupported operation cases.
+- Provides positional and logical queries such as argmin, argmax, nonzero count, any, and all.
+- Preserves predictable semantics across contiguous and non-trivial shape transformations.
+- Serves as the high-throughput compute workhorse used by analytics and algorithmic systems.
+- Anchors most data-manipulation behavior on top of the shared NdArray contract.
+
+### spatial.rs
+
+- Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces.
+- Provides zero-padded convolution for kernel filtering across image-like matrix inputs.
+- Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods.
+- Supports flood-fill propagation and region extraction or insertion for localized data editing.
+- Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition.
+- Serves as the spatial-processing utility layer built on top of NdArray primitives.
 
 ## Functions
 
@@ -17,7 +90,6 @@ Finally, the `analytics.rs` module provides statistical and analytical tools, in
 Creates a 2D affine transform matrix.
 
 ```lua
--- signature
 lurek.compute.affine2d(tx, ty, angle_rad, sx, sy)
 ```
 
@@ -25,17 +97,17 @@ lurek.compute.affine2d(tx, ty, angle_rad, sx, sy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Translation X component. |
-| `ty` | `number` | Translation Y component. |
-| `angle_rad` | `number` | Rotation angle in radians. |
-| `sx` | `number` | Scale X component. |
-| `sy` | `number` | Scale Y component. |
+| `tx` | number | Translation X component. |
+| `ty` | number | Translation Y component. |
+| `angle_rad` | number | Rotation angle in radians. |
+| `sx` | number | Scale X component. |
+| `sy` | number | Scale Y component. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New affine transform matrix array. |
+| [LArray](#larray-handle) | New affine transform matrix array. |
 
 **Example**
 
@@ -53,7 +125,6 @@ end
 Computes the FFT of real-valued samples.
 
 ```lua
--- signature
 lurek.compute.fft(samples)
 ```
 
@@ -61,13 +132,13 @@ lurek.compute.fft(samples)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `samples` | `table` | Array table of real-valued samples. |
+| `samples` | table | Array table of real-valued samples. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `ComputeFftResult` | Array table of complex pairs with `re` and `im` fields. |
+| LComputeFftResult | Array table of complex pairs with `re` and `im` fields. |
 
 **Example**
 
@@ -86,7 +157,6 @@ end
 Computes FFT magnitudes for real-valued samples.
 
 ```lua
--- signature
 lurek.compute.fftMagnitude(samples)
 ```
 
@@ -94,13 +164,13 @@ lurek.compute.fftMagnitude(samples)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `samples` | `table` | Array table of real-valued samples. |
+| `samples` | table | Array table of real-valued samples. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of magnitude values. |
+| number[] | Array table of magnitude values. |
 
 **Example**
 
@@ -119,7 +189,6 @@ end
 Creates an array from a flat Lua table and optional shape.
 
 ```lua
--- signature
 lurek.compute.fromTable(data, shape, dtype)
 ```
 
@@ -127,15 +196,15 @@ lurek.compute.fromTable(data, shape, dtype)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | Array table of numeric values. |
-| `shape?` | `table` | Optional array table of positive dimension sizes. |
-| `dtype?` | `string` | Data type name; defaults to `float32`. |
+| `data` | table | Array table of numeric values. |
+| `shape?` | table | Optional array table of positive dimension sizes. |
+| `dtype?` | string | Data type name; defaults to `float32`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array handle containing table values. |
+| [LArray](#larray-handle) | New array handle containing table values. |
 
 **Example**
 
@@ -153,7 +222,6 @@ end
 Creates a square Gaussian kernel array.
 
 ```lua
--- signature
 lurek.compute.gaussianKernel(size, sigma)
 ```
 
@@ -161,14 +229,14 @@ lurek.compute.gaussianKernel(size, sigma)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Kernel width and height. |
-| `sigma` | `number` | Gaussian sigma value. |
+| `size` | number | Kernel width and height. |
+| `sigma` | number | Gaussian sigma value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New Gaussian kernel array. |
+| [LArray](#larray-handle) | New Gaussian kernel array. |
 
 **Example**
 
@@ -187,7 +255,6 @@ end
 Returns the global compute parallelism threshold.
 
 ```lua
--- signature
 lurek.compute.getParThreshold()
 ```
 
@@ -195,7 +262,7 @@ lurek.compute.getParThreshold()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current parallel threshold. |
+| number | Current parallel threshold. |
 
 **Example**
 
@@ -213,7 +280,6 @@ end
 Computes the inverse FFT of complex frequency pairs.
 
 ```lua
--- signature
 lurek.compute.ifft(freqs)
 ```
 
@@ -221,13 +287,13 @@ lurek.compute.ifft(freqs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `freqs` | `table` | Array table of complex pairs with `re` and `im` fields. |
+| `freqs` | table | Array table of complex pairs with `re` and `im` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of reconstructed real-valued samples. |
+| number[] | Array table of reconstructed real-valued samples. |
 
 **Example**
 
@@ -247,7 +313,6 @@ end
 Creates a zero-filled array with the requested shape and data type.
 
 ```lua
--- signature
 lurek.compute.newArray(shape, dtype)
 ```
 
@@ -255,14 +320,14 @@ lurek.compute.newArray(shape, dtype)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shape` | `table` | Array table of positive dimension sizes. |
-| `dtype?` | `string` | Data type name; defaults to `float32`. |
+| `shape` | table | Array table of positive dimension sizes. |
+| `dtype?` | string | Data type name; defaults to `float32`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New zero-filled array handle. |
+| [LArray](#larray-handle) | New zero-filled array handle. |
 
 **Example**
 
@@ -281,7 +346,6 @@ end
 Creates a one-filled array with the requested shape and data type.
 
 ```lua
--- signature
 lurek.compute.ones(shape, dtype)
 ```
 
@@ -289,14 +353,14 @@ lurek.compute.ones(shape, dtype)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shape` | `table` | Array table of positive dimension sizes. |
-| `dtype?` | `string` | Data type name; defaults to `float32`. |
+| `shape` | table | Array table of positive dimension sizes. |
+| `dtype?` | string | Data type name; defaults to `float32`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New one-filled array handle. |
+| [LArray](#larray-handle) | New one-filled array handle. |
 
 **Example**
 
@@ -314,7 +378,6 @@ end
 Creates a one-dimensional range array.
 
 ```lua
--- signature
 lurek.compute.range(start, stop, step, dtype)
 ```
 
@@ -322,16 +385,16 @@ lurek.compute.range(start, stop, step, dtype)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | First value in the range. |
-| `stop` | `number` | Stop value for the range. |
-| `step?` | `number` | Step size; defaults to 1.0. |
-| `dtype?` | `string` | Data type name; defaults to `float32`. |
+| `start` | number | First value in the range. |
+| `stop` | number | Stop value for the range. |
+| `step?` | number | Step size; defaults to 1.0. |
+| `dtype?` | string | Data type name; defaults to `float32`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New range array handle. |
+| [LArray](#larray-handle) | New range array handle. |
 
 **Example**
 
@@ -350,7 +413,6 @@ end
 Creates a 2D rotation matrix from an angle in radians.
 
 ```lua
--- signature
 lurek.compute.rotate2dMatrix(angle_rad)
 ```
 
@@ -358,13 +420,13 @@ lurek.compute.rotate2dMatrix(angle_rad)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle_rad` | `number` | Rotation angle in radians. |
+| `angle_rad` | number | Rotation angle in radians. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New rotation matrix array. |
+| [LArray](#larray-handle) | New rotation matrix array. |
 
 **Example**
 
@@ -383,7 +445,6 @@ end
 Sets the global compute parallelism threshold and returns the previous value.
 
 ```lua
--- signature
 lurek.compute.setParThreshold(threshold)
 ```
 
@@ -391,13 +452,13 @@ lurek.compute.setParThreshold(threshold)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `threshold` | `number` | New threshold; values below one are clamped to one. |
+| `threshold` | number | New threshold; values below one are clamped to one. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Previous parallel threshold. |
+| number | Previous parallel threshold. |
 
 **Example**
 
@@ -416,7 +477,6 @@ end
 Creates a zero-filled array with the requested shape and data type.
 
 ```lua
--- signature
 lurek.compute.zeros(shape, dtype)
 ```
 
@@ -424,14 +484,14 @@ lurek.compute.zeros(shape, dtype)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shape` | `table` | Array table of positive dimension sizes. |
-| `dtype?` | `string` | Data type name; defaults to `float32`. |
+| `shape` | table | Array table of positive dimension sizes. |
+| `dtype?` | string | Data type name; defaults to `float32`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New zero-filled array handle. |
+| [LArray](#larray-handle) | New zero-filled array handle. |
 
 **Example**
 
@@ -444,14 +504,35 @@ end
 
 ---
 
-## LArray
+## Module Fields
 
-### `LArray:abs`
+*No module-level fields documented.*
+
+## Types
+
+- [LArray Handle](#larray-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LArray Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LArray:abs`
 
 Returns element-wise absolute values.
 
 ```lua
--- signature
 LArray:abs()
 ```
 
@@ -459,7 +540,7 @@ LArray:abs()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing absolute values. |
+| [LArray](#larray-handle) | New array containing absolute values. |
 
 **Example**
 
@@ -473,12 +554,11 @@ end
 
 ---
 
-### `LArray:add`
+#### `LArray:add`
 
 Returns element-wise addition with an array or scalar.
 
 ```lua
--- signature
 LArray:add(value)
 ```
 
@@ -486,13 +566,13 @@ LArray:add(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing the addition result. |
+| [LArray](#larray-handle) | New array containing the addition result. |
 
 **Example**
 
@@ -506,12 +586,11 @@ end
 
 ---
 
-### `LArray:addInplace`
+#### `LArray:addInplace`
 
 Adds another array into this array in place.
 
 ```lua
--- signature
 LArray:addInplace(other)
 ```
 
@@ -519,7 +598,7 @@ LArray:addInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array with a compatible shape. |
+| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
 
 **Example**
 
@@ -535,12 +614,11 @@ end
 
 ---
 
-### `LArray:all`
+#### `LArray:all`
 
 Returns whether all elements are non-zero.
 
 ```lua
--- signature
 LArray:all()
 ```
 
@@ -548,7 +626,7 @@ LArray:all()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when every element is non-zero. |
+| boolean | True when every element is non-zero. |
 
 **Example**
 
@@ -561,12 +639,11 @@ end
 
 ---
 
-### `LArray:any`
+#### `LArray:any`
 
 Returns whether any element is non-zero.
 
 ```lua
--- signature
 LArray:any()
 ```
 
@@ -574,7 +651,7 @@ LArray:any()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when at least one element is non-zero. |
+| boolean | True when at least one element is non-zero. |
 
 **Example**
 
@@ -588,12 +665,11 @@ end
 
 ---
 
-### `LArray:argmax`
+#### `LArray:argmax`
 
 Returns the one-based flat index of the maximum value.
 
 ```lua
--- signature
 LArray:argmax()
 ```
 
@@ -601,7 +677,7 @@ LArray:argmax()
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based index of the maximum element. |
+| number | One-based index of the maximum element. |
 
 **Example**
 
@@ -614,12 +690,11 @@ end
 
 ---
 
-### `LArray:argmin`
+#### `LArray:argmin`
 
 Returns the one-based flat index of the minimum value.
 
 ```lua
--- signature
 LArray:argmin()
 ```
 
@@ -627,7 +702,7 @@ LArray:argmin()
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based index of the minimum element. |
+| number | One-based index of the minimum element. |
 
 **Example**
 
@@ -640,12 +715,11 @@ end
 
 ---
 
-### `LArray:bitwiseAnd`
+#### `LArray:bitwiseAnd`
 
 Returns element-wise bitwise AND with another array.
 
 ```lua
--- signature
 LArray:bitwiseAnd(other)
 ```
 
@@ -653,13 +727,13 @@ LArray:bitwiseAnd(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array used as the right-hand operand. |
+| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing bitwise AND results. |
+| [LArray](#larray-handle) | New array containing bitwise AND results. |
 
 **Example**
 
@@ -674,12 +748,11 @@ end
 
 ---
 
-### `LArray:bitwiseLShift`
+#### `LArray:bitwiseLShift`
 
 Returns element-wise left shift by a bit count.
 
 ```lua
--- signature
 LArray:bitwiseLShift(amount)
 ```
 
@@ -687,13 +760,13 @@ LArray:bitwiseLShift(amount)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `amount` | `number` | Bit count to shift left. |
+| `amount` | number | Bit count to shift left. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing shifted values. |
+| [LArray](#larray-handle) | New array containing shifted values. |
 
 **Example**
 
@@ -707,12 +780,11 @@ end
 
 ---
 
-### `LArray:bitwiseNot`
+#### `LArray:bitwiseNot`
 
 Returns element-wise bitwise NOT.
 
 ```lua
--- signature
 LArray:bitwiseNot()
 ```
 
@@ -720,7 +792,7 @@ LArray:bitwiseNot()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing bitwise NOT results. |
+| [LArray](#larray-handle) | New array containing bitwise NOT results. |
 
 **Example**
 
@@ -734,12 +806,11 @@ end
 
 ---
 
-### `LArray:bitwiseOr`
+#### `LArray:bitwiseOr`
 
 Returns element-wise bitwise OR with another array.
 
 ```lua
--- signature
 LArray:bitwiseOr(other)
 ```
 
@@ -747,13 +818,13 @@ LArray:bitwiseOr(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array used as the right-hand operand. |
+| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing bitwise OR results. |
+| [LArray](#larray-handle) | New array containing bitwise OR results. |
 
 **Example**
 
@@ -768,12 +839,11 @@ end
 
 ---
 
-### `LArray:bitwiseRShift`
+#### `LArray:bitwiseRShift`
 
 Returns element-wise right shift by a bit count.
 
 ```lua
--- signature
 LArray:bitwiseRShift(amount)
 ```
 
@@ -781,13 +851,13 @@ LArray:bitwiseRShift(amount)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `amount` | `number` | Bit count to shift right. |
+| `amount` | number | Bit count to shift right. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing shifted values. |
+| [LArray](#larray-handle) | New array containing shifted values. |
 
 **Example**
 
@@ -801,12 +871,11 @@ end
 
 ---
 
-### `LArray:bitwiseXor`
+#### `LArray:bitwiseXor`
 
 Returns element-wise bitwise XOR with another array.
 
 ```lua
--- signature
 LArray:bitwiseXor(other)
 ```
 
@@ -814,13 +883,13 @@ LArray:bitwiseXor(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array used as the right-hand operand. |
+| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing bitwise XOR results. |
+| [LArray](#larray-handle) | New array containing bitwise XOR results. |
 
 **Example**
 
@@ -835,12 +904,11 @@ end
 
 ---
 
-### `LArray:clamp`
+#### `LArray:clamp`
 
 Returns values clamped between minimum and maximum bounds.
 
 ```lua
--- signature
 LArray:clamp(min, max)
 ```
 
@@ -848,14 +916,14 @@ LArray:clamp(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum allowed value. |
-| `max` | `number` | Maximum allowed value. |
+| `min` | number | Minimum allowed value. |
+| `max` | number | Maximum allowed value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing clamped values. |
+| [LArray](#larray-handle) | New array containing clamped values. |
 
 **Example**
 
@@ -869,12 +937,11 @@ end
 
 ---
 
-### `LArray:clone`
+#### `LArray:clone`
 
 Returns an independent deep copy of this array.
 
 ```lua
--- signature
 LArray:clone()
 ```
 
@@ -882,7 +949,7 @@ LArray:clone()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array with copied data and shape. |
+| [LArray](#larray-handle) | New array with copied data and shape. |
 
 **Example**
 
@@ -897,12 +964,11 @@ end
 
 ---
 
-### `LArray:convolve1d`
+#### `LArray:convolve1d`
 
 Returns one-dimensional convolution with a kernel array.
 
 ```lua
--- signature
 LArray:convolve1d(kernel)
 ```
 
@@ -910,13 +976,13 @@ LArray:convolve1d(kernel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kernel` | `LArray` | Kernel array used for convolution. |
+| `kernel` | [LArray](#larray-handle) | Kernel array used for convolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing convolution result. |
+| [LArray](#larray-handle) | New array containing convolution result. |
 
 **Example**
 
@@ -931,12 +997,11 @@ end
 
 ---
 
-### `LArray:convolve2D`
+#### `LArray:convolve2D`
 
 Returns two-dimensional convolution with a kernel array.
 
 ```lua
--- signature
 LArray:convolve2D(kernel)
 ```
 
@@ -944,13 +1009,13 @@ LArray:convolve2D(kernel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kernel` | `LArray` | Kernel array used for convolution. |
+| `kernel` | [LArray](#larray-handle) | Kernel array used for convolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing convolution result. |
+| [LArray](#larray-handle) | New array containing convolution result. |
 
 **Example**
 
@@ -967,12 +1032,11 @@ end
 
 ---
 
-### `LArray:correlate1d`
+#### `LArray:correlate1d`
 
 Returns one-dimensional correlation with a template array.
 
 ```lua
--- signature
 LArray:correlate1d(template)
 ```
 
@@ -980,13 +1044,13 @@ LArray:correlate1d(template)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `template` | `LArray` | Template array used for correlation. |
+| `template` | [LArray](#larray-handle) | Template array used for correlation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing correlation result. |
+| [LArray](#larray-handle) | New array containing correlation result. |
 
 **Example**
 
@@ -1001,12 +1065,11 @@ end
 
 ---
 
-### `LArray:countNonZero`
+#### `LArray:countNonZero`
 
 Counts the number of non-zero elements in this array.
 
 ```lua
--- signature
 LArray:countNonZero()
 ```
 
@@ -1014,7 +1077,7 @@ LArray:countNonZero()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of non-zero elements. |
+| number | Number of non-zero elements. |
 
 **Example**
 
@@ -1027,12 +1090,11 @@ end
 
 ---
 
-### `LArray:covariance`
+#### `LArray:covariance`
 
 Returns covariance with another array.
 
 ```lua
--- signature
 LArray:covariance(other)
 ```
 
@@ -1040,13 +1102,13 @@ LArray:covariance(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array used as the second variable. |
+| `other` | [LArray](#larray-handle) | Array used as the second variable. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Covariance value. |
+| number | Covariance value. |
 
 **Example**
 
@@ -1060,12 +1122,11 @@ end
 
 ---
 
-### `LArray:cross2d`
+#### `LArray:cross2d`
 
 Returns two-dimensional cross product with another vector.
 
 ```lua
--- signature
 LArray:cross2d(other)
 ```
 
@@ -1073,13 +1134,13 @@ LArray:cross2d(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Vector array used as the second operand. |
+| `other` | [LArray](#larray-handle) | Vector array used as the second operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Scalar 2D cross product result. |
+| number | Scalar 2D cross product result. |
 
 **Example**
 
@@ -1093,12 +1154,11 @@ end
 
 ---
 
-### `LArray:cumsum`
+#### `LArray:cumsum`
 
 Returns cumulative sum over the flattened array.
 
 ```lua
--- signature
 LArray:cumsum()
 ```
 
@@ -1106,7 +1166,7 @@ LArray:cumsum()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing cumulative sums. |
+| [LArray](#larray-handle) | New array containing cumulative sums. |
 
 **Example**
 
@@ -1120,12 +1180,11 @@ end
 
 ---
 
-### `LArray:diff`
+#### `LArray:diff`
 
 Returns finite differences over the flattened array.
 
 ```lua
--- signature
 LArray:diff(order)
 ```
 
@@ -1133,13 +1192,13 @@ LArray:diff(order)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `order?` | `number` | Difference order; defaults to 1. |
+| `order?` | number | Difference order; defaults to 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing differences. |
+| [LArray](#larray-handle) | New array containing differences. |
 
 **Example**
 
@@ -1153,12 +1212,11 @@ end
 
 ---
 
-### `LArray:dilate`
+#### `LArray:dilate`
 
 Returns morphological dilation with a radius.
 
 ```lua
--- signature
 LArray:dilate(radius)
 ```
 
@@ -1166,13 +1224,13 @@ LArray:dilate(radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `radius` | `number` | Dilation radius in cells. |
+| `radius` | number | Dilation radius in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing dilation result. |
+| [LArray](#larray-handle) | New array containing dilation result. |
 
 **Example**
 
@@ -1187,12 +1245,11 @@ end
 
 ---
 
-### `LArray:div`
+#### `LArray:div`
 
 Returns element-wise division with an array or scalar.
 
 ```lua
--- signature
 LArray:div(value)
 ```
 
@@ -1200,13 +1257,13 @@ LArray:div(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing the division result. |
+| [LArray](#larray-handle) | New array containing the division result. |
 
 **Example**
 
@@ -1220,12 +1277,11 @@ end
 
 ---
 
-### `LArray:divInplace`
+#### `LArray:divInplace`
 
 Divides this array by another array in place.
 
 ```lua
--- signature
 LArray:divInplace(other)
 ```
 
@@ -1233,7 +1289,7 @@ LArray:divInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array with a compatible shape. |
+| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
 
 **Example**
 
@@ -1248,12 +1304,11 @@ end
 
 ---
 
-### `LArray:dot`
+#### `LArray:dot`
 
 Returns dot product with another array.
 
 ```lua
--- signature
 LArray:dot(other)
 ```
 
@@ -1261,13 +1316,13 @@ LArray:dot(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array used as the right-hand operand. |
+| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Dot product result. |
+| number | Dot product result. |
 
 **Example**
 
@@ -1281,12 +1336,11 @@ end
 
 ---
 
-### `LArray:eigenPower`
+#### `LArray:eigenPower`
 
 Estimates dominant eigenvalue and eigenvector using power iteration.
 
 ```lua
--- signature
 LArray:eigenPower(max_iter, tol)
 ```
 
@@ -1294,14 +1348,14 @@ LArray:eigenPower(max_iter, tol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_iter?` | `number` | Maximum iteration count; zero uses the engine default. |
-| `tol?` | `number` | Convergence tolerance; zero uses the engine default. |
+| `max_iter?` | number | Maximum iteration count; zero uses the engine default. |
+| `tol?` | number | Convergence tolerance; zero uses the engine default. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArrayEigenPowerResult` | Table containing `value` and `vector` fields. |
+| LArrayEigenPowerResult | Table containing `value` and `vector` fields. |
 
 **Example**
 
@@ -1316,12 +1370,11 @@ end
 
 ---
 
-### `LArray:eq`
+#### `LArray:eq`
 
 Returns element-wise equality comparison with an array or scalar.
 
 ```lua
--- signature
 LArray:eq(value)
 ```
 
@@ -1329,13 +1382,13 @@ LArray:eq(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing comparison results. |
+| [LArray](#larray-handle) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1349,12 +1402,11 @@ end
 
 ---
 
-### `LArray:erode`
+#### `LArray:erode`
 
 Returns morphological erosion with a radius.
 
 ```lua
--- signature
 LArray:erode(radius)
 ```
 
@@ -1362,13 +1414,13 @@ LArray:erode(radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `radius` | `number` | Erosion radius in cells. |
+| `radius` | number | Erosion radius in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing erosion result. |
+| [LArray](#larray-handle) | New array containing erosion result. |
 
 **Example**
 
@@ -1383,12 +1435,11 @@ end
 
 ---
 
-### `LArray:eval`
+#### `LArray:eval`
 
 Maps each element through a Lua expression compiled as `function(x) return expression end`.
 
 ```lua
--- signature
 LArray:eval(expr)
 ```
 
@@ -1396,13 +1447,13 @@ LArray:eval(expr)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `expr` | `string` | Lua expression that can read the current element as `x`. |
+| `expr` | string | Lua expression that can read the current element as `x`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing expression results. |
+| [LArray](#larray-handle) | New array containing expression results. |
 
 **Example**
 
@@ -1416,12 +1467,11 @@ end
 
 ---
 
-### `LArray:fill`
+#### `LArray:fill`
 
 Fills this array in place with one value.
 
 ```lua
--- signature
 LArray:fill(val)
 ```
 
@@ -1429,7 +1479,7 @@ LArray:fill(val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `val` | `number` | Value written to every element. |
+| `val` | number | Value written to every element. |
 
 **Example**
 
@@ -1443,12 +1493,11 @@ end
 
 ---
 
-### `LArray:floodFill`
+#### `LArray:floodFill`
 
 Returns a flood-filled copy starting at a one-based row and column.
 
 ```lua
--- signature
 LArray:floodFill(row, col, val)
 ```
 
@@ -1456,15 +1505,15 @@ LArray:floodFill(row, col, val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | `number` | One-based start row. |
-| `col` | `number` | One-based start column. |
-| `val` | `number` | Replacement value. |
+| `row` | number | One-based start row. |
+| `col` | number | One-based start column. |
+| `val` | number | Replacement value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing flood-fill result. |
+| [LArray](#larray-handle) | New array containing flood-fill result. |
 
 **Example**
 
@@ -1480,12 +1529,11 @@ end
 
 ---
 
-### `LArray:get`
+#### `LArray:get`
 
 Reads an array element using one-based indices.
 
 ```lua
--- signature
 LArray:get(...)
 ```
 
@@ -1499,7 +1547,7 @@ LArray:get(...)
 
 | Type | Description |
 |------|-------------|
-| `number` | Element value at the requested index. |
+| number | Element value at the requested index. |
 
 **Example**
 
@@ -1512,12 +1560,11 @@ end
 
 ---
 
-### `LArray:getDataType`
+#### `LArray:getDataType`
 
 Returns the element data type name as a string.
 
 ```lua
--- signature
 LArray:getDataType()
 ```
 
@@ -1525,7 +1572,7 @@ LArray:getDataType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Data type name such as `float32`. |
+| string | Data type name such as `float32`. |
 
 **Example**
 
@@ -1538,12 +1585,11 @@ end
 
 ---
 
-### `LArray:getDimensions`
+#### `LArray:getDimensions`
 
 Returns the number of array dimensions.
 
 ```lua
--- signature
 LArray:getDimensions()
 ```
 
@@ -1551,7 +1597,7 @@ LArray:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | Dimension count. |
+| number | Dimension count. |
 
 **Example**
 
@@ -1565,12 +1611,11 @@ end
 
 ---
 
-### `LArray:getRegion`
+#### `LArray:getRegion`
 
 Returns a rectangular region from this array.
 
 ```lua
--- signature
 LArray:getRegion(row, col, rows, cols)
 ```
 
@@ -1578,16 +1623,16 @@ LArray:getRegion(row, col, rows, cols)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | `number` | One-based start row. |
-| `col` | `number` | One-based start column. |
-| `rows` | `number` | Region row count. |
-| `cols` | `number` | Region column count. |
+| `row` | number | One-based start row. |
+| `col` | number | One-based start column. |
+| `rows` | number | Region row count. |
+| `cols` | number | Region column count. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing the requested region. |
+| [LArray](#larray-handle) | New array containing the requested region. |
 
 **Example**
 
@@ -1602,12 +1647,11 @@ end
 
 ---
 
-### `LArray:getShape`
+#### `LArray:getShape`
 
 Returns the array shape as one-based dimension table.
 
 ```lua
--- signature
 LArray:getShape()
 ```
 
@@ -1615,7 +1659,7 @@ LArray:getShape()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of dimension sizes. |
+| number[] | Array table of dimension sizes. |
 
 **Example**
 
@@ -1629,12 +1673,11 @@ end
 
 ---
 
-### `LArray:getSize`
+#### `LArray:getSize`
 
 Returns the total number of array elements.
 
 ```lua
--- signature
 LArray:getSize()
 ```
 
@@ -1642,7 +1685,7 @@ LArray:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Element count. |
+| number | Element count. |
 
 **Example**
 
@@ -1655,12 +1698,11 @@ end
 
 ---
 
-### `LArray:gt`
+#### `LArray:gt`
 
 Returns element-wise greater-than comparison with an array or scalar.
 
 ```lua
--- signature
 LArray:gt(value)
 ```
 
@@ -1668,13 +1710,13 @@ LArray:gt(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing comparison results. |
+| [LArray](#larray-handle) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1688,12 +1730,11 @@ end
 
 ---
 
-### `LArray:gte`
+#### `LArray:gte`
 
 Returns element-wise greater-or-equal comparison with an array or scalar.
 
 ```lua
--- signature
 LArray:gte(value)
 ```
 
@@ -1701,13 +1742,13 @@ LArray:gte(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing comparison results. |
+| [LArray](#larray-handle) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1721,12 +1762,11 @@ end
 
 ---
 
-### `LArray:histogram`
+#### `LArray:histogram`
 
 Returns histogram bins for the array values.
 
 ```lua
--- signature
 LArray:histogram(bins, lo, hi)
 ```
 
@@ -1734,15 +1774,15 @@ LArray:histogram(bins, lo, hi)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bins` | `number` | Number of histogram bins. |
-| `lo?` | `number` | Optional lower bound. |
-| `hi?` | `number` | Optional upper bound. |
+| `bins` | number | Number of histogram bins. |
+| `lo?` | number | Optional lower bound. |
+| `hi?` | number | Optional upper bound. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArrayHistogramResult` | Array of bin tables with `lo`, `hi`, and `count` fields. |
+| LArrayHistogramResult | Array of bin tables with `lo`, `hi`, and `count` fields. |
 
 **Example**
 
@@ -1757,12 +1797,11 @@ end
 
 ---
 
-### `LArray:isOnGPU`
+#### `LArray:isOnGPU`
 
 Returns whether this array is currently stored on the GPU.
 
 ```lua
--- signature
 LArray:isOnGPU()
 ```
 
@@ -1770,7 +1809,7 @@ LArray:isOnGPU()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Always false for the current CPU-backed implementation. |
+| boolean | Always false for the current CPU-backed implementation. |
 
 **Example**
 
@@ -1783,12 +1822,11 @@ end
 
 ---
 
-### `LArray:linsolve`
+#### `LArray:linsolve`
 
 Solves a linear system using this matrix and a right-hand side array.
 
 ```lua
--- signature
 LArray:linsolve(b)
 ```
 
@@ -1796,13 +1834,13 @@ LArray:linsolve(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | `LArray` | Right-hand side array. |
+| `b` | [LArray](#larray-handle) | Right-hand side array. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | Solution array. |
+| [LArray](#larray-handle) | Solution array. |
 
 **Example**
 
@@ -1817,12 +1855,11 @@ end
 
 ---
 
-### `LArray:lt`
+#### `LArray:lt`
 
 Returns element-wise less-than comparison with an array or scalar.
 
 ```lua
--- signature
 LArray:lt(value)
 ```
 
@@ -1830,13 +1867,13 @@ LArray:lt(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing comparison results. |
+| [LArray](#larray-handle) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1850,12 +1887,11 @@ end
 
 ---
 
-### `LArray:lte`
+#### `LArray:lte`
 
 Returns element-wise less-or-equal comparison with an array or scalar.
 
 ```lua
--- signature
 LArray:lte(value)
 ```
 
@@ -1863,13 +1899,13 @@ LArray:lte(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing comparison results. |
+| [LArray](#larray-handle) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1883,12 +1919,11 @@ end
 
 ---
 
-### `LArray:luDecompose`
+#### `LArray:luDecompose`
 
 Decomposes this matrix into LU data and permutation metadata.
 
 ```lua
--- signature
 LArray:luDecompose()
 ```
 
@@ -1896,7 +1931,7 @@ LArray:luDecompose()
 
 | Type | Description |
 |------|-------------|
-| `LArrayLuDecomposeResult` | Table containing `n`, `det_sign`, `perm`, and `lu_data` fields. |
+| LArrayLuDecomposeResult | Table containing `n`, `det_sign`, `perm`, and `lu_data` fields. |
 
 **Example**
 
@@ -1911,12 +1946,11 @@ end
 
 ---
 
-### `LArray:map`
+#### `LArray:map`
 
 Maps each element through a Lua function and returns a new array.
 
 ```lua
--- signature
 LArray:map(func)
 ```
 
@@ -1924,13 +1958,13 @@ LArray:map(func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Function called with each element value and returning a number. |
+| `func` | function | Function called with each element value and returning a number. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing mapped values. |
+| [LArray](#larray-handle) | New array containing mapped values. |
 
 **Example**
 
@@ -1944,12 +1978,11 @@ end
 
 ---
 
-### `LArray:matmul`
+#### `LArray:matmul`
 
 Returns matrix multiplication of this array and another array.
 
 ```lua
--- signature
 LArray:matmul(other)
 ```
 
@@ -1957,13 +1990,13 @@ LArray:matmul(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Right-hand matrix array. |
+| `other` | [LArray](#larray-handle) | Right-hand matrix array. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing matrix multiplication result. |
+| [LArray](#larray-handle) | New array containing matrix multiplication result. |
 
 **Example**
 
@@ -1979,12 +2012,11 @@ end
 
 ---
 
-### `LArray:max`
+#### `LArray:max`
 
 Returns total maximum or a maximum array along a one-based axis.
 
 ```lua
--- signature
 LArray:max()
 ```
 
@@ -1992,7 +2024,7 @@ LArray:max()
 
 | Type | Description |
 |------|-------------|
-| `number` | Scalar maximum when no axis is given. |
+| number | Scalar maximum when no axis is given. |
 
 **Example**
 
@@ -2005,12 +2037,11 @@ end
 
 ---
 
-### `LArray:mean`
+#### `LArray:mean`
 
 Returns total mean or a mean array along a one-based axis.
 
 ```lua
--- signature
 LArray:mean()
 ```
 
@@ -2018,7 +2049,7 @@ LArray:mean()
 
 | Type | Description |
 |------|-------------|
-| `number` | Scalar mean when no axis is given. |
+| number | Scalar mean when no axis is given. |
 
 **Example**
 
@@ -2031,12 +2062,11 @@ end
 
 ---
 
-### `LArray:min`
+#### `LArray:min`
 
 Returns total minimum or a minimum array along a one-based axis.
 
 ```lua
--- signature
 LArray:min()
 ```
 
@@ -2044,7 +2074,7 @@ LArray:min()
 
 | Type | Description |
 |------|-------------|
-| `number` | Scalar minimum when no axis is given. |
+| number | Scalar minimum when no axis is given. |
 
 **Example**
 
@@ -2057,12 +2087,11 @@ end
 
 ---
 
-### `LArray:mul`
+#### `LArray:mul`
 
 Returns element-wise multiplication with an array or scalar.
 
 ```lua
--- signature
 LArray:mul(value)
 ```
 
@@ -2070,13 +2099,13 @@ LArray:mul(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing the multiplication result. |
+| [LArray](#larray-handle) | New array containing the multiplication result. |
 
 **Example**
 
@@ -2090,12 +2119,11 @@ end
 
 ---
 
-### `LArray:mulInplace`
+#### `LArray:mulInplace`
 
 Multiplies this array by another array in place.
 
 ```lua
--- signature
 LArray:mulInplace(other)
 ```
 
@@ -2103,7 +2131,7 @@ LArray:mulInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array with a compatible shape. |
+| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
 
 **Example**
 
@@ -2118,12 +2146,11 @@ end
 
 ---
 
-### `LArray:neg`
+#### `LArray:neg`
 
 Returns element-wise negated values.
 
 ```lua
--- signature
 LArray:neg()
 ```
 
@@ -2131,7 +2158,7 @@ LArray:neg()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing negated values. |
+| [LArray](#larray-handle) | New array containing negated values. |
 
 **Example**
 
@@ -2145,12 +2172,11 @@ end
 
 ---
 
-### `LArray:neq`
+#### `LArray:neq`
 
 Returns element-wise inequality comparison with an array or scalar.
 
 ```lua
--- signature
 LArray:neq(value)
 ```
 
@@ -2158,13 +2184,13 @@ LArray:neq(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing comparison results. |
+| [LArray](#larray-handle) | New mask array containing comparison results. |
 
 **Example**
 
@@ -2178,12 +2204,11 @@ end
 
 ---
 
-### `LArray:normalizeRange`
+#### `LArray:normalizeRange`
 
 Returns array values normalized into a target range.
 
 ```lua
--- signature
 LArray:normalizeRange(lo, hi)
 ```
 
@@ -2191,14 +2216,14 @@ LArray:normalizeRange(lo, hi)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lo` | `number` | Target lower bound. |
-| `hi` | `number` | Target upper bound. |
+| `lo` | number | Target lower bound. |
+| `hi` | number | Target upper bound. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New normalized array. |
+| [LArray](#larray-handle) | New normalized array. |
 
 **Example**
 
@@ -2212,12 +2237,11 @@ end
 
 ---
 
-### `LArray:normalizeVec`
+#### `LArray:normalizeVec`
 
 Returns this vector normalized to unit length.
 
 ```lua
--- signature
 LArray:normalizeVec()
 ```
 
@@ -2225,7 +2249,7 @@ LArray:normalizeVec()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New normalized vector array. |
+| [LArray](#larray-handle) | New normalized vector array. |
 
 **Example**
 
@@ -2240,12 +2264,11 @@ end
 
 ---
 
-### `LArray:outer`
+#### `LArray:outer`
 
 Returns outer product with another vector array.
 
 ```lua
--- signature
 LArray:outer(other)
 ```
 
@@ -2253,13 +2276,13 @@ LArray:outer(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Vector array used as the second operand. |
+| `other` | [LArray](#larray-handle) | Vector array used as the second operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing outer product result. |
+| [LArray](#larray-handle) | New array containing outer product result. |
 
 **Example**
 
@@ -2274,12 +2297,11 @@ end
 
 ---
 
-### `LArray:pearsonCorr`
+#### `LArray:pearsonCorr`
 
 Returns Pearson correlation with another array.
 
 ```lua
--- signature
 LArray:pearsonCorr(other)
 ```
 
@@ -2287,13 +2309,13 @@ LArray:pearsonCorr(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array used as the second variable. |
+| `other` | [LArray](#larray-handle) | Array used as the second variable. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Pearson correlation coefficient. |
+| number | Pearson correlation coefficient. |
 
 **Example**
 
@@ -2307,12 +2329,11 @@ end
 
 ---
 
-### `LArray:percentile`
+#### `LArray:percentile`
 
 Returns a percentile value from the array.
 
 ```lua
--- signature
 LArray:percentile(p)
 ```
 
@@ -2320,13 +2341,13 @@ LArray:percentile(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | `number` | Percentile between 0 and 100. |
+| `p` | number | Percentile between 0 and 100. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Percentile result. |
+| number | Percentile result. |
 
 **Example**
 
@@ -2340,12 +2361,11 @@ end
 
 ---
 
-### `LArray:pow`
+#### `LArray:pow`
 
 Returns this array raised element-wise to a scalar exponent.
 
 ```lua
--- signature
 LArray:pow(exp)
 ```
 
@@ -2353,13 +2373,13 @@ LArray:pow(exp)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `exp` | `number` | Exponent applied to every element. |
+| `exp` | number | Exponent applied to every element. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing powered values. |
+| [LArray](#larray-handle) | New array containing powered values. |
 
 **Example**
 
@@ -2373,12 +2393,11 @@ end
 
 ---
 
-### `LArray:reduce`
+#### `LArray:reduce`
 
 Reduces array values with a Lua accumulator function.
 
 ```lua
--- signature
 LArray:reduce(func, init)
 ```
 
@@ -2386,14 +2405,14 @@ LArray:reduce(func, init)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Function called as `(accumulator, value)` and returning the next accumulator. |
-| `init` | `number` | Initial accumulator value. |
+| `func` | function | Function called as `(accumulator, value)` and returning the next accumulator. |
+| `init` | number | Initial accumulator value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Final accumulator value. |
+| number | Final accumulator value. |
 
 **Example**
 
@@ -2407,12 +2426,11 @@ end
 
 ---
 
-### `LArray:reshape`
+#### `LArray:reshape`
 
 Returns a reshaped copy of this array.
 
 ```lua
--- signature
 LArray:reshape(shape)
 ```
 
@@ -2420,13 +2438,13 @@ LArray:reshape(shape)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shape` | `table` | Array table of positive dimension sizes. |
+| `shape` | table | Array table of positive dimension sizes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array with the requested shape. |
+| [LArray](#larray-handle) | New array with the requested shape. |
 
 **Example**
 
@@ -2441,12 +2459,11 @@ end
 
 ---
 
-### `LArray:scan`
+#### `LArray:scan`
 
 Produces prefix accumulator values with a Lua function.
 
 ```lua
--- signature
 LArray:scan(func, init)
 ```
 
@@ -2454,14 +2471,14 @@ LArray:scan(func, init)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Function called as `(accumulator, value)` and returning the next accumulator. |
-| `init` | `number` | Initial accumulator value. |
+| `func` | function | Function called as `(accumulator, value)` and returning the next accumulator. |
+| `init` | number | Initial accumulator value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing accumulator values. |
+| [LArray](#larray-handle) | New array containing accumulator values. |
 
 **Example**
 
@@ -2476,12 +2493,11 @@ end
 
 ---
 
-### `LArray:set`
+#### `LArray:set`
 
 Writes an array element using one-based indices followed by the value.
 
 ```lua
--- signature
 LArray:set(...)
 ```
 
@@ -2503,12 +2519,11 @@ end
 
 ---
 
-### `LArray:setRegion`
+#### `LArray:setRegion`
 
 Writes a source array into this array at a one-based row and column.
 
 ```lua
--- signature
 LArray:setRegion(row, col, source)
 ```
 
@@ -2516,9 +2531,9 @@ LArray:setRegion(row, col, source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | `number` | One-based destination row. |
-| `col` | `number` | One-based destination column. |
-| `source` | `LArray` | Source array copied into this array. |
+| `row` | number | One-based destination row. |
+| `col` | number | One-based destination column. |
+| `source` | [LArray](#larray-handle) | Source array copied into this array. |
 
 **Example**
 
@@ -2533,12 +2548,11 @@ end
 
 ---
 
-### `LArray:sobel`
+#### `LArray:sobel`
 
 Computes Sobel gradients for this array.
 
 ```lua
--- signature
 LArray:sobel()
 ```
 
@@ -2546,7 +2560,7 @@ LArray:sobel()
 
 | Type | Description |
 |------|-------------|
-| `LArraySobelResult` | Table with `gx` and `gy` gradient arrays. |
+| LArraySobelResult | Table with `gx` and `gy` gradient arrays. |
 
 **Example**
 
@@ -2562,12 +2576,11 @@ end
 
 ---
 
-### `LArray:sqrt`
+#### `LArray:sqrt`
 
 Returns element-wise square roots.
 
 ```lua
--- signature
 LArray:sqrt()
 ```
 
@@ -2575,7 +2588,7 @@ LArray:sqrt()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing square root values. |
+| [LArray](#larray-handle) | New array containing square root values. |
 
 **Example**
 
@@ -2589,12 +2602,11 @@ end
 
 ---
 
-### `LArray:sub`
+#### `LArray:sub`
 
 Returns element-wise subtraction with an array or scalar.
 
 ```lua
--- signature
 LArray:sub(value)
 ```
 
@@ -2602,13 +2614,13 @@ LArray:sub(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Array or scalar number for element-wise operation. |
+| `value` | any | Array or scalar number for element-wise operation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing the subtraction result. |
+| [LArray](#larray-handle) | New array containing the subtraction result. |
 
 **Example**
 
@@ -2622,12 +2634,11 @@ end
 
 ---
 
-### `LArray:subInplace`
+#### `LArray:subInplace`
 
 Subtracts another array from this array in place.
 
 ```lua
--- signature
 LArray:subInplace(other)
 ```
 
@@ -2635,7 +2646,7 @@ LArray:subInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LArray` | Array with a compatible shape. |
+| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
 
 **Example**
 
@@ -2650,12 +2661,11 @@ end
 
 ---
 
-### `LArray:sum`
+#### `LArray:sum`
 
 Returns total sum or a summed array along a one-based axis.
 
 ```lua
--- signature
 LArray:sum()
 ```
 
@@ -2663,7 +2673,7 @@ LArray:sum()
 
 | Type | Description |
 |------|-------------|
-| `number` | Scalar sum when no axis is given. |
+| number | Scalar sum when no axis is given. |
 
 **Example**
 
@@ -2677,12 +2687,11 @@ end
 
 ---
 
-### `LArray:threshold`
+#### `LArray:threshold`
 
 Returns a mask array where values above a threshold are selected.
 
 ```lua
--- signature
 LArray:threshold(val)
 ```
 
@@ -2690,13 +2699,13 @@ LArray:threshold(val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `val` | `number` | Threshold value. |
+| `val` | number | Threshold value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New mask array containing threshold results. |
+| [LArray](#larray-handle) | New mask array containing threshold results. |
 
 **Example**
 
@@ -2710,12 +2719,11 @@ end
 
 ---
 
-### `LArray:toTable`
+#### `LArray:toTable`
 
 Returns array values flattened into a Lua table.
 
 ```lua
--- signature
 LArray:toTable()
 ```
 
@@ -2723,7 +2731,7 @@ LArray:toTable()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Numeric values in storage order. |
+| number[] | Numeric values in storage order. |
 
 **Example**
 
@@ -2737,12 +2745,11 @@ end
 
 ---
 
-### `LArray:transformPoints`
+#### `LArray:transformPoints`
 
 Transforms a point array by this transform matrix.
 
 ```lua
--- signature
 LArray:transformPoints(pts)
 ```
 
@@ -2750,13 +2757,13 @@ LArray:transformPoints(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | `LArray` | Point array to transform. |
+| `pts` | [LArray](#larray-handle) | Point array to transform. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing transformed points. |
+| [LArray](#larray-handle) | New array containing transformed points. |
 
 **Example**
 
@@ -2771,12 +2778,11 @@ end
 
 ---
 
-### `LArray:transpose`
+#### `LArray:transpose`
 
 Returns a transposed copy of a two-dimensional array.
 
 ```lua
--- signature
 LArray:transpose()
 ```
 
@@ -2784,7 +2790,7 @@ LArray:transpose()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New transposed array. |
+| [LArray](#larray-handle) | New transposed array. |
 
 **Example**
 
@@ -2799,12 +2805,11 @@ end
 
 ---
 
-### `LArray:type`
+#### `LArray:type`
 
 Returns the Lua-visible type name for this array handle.
 
 ```lua
--- signature
 LArray:type()
 ```
 
@@ -2812,7 +2817,7 @@ LArray:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LArray`. |
+| string | The string `[LArray](#larray-handle)`. |
 
 **Example**
 
@@ -2825,12 +2830,11 @@ end
 
 ---
 
-### `LArray:typeOf`
+#### `LArray:typeOf`
 
 Returns whether this array handle matches a supported type name.
 
 ```lua
--- signature
 LArray:typeOf(name)
 ```
 
@@ -2838,13 +2842,13 @@ LArray:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LArray`, `Array`, and `Object`. |
+| `name` | string | Type name to compare against `[LArray](#larray-handle)`, `Array`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2858,12 +2862,11 @@ end
 
 ---
 
-### `LArray:where`
+#### `LArray:where`
 
 Selects values from this array or another array using a mask array.
 
 ```lua
--- signature
 LArray:where(mask, other)
 ```
 
@@ -2871,14 +2874,14 @@ LArray:where(mask, other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | `LArray` | Mask array used to choose between arrays. |
-| `other` | `LArray` | Array used where the mask is false. |
+| `mask` | [LArray](#larray-handle) | Mask array used to choose between arrays. |
+| `other` | [LArray](#larray-handle) | Array used where the mask is false. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New array containing selected values. |
+| [LArray](#larray-handle) | New array containing selected values. |
 
 **Example**
 
@@ -2895,12 +2898,11 @@ end
 
 ---
 
-### `LArray:zscore`
+#### `LArray:zscore`
 
 Returns z-score normalized array values.
 
 ```lua
--- signature
 LArray:zscore()
 ```
 
@@ -2908,7 +2910,7 @@ LArray:zscore()
 
 | Type | Description |
 |------|-------------|
-| `LArray` | New z-score normalized array. |
+| [LArray](#larray-handle) | New z-score normalized array. |
 
 **Example**
 

@@ -23,6 +23,10 @@ SRC = ROOT / "src"
 SPECS = ROOT / "docs" / "specs"
 SPECS_README = SPECS / "README.md"
 
+# `lua_api` is intentionally excluded from 1:1 module-spec coverage because it
+# is a thin wrapper layer. Global callbacks are documented in callbacks.md.
+SRC_SPEC_EXCLUDE = {"lua_api"}
+
 def main():
     from argparse import RawDescriptionHelpFormatter
     epilog = """
@@ -45,15 +49,15 @@ Examples:
     # --- Gather ground truth ---
     src_modules = sorted(
         d.name for d in SRC.iterdir()
-        if d.is_dir() and not d.name.startswith(".")
+        if d.is_dir() and not d.name.startswith(".") and d.name not in SRC_SPEC_EXCLUDE
     )
 
     # Specs that intentionally have no matching src/<module>/ dir
-    SPEC_ALLOWLIST = {"vscode-extension"}
+    SPEC_ALLOWLIST = {"vscode-extension", "callbacks"}
 
     spec_files = sorted(
         f.stem for f in SPECS.glob("*.md")
-        if f.name not in {"README.md", "SPEC_TEMPLATE.md"}
+        if f.name not in {"README.md"}
         and f.stem not in SPEC_ALLOWLIST
     )
 

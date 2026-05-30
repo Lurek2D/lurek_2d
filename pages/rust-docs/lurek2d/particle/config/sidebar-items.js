@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["AreaDistribution","EmissionShape","EmitterState","InsertMode","RelativeMode"],"struct":["Attractor","BounceBounds","ParticleConfig"]};

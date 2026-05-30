@@ -13,10 +13,10 @@
         <link rel="canonical" href="https://lurek2d.github.io/lurek_2d/handbook.html">
       
       
-        <link rel="prev" href="architecture/philosophy.html">
+        <link rel="prev" href="architecture/developer-ecosystem.html">
       
       
-        <link rel="next" href="architecture/engine-architecture.html">
+        <link rel="next" href="extension_plan.html">
       
       
         
@@ -271,7 +271,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="modules/agent.html" class="md-tabs__link">
+        <a href="lua-api.html" class="md-tabs__link">
           
   
   
@@ -290,17 +290,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="CHANGELOG.html" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="rust-api.html" class="md-tabs__link">
+          
   
   
     
   
-  Changelog
+  Rust
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -389,6 +392,12 @@
         
       
         
+          
+        
+      
+        
+      
+        
       
         
       
@@ -429,8 +438,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="architecture/index.html" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -444,8 +454,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
@@ -473,6 +489,176 @@
     
   
     Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/engine-core.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/render-pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/scripting-bridge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/modularity-plugins.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modularity & Plugins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/quality-assurance.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality Assurance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/developer-ecosystem.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Ecosystem
   
 
     
@@ -750,118 +936,6 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture/engine-architecture.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Engine
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture/test-framework.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Testing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture/cag-system.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CAG System
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture/rag-system.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    RAG System
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="extension_plan.html" class="md-nav__link">
         
   
@@ -870,34 +944,6 @@
     
   
     VS Code Extension
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture/lua-api-file-standard.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Lua API Standards
   
 
     
@@ -1173,6 +1219,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1217,6 +1267,62 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lua-api.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Browser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="callbacks.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Callback Hooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -3107,15 +3213,71 @@
   
   
   
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rust
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Rust
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="CHANGELOG.html" class="md-nav__link">
+      <a href="rust-api.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    API Browser
   
 
     
@@ -3124,6 +3286,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3390,7 +3560,7 @@
 </ul>
 <hr />
 <h2 id="1-what-lurek2d-is">1. What Lurek2D is<a class="headerlink" href="#1-what-lurek2d-is" title="Permanent link">&para;</a></h2>
-<p>One binary, one scripting language, one afternoon to learn. Source under <a href="../src/">src/</a> is organised into five responsibility groups â€” Foundations, Core Runtime, Platform Services, Feature Systems, and Edge/Integration â€” defined in <a href="architecture/philosophy.html">architecture/philosophy.md</a> and inventoried in <a href="architecture/engine-architecture.html">architecture/engine-architecture.md</a>. Renderer is <code>wgpu</code> (Vulkan / DX12 / Metal); physics is <code>rapier2d</code>; audio is <code>rodio</code>. Engine version is <strong>1.0.0</strong> (<a href="../Cargo.toml">Cargo.toml</a>). Licence is MIT. Desktop targets only â€” Windows, Linux, macOS on x86_64 and ARM (constraint <strong>A-02</strong>).</p>
+<p>One binary, one scripting language, one afternoon to learn. Source under <a href="../src/">src/</a> is organised into five responsibility groups â€” Foundations, Core Runtime, Platform Services, Feature Systems, and Edge/Integration â€” defined in <a href="architecture/philosophy.html">architecture/philosophy.md</a> and inventoried in <a href="architecture/engine-architecture.md">architecture/engine-architecture.md</a>. Renderer is <code>wgpu</code> (Vulkan / DX12 / Metal); physics is <code>rapier2d</code>; audio is <code>rodio</code>. Engine version is <strong>1.0.0</strong> (<a href="../Cargo.toml">Cargo.toml</a>). Licence is MIT. Desktop targets only â€” Windows, Linux, macOS on x86_64 and ARM (constraint <strong>A-02</strong>).</p>
 <hr />
 <h2 id="2-audience-map">2. Audience map<a class="headerlink" href="#2-audience-map" title="Permanent link">&para;</a></h2>
 <p>Six personas. Each maps to the handbook sections that matter most.</p>
@@ -3432,17 +3602,17 @@
 <td><strong>GameTest</strong></td>
 <td>Writing Lua BDD tests for game/library behaviour.</td>
 <td>Â§3 Â· Â§9 Testing</td>
-<td><a href="architecture/test-framework.html">test-framework.md</a></td>
+<td><a href="architecture/test-framework.md">test-framework.md</a></td>
 </tr>
 <tr>
 <td><strong>EngTest</strong></td>
 <td>Writing Rust unit / integration / benches.</td>
 <td>Â§3 Â· Â§9 Â· Â§10</td>
-<td><a href="architecture/test-framework.html">test-framework.md</a></td>
+<td><a href="architecture/test-framework.md">test-framework.md</a></td>
 </tr>
 </tbody>
 </table>
-<p>Personas are formalised in <a href="architecture/cag-system.html#4-six-persona-model">architecture/cag-system.md Â§ 4</a>.</p>
+<p>Personas are formalised in <a href="architecture/cag-system.md#4-six-persona-model">architecture/cag-system.md Â§ 4</a>.</p>
 <hr />
 <h2 id="3-first-30-minutes">3. First 30 minutes<a class="headerlink" href="#3-first-30-minutes" title="Permanent link">&para;</a></h2>
 <p>A working dev loop in five steps.</p>
@@ -3520,13 +3690,13 @@
 </tr>
 </tbody>
 </table>
-<p>For canonical group-by-group module placement, see <a href="architecture/engine-architecture.html#complete-module-inventory">architecture/engine-architecture.md Â§ Complete Module Inventory</a>.</p>
+<p>For canonical group-by-group module placement, see <a href="architecture/engine-architecture.md#complete-module-inventory">architecture/engine-architecture.md Â§ Complete Module Inventory</a>.</p>
 <hr />
 <h2 id="5-build-and-run">5. Build and run<a class="headerlink" href="#5-build-and-run" title="Permanent link">&para;</a></h2>
 <p>Cargo profiles:</p>
 <ul>
 <li><code>cargo build</code> â†’ <code>build/debug/lurek2d</code> â€” fast incremental, slow runtime, full debug symbols.</li>
-<li><code>cargo build --release</code> â†’ <code>build/release/lurek2d</code> â€” slow build, optimised binary (target is â‰¤ 10 MB once the <a href="architecture/plugins.html">plugin architecture</a> lands).</li>
+<li><code>cargo build --release</code> â†’ <code>build/release/lurek2d</code> â€” slow build, optimised binary (target is â‰¤ 10 MB once the <a href="architecture/plugins.md">plugin architecture</a> lands).</li>
 <li><code>cargo check</code> â€” type-check only; the fastest "did I break the build?" loop.</li>
 </ul>
 <p>The <code>build/</code> directory is the configured Cargo <code>target-dir</code> (<a href="../.cargo/config.toml">.cargo/config.toml</a>). Don't use <code>target/</code>.</p>
@@ -3668,7 +3838,7 @@
 <ol>
 <li><strong>Pick a module</strong> under <a href="../src/">src/</a> (e.g. <code>src/timer/</code>).</li>
 <li><strong>Read its spec</strong> at <a href="specs/timer.html">docs/specs/timer.md</a> â€” types, functions, Lua API surface, current test paths. The spec is the canonical contract.</li>
-<li><strong>Make the Rust change</strong>. Follow the file-structure rules in <a href="architecture/engine-architecture.html#module-internal-file-structure-standard">architecture/engine-architecture.md Â§ Module Internal File Structure Standard</a>: thin <code>mod.rs</code>, <code>&lt;primary&gt;.rs</code> for logic, no <code>impl LuaUserData</code> outside <code>src/lua_api/</code>, no <code>wgpu::*</code> outside <code>src/render/</code>. Every new <code>pub</code> item gets a <code>///</code> doc comment (constraint <strong>Q-05</strong>).</li>
+<li><strong>Make the Rust change</strong>. Follow the file-structure rules in <a href="architecture/engine-architecture.md#module-internal-file-structure-standard">architecture/engine-architecture.md Â§ Module Internal File Structure Standard</a>: thin <code>mod.rs</code>, <code>&lt;primary&gt;.rs</code> for logic, no <code>impl LuaUserData</code> outside <code>src/lua_api/</code>, no <code>wgpu::*</code> outside <code>src/render/</code>. Every new <code>pub</code> item gets a <code>///</code> doc comment (constraint <strong>Q-05</strong>).</li>
 <li><strong>Regenerate auto-spec sections</strong>:
    <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>tools/gen_all_docs.py
 </code></pre></div>
@@ -3708,7 +3878,7 @@
 </tr>
 </tbody>
 </table>
-<p>The cross-artifact sync table in the system prompt (<a href="../.github/copilot-instructions.md">.github/copilot-instructions.md Â§ Cross-Artifact Sync</a>) tells you which docs to update when source changes. Regenerate generated docs after any public-API change. Module-spec manual-vs-auto rules are documented in <a href="specs/SPEC_TEMPLATE.html">docs/specs/SPEC_TEMPLATE.md</a> and checked by <code>python tools/validate/validate_module_coverage.py</code> plus <code>python tools/audit/doc_coverage.py</code>.</p>
+<p>The cross-artifact sync table in the system prompt (<a href="../.github/copilot-instructions.md">.github/copilot-instructions.md Â§ Cross-Artifact Sync</a>) tells you which docs to update when source changes. Regenerate generated docs after any public-API change. Module-spec manual-vs-auto rules are documented in <a href="specs/SPEC_TEMPLATE.md">docs/specs/SPEC_TEMPLATE.md</a> and checked by <code>python tools/validate/validate_module_coverage.py</code> plus <code>python tools/audit/doc_coverage.py</code>.</p>
 <p>Snippet docs and workflow are tracked separately in <a href="snippets.html">docs/snippets.md</a>. Snippet source-of-truth files live in <a href="../content/snippets/">content/snippets/</a> and generate <a href="../extension/vscode/data/snippets.json">extension/vscode/data/snippets.json</a>. Use <code>python tools/snippets/gen_vscode_snippets.py</code> after snippet edits, then run <code>python tools/validate/validate_snippets.py</code> and <code>python tools/audit/snippet_coverage.py</code>.</p>
 <hr />
 <h2 id="9-testing">9. Testing<a class="headerlink" href="#9-testing" title="Permanent link">&para;</a></h2>
@@ -3719,8 +3889,8 @@
 <li><strong>Rust unit tests are for internals only.</strong> Put them in <a href="../tests/rust/unit/">tests/rust/unit/<module>_tests.rs</a>. Never add <code>#[cfg(test)]</code> blocks inside <code>src/</code>.</li>
 <li><strong>Keep <code>src/lua_api/*_api.rs</code> and every <code>mod.rs</code> thin.</strong> Business logic goes in <code>src/&lt;module&gt;/*.rs</code> sibling files. See <strong>TST-03</strong> and <strong>TST-04</strong> in <a href="architecture/philosophy.html#testing-constraints">philosophy.md Â§ Testing Constraints</a>.</li>
 </ul>
-<p>Full decision tree and banned-patterns list: <a href="architecture/test-framework.html#test-placement">test-framework.md Â§ Test placement</a>.</p>
-<p>Two test layers (full design in <a href="architecture/test-framework.html">architecture/test-framework.md</a>):</p>
+<p>Full decision tree and banned-patterns list: <a href="architecture/test-framework.md#test-placement">test-framework.md Â§ Test placement</a>.</p>
+<p>Two test layers (full design in <a href="architecture/test-framework.md">architecture/test-framework.md</a>):</p>
 <ul>
 <li><strong>Rust</strong> â€” <code>cargo test</code>. Per-module suites under <code>tests/rust/unit/&lt;module&gt;_tests.rs</code>. Float comparisons use absolute tolerance, never <code>assert_eq!</code> on <code>f32</code>.</li>
 <li><strong>Lua BDD</strong> â€” <code>cargo test lua_test_&lt;category&gt;_&lt;name&gt;</code>. Files under <a href="../tests/lua/">tests/lua/</a> using <code>describe</code> / <code>it</code> / <code>expect_equal</code> from <a href="../tests/lua/init.lua">tests/lua/init.lua</a>. Every Lua test file must end with <code>test_summary()</code>.</li>
@@ -3779,7 +3949,7 @@
 <li><strong>Skills</strong> under <code>.github/skills/&lt;name&gt;/</code> are deep domain knowledge loaded on demand when the user task matches the skill's <code>description</code>.</li>
 <li><strong>Prompts</strong> under <code>.github/prompts/&lt;verb&gt;-&lt;noun&gt;.prompt.md</code> are user-invocable playbooks, surfaced as slash commands. Example: <code>/run-quality-sweep</code>, <code>/audit-module</code>, <code>/create-demo</code>.</li>
 </ul>
-<p>Full deep dive in <a href="architecture/cag-system.html">architecture/cag-system.md</a>. When working with an agent on a multi-step change, route through <code>Manager</code> â€” it engages <code>Planner</code> for â‰Ą 3-agent or â‰Ą 5-file tasks before any implementation.</p>
+<p>Full deep dive in <a href="architecture/cag-system.md">architecture/cag-system.md</a>. When working with an agent on a multi-step change, route through <code>Manager</code> â€” it engages <code>Planner</code> for â‰Ą 3-agent or â‰Ą 5-file tasks before any implementation.</p>
 <p>Common slash prompts â€” each one is a parameterised playbook under <a href="../.github/prompts/">.github/prompts/</a>:</p>
 <table>
 <thead>
@@ -3864,7 +4034,7 @@
 </tr>
 <tr>
 <td>Don't know which module a feature belongs to</td>
-<td><a href="architecture/engine-architecture.html#complete-module-inventory">architecture/engine-architecture.md Â§ Complete Module Inventory</a>.</td>
+<td><a href="architecture/engine-architecture.md#complete-module-inventory">architecture/engine-architecture.md Â§ Complete Module Inventory</a>.</td>
 </tr>
 <tr>
 <td>Need to design a new <code>lurek.*</code> API</td>
@@ -3872,15 +4042,15 @@
 </tr>
 <tr>
 <td>Need to add a new module</td>
-<td><a href="architecture/engine-architecture.html#module-internal-file-structure-standard">architecture/engine-architecture.md Â§ Module Internal File Structure Standard</a> + <code>Architect</code> agent.</td>
+<td><a href="architecture/engine-architecture.md#module-internal-file-structure-standard">architecture/engine-architecture.md Â§ Module Internal File Structure Standard</a> + <code>Architect</code> agent.</td>
 </tr>
 <tr>
 <td>Need a new agent / skill / prompt</td>
-<td><a href="architecture/cag-system.html#6-authoring-guides">architecture/cag-system.md Â§ 6 Authoring Guides</a>.</td>
+<td><a href="architecture/cag-system.md#6-authoring-guides">architecture/cag-system.md Â§ 6 Authoring Guides</a>.</td>
 </tr>
 <tr>
 <td>Plugin / size question</td>
-<td><a href="architecture/plugins.html">architecture/plugins.md</a>.</td>
+<td><a href="architecture/plugins.md">architecture/plugins.md</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -3900,11 +4070,11 @@
 </tr>
 <tr>
 <td><strong>CAG</strong></td>
-<td>Context Augmented Guidance â€” the <code>.github/</code> layer customising AI workflows. <a href="architecture/cag-system.html">architecture/cag-system.md</a>.</td>
+<td>Context Augmented Guidance â€” the <code>.github/</code> layer customising AI workflows. <a href="architecture/cag-system.md">architecture/cag-system.md</a>.</td>
 </tr>
 <tr>
 <td><strong>CORE-KEEP</strong></td>
-<td>Plugin tier for modules that always ship in the core binary. <a href="architecture/plugins.html#4-plugin-tiers">architecture/plugins.md Â§ 4</a>.</td>
+<td>Plugin tier for modules that always ship in the core binary. <a href="architecture/plugins.md#4-plugin-tiers">architecture/plugins.md Â§ 4</a>.</td>
 </tr>
 <tr>
 <td><strong>DAG (no-cycles rule)</strong></td>
@@ -3916,7 +4086,7 @@
 </tr>
 <tr>
 <td><strong>Edge/Integration</strong></td>
-<td>The top responsibility group: <code>app</code>, <code>lua_api</code>, <code>devtools</code>, <code>debugbridge</code>, <code>docs</code>, <code>pipeline</code>, <code>bin</code>. <a href="architecture/engine-architecture.html#module-group-model">architecture/engine-architecture.md</a>.</td>
+<td>The top responsibility group: <code>app</code>, <code>lua_api</code>, <code>devtools</code>, <code>debugbridge</code>, <code>docs</code>, <code>pipeline</code>, <code>bin</code>. <a href="architecture/engine-architecture.md#module-group-model">architecture/engine-architecture.md</a>.</td>
 </tr>
 <tr>
 <td><strong>GameFS</strong></td>
@@ -3932,27 +4102,27 @@
 </tr>
 <tr>
 <td><strong>Persona</strong></td>
-<td>One of six target user profiles (EngDev, GameDev, Modder, Player, GameTest, EngTest). <a href="architecture/cag-system.html#4-six-persona-model">architecture/cag-system.md Â§ 4</a>.</td>
+<td>One of six target user profiles (EngDev, GameDev, Modder, Player, GameTest, EngTest). <a href="architecture/cag-system.md#4-six-persona-model">architecture/cag-system.md Â§ 4</a>.</td>
 </tr>
 <tr>
 <td><strong>Plugin tier</strong></td>
-<td>One of CORE-KEEP / TIER-1-PLUGIN / TIER-2-PLUGIN / THIRD-PARTY-PLUGIN. <a href="architecture/plugins.html#4-plugin-tiers">architecture/plugins.md Â§ 4</a>.</td>
+<td>One of CORE-KEEP / TIER-1-PLUGIN / TIER-2-PLUGIN / THIRD-PARTY-PLUGIN. <a href="architecture/plugins.md#4-plugin-tiers">architecture/plugins.md Â§ 4</a>.</td>
 </tr>
 <tr>
 <td><strong><code>RenderCommand</code></strong></td>
-<td>The single GPU-agnostic enum that every renderer-bound subsystem emits. <a href="architecture/render-command-architecture.html">architecture/render-command-architecture.md</a>.</td>
+<td>The single GPU-agnostic enum that every renderer-bound subsystem emits. <a href="architecture/render-command-architecture.md">architecture/render-command-architecture.md</a>.</td>
 </tr>
 <tr>
 <td><strong><code>SharedState</code></strong></td>
-<td>The <code>Rc&lt;RefCell&lt;...&gt;&gt;</code> hub holding every runtime resource pool. <code>src/runtime/shared_state.rs</code>. <a href="architecture/engine-architecture.html#state-architecture">architecture/engine-architecture.md Â§ State Architecture</a>.</td>
+<td>The <code>Rc&lt;RefCell&lt;...&gt;&gt;</code> hub holding every runtime resource pool. <code>src/runtime/shared_state.rs</code>. <a href="architecture/engine-architecture.md#state-architecture">architecture/engine-architecture.md Â§ State Architecture</a>.</td>
 </tr>
 <tr>
 <td><strong>Skill</strong></td>
-<td>On-demand domain knowledge under <code>.github/skills/&lt;name&gt;/SKILL.md</code>, loaded when the user task matches. <a href="architecture/cag-system.html#2-file-type-catalog">architecture/cag-system.md Â§ 2</a>.</td>
+<td>On-demand domain knowledge under <code>.github/skills/&lt;name&gt;/SKILL.md</code>, loaded when the user task matches. <a href="architecture/cag-system.md#2-file-type-catalog">architecture/cag-system.md Â§ 2</a>.</td>
 </tr>
 <tr>
 <td><strong>Sweep</strong></td>
-<td>The end-of-session CAG-Architect review confirming <code>.github/</code> changes are valid. <a href="architecture/cag-system.html#7-end-of-session-cag-sweep-contract">architecture/cag-system.md Â§ 7</a>.</td>
+<td>The end-of-session CAG-Architect review confirming <code>.github/</code> changes are valid. <a href="architecture/cag-system.md#7-end-of-session-cag-sweep-contract">architecture/cag-system.md Â§ 7</a>.</td>
 </tr>
 <tr>
 <td><strong>Thin Wrapper Rule</strong></td>

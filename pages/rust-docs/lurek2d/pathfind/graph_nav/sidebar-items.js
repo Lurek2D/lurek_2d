@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["graph_astar","graph_range"]};

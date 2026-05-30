@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["analytics","array","fft","linalg","ops","spatial"]};

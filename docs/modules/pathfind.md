@@ -1,12 +1,204 @@
 # Pathfind
 
-- The `pathfind` module is a comprehensive Feature Systems tier library providing a vast array of pathfinding algorithms and spatial reasoning tools for Lurek2D.
+## Summary
 
 It is designed to handle everything from simple grid-based movement to complex, multi-agent AI steering and hierarchical navigation. The foundation of the module is the `NavGrid`, a robust 2D grid structure supporting per-cell walkability masks, integer-based movement costs, and configurable diagonal movement policies (with corner-cutting prevention). On top of this, the module implements classical algorithms like A* (with octile or Manhattan heuristics), Dijkstra's algorithm for cost-weighted reachability, and unweighted BFS. For high-performance uniform-cost grids, it features Jump Point Search (JPS), which dramatically accelerates A* by pruning symmetric neighbors.
 
 To address the challenges of large open worlds and massive agent counts, the module includes several advanced AI pathing techniques. Hierarchical Pathfinding A* (HPA*) partitions grids into chunks, building an abstract graph of boundary entrances to allow near-instant long-distance path planning that is later refined into tile-by-tile routes. For crowd simulation, the `FlowField` and `ai_flow_field` structures precompute directional vectors across a grid toward a specific goal, allowing hundreds of agents to steer smoothly without calculating individual paths. Additionally, the `InfluenceMap` system allows developers to propagate, blend, and decay scalar values across grids—perfect for tactical AI to evaluate threat levels, control zones, or attractive points of interest.
 
 Beyond standard square grids, the module offers extensive support for alternative spatial layouts. It includes a fully featured `HexGrid` with cube-coordinate math, supporting both pointy-top and flat-top layouts, alongside specific line-of-sight and field-of-view queries. An `IsoGrid` provides specialized routing for isometric map layouts. For non-grid environments, the `NavMesh` structure allows A* routing across connected arbitrary polygons, extracting smoothed centroid corridors. To ensure pathfinding never stalls the primary game loop, the module features a dedicated `PathThreadPool`, allowing asynchronous, off-thread path requests via non-blocking channels. Finally, the `UnitPathfinder` provides a high-level, stateful wrapper for individual agents, handling path caching, variable unit sizes (clearance checks), partial paths, and string-pull smoothing. The entire suite is accessible via the `lurek.pathfind.*` Lua API.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### ai_flow_field.rs
+
+- Precomputed flow field steering many agents toward a single goal cell.
+- Propagates breadth-first distance over 8-directional neighbours with diagonal cost.
+- Stores per-cell direction vectors for smooth unit movement.
+- Respects walkability masks when terrain blocks pathing.
+- Gives group movement code a cheap steering target instead of a full path.
+
+### astar.rs
+
+- A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes.
+- Chooses octile or Manhattan heuristics to match the movement model.
+- Stops early when a node budget is reached and falls back to a partial path.
+- Uses Bresenham line-of-sight checks for path smoothing and validation.
+- Removes redundant waypoints through string-pull smoothing.
+- Serves as the standard single-unit shortest-path search for grid movement.
+
+### async_pool.rs
+
+- Fixed-size thread pool that runs A* pathfinding off the game thread.
+- Submits jobs through channels and polls results without blocking.
+- Shares one work queue across workers while skipping cancelled requests early.
+- Gives pathfinding heavy workloads a parallel execution path.
+- Keeps thread management isolated from callers.
+
+### bidir.rs
+
+- Bidirectional A* search that expands from both start and goal at once.
+- Meets in the middle when the closed sets overlap to cut explored nodes.
+- Falls back to a partial forward path when the node budget runs out.
+- Respects NavGrid diagonal mode and per-cell movement cost.
+- Supports variable unit sizes for multi-tile pathfinding.
+- Helps large open grids return useful routes with less search work.
+
+### flow_field.rs
+
+- Dijkstra-based flow field seeded from one or more goal cells over a NavGrid.
+- Stores normalized direction vectors toward the nearest goal beside accumulated cost.
+- Supports variable unit sizes for clearance-aware pathfinding.
+- Converts world-space positions into tile lookups and steering velocities.
+- Includes debug visualisation for directions and obstacles.
+- Provides the group-movement layer above raw path search.
+
+### goal_map.rs
+
+- Multi-source Dijkstra distance field for goal-oriented AI movement.
+- Builds a cost-to-reach map from many weighted source cells.
+- Returns downhill gradient, uphill flee direction, and flood-fill reachability.
+- Supports custom blocker predicates during baking from Lua bindings.
+- Serializes and restores the field as a compact binary blob.
+- Gives AI code a reusable distance surface for steering and influence.
+
+### graph_nav.rs
+
+- A* shortest-path search over weighted directed or bidirectional graphs.
+- Supports cost-bounded range queries for reachable nodes.
+- Falls back to Dijkstra when no heuristic is provided.
+- Reconstructs paths from predecessor maps for caller consumption.
+- Serves graph-based navigation where grid adjacency is not enough.
+
+### graph_path.rs
+
+- Province-level A* pathfinding across adjacency graphs with configurable move costs.
+- Adds Dijkstra-based reachability flooding for budget-limited travel.
+- Models blocked provinces and edge-tag costs in the search cost.
+- Uses a min-heap priority queue node for standard BinaryHeap ordering.
+- Applies a Euclidean centroid heuristic for admissible A* search.
+- Fits strategic map travel where regions, not cells, are the navigation unit.
+
+### grid.rs
+
+- Flat 2-D grid with per-cell walkability and movement-cost storage.
+- Provides A* with optional diagonal movement and selectable heuristics.
+- Includes Dijkstra and BFS variants for weighted and uniform-cost search.
+- Builds flow fields from a single goal cell for steering behavior.
+- Keeps internal heap and path reconstruction helpers close to the grid model.
+- Supports movement-cost lookups suitable for tile-based gameplay maps.
+- Acts as the basic navigation surface for cell-level routing.
+
+### hex_grid.rs
+
+- Hex grid with configurable flat-top or pointy-top offset layout.
+- Stores blocked flags and movement costs for weighted pathfinding.
+- Runs A* search for shortest paths between hex cells.
+- Exposes line-of-sight, field-of-view, and movement-range queries.
+- Uses cube-coordinate math for distance, interpolation, and rounding.
+- Fits tactics and map systems that need hex adjacency instead of squares.
+- Keeps hex navigation self-contained and script-friendly.
+
+### hpa.rs
+
+- Hierarchical Pathfinding A* over a chunked NavGrid abstraction.
+- Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries.
+- Builds an abstract graph of chunk-to-chunk edges with computed costs.
+- Runs abstract A* search with an octile heuristic.
+- Refines abstract waypoints back into full grid-level paths per segment.
+- Supports BFS reachability checks over chunk connectivity.
+- Temporarily inserts start and goal nodes for single-query routing.
+- Handles both horizontal and vertical chunk boundaries.
+- Accepts variable unit sizes through to the refinement stage.
+- Cuts large map searches down to a smaller navigation graph first.
+
+### influence_map.rs
+
+- Grid-based influence map with named floating-point layers over a uniform cell grid.
+- Stamps radial influence with falloff, smooths through neighbours, and decays over time.
+- Queries aggregated influence in rectangles or locates extrema positions.
+- Blends multiple layers into a destination layer with weighted combination.
+- Exposes debug visualisation into an RGBA image for inspection.
+- Serves tactical scoring and spatial pressure systems.
+
+### iso_grid.rs
+
+- Grid-based A* pathfinding over a rectangular isometric cell map.
+- Stores blocked flags and movement costs for weighted searches.
+- Uses Bresenham line-of-sight checks for visibility and smoothing support.
+- Expands four-direction neighbours with bounds and passability filtering.
+- Gives isometric tile worlds a direct path and visibility helper.
+
+### jps.rs
+
+- Jump Point Search optimized A* on uniform-cost 8-directional grids.
+- Prunes symmetric neighbours to skip large open areas.
+- Identifies forced neighbours and jump points along cardinal and diagonal directions.
+- Reconstructs a full tile-by-tile path from the jump points.
+- Uses an octile heuristic and a min-heap open list.
+- Works best when long straight corridors dominate the map.
+- Keeps uniform-grid search fast without changing the grid model.
+
+### mod.rs
+
+- Grid-based and graph-based pathfinding algorithms for cells, graphs, and flow fields.
+- Collects A*, bidirectional search, JPS, HPA*, goal maps, and influence maps under one namespace.
+- Includes grid, hex, isometric, and navmesh navigation surfaces.
+- Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
+
+### nav_grid.rs
+
+- Integer-cost walkability grid for tile-based pathfinding.
+- Stores per-cell movement weight where zero means blocked and higher values cost more.
+- Exposes cardinal and diagonal neighbour queries with corner-cut policies.
+- Tracks dirty rectangles for deferred HPA hierarchy invalidation.
+- Supports bulk fill, rect fill, byte import/export, and snapshot cloning.
+- Renders the grid and path overlay into ImageData for debug use.
+- Forms the base grid model used by higher-level navigation layers.
+
+### navmesh.rs
+
+- Polygon-based navigation mesh for 2D pathfinding.
+- Runs A* over a polygon adjacency graph with a centroid heuristic.
+- Checks point containment with ray-cast tests and extracts centroid waypoints.
+- Supports directed and bidirectional polygon connectivity.
+- Serves large open areas where cell grids are too coarse.
+
+### pathgrid.rs
+
+- Grid-based A* pathfinding with 8-directional movement and variable cell costs.
+- Uses Bresenham line-of-sight for path smoothing after search.
+- Converts cell indices to world-space centres with configurable cell size.
+- Prevents diagonal corner cutting through blocked corners.
+- Uses an octile heuristic for consistent cost estimation.
+- Gives tile maps a direct shortest-path implementation.
+
+### range_map.rs
+
+- Dijkstra-based budget-limited range expansion over a 2-D grid.
+- Produces a cost map for cells reachable within a travel budget.
+- Supports cardinal and diagonal movement with per-cell cost weights.
+- Useful for movement preview, threat radius, and action-range queries.
+- Keeps reachability and distance budgeting in one helper.
+
+### render.rs
+
+- Debug visualization for pathfinding structures as colored RenderCommand lists.
+- Draws NavGrid cells, FlowField arrows, and InfluenceMap heat overlays.
+- Returns batches ready for overlay drawing in the renderer.
+- Gives developers a direct view into navigation data.
+- Keeps visual inspection separate from path search logic.
+
+### unit_pathfinder.rs
+
+- Stateful per-unit pathfinder wrapping a shared NavGrid reference.
+- Runs full A* searches with optional string-pull smoothing.
+- Supports partial paths, BFS reachability, and nearest-walkable searches.
+- Caches recent routes with an LRU strategy and manual invalidation.
+- Exposes octile heuristic and Bresenham LOS helpers for local decisions.
+- Gives each unit its own path search facade without duplicating grid data.
 
 ## Functions
 
@@ -15,7 +207,6 @@ Beyond standard square grids, the module offers extensive support for alternativ
 Returns the configured pathfinding thread count.
 
 ```lua
--- signature
 lurek.pathfind.getThreadCount()
 ```
 
@@ -23,7 +214,7 @@ lurek.pathfind.getThreadCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Thread count (minimum 1). |
+| number | Thread count (minimum 1). |
 
 **Example**
 
@@ -42,7 +233,6 @@ end
 Creates a flow field for a navigation grid.
 
 ```lua
--- signature
 lurek.pathfind.newFlowField(grid_ud)
 ```
 
@@ -50,13 +240,13 @@ lurek.pathfind.newFlowField(grid_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grid_ud` | `LNavGrid` | Navigation grid to compute flow field from. |
+| `grid_ud` | [LNavGrid](#lnavgrid-handle) | Navigation grid to compute flow field from. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFlowField` | New flow field handle. |
+| [LFlowField](#lflowfield-handle) | New flow field handle. |
 
 **Example**
 
@@ -79,12 +269,43 @@ end
 
 ---
 
+### `lurek.pathfind.newGoalMap`
+
+Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
+
+```lua
+lurek.pathfind.newGoalMap(width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LGoalMap](#lgoalmap-handle) | New goal map ready for source registration and baking. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    print("goal_map_type = " .. gm:type())
+end
+```
+
+---
+
 ### `lurek.pathfind.newHexGrid`
 
 Creates a hex grid with the given dimensions.
 
 ```lua
--- signature
 lurek.pathfind.newHexGrid(width, height, layout_str)
 ```
 
@@ -92,15 +313,15 @@ lurek.pathfind.newHexGrid(width, height, layout_str)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Grid width in hex columns. |
-| `height` | `number` | Grid height in hex rows. |
-| `layout_str?` | `string` | Hex layout: `flat` (default) or `pointy`. |
+| `width` | number | Grid width in hex columns. |
+| `height` | number | Grid height in hex rows. |
+| `layout_str?` | string | Hex layout: `flat` (default) or `pointy`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHexGrid` | New hex grid handle. |
+| [LHexGrid](#lhexgrid-handle) | New hex grid handle. |
 
 **Example**
 
@@ -123,7 +344,6 @@ end
 Creates a Jump Point Search grid with given dimensions.
 
 ```lua
--- signature
 lurek.pathfind.newJpsGrid(width, height)
 ```
 
@@ -131,14 +351,14 @@ lurek.pathfind.newJpsGrid(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Grid width in cells. |
-| `height` | `number` | Grid height in cells. |
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LJpsGrid` | New JPS grid handle. |
+| [LJpsGrid](#ljpsgrid-handle) | New JPS grid handle. |
 
 **Example**
 
@@ -162,7 +382,6 @@ end
 Creates a navigation grid with the given dimensions.
 
 ```lua
--- signature
 lurek.pathfind.newNavGrid(width, height)
 ```
 
@@ -170,14 +389,14 @@ lurek.pathfind.newNavGrid(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Grid width in cells. |
-| `height` | `number` | Grid height in cells. |
+| `width` | number | Grid width in cells. |
+| `height` | number | Grid height in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNavGrid` | New navigation grid handle. |
+| [LNavGrid](#lnavgrid-handle) | New navigation grid handle. |
 
 **Example**
 
@@ -198,7 +417,6 @@ end
 Creates a navigation grid from a tilemap layer and blocked gid table.
 
 ```lua
--- signature
 lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table)
 ```
 
@@ -206,15 +424,15 @@ lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tm_ud` | `LTileMap` | Tilemap to derive navigation grid from. |
-| `layer_index` | `number` | One-based tilemap layer index. |
-| `blocked_table` | `table` | Array of tile GIDs that should be blocked. |
+| `tm_ud` | [LTileMap](#ltilemap-handle) | Tilemap to derive navigation grid from. |
+| `layer_index` | number | One-based tilemap layer index. |
+| `blocked_table` | table | Array of tile GIDs that should be blocked. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNavGrid` | New navigation grid handle. |
+| [LNavGrid](#lnavgrid-handle) | New navigation grid handle. |
 
 **Example**
 
@@ -241,7 +459,6 @@ end
 Creates an empty navigation mesh for polygon-based pathfinding.
 
 ```lua
--- signature
 lurek.pathfind.newNavMesh()
 ```
 
@@ -249,7 +466,7 @@ lurek.pathfind.newNavMesh()
 
 | Type | Description |
 |------|-------------|
-| `LNavMesh` | New navmesh handle. |
+| [LNavMesh](#lnavmesh-handle) | New navmesh handle. |
 
 **Example**
 
@@ -279,7 +496,6 @@ end
 Creates an AI flow field from a path grid.
 
 ```lua
--- signature
 lurek.pathfind.newPathFlowField(grid_ud)
 ```
 
@@ -287,13 +503,13 @@ lurek.pathfind.newPathFlowField(grid_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grid_ud` | `LPathGrid` | Path grid to compute AI flow field from. |
+| `grid_ud` | [LPathGrid](#lpathgrid-handle) | Path grid to compute AI flow field from. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAIFlowField` | New AI flow field handle. |
+| [LAIFlowField](#laiflowfield-handle) | New AI flow field handle. |
 
 **Example**
 
@@ -318,7 +534,6 @@ end
 Creates a cell-size path grid with given dimensions.
 
 ```lua
--- signature
 lurek.pathfind.newPathGrid(w, h, cell_size)
 ```
 
@@ -326,15 +541,15 @@ lurek.pathfind.newPathGrid(w, h, cell_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Grid width in cells. |
-| `h` | `number` | Grid height in cells. |
-| `cell_size` | `number` | World-space size of each cell. |
+| `w` | number | Grid width in cells. |
+| `h` | number | Grid height in cells. |
+| `cell_size` | number | World-space size of each cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPathGrid` | New path grid handle. |
+| [LPathGrid](#lpathgrid-handle) | New path grid handle. |
 
 **Example**
 
@@ -354,7 +569,6 @@ end
 Creates a unit pathfinder for a navigation grid.
 
 ```lua
--- signature
 lurek.pathfind.newPathfinder(grid_ud)
 ```
 
@@ -362,13 +576,13 @@ lurek.pathfind.newPathfinder(grid_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grid_ud` | `LNavGrid` | Navigation grid to pathfind on. |
+| `grid_ud` | [LNavGrid](#lnavgrid-handle) | Navigation grid to pathfind on. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LUnitPathfinder` | New pathfinder handle. |
+| [LUnitPathfinder](#lunitpathfinder-handle) | New pathfinder handle. |
 
 **Example**
 
@@ -401,7 +615,6 @@ end
 Computes reachable cells from range map options.
 
 ```lua
--- signature
 lurek.pathfind.rangeMap(opts)
 ```
 
@@ -409,13 +622,13 @@ lurek.pathfind.rangeMap(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells. |
+| `opts` | table | Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `PathfindRangeMapResult` | Range map result with `cells`, `width`, and `height` fields. |
+| LPathfindRangeMapResult | Range map result with `cells`, `width`, and `height` fields. |
 
 **Example**
 
@@ -445,7 +658,6 @@ end
 Sets the configured pathfinding worker-thread count.
 
 ```lua
--- signature
 lurek.pathfind.setThreadCount(count)
 ```
 
@@ -453,7 +665,7 @@ lurek.pathfind.setThreadCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Desired thread count. |
+| `count` | number | Desired thread count. |
 
 **Example**
 
@@ -467,14 +679,44 @@ end
 
 ---
 
-## LAIFlowField
+## Module Fields
 
-### `LAIFlowField:getDirection`
+*No module-level fields documented.*
+
+## Types
+
+- [LAIFlowField Handle](#laiflowfield-handle)
+- [LFlowField Handle](#lflowfield-handle)
+- [LGoalMap Handle](#lgoalmap-handle)
+- [LHexGrid Handle](#lhexgrid-handle)
+- [LJpsGrid Handle](#ljpsgrid-handle)
+- [LNavGrid Handle](#lnavgrid-handle)
+- [LNavMesh Handle](#lnavmesh-handle)
+- [LPathGrid Handle](#lpathgrid-handle)
+- [LTileMap Handle](#ltilemap-handle)
+- [LUnitPathfinder Handle](#lunitpathfinder-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAIFlowField Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAIFlowField:getDirection`
 
 Returns flow direction vector for a one-based cell.
 
 ```lua
--- signature
 LAIFlowField:getDirection(x, y)
 ```
 
@@ -482,15 +724,15 @@ LAIFlowField:getDirection(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Direction X component. |
-| `number` | b Direction Y component. |
+| number | Direction X component. |
+| number | Direction Y component. |
 
 **Example**
 
@@ -509,12 +751,11 @@ end
 
 ---
 
-### `LAIFlowField:getDistance`
+#### `LAIFlowField:getDistance`
 
 Returns distance to goal for a one-based cell.
 
 ```lua
--- signature
 LAIFlowField:getDistance(x, y)
 ```
 
@@ -522,14 +763,14 @@ LAIFlowField:getDistance(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Distance to the goal. |
+| number | Distance to the goal. |
 
 **Example**
 
@@ -548,12 +789,11 @@ end
 
 ---
 
-### `LAIFlowField:getGoal`
+#### `LAIFlowField:getGoal`
 
 Returns the one-based flow field goal, or nil when no goal is set.
 
 ```lua
--- signature
 LAIFlowField:getGoal()
 ```
 
@@ -561,8 +801,8 @@ LAIFlowField:getGoal()
 
 | Type | Description |
 |------|-------------|
-| `number` | a One-based goal column, or nil. |
-| `number` | b One-based goal row, or nil. |
+| number | One-based goal column; or nil. |
+| number | One-based goal row; or nil. |
 
 **Example**
 
@@ -581,12 +821,11 @@ end
 
 ---
 
-### `LAIFlowField:getHeight`
+#### `LAIFlowField:getHeight`
 
 Returns flow field height from this object.
 
 ```lua
--- signature
 LAIFlowField:getHeight()
 ```
 
@@ -594,7 +833,7 @@ LAIFlowField:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height. |
+| number | Height. |
 
 **Example**
 
@@ -612,12 +851,11 @@ end
 
 ---
 
-### `LAIFlowField:getWidth`
+#### `LAIFlowField:getWidth`
 
 Returns flow field width from this object.
 
 ```lua
--- signature
 LAIFlowField:getWidth()
 ```
 
@@ -625,7 +863,7 @@ LAIFlowField:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width. |
+| number | Width. |
 
 **Example**
 
@@ -643,12 +881,11 @@ end
 
 ---
 
-### `LAIFlowField:hasGoal`
+#### `LAIFlowField:hasGoal`
 
 Returns whether a flow field goal is currently set.
 
 ```lua
--- signature
 LAIFlowField:hasGoal()
 ```
 
@@ -656,7 +893,7 @@ LAIFlowField:hasGoal()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a goal exists. |
+| boolean | True when a goal exists. |
 
 **Example**
 
@@ -673,12 +910,11 @@ end
 
 ---
 
-### `LAIFlowField:setGoal`
+#### `LAIFlowField:setGoal`
 
 Sets the one-based flow field goal and recalculates the field.
 
 ```lua
--- signature
 LAIFlowField:setGoal(x, y)
 ```
 
@@ -686,8 +922,8 @@ LAIFlowField:setGoal(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based goal column. |
-| `y` | `number` | One-based goal row. |
+| `x` | number | One-based goal column. |
+| `y` | number | One-based goal row. |
 
 **Example**
 
@@ -706,12 +942,11 @@ end
 
 ---
 
-### `LAIFlowField:type`
+#### `LAIFlowField:type`
 
 Returns the Lua-visible type name for this AI flow field handle.
 
 ```lua
--- signature
 LAIFlowField:type()
 ```
 
@@ -719,7 +954,7 @@ LAIFlowField:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAIFlowField`. |
+| string | The string `[LAIFlowField](#laiflowfield-handle)`. |
 
 **Example**
 
@@ -734,12 +969,11 @@ end
 
 ---
 
-### `LAIFlowField:typeOf`
+#### `LAIFlowField:typeOf`
 
 Returns whether this AI flow field handle matches a supported type name.
 
 ```lua
--- signature
 LAIFlowField:typeOf(name)
 ```
 
@@ -747,13 +981,13 @@ LAIFlowField:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -769,14 +1003,19 @@ end
 
 ---
 
-## LFlowField
+## LFlowField Handle
 
-### `LFlowField:calculate`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFlowField:calculate`
 
 Calculates a flow field toward one target cell.
 
 ```lua
--- signature
 LFlowField:calculate(tx, ty, unit_size)
 ```
 
@@ -784,9 +1023,9 @@ LFlowField:calculate(tx, ty, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | One-based target column. |
-| `ty` | `number` | One-based target row. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `tx` | number | One-based target column. |
+| `ty` | number | One-based target row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Example**
 
@@ -806,12 +1045,11 @@ end
 
 ---
 
-### `LFlowField:calculateMulti`
+#### `LFlowField:calculateMulti`
 
 Calculates a flow field toward multiple target cells.
 
 ```lua
--- signature
 LFlowField:calculateMulti(targets, unit_size)
 ```
 
@@ -819,8 +1057,8 @@ LFlowField:calculateMulti(targets, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `targets` | `table` | Array of `{x, y}` target tables. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `targets` | table | Array of `{x, y}` target tables. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Example**
 
@@ -845,12 +1083,11 @@ end
 
 ---
 
-### `LFlowField:getCostToTarget`
+#### `LFlowField:getCostToTarget`
 
 Returns integration cost to the target from a one-based grid cell.
 
 ```lua
--- signature
 LFlowField:getCostToTarget(x, y)
 ```
 
@@ -858,14 +1095,14 @@ LFlowField:getCostToTarget(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Integration cost to the nearest target. |
+| number | Integration cost to the nearest target. |
 
 **Example**
 
@@ -886,12 +1123,11 @@ end
 
 ---
 
-### `LFlowField:getDirection`
+#### `LFlowField:getDirection`
 
 Returns flow direction vector at a one-based grid cell.
 
 ```lua
--- signature
 LFlowField:getDirection(x, y)
 ```
 
@@ -899,15 +1135,15 @@ LFlowField:getDirection(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Direction X component. |
-| `number` | b Direction Y component. |
+| number | Direction X component. |
+| number | Direction Y component. |
 
 **Example**
 
@@ -929,12 +1165,11 @@ end
 
 ---
 
-### `LFlowField:getDirectionAngle`
+#### `LFlowField:getDirectionAngle`
 
 Returns flow direction angle at a one-based grid cell.
 
 ```lua
--- signature
 LFlowField:getDirectionAngle(x, y)
 ```
 
@@ -942,14 +1177,14 @@ LFlowField:getDirectionAngle(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Direction angle in radians. |
+| number | Direction angle in radians. |
 
 **Example**
 
@@ -969,12 +1204,11 @@ end
 
 ---
 
-### `LFlowField:getTargets`
+#### `LFlowField:getTargets`
 
 Returns target cells for this flow field.
 
 ```lua
--- signature
 LFlowField:getTargets()
 ```
 
@@ -982,7 +1216,7 @@ LFlowField:getTargets()
 
 | Type | Description |
 |------|-------------|
-| `LFlowFieldGetTargetsResult` | Array table of target point tables. |
+| LFlowFieldGetTargetsResult | Array table of target point tables. |
 
 **Example**
 
@@ -1006,12 +1240,11 @@ end
 
 ---
 
-### `LFlowField:isCalculated`
+#### `LFlowField:isCalculated`
 
 Returns whether the flow field has been calculated.
 
 ```lua
--- signature
 LFlowField:isCalculated()
 ```
 
@@ -1019,7 +1252,7 @@ LFlowField:isCalculated()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when calculated. |
+| boolean | True when calculated. |
 
 **Example**
 
@@ -1036,12 +1269,11 @@ end
 
 ---
 
-### `LFlowField:steer`
+#### `LFlowField:steer`
 
 Returns a steering velocity for a world position using the flow field.
 
 ```lua
--- signature
 LFlowField:steer(wx, wy, speed, tw, th)
 ```
 
@@ -1049,18 +1281,18 @@ LFlowField:steer(wx, wy, speed, tw, th)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wx` | `number` | World X position. |
-| `wy` | `number` | World Y position. |
-| `speed` | `number` | Movement speed scalar. |
-| `tw` | `number` | Tile width in world units. |
-| `th` | `number` | Tile height in world units. |
+| `wx` | number | World X position. |
+| `wy` | number | World Y position. |
+| `speed` | number | Movement speed scalar. |
+| `tw` | number | Tile width in world units. |
+| `th` | number | Tile height in world units. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Steered X velocity. |
-| `number` | b Steered Y velocity. |
+| number | Steered X velocity. |
+| number | Steered Y velocity. |
 
 **Example**
 
@@ -1080,12 +1312,11 @@ end
 
 ---
 
-### `LFlowField:type`
+#### `LFlowField:type`
 
 Returns the Lua-visible type name for this flow field handle.
 
 ```lua
--- signature
 LFlowField:type()
 ```
 
@@ -1093,7 +1324,7 @@ LFlowField:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LFlowField`. |
+| string | The string `[LFlowField](#lflowfield-handle)`. |
 
 **Example**
 
@@ -1108,12 +1339,11 @@ end
 
 ---
 
-### `LFlowField:typeOf`
+#### `LFlowField:typeOf`
 
 Returns whether this flow field handle matches a supported type name.
 
 ```lua
--- signature
 LFlowField:typeOf(name)
 ```
 
@@ -1121,13 +1351,13 @@ LFlowField:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1143,14 +1373,447 @@ end
 
 ---
 
-## LHexGrid
+## LGoalMap Handle
 
-### `LHexGrid:distance`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGoalMap:addSource`
+
+Registers a source cell for this goal map. Coordinates are one-based.
+
+```lua
+LGoalMap:addSource(x, y, weight)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `weight?` | number | Relative weight (default 1). Lower = stronger pull. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:bake()
+    print("distance_1_1 = " .. gm:distanceAt(1, 1))
+end
+```
+
+---
+
+#### `LGoalMap:bake`
+
+Runs multi-source Dijkstra to build the distance field using the registered blocker.
+
+```lua
+LGoalMap:bake()
+```
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:bake()
+    print("ready_after_bake = " .. tostring(gm:isReady()))
+end
+```
+
+---
+
+#### `LGoalMap:clearSources`
+
+Removes all registered source cells.
+
+```lua
+LGoalMap:clearSources()
+```
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:clearSources()
+    gm:bake()
+    print("ready_after_clear = " .. tostring(gm:isReady()))
+end
+```
+
+---
+
+#### `LGoalMap:distanceAt`
+
+Returns the minimum cost from (x, y) to the nearest source.
+
+```lua
+LGoalMap:distanceAt(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Distance value; max-int means unreachable. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(10, 10)
+    gm:addSource(5, 5, 1)
+    gm:bake()
+    print("distance_5_5 = " .. gm:distanceAt(5, 5))
+    print("distance_1_1 = " .. gm:distanceAt(1, 1))
+end
+```
+
+---
+
+#### `LGoalMap:flee`
+
+Returns a normalised direction vector pointing away from sources (for fleeing NPCs).
+
+```lua
+LGoalMap:flee(x, y, fear)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `fear?` | number | Scale factor (default 1.0). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | dx component. |
+| number | dy component. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(10, 10)
+    gm:addSource(5, 5, 1)
+    gm:bake()
+    local dx, dy = gm:flee(5, 6, 1.0)
+    print("flee = " .. dx .. "," .. dy)
+end
+```
+
+---
+
+#### `LGoalMap:floodFill`
+
+Returns all cells reachable from (cx, cy) within `threshold` steps.
+
+```lua
+LGoalMap:floodFill(cx, cy, threshold)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | One-based center column. |
+| `cy` | number | One-based center row. |
+| `threshold` | number | Maximum distance to include. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{x, y}` tables (one-based). |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(12, 12)
+    gm:addSource(6, 6, 1)
+    gm:bake()
+    local cells = gm:floodFill(6, 6, 4)
+    print("flood_cells = " .. #cells)
+end
+```
+
+---
+
+#### `LGoalMap:gradientAt`
+
+Returns a normalised direction vector pointing toward the nearest source.
+
+```lua
+LGoalMap:gradientAt(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | dx component. |
+| number | dy component. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(10, 10)
+    gm:addSource(10, 10, 1)
+    gm:bake()
+    local dx, dy = gm:gradientAt(1, 1)
+    print("gradient = " .. dx .. "," .. dy)
+end
+```
+
+---
+
+#### `LGoalMap:isReady`
+
+Returns true when the distance field has been baked and not invalidated.
+
+```lua
+LGoalMap:isReady()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the field is ready for queries. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(8, 8)
+    gm:addSource(4, 4, 1)
+    print("ready_before = " .. tostring(gm:isReady()))
+    gm:bake()
+    print("ready_after = " .. tostring(gm:isReady()))
+end
+```
+
+---
+
+#### `LGoalMap:restore`
+
+Restores a distance field from a blob produced by `save`.
+
+```lua
+LGoalMap:restore(blob)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `blob` | string | Serialised blob. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(12, 12)
+    gm:addSource(6, 6, 1)
+    gm:bake()
+    local blob = gm:save()
+
+    local gm2 = lurek.pathfind.newGoalMap(12, 12)
+    gm2:restore(blob)
+    print("distance_restored = " .. gm2:distanceAt(6, 6))
+end
+```
+
+---
+
+#### `LGoalMap:save`
+
+Serialises the current distance field to a binary blob string.
+
+```lua
+LGoalMap:save()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Serialised blob. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(12, 12)
+    gm:addSource(6, 6, 1)
+    gm:bake()
+    local blob = gm:save()
+    print("blob_bytes = " .. #blob)
+end
+```
+
+---
+
+#### `LGoalMap:setBlocker`
+
+Sets a Lua predicate called during `bake` to determine blocked cells.
+
+```lua
+LGoalMap:setBlocker(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | `fn(x: integer, y: integer) -> boolean` (one-based). |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:setBlocker(function(x, y)
+        return x == 9 and y >= 4 and y <= 12
+    end)
+    gm:bake()
+    print("distance_12_8 = " .. gm:distanceAt(12, 8))
+end
+```
+
+---
+
+#### `LGoalMap:setSources`
+
+Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.
+
+```lua
+LGoalMap:setSources(sources)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sources` | table | Array of `{x, y, weight?}` tables. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:setSources({
+        { x = 4, y = 4, weight = 1 },
+        { x = 13, y = 13, weight = 2 },
+    })
+    gm:bake()
+    print("ready = " .. tostring(gm:isReady()))
+end
+```
+
+---
+
+#### `LGoalMap:type`
+
+Returns the Lua-visible type name for this goal map handle.
+
+```lua
+LGoalMap:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LGoalMap](#lgoalmap-handle)`. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(8, 8)
+    print("type = " .. gm:type())
+end
+```
+
+---
+
+#### `LGoalMap:typeOf`
+
+Returns whether this goal map handle matches a supported type name.
+
+```lua
+LGoalMap:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the name matches. |
+
+**Example**
+
+```lua
+do
+    local gm = lurek.pathfind.newGoalMap(8, 8)
+    print("is_goal_map = " .. tostring(gm:typeOf("LGoalMap")))
+    print("is_object = " .. tostring(gm:typeOf("LObject")))
+end
+```
+
+---
+
+## LHexGrid Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LHexGrid:distance`
 
 Returns hex distance between two one-based hex cells.
 
 ```lua
--- signature
 LHexGrid:distance(c1, r1, c2, r2)
 ```
 
@@ -1158,16 +1821,16 @@ LHexGrid:distance(c1, r1, c2, r2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c1` | `number` | One-based column of the first cell. |
-| `r1` | `number` | One-based row of the first cell. |
-| `c2` | `number` | One-based column of the second cell. |
-| `r2` | `number` | One-based row of the second cell. |
+| `c1` | number | One-based column of the first cell. |
+| `r1` | number | One-based row of the first cell. |
+| `c2` | number | One-based column of the second cell. |
+| `r2` | number | One-based row of the second cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Hex distance. |
+| number | Hex distance. |
 
 **Example**
 
@@ -1182,12 +1845,11 @@ end
 
 ---
 
-### `LHexGrid:fieldOfView`
+#### `LHexGrid:fieldOfView`
 
 Returns visible hex cells within range from an origin.
 
 ```lua
--- signature
 LHexGrid:fieldOfView(col, row, max_range)
 ```
 
@@ -1195,15 +1857,15 @@ LHexGrid:fieldOfView(col, row, max_range)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | One-based origin column. |
-| `row` | `number` | One-based origin row. |
-| `max_range` | `number` | Maximum visibility range in cells. |
+| `col` | number | One-based origin column. |
+| `row` | number | One-based origin row. |
+| `max_range` | number | Maximum visibility range in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHexGridFieldOfViewResult` | Array of `{col, row}` hex cell tables. |
+| LHexGridFieldOfViewResult | Array of `{col, row}` hex cell tables. |
 
 **Example**
 
@@ -1223,12 +1885,11 @@ end
 
 ---
 
-### `LHexGrid:findPath`
+#### `LHexGrid:findPath`
 
 Finds a path between one-based hex cells.
 
 ```lua
--- signature
 LHexGrid:findPath(fc, fr, tc, tr)
 ```
 
@@ -1236,16 +1897,16 @@ LHexGrid:findPath(fc, fr, tc, tr)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fc` | `number` | One-based start column. |
-| `fr` | `number` | One-based start row. |
-| `tc` | `number` | One-based goal column. |
-| `tr` | `number` | One-based goal row. |
+| `fc` | number | One-based start column. |
+| `fr` | number | One-based start row. |
+| `tc` | number | One-based goal column. |
+| `tr` | number | One-based goal row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHexGridFindPathResult` | Array of `{col, row}` hex cell tables, or nil when no path exists. |
+| LHexGridFindPathResult | Array of `{col, row}` hex cell tables, or nil when no path exists. |
 
 **Example**
 
@@ -1270,12 +1931,11 @@ end
 
 ---
 
-### `LHexGrid:isBlocked`
+#### `LHexGrid:isBlocked`
 
 Returns whether a one-based hex cell is blocked.
 
 ```lua
--- signature
 LHexGrid:isBlocked(col, row)
 ```
 
@@ -1283,14 +1943,14 @@ LHexGrid:isBlocked(col, row)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | One-based hex column. |
-| `row` | `number` | One-based hex row. |
+| `col` | number | One-based hex column. |
+| `row` | number | One-based hex row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when blocked. |
+| boolean | True when blocked. |
 
 **Example**
 
@@ -1307,12 +1967,11 @@ end
 
 ---
 
-### `LHexGrid:lineOfSight`
+#### `LHexGrid:lineOfSight`
 
 Returns whether two one-based hex cells have line of sight.
 
 ```lua
--- signature
 LHexGrid:lineOfSight(fc, fr, tc, tr)
 ```
 
@@ -1320,16 +1979,16 @@ LHexGrid:lineOfSight(fc, fr, tc, tr)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fc` | `number` | One-based column of the first cell. |
-| `fr` | `number` | One-based row of the first cell. |
-| `tc` | `number` | One-based column of the second cell. |
-| `tr` | `number` | One-based row of the second cell. |
+| `fc` | number | One-based column of the first cell. |
+| `fr` | number | One-based row of the first cell. |
+| `tc` | number | One-based column of the second cell. |
+| `tr` | number | One-based row of the second cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when line of sight is clear. |
+| boolean | True when line of sight is clear. |
 
 **Example**
 
@@ -1348,12 +2007,11 @@ end
 
 ---
 
-### `LHexGrid:rangeOfMovement`
+#### `LHexGrid:rangeOfMovement`
 
 Returns reachable hex cells within a movement budget.
 
 ```lua
--- signature
 LHexGrid:rangeOfMovement(col, row, budget)
 ```
 
@@ -1361,15 +2019,15 @@ LHexGrid:rangeOfMovement(col, row, budget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | One-based origin column. |
-| `row` | `number` | One-based origin row. |
-| `budget` | `number` | Maximum movement cost budget. |
+| `col` | number | One-based origin column. |
+| `row` | number | One-based origin row. |
+| `budget` | number | Maximum movement cost budget. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LHexGridRangeOfMovementResult` | Array of `{col, row}` hex cell tables. |
+| LHexGridRangeOfMovementResult | Array of `{col, row}` hex cell tables. |
 
 **Example**
 
@@ -1389,12 +2047,11 @@ end
 
 ---
 
-### `LHexGrid:setBlocked`
+#### `LHexGrid:setBlocked`
 
 Sets blocked state for a one-based hex cell.
 
 ```lua
--- signature
 LHexGrid:setBlocked(col, row, blocked)
 ```
 
@@ -1402,9 +2059,9 @@ LHexGrid:setBlocked(col, row, blocked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | One-based hex column. |
-| `row` | `number` | One-based hex row. |
-| `blocked` | `boolean` | True to block the cell. |
+| `col` | number | One-based hex column. |
+| `row` | number | One-based hex row. |
+| `blocked` | boolean | True to block the cell. |
 
 **Example**
 
@@ -1422,12 +2079,11 @@ end
 
 ---
 
-### `LHexGrid:setCost`
+#### `LHexGrid:setCost`
 
 Sets movement cost for a one-based hex cell.
 
 ```lua
--- signature
 LHexGrid:setCost(col, row, cost)
 ```
 
@@ -1435,9 +2091,9 @@ LHexGrid:setCost(col, row, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | One-based hex column. |
-| `row` | `number` | One-based hex row. |
-| `cost` | `number` | Movement cost value. |
+| `col` | number | One-based hex column. |
+| `row` | number | One-based hex row. |
+| `cost` | number | Movement cost value. |
 
 **Example**
 
@@ -1458,12 +2114,11 @@ end
 
 ---
 
-### `LHexGrid:type`
+#### `LHexGrid:type`
 
 Returns the Lua-visible type name for this hex grid handle.
 
 ```lua
--- signature
 LHexGrid:type()
 ```
 
@@ -1471,7 +2126,7 @@ LHexGrid:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LHexGrid`. |
+| string | The string `[LHexGrid](#lhexgrid-handle)`. |
 
 **Example**
 
@@ -1485,12 +2140,11 @@ end
 
 ---
 
-### `LHexGrid:typeOf`
+#### `LHexGrid:typeOf`
 
 Returns whether this hex grid handle matches a supported type name.
 
 ```lua
--- signature
 LHexGrid:typeOf(name)
 ```
 
@@ -1498,13 +2152,13 @@ LHexGrid:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1519,14 +2173,19 @@ end
 
 ---
 
-## LJpsGrid
+## LJpsGrid Handle
 
-### `LJpsGrid:findPath`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LJpsGrid:findPath`
 
 Finds a JPS path between one-based grid cells.
 
 ```lua
--- signature
 LJpsGrid:findPath(fx, fy, tx, ty)
 ```
 
@@ -1534,16 +2193,16 @@ LJpsGrid:findPath(fx, fy, tx, ty)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fx` | `number` | One-based start column. |
-| `fy` | `number` | One-based start row. |
-| `tx` | `number` | One-based goal column. |
-| `ty` | `number` | One-based goal row. |
+| `fx` | number | One-based start column. |
+| `fy` | number | One-based start row. |
+| `tx` | number | One-based goal column. |
+| `ty` | number | One-based goal row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LJpsGridFindPathResult` | Array of `{x, y}` point tables, or nil when no path exists. |
+| LJpsGridFindPathResult | Array of `{x, y}` point tables, or nil when no path exists. |
 
 **Example**
 
@@ -1569,12 +2228,11 @@ end
 
 ---
 
-### `LJpsGrid:isBlocked`
+#### `LJpsGrid:isBlocked`
 
 Returns whether a one-based JPS grid cell is blocked.
 
 ```lua
--- signature
 LJpsGrid:isBlocked(x, y)
 ```
 
@@ -1582,14 +2240,14 @@ LJpsGrid:isBlocked(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when blocked. |
+| boolean | True when blocked. |
 
 **Example**
 
@@ -1606,12 +2264,11 @@ end
 
 ---
 
-### `LJpsGrid:setBlocked`
+#### `LJpsGrid:setBlocked`
 
 Sets blocked state for a one-based JPS grid cell.
 
 ```lua
--- signature
 LJpsGrid:setBlocked(x, y, blocked)
 ```
 
@@ -1619,9 +2276,9 @@ LJpsGrid:setBlocked(x, y, blocked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
-| `blocked` | `boolean` | True to block the cell. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `blocked` | boolean | True to block the cell. |
 
 **Example**
 
@@ -1640,12 +2297,11 @@ end
 
 ---
 
-### `LJpsGrid:type`
+#### `LJpsGrid:type`
 
 Returns the Lua-visible type name for this JPS grid handle.
 
 ```lua
--- signature
 LJpsGrid:type()
 ```
 
@@ -1653,7 +2309,7 @@ LJpsGrid:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LJpsGrid`. |
+| string | The string `[LJpsGrid](#ljpsgrid-handle)`. |
 
 **Example**
 
@@ -1667,12 +2323,11 @@ end
 
 ---
 
-### `LJpsGrid:typeOf`
+#### `LJpsGrid:typeOf`
 
 Returns whether this JPS grid handle matches a supported type name.
 
 ```lua
--- signature
 LJpsGrid:typeOf(name)
 ```
 
@@ -1680,13 +2335,13 @@ LJpsGrid:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1701,14 +2356,19 @@ end
 
 ---
 
-## LNavGrid
+## LNavGrid Handle
 
-### `LNavGrid:clearDirty`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNavGrid:clearDirty`
 
 Clears all dirty region markers from the grid.
 
 ```lua
--- signature
 LNavGrid:clearDirty()
 ```
 
@@ -1729,12 +2389,11 @@ end
 
 ---
 
-### `LNavGrid:fill`
+#### `LNavGrid:fill`
 
 Fills the entire grid with a uniform movement cost.
 
 ```lua
--- signature
 LNavGrid:fill(cost)
 ```
 
@@ -1742,7 +2401,7 @@ LNavGrid:fill(cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cost` | `number` | Movement cost (0–255). |
+| `cost` | number | Movement cost (0â€“255). |
 
 **Example**
 
@@ -1759,12 +2418,11 @@ end
 
 ---
 
-### `LNavGrid:fillRect`
+#### `LNavGrid:fillRect`
 
 Fills a one-based rectangular area with a movement cost.
 
 ```lua
--- signature
 LNavGrid:fillRect(x, y, w, h, cost)
 ```
 
@@ -1772,11 +2430,11 @@ LNavGrid:fillRect(x, y, w, h, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column of the top-left corner. |
-| `y` | `number` | One-based row of the top-left corner. |
-| `w` | `number` | Rectangle width in cells. |
-| `h` | `number` | Rectangle height in cells. |
-| `cost` | `number` | Movement cost (0–255). |
+| `x` | number | One-based column of the top-left corner. |
+| `y` | number | One-based row of the top-left corner. |
+| `w` | number | Rectangle width in cells. |
+| `h` | number | Rectangle height in cells. |
+| `cost` | number | Movement cost (0â€“255). |
 
 **Example**
 
@@ -1794,12 +2452,11 @@ end
 
 ---
 
-### `LNavGrid:findHpaPath`
+#### `LNavGrid:findHpaPath`
 
 Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
 
 ```lua
--- signature
 LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size)
 ```
 
@@ -1807,17 +2464,17 @@ LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | One-based start column. |
-| `sy` | `number` | One-based start row. |
-| `gx` | `number` | One-based goal column. |
-| `gy` | `number` | One-based goal row. |
-| `unit_size?` | `number` | Optional unit footprint in cells, default 1. |
+| `sx` | number | One-based start column. |
+| `sy` | number | One-based start row. |
+| `gx` | number | One-based goal column. |
+| `gy` | number | One-based goal row. |
+| `unit_size?` | number | Optional unit footprint in cells, default 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of `{x, y}` waypoint tables, or nil when no path exists. |
+| table | Array of `{x, y}` waypoint tables, or nil when no path exists. |
 
 **Example**
 
@@ -1834,12 +2491,11 @@ end
 
 ---
 
-### `LNavGrid:getChunkSize`
+#### `LNavGrid:getChunkSize`
 
 Returns the hierarchical chunk size in cells.
 
 ```lua
--- signature
 LNavGrid:getChunkSize()
 ```
 
@@ -1847,7 +2503,7 @@ LNavGrid:getChunkSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Chunk size. |
+| number | Chunk size. |
 
 **Example**
 
@@ -1863,12 +2519,11 @@ end
 
 ---
 
-### `LNavGrid:getCost`
+#### `LNavGrid:getCost`
 
 Returns movement cost at a one-based grid cell.
 
 ```lua
--- signature
 LNavGrid:getCost(x, y)
 ```
 
@@ -1876,14 +2531,14 @@ LNavGrid:getCost(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Movement cost. |
+| number | Movement cost. |
 
 **Example**
 
@@ -1900,12 +2555,11 @@ end
 
 ---
 
-### `LNavGrid:getDiagonalMode`
+#### `LNavGrid:getDiagonalMode`
 
 Returns the current diagonal movement mode name.
 
 ```lua
--- signature
 LNavGrid:getDiagonalMode()
 ```
 
@@ -1913,7 +2567,7 @@ LNavGrid:getDiagonalMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | Mode name. |
+| string | Mode name. |
 
 **Example**
 
@@ -1929,12 +2583,11 @@ end
 
 ---
 
-### `LNavGrid:getDimensions`
+#### `LNavGrid:getDimensions`
 
 Returns grid width and height as two integers.
 
 ```lua
--- signature
 LNavGrid:getDimensions()
 ```
 
@@ -1942,8 +2595,8 @@ LNavGrid:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Grid width. |
-| `number` | b Grid height. |
+| number | Grid width. |
+| number | Grid height. |
 
 **Example**
 
@@ -1959,12 +2612,11 @@ end
 
 ---
 
-### `LNavGrid:getHeight`
+#### `LNavGrid:getHeight`
 
 Returns grid height from this object.
 
 ```lua
--- signature
 LNavGrid:getHeight()
 ```
 
@@ -1972,7 +2624,7 @@ LNavGrid:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Grid height. |
+| number | Grid height. |
 
 **Example**
 
@@ -1988,12 +2640,11 @@ end
 
 ---
 
-### `LNavGrid:getWidth`
+#### `LNavGrid:getWidth`
 
 Returns grid width from this object.
 
 ```lua
--- signature
 LNavGrid:getWidth()
 ```
 
@@ -2001,7 +2652,7 @@ LNavGrid:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Grid width. |
+| number | Grid width. |
 
 **Example**
 
@@ -2017,12 +2668,11 @@ end
 
 ---
 
-### `LNavGrid:isBlocked`
+#### `LNavGrid:isBlocked`
 
 Returns whether a one-based grid cell is blocked.
 
 ```lua
--- signature
 LNavGrid:isBlocked(x, y)
 ```
 
@@ -2030,14 +2680,14 @@ LNavGrid:isBlocked(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when blocked. |
+| boolean | True when blocked. |
 
 **Example**
 
@@ -2054,12 +2704,11 @@ end
 
 ---
 
-### `LNavGrid:isWalkable`
+#### `LNavGrid:isWalkable`
 
 Returns whether a one-based grid cell is walkable for a unit size.
 
 ```lua
--- signature
 LNavGrid:isWalkable(x, y, unit_size)
 ```
 
@@ -2067,15 +2716,15 @@ LNavGrid:isWalkable(x, y, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when walkable. |
+| boolean | True when walkable. |
 
 **Example**
 
@@ -2094,12 +2743,11 @@ end
 
 ---
 
-### `LNavGrid:loadFromString`
+#### `LNavGrid:loadFromString`
 
 Loads grid data from a serialized binary string.
 
 ```lua
--- signature
 LNavGrid:loadFromString(data)
 ```
 
@@ -2107,7 +2755,7 @@ LNavGrid:loadFromString(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `string` | Serialized grid bytes. |
+| `data` | string | Serialized grid bytes. |
 
 **Example**
 
@@ -2129,12 +2777,11 @@ end
 
 ---
 
-### `LNavGrid:rebuildAbstract`
+#### `LNavGrid:rebuildAbstract`
 
 Rebuilds the cached abstract graph for this grid.
 
 ```lua
--- signature
 LNavGrid:rebuildAbstract()
 ```
 
@@ -2154,12 +2801,11 @@ end
 
 ---
 
-### `LNavGrid:saveToString`
+#### `LNavGrid:saveToString`
 
 Saves grid data to a serialized binary string.
 
 ```lua
--- signature
 LNavGrid:saveToString()
 ```
 
@@ -2167,7 +2813,7 @@ LNavGrid:saveToString()
 
 | Type | Description |
 |------|-------------|
-| `string` | Serialized grid bytes. |
+| string | Serialized grid bytes. |
 
 **Example**
 
@@ -2187,12 +2833,11 @@ end
 
 ---
 
-### `LNavGrid:setBlocked`
+#### `LNavGrid:setBlocked`
 
 Sets blocked state at a one-based grid cell.
 
 ```lua
--- signature
 LNavGrid:setBlocked(x, y, blocked)
 ```
 
@@ -2200,9 +2845,9 @@ LNavGrid:setBlocked(x, y, blocked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
-| `blocked` | `boolean` | True to block the cell. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `blocked` | boolean | True to block the cell. |
 
 **Example**
 
@@ -2219,12 +2864,11 @@ end
 
 ---
 
-### `LNavGrid:setChunkSize`
+#### `LNavGrid:setChunkSize`
 
 Sets hierarchical chunk size for abstract graph partitioning.
 
 ```lua
--- signature
 LNavGrid:setChunkSize(size)
 ```
 
@@ -2232,7 +2876,7 @@ LNavGrid:setChunkSize(size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Chunk side length in cells. |
+| `size` | number | Chunk side length in cells. |
 
 **Example**
 
@@ -2249,12 +2893,11 @@ end
 
 ---
 
-### `LNavGrid:setCost`
+#### `LNavGrid:setCost`
 
 Sets movement cost at a one-based grid cell.
 
 ```lua
--- signature
 LNavGrid:setCost(x, y, cost)
 ```
 
@@ -2262,9 +2905,9 @@ LNavGrid:setCost(x, y, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
-| `cost` | `number` | Movement cost (0–255). |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `cost` | number | Movement cost (0â€“255). |
 
 **Example**
 
@@ -2281,12 +2924,11 @@ end
 
 ---
 
-### `LNavGrid:setDiagonalMode`
+#### `LNavGrid:setDiagonalMode`
 
 Sets diagonal movement mode for this object.
 
 ```lua
--- signature
 LNavGrid:setDiagonalMode(mode)
 ```
 
@@ -2294,7 +2936,7 @@ LNavGrid:setDiagonalMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Mode name: `none`, `always`, or `nocornercut`. |
+| `mode` | string | Mode name: `none`, `always`, or `nocornercut`. |
 
 **Example**
 
@@ -2310,12 +2952,11 @@ end
 
 ---
 
-### `LNavGrid:setDirty`
+#### `LNavGrid:setDirty`
 
 Marks a one-based rectangular region dirty for incremental rebuild.
 
 ```lua
--- signature
 LNavGrid:setDirty(x, y, w, h)
 ```
 
@@ -2323,10 +2964,10 @@ LNavGrid:setDirty(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column of the top-left corner. |
-| `y` | `number` | One-based row of the top-left corner. |
-| `w` | `number` | Region width in cells. |
-| `h` | `number` | Region height in cells. |
+| `x` | number | One-based column of the top-left corner. |
+| `y` | number | One-based row of the top-left corner. |
+| `w` | number | Region width in cells. |
+| `h` | number | Region height in cells. |
 
 **Example**
 
@@ -2347,12 +2988,11 @@ end
 
 ---
 
-### `LNavGrid:type`
+#### `LNavGrid:type`
 
 Returns the Lua-visible type name for this navigation grid handle.
 
 ```lua
--- signature
 LNavGrid:type()
 ```
 
@@ -2360,7 +3000,7 @@ LNavGrid:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LNavGrid`. |
+| string | The string `[LNavGrid](#lnavgrid-handle)`. |
 
 **Example**
 
@@ -2374,12 +3014,11 @@ end
 
 ---
 
-### `LNavGrid:typeOf`
+#### `LNavGrid:typeOf`
 
 Returns whether this navigation grid handle matches a supported type name.
 
 ```lua
--- signature
 LNavGrid:typeOf(name)
 ```
 
@@ -2387,13 +3026,13 @@ LNavGrid:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2408,14 +3047,19 @@ end
 
 ---
 
-## LNavMesh
+## LNavMesh Handle
 
-### `LNavMesh:addPolygon`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNavMesh:addPolygon`
 
 Adds a polygon from vertex tables and returns a one-based id.
 
 ```lua
--- signature
 LNavMesh:addPolygon(vertices)
 ```
 
@@ -2423,13 +3067,13 @@ LNavMesh:addPolygon(vertices)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vertices` | `table` | Array of `{x, y}` vertex tables (minimum 3). |
+| `vertices` | table | Array of `{x, y}` vertex tables (minimum 3). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based polygon id. |
+| number | One-based polygon id. |
 
 **Example**
 
@@ -2449,12 +3093,11 @@ end
 
 ---
 
-### `LNavMesh:connectPolygons`
+#### `LNavMesh:connectPolygons`
 
 Connects two polygons by one-based id.
 
 ```lua
--- signature
 LNavMesh:connectPolygons(a, b, bidirectional)
 ```
 
@@ -2462,15 +3105,15 @@ LNavMesh:connectPolygons(a, b, bidirectional)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | One-based id of the first polygon. |
-| `b` | `number` | One-based id of the second polygon. |
-| `bidirectional?` | `boolean` | True for two-way link (default true). |
+| `a` | number | One-based id of the first polygon. |
+| `b` | number | One-based id of the second polygon. |
+| `bidirectional?` | boolean | True for two-way link (default true). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the connection was added. |
+| boolean | True when the connection was added. |
 
 **Example**
 
@@ -2503,12 +3146,11 @@ end
 
 ---
 
-### `LNavMesh:findPath`
+#### `LNavMesh:findPath`
 
 Finds a path through the navmesh between world points.
 
 ```lua
--- signature
 LNavMesh:findPath(sx, sy, gx, gy)
 ```
 
@@ -2516,16 +3158,16 @@ LNavMesh:findPath(sx, sy, gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Start X in world coordinates. |
-| `sy` | `number` | Start Y in world coordinates. |
-| `gx` | `number` | Goal X in world coordinates. |
-| `gy` | `number` | Goal Y in world coordinates. |
+| `sx` | number | Start X in world coordinates. |
+| `sy` | number | Start Y in world coordinates. |
+| `gx` | number | Goal X in world coordinates. |
+| `gy` | number | Goal Y in world coordinates. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNavMeshFindPathResult` | Array of `{x, y}` point tables, or nil when no path exists. |
+| LNavMeshFindPathResult | Array of `{x, y}` point tables, or nil when no path exists. |
 
 **Example**
 
@@ -2567,12 +3209,11 @@ end
 
 ---
 
-### `LNavMesh:getPolygonCount`
+#### `LNavMesh:getPolygonCount`
 
 Returns the total navmesh polygon count.
 
 ```lua
--- signature
 LNavMesh:getPolygonCount()
 ```
 
@@ -2580,7 +3221,7 @@ LNavMesh:getPolygonCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Polygon count. |
+| number | Polygon count. |
 
 **Example**
 
@@ -2600,12 +3241,11 @@ end
 
 ---
 
-### `LNavMesh:type`
+#### `LNavMesh:type`
 
 Returns the Lua-visible type name for this navmesh handle.
 
 ```lua
--- signature
 LNavMesh:type()
 ```
 
@@ -2613,7 +3253,7 @@ LNavMesh:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LNavMesh`. |
+| string | The string `[LNavMesh](#lnavmesh-handle)`. |
 
 **Example**
 
@@ -2627,12 +3267,11 @@ end
 
 ---
 
-### `LNavMesh:typeOf`
+#### `LNavMesh:typeOf`
 
 Returns whether this navmesh handle matches a supported type name.
 
 ```lua
--- signature
 LNavMesh:typeOf(name)
 ```
 
@@ -2640,13 +3279,13 @@ LNavMesh:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2661,14 +3300,19 @@ end
 
 ---
 
-## LPathGrid
+## LPathGrid Handle
 
-### `LPathGrid:findPath`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPathGrid:findPath`
 
 Finds a path between one-based path grid cells.
 
 ```lua
--- signature
 LPathGrid:findPath(sx, sy, gx, gy)
 ```
 
@@ -2676,16 +3320,16 @@ LPathGrid:findPath(sx, sy, gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | One-based start column. |
-| `sy` | `number` | One-based start row. |
-| `gx` | `number` | One-based goal column. |
-| `gy` | `number` | One-based goal row. |
+| `sx` | number | One-based start column. |
+| `sy` | number | One-based start row. |
+| `gx` | number | One-based goal column. |
+| `gy` | number | One-based goal row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPathGridFindPathResult` | Array of `{x, y}` point tables, or nil when no path exists. |
+| LPathGridFindPathResult | Array of `{x, y}` point tables, or nil when no path exists. |
 
 **Example**
 
@@ -2711,12 +3355,11 @@ end
 
 ---
 
-### `LPathGrid:findPathSmoothed`
+#### `LPathGrid:findPathSmoothed`
 
 Finds a smoothed path between one-based path grid cells.
 
 ```lua
--- signature
 LPathGrid:findPathSmoothed(sx, sy, gx, gy)
 ```
 
@@ -2724,16 +3367,16 @@ LPathGrid:findPathSmoothed(sx, sy, gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | One-based start column. |
-| `sy` | `number` | One-based start row. |
-| `gx` | `number` | One-based goal column. |
-| `gy` | `number` | One-based goal row. |
+| `sx` | number | One-based start column. |
+| `sy` | number | One-based start row. |
+| `gx` | number | One-based goal column. |
+| `gy` | number | One-based goal row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPathGridFindPathSmoothedResult` | Array of `{x, y}` point tables, or nil when no path exists. |
+| LPathGridFindPathSmoothedResult | Array of `{x, y}` point tables, or nil when no path exists. |
 
 **Example**
 
@@ -2758,12 +3401,11 @@ end
 
 ---
 
-### `LPathGrid:getCellSize`
+#### `LPathGrid:getCellSize`
 
 Returns path grid cell size from this object.
 
 ```lua
--- signature
 LPathGrid:getCellSize()
 ```
 
@@ -2771,7 +3413,7 @@ LPathGrid:getCellSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell size. |
+| number | Cell size. |
 
 **Example**
 
@@ -2786,12 +3428,11 @@ end
 
 ---
 
-### `LPathGrid:getCost`
+#### `LPathGrid:getCost`
 
 Returns movement cost at a one-based cell.
 
 ```lua
--- signature
 LPathGrid:getCost(x, y)
 ```
 
@@ -2799,14 +3440,14 @@ LPathGrid:getCost(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Movement cost. |
+| number | Movement cost. |
 
 **Example**
 
@@ -2823,12 +3464,11 @@ end
 
 ---
 
-### `LPathGrid:getHeight`
+#### `LPathGrid:getHeight`
 
 Returns grid height from this object.
 
 ```lua
--- signature
 LPathGrid:getHeight()
 ```
 
@@ -2836,7 +3476,7 @@ LPathGrid:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Grid height. |
+| number | Grid height. |
 
 **Example**
 
@@ -2851,12 +3491,11 @@ end
 
 ---
 
-### `LPathGrid:getWidth`
+#### `LPathGrid:getWidth`
 
 Returns grid width from this object.
 
 ```lua
--- signature
 LPathGrid:getWidth()
 ```
 
@@ -2864,7 +3503,7 @@ LPathGrid:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Grid width. |
+| number | Grid width. |
 
 **Example**
 
@@ -2879,12 +3518,11 @@ end
 
 ---
 
-### `LPathGrid:isWalkable`
+#### `LPathGrid:isWalkable`
 
 Returns walkability at a one-based cell.
 
 ```lua
--- signature
 LPathGrid:isWalkable(x, y)
 ```
 
@@ -2892,14 +3530,14 @@ LPathGrid:isWalkable(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when walkable. |
+| boolean | True when walkable. |
 
 **Example**
 
@@ -2916,12 +3554,11 @@ end
 
 ---
 
-### `LPathGrid:setCost`
+#### `LPathGrid:setCost`
 
 Sets movement cost at a one-based cell.
 
 ```lua
--- signature
 LPathGrid:setCost(x, y, cost)
 ```
 
@@ -2929,9 +3566,9 @@ LPathGrid:setCost(x, y, cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
-| `cost` | `number` | Movement cost value. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `cost` | number | Movement cost value. |
 
 **Example**
 
@@ -2948,12 +3585,11 @@ end
 
 ---
 
-### `LPathGrid:setWalkable`
+#### `LPathGrid:setWalkable`
 
 Sets walkability at a one-based cell.
 
 ```lua
--- signature
 LPathGrid:setWalkable(x, y, w)
 ```
 
@@ -2961,9 +3597,9 @@ LPathGrid:setWalkable(x, y, w)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column. |
-| `y` | `number` | One-based row. |
-| `w` | `boolean` | True to mark the cell walkable. |
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `w` | boolean | True to mark the cell walkable. |
 
 **Example**
 
@@ -2980,12 +3616,11 @@ end
 
 ---
 
-### `LPathGrid:type`
+#### `LPathGrid:type`
 
 Returns the Lua-visible type name for this path grid handle.
 
 ```lua
--- signature
 LPathGrid:type()
 ```
 
@@ -2993,7 +3628,7 @@ LPathGrid:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LPathGrid`. |
+| string | The string `[LPathGrid](#lpathgrid-handle)`. |
 
 **Example**
 
@@ -3007,12 +3642,11 @@ end
 
 ---
 
-### `LPathGrid:typeOf`
+#### `LPathGrid:typeOf`
 
 Returns whether this path grid handle matches a supported type name.
 
 ```lua
--- signature
 LPathGrid:typeOf(name)
 ```
 
@@ -3020,13 +3654,13 @@ LPathGrid:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -3041,14 +3675,1014 @@ end
 
 ---
 
-## LUnitPathfinder
+## LTileMap Handle
 
-### `LUnitPathfinder:clearCache`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTileMap:addLayer`
+
+Creates a new tile layer with the given name and dimensions.
+
+```lua
+LTileMap:addLayer(name, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Layer name. |
+| `w` | number | Width in tiles. |
+| `h` | number | Height in tiles. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Index of the new layer (1-based). |
+
+---
+
+#### `LTileMap:addTileSet`
+
+Attaches a tileset to this map for tile rendering.
+
+```lua
+LTileMap:addTileSet(tileSet)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tileSet` | LTileSet | Tileset to add. |
+
+---
+
+#### `LTileMap:applyAutoTile`
+
+Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
+
+```lua
+LTileMap:applyAutoTile(layer, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTile8`
+
+Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
+
+```lua
+LTileMap:applyAutoTile8(layer, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTile8At`
+
+Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+```lua
+LTileMap:applyAutoTile8At(layer, x, y, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTileAt`
+
+Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+```lua
+LTileMap:applyAutoTileAt(layer, x, y, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:checkEntities`
+
+Checks a list of entities against registered tile-enter callbacks on a layer.
+
+```lua
+LTileMap:checkEntities(layer, entities)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `entities` | table | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields. |
+
+---
+
+#### `LTileMap:clearTile`
+
+Removes the tile at a specific grid position, setting it to empty (GID 0).
+
+```lua
+LTileMap:clearTile(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+---
+
+#### `LTileMap:drawToImage`
+
+Rasterizes the map into an image using the given tile size, returning an image handle.
+
+```lua
+LTileMap:drawToImage(tileSize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tileSize` | number | Pixel size of each tile in the output image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LImage | Rasterized image of the map. |
+
+---
+
+#### `LTileMap:fill`
+
+Fills every cell of a layer with the given GID.
+
+```lua
+LTileMap:fill(layer, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `gid` | number | Global tile ID to fill with. |
+
+---
+
+#### `LTileMap:findTilesByGid`
+
+Returns all positions on a layer that contain a specific GID.
+
+```lua
+LTileMap:findTilesByGid(layer, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `gid` | number | Global tile ID to search for. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTileMapFindTilesByGidResult | Array of `{x=number, y=number}` positions. |
+
+---
+
+#### `LTileMap:fireTileExit`
+
+Manually fires the tile-exit callback for a specific GID and entity at a tile position.
+
+```lua
+LTileMap:fireTileExit(gid, entity, tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID. |
+| `entity` | table | Entity table to pass to the callback. |
+| `tx` | number | Tile column. |
+| `ty` | number | Tile row. |
+
+---
+
+#### `LTileMap:fireTileStep`
+
+Manually fires the tile-step callback for a specific GID and entity at a tile position.
+
+```lua
+LTileMap:fireTileStep(gid, entity, tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID. |
+| `entity` | table | Entity table to pass to the callback. |
+| `tx` | number | Tile column. |
+| `ty` | number | Tile row. |
+
+---
+
+#### `LTileMap:getChunkSize`
+
+Returns the chunk size used for internal tile storage.
+
+```lua
+LTileMap:getChunkSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Chunk size in tiles per side. |
+
+---
+
+#### `LTileMap:getLayerColor`
+
+Returns the tint color of a layer as four RGBA components.
+
+```lua
+LTileMap:getLayerColor(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red (0..1). |
+| number | Green (0..1). |
+| number | Blue (0..1). |
+| number | Alpha (0..1). |
+
+---
+
+#### `LTileMap:getLayerCount`
+
+Returns the total number of layers in this map.
+
+```lua
+LTileMap:getLayerCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer count. |
+
+---
+
+#### `LTileMap:getLayerName`
+
+Returns the name of a layer by index.
+
+```lua
+LTileMap:getLayerName(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Layer name, or nil if index is out of range. |
+
+---
+
+#### `LTileMap:getLayerOffset`
+
+Returns the pixel offset of a layer.
+
+```lua
+LTileMap:getLayerOffset(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Horizontal offset. |
+| number | Vertical offset. |
+
+---
+
+#### `LTileMap:getLayerParallax`
+
+Returns the parallax scroll factor of a layer.
+
+```lua
+LTileMap:getLayerParallax(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Horizontal parallax factor. |
+| number | Vertical parallax factor. |
+
+---
+
+#### `LTileMap:getLayerVisible`
+
+Returns whether a layer is currently visible.
+
+```lua
+LTileMap:getLayerVisible(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the layer is visible. |
+
+---
+
+#### `LTileMap:getOrientation`
+
+Returns the current map orientation as a string.
+
+```lua
+LTileMap:getOrientation()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+
+---
+
+#### `LTileMap:getTile`
+
+Returns the tile GID at a specific grid position on a layer.
+
+```lua
+LTileMap:getTile(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Global tile ID at that position. |
+
+---
+
+#### `LTileMap:getTileDimensions`
+
+Returns both tile width and height in pixels.
+
+```lua
+LTileMap:getTileDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile width. |
+| number | Tile height. |
+
+---
+
+#### `LTileMap:getTileHeight`
+
+Returns the height of a single tile in pixels for this map.
+
+```lua
+LTileMap:getTileHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile height in pixels. |
+
+---
+
+#### `LTileMap:getTileSet`
+
+Returns the tileset at the given index.
+
+```lua
+LTileMap:getTileSet(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Tileset index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTileSet | The tileset, or nil if index is out of range. |
+
+---
+
+#### `LTileMap:getTileSetCount`
+
+Returns how many tilesets are attached to this map.
+
+```lua
+LTileMap:getTileSetCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tileset count. |
+
+---
+
+#### `LTileMap:getTileWidth`
+
+Returns the width of a single tile in pixels for this map.
+
+```lua
+LTileMap:getTileWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile width in pixels. |
+
+---
+
+#### `LTileMap:getViewport`
+
+Returns the current viewport rectangle, or nils if none is set.
+
+```lua
+LTileMap:getViewport()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Left edge. |
+| number | Top edge. |
+| number | Width. |
+| number | Height. |
+
+---
+
+#### `LTileMap:isSolid`
+
+Checks whether the tile at a given position on a layer is solid.
+
+```lua
+LTileMap:isSolid(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the tile at that position is marked solid. |
+
+---
+
+#### `LTileMap:onTileEnter`
+
+Registers a callback invoked when an entity enters a tile with the given GID.
+
+```lua
+LTileMap:onTileEnter(gid, func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(wx, wy, tx, ty)`. |
+
+---
+
+#### `LTileMap:onTileExit`
+
+Registers a callback invoked when an entity leaves a tile with the given GID.
+
+```lua
+LTileMap:onTileExit(gid, func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(entity, tx, ty)`. |
+
+---
+
+#### `LTileMap:onTileStep`
+
+Registers a callback invoked each frame an entity remains on a tile with the given GID.
+
+```lua
+LTileMap:onTileStep(gid, func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(entity, tx, ty)`. |
+
+---
+
+#### `LTileMap:rectOverlapsSolid`
+
+Tests whether a world-space rectangle overlaps any solid tile on a layer.
+
+```lua
+LTileMap:rectOverlapsSolid(layer, x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Rectangle left edge in world pixels. |
+| `y` | number | Rectangle top edge in world pixels. |
+| `w` | number | Rectangle width in pixels. |
+| `h` | number | Rectangle height in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if any solid tile is overlapped. |
+
+---
+
+#### `LTileMap:render`
+
+Submits render commands for all visible tiles, optionally offset by a scroll position.
+
+```lua
+LTileMap:render(ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ox?` | number | Horizontal scroll offset (default 0). |
+| `oy?` | number | Vertical scroll offset (default 0). |
+
+---
+
+#### `LTileMap:setLayerColor`
+
+Sets the tint color for an entire layer.
+
+```lua
+LTileMap:setLayerColor(idx, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `r` | number | Red channel (0..1). |
+| `g` | number | Green channel (0..1). |
+| `b` | number | Blue channel (0..1). |
+| `a` | number | Alpha channel (0..1). |
+
+---
+
+#### `LTileMap:setLayerOffset`
+
+Sets the pixel offset for a layer, shifting all tiles during rendering.
+
+```lua
+LTileMap:setLayerOffset(idx, ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `ox` | number | Horizontal offset in pixels. |
+| `oy` | number | Vertical offset in pixels. |
+
+---
+
+#### `LTileMap:setLayerParallax`
+
+Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+
+```lua
+LTileMap:setLayerParallax(idx, px, py)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `px` | number | Horizontal parallax factor. |
+| `py` | number | Vertical parallax factor. |
+
+---
+
+#### `LTileMap:setLayerVisible`
+
+Sets whether a layer is drawn during rendering.
+
+```lua
+LTileMap:setLayerVisible(idx, visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `visible` | boolean | True to show, false to hide. |
+
+---
+
+#### `LTileMap:setOrientation`
+
+Sets the map orientation, affecting coordinate transforms and rendering.
+
+```lua
+LTileMap:setOrientation(orientation)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orientation` | string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+
+---
+
+#### `LTileMap:setTile`
+
+Sets the tile GID at a specific grid position on a layer.
+
+```lua
+LTileMap:setTile(layer, x, y, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `gid` | number | Global tile ID to place. |
+
+---
+
+#### `LTileMap:setTileTint`
+
+Overrides the color tint for a single tile at a given position.
+
+```lua
+LTileMap:setTileTint(layer, x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `r` | number | Red channel (0..1). |
+| `g` | number | Green channel (0..1). |
+| `b` | number | Blue channel (0..1). |
+| `a` | number | Alpha channel (0..1). |
+
+---
+
+#### `LTileMap:setViewport`
+
+Sets the visible area of the map for culling during rendering.
+
+```lua
+LTileMap:setViewport(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Left edge in world pixels. |
+| `y` | number | Top edge in world pixels. |
+| `w` | number | Viewport width in pixels. |
+| `h` | number | Viewport height in pixels. |
+
+---
+
+#### `LTileMap:sweepRect`
+
+Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
+
+```lua
+LTileMap:sweepRect(layer, x, y, w, h, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Rectangle left edge in world pixels. |
+| `y` | number | Rectangle top edge in world pixels. |
+| `w` | number | Rectangle width in pixels. |
+| `h` | number | Rectangle height in pixels. |
+| `dx` | number | Horizontal movement delta. |
+| `dy` | number | Vertical movement delta. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Contact X position. |
+| number | Contact Y position. |
+| number | Normal X component. |
+| number | Normal Y component. |
+| number | Tile column hit (1-based; or 0 if no hit). |
+| number | Tile row hit (1-based; or 0 if no hit). |
+
+---
+
+#### `LTileMap:tileToWorld`
+
+Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
+
+```lua
+LTileMap:tileToWorld(tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tx` | number | Tile column (1-based). |
+| `ty` | number | Tile row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | World X position in pixels. |
+| number | World Y position in pixels. |
+
+---
+
+#### `LTileMap:tileTypeIndex`
+
+Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
+
+```lua
+LTileMap:tileTypeIndex(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTileMapTileTypeIndexResult | Table keyed by GID, each value an array of `{x=number, y=number}`. |
+
+---
+
+#### `LTileMap:toNavGrid`
+
+Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+
+```lua
+LTileMap:toNavGrid(layer, gids)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `gids` | table | Array of walkable GIDs. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean[] | Flat walkable grid (true = walkable), row-major order. |
+
+---
+
+#### `LTileMap:type`
+
+Returns the type name of this userdata.
+
+```lua
+LTileMap:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LTileMap](#ltilemap-handle)"`. |
+
+---
+
+#### `LTileMap:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LTileMap:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check against. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if `name` is `"[LTileMap](#ltilemap-handle)"` or `"Object"`. |
+
+---
+
+#### `LTileMap:update`
+
+Advances tile animations by the given delta time.
+
+```lua
+LTileMap:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Time elapsed in seconds since last update. |
+
+---
+
+#### `LTileMap:worldToTile`
+
+Converts world-space pixel coordinates to tile-grid coordinates.
+
+```lua
+LTileMap:worldToTile(wx, wy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | World X position in pixels. |
+| `wy` | number | World Y position in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile column (1-based). |
+| number | Tile row (1-based). |
+
+---
+
+## LUnitPathfinder Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LUnitPathfinder:clearCache`
 
 Clears all cached paths on this object.
 
 ```lua
--- signature
 LUnitPathfinder:clearCache()
 ```
 
@@ -3072,12 +4706,11 @@ end
 
 ---
 
-### `LUnitPathfinder:findNearestWalkable`
+#### `LUnitPathfinder:findNearestWalkable`
 
 Finds nearest walkable one-based grid cell within a radius.
 
 ```lua
--- signature
 LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size)
 ```
 
@@ -3085,17 +4718,17 @@ LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | One-based column of the search origin. |
-| `y` | `number` | One-based row of the search origin. |
-| `max_radius` | `number` | Maximum search radius in cells. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `x` | number | One-based column of the search origin. |
+| `y` | number | One-based row of the search origin. |
+| `max_radius` | number | Maximum search radius in cells. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a One-based column of the nearest walkable cell, or nil. |
-| `number` | b One-based row of the nearest walkable cell, or nil. |
+| number | One-based column of the nearest walkable cell; or nil. |
+| number | One-based row of the nearest walkable cell; or nil. |
 
 **Example**
 
@@ -3118,12 +4751,11 @@ end
 
 ---
 
-### `LUnitPathfinder:findPartialPath`
+#### `LUnitPathfinder:findPartialPath`
 
 Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
 
 ```lua
--- signature
 LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size)
 ```
 
@@ -3131,19 +4763,19 @@ LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based column of the start cell. |
-| `y1` | `number` | One-based row of the start cell. |
-| `x2` | `number` | One-based column of the goal cell. |
-| `y2` | `number` | One-based row of the goal cell. |
-| `max_nodes` | `number` | Maximum number of nodes to expand before stopping. |
-| `unit_size?` | `number` | Width/height of the unit in grid cells for clearance checks (default 1). |
+| `x1` | number | One-based column of the start cell. |
+| `y1` | number | One-based row of the start cell. |
+| `x2` | number | One-based column of the goal cell. |
+| `y2` | number | One-based row of the goal cell. |
+| `max_nodes` | number | Maximum number of nodes to expand before stopping. |
+| `unit_size?` | number | Width/height of the unit in grid cells for clearance checks (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LUnitPathfinderFindPartialPathResult` | a Array of `{x, y}` waypoint tables forming the found partial path. |
-| `boolean` | b `true` if the returned path reaches the exact goal cell. |
+| LUnitPathfinderFindPartialPathResult | Array of `{x; y}` waypoint tables forming the found partial path. |
+| boolean | `true` if the returned path reaches the exact goal cell. |
 
 **Example**
 
@@ -3166,12 +4798,11 @@ end
 
 ---
 
-### `LUnitPathfinder:findPath`
+#### `LUnitPathfinder:findPath`
 
 Finds a path between one-based grid cells.
 
 ```lua
--- signature
 LUnitPathfinder:findPath(x1, y1, x2, y2, unit_size)
 ```
 
@@ -3179,17 +4810,17 @@ LUnitPathfinder:findPath(x1, y1, x2, y2, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based start column. |
-| `y1` | `number` | One-based start row. |
-| `x2` | `number` | One-based goal column. |
-| `y2` | `number` | One-based goal row. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `x1` | number | One-based start column. |
+| `y1` | number | One-based start row. |
+| `x2` | number | One-based goal column. |
+| `y2` | number | One-based goal row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LUnitPathfinderFindPathResult` | Array of `{x, y}` waypoint tables, or nil when no path exists. |
+| LUnitPathfinderFindPathResult | Array of `{x, y}` waypoint tables, or nil when no path exists. |
 
 **Example**
 
@@ -3217,12 +4848,11 @@ end
 
 ---
 
-### `LUnitPathfinder:findPathBidirectional`
+#### `LUnitPathfinder:findPathBidirectional`
 
 Finds a path using bidirectional A* and returns completion status.
 
 ```lua
--- signature
 LUnitPathfinder:findPathBidirectional(x1, y1, x2, y2, unit_size, max_nodes)
 ```
 
@@ -3230,19 +4860,19 @@ LUnitPathfinder:findPathBidirectional(x1, y1, x2, y2, unit_size, max_nodes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based column of the start cell. |
-| `y1` | `number` | One-based row of the start cell. |
-| `x2` | `number` | One-based column of the goal cell. |
-| `y2` | `number` | One-based row of the goal cell. |
-| `unit_size?` | `number` | Width or height of the unit in grid cells for clearance checks (default 1). |
-| `max_nodes?` | `number` | Optional node-expansion budget; 0 uses the full search. |
+| `x1` | number | One-based column of the start cell. |
+| `y1` | number | One-based row of the start cell. |
+| `x2` | number | One-based column of the goal cell. |
+| `y2` | number | One-based row of the goal cell. |
+| `unit_size?` | number | Width or height of the unit in grid cells for clearance checks (default 1). |
+| `max_nodes?` | number | Optional node-expansion budget; 0 uses the full search. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LUnitPathfinderFindPathBidirectionalResult` | a Array of waypoint tables, or nil when no path exists. |
-| `boolean` | b True when the path is complete. |
+| LUnitPathfinderFindPathBidirectionalResult | Array of waypoint tables; or nil when no path exists. |
+| boolean | True when the path is complete. |
 
 **Example**
 
@@ -3266,12 +4896,11 @@ end
 
 ---
 
-### `LUnitPathfinder:findPathSmooth`
+#### `LUnitPathfinder:findPathSmooth`
 
 Finds a smoothed path between one-based grid cells.
 
 ```lua
--- signature
 LUnitPathfinder:findPathSmooth(x1, y1, x2, y2, unit_size)
 ```
 
@@ -3279,17 +4908,17 @@ LUnitPathfinder:findPathSmooth(x1, y1, x2, y2, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based start column. |
-| `y1` | `number` | One-based start row. |
-| `x2` | `number` | One-based goal column. |
-| `y2` | `number` | One-based goal row. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `x1` | number | One-based start column. |
+| `y1` | number | One-based start row. |
+| `x2` | number | One-based goal column. |
+| `y2` | number | One-based goal row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LUnitPathfinderFindPathSmoothResult` | Array of `{x, y}` waypoint tables, or nil when no path exists. |
+| LUnitPathfinderFindPathSmoothResult | Array of `{x, y}` waypoint tables, or nil when no path exists. |
 
 **Example**
 
@@ -3313,12 +4942,11 @@ end
 
 ---
 
-### `LUnitPathfinder:getCacheSize`
+#### `LUnitPathfinder:getCacheSize`
 
 Returns the current path cache entry count.
 
 ```lua
--- signature
 LUnitPathfinder:getCacheSize()
 ```
 
@@ -3326,7 +4954,7 @@ LUnitPathfinder:getCacheSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cache size. |
+| number | Cache size. |
 
 **Example**
 
@@ -3347,12 +4975,11 @@ end
 
 ---
 
-### `LUnitPathfinder:getPathCost`
+#### `LUnitPathfinder:getPathCost`
 
 Returns the total movement cost along a waypoint path.
 
 ```lua
--- signature
 LUnitPathfinder:getPathCost(path)
 ```
 
@@ -3360,13 +4987,13 @@ LUnitPathfinder:getPathCost(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `table` | Array of `{x, y}` waypoint tables. |
+| `path` | table | Array of `{x, y}` waypoint tables. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Path cost. |
+| number | Path cost. |
 
 **Example**
 
@@ -3390,12 +5017,11 @@ end
 
 ---
 
-### `LUnitPathfinder:getPathLength`
+#### `LUnitPathfinder:getPathLength`
 
 Returns the total Euclidean length of a waypoint path.
 
 ```lua
--- signature
 LUnitPathfinder:getPathLength(path)
 ```
 
@@ -3403,13 +5029,13 @@ LUnitPathfinder:getPathLength(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `table` | Array of `{x, y}` waypoint tables. |
+| `path` | table | Array of `{x, y}` waypoint tables. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Path length. |
+| number | Path length. |
 
 **Example**
 
@@ -3432,12 +5058,11 @@ end
 
 ---
 
-### `LUnitPathfinder:heuristicDistance`
+#### `LUnitPathfinder:heuristicDistance`
 
 Returns heuristic distance between two one-based cells.
 
 ```lua
--- signature
 LUnitPathfinder:heuristicDistance(x1, y1, x2, y2)
 ```
 
@@ -3445,16 +5070,16 @@ LUnitPathfinder:heuristicDistance(x1, y1, x2, y2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based column of the first cell. |
-| `y1` | `number` | One-based row of the first cell. |
-| `x2` | `number` | One-based column of the second cell. |
-| `y2` | `number` | One-based row of the second cell. |
+| `x1` | number | One-based column of the first cell. |
+| `y1` | number | One-based row of the first cell. |
+| `x2` | number | One-based column of the second cell. |
+| `y2` | number | One-based row of the second cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Heuristic distance. |
+| number | Heuristic distance. |
 
 **Example**
 
@@ -3470,12 +5095,11 @@ end
 
 ---
 
-### `LUnitPathfinder:isCacheEnabled`
+#### `LUnitPathfinder:isCacheEnabled`
 
 Returns whether path cache is enabled.
 
 ```lua
--- signature
 LUnitPathfinder:isCacheEnabled()
 ```
 
@@ -3483,7 +5107,7 @@ LUnitPathfinder:isCacheEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when enabled. |
+| boolean | True when enabled. |
 
 **Example**
 
@@ -3505,12 +5129,11 @@ end
 
 ---
 
-### `LUnitPathfinder:isReachable`
+#### `LUnitPathfinder:isReachable`
 
 Returns whether a target cell is reachable from a start cell.
 
 ```lua
--- signature
 LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size)
 ```
 
@@ -3518,17 +5141,17 @@ LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based start column. |
-| `y1` | `number` | One-based start row. |
-| `x2` | `number` | One-based target column. |
-| `y2` | `number` | One-based target row. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `x1` | number | One-based start column. |
+| `y1` | number | One-based start row. |
+| `x2` | number | One-based target column. |
+| `y2` | number | One-based target row. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when reachable. |
+| boolean | True when reachable. |
 
 **Example**
 
@@ -3548,12 +5171,11 @@ end
 
 ---
 
-### `LUnitPathfinder:lineOfSight`
+#### `LUnitPathfinder:lineOfSight`
 
 Returns whether two one-based cells have line of sight.
 
 ```lua
--- signature
 LUnitPathfinder:lineOfSight(x1, y1, x2, y2, unit_size)
 ```
 
@@ -3561,17 +5183,17 @@ LUnitPathfinder:lineOfSight(x1, y1, x2, y2, unit_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x1` | `number` | One-based column of the first cell. |
-| `y1` | `number` | One-based row of the first cell. |
-| `x2` | `number` | One-based column of the second cell. |
-| `y2` | `number` | One-based row of the second cell. |
-| `unit_size?` | `number` | Unit footprint in cells (default 1). |
+| `x1` | number | One-based column of the first cell. |
+| `y1` | number | One-based row of the first cell. |
+| `x2` | number | One-based column of the second cell. |
+| `y2` | number | One-based row of the second cell. |
+| `unit_size?` | number | Unit footprint in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when line of sight is clear. |
+| boolean | True when line of sight is clear. |
 
 **Example**
 
@@ -3593,12 +5215,11 @@ end
 
 ---
 
-### `LUnitPathfinder:setCacheEnabled`
+#### `LUnitPathfinder:setCacheEnabled`
 
 Enables or disables the path cache on this object.
 
 ```lua
--- signature
 LUnitPathfinder:setCacheEnabled(enabled)
 ```
 
@@ -3606,7 +5227,7 @@ LUnitPathfinder:setCacheEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to enable caching. |
+| `enabled` | boolean | True to enable caching. |
 
 **Example**
 
@@ -3631,12 +5252,11 @@ end
 
 ---
 
-### `LUnitPathfinder:setCacheMaxSize`
+#### `LUnitPathfinder:setCacheMaxSize`
 
 Sets maximum path cache size for this object.
 
 ```lua
--- signature
 LUnitPathfinder:setCacheMaxSize(n)
 ```
 
@@ -3644,7 +5264,7 @@ LUnitPathfinder:setCacheMaxSize(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Maximum number of cached paths. |
+| `n` | number | Maximum number of cached paths. |
 
 **Example**
 
@@ -3667,12 +5287,11 @@ end
 
 ---
 
-### `LUnitPathfinder:type`
+#### `LUnitPathfinder:type`
 
 Returns the Lua-visible type name for this pathfinder handle.
 
 ```lua
--- signature
 LUnitPathfinder:type()
 ```
 
@@ -3680,7 +5299,7 @@ LUnitPathfinder:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LUnitPathfinder`. |
+| string | The string `[LUnitPathfinder](#lunitpathfinder-handle)`. |
 
 **Example**
 
@@ -3695,12 +5314,11 @@ end
 
 ---
 
-### `LUnitPathfinder:typeOf`
+#### `LUnitPathfinder:typeOf`
 
 Returns whether this pathfinder handle matches a supported type name.
 
 ```lua
--- signature
 LUnitPathfinder:typeOf(name)
 ```
 
@@ -3708,13 +5326,13 @@ LUnitPathfinder:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | String value for `name`. |
+| `name` | string | String value for `name`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["BinaryOp","CmpOp","ColumnStore","ReduceOp","ScalarOp"],"struct":["VecFrame"]};

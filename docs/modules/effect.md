@@ -1,13 +1,79 @@
 # Effect
 
-- The `effect` module is a comprehensive Platform Services component responsible for the engine's post-processing and screen-space visual effects pipeline.
-- **Note:** Weather, atmosphere, and screen overlay effects have been extracted to `src/overlay/` — see [`docs/specs/overlay.md`](overlay.md).
+## Summary
 
-It provides developers with the tools to significantly enhance the visual fidelity of their games through composable, full-screen shaders and overlays. The core of this pipeline is the `PostFxStack`, which manages an ordered list of `PostFxEffect` instances. These effects process the rendered frame buffer sequentially before it is presented to the screen. The built-in effects catalog is extensive, offering varied blur algorithms (Gaussian, box, radial), bloom (combining thresholding, blurring, and additive blending), LUT-based color grading, lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation. Custom shader passes are also fully supported via explicit shader handles.
+The `effect` module manages visual post-effect composition data and lifecycle, including stack ordering, effect instances, presets, and conversion into render-command level apply/capture passes. It focuses on effect state orchestration rather than direct GPU execution.
 
-Operating parallel to the shader pipeline is the `Overlay` controller. It manages screen-space, CPU-driven visual states that overlay the world, such as ambient lighting tints driven by a time-of-day curve (dawn, day, dusk, night) and complex weather particle simulations (rain, snow, hail, dust, leaves, ash, pollen). The `Overlay` system also handles instantaneous atmospheric triggers, including screen flashes, camera shakes with deterministic PRNG offsets, lightning flashes, and fade-in/fade-out transitions. A specialized `WaterOverlay` adds animated water surface distortion with configurable amplitude and depth-based color shifting.
+Core responsibilities are partitioned across submodules: `effect` and `effect_type` define instance/state and built-in identifiers, `stack` manages ordered effect collections, `presets` supplies reusable configurations, `image_effect` groups image-scoped effect sets, and `render`/`draw` adapt effect state into command-level outputs consumed by the renderer.
 
-For bridging scene changes, the module includes a `ScreenTransition` state machine offering classic visual transitions (fade, wipe, iris wipe, dissolve) with time-based playback and reverse capabilities. For scenarios where GPU post-processing is unnecessary or unavailable, `ImageEffect` provides CPU-side per-pixel operations. The entire module is heavily configurable via Lua scripts through the `lurek.effect.*` namespace, allowing for dynamic, real-time adjustments to effect stacks, preset loading, and weather conditions.
+A key architectural property is data-driven configuration. Effects are represented as configurable descriptors and parameter maps, enabling Lua and tooling workflows to compose visual pipelines without hardcoding render paths per effect.
+
+The module should continue to own effect lifecycle and stack policy (including expiry/removal timing), while the renderer remains responsible for executing the generated commands on GPU resources.
+
+Implementation detail and boundary guarantees for effect: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: draw.rs: Render a preview image summarizing the current post-FX stack state.; effect.rs: Post-processing effect instance holding type, parameters, and enabled state.; effect_type.rs: Post-processing effect type enumeration and name registry.; image_effect.rs: Image-scoped post-processing effect pipeline that groups and orders shader passes.; mod.rs: Visual effect sub-system: particle effects, screen-space post-processing, and shakes.; presets.rs: Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).; render.rs: Render-command integration for the post-effects stack.; stack.rs: Ordered post-processing effect stack with per-entry enable flags.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### draw.rs
+
+- Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image.
+- Distinguishes active and inactive stack states through deterministic color selection.
+- Delivers a minimal visual probe for tooling and debug-side effect inspection.
+
+### effect.rs
+
+- Provides runtime post-effect instances that couple effect kind with mutable parameter state.
+- Supports built-in and custom shader-backed variants under one unified runtime shape.
+- Exposes parameter and enable controls for live effect tuning without pipeline rebuilds.
+- Delivers the per-effect state object consumed by stack management and rendering stages.
+
+### effect_type.rs
+
+- Provides the canonical post-effect type catalog that defines all built-in processing identities.
+- Maps stable Lua-facing names to typed variants for predictable script and engine interoperability.
+- Supplies debug labels and parsing helpers that normalize user input into supported effect forms.
+- Defines default parameter sets so each effect starts from consistent baseline behavior.
+- Separates built-in variants from custom-shader paths while preserving one shared lookup model.
+- Delivers the naming and typing backbone used by effect instances, stacks, and presets.
+
+### image_effect.rs
+
+- Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains.
+- Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally.
+- Converts active effects into renderer-facing pass descriptors for downstream execution.
+- Delivers the per-target composition layer for reusable shader effect application.
+
+### mod.rs
+
+- Provides the high-level visual effects module boundary for post-processing composition and runtime control.
+- Connects effect instances, stacks, presets, and renderer integration into one coherent pipeline surface.
+- Delivers a data-driven effect orchestration layer that scripts and systems can configure predictably.
+
+### presets.rs
+
+- Provides built-in post-effect presets that package curated visual moods into ready-to-use chains.
+- Builds effect sets with viewport-aware stack initialization for immediate runtime application.
+- Exposes canonical preset names so scripts can select consistent looks with stable identifiers.
+- Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable.
+- Delivers one-call factories that return enabled stacks configured for direct deployment.
+
+### render.rs
+
+- Provides render-command generation for post-effect capture and application flows.
+- Emits deterministic begin, end, and apply command sequences consumed by the renderer.
+- Delivers no-op behavior when stacks have no active effects to process.
+
+### stack.rs
+
+- Provides ordered post-effect stack management with per-entry enable state and target dimensions.
+- Stores effect references in application order while preserving synchronized activation flags.
+- Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition.
+- Exposes query helpers that report active subsets and positional stack metadata.
+- Includes stack-introspection render helpers for debugging and visual tooling overlays.
+- Applies defensive index handling so invalid operations fail safely at runtime boundaries.
+- Delivers the sequencing core that determines how effect chains are executed frame to frame.
 
 ## Functions
 
@@ -16,7 +82,6 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 Returns all built-in post-processing effect type names.
 
 ```lua
--- signature
 lurek.effect.getEffectTypes()
 ```
 
@@ -24,7 +89,7 @@ lurek.effect.getEffectTypes()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Built-in effect type strings. |
+| string[] | Built-in effect type strings. |
 
 **Example**
 
@@ -42,7 +107,6 @@ end
 Returns all built-in post-processing preset names.
 
 ```lua
--- signature
 lurek.effect.getPresetNames()
 ```
 
@@ -50,7 +114,7 @@ lurek.effect.getPresetNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Built-in preset name strings. |
+| string[] | Built-in preset name strings. |
 
 **Example**
 
@@ -69,7 +133,6 @@ end
 Returns whether renderer shader error display overlays are enabled.
 
 ```lua
--- signature
 lurek.effect.getShaderErrorDisplay()
 ```
 
@@ -77,7 +140,7 @@ lurek.effect.getShaderErrorDisplay()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when shader error display is enabled. |
+| boolean | True when shader error display is enabled. |
 
 **Example**
 
@@ -95,7 +158,6 @@ end
 Creates a custom post-processing effect that references an existing shader id.
 
 ```lua
--- signature
 lurek.effect.newCustomEffect(shader_id)
 ```
 
@@ -103,13 +165,13 @@ lurek.effect.newCustomEffect(shader_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader_id` | `number` | Renderer shader identifier used for the custom effect. |
+| `shader_id` | number | Renderer shader identifier used for the custom effect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPostFxEffect` | New custom post-processing effect handle. |
+| [LPostFxEffect](#lpostfxeffect-handle) | New custom post-processing effect handle. |
 
 **Example**
 
@@ -127,7 +189,6 @@ end
 Creates a built-in post-processing effect by type name.
 
 ```lua
--- signature
 lurek.effect.newEffect(type_name)
 ```
 
@@ -135,13 +196,13 @@ lurek.effect.newEffect(type_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `type_name` | `string` | Built-in effect type name such as `blur`, `bloom`, or `crt`. |
+| `type_name` | string | Built-in effect type name such as `blur`, `bloom`, or `crt`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPostFxEffect` | New post-processing effect handle. |
+| [LPostFxEffect](#lpostfxeffect-handle) | New post-processing effect handle. |
 
 **Example**
 
@@ -160,7 +221,6 @@ end
 Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
 
 ```lua
--- signature
 lurek.effect.newImageEffect(spec, params)
 ```
 
@@ -168,14 +228,14 @@ lurek.effect.newImageEffect(spec, params)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `spec?` | `LuaValue` | Optional effect type string, or an array table of effect entries, or nil for an empty chain. |
-| `params?` | `table` | Optional parameter table used when `spec` is an effect type string. |
+| `spec?` | LuaValue | Optional effect type string, or an array table of effect entries, or nil for an empty chain. |
+| `params?` | table | Optional parameter table used when `spec` is an effect type string. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageEffect` | New image effect chain handle. |
+| [LImageEffect](#limageeffect-handle) | New image effect chain handle. |
 
 **Example**
 
@@ -193,7 +253,6 @@ end
 Creates a custom post-processing pass from an existing shader id.
 
 ```lua
--- signature
 lurek.effect.newPass(shader_id)
 ```
 
@@ -201,13 +260,13 @@ lurek.effect.newPass(shader_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader_id` | `number` | Renderer shader identifier used for the pass. |
+| `shader_id` | number | Renderer shader identifier used for the pass. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPostFxEffect` | New custom post-processing effect handle. |
+| [LPostFxEffect](#lpostfxeffect-handle) | New custom post-processing effect handle. |
 
 **Example**
 
@@ -225,7 +284,6 @@ end
 Creates a named preset post-processing stack with optional dimensions.
 
 ```lua
--- signature
 lurek.effect.newPresetStack(name, w, h)
 ```
 
@@ -233,15 +291,15 @@ lurek.effect.newPresetStack(name, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Preset stack name. |
-| `w?` | `number` | Stack width in pixels, defaulting to window width. |
-| `h?` | `number` | Stack height in pixels, defaulting to window height. |
+| `name` | string | Preset stack name. |
+| `w?` | number | Stack width in pixels, defaulting to window width. |
+| `h?` | number | Stack height in pixels, defaulting to window height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPostFxStack` | New preset post-processing stack handle. |
+| [LPostFxStack](#lpostfxstack-handle) | New preset post-processing stack handle. |
 
 **Example**
 
@@ -259,7 +317,6 @@ end
 Creates a post-processing stack using optional dimensions or the current window size.
 
 ```lua
--- signature
 lurek.effect.newStack(w, h)
 ```
 
@@ -267,14 +324,14 @@ lurek.effect.newStack(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w?` | `number` | Stack width in pixels, defaulting to window width. |
-| `h?` | `number` | Stack height in pixels, defaulting to window height. |
+| `w?` | number | Stack width in pixels, defaulting to window width. |
+| `h?` | number | Stack height in pixels, defaulting to window height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPostFxStack` | New post-processing stack handle. |
+| [LPostFxStack](#lpostfxstack-handle) | New post-processing stack handle. |
 
 **Example**
 
@@ -292,7 +349,6 @@ end
 Enables or disables renderer shader error display overlays.
 
 ```lua
--- signature
 lurek.effect.setShaderErrorDisplay(enabled)
 ```
 
@@ -300,7 +356,7 @@ lurek.effect.setShaderErrorDisplay(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | New shader error display flag. |
+| `enabled` | boolean | New shader error display flag. |
 
 **Example**
 
@@ -313,14 +369,37 @@ end
 
 ---
 
-## LImageEffect
+## Module Fields
 
-### `LImageEffect:addEffect`
+*No module-level fields documented.*
+
+## Types
+
+- [LImageEffect Handle](#limageeffect-handle)
+- [LPostFxEffect Handle](#lpostfxeffect-handle)
+- [LPostFxStack Handle](#lpostfxstack-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LImageEffect Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageEffect:addEffect`
 
 Appends a built-in post-effect by type name to this image effect chain.
 
 ```lua
--- signature
 LImageEffect:addEffect(name)
 ```
 
@@ -328,13 +407,13 @@ LImageEffect:addEffect(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Built-in effect type name. |
+| `name` | string | Built-in effect type name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPostFxEffect` | Handle for the effect added to the chain. |
+| [LPostFxEffect](#lpostfxeffect-handle) | Handle for the effect added to the chain. |
 
 **Example**
 
@@ -348,12 +427,11 @@ end
 
 ---
 
-### `LImageEffect:clear`
+#### `LImageEffect:clear`
 
 Removes every effect from this image effect chain.
 
 ```lua
--- signature
 LImageEffect:clear()
 ```
 
@@ -370,12 +448,11 @@ end
 
 ---
 
-### `LImageEffect:clearEffects`
+#### `LImageEffect:clearEffects`
 
 Removes every effect from this image effect chain.
 
 ```lua
--- signature
 LImageEffect:clearEffects()
 ```
 
@@ -392,12 +469,11 @@ end
 
 ---
 
-### `LImageEffect:clone`
+#### `LImageEffect:clone`
 
 Creates a new image effect chain with cloned effect entries.
 
 ```lua
--- signature
 LImageEffect:clone()
 ```
 
@@ -405,7 +481,7 @@ LImageEffect:clone()
 
 | Type | Description |
 |------|-------------|
-| `LImageEffect` | New image effect handle with the same effect chain. |
+| [LImageEffect](#limageeffect-handle) | New image effect handle with the same effect chain. |
 
 **Example**
 
@@ -420,12 +496,11 @@ end
 
 ---
 
-### `LImageEffect:effectCount`
+#### `LImageEffect:effectCount`
 
 Returns the number of effects in this image effect chain.
 
 ```lua
--- signature
 LImageEffect:effectCount()
 ```
 
@@ -433,7 +508,7 @@ LImageEffect:effectCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Effect count. |
+| number | Effect count. |
 
 **Example**
 
@@ -447,12 +522,11 @@ end
 
 ---
 
-### `LImageEffect:getEffect`
+#### `LImageEffect:getEffect`
 
 Looks up an image effect by one-based index or effect type name.
 
 ```lua
--- signature
 LImageEffect:getEffect(key)
 ```
 
@@ -460,13 +534,13 @@ LImageEffect:getEffect(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Effect name string or one-based integer index. |
+| `key` | string | Effect name string or one-based integer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | `LPostFxEffect` handle, or nil when no matching effect exists. |
+| LuaValue | `[LPostFxEffect](#lpostfxeffect-handle)` handle, or nil when no matching effect exists. |
 
 **Example**
 
@@ -481,12 +555,11 @@ end
 
 ---
 
-### `LImageEffect:getEffectCount`
+#### `LImageEffect:getEffectCount`
 
 Returns the number of effects in this image effect chain.
 
 ```lua
--- signature
 LImageEffect:getEffectCount()
 ```
 
@@ -494,7 +567,7 @@ LImageEffect:getEffectCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Effect count. |
+| number | Effect count. |
 
 **Example**
 
@@ -509,12 +582,11 @@ end
 
 ---
 
-### `LImageEffect:removeByIndex`
+#### `LImageEffect:removeByIndex`
 
 Removes an image effect by zero-based internal index.
 
 ```lua
--- signature
 LImageEffect:removeByIndex(idx)
 ```
 
@@ -522,13 +594,13 @@ LImageEffect:removeByIndex(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Zero-based effect index. |
+| `idx` | number | Zero-based effect index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an effect was removed. |
+| boolean | True when an effect was removed. |
 
 **Example**
 
@@ -543,12 +615,11 @@ end
 
 ---
 
-### `LImageEffect:removeByName`
+#### `LImageEffect:removeByName`
 
 Removes the first image effect with a matching effect type name.
 
 ```lua
--- signature
 LImageEffect:removeByName(name)
 ```
 
@@ -556,13 +627,13 @@ LImageEffect:removeByName(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Effect type name to remove. |
+| `name` | string | Effect type name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an effect was removed. |
+| boolean | True when an effect was removed. |
 
 **Example**
 
@@ -577,12 +648,11 @@ end
 
 ---
 
-### `LImageEffect:removeEffect`
+#### `LImageEffect:removeEffect`
 
 Removes an image effect by one-based index or effect type name.
 
 ```lua
--- signature
 LImageEffect:removeEffect(key)
 ```
 
@@ -590,13 +660,13 @@ LImageEffect:removeEffect(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Effect name string or one-based integer index. |
+| `key` | string | Effect name string or one-based integer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an effect was removed. |
+| boolean | True when an effect was removed. |
 
 **Example**
 
@@ -611,12 +681,11 @@ end
 
 ---
 
-### `LImageEffect:save`
+#### `LImageEffect:save`
 
 Reports success for the current image effect save placeholder.
 
 ```lua
--- signature
 LImageEffect:save()
 ```
 
@@ -624,7 +693,7 @@ LImageEffect:save()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Always true. |
+| boolean | Always true. |
 
 **Example**
 
@@ -638,12 +707,11 @@ end
 
 ---
 
-### `LImageEffect:type`
+#### `LImageEffect:type`
 
 Returns the Lua-visible type name for this image effect handle.
 
 ```lua
--- signature
 LImageEffect:type()
 ```
 
@@ -651,7 +719,7 @@ LImageEffect:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LImageEffect`. |
+| string | The string `[LImageEffect](#limageeffect-handle)`. |
 
 **Example**
 
@@ -664,12 +732,11 @@ end
 
 ---
 
-### `LImageEffect:typeOf`
+#### `LImageEffect:typeOf`
 
 Returns whether this image effect handle matches a supported type name.
 
 ```lua
--- signature
 LImageEffect:typeOf(name)
 ```
 
@@ -677,13 +744,13 @@ LImageEffect:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `ImageEffect` and `Object`. |
+| `name` | string | Type name to compare against `ImageEffect` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -696,14 +763,19 @@ end
 
 ---
 
-## LPostFxEffect
+## LPostFxEffect Handle
 
-### `LPostFxEffect:disableAutoUniforms`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPostFxEffect:disableAutoUniforms`
 
 Disables automatic time and resolution uniforms for this effect.
 
 ```lua
--- signature
 LPostFxEffect:disableAutoUniforms()
 ```
 
@@ -719,12 +791,11 @@ end
 
 ---
 
-### `LPostFxEffect:enableAutoUniforms`
+#### `LPostFxEffect:enableAutoUniforms`
 
 Enables automatic time and resolution uniforms for this effect.
 
 ```lua
--- signature
 LPostFxEffect:enableAutoUniforms()
 ```
 
@@ -740,12 +811,11 @@ end
 
 ---
 
-### `LPostFxEffect:getEffectType`
+#### `LPostFxEffect:getEffectType`
 
 Returns the renderer effect type name.
 
 ```lua
--- signature
 LPostFxEffect:getEffectType()
 ```
 
@@ -753,7 +823,7 @@ LPostFxEffect:getEffectType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Effect type name used by the renderer. |
+| string | Effect type name used by the renderer. |
 
 **Example**
 
@@ -766,12 +836,11 @@ end
 
 ---
 
-### `LPostFxEffect:getParameter`
+#### `LPostFxEffect:getParameter`
 
 Reads a numeric shader parameter and falls back to a default value when missing.
 
 ```lua
--- signature
 LPostFxEffect:getParameter(name, default)
 ```
 
@@ -779,14 +848,14 @@ LPostFxEffect:getParameter(name, default)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Parameter name to read. |
-| `default?` | `number` | Default value returned when the parameter is absent. |
+| `name` | string | Parameter name to read. |
+| `default?` | number | Default value returned when the parameter is absent. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Stored parameter value or the supplied default. |
+| number | Stored parameter value or the supplied default. |
 
 **Example**
 
@@ -801,12 +870,11 @@ end
 
 ---
 
-### `LPostFxEffect:getParameterNames`
+#### `LPostFxEffect:getParameterNames`
 
 Returns the parameter names stored on this effect.
 
 ```lua
--- signature
 LPostFxEffect:getParameterNames()
 ```
 
@@ -814,7 +882,7 @@ LPostFxEffect:getParameterNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Parameter name strings. |
+| string[] | Parameter name strings. |
 
 **Example**
 
@@ -829,12 +897,11 @@ end
 
 ---
 
-### `LPostFxEffect:getType`
+#### `LPostFxEffect:getType`
 
 Returns the renderer effect type name.
 
 ```lua
--- signature
 LPostFxEffect:getType()
 ```
 
@@ -842,7 +909,7 @@ LPostFxEffect:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Effect type name used by the renderer. |
+| string | Effect type name used by the renderer. |
 
 **Example**
 
@@ -855,12 +922,11 @@ end
 
 ---
 
-### `LPostFxEffect:getTypeName`
+#### `LPostFxEffect:getTypeName`
 
 Returns the built-in or custom effect type name.
 
 ```lua
--- signature
 LPostFxEffect:getTypeName()
 ```
 
@@ -868,7 +934,7 @@ LPostFxEffect:getTypeName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Effect type name used by the renderer. |
+| string | Effect type name used by the renderer. |
 
 **Example**
 
@@ -881,12 +947,11 @@ end
 
 ---
 
-### `LPostFxEffect:hasParameter`
+#### `LPostFxEffect:hasParameter`
 
 Returns whether a shader parameter exists on this effect.
 
 ```lua
--- signature
 LPostFxEffect:hasParameter(name)
 ```
 
@@ -894,13 +959,13 @@ LPostFxEffect:hasParameter(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Parameter name to check. |
+| `name` | string | Parameter name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the parameter is present. |
+| boolean | True when the parameter is present. |
 
 **Example**
 
@@ -914,12 +979,11 @@ end
 
 ---
 
-### `LPostFxEffect:isAutoUniforms`
+#### `LPostFxEffect:isAutoUniforms`
 
 Returns whether automatic uniforms are enabled for this effect.
 
 ```lua
--- signature
 LPostFxEffect:isAutoUniforms()
 ```
 
@@ -927,7 +991,7 @@ LPostFxEffect:isAutoUniforms()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when automatic uniforms are enabled. |
+| boolean | True when automatic uniforms are enabled. |
 
 **Example**
 
@@ -940,12 +1004,11 @@ end
 
 ---
 
-### `LPostFxEffect:isBuiltIn`
+#### `LPostFxEffect:isBuiltIn`
 
 Returns whether this effect uses one of the engine built-in effect types.
 
 ```lua
--- signature
 LPostFxEffect:isBuiltIn()
 ```
 
@@ -953,7 +1016,7 @@ LPostFxEffect:isBuiltIn()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True for built-in effects, false for custom shader effects. |
+| boolean | True for built-in effects, false for custom shader effects. |
 
 **Example**
 
@@ -966,12 +1029,11 @@ end
 
 ---
 
-### `LPostFxEffect:isEnabled`
+#### `LPostFxEffect:isEnabled`
 
 Returns whether this effect is enabled on its owning effect object.
 
 ```lua
--- signature
 LPostFxEffect:isEnabled()
 ```
 
@@ -979,7 +1041,7 @@ LPostFxEffect:isEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Current enabled flag stored on the effect. |
+| boolean | Current enabled flag stored on the effect. |
 
 **Example**
 
@@ -992,12 +1054,11 @@ end
 
 ---
 
-### `LPostFxEffect:setBrightness`
+#### `LPostFxEffect:setBrightness`
 
 Sets the brightness shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setBrightness(v)
 ```
 
@@ -1005,7 +1066,7 @@ LPostFxEffect:setBrightness(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Brightness value passed to the effect shader. |
+| `v` | number | Brightness value passed to the effect shader. |
 
 **Example**
 
@@ -1019,12 +1080,11 @@ end
 
 ---
 
-### `LPostFxEffect:setContrast`
+#### `LPostFxEffect:setContrast`
 
 Sets the contrast shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setContrast(v)
 ```
 
@@ -1032,7 +1092,7 @@ LPostFxEffect:setContrast(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Contrast value passed to the effect shader. |
+| `v` | number | Contrast value passed to the effect shader. |
 
 **Example**
 
@@ -1046,12 +1106,11 @@ end
 
 ---
 
-### `LPostFxEffect:setEnabled`
+#### `LPostFxEffect:setEnabled`
 
 Enables or disables this effect. This method is available to Lua scripts.
 
 ```lua
--- signature
 LPostFxEffect:setEnabled(enabled)
 ```
 
@@ -1059,7 +1118,7 @@ LPostFxEffect:setEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | New enabled flag. |
+| `enabled` | boolean | New enabled flag. |
 
 **Example**
 
@@ -1073,12 +1132,11 @@ end
 
 ---
 
-### `LPostFxEffect:setIntensity`
+#### `LPostFxEffect:setIntensity`
 
 Sets the intensity shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setIntensity(v)
 ```
 
@@ -1086,7 +1144,7 @@ LPostFxEffect:setIntensity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Intensity value passed to the effect shader. |
+| `v` | number | Intensity value passed to the effect shader. |
 
 **Example**
 
@@ -1100,12 +1158,11 @@ end
 
 ---
 
-### `LPostFxEffect:setOffset`
+#### `LPostFxEffect:setOffset`
 
 Sets the offset shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setOffset(v)
 ```
 
@@ -1113,7 +1170,7 @@ LPostFxEffect:setOffset(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Offset value passed to the effect shader. |
+| `v` | number | Offset value passed to the effect shader. |
 
 **Example**
 
@@ -1127,12 +1184,11 @@ end
 
 ---
 
-### `LPostFxEffect:setParameter`
+#### `LPostFxEffect:setParameter`
 
 Sets a numeric shader parameter by name.
 
 ```lua
--- signature
 LPostFxEffect:setParameter(name, value)
 ```
 
@@ -1140,8 +1196,8 @@ LPostFxEffect:setParameter(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Parameter name expected by the effect shader. |
-| `value` | `number` | Numeric parameter value. |
+| `name` | string | Parameter name expected by the effect shader. |
+| `value` | number | Numeric parameter value. |
 
 **Example**
 
@@ -1155,12 +1211,11 @@ end
 
 ---
 
-### `LPostFxEffect:setRadius`
+#### `LPostFxEffect:setRadius`
 
 Sets the radius shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setRadius(v)
 ```
 
@@ -1168,7 +1223,7 @@ LPostFxEffect:setRadius(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Radius value passed to the effect shader. |
+| `v` | number | Radius value passed to the effect shader. |
 
 **Example**
 
@@ -1182,12 +1237,11 @@ end
 
 ---
 
-### `LPostFxEffect:setSaturation`
+#### `LPostFxEffect:setSaturation`
 
 Sets the saturation shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setSaturation(v)
 ```
 
@@ -1195,7 +1249,7 @@ LPostFxEffect:setSaturation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Saturation value passed to the effect shader. |
+| `v` | number | Saturation value passed to the effect shader. |
 
 **Example**
 
@@ -1209,12 +1263,11 @@ end
 
 ---
 
-### `LPostFxEffect:setScanlineStrength`
+#### `LPostFxEffect:setScanlineStrength`
 
 Sets the scanline strength shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setScanlineStrength(v)
 ```
 
@@ -1222,7 +1275,7 @@ LPostFxEffect:setScanlineStrength(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Scanline strength value passed to the effect shader. |
+| `v` | number | Scanline strength value passed to the effect shader. |
 
 **Example**
 
@@ -1236,12 +1289,11 @@ end
 
 ---
 
-### `LPostFxEffect:setStrength`
+#### `LPostFxEffect:setStrength`
 
 Sets the strength shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setStrength(v)
 ```
 
@@ -1249,7 +1301,7 @@ LPostFxEffect:setStrength(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Strength value passed to the effect shader. |
+| `v` | number | Strength value passed to the effect shader. |
 
 **Example**
 
@@ -1263,12 +1315,11 @@ end
 
 ---
 
-### `LPostFxEffect:setThreshold`
+#### `LPostFxEffect:setThreshold`
 
 Sets the threshold shader parameter on this effect.
 
 ```lua
--- signature
 LPostFxEffect:setThreshold(v)
 ```
 
@@ -1276,7 +1327,7 @@ LPostFxEffect:setThreshold(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Threshold value passed to the effect shader. |
+| `v` | number | Threshold value passed to the effect shader. |
 
 **Example**
 
@@ -1290,12 +1341,11 @@ end
 
 ---
 
-### `LPostFxEffect:type`
+#### `LPostFxEffect:type`
 
 Returns the Lua-visible type name for this post-processing effect handle.
 
 ```lua
--- signature
 LPostFxEffect:type()
 ```
 
@@ -1303,7 +1353,7 @@ LPostFxEffect:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LPostFxEffect`. |
+| string | The string `[LPostFxEffect](#lpostfxeffect-handle)`. |
 
 **Example**
 
@@ -1316,12 +1366,11 @@ end
 
 ---
 
-### `LPostFxEffect:typeOf`
+#### `LPostFxEffect:typeOf`
 
 Returns whether this effect handle matches a supported type name.
 
 ```lua
--- signature
 LPostFxEffect:typeOf(name)
 ```
 
@@ -1329,13 +1378,13 @@ LPostFxEffect:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `PostFxEffect` and `Object`. |
+| `name` | string | Type name to compare against `PostFxEffect` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1348,14 +1397,19 @@ end
 
 ---
 
-## LPostFxStack
+## LPostFxStack Handle
 
-### `LPostFxStack:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPostFxStack:add`
 
 Appends an effect to the end of this stack.
 
 ```lua
--- signature
 LPostFxStack:add(effect_ud)
 ```
 
@@ -1363,7 +1417,7 @@ LPostFxStack:add(effect_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `effect_ud` | `LPostFxEffect` | Effect handle to append. |
+| `effect_ud` | [LPostFxEffect](#lpostfxeffect-handle) | Effect handle to append. |
 
 **Example**
 
@@ -1378,12 +1432,11 @@ end
 
 ---
 
-### `LPostFxStack:apply`
+#### `LPostFxStack:apply`
 
 Queues this stack's enabled post-effect passes for renderer application.
 
 ```lua
--- signature
 LPostFxStack:apply()
 ```
 
@@ -1402,12 +1455,11 @@ end
 
 ---
 
-### `LPostFxStack:beginCapture`
+#### `LPostFxStack:beginCapture`
 
 Starts post-effect capture and queues a renderer begin-capture command.
 
 ```lua
--- signature
 LPostFxStack:beginCapture()
 ```
 
@@ -1424,12 +1476,11 @@ end
 
 ---
 
-### `LPostFxStack:clear`
+#### `LPostFxStack:clear`
 
 Removes all effects and pass state from this stack.
 
 ```lua
--- signature
 LPostFxStack:clear()
 ```
 
@@ -1446,12 +1497,11 @@ end
 
 ---
 
-### `LPostFxStack:clearFeedback`
+#### `LPostFxStack:clearFeedback`
 
 Resets the stack feedback blend factor to zero.
 
 ```lua
--- signature
 LPostFxStack:clearFeedback()
 ```
 
@@ -1468,12 +1518,11 @@ end
 
 ---
 
-### `LPostFxStack:dedup`
+#### `LPostFxStack:dedup`
 
 Removes duplicate effect handles while preserving first occurrences.
 
 ```lua
--- signature
 LPostFxStack:dedup()
 ```
 
@@ -1481,7 +1530,7 @@ LPostFxStack:dedup()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of duplicate effects removed. |
+| number | Number of duplicate effects removed. |
 
 **Example**
 
@@ -1498,12 +1547,11 @@ end
 
 ---
 
-### `LPostFxStack:endCapture`
+#### `LPostFxStack:endCapture`
 
 Ends post-effect capture and queues a renderer end-capture command.
 
 ```lua
--- signature
 LPostFxStack:endCapture()
 ```
 
@@ -1521,12 +1569,11 @@ end
 
 ---
 
-### `LPostFxStack:getDimensions`
+#### `LPostFxStack:getDimensions`
 
 Returns the stack render dimensions.
 
 ```lua
--- signature
 LPostFxStack:getDimensions()
 ```
 
@@ -1534,8 +1581,8 @@ LPostFxStack:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Stack width in pixels. |
-| `number` | b Stack height in pixels. |
+| number | Stack width in pixels. |
+| number | Stack height in pixels. |
 
 **Example**
 
@@ -1549,12 +1596,11 @@ end
 
 ---
 
-### `LPostFxStack:getEffect`
+#### `LPostFxStack:getEffect`
 
 Returns the effect handle at a one-based position.
 
 ```lua
--- signature
 LPostFxStack:getEffect(index)
 ```
 
@@ -1562,13 +1608,13 @@ LPostFxStack:getEffect(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based stack position. |
+| `index` | number | One-based stack position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | `LPostFxEffect` handle, or nil when the index is out of range. |
+| LuaValue | `[LPostFxEffect](#lpostfxeffect-handle)` handle, or nil when the index is out of range. |
 
 **Example**
 
@@ -1583,12 +1629,11 @@ end
 
 ---
 
-### `LPostFxStack:getEffectCount`
+#### `LPostFxStack:getEffectCount`
 
 Returns the number of effect handles in this stack.
 
 ```lua
--- signature
 LPostFxStack:getEffectCount()
 ```
 
@@ -1596,7 +1641,7 @@ LPostFxStack:getEffectCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Effect count. |
+| number | Effect count. |
 
 **Example**
 
@@ -1611,12 +1656,11 @@ end
 
 ---
 
-### `LPostFxStack:getEnabledEffects`
+#### `LPostFxStack:getEnabledEffects`
 
 Returns effect handles whose stack passes are enabled.
 
 ```lua
--- signature
 LPostFxStack:getEnabledEffects()
 ```
 
@@ -1624,7 +1668,7 @@ LPostFxStack:getEnabledEffects()
 
 | Type | Description |
 |------|-------------|
-| `LPostFxEffect[]` | Enabled `LPostFxEffect` handles. |
+| [LPostFxEffect](#lpostfxeffect-handle)[] | Enabled `[LPostFxEffect](#lpostfxeffect-handle)` handles. |
 
 **Example**
 
@@ -1640,12 +1684,11 @@ end
 
 ---
 
-### `LPostFxStack:getFeedback`
+#### `LPostFxStack:getFeedback`
 
 Returns the current stack feedback blend factor.
 
 ```lua
--- signature
 LPostFxStack:getFeedback()
 ```
 
@@ -1653,7 +1696,7 @@ LPostFxStack:getFeedback()
 
 | Type | Description |
 |------|-------------|
-| `number` | Feedback blend factor in the range 0.0 through 1.0. |
+| number | Feedback blend factor in the range 0.0 through 1.0. |
 
 **Example**
 
@@ -1667,12 +1710,11 @@ end
 
 ---
 
-### `LPostFxStack:getHeight`
+#### `LPostFxStack:getHeight`
 
 Returns the stack render height. This method is available to Lua scripts.
 
 ```lua
--- signature
 LPostFxStack:getHeight()
 ```
 
@@ -1680,7 +1722,7 @@ LPostFxStack:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Stack height in pixels. |
+| number | Stack height in pixels. |
 
 **Example**
 
@@ -1693,12 +1735,11 @@ end
 
 ---
 
-### `LPostFxStack:getWidth`
+#### `LPostFxStack:getWidth`
 
 Returns the stack render width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LPostFxStack:getWidth()
 ```
 
@@ -1706,7 +1747,7 @@ LPostFxStack:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Stack width in pixels. |
+| number | Stack width in pixels. |
 
 **Example**
 
@@ -1719,12 +1760,11 @@ end
 
 ---
 
-### `LPostFxStack:insert`
+#### `LPostFxStack:insert`
 
 Inserts an effect at a one-based stack position.
 
 ```lua
--- signature
 LPostFxStack:insert(position, effect_ud)
 ```
 
@@ -1732,8 +1772,8 @@ LPostFxStack:insert(position, effect_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `position` | `number` | One-based insertion position, clamped to the stack length. |
-| `effect_ud` | `LPostFxEffect` | Effect handle to insert. |
+| `position` | number | One-based insertion position, clamped to the stack length. |
+| `effect_ud` | [LPostFxEffect](#lpostfxeffect-handle) | Effect handle to insert. |
 
 **Example**
 
@@ -1748,12 +1788,11 @@ end
 
 ---
 
-### `LPostFxStack:isCapturing`
+#### `LPostFxStack:isCapturing`
 
 Returns whether this stack is currently capturing draw commands.
 
 ```lua
--- signature
 LPostFxStack:isCapturing()
 ```
 
@@ -1761,7 +1800,7 @@ LPostFxStack:isCapturing()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when capture mode is active. |
+| boolean | True when capture mode is active. |
 
 **Example**
 
@@ -1774,12 +1813,11 @@ end
 
 ---
 
-### `LPostFxStack:isEmpty`
+#### `LPostFxStack:isEmpty`
 
 Returns whether this stack has no effects.
 
 ```lua
--- signature
 LPostFxStack:isEmpty()
 ```
 
@@ -1787,7 +1825,7 @@ LPostFxStack:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the stack has zero effects. |
+| boolean | True when the stack has zero effects. |
 
 **Example**
 
@@ -1800,12 +1838,11 @@ end
 
 ---
 
-### `LPostFxStack:isEnabled`
+#### `LPostFxStack:isEnabled`
 
 Returns whether the effect pass at a one-based position is enabled.
 
 ```lua
--- signature
 LPostFxStack:isEnabled(position)
 ```
 
@@ -1813,13 +1850,13 @@ LPostFxStack:isEnabled(position)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `position` | `number` | One-based stack position. |
+| `position` | number | One-based stack position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the pass is enabled; false for out-of-range positions. |
+| boolean | True when the pass is enabled; false for out-of-range positions. |
 
 **Example**
 
@@ -1834,12 +1871,11 @@ end
 
 ---
 
-### `LPostFxStack:len`
+#### `LPostFxStack:len`
 
 Returns the number of effect handles in this stack.
 
 ```lua
--- signature
 LPostFxStack:len()
 ```
 
@@ -1847,7 +1883,7 @@ LPostFxStack:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Effect count. |
+| number | Effect count. |
 
 **Example**
 
@@ -1861,12 +1897,11 @@ end
 
 ---
 
-### `LPostFxStack:remove`
+#### `LPostFxStack:remove`
 
 Removes the first matching effect handle from this stack.
 
 ```lua
--- signature
 LPostFxStack:remove(effect_ud)
 ```
 
@@ -1874,13 +1909,13 @@ LPostFxStack:remove(effect_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `effect_ud` | `LPostFxEffect` | Effect handle to remove. |
+| `effect_ud` | [LPostFxEffect](#lpostfxeffect-handle) | Effect handle to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the effect was found and removed. |
+| boolean | True when the effect was found and removed. |
 
 **Example**
 
@@ -1896,12 +1931,11 @@ end
 
 ---
 
-### `LPostFxStack:resize`
+#### `LPostFxStack:resize`
 
 Resizes the post-processing stack render target dimensions.
 
 ```lua
--- signature
 LPostFxStack:resize(w, h)
 ```
 
@@ -1909,8 +1943,8 @@ LPostFxStack:resize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | New width in pixels. |
-| `h` | `number` | New height in pixels. |
+| `w` | number | New width in pixels. |
+| `h` | number | New height in pixels. |
 
 **Example**
 
@@ -1924,12 +1958,11 @@ end
 
 ---
 
-### `LPostFxStack:setEnabled`
+#### `LPostFxStack:setEnabled`
 
 Enables or disables the effect pass at a one-based stack position.
 
 ```lua
--- signature
 LPostFxStack:setEnabled(position, enabled)
 ```
 
@@ -1937,8 +1970,8 @@ LPostFxStack:setEnabled(position, enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `position` | `number` | One-based stack position. |
-| `enabled` | `boolean` | New enabled flag for the pass. |
+| `position` | number | One-based stack position. |
+| `enabled` | boolean | New enabled flag for the pass. |
 
 **Example**
 
@@ -1954,12 +1987,11 @@ end
 
 ---
 
-### `LPostFxStack:setFeedback`
+#### `LPostFxStack:setFeedback`
 
 Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
 
 ```lua
--- signature
 LPostFxStack:setFeedback(factor)
 ```
 
@@ -1967,7 +1999,7 @@ LPostFxStack:setFeedback(factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `factor` | `number` | Feedback blend factor. |
+| `factor` | number | Feedback blend factor. |
 
 **Example**
 
@@ -1981,12 +2013,11 @@ end
 
 ---
 
-### `LPostFxStack:type`
+#### `LPostFxStack:type`
 
 Returns the Lua-visible type name for this post-processing stack handle.
 
 ```lua
--- signature
 LPostFxStack:type()
 ```
 
@@ -1994,7 +2025,7 @@ LPostFxStack:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LPostFxStack`. |
+| string | The string `[LPostFxStack](#lpostfxstack-handle)`. |
 
 **Example**
 
@@ -2007,12 +2038,11 @@ end
 
 ---
 
-### `LPostFxStack:typeOf`
+#### `LPostFxStack:typeOf`
 
 Returns whether this stack handle matches a supported type name.
 
 ```lua
--- signature
 LPostFxStack:typeOf(name)
 ```
 
@@ -2020,13 +2050,13 @@ LPostFxStack:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `PostFxStack` and `Object`. |
+| `name` | string | Type name to compare against `PostFxStack` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

@@ -968,6 +968,7 @@ def main():
         data = json.load(f)
 
     lua_api = data.get("lua_api", {}).get("modules", {})
+    engine_callbacks = data.get("engine_callbacks", [])
 
     # Maps internal json key â†’ actual Lua namespace (for modules that register under a different name)
     _LUA_NAMESPACE = {}
@@ -982,6 +983,13 @@ def main():
     out.append("")
     out.append("---@alias LuaValue nil|boolean|number|string|table|function|userdata|thread")
     out.append("")
+
+    if engine_callbacks:
+        out.append("--- Global engine callbacks invoked by the runtime when defined in `main.lua`.")
+        out.append("")
+        for callback in sorted(engine_callbacks, key=lambda c: c.get("name", "")):
+            if callback.get("name"):
+                write_callback_doc(out, callback)
 
     declared_types, referenced_types = collect_declared_and_referenced_types(lua_api)
     opaque_types = sorted(

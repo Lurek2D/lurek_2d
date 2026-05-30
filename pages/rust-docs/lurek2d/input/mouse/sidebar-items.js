@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["CursorKind","SystemCursor"],"fn":["is_cursor_supported"],"struct":["CursorHandle","MouseState"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["BillboardSprite","CeilingQuad","FloorQuad","ModelMesh","RaycasterScene","WallQuad"]};

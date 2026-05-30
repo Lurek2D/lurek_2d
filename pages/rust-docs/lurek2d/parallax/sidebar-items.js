@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["draw","layer","presets","render","tile_iter"]};

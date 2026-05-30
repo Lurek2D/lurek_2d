@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["fire","rain","smoke","snow","sparks"]};

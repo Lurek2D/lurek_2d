@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["add_type_methods"],"trait":["LurekType"]};

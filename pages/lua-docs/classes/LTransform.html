@@ -3,142 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LTransform - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LTransform Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/math.html#ltransform-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a class="active" href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LTransform</h1>
-  <p>Lua-side wrapper for a 2D transform matrix.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/math.html">lurek.math</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform()
-    t:translate(50, 50)
-    local x, y = t:transformPoint(0, 0)
-    print(&quot;point = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LTransform userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-clone"><div class="item-row-main"><h3>clone</h3><pre class="inline-signature">LTransform:clone() -&gt; LTransform</pre><p>Returns a copy of this transform. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:717</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(10, 20, 0.5)
-    local clone = t:clone()
-    local x, y = clone:transformPoint(0, 0)
-    print(&quot;clone point = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-decompose"><div class="item-row-main"><h3>decompose</h3><pre class="inline-signature">LTransform:decompose() -&gt; number</pre><p>Decomposes this transform into component values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:742</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(10, 20, 1.5, 3, 4)
-    local x, y, angle, sx, sy = t:decompose()
-    print(&quot;pos=&quot; .. x .. &quot;,&quot; .. y .. &quot; angle=&quot; .. angle .. &quot; scale=&quot; .. sx .. &quot;,&quot; .. sy)
-end</code></pre></details></article><article class="item-row api-row" id="method-getmatrix"><div class="item-row-main"><h3>getMatrix</h3><pre class="inline-signature">LTransform:getMatrix() -&gt; number[]</pre><p>Returns this transform matrix as a flat array table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:723</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(5, 10)
-    local m = t:getMatrix()
-    print(&quot;matrix elements = &quot; .. #m)
-    print(&quot;first row = &quot; .. m[1] .. &quot;,&quot; .. m[2] .. &quot;,&quot; .. m[3])
-end</code></pre></details></article><article class="item-row api-row" id="method-inverse"><div class="item-row-main"><h3>inverse</h3><pre class="inline-signature">LTransform:inverse() -&gt; LTransform</pre><p>Returns this transform&#x27;s inverse.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:709</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(10, 20, 0.5)
-    local inv = t:inverse()
-    local x, y = t:transformPoint(5, 0)
-    local rx, ry = inv:transformPoint(x, y)
-    print(&quot;roundtrip = &quot; .. rx .. &quot;,&quot; .. ry)
-end</code></pre></details></article><article class="item-row api-row" id="method-inversetransformpoint"><div class="item-row-main"><h3>inverseTransformPoint</h3><pre class="inline-signature">LTransform:inverseTransformPoint(x: number, y: number) -&gt; number</pre><p>Transforms a point by this transform&#x27;s inverse.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:703</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(100, 0, 0, 2, 2)
-    local fx, fy = t:transformPoint(5, 0)
-    local ix, iy = t:inverseTransformPoint(fx, fy)
-    print(&quot;forward = &quot; .. fx .. &quot;,&quot; .. fy)
-    print(&quot;inverse = &quot; .. ix .. &quot;,&quot; .. iy)
-end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LTransform:reset()</pre><p>Resets this transform to identity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:643</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
-    t:reset()
-    local x, y = t:transformPoint(10, 10)
-    print(&quot;after reset = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-rotate"><div class="item-row-main"><h3>rotate</h3><pre class="inline-signature">LTransform:rotate(angle: number)</pre><p>Applies a rotation to this transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:621</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform()
-    t:rotate(lurek.math.pi / 2)
-    local x, y = t:transformPoint(10, 0)
-    print(&quot;point = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-scale"><div class="item-row-main"><h3>scale</h3><pre class="inline-signature">LTransform:scale(sx: number, sy: number?)</pre><p>Applies scale to this transform. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:629</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform()
-    t:scale(2, 3)
-    local x, y = t:transformPoint(10, 5)
-    print(&quot;point = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-settransformation"><div class="item-row-main"><h3>setTransformation</h3><pre class="inline-signature">LTransform:setTransformation(x: number, y: number, angle: number?, sx: number?, sy: number?, ox: number?, oy: number?, kx: number?, ky: number?)</pre><p>Replaces this transform from position, rotation, scale, origin, and shear components.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:659</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform()
-    t:setTransformation(0, 0, lurek.math.pi, 1, 1)
-    local x, y = t:transformPoint(10, 0)
-    print(&quot;after set = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-shear"><div class="item-row-main"><h3>shear</h3><pre class="inline-signature">LTransform:shear(kx: number, ky: number)</pre><p>Applies shear to this transform. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:637</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform()
-    t:shear(0.25, 0)
-    local x, y = t:transformPoint(10, 10)
-    print(&quot;point = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-transformpoint"><div class="item-row-main"><h3>transformPoint</h3><pre class="inline-signature">LTransform:transformPoint(x: number, y: number) -&gt; number</pre><p>Transforms a point by this transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:694</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform(100, 0, 0, 2, 2)
-    local fx, fy = t:transformPoint(5, 0)
-    local ix, iy = t:inverseTransformPoint(fx, fy)
-    print(&quot;forward = &quot; .. fx .. &quot;,&quot; .. fy)
-    print(&quot;inverse = &quot; .. ix .. &quot;,&quot; .. iy)
-end</code></pre></details></article><article class="item-row api-row" id="method-translate"><div class="item-row-main"><h3>translate</h3><pre class="inline-signature">LTransform:translate(dx: number, dy: number)</pre><p>Applies a translation to this transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:614</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local t = lurek.math.newTransform()
-    t:translate(50, 50)
-    local x, y = t:transformPoint(0, 0)
-    print(&quot;point = &quot; .. x .. &quot;,&quot; .. y)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTransform:type() -&gt; string</pre><p>Returns the Lua-visible type name for this transform handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:746</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local tf = lurek.math.newTransform()
-    print(tf:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTransform:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this transform handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:751</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local tf = lurek.math.newTransform()
-    print(tostring(tf:typeOf(&quot;LTransform&quot;)))
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/math.html#ltransform-handle">../../modules/math.html#ltransform-handle</a>…</p>
 </body>
 </html>

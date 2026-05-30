@@ -13,7 +13,7 @@ import importlib.util, sys
 spec = importlib.util.spec_from_file_location('gen', 'tools/docs/gen_docs_lua.py')
 gen = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(gen)
-result = gen._callbacks()
+result = gen._callbacks([])
 found = False
 for i, item in enumerate(result):
     if '\n' in item or '\r' in item:

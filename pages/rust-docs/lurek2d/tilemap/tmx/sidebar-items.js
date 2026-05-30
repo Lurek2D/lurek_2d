@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["TmxLayer","TmxOrientation","TmxStaggerAxis"],"fn":["load_tmx"],"struct":["TmxMap","TmxObject","TmxObjectLayer","TmxTileLayer","TmxTileset"]};

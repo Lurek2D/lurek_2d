@@ -3,88 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>lurek.overlay - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Module overlay Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/overlay.html">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a class="active" href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Module</p>
-  <h1>lurek.overlay</h1>
-  <p>`lurek.overlay` -- Lua bindings for the overlay system: weather, atmosphere, screen flash/shake/fade, transitions, and ambient controls. - Registers `lurek.overlay.*` functions and types via `register()`. - `LuaOverlay`: userdata type exposed to Lua. - Bridges 90 Lua-callable methods via `mlua`. - See `docs/specs/overlay.md` for the full API specification.</p>
-  <div class="api-meta api-meta-header"><span>2 functions</span><span>2 classes</span><span>src/lua_api/overlay_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 90</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
-</header>
-
-<section class="section-block" id="functions">
-  <div class="section-head">
-    <h2>Functions</h2>
-    <p>Standalone namespace functions registered under lurek.overlay.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="fn-new"><div class="item-row-main"><h3>new</h3><pre class="inline-signature">lurek.overlay.new(w: integer?, h: integer?) -&gt; LOverlay</pre><p>Creates an overlay controller for screen effects using optional dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/overlay_api.rs:707</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
-    local ov = lurek.overlay.new(800, 600)
-    local w, h = ov:getDimensions()
-    print(&quot;lurek.overlay.new type=&quot; .. ov:type())
-    print(&quot;lurek.overlay.new size=&quot; .. w .. &quot;x&quot; .. h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-newtransition"><div class="item-row-main"><h3>newTransition</h3><pre class="inline-signature">lurek.overlay.newTransition(kind: string?, duration: number?, color_tbl: table?) -&gt; LScreenTransition</pre><p>Creates a timed screen transition with optional kind, duration, and color.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/overlay_api.rs:724</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
-    local tr = lurek.overlay.newTransition(&quot;wipe&quot;, 0.75, { 0.05, 0.10, 0.15, 1.0 })
-    print(&quot;lurek.overlay.newTransition type=&quot; .. tr:type())
-    print(&quot;lurek.overlay.newTransition kind=&quot; .. tr:kind())
-end</code></pre></details></article>
-  </div>
-</section>
-
-<section class="section-block" id="classes">
-  <div class="section-head">
-    <h2>Classes</h2>
-    <p>Lua userdata types that expose methods through this module.</p>
-  </div>
-    <div class="item-list compact-list">
-    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LOverlay.html">LOverlay</a></h3><p>Lua-side handle for screen overlay, ambient, weather, and transition visual state.</p></div><div class="item-row-meta"><span>77 methods</span><span>module overlay</span></div><div class="card-note">Example: overlay.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LScreenTransition.html">LScreenTransition</a></h3><p>Lua-side handle for a timed screen transition effect.</p></div><div class="item-row-meta"><span>11 methods</span><span>module overlay</span></div><div class="card-note">Example: overlay.lua</div></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/overlay.html">../../modules/overlay.html</a>…</p>
 </body>
 </html>

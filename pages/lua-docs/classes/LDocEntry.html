@@ -3,123 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LDocEntry - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LDocEntry Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/docs.html#ldocentry-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a class="active" href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LDocEntry</h1>
-  <p>Provides Lua accessors for documentation entry metadata.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/docs.html">lurek.docs</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;name = &quot; .. entry:getName())
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LDocEntry userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-getdeprecated"><div class="item-row-main"><h3>getDeprecated</h3><pre class="inline-signature">LDocEntry:getDeprecated() -&gt; LuaValue</pre><p>Returns this entry&#x27;s deprecation text when one was recorded.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:229</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local deprecated = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;):getDeprecated()
-    print(&quot;deprecated = &quot; .. type(deprecated))
-end</code></pre></details></article><article class="item-row api-row" id="method-getdescription"><div class="item-row-main"><h3>getDescription</h3><pre class="inline-signature">LDocEntry:getDescription() -&gt; string</pre><p>Returns the prose description recorded for this entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:170</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;desc len = &quot; .. #entry:getDescription())
-end</code></pre></details></article><article class="item-row api-row" id="method-getexample"><div class="item-row-main"><h3>getExample</h3><pre class="inline-signature">LDocEntry:getExample() -&gt; LuaValue</pre><p>Returns this entry&#x27;s example text when one was recorded.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:221</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local example = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;):getExample()
-    print(&quot;example = &quot; .. type(example))
-end</code></pre></details></article><article class="item-row api-row" id="method-getkind"><div class="item-row-main"><h3>getKind</h3><pre class="inline-signature">LDocEntry:getKind() -&gt; string</pre><p>Returns the documentation kind recorded for this entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:166</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;kind = &quot; .. entry:getKind())
-end</code></pre></details></article><article class="item-row api-row" id="method-getmodule"><div class="item-row-main"><h3>getModule</h3><pre class="inline-signature">LDocEntry:getModule() -&gt; string</pre><p>Returns the module name associated with this documentation entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:162</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;module = &quot; .. entry:getModule())
-end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LDocEntry:getName() -&gt; string</pre><p>Returns the short API name stored by this documentation entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:152</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;name = &quot; .. entry:getName())
-end</code></pre></details></article><article class="item-row api-row" id="method-getparameters"><div class="item-row-main"><h3>getParameters</h3><pre class="inline-signature">LDocEntry:getParameters() -&gt; table</pre><p>Returns parameter metadata recorded for this entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:181</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local params = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;):getParameters()
-    print(&quot;params = &quot; .. #params)
-end</code></pre></details></article><article class="item-row api-row" id="method-getqualifiedname"><div class="item-row-main"><h3>getQualifiedName</h3><pre class="inline-signature">LDocEntry:getQualifiedName() -&gt; string</pre><p>Returns the full dotted API name stored by this documentation entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:156</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;qualified = &quot; .. entry:getQualifiedName())
-end</code></pre></details></article><article class="item-row api-row" id="method-getreturns"><div class="item-row-main"><h3>getReturns</h3><pre class="inline-signature">LDocEntry:getReturns() -&gt; table</pre><p>Returns return-value metadata recorded for this entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:206</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local returns = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;):getReturns()
-    print(&quot;returns = &quot; .. #returns)
-end</code></pre></details></article><article class="item-row api-row" id="method-getscore"><div class="item-row-main"><h3>getScore</h3><pre class="inline-signature">LDocEntry:getScore() -&gt; number</pre><p>Returns the documentation quality score calculated for this entry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:233</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;score = &quot; .. entry:getScore())
-end</code></pre></details></article><article class="item-row api-row" id="method-getsince"><div class="item-row-main"><h3>getSince</h3><pre class="inline-signature">LDocEntry:getSince() -&gt; LuaValue</pre><p>Returns this entry&#x27;s since-version text when one was recorded.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:225</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local since = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;):getSince()
-    print(&quot;since = &quot; .. type(since))
-end</code></pre></details></article><article class="item-row api-row" id="method-hasdescription"><div class="item-row-main"><h3>hasDescription</h3><pre class="inline-signature">LDocEntry:hasDescription() -&gt; boolean</pre><p>Returns whether this entry has non-empty description text.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:237</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;hasDesc = &quot; .. tostring(entry:hasDescription()))
-end</code></pre></details></article><article class="item-row api-row" id="method-hasexample"><div class="item-row-main"><h3>hasExample</h3><pre class="inline-signature">LDocEntry:hasExample() -&gt; boolean</pre><p>Returns whether this entry has example text.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:255</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;hasExample = &quot; .. tostring(entry:hasExample()))
-end</code></pre></details></article><article class="item-row api-row" id="method-hasparameters"><div class="item-row-main"><h3>hasParameters</h3><pre class="inline-signature">LDocEntry:hasParameters() -&gt; boolean</pre><p>Returns whether this entry has parameter metadata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:243</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;hasParams = &quot; .. tostring(entry:hasParameters()))
-end</code></pre></details></article><article class="item-row api-row" id="method-hasreturntype"><div class="item-row-main"><h3>hasReturnType</h3><pre class="inline-signature">LDocEntry:hasReturnType() -&gt; boolean</pre><p>Returns whether this entry has return-value metadata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:249</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;hasReturn = &quot; .. tostring(entry:hasReturnType()))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LDocEntry:type() -&gt; string</pre><p>Returns the Lua-visible type name for this documentation entry handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:259</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;type = &quot; .. entry:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LDocEntry:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this documentation entry handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/docs_api.rs:264</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
-    local entry = lurek.docs.scan():getEntry(&quot;lurek.math.lerp&quot;)
-    print(&quot;is LDocEntry = &quot; .. tostring(entry:typeOf(&quot;LDocEntry&quot;)))
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/docs.html#ldocentry-handle">../../modules/docs.html#ldocentry-handle</a>…</p>
 </body>
 </html>

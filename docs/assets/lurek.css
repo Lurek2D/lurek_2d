@@ -39,3 +39,12 @@
 .md-typeset .tip > summary {
   background-color: color-mix(in srgb, var(--lurek-sky) 15%, transparent);
 }
+
+/* Module/API sections: slightly larger section headers for scanability */
+.md-typeset h2 {
+  font-size: 1.35rem;
+}
+
+.md-typeset h3 {
+  font-size: 1.15rem;
+}

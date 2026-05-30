@@ -1,6 +1,6 @@
 # Globe
 
-- The `globe` module, situated in the Feature Systems tier, provides a comprehensive framework for rendering and interacting with an XCOM-style Geoscape.
+## Summary
 
 At its core is the `Globe` structure, which oversees a highly optimized, region-based spherical map. It utilizes an orbit camera with latitude and longitude positioning, supporting smooth interpolation, variable zoom levels, and automatic Level-of-Detail (LOD) adjustments. A key architectural decision is that all rendering output consists of 2D draw commands (such as convex fans, polylines, and circles) projected from spherical coordinates, intentionally avoiding the complexity of a full 3D pipeline.
 
@@ -10,6 +10,152 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 > **Note on naming:** Globe internally uses "Region" as the primary type name (e.g., `Region`, `RegionId`, `RegionGraph`) to avoid confusion with the separate `crate::province` 2D province-map module. Backward-compatible aliases (`Province`, `ProvinceId`, `ProvinceGraph`) are provided. The Lua API exposes both `addProvince`/`addRegion` etc. for scripts.
 
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### composition.rs
+
+- Provides split-view globe composition that merges multiple named views into one render batch.
+- Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior.
+- Delivers multi-panel frame assembly for comparative or tactical map presentation.
+
+### draw.rs
+
+- Provides full globe frame emission that converts world map state into ordered render commands.
+- Draws projected regions with fog, lighting, overlays, and optional texture contribution.
+- Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues.
+- Integrates marker and label drawing with animation and LOD-aware visibility rules.
+- Applies camera projection and world parameters consistently across all rendered primitives.
+- Supports layered heat and style effects so thematic map signals remain legible.
+- Delivers the end-to-end draw pipeline for globe visualization in runtime frames.
+
+### export.rs
+
+- Provides globe geometry export helpers that convert region polygons into portable mesh text output.
+- Emits flat OBJ data with deterministic region object grouping for downstream tooling.
+- Delivers a simple export path for inspection, conversion, and offline map processing workflows.
+
+### fog.rs
+
+- Provides compact per-region fog state storage with hidden, explored, and visible visibility tiers.
+- Supports per-viewer mask ownership so different observers can maintain independent map knowledge.
+- Exposes reveal, hide, explore, and toggle operations for direct gameplay-state updates.
+- Includes serialization-friendly encoding to persist fog state across save and restore cycles.
+- Supplies query helpers that report visible and explored subsets for UI and logic consumers.
+- Delivers the fog-of-war backbone used by globe rendering and strategic information gating.
+
+### label.rs
+
+- Provides id-keyed globe label storage for map annotations positioned by latitude and longitude.
+- Supports add, remove, update, and visibility operations for dynamic labeling workflows.
+- Applies LOD-aware filtering so text density scales with camera detail level.
+- Maintains stable iteration outputs used by rendering and debugging interfaces.
+- Delivers the label-management layer for readable and controllable geographic annotation.
+
+### layer.rs
+
+- Provides named globe layer storage that overlays per-region color and visibility modifications.
+- Supports insert, remove, lookup, and alpha control for composable thematic map styling.
+- Resolves effective colors in z-order so stacked overlays produce deterministic final output.
+- Delivers the overlay-composition layer used by draw logic and gameplay visualization.
+
+### lighting.rs
+
+- Provides globe lighting helpers that derive sun direction and regional light intensity over time.
+- Computes diffuse contribution with ambient floors to keep night-side visuals readable.
+- Supports batch intensity and terminator blending calculations for smooth day-night transitions.
+- Delivers reusable illumination math consumed by globe rendering passes.
+
+### loader.rs
+
+- Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources.
+- Parses lightweight structured input into normalized region records with geometry and adjacency data.
+- Converts intermediate builder state into shared globe region types used across the subsystem.
+- Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping.
+- Handles primitive parsing and validation to keep load-time failures explicit and actionable.
+- Supports both in-memory string input and file-based ingestion paths for tooling flexibility.
+- Delivers the map-ingestion layer that seeds topology and rendering state for globe runtime use.
+
+### marker.rs
+
+- Provides stable-id globe marker storage for pins and point annotations on planetary surfaces.
+- Supports marker insertion, removal, movement, and lookup by id or classification type.
+- Manages marker visibility and custom attributes for flexible runtime presentation.
+- Keeps marker collections deterministic for rendering and interaction queries.
+- Delivers the marker-management layer used by tactical and informational map overlays.
+
+### mod.rs
+
+- Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration.
+- Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface.
+- Supports synchronization and loading flows so globe state can be updated from external game systems.
+- Delivers a cohesive planetary-view feature set for strategic map presentation and interaction.
+
+### picking.rs
+
+- Provides screen-space globe picking that identifies visible regions under pointer coordinates.
+- Projects region geometry into 2D and applies point-in-polygon hit testing for selection.
+- Chooses the front-most valid candidate using camera-facing depth information.
+- Delivers interaction picking results consumed by UI and gameplay selection flows.
+
+### projection.rs
+
+- Provides globe projection math driven by an orbit camera with latitude, longitude, and zoom control.
+- Builds view transforms from globe rotation, axial tilt, and camera orientation inputs.
+- Projects points and regions from spherical coordinates into screen-space render geometry.
+- Applies facing checks and depth culling to reject back-hemisphere geometry during projection.
+- Delivers camera and projection utilities used by drawing, picking, and interaction code paths.
+
+### province_adapter.rs
+
+- Provides a bridge that applies province-registry ownership and visibility state onto globe regions.
+- Synchronizes political coloring so map visuals reflect current simulation authority data.
+- Delivers adapter logic that keeps province gameplay state aligned with globe presentation.
+
+### registry.rs
+
+- Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data.
+- Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers.
+- Integrates camera projection and picking paths so selection and rendering share one state container.
+- Emits full-frame render commands from current globe state for deterministic map visualization.
+- Caches sector and reachability information to support strategic lookup and path-cost workflows.
+- Delivers named registry management for handling multiple independent globe instances.
+
+### sphere.rs
+
+- Provides spherical geometry helpers for converting between latitude-longitude and unit-vector space.
+- Computes great-circle distance and interpolation for geodesic path and arc construction.
+- Supplies ray-sphere intersection tests used by projection and picking style calculations.
+- Defines lightweight 3x3 rotation matrices and multiplication helpers for globe transforms.
+- Delivers foundational math primitives shared across lighting, projection, and topology tools.
+
+### sync.rs
+
+- Provides globe snapshot transfer structures for cross-thread synchronization and state exchange.
+- Defines channel wrappers and snapshot payload shapes used to move globe state safely.
+- Supports building and applying snapshots to keep remote and local globe views aligned.
+- Delivers the synchronization utility layer for background simulation integration.
+
+### topology.rs
+
+- Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges.
+- Supports insertion, removal, and mutation workflows while keeping lookup caches coherent.
+- Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions.
+- Exposes neighbor and region iteration helpers used by rendering and gameplay systems.
+- Delivers the structural map-graph backbone that powers globe connectivity logic.
+
+### types.rs
+
+- Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts.
+- Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes.
+- Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior.
+- Supplies layer and heat-overlay structures used to blend thematic map information at runtime.
+- Models marker and label style data with visibility, pulse, and level-of-detail controls.
+- Includes projection result types for screen-space rendering and interaction pipelines.
+- Declares subsystem error variants for loading, lookup, and path-related failure handling.
+- Delivers the canonical type contract consumed by all globe modules and integration surfaces.
+
 ## Functions
 
 ### `lurek.globe.generateVoronoi`
@@ -17,7 +163,6 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 Creates a globe and populates provinces from latitude-longitude seed points.
 
 ```lua
--- signature
 lurek.globe.generateVoronoi(name, seeds_tbl, spec_tbl)
 ```
 
@@ -25,15 +170,15 @@ lurek.globe.generateVoronoi(name, seeds_tbl, spec_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
-| `seeds_tbl` | `table` | Array table of `{lat, lon}` seed pairs. |
-| `spec_tbl?` | `table` | Globe specification table. |
+| `name` | string | Globe registry name. |
+| `seeds_tbl` | table | Array table of `{lat, lon}` seed pairs. |
+| `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | New generated globe handle. |
+| [LGlobe](#lglobe-handle) | New generated globe handle. |
 
 **Example**
 
@@ -51,7 +196,6 @@ end
 Returns a globe from the module registry by name.
 
 ```lua
--- signature
 lurek.globe.get(name)
 ```
 
@@ -59,13 +203,13 @@ lurek.globe.get(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
+| `name` | string | Globe registry name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | Globe handle, or nil when no globe exists with that name. |
+| [LGlobe](#lglobe-handle) | Globe handle, or nil when no globe exists with that name. |
 
 **Example**
 
@@ -86,7 +230,6 @@ end
 Computes great-circle distance between two latitude-longitude points.
 
 ```lua
--- signature
 lurek.globe.greatCircleDistance(la, lo, lb, lo2)
 ```
 
@@ -94,16 +237,16 @@ lurek.globe.greatCircleDistance(la, lo, lb, lo2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `la` | `number` | Start latitude in degrees. |
-| `lo` | `number` | Start longitude in degrees. |
-| `lb` | `number` | End latitude in degrees. |
-| `lo2` | `number` | End longitude in degrees. |
+| `la` | number | Start latitude in degrees. |
+| `lo` | number | Start longitude in degrees. |
+| `lb` | number | End latitude in degrees. |
+| `lo2` | number | End longitude in degrees. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Great-circle distance on the unit sphere. |
+| number | Great-circle distance on the unit sphere. |
 
 **Example**
 
@@ -121,7 +264,6 @@ end
 Computes sampled latitude-longitude points along a great-circle path.
 
 ```lua
--- signature
 lurek.globe.greatCirclePath(la, lo, lb, lo2, n)
 ```
 
@@ -129,17 +271,17 @@ lurek.globe.greatCirclePath(la, lo, lb, lo2, n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `la` | `number` | Start latitude in degrees. |
-| `lo` | `number` | Start longitude in degrees. |
-| `lb` | `number` | End latitude in degrees. |
-| `lo2` | `number` | End longitude in degrees. |
-| `n` | `number` | Number of samples. |
+| `la` | number | Start latitude in degrees. |
+| `lo` | number | Start longitude in degrees. |
+| `lb` | number | End latitude in degrees. |
+| `lo2` | number | End longitude in degrees. |
+| `n` | number | Number of samples. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `GlobeGreatCirclePathResult` | Array table of `{lat, lon}` point tables. |
+| LGlobeGreatCirclePathResult | Array table of `{lat, lon}` point tables. |
 
 **Example**
 
@@ -160,7 +302,6 @@ end
 Converts latitude and longitude to a unit-sphere 3D vector table.
 
 ```lua
--- signature
 lurek.globe.latLonToUnit(lat, lon)
 ```
 
@@ -168,14 +309,14 @@ lurek.globe.latLonToUnit(lat, lon)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lat` | `number` | Latitude in degrees. |
-| `lon` | `number` | Longitude in degrees. |
+| `lat` | number | Latitude in degrees. |
+| `lon` | number | Longitude in degrees. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `GlobeLatLonToUnitResult` | Array table `{x, y, z}` on the unit sphere. |
+| LGlobeLatLonToUnitResult | Array table `{x, y, z}` on the unit sphere. |
 
 **Example**
 
@@ -193,7 +334,6 @@ end
 Creates a globe and populates provinces from a PNG file.
 
 ```lua
--- signature
 lurek.globe.loadFromPNG(name, png_path, spec_tbl)
 ```
 
@@ -201,15 +341,15 @@ lurek.globe.loadFromPNG(name, png_path, spec_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
-| `png_path` | `string` | PNG file path to load. |
-| `spec_tbl?` | `table` | Globe specification table. |
+| `name` | string | Globe registry name. |
+| `png_path` | string | PNG file path to load. |
+| `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | New populated globe handle. |
+| [LGlobe](#lglobe-handle) | New populated globe handle. |
 
 **Example**
 
@@ -227,7 +367,6 @@ end
 Creates a globe and populates provinces from TOML source text.
 
 ```lua
--- signature
 lurek.globe.loadFromTOML(name, toml_src, spec_tbl)
 ```
 
@@ -235,15 +374,15 @@ lurek.globe.loadFromTOML(name, toml_src, spec_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
-| `toml_src` | `string` | TOML province document source. |
-| `spec_tbl?` | `table` | Globe specification table. |
+| `name` | string | Globe registry name. |
+| `toml_src` | string | TOML province document source. |
+| `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | New populated globe handle. |
+| [LGlobe](#lglobe-handle) | New populated globe handle. |
 
 **Example**
 
@@ -262,7 +401,6 @@ end
 Creates a globe and populates provinces from a TOML file path.
 
 ```lua
--- signature
 lurek.globe.loadFromTOMLFile(name, path, spec_tbl)
 ```
 
@@ -270,15 +408,15 @@ lurek.globe.loadFromTOMLFile(name, path, spec_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
-| `path` | `string` | TOML file path to load. |
-| `spec_tbl?` | `table` | Globe specification table. |
+| `name` | string | Globe registry name. |
+| `path` | string | TOML file path to load. |
+| `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | New populated globe handle. |
+| [LGlobe](#lglobe-handle) | New populated globe handle. |
 
 **Example**
 
@@ -299,7 +437,6 @@ end
 Creates a named globe with optional specification fields in the module registry.
 
 ```lua
--- signature
 lurek.globe.new(name, spec_tbl)
 ```
 
@@ -307,14 +444,14 @@ lurek.globe.new(name, spec_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
-| `spec_tbl?` | `table` | Globe specification table. |
+| `name` | string | Globe registry name. |
+| `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | New globe handle. |
+| [LGlobe](#lglobe-handle) | New globe handle. |
 
 **Example**
 
@@ -332,7 +469,6 @@ end
 Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 
 ```lua
--- signature
 lurek.globe.raySphereIntersect(ox, oy, oz, dx, dy, dz, radius)
 ```
 
@@ -340,19 +476,19 @@ lurek.globe.raySphereIntersect(ox, oy, oz, dx, dy, dz, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Ray origin x. |
-| `oy` | `number` | Ray origin y. |
-| `oz` | `number` | Ray origin z. |
-| `dx` | `number` | Ray direction x. |
-| `dy` | `number` | Ray direction y. |
-| `dz` | `number` | Ray direction z. |
-| `radius` | `number` | Sphere radius. |
+| `ox` | number | Ray origin x. |
+| `oy` | number | Ray origin y. |
+| `oz` | number | Ray origin z. |
+| `dx` | number | Ray direction x. |
+| `dy` | number | Ray direction y. |
+| `dz` | number | Ray direction z. |
+| `radius` | number | Sphere radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Hit distance `t`, or nil when the ray misses. |
+| number | Hit distance `t`, or nil when the ray misses. |
 
 **Example**
 
@@ -371,7 +507,6 @@ end
 Removes a globe from the registry by name.
 
 ```lua
--- signature
 lurek.globe.remove(name)
 ```
 
@@ -379,13 +514,13 @@ lurek.globe.remove(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
+| `name` | string | Globe registry name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a globe was removed. |
+| boolean | True when a globe was removed. |
 
 **Example**
 
@@ -399,14 +534,36 @@ end
 
 ---
 
-## LGlobe
+## Module Fields
 
-### `LGlobe:addArc`
+*No module-level fields documented.*
+
+## Types
+
+- [LGlobe Handle](#lglobe-handle)
+- [LGlobeRegistry Handle](#lgloberegistry-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LGlobe Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGlobe:addArc`
 
 Adds a visible route arc between two latitude and longitude points.
 
 ```lua
--- signature
 LGlobe:addArc(lat1, lon1, lat2, lon2, steps)
 ```
 
@@ -414,17 +571,17 @@ LGlobe:addArc(lat1, lon1, lat2, lon2, steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lat1` | `number` | Start latitude in degrees. |
-| `lon1` | `number` | Start longitude in degrees. |
-| `lat2` | `number` | End latitude in degrees. |
-| `lon2` | `number` | End longitude in degrees. |
-| `steps?` | `number` | Point count for the arc, defaulting to 24. |
+| `lat1` | number | Start latitude in degrees. |
+| `lon1` | number | Start longitude in degrees. |
+| `lat2` | number | End latitude in degrees. |
+| `lon2` | number | End longitude in degrees. |
+| `steps?` | number | Point count for the arc, defaulting to 24. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | New arc id. |
+| number | New arc id. |
 
 **Example**
 
@@ -438,12 +595,11 @@ end
 
 ---
 
-### `LGlobe:addLabel`
+#### `LGlobe:addLabel`
 
 Adds a text label at latitude and longitude.
 
 ```lua
--- signature
 LGlobe:addLabel(ltype, lat, lon, text)
 ```
 
@@ -451,16 +607,16 @@ LGlobe:addLabel(ltype, lat, lon, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ltype` | `string` | Label type name. |
-| `lat` | `number` | Latitude in degrees. |
-| `lon` | `number` | Longitude in degrees. |
-| `text` | `string` | Label text. |
+| `ltype` | string | Label type name. |
+| `lat` | number | Latitude in degrees. |
+| `lon` | number | Longitude in degrees. |
+| `text` | string | Label text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | New label id. |
+| number | New label id. |
 
 **Example**
 
@@ -474,12 +630,11 @@ end
 
 ---
 
-### `LGlobe:addLayer`
+#### `LGlobe:addLayer`
 
 Adds a render layer with optional z-order.
 
 ```lua
--- signature
 LGlobe:addLayer(name, z_order)
 ```
 
@@ -487,8 +642,8 @@ LGlobe:addLayer(name, z_order)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `z_order?` | `number` | Layer z-order, defaulting to zero. |
+| `name` | string | Layer name. |
+| `z_order?` | number | Layer z-order, defaulting to zero. |
 
 **Example**
 
@@ -503,12 +658,11 @@ end
 
 ---
 
-### `LGlobe:addMarker`
+#### `LGlobe:addMarker`
 
 Adds a marker at latitude and longitude with an optional label.
 
 ```lua
--- signature
 LGlobe:addMarker(mtype, lat, lon, label)
 ```
 
@@ -516,16 +670,16 @@ LGlobe:addMarker(mtype, lat, lon, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mtype` | `string` | Marker type name. |
-| `lat` | `number` | Latitude in degrees. |
-| `lon` | `number` | Longitude in degrees. |
-| `label?` | `string` | Marker label. |
+| `mtype` | string | Marker type name. |
+| `lat` | number | Latitude in degrees. |
+| `lon` | number | Longitude in degrees. |
+| `label?` | string | Marker label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | New marker id. |
+| number | New marker id. |
 
 **Example**
 
@@ -539,12 +693,11 @@ end
 
 ---
 
-### `LGlobe:addProvince`
+#### `LGlobe:addProvince`
 
 Adds a province described by id, centroid, vertices, neighbors, and optional base color.
 
 ```lua
--- signature
 LGlobe:addProvince(p)
 ```
 
@@ -552,13 +705,13 @@ LGlobe:addProvince(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | `table` | Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`. |
+| `p` | table | Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the province was accepted by the globe. |
+| boolean | True when the province was accepted by the globe. |
 
 **Example**
 
@@ -572,12 +725,11 @@ end
 
 ---
 
-### `LGlobe:addRegion`
+#### `LGlobe:addRegion`
 
 Adds a region described by id, centroid, vertices, neighbors, and optional base color.
 
 ```lua
--- signature
 LGlobe:addRegion(p)
 ```
 
@@ -585,13 +737,13 @@ LGlobe:addRegion(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | `table` | Region table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`. |
+| `p` | table | Region table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the region was accepted by the globe. |
+| boolean | True when the region was accepted by the globe. |
 
 **Example**
 
@@ -610,12 +762,11 @@ end
 
 ---
 
-### `LGlobe:cacheReachability`
+#### `LGlobe:cacheReachability`
 
 Caches default-cost reachability for a named faction.
 
 ```lua
--- signature
 LGlobe:cacheReachability(faction, start_id, max_cost)
 ```
 
@@ -623,9 +774,9 @@ LGlobe:cacheReachability(faction, start_id, max_cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `faction` | `string` | Faction cache key. |
-| `start_id` | `number` | Start province id. |
-| `max_cost` | `number` | Maximum traversal cost. |
+| `faction` | string | Faction cache key. |
+| `start_id` | number | Start province id. |
+| `max_cost` | number | Maximum traversal cost. |
 
 **Example**
 
@@ -640,12 +791,11 @@ end
 
 ---
 
-### `LGlobe:clearProvinceTexture`
+#### `LGlobe:clearProvinceTexture`
 
 Removes texture metadata from a province.
 
 ```lua
--- signature
 LGlobe:clearProvinceTexture(id)
 ```
 
@@ -653,13 +803,13 @@ LGlobe:clearProvinceTexture(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
+| `id` | number | Province id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the province exists. |
+| boolean | True when the province exists. |
 
 **Example**
 
@@ -675,12 +825,11 @@ end
 
 ---
 
-### `LGlobe:decodeFogBase64`
+#### `LGlobe:decodeFogBase64`
 
 Loads one viewer's fog state from a base64 string.
 
 ```lua
--- signature
 LGlobe:decodeFogBase64(viewer, payload)
 ```
 
@@ -688,14 +837,14 @@ LGlobe:decodeFogBase64(viewer, payload)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
-| `payload` | `string` | Base64-encoded fog state. |
+| `viewer` | string | Viewer name. |
+| `payload` | string | Base64-encoded fog state. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the payload was decoded. |
+| boolean | True when the payload was decoded. |
 
 **Example**
 
@@ -710,12 +859,11 @@ end
 
 ---
 
-### `LGlobe:encodeFogBase64`
+#### `LGlobe:encodeFogBase64`
 
 Serializes one viewer's fog state to a base64 string.
 
 ```lua
--- signature
 LGlobe:encodeFogBase64(viewer)
 ```
 
@@ -723,13 +871,13 @@ LGlobe:encodeFogBase64(viewer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
+| `viewer` | string | Viewer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Base64-encoded fog state, or an empty string on encode failure. |
+| string | Base64-encoded fog state, or an empty string on encode failure. |
 
 **Example**
 
@@ -743,12 +891,11 @@ end
 
 ---
 
-### `LGlobe:exportProvinceMeshOBJ`
+#### `LGlobe:exportProvinceMeshOBJ`
 
 Exports province geometry as Wavefront OBJ text.
 
 ```lua
--- signature
 LGlobe:exportProvinceMeshOBJ()
 ```
 
@@ -756,7 +903,7 @@ LGlobe:exportProvinceMeshOBJ()
 
 | Type | Description |
 |------|-------------|
-| `string` | OBJ mesh text for the current provinces. |
+| string | OBJ mesh text for the current provinces. |
 
 **Example**
 
@@ -771,12 +918,11 @@ end
 
 ---
 
-### `LGlobe:findPath`
+#### `LGlobe:findPath`
 
 Finds a default-cost province path between two province ids.
 
 ```lua
--- signature
 LGlobe:findPath(from_id, to_id)
 ```
 
@@ -784,14 +930,14 @@ LGlobe:findPath(from_id, to_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_id` | `number` | Start province id. |
-| `to_id` | `number` | Target province id. |
+| `from_id` | number | Start province id. |
+| `to_id` | number | Target province id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Province ids, or nil when no path exists. |
+| string[] | Province ids, or nil when no path exists. |
 
 **Example**
 
@@ -806,12 +952,11 @@ end
 
 ---
 
-### `LGlobe:getCachedReachability`
+#### `LGlobe:getCachedReachability`
 
 Returns cached reachability costs for a faction.
 
 ```lua
--- signature
 LGlobe:getCachedReachability(faction)
 ```
 
@@ -819,13 +964,13 @@ LGlobe:getCachedReachability(faction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `faction` | `string` | Faction cache key. |
+| `faction` | string | Faction cache key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Map table from province id (integer key) to accumulated traversal cost (number), empty when missing. |
+| table | Map table from province id (integer key) to accumulated traversal cost (number), empty when missing. |
 
 **Example**
 
@@ -842,12 +987,11 @@ end
 
 ---
 
-### `LGlobe:getCamera`
+#### `LGlobe:getCamera`
 
 Returns camera latitude, longitude, and zoom.
 
 ```lua
--- signature
 LGlobe:getCamera()
 ```
 
@@ -855,9 +999,9 @@ LGlobe:getCamera()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Camera latitude in degrees. |
-| `number` | b Camera longitude in degrees. |
-| `number` | c Camera zoom. |
+| number | Camera latitude in degrees. |
+| number | Camera longitude in degrees. |
+| number | Camera zoom. |
 
 **Example**
 
@@ -872,12 +1016,11 @@ end
 
 ---
 
-### `LGlobe:getFogState`
+#### `LGlobe:getFogState`
 
 Returns fog-of-war state for one viewer and province.
 
 ```lua
--- signature
 LGlobe:getFogState(viewer, id)
 ```
 
@@ -885,14 +1028,14 @@ LGlobe:getFogState(viewer, id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
-| `id` | `number` | Province id. |
+| `viewer` | string | Viewer name. |
+| `id` | number | Province id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | `visible`, `explored`, or `hidden`. |
+| string | `visible`, `explored`, or `hidden`. |
 
 **Example**
 
@@ -908,12 +1051,11 @@ end
 
 ---
 
-### `LGlobe:getLod`
+#### `LGlobe:getLod`
 
 Returns the camera-derived level-of-detail tier name.
 
 ```lua
--- signature
 LGlobe:getLod()
 ```
 
@@ -921,7 +1063,7 @@ LGlobe:getLod()
 
 | Type | Description |
 |------|-------------|
-| `string` | One of `far`, `mid`, or `near`. |
+| string | One of `far`, `mid`, or `near`. |
 
 **Example**
 
@@ -935,12 +1077,11 @@ end
 
 ---
 
-### `LGlobe:getMarkerAttr`
+#### `LGlobe:getMarkerAttr`
 
 Reads a string attribute from a marker.
 
 ```lua
--- signature
 LGlobe:getMarkerAttr(id, key)
 ```
 
@@ -948,14 +1089,14 @@ LGlobe:getMarkerAttr(id, key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
-| `key` | `string` | Attribute key. |
+| `id` | number | Marker id. |
+| `key` | string | Attribute key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Attribute string, or nil when missing. |
+| string | Attribute string, or nil when missing. |
 
 **Example**
 
@@ -971,12 +1112,11 @@ end
 
 ---
 
-### `LGlobe:getName`
+#### `LGlobe:getName`
 
 Returns the registry name of this globe.
 
 ```lua
--- signature
 LGlobe:getName()
 ```
 
@@ -984,7 +1124,7 @@ LGlobe:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Globe registry name. |
+| string | Globe registry name. |
 
 **Example**
 
@@ -997,12 +1137,11 @@ end
 
 ---
 
-### `LGlobe:getNeighbors`
+#### `LGlobe:getNeighbors`
 
 Returns neighboring province ids for a province.
 
 ```lua
--- signature
 LGlobe:getNeighbors(id)
 ```
 
@@ -1010,13 +1149,13 @@ LGlobe:getNeighbors(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
+| `id` | number | Province id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of neighboring province ids. |
+| number[] | Array table of neighboring province ids. |
 
 **Example**
 
@@ -1031,12 +1170,11 @@ end
 
 ---
 
-### `LGlobe:getProvinceAttr`
+#### `LGlobe:getProvinceAttr`
 
 Reads a string attribute from a province.
 
 ```lua
--- signature
 LGlobe:getProvinceAttr(id, key)
 ```
 
@@ -1044,14 +1182,14 @@ LGlobe:getProvinceAttr(id, key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
-| `key` | `string` | Attribute key. |
+| `id` | number | Province id. |
+| `key` | string | Attribute key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Attribute string, or nil when the province or key is missing. |
+| string | Attribute string, or nil when the province or key is missing. |
 
 **Example**
 
@@ -1067,12 +1205,11 @@ end
 
 ---
 
-### `LGlobe:getProvinceSector`
+#### `LGlobe:getProvinceSector`
 
 Returns the sector name assigned to a province.
 
 ```lua
--- signature
 LGlobe:getProvinceSector(id)
 ```
 
@@ -1080,13 +1217,13 @@ LGlobe:getProvinceSector(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
+| `id` | number | Province id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Sector string, or nil when absent. |
+| string | Sector string, or nil when absent. |
 
 **Example**
 
@@ -1102,12 +1239,11 @@ end
 
 ---
 
-### `LGlobe:getSectorProvinces`
+#### `LGlobe:getSectorProvinces`
 
 Returns province ids assigned to a sector.
 
 ```lua
--- signature
 LGlobe:getSectorProvinces(sector)
 ```
 
@@ -1115,13 +1251,13 @@ LGlobe:getSectorProvinces(sector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sector` | `string` | Sector name. |
+| `sector` | string | Sector name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of province ids. |
+| number[] | Array table of province ids. |
 
 **Example**
 
@@ -1137,12 +1273,11 @@ end
 
 ---
 
-### `LGlobe:getTimeOfDay`
+#### `LGlobe:getTimeOfDay`
 
 Returns globe time of day. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:getTimeOfDay()
 ```
 
@@ -1150,7 +1285,7 @@ LGlobe:getTimeOfDay()
 
 | Type | Description |
 |------|-------------|
-| `number` | Time of day in hours. |
+| number | Time of day in hours. |
 
 **Example**
 
@@ -1165,12 +1300,11 @@ end
 
 ---
 
-### `LGlobe:hideProvince`
+#### `LGlobe:hideProvince`
 
 Hides a province for one fog-of-war viewer.
 
 ```lua
--- signature
 LGlobe:hideProvince(viewer, id)
 ```
 
@@ -1178,8 +1312,8 @@ LGlobe:hideProvince(viewer, id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
-| `id` | `number` | Province id. |
+| `viewer` | string | Viewer name. |
+| `id` | number | Province id. |
 
 **Example**
 
@@ -1194,12 +1328,11 @@ end
 
 ---
 
-### `LGlobe:isVisible`
+#### `LGlobe:isVisible`
 
 Returns whether a province is visible for one fog-of-war viewer.
 
 ```lua
--- signature
 LGlobe:isVisible(viewer, id)
 ```
 
@@ -1207,14 +1340,14 @@ LGlobe:isVisible(viewer, id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
-| `id` | `number` | Province id. |
+| `viewer` | string | Viewer name. |
+| `id` | number | Province id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the province is visible. |
+| boolean | True when the province is visible. |
 
 **Example**
 
@@ -1229,12 +1362,11 @@ end
 
 ---
 
-### `LGlobe:moveMarker`
+#### `LGlobe:moveMarker`
 
 Moves a marker to latitude and longitude coordinates.
 
 ```lua
--- signature
 LGlobe:moveMarker(id, lat, lon)
 ```
 
@@ -1242,15 +1374,15 @@ LGlobe:moveMarker(id, lat, lon)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
-| `lat` | `number` | Latitude in degrees. |
-| `lon` | `number` | Longitude in degrees. |
+| `id` | number | Marker id. |
+| `lat` | number | Latitude in degrees. |
+| `lon` | number | Longitude in degrees. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the marker exists. |
+| boolean | True when the marker exists. |
 
 **Example**
 
@@ -1265,12 +1397,11 @@ end
 
 ---
 
-### `LGlobe:pan`
+#### `LGlobe:pan`
 
 Pans the globe camera by latitude and longitude deltas.
 
 ```lua
--- signature
 LGlobe:pan(dlat, dlon)
 ```
 
@@ -1278,8 +1409,8 @@ LGlobe:pan(dlat, dlon)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dlat` | `number` | Latitude delta in degrees. |
-| `dlon` | `number` | Longitude delta in degrees. |
+| `dlat` | number | Latitude delta in degrees. |
+| `dlon` | number | Longitude delta in degrees. |
 
 **Example**
 
@@ -1295,12 +1426,11 @@ end
 
 ---
 
-### `LGlobe:pick`
+#### `LGlobe:pick`
 
 Picks a province at screen coordinates.
 
 ```lua
--- signature
 LGlobe:pick(sx, sy)
 ```
 
@@ -1308,14 +1438,14 @@ LGlobe:pick(sx, sy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Screen x coordinate. |
-| `sy` | `number` | Screen y coordinate. |
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Province id, or nil when nothing is hit. |
+| number | Province id, or nil when nothing is hit. |
 
 **Example**
 
@@ -1329,12 +1459,11 @@ end
 
 ---
 
-### `LGlobe:pickLatLon`
+#### `LGlobe:pickLatLon`
 
 Picks at screen coordinates and returns the hit province centroid screen coordinates.
 
 ```lua
--- signature
 LGlobe:pickLatLon(sx, sy)
 ```
 
@@ -1342,15 +1471,15 @@ LGlobe:pickLatLon(sx, sy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Screen x coordinate. |
-| `sy` | `number` | Screen y coordinate. |
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Centroid x coordinate, or nil when nothing is hit. |
-| `number` | b Centroid y coordinate, or nil when nothing is hit. |
+| number | Centroid x coordinate; or nil when nothing is hit. |
+| number | Centroid y coordinate; or nil when nothing is hit. |
 
 **Example**
 
@@ -1364,12 +1493,11 @@ end
 
 ---
 
-### `LGlobe:pickRaycast`
+#### `LGlobe:pickRaycast`
 
 Samples along a screen ray from the camera center and returns the first hit province.
 
 ```lua
--- signature
 LGlobe:pickRaycast(sx, sy, steps)
 ```
 
@@ -1377,15 +1505,15 @@ LGlobe:pickRaycast(sx, sy, steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Target screen x coordinate. |
-| `sy` | `number` | Target screen y coordinate. |
-| `steps?` | `number` | Number of samples along the ray, defaulting to 24. |
+| `sx` | number | Target screen x coordinate. |
+| `sy` | number | Target screen y coordinate. |
+| `steps?` | number | Number of samples along the ray, defaulting to 24. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Province id, or nil when no sample hits. |
+| number | Province id, or nil when no sample hits. |
 
 **Example**
 
@@ -1399,12 +1527,11 @@ end
 
 ---
 
-### `LGlobe:provinceCount`
+#### `LGlobe:provinceCount`
 
 Returns the number of regions in this globe.
 
 ```lua
--- signature
 LGlobe:provinceCount()
 ```
 
@@ -1412,7 +1539,7 @@ LGlobe:provinceCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Region count. |
+| number | Region count. |
 
 **Example**
 
@@ -1425,12 +1552,11 @@ end
 
 ---
 
-### `LGlobe:reachable`
+#### `LGlobe:reachable`
 
 Returns provinces reachable from a start province within a cost budget.
 
 ```lua
--- signature
 LGlobe:reachable(start_id, max_cost)
 ```
 
@@ -1438,14 +1564,14 @@ LGlobe:reachable(start_id, max_cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start_id` | `number` | Start province id. |
-| `max_cost` | `number` | Maximum traversal cost. |
+| `start_id` | number | Start province id. |
+| `max_cost` | number | Maximum traversal cost. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Map table from province id (integer key) to accumulated traversal cost (number). |
+| table | Map table from province id (integer key) to accumulated traversal cost (number). |
 
 **Example**
 
@@ -1462,12 +1588,11 @@ end
 
 ---
 
-### `LGlobe:regionCount`
+#### `LGlobe:regionCount`
 
 Returns the number of regions in this globe.
 
 ```lua
--- signature
 LGlobe:regionCount()
 ```
 
@@ -1475,7 +1600,7 @@ LGlobe:regionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Region count. |
+| number | Region count. |
 
 **Example**
 
@@ -1498,12 +1623,11 @@ end
 
 ---
 
-### `LGlobe:removeArc`
+#### `LGlobe:removeArc`
 
 Removes an arc by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeArc(id)
 ```
 
@@ -1511,13 +1635,13 @@ LGlobe:removeArc(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Arc id. |
+| `id` | number | Arc id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when an arc was removed. |
+| boolean | True when an arc was removed. |
 
 **Example**
 
@@ -1532,12 +1656,11 @@ end
 
 ---
 
-### `LGlobe:removeHeatLayer`
+#### `LGlobe:removeHeatLayer`
 
 Removes a heat layer by name. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeHeatLayer(name)
 ```
 
@@ -1545,13 +1668,13 @@ LGlobe:removeHeatLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Heat layer name. |
+| `name` | string | Heat layer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a layer was removed. |
+| boolean | True when a layer was removed. |
 
 **Example**
 
@@ -1566,12 +1689,11 @@ end
 
 ---
 
-### `LGlobe:removeLabel`
+#### `LGlobe:removeLabel`
 
 Removes a label by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeLabel(id)
 ```
 
@@ -1579,13 +1701,13 @@ LGlobe:removeLabel(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Label id. |
+| `id` | number | Label id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a label was removed. |
+| boolean | True when a label was removed. |
 
 **Example**
 
@@ -1600,12 +1722,11 @@ end
 
 ---
 
-### `LGlobe:removeLayer`
+#### `LGlobe:removeLayer`
 
 Removes a render layer by name. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeLayer(name)
 ```
 
@@ -1613,13 +1734,13 @@ LGlobe:removeLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
+| `name` | string | Layer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a layer was removed. |
+| boolean | True when a layer was removed. |
 
 **Example**
 
@@ -1634,12 +1755,11 @@ end
 
 ---
 
-### `LGlobe:removeMarker`
+#### `LGlobe:removeMarker`
 
 Removes a marker by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeMarker(id)
 ```
 
@@ -1647,13 +1767,13 @@ LGlobe:removeMarker(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
+| `id` | number | Marker id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a marker was removed. |
+| boolean | True when a marker was removed. |
 
 **Example**
 
@@ -1668,12 +1788,11 @@ end
 
 ---
 
-### `LGlobe:removeProvince`
+#### `LGlobe:removeProvince`
 
 Removes a region by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeProvince(id)
 ```
 
@@ -1681,13 +1800,13 @@ LGlobe:removeProvince(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Region id to remove. |
+| `id` | number | Region id to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a region was removed. |
+| boolean | True when a region was removed. |
 
 **Example**
 
@@ -1702,12 +1821,11 @@ end
 
 ---
 
-### `LGlobe:removeRegion`
+#### `LGlobe:removeRegion`
 
 Removes a region by id. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:removeRegion(id)
 ```
 
@@ -1715,13 +1833,13 @@ LGlobe:removeRegion(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Region id to remove. |
+| `id` | number | Region id to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a region was removed. |
+| boolean | True when a region was removed. |
 
 **Example**
 
@@ -1741,12 +1859,11 @@ end
 
 ---
 
-### `LGlobe:revealAll`
+#### `LGlobe:revealAll`
 
 Reveals every province for one fog-of-war viewer.
 
 ```lua
--- signature
 LGlobe:revealAll(viewer)
 ```
 
@@ -1754,7 +1871,7 @@ LGlobe:revealAll(viewer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
+| `viewer` | string | Viewer name. |
 
 **Example**
 
@@ -1768,12 +1885,11 @@ end
 
 ---
 
-### `LGlobe:revealProvince`
+#### `LGlobe:revealProvince`
 
 Reveals a province for one fog-of-war viewer.
 
 ```lua
--- signature
 LGlobe:revealProvince(viewer, id)
 ```
 
@@ -1781,8 +1897,8 @@ LGlobe:revealProvince(viewer, id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
-| `id` | `number` | Province id. |
+| `viewer` | string | Viewer name. |
+| `id` | number | Province id. |
 
 **Example**
 
@@ -1797,12 +1913,11 @@ end
 
 ---
 
-### `LGlobe:setActiveViewer`
+#### `LGlobe:setActiveViewer`
 
 Sets the active fog-of-war viewer name or clears it.
 
 ```lua
--- signature
 LGlobe:setActiveViewer(viewer)
 ```
 
@@ -1810,7 +1925,7 @@ LGlobe:setActiveViewer(viewer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer?` | `string` | Viewer name. |
+| `viewer?` | string | Viewer name. |
 
 **Example**
 
@@ -1824,12 +1939,11 @@ end
 
 ---
 
-### `LGlobe:setAutoRotationSpeed`
+#### `LGlobe:setAutoRotationSpeed`
 
 Sets automatic globe rotation speed.
 
 ```lua
--- signature
 LGlobe:setAutoRotationSpeed(dps)
 ```
 
@@ -1837,7 +1951,7 @@ LGlobe:setAutoRotationSpeed(dps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dps` | `number` | Rotation speed in degrees per second. |
+| `dps` | number | Rotation speed in degrees per second. |
 
 **Example**
 
@@ -1851,12 +1965,11 @@ end
 
 ---
 
-### `LGlobe:setBorders`
+#### `LGlobe:setBorders`
 
 Enables or disables province border rendering.
 
 ```lua
--- signature
 LGlobe:setBorders(show)
 ```
 
@@ -1864,7 +1977,7 @@ LGlobe:setBorders(show)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `show` | `boolean` | New border visibility flag. |
+| `show` | boolean | New border visibility flag. |
 
 **Example**
 
@@ -1878,12 +1991,11 @@ end
 
 ---
 
-### `LGlobe:setCamera`
+#### `LGlobe:setCamera`
 
 Sets camera latitude, longitude, and zoom.
 
 ```lua
--- signature
 LGlobe:setCamera(lat, lon, z)
 ```
 
@@ -1891,9 +2003,9 @@ LGlobe:setCamera(lat, lon, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lat` | `number` | Camera latitude in degrees. |
-| `lon` | `number` | Camera longitude in degrees. |
-| `z` | `number` | Camera zoom, clamped to at least 0.1. |
+| `lat` | number | Camera latitude in degrees. |
+| `lon` | number | Camera longitude in degrees. |
+| `z` | number | Camera zoom, clamped to at least 0.1. |
 
 **Example**
 
@@ -1907,12 +2019,11 @@ end
 
 ---
 
-### `LGlobe:setFogState`
+#### `LGlobe:setFogState`
 
 Sets fog-of-war state for one viewer and province.
 
 ```lua
--- signature
 LGlobe:setFogState(viewer, id, state)
 ```
 
@@ -1920,9 +2031,9 @@ LGlobe:setFogState(viewer, id, state)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `viewer` | `string` | Viewer name. |
-| `id` | `number` | Province id. |
-| `state` | `string` | `visible`, `explored`, or any other value for hidden. |
+| `viewer` | string | Viewer name. |
+| `id` | number | Province id. |
+| `state` | string | `visible`, `explored`, or any other value for hidden. |
 
 **Example**
 
@@ -1937,12 +2048,11 @@ end
 
 ---
 
-### `LGlobe:setHeatLayer`
+#### `LGlobe:setHeatLayer`
 
 Creates or replaces a heat layer that maps province attributes into colors.
 
 ```lua
--- signature
 LGlobe:setHeatLayer(name, attr_key, min, max, alpha)
 ```
 
@@ -1950,11 +2060,11 @@ LGlobe:setHeatLayer(name, attr_key, min, max, alpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Heat layer name. |
-| `attr_key` | `string` | Province attribute key read as a numeric value. |
-| `min` | `number` | Attribute value mapped to cold color. |
-| `max` | `number` | Attribute value mapped to hot color. |
-| `alpha` | `number` | Layer alpha clamped to 0.0 through 1.0. |
+| `name` | string | Heat layer name. |
+| `attr_key` | string | Province attribute key read as a numeric value. |
+| `min` | number | Attribute value mapped to cold color. |
+| `max` | number | Attribute value mapped to hot color. |
+| `alpha` | number | Layer alpha clamped to 0.0 through 1.0. |
 
 **Example**
 
@@ -1968,12 +2078,11 @@ end
 
 ---
 
-### `LGlobe:setLabelText`
+#### `LGlobe:setLabelText`
 
 Changes text for an existing label.
 
 ```lua
--- signature
 LGlobe:setLabelText(id, text)
 ```
 
@@ -1981,14 +2090,14 @@ LGlobe:setLabelText(id, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Label id. |
-| `text` | `string` | New label text. |
+| `id` | number | Label id. |
+| `text` | string | New label text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the label exists. |
+| boolean | True when the label exists. |
 
 **Example**
 
@@ -2003,12 +2112,11 @@ end
 
 ---
 
-### `LGlobe:setLabelVisible`
+#### `LGlobe:setLabelVisible`
 
 Shows or hides a label. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:setLabelVisible(id, vis)
 ```
 
@@ -2016,14 +2124,14 @@ LGlobe:setLabelVisible(id, vis)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Label id. |
-| `vis` | `boolean` | New visibility flag. |
+| `id` | number | Label id. |
+| `vis` | boolean | New visibility flag. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the label exists. |
+| boolean | True when the label exists. |
 
 **Example**
 
@@ -2038,12 +2146,11 @@ end
 
 ---
 
-### `LGlobe:setLayerAlpha`
+#### `LGlobe:setLayerAlpha`
 
 Sets render layer alpha. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:setLayerAlpha(name, alpha)
 ```
 
@@ -2051,14 +2158,14 @@ LGlobe:setLayerAlpha(name, alpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `alpha` | `number` | Layer alpha. |
+| `name` | string | Layer name. |
+| `alpha` | number | Layer alpha. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -2073,12 +2180,11 @@ end
 
 ---
 
-### `LGlobe:setLayerColor`
+#### `LGlobe:setLayerColor`
 
 Sets a province color override inside a render layer.
 
 ```lua
--- signature
 LGlobe:setLayerColor(layer, id, r, g, b, a)
 ```
 
@@ -2086,18 +2192,18 @@ LGlobe:setLayerColor(layer, id, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name. |
-| `id` | `number` | Province id. |
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `layer` | string | Layer name. |
+| `id` | number | Province id. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -2113,12 +2219,11 @@ end
 
 ---
 
-### `LGlobe:setLayerVisible`
+#### `LGlobe:setLayerVisible`
 
 Shows or hides a render layer. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:setLayerVisible(name, vis)
 ```
 
@@ -2126,14 +2231,14 @@ LGlobe:setLayerVisible(name, vis)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `vis` | `boolean` | New visibility flag. |
+| `name` | string | Layer name. |
+| `vis` | boolean | New visibility flag. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -2148,12 +2253,11 @@ end
 
 ---
 
-### `LGlobe:setMarkerAttr`
+#### `LGlobe:setMarkerAttr`
 
 Sets a string attribute on a marker.
 
 ```lua
--- signature
 LGlobe:setMarkerAttr(id, key, val)
 ```
 
@@ -2161,15 +2265,15 @@ LGlobe:setMarkerAttr(id, key, val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
-| `key` | `string` | Attribute key. |
-| `val` | `string` | Attribute value. |
+| `id` | number | Marker id. |
+| `key` | string | Attribute key. |
+| `val` | string | Attribute value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the marker exists. |
+| boolean | True when the marker exists. |
 
 **Example**
 
@@ -2184,12 +2288,11 @@ end
 
 ---
 
-### `LGlobe:setMarkerPulse`
+#### `LGlobe:setMarkerPulse`
 
 Sets marker pulse frequency and amplitude.
 
 ```lua
--- signature
 LGlobe:setMarkerPulse(id, hz, amp)
 ```
 
@@ -2197,15 +2300,15 @@ LGlobe:setMarkerPulse(id, hz, amp)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
-| `hz` | `number` | Pulse frequency in hertz, clamped to at least zero. |
-| `amp` | `number` | Pulse amplitude clamped to 0.0 through 1.0. |
+| `id` | number | Marker id. |
+| `hz` | number | Pulse frequency in hertz, clamped to at least zero. |
+| `amp` | number | Pulse amplitude clamped to 0.0 through 1.0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the marker exists. |
+| boolean | True when the marker exists. |
 
 **Example**
 
@@ -2220,12 +2323,11 @@ end
 
 ---
 
-### `LGlobe:setMarkerRotation`
+#### `LGlobe:setMarkerRotation`
 
 Sets marker rotation speed. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:setMarkerRotation(id, dps)
 ```
 
@@ -2233,14 +2335,14 @@ LGlobe:setMarkerRotation(id, dps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
-| `dps` | `number` | Rotation speed in degrees per second. |
+| `id` | number | Marker id. |
+| `dps` | number | Rotation speed in degrees per second. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the marker exists. |
+| boolean | True when the marker exists. |
 
 **Example**
 
@@ -2255,12 +2357,11 @@ end
 
 ---
 
-### `LGlobe:setMarkerVisible`
+#### `LGlobe:setMarkerVisible`
 
 Shows or hides a marker. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:setMarkerVisible(id, vis)
 ```
 
@@ -2268,14 +2369,14 @@ LGlobe:setMarkerVisible(id, vis)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Marker id. |
-| `vis` | `boolean` | New visibility flag. |
+| `id` | number | Marker id. |
+| `vis` | boolean | New visibility flag. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the marker exists. |
+| boolean | True when the marker exists. |
 
 **Example**
 
@@ -2290,12 +2391,11 @@ end
 
 ---
 
-### `LGlobe:setProvinceAttr`
+#### `LGlobe:setProvinceAttr`
 
 Sets a string attribute on a province.
 
 ```lua
--- signature
 LGlobe:setProvinceAttr(id, key, val)
 ```
 
@@ -2303,15 +2403,15 @@ LGlobe:setProvinceAttr(id, key, val)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
-| `key` | `string` | Attribute key. |
-| `val` | `string` | Attribute value. |
+| `id` | number | Province id. |
+| `key` | string | Attribute key. |
+| `val` | string | Attribute value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the province exists. |
+| boolean | True when the province exists. |
 
 **Example**
 
@@ -2326,12 +2426,11 @@ end
 
 ---
 
-### `LGlobe:setProvinceSector`
+#### `LGlobe:setProvinceSector`
 
 Assigns a province to a named sector.
 
 ```lua
--- signature
 LGlobe:setProvinceSector(id, sector)
 ```
 
@@ -2339,14 +2438,14 @@ LGlobe:setProvinceSector(id, sector)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
-| `sector` | `string` | Sector name. |
+| `id` | number | Province id. |
+| `sector` | string | Sector name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the province sector was set. |
+| boolean | True when the province sector was set. |
 
 **Example**
 
@@ -2361,12 +2460,11 @@ end
 
 ---
 
-### `LGlobe:setProvinceTexture`
+#### `LGlobe:setProvinceTexture`
 
 Assigns a raw texture handle and UV rectangle to a province.
 
 ```lua
--- signature
 LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1)
 ```
 
@@ -2374,18 +2472,18 @@ LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Province id. |
-| `tex_raw` | `number` | Raw texture identifier stored in province attributes. |
-| `u0` | `number` | Left UV coordinate. |
-| `v0` | `number` | Top UV coordinate. |
-| `u1` | `number` | Right UV coordinate. |
-| `v1` | `number` | Bottom UV coordinate. |
+| `id` | number | Province id. |
+| `tex_raw` | number | Raw texture identifier stored in province attributes. |
+| `u0` | number | Left UV coordinate. |
+| `v0` | number | Top UV coordinate. |
+| `u1` | number | Right UV coordinate. |
+| `v1` | number | Bottom UV coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the province exists. |
+| boolean | True when the province exists. |
 
 **Example**
 
@@ -2400,12 +2498,11 @@ end
 
 ---
 
-### `LGlobe:setRotation`
+#### `LGlobe:setRotation`
 
 Sets globe rotation angle. This method is available to Lua scripts.
 
 ```lua
--- signature
 LGlobe:setRotation(deg)
 ```
 
@@ -2413,7 +2510,7 @@ LGlobe:setRotation(deg)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `deg` | `number` | Rotation in degrees. |
+| `deg` | number | Rotation in degrees. |
 
 **Example**
 
@@ -2427,12 +2524,11 @@ end
 
 ---
 
-### `LGlobe:setTimeOfDay`
+#### `LGlobe:setTimeOfDay`
 
 Sets globe time of day modulo 24 hours.
 
 ```lua
--- signature
 LGlobe:setTimeOfDay(t)
 ```
 
@@ -2440,7 +2536,7 @@ LGlobe:setTimeOfDay(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Time of day in hours. |
+| `t` | number | Time of day in hours. |
 
 **Example**
 
@@ -2454,12 +2550,11 @@ end
 
 ---
 
-### `LGlobe:type`
+#### `LGlobe:type`
 
 Returns the Lua-visible type name for this globe handle.
 
 ```lua
--- signature
 LGlobe:type()
 ```
 
@@ -2467,7 +2562,7 @@ LGlobe:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGlobe`. |
+| string | The string `[LGlobe](#lglobe-handle)`. |
 
 **Example**
 
@@ -2480,12 +2575,11 @@ end
 
 ---
 
-### `LGlobe:typeOf`
+#### `LGlobe:typeOf`
 
 Returns whether this globe handle matches a supported type name.
 
 ```lua
--- signature
 LGlobe:typeOf(name)
 ```
 
@@ -2493,13 +2587,13 @@ LGlobe:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LGlobe` and `Object`. |
+| `name` | string | Type name to compare against `[LGlobe](#lglobe-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2512,12 +2606,11 @@ end
 
 ---
 
-### `LGlobe:update`
+#### `LGlobe:update`
 
 Advances globe simulation timers and animated state.
 
 ```lua
--- signature
 LGlobe:update(dt)
 ```
 
@@ -2525,7 +2618,7 @@ LGlobe:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -2539,12 +2632,11 @@ end
 
 ---
 
-### `LGlobe:zoom`
+#### `LGlobe:zoom`
 
 Multiplies the globe camera zoom by a factor.
 
 ```lua
--- signature
 LGlobe:zoom(factor)
 ```
 
@@ -2552,7 +2644,7 @@ LGlobe:zoom(factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `factor` | `number` | Zoom factor. |
+| `factor` | number | Zoom factor. |
 
 **Example**
 
@@ -2568,14 +2660,19 @@ end
 
 ---
 
-## LGlobeRegistry
+## LGlobeRegistry Handle
 
-### `LGlobeRegistry:get`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGlobeRegistry:get`
 
 Returns a globe handle by registry name.
 
 ```lua
--- signature
 LGlobeRegistry:get(name)
 ```
 
@@ -2583,13 +2680,13 @@ LGlobeRegistry:get(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
+| `name` | string | Globe registry name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | Globe handle, or nil when no globe exists with that name. |
+| [LGlobe](#lglobe-handle) | Globe handle, or nil when no globe exists with that name. |
 
 **Example**
 
@@ -2603,12 +2700,11 @@ end
 
 ---
 
-### `LGlobeRegistry:names`
+#### `LGlobeRegistry:names`
 
 Returns all globe names currently stored in this registry.
 
 ```lua
--- signature
 LGlobeRegistry:names()
 ```
 
@@ -2616,7 +2712,7 @@ LGlobeRegistry:names()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Globe names. |
+| string[] | Globe names. |
 
 **Example**
 
@@ -2630,12 +2726,11 @@ end
 
 ---
 
-### `LGlobeRegistry:new`
+#### `LGlobeRegistry:new`
 
 Creates a named globe with optional specification fields.
 
 ```lua
--- signature
 LGlobeRegistry:new(name, spec_tbl)
 ```
 
@@ -2643,14 +2738,14 @@ LGlobeRegistry:new(name, spec_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
-| `spec_tbl?` | `table` | Globe specification table. |
+| `name` | string | Globe registry name. |
+| `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGlobe` | New globe handle. |
+| [LGlobe](#lglobe-handle) | New globe handle. |
 
 **Example**
 
@@ -2664,12 +2759,11 @@ end
 
 ---
 
-### `LGlobeRegistry:remove`
+#### `LGlobeRegistry:remove`
 
 Removes a globe from the registry by name.
 
 ```lua
--- signature
 LGlobeRegistry:remove(name)
 ```
 
@@ -2677,13 +2771,13 @@ LGlobeRegistry:remove(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Globe registry name. |
+| `name` | string | Globe registry name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a globe was removed. |
+| boolean | True when a globe was removed. |
 
 **Example**
 
@@ -2697,12 +2791,11 @@ end
 
 ---
 
-### `LGlobeRegistry:type`
+#### `LGlobeRegistry:type`
 
 Returns the Lua-visible type name for this globe registry handle.
 
 ```lua
--- signature
 LGlobeRegistry:type()
 ```
 
@@ -2710,7 +2803,7 @@ LGlobeRegistry:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGlobeRegistry`. |
+| string | The string `[LGlobeRegistry](#lgloberegistry-handle)`. |
 
 **Example**
 
@@ -2724,12 +2817,11 @@ end
 
 ---
 
-### `LGlobeRegistry:typeOf`
+#### `LGlobeRegistry:typeOf`
 
 Returns whether this registry handle matches a supported type name.
 
 ```lua
--- signature
 LGlobeRegistry:typeOf(name)
 ```
 
@@ -2737,13 +2829,13 @@ LGlobeRegistry:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LGlobeRegistry` and `Object`. |
+| `name` | string | Type name to compare against `[LGlobeRegistry](#lgloberegistry-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

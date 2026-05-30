@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["EasingFunction","MouseFilter","TextVAlign","WidgetState","WidgetTransitionKind","WidgetType"],"struct":["WidgetBase","WidgetTransition"]};

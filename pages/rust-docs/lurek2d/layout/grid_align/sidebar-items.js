@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["center_in_area","snap_to_grid"]};

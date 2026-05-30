@@ -30,6 +30,13 @@ SRC_DIR = WORKSPACE_ROOT / "src"
 TESTS_DIR = WORKSPACE_ROOT / "tests"
 OUTPUT_FILE = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
 
+ENGINE_CALLBACK_TAG_RE = re.compile(
+    r"^\s*//!\s*@engine-callback\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+?)\s*$"
+)
+ENGINE_PARAM_TAG_RE = re.compile(
+    r"^\s*//!\s*@engine-param\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+?)\s*$"
+)
+
 
 # ── Load gen_lua_api as a module (avoids duplicating parser logic) ─────────────
 
@@ -127,6 +134,73 @@ def extract_lua_api(gen_lua_api, verbose: bool = False) -> dict:
             "enums": {},
         "modules": modules,
     }
+
+
+def extract_engine_callbacks() -> list[dict]:
+    """Extract global `lurek.*` engine callback contracts from Rust tag comments."""
+    callbacks_by_name: dict[str, dict] = {}
+
+    for rs_file in sorted(SRC_DIR.rglob("*.rs")):
+        try:
+            lines = rs_file.read_text(encoding="utf-8").splitlines()
+        except Exception:
+            continue
+
+        for raw in lines:
+            cb_m = ENGINE_CALLBACK_TAG_RE.match(raw)
+            if cb_m:
+                name = cb_m.group(1).strip()
+                signature = cb_m.group(2).strip()
+                description = cb_m.group(3).strip()
+                entry = callbacks_by_name.setdefault(
+                    name,
+                    {
+                        "name": name,
+                        "signature": signature,
+                        "description": description,
+                        "parameters": [],
+                    },
+                )
+                # Keep the first non-empty signature/description unless missing.
+                if not entry.get("signature") and signature:
+                    entry["signature"] = signature
+                if not entry.get("description") and description:
+                    entry["description"] = description
+                continue
+
+            param_m = ENGINE_PARAM_TAG_RE.match(raw)
+            if param_m:
+                cb_name = param_m.group(1).strip()
+                param_name = param_m.group(2).strip()
+                param_type = param_m.group(3).strip()
+                optional_raw = param_m.group(4).strip().lower()
+                description = param_m.group(5).strip()
+                entry = callbacks_by_name.setdefault(
+                    cb_name,
+                    {
+                        "name": cb_name,
+                        "signature": f"function lurek.{cb_name}()",
+                        "description": "Engine callback.",
+                        "parameters": [],
+                    },
+                )
+                existing_names = {p.get("name") for p in entry["parameters"]}
+                if param_name not in existing_names:
+                    entry["parameters"].append(
+                        {
+                            "name": param_name,
+                            "type": param_type,
+                            "description": description,
+                            "optional": optional_raw in {"1", "true", "yes", "optional"},
+                        }
+                    )
+
+    callbacks = sorted(callbacks_by_name.values(), key=lambda item: item["name"])
+    for cb in callbacks:
+        # Keep params order as declared in source and ensure optional keys exist.
+        for p in cb.get("parameters", []):
+            p.setdefault("optional", False)
+    return callbacks
 
 
 # ── Rust public item extraction ────────────────────────────────────────────────
@@ -446,6 +520,7 @@ def main() -> int:
     print("--- Scanning Lua API ---")
     gen_lua_api = _load_gen_lua_api()
     lua_api = extract_lua_api(gen_lua_api, verbose=args.verbose)
+    engine_callbacks = extract_engine_callbacks()
 
     # Apply docs overlay (fills descriptions that cannot live in Rust source)
     overlay_path = WORKSPACE_ROOT / "logs" / "docs_overlay.json"
@@ -477,9 +552,11 @@ def main() -> int:
             "stats": {
                 "lua_functions": lua_api["summary"]["total_functions"],
                 "lua_modules": lua_api["summary"]["modules"],
+                "engine_callbacks": len(engine_callbacks),
             },
         },
         "lua_api": lua_api,
+        "engine_callbacks": engine_callbacks,
     }
 
     output_path.write_text(

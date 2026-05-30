@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["convolve2d","dilate","dot","erode","flood_fill","get_region","matmul","set_region"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["sample_with_pity"],"struct":["LootEntry","LootTable","PityTracker"]};

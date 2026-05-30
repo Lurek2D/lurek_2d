@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["build_adjacency_map","connected_components","find_isolated_provinces","find_route_bfs","find_route_dijkstra","is_connected","total_numeric_attr_for_owner"]};

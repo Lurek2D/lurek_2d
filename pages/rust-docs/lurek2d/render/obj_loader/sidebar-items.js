@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ObjError"],"struct":["ObjCamera","ObjFace","ObjLoader","ObjMaterial","ObjModel","Vec2","Vec3"]};

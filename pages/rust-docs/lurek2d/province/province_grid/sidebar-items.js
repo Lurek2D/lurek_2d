@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["AdjacencyPair","ProvinceGrid","ProvinceShapeCacheEntry"]};

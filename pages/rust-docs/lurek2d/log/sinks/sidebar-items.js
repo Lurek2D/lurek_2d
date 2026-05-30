@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["SinkKind","SinkLevel"],"struct":["MemoryEntry","RotatingFileSink","Sink","SinkRegistry"]};

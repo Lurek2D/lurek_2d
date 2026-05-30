@@ -1,12 +1,151 @@
 # Ui
 
-- The `ui` module is a comprehensive Feature Systems tier component that provides a full-featured, retained-mode Graphical User Interface (GUI) toolkit.
+## Summary
 
 Designed for both engine tooling and in-game interfaces, it centers around the `GuiContext`, which manages the stateful widget tree, focus navigation, input routing, and rendering lifecycle. The framework offers an extensive library of over 35 distinct widget types, ranging from core controls (Buttons, Labels, TextInputs, Checkboxes, Sliders, ComboBoxes, ProgressBars) to advanced layout containers (ScrollPanels, SplitPanels, DockPanels) and specialized extras (TreeViews, Toolbars, Menus, Accordions, ColorPickers). All widgets embed a shared `WidgetBase` that handles layout parameters, visibility, anchoring, and transitions.
 
 At the structural level, the module employs a robust flex-based layout engine (`Layout`) that supports vertical, horizontal, and grid packing, alongside alignment, spacing, padding, and min/max constraints. Layouts can be constructed programmatically in Lua or loaded dynamically from declarative TOML files using the built-in layout loader, which dramatically accelerates UI iteration. The visual presentation is governed by a flexible `Theme` system that maps widget states (Normal, Hovered, Pressed, Focused, Disabled) to specific styles containing color palettes, font overrides, borders, and shadows. The module natively supports resolution-independent 9-slice borders (`NinePatch`) and per-widget transition animations (alpha fades, position slides) to deliver a polished, responsive user experience.
 
 Beyond standard UI components and input routing, the module integrates powerful data binding tools. The `GUITable` seamlessly integrates with the `dataframe` module, enabling bulk loading of structured rows directly into UI views without expensive Lua-side iterations. Fully exposed through the `lurek.ui.*` API, this module equips developers with everything needed to build intricate developer dashboards, complex menus, and data-rich game interfaces.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### containers.rs
+
+- This file provides retained-mode UI containers that structure complex screen hierarchies.
+- It defines panels, layouts, windows, splits, and docks as composable spatial building blocks.
+- It drives vertical, horizontal, and grid arrangement with stable spacing and alignment rules.
+- It supplies scrollable viewports for overflowed content without breaking parent layout flow.
+- It supports nine-slice framing so scalable borders keep visual intent across resolutions.
+- It enables draggable and resizable window shells for tool-like and in-game interface scenes.
+- It anchors container semantics that other widgets rely on for predictable composition.
+
+### context.rs
+
+- This file provides the central retained-mode UI context that owns widget state and lifecycle.
+- It stores all widget variants in one indexed arena so references stay compact and stable.
+- It runs recursive layout to compute absolute rectangles from parent-relative placement data.
+- It manages focus traversal and keyboard navigation for consistent interaction behavior.
+- It routes mouse and key events through controlled dispatch paths tied to active widgets.
+- It drives drag-and-drop with safety checks that prevent invalid parent-child cycles.
+- It advances alpha and position transitions so UI motion remains smooth and deterministic.
+- It maintains data bindings that synchronize widget values with script-owned state keys.
+- It tracks render signatures to detect dirtiness without expensive full-tree comparisons.
+- It queues interface events so Lua can consume interactions in a frame-coherent order.
+- It handles toast overlay lifetimes and visibility as transient UI feedback primitives.
+- It maintains root-level viewport and scaling context used by layout and rendering passes.
+- It exposes creation and lookup surfaces that keep widget graph mutations predictable.
+- It centralizes ownership so memory, input, and animation behavior are coordinated.
+- It forms the contract boundary between UI data, behavior, and visual output.
+- It keeps high-volume interface updates efficient enough for runtime and tooling screens.
+- It enables complex widget ecosystems while preserving one coherent execution timeline.
+- It anchors the entire UI subsystem around deterministic per-frame state progression.
+
+### controls.rs
+
+- This file provides the concrete interactive controls used by the retained-mode UI layer.
+- It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior.
+- It embeds common widget base state so style, layout, and interaction remain consistent.
+- It validates and clamps editable values to enforce reliable control invariants.
+- It normalizes selection behavior when list-like data mutates at runtime.
+- It keeps control construction explicit so type identity is always unambiguous.
+- It supports snapshot-friendly cloning for tooling, testing, and reversible operations.
+- It packages core interaction primitives in one predictable and reusable control set.
+- It establishes stable semantics for input-heavy interfaces across gameplay and tools.
+- It forms the practical interaction surface most UI scripts build on top of.
+
+### data_graph_renderer.rs
+
+- This file provides the data graph renderer used for chart-like UI visualization surfaces.
+- It supports multiple series forms so lines, points, and bars share one rendering core.
+- It maps graph space to screen space with reversible coordinate conversion helpers.
+- It computes automatic ranges so diverse datasets fit cleanly into constrained viewports.
+- It serves both runtime HUD analytics and editor-facing diagnostic chart panels.
+- It keeps chart rendering behavior consistent across tooling and in-game dashboards.
+
+### extras.rs
+
+- This file provides the extended widget set that goes beyond baseline UI control primitives.
+- It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements.
+- It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows.
+- It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces.
+- It models hierarchical trees and menu structures in forms suitable for retained updates.
+- It supplies status and notification components that communicate system state to players.
+- It keeps advanced widgets aligned with shared base style and layout semantics.
+- It provides custom widget shells for script-driven rendering and bespoke interactions.
+- It enables dense information surfaces without leaving the core retained UI ecosystem.
+- It expands UI expressiveness while keeping integration with context and renderer coherent.
+- It supports practical tool-building needs alongside in-game menu and HUD requirements.
+- It rounds out the module with specialized pieces required for full product interfaces.
+
+### layout_loader.rs
+
+- This file provides declarative UI loading from TOML definitions into live widget trees.
+- It maps textual widget kinds onto concrete context constructors with consistent defaults.
+- It applies generic and type-specific properties so authored layouts become runtime-ready.
+- It supports recursive child structures that mirror retained parent-child composition.
+- It offers headless image rendering for snapshot checks and offline layout verification.
+- It enables fast iteration on UI structure without hardcoding full trees in Lua scripts.
+
+### mod.rs
+
+- This module delivers the full retained UI toolkit used by gameplay and tooling layers.
+- It combines context, widgets, containers, rendering, and theming into one coherent surface.
+- It keeps interface construction flexible through code-first and data-driven layout paths.
+
+### render.rs
+
+- This file provides UI render emission for GPU commands and headless pixel raster outputs.
+- It draws the full retained widget catalog with consistent visual behavior across states.
+- It resolves theme style data per widget and applies alpha-aware color composition.
+- It emits shared primitives for shadows, fills, borders, gradients, and highlights.
+- It handles control-specific visuals such as sliders, checks, radios, combos, and switches.
+- It renders hierarchical content like trees and menus while preserving structural readability.
+- It supports color-picker internals with hue-space conversion used during visual generation.
+- It threads context, font, and output carriers through one deterministic render traversal.
+- It merges generic and type-specific child sources so nested widgets render in correct order.
+- It measures and aligns text with active font context to keep typography placement stable.
+- It supports CPU fallback output for screenshots, tests, and non-GPU verification paths.
+- It keeps rendering logic centralized so visual changes remain coherent and maintainable.
+- It scales from lightweight HUDs to complex tool panels using one render architecture.
+- It preserves deterministic draw command shape for regression checks and diagnostics.
+- It bridges widget semantics to backend draw primitives without leaking UI internals.
+- It supports theme-driven look changes without requiring widget logic rewrites.
+- It maintains robust rendering behavior under dynamic UI mutation each frame.
+- It anchors the visual execution layer of the retained UI subsystem.
+
+### theme.rs
+
+- This file provides the theming system that maps widget type and state to visual style data.
+- It stores colors, typography, borders, shadows, gradients, and alignment in reusable records.
+- It resolves requested styles with controlled fallback so partial themes remain functional.
+- It ships practical defaults that cover standard widgets without requiring custom setup.
+- It keeps style records clonable for cheap per-screen forks and variation experiments.
+- It supports semantic theme tokens so shared visual meanings stay consistent across widgets.
+- It integrates directly with render-time style resolution inside the UI drawing pipeline.
+- It includes debug-oriented raster helpers for quick visual verification of style states.
+- It enables extension through custom type-state registrations without changing core presets.
+- It separates visual policy from interaction logic for cleaner UI architecture boundaries.
+- It supports rapid skin iteration while preserving stable widget behavior contracts.
+- It keeps style lookup deterministic so rendering output stays predictable across frames.
+- It provides one source of truth for interface look-and-feel in the module.
+- It allows games and tools to share a common style backbone with targeted overrides.
+- It anchors maintainable visual customization across the retained UI ecosystem.
+
+### widget.rs
+
+- This file provides core widget primitives that define shared UI node state and semantics.
+- It models layout metrics, style linkage, identity, and interaction flags per widget instance.
+- It represents the tree unit that context, layout, and renderer pipelines operate on.
+- It supports state transitions that drive hover, focus, press, and animated visual behavior.
+- It keeps parent-child composition explicit so traversal and ownership rules remain stable.
+- It anchors type and state enums used across all concrete control and container variants.
+- It enables consistent text alignment and font override behavior at the widget boundary.
+- It provides reusable base data that reduces duplication across the larger UI catalog.
+- It ensures widget-level contracts remain predictable for script and engine integrations.
+- It defines the structural vocabulary that the retained UI subsystem builds upon.
 
 ## Functions
 
@@ -15,7 +154,6 @@ Beyond standard UI components and input routing, the module integrates powerful 
 Adds a toast notification to the queue.
 
 ```lua
--- signature
 lurek.ui.addToast(toast_table)
 ```
 
@@ -23,7 +161,7 @@ lurek.ui.addToast(toast_table)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `toast_table` | `table` | Table with message (string) and optional duration (number). |
+| `toast_table` | table | Table with message (string) and optional duration (number). |
 
 **Example**
 
@@ -43,7 +181,6 @@ end
 Animate widget color tint from one RGBA value to another.
 
 ```lua
--- signature
 lurek.ui.animateColor(idx, from, to, duration, easing)
 ```
 
@@ -51,17 +188,17 @@ lurek.ui.animateColor(idx, from, to, duration, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Widget index. |
-| `from` | `table` | Starting color {r, g, b, a} (0-1 range). |
-| `to` | `table` | Target color {r, g, b, a} (0-1 range). |
-| `duration` | `number` | Duration in seconds. |
-| `easing?` | `string` | Easing function name (default "linear"). |
+| `idx` | number | Widget index. |
+| `from` | table | Starting color {r, g, b, a} (0-1 range). |
+| `to` | table | Target color {r, g, b, a} (0-1 range). |
+| `duration` | number | Duration in seconds. |
+| `easing?` | string | Easing function name (default "linear"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | Schedules the animation; no return value. |
+| nil | Schedules the animation; no return value. |
 
 **Example**
 
@@ -80,7 +217,6 @@ end
 Animate widget rotation from one angle to another (in radians).
 
 ```lua
--- signature
 lurek.ui.animateRotation(idx, from, to, duration, easing)
 ```
 
@@ -88,17 +224,17 @@ lurek.ui.animateRotation(idx, from, to, duration, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Widget index. |
-| `from` | `number` | Starting angle in radians. |
-| `to` | `number` | Target angle in radians. |
-| `duration` | `number` | Duration in seconds. |
-| `easing?` | `string` | Easing function name (default "linear"). |
+| `idx` | number | Widget index. |
+| `from` | number | Starting angle in radians. |
+| `to` | number | Target angle in radians. |
+| `duration` | number | Duration in seconds. |
+| `easing?` | string | Easing function name (default "linear"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | Schedules the animation; no return value. |
+| nil | Schedules the animation; no return value. |
 
 **Example**
 
@@ -117,7 +253,6 @@ end
 Animate widget scale from one value to another.
 
 ```lua
--- signature
 lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing)
 ```
 
@@ -125,19 +260,19 @@ lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Widget index. |
-| `from_sx` | `number` | Starting X scale. |
-| `from_sy` | `number` | Starting Y scale. |
-| `to_sx` | `number` | Target X scale. |
-| `to_sy` | `number` | Target Y scale. |
-| `duration` | `number` | Duration in seconds. |
-| `easing?` | `string` | Easing function name (default "linear"). |
+| `idx` | number | Widget index. |
+| `from_sx` | number | Starting X scale. |
+| `from_sy` | number | Starting Y scale. |
+| `to_sx` | number | Target X scale. |
+| `to_sy` | number | Target Y scale. |
+| `duration` | number | Duration in seconds. |
+| `easing?` | string | Easing function name (default "linear"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | Schedules the animation; no return value. |
+| nil | Schedules the animation; no return value. |
 
 **Example**
 
@@ -156,7 +291,6 @@ end
 Begins a drag operation on a widget.
 
 ```lua
--- signature
 lurek.ui.beginDrag(widget)
 ```
 
@@ -164,13 +298,13 @@ lurek.ui.beginDrag(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | `table|number` | The widget table or widget index. |
+| `widget` | table|number | The widget table or widget index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the drag started. |
+| boolean | True if the drag started. |
 
 **Example**
 
@@ -192,7 +326,6 @@ end
 Clears all retained UI widgets and transient UI state while keeping the active theme.
 
 ```lua
--- signature
 lurek.ui.clear()
 ```
 
@@ -200,7 +333,7 @@ lurek.ui.clear()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of widgets removed from the retained UI tree. |
+| number | Number of widgets removed from the retained UI tree. |
 
 **Example**
 
@@ -220,7 +353,6 @@ end
 Clears keyboard focus from all widgets.
 
 ```lua
--- signature
 lurek.ui.clearFocus()
 ```
 
@@ -248,7 +380,6 @@ end
 Clears the global UI font override so the UI falls back to the active render font again.
 
 ```lua
--- signature
 lurek.ui.clearFont()
 ```
 
@@ -272,7 +403,6 @@ end
 Invokes custom draw callbacks for all widgets that have one registered.
 
 ```lua
--- signature
 lurek.ui.draw()
 ```
 
@@ -296,7 +426,6 @@ end
 Renders the entire UI to an image buffer.
 
 ```lua
--- signature
 lurek.ui.drawToImage(w, h)
 ```
 
@@ -304,14 +433,14 @@ lurek.ui.drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width in pixels. |
-| `h` | `number` | Image height in pixels. |
+| `w` | number | Image width in pixels. |
+| `h` | number | Image height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | The rendered image. |
+| [LImageData](#limagedata-handle) | The rendered image. |
 
 **Example**
 
@@ -333,7 +462,6 @@ end
 Drops the currently dragged widget onto a target widget.
 
 ```lua
--- signature
 lurek.ui.dropOn(target)
 ```
 
@@ -341,13 +469,13 @@ lurek.ui.dropOn(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `table|number` | The target widget table or widget index. |
+| `target` | table|number | The target widget table or widget index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the drop succeeded. |
+| boolean | True if the drop succeeded. |
 
 **Example**
 
@@ -369,7 +497,6 @@ end
 Ends the current drag operation without dropping.
 
 ```lua
--- signature
 lurek.ui.endDrag()
 ```
 
@@ -377,7 +504,7 @@ lurek.ui.endDrag()
 
 | Type | Description |
 |------|-------------|
-| `number` | The widget index that was being dragged, or nil if no drag was active. |
+| number | The widget index that was being dragged, or nil if no drag was active. |
 
 **Example**
 
@@ -399,7 +526,6 @@ end
 Flushes internal UI layout and render caches.
 
 ```lua
--- signature
 lurek.ui.flushCache()
 ```
 
@@ -407,7 +533,7 @@ lurek.ui.flushCache()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the cache was flushed. |
+| boolean | True if the cache was flushed. |
 
 **Example**
 
@@ -429,7 +555,6 @@ end
 Move focus in a spatial direction. Uses geometry to find nearest focusable widget.
 
 ```lua
--- signature
 lurek.ui.focusDirection(dx, dy)
 ```
 
@@ -437,14 +562,14 @@ lurek.ui.focusDirection(dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dx` | `number` | Horizontal direction (-1=left, 1=right, 0=none). |
-| `dy` | `number` | Vertical direction (-1=up, 1=down, 0=none). |
+| `dx` | number | Horizontal direction (-1=left, 1=right, 0=none). |
+| `dy` | number | Vertical direction (-1=up, 1=down, 0=none). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Whether focus moved. |
+| boolean | Whether focus moved. |
 
 **Example**
 
@@ -462,7 +587,6 @@ end
 Moves keyboard focus using an explicit directional focus link.
 
 ```lua
--- signature
 lurek.ui.focusNeighbor(direction)
 ```
 
@@ -470,13 +594,13 @@ lurek.ui.focusNeighbor(direction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `direction` | `string` | Direction: "up", "down", "left", or "right". |
+| `direction` | string | Direction: "up", "down", "left", or "right". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when focus was moved to a configured neighbor. |
+| boolean | True when focus was moved to a configured neighbor. |
 
 **Example**
 
@@ -498,7 +622,6 @@ end
 Moves keyboard focus to the next focusable widget.
 
 ```lua
--- signature
 lurek.ui.focusNext()
 ```
 
@@ -524,7 +647,6 @@ end
 Moves keyboard focus to the previous focusable widget.
 
 ```lua
--- signature
 lurek.ui.focusPrev()
 ```
 
@@ -552,7 +674,6 @@ end
 Returns the widget index currently being dragged, or nil.
 
 ```lua
--- signature
 lurek.ui.getActiveDrag()
 ```
 
@@ -560,7 +681,7 @@ lurek.ui.getActiveDrag()
 
 | Type | Description |
 |------|-------------|
-| `number` | The dragged widget index. |
+| number | The dragged widget index. |
 
 **Example**
 
@@ -582,7 +703,6 @@ end
 Returns the index of the currently focused widget, or nil.
 
 ```lua
--- signature
 lurek.ui.getFocus()
 ```
 
@@ -590,7 +710,7 @@ lurek.ui.getFocus()
 
 | Type | Description |
 |------|-------------|
-| `number` | The focused widget index. |
+| number | The focused widget index. |
 
 **Example**
 
@@ -616,7 +736,6 @@ end
 Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
 
 ```lua
--- signature
 lurek.ui.getFont()
 ```
 
@@ -624,7 +743,7 @@ lurek.ui.getFont()
 
 | Type | Description |
 |------|-------------|
-| `LFont` | Current global UI font handle. |
+| [LFont](#lfont-handle) | Current global UI font handle. |
 
 **Example**
 
@@ -646,7 +765,6 @@ end
 Returns the root panel widget of the UI tree.
 
 ```lua
--- signature
 lurek.ui.getRoot()
 ```
 
@@ -654,7 +772,7 @@ lurek.ui.getRoot()
 
 | Type | Description |
 |------|-------------|
-| `LPanel` | The root panel widget table. |
+| [LPanel](#lpanel-handle) | The root panel widget table. |
 
 **Example**
 
@@ -673,7 +791,6 @@ end
 Get the current UI scale factor (current_height / base_height).
 
 ```lua
--- signature
 lurek.ui.getScaleFactor()
 ```
 
@@ -681,7 +798,7 @@ lurek.ui.getScaleFactor()
 
 | Type | Description |
 |------|-------------|
-| `number` | The scale factor. |
+| number | The scale factor. |
 
 **Example**
 
@@ -699,7 +816,6 @@ end
 Returns the value of a named semantic style token from the active theme.
 
 ```lua
--- signature
 lurek.ui.getStyleToken(name)
 ```
 
@@ -707,13 +823,13 @@ lurek.ui.getStyleToken(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The token name (e.g. "spacing_md", "color_primary"). |
+| `name` | string | The token name (e.g. "spacing_md", "color_primary"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The token value for float tokens. |
+| number | The token value for float tokens. |
 
 **Example**
 
@@ -735,7 +851,6 @@ end
 Returns whether a theme is currently set.
 
 ```lua
--- signature
 lurek.ui.getTheme()
 ```
 
@@ -743,7 +858,7 @@ lurek.ui.getTheme()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a theme is active. |
+| boolean | True if a theme is active. |
 
 **Example**
 
@@ -765,7 +880,6 @@ end
 Returns the number of active toast notifications.
 
 ```lua
--- signature
 lurek.ui.getToastCount()
 ```
 
@@ -773,7 +887,7 @@ lurek.ui.getToastCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The toast count. |
+| number | The toast count. |
 
 **Example**
 
@@ -795,7 +909,6 @@ end
 Returns the total number of widgets in the UI context.
 
 ```lua
--- signature
 lurek.ui.getWidgetCount()
 ```
 
@@ -803,7 +916,7 @@ lurek.ui.getWidgetCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The widget count. |
+| number | The widget count. |
 
 **Example**
 
@@ -824,7 +937,6 @@ end
 Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
 
 ```lua
--- signature
 lurek.ui.getWidgetFont(widget)
 ```
 
@@ -832,13 +944,13 @@ lurek.ui.getWidgetFont(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | `LUiWidget` | Widget handle to query. |
+| `widget` | [LUiWidget](#luiwidget-handle) | Widget handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFont` | Font override assigned to the widget. |
+| [LFont](#lfont-handle) | Font override assigned to the widget. |
 
 **Example**
 
@@ -860,7 +972,6 @@ end
 Delivers a key press event to the UI.
 
 ```lua
--- signature
 lurek.ui.keypressed(key)
 ```
 
@@ -868,13 +979,13 @@ lurek.ui.keypressed(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key name. |
+| `key` | string | The key name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a widget consumed the event. |
+| boolean | True if a widget consumed the event. |
 
 **Example**
 
@@ -895,7 +1006,6 @@ end
 Loads a UI layout from a Lua table definition.
 
 ```lua
--- signature
 lurek.ui.loadLayout(def)
 ```
 
@@ -903,13 +1013,13 @@ lurek.ui.loadLayout(def)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `def` | `table` | The layout definition table. |
+| `def` | table | The layout definition table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The root widget index. |
+| number | The root widget index. |
 
 **Example**
 
@@ -929,7 +1039,6 @@ end
 Loads a UI layout from a TOML layout file.
 
 ```lua
--- signature
 lurek.ui.loadLayoutFile(path)
 ```
 
@@ -937,13 +1046,13 @@ lurek.ui.loadLayoutFile(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Path to the TOML layout file. |
+| `path` | string | Path to the TOML layout file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The root widget index. |
+| number | The root widget index. |
 
 **Example**
 
@@ -964,7 +1073,6 @@ end
 Loads a UI layout from a TOML file resolved through GameFS.
 
 ```lua
--- signature
 lurek.ui.loadLayoutGameFile(path)
 ```
 
@@ -972,13 +1080,13 @@ lurek.ui.loadLayoutGameFile(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | GameFS path to the TOML layout file. |
+| `path` | string | GameFS path to the TOML layout file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The root widget index. |
+| number | The root widget index. |
 
 **Example**
 
@@ -998,7 +1106,6 @@ end
 Delivers a mouse move event to the UI.
 
 ```lua
--- signature
 lurek.ui.mousemoved(x, y)
 ```
 
@@ -1006,14 +1113,14 @@ lurek.ui.mousemoved(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Mouse X position. |
-| `y` | `number` | Mouse Y position. |
+| `x` | number | Mouse X position. |
+| `y` | number | Mouse Y position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a widget consumed the event. |
+| boolean | True if a widget consumed the event. |
 
 **Example**
 
@@ -1038,7 +1145,6 @@ end
 Delivers a mouse press event to the UI.
 
 ```lua
--- signature
 lurek.ui.mousepressed(x, y, btn)
 ```
 
@@ -1046,15 +1152,15 @@ lurek.ui.mousepressed(x, y, btn)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Mouse X position. |
-| `y` | `number` | Mouse Y position. |
-| `btn?` | `number` | Mouse button index (default 1). |
+| `x` | number | Mouse X position. |
+| `y` | number | Mouse Y position. |
+| `btn?` | number | Mouse button index (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a widget consumed the event. |
+| boolean | True if a widget consumed the event. |
 
 **Example**
 
@@ -1081,7 +1187,6 @@ end
 Delivers a mouse release event to the UI.
 
 ```lua
--- signature
 lurek.ui.mousereleased(x, y, btn)
 ```
 
@@ -1089,15 +1194,15 @@ lurek.ui.mousereleased(x, y, btn)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Mouse X position. |
-| `y` | `number` | Mouse Y position. |
-| `btn?` | `number` | Mouse button index (default 1). |
+| `x` | number | Mouse X position. |
+| `y` | number | Mouse Y position. |
+| `btn?` | number | Mouse button index (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a widget consumed the event. |
+| boolean | True if a widget consumed the event. |
 
 **Example**
 
@@ -1126,7 +1231,6 @@ end
 Creates a new accordion widget with collapsible sections.
 
 ```lua
--- signature
 lurek.ui.newAccordion()
 ```
 
@@ -1134,7 +1238,7 @@ lurek.ui.newAccordion()
 
 | Type | Description |
 |------|-------------|
-| `LAccordion` | The new accordion widget table. |
+| [LAccordion](#laccordion-handle) | The new accordion widget table. |
 
 **Example**
 
@@ -1154,7 +1258,6 @@ end
 Creates a new area chart for data visualization.
 
 ```lua
--- signature
 lurek.ui.newAreaChart(opts)
 ```
 
@@ -1162,13 +1265,13 @@ lurek.ui.newAreaChart(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Table with width, height, and optional title. |
+| `opts` | table | Table with width, height, and optional title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAreaChart` | The new area chart userdata. |
+| [LAreaChart](#lareachart-handle) | The new area chart userdata. |
 
 **Example**
 
@@ -1190,7 +1293,6 @@ end
 Creates a new badge widget for displaying counts.
 
 ```lua
--- signature
 lurek.ui.newBadge(count)
 ```
 
@@ -1198,13 +1300,13 @@ lurek.ui.newBadge(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Initial count (default 0). |
+| `count?` | number | Initial count (default 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBadge` | The new badge widget table. |
+| [LBadge](#lbadge-handle) | The new badge widget table. |
 
 **Example**
 
@@ -1225,7 +1327,6 @@ end
 Creates a new bar chart for data visualization.
 
 ```lua
--- signature
 lurek.ui.newBarChart(opts)
 ```
 
@@ -1233,13 +1334,13 @@ lurek.ui.newBarChart(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Table with width, height, and optional title. |
+| `opts` | table | Table with width, height, and optional title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBarChart` | The new bar chart userdata. |
+| [LBarChart](#lbarchart-handle) | The new bar chart userdata. |
 
 **Example**
 
@@ -1262,7 +1363,6 @@ end
 Creates a new button widget with optional label text.
 
 ```lua
--- signature
 lurek.ui.newButton(text)
 ```
 
@@ -1270,13 +1370,13 @@ lurek.ui.newButton(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text?` | `string` | The button label text. |
+| `text?` | string | The button label text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LButton` | The new button widget table. |
+| [LButton](#lbutton-handle) | The new button widget table. |
 
 **Example**
 
@@ -1296,7 +1396,6 @@ end
 Creates a new checkbox widget with optional label.
 
 ```lua
--- signature
 lurek.ui.newCheckbox(text)
 ```
 
@@ -1304,13 +1403,13 @@ lurek.ui.newCheckbox(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text?` | `string` | The checkbox label text. |
+| `text?` | string | The checkbox label text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCheckbox` | The new checkbox widget table. |
+| [LCheckbox](#lcheckbox-handle) | The new checkbox widget table. |
 
 **Example**
 
@@ -1331,7 +1430,6 @@ end
 Creates a new color picker widget for color selection.
 
 ```lua
--- signature
 lurek.ui.newColorPicker()
 ```
 
@@ -1339,7 +1437,7 @@ lurek.ui.newColorPicker()
 
 | Type | Description |
 |------|-------------|
-| `LColorPicker` | The new color picker widget table. |
+| [LColorPicker](#lcolorpicker-handle) | The new color picker widget table. |
 
 **Example**
 
@@ -1361,7 +1459,6 @@ end
 Creates a new combo box (drop-down) widget.
 
 ```lua
--- signature
 lurek.ui.newComboBox()
 ```
 
@@ -1369,7 +1466,7 @@ lurek.ui.newComboBox()
 
 | Type | Description |
 |------|-------------|
-| `LComboBox` | The new combo box widget table. |
+| [LComboBox](#lcombobox-handle) | The new combo box widget table. |
 
 **Example**
 
@@ -1389,7 +1486,6 @@ end
 Creates a new custom widget with optional initial configuration.
 
 ```lua
--- signature
 lurek.ui.newCustomWidget(config)
 ```
 
@@ -1397,13 +1493,13 @@ lurek.ui.newCustomWidget(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | `table` | Optional table with x, y, width, height, id, visible, enabled fields. |
+| `config?` | table | Optional table with x, y, width, height, id, visible, enabled fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LUiWidget` | The new custom widget table. |
+| [LUiWidget](#luiwidget-handle) | The new custom widget table. |
 
 **Example**
 
@@ -1426,7 +1522,6 @@ end
 Creates a new dialog widget with an optional title.
 
 ```lua
--- signature
 lurek.ui.newDialog(title)
 ```
 
@@ -1434,13 +1529,13 @@ lurek.ui.newDialog(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title?` | `string` | The dialog title. |
+| `title?` | string | The dialog title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDialog` | The new dialog widget table. |
+| [LDialog](#ldialog-handle) | The new dialog widget table. |
 
 **Example**
 
@@ -1475,7 +1570,6 @@ end
 Creates a new dock panel widget for docking child widgets to sides.
 
 ```lua
--- signature
 lurek.ui.newDockPanel()
 ```
 
@@ -1483,7 +1577,7 @@ lurek.ui.newDockPanel()
 
 | Type | Description |
 |------|-------------|
-| `LDockPanel` | The new dock panel widget table. |
+| [LDockPanel](#ldockpanel-handle) | The new dock panel widget table. |
 
 **Example**
 
@@ -1513,7 +1607,6 @@ end
 Creates a new image display widget.
 
 ```lua
--- signature
 lurek.ui.newImageWidget()
 ```
 
@@ -1521,7 +1614,7 @@ lurek.ui.newImageWidget()
 
 | Type | Description |
 |------|-------------|
-| `LImageWidget` | The new image widget table. |
+| [LImageWidget](#limagewidget-handle) | The new image widget table. |
 
 **Example**
 
@@ -1543,7 +1636,6 @@ end
 Creates a new label widget for displaying text.
 
 ```lua
--- signature
 lurek.ui.newLabel(text)
 ```
 
@@ -1551,13 +1643,13 @@ lurek.ui.newLabel(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text?` | `string` | The label text. |
+| `text?` | string | The label text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLabel` | The new label widget table. |
+| [LLabel](#llabel-handle) | The new label widget table. |
 
 **Example**
 
@@ -1578,7 +1670,6 @@ end
 Creates a new layout container widget.
 
 ```lua
--- signature
 lurek.ui.newLayout(direction)
 ```
 
@@ -1586,13 +1677,13 @@ lurek.ui.newLayout(direction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `direction?` | `string` | Layout direction: "vertical" or "horizontal" (default "vertical"). |
+| `direction?` | string | Layout direction: "vertical" or "horizontal" (default "vertical"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLayout` | The new layout widget table. |
+| [LLayout](#llayout-handle) | The new layout widget table. |
 
 **Example**
 
@@ -1617,7 +1708,6 @@ end
 Creates a new line chart for data visualization.
 
 ```lua
--- signature
 lurek.ui.newLineChart(opts)
 ```
 
@@ -1625,13 +1715,13 @@ lurek.ui.newLineChart(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Table with width, height, and optional title. |
+| `opts` | table | Table with width, height, and optional title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLineChart` | The new line chart userdata. |
+| [LLineChart](#llinechart-handle) | The new line chart userdata. |
 
 **Example**
 
@@ -1653,7 +1743,6 @@ end
 Creates a new list box widget for item selection.
 
 ```lua
--- signature
 lurek.ui.newList()
 ```
 
@@ -1661,7 +1750,7 @@ lurek.ui.newList()
 
 | Type | Description |
 |------|-------------|
-| `LListBox` | The new list box widget table. |
+| [LListBox](#llistbox-handle) | The new list box widget table. |
 
 **Example**
 
@@ -1681,7 +1770,6 @@ end
 Creates a new menu bar widget for top-level menus.
 
 ```lua
--- signature
 lurek.ui.newMenuBar()
 ```
 
@@ -1689,7 +1777,7 @@ lurek.ui.newMenuBar()
 
 | Type | Description |
 |------|-------------|
-| `LMenuBar` | The new menu bar widget table. |
+| [LMenuBar](#lmenubar-handle) | The new menu bar widget table. |
 
 **Example**
 
@@ -1709,7 +1797,6 @@ end
 Creates a new menu item widget with optional text.
 
 ```lua
--- signature
 lurek.ui.newMenuItem(text)
 ```
 
@@ -1717,13 +1804,13 @@ lurek.ui.newMenuItem(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text?` | `string` | The menu item text. |
+| `text?` | string | The menu item text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMenuItem` | The new menu item widget table. |
+| [LMenuItem](#lmenuitem-handle) | The new menu item widget table. |
 
 **Example**
 
@@ -1744,7 +1831,6 @@ end
 Creates a new nine-patch widget for scalable bordered images.
 
 ```lua
--- signature
 lurek.ui.newNinePatch()
 ```
 
@@ -1752,7 +1838,7 @@ lurek.ui.newNinePatch()
 
 | Type | Description |
 |------|-------------|
-| `LNinePatch` | The new nine-patch widget table. |
+| [LNinePatch](#lninepatch-handle) | The new nine-patch widget table. |
 
 **Example**
 
@@ -1773,7 +1859,6 @@ end
 Creates a new panel widget (container).
 
 ```lua
--- signature
 lurek.ui.newPanel()
 ```
 
@@ -1781,7 +1866,7 @@ lurek.ui.newPanel()
 
 | Type | Description |
 |------|-------------|
-| `LPanel` | The new panel widget table. |
+| [LPanel](#lpanel-handle) | The new panel widget table. |
 
 **Example**
 
@@ -1802,7 +1887,6 @@ end
 Creates a new pie chart for data visualization.
 
 ```lua
--- signature
 lurek.ui.newPieChart(opts)
 ```
 
@@ -1810,13 +1894,13 @@ lurek.ui.newPieChart(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Table with width, height, and optional title. |
+| `opts` | table | Table with width, height, and optional title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPieChart` | The new pie chart userdata. |
+| [LPieChart](#lpiechart-handle) | The new pie chart userdata. |
 
 **Example**
 
@@ -1839,7 +1923,6 @@ end
 Creates a new progress bar widget with min and max.
 
 ```lua
--- signature
 lurek.ui.newProgressBar(min, max)
 ```
 
@@ -1847,14 +1930,14 @@ lurek.ui.newProgressBar(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min?` | `number` | Minimum value (default 0). |
-| `max?` | `number` | Maximum value (default 100). |
+| `min?` | number | Minimum value (default 0). |
+| `max?` | number | Maximum value (default 100). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LProgressBar` | The new progress bar widget table. |
+| [LProgressBar](#lprogressbar-handle) | The new progress bar widget table. |
 
 **Example**
 
@@ -1874,7 +1957,6 @@ end
 Creates a new radio button widget in a named group.
 
 ```lua
--- signature
 lurek.ui.newRadioButton(text, group)
 ```
 
@@ -1882,14 +1964,14 @@ lurek.ui.newRadioButton(text, group)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text?` | `string` | The radio button label. |
-| `group?` | `string` | The radio group name. |
+| `text?` | string | The radio button label. |
+| `group?` | string | The radio group name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRadioButton` | The new radio button widget table. |
+| [LRadioButton](#lradiobutton-handle) | The new radio button widget table. |
 
 **Example**
 
@@ -1913,7 +1995,6 @@ end
 Creates a new scatter plot for data visualization.
 
 ```lua
--- signature
 lurek.ui.newScatterPlot(opts)
 ```
 
@@ -1921,13 +2002,13 @@ lurek.ui.newScatterPlot(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | `table` | Table with width, height, and optional title. |
+| `opts` | table | Table with width, height, and optional title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LScatterPlot` | The new scatter plot userdata. |
+| [LScatterPlot](#lscatterplot-handle) | The new scatter plot userdata. |
 
 **Example**
 
@@ -1949,7 +2030,6 @@ end
 Creates a new scroll bar widget for content scrolling.
 
 ```lua
--- signature
 lurek.ui.newScrollBar(vertical)
 ```
 
@@ -1957,13 +2037,13 @@ lurek.ui.newScrollBar(vertical)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vertical?` | `boolean` | True for vertical (default true). |
+| `vertical?` | boolean | True for vertical (default true). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LScrollBar` | The new scroll bar widget table. |
+| [LScrollBar](#lscrollbar-handle) | The new scroll bar widget table. |
 
 **Example**
 
@@ -1983,7 +2063,6 @@ end
 Creates a new scrollable panel widget.
 
 ```lua
--- signature
 lurek.ui.newScrollPanel()
 ```
 
@@ -1991,7 +2070,7 @@ lurek.ui.newScrollPanel()
 
 | Type | Description |
 |------|-------------|
-| `LScrollPanel` | The new scroll panel widget table. |
+| [LScrollPanel](#lscrollpanel-handle) | The new scroll panel widget table. |
 
 **Example**
 
@@ -2017,7 +2096,6 @@ end
 Creates a new separator widget for visual division.
 
 ```lua
--- signature
 lurek.ui.newSeparator(vertical)
 ```
 
@@ -2025,13 +2103,13 @@ lurek.ui.newSeparator(vertical)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vertical?` | `boolean` | True for vertical separator (default false). |
+| `vertical?` | boolean | True for vertical separator (default false). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSeparator` | The new separator widget table. |
+| [LSeparator](#lseparator-handle) | The new separator widget table. |
 
 **Example**
 
@@ -2051,7 +2129,6 @@ end
 Creates a new slider widget with adjustable range.
 
 ```lua
--- signature
 lurek.ui.newSlider(min, max)
 ```
 
@@ -2059,14 +2136,14 @@ lurek.ui.newSlider(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min?` | `number` | Minimum value (default 0). |
-| `max?` | `number` | Maximum value (default 100). |
+| `min?` | number | Minimum value (default 0). |
+| `max?` | number | Maximum value (default 100). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSlider` | The new slider widget table. |
+| [LSlider](#lslider-handle) | The new slider widget table. |
 
 **Example**
 
@@ -2087,7 +2164,6 @@ end
 Creates a new spacer widget for spacing between other widgets.
 
 ```lua
--- signature
 lurek.ui.newSpacer(w, h)
 ```
 
@@ -2095,14 +2171,14 @@ lurek.ui.newSpacer(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w?` | `number` | The width. |
-| `h?` | `number` | The height. |
+| `w?` | number | The width. |
+| `h?` | number | The height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpacer` | The new spacer widget table. |
+| LSpacer | The new spacer widget table. |
 
 **Example**
 
@@ -2122,7 +2198,6 @@ end
 Creates a new spin box (numeric stepper) widget.
 
 ```lua
--- signature
 lurek.ui.newSpinBox(min, max)
 ```
 
@@ -2130,14 +2205,14 @@ lurek.ui.newSpinBox(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min?` | `number` | Minimum value (default 0). |
-| `max?` | `number` | Maximum value (default 100). |
+| `min?` | number | Minimum value (default 0). |
+| `max?` | number | Maximum value (default 100). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpinBox` | The new spin box widget table. |
+| [LSpinBox](#lspinbox-handle) | The new spin box widget table. |
 
 **Example**
 
@@ -2158,7 +2233,6 @@ end
 Creates a new split panel widget with two resizable sub-panels.
 
 ```lua
--- signature
 lurek.ui.newSplitPanel(orientation)
 ```
 
@@ -2166,13 +2240,13 @@ lurek.ui.newSplitPanel(orientation)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `orientation?` | `string` | "horizontal" or "vertical" (default "horizontal"). |
+| `orientation?` | string | "horizontal" or "vertical" (default "horizontal"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSplitPanel` | The new split panel widget table. |
+| [LSplitPanel](#lsplitpanel-handle) | The new split panel widget table. |
 
 **Example**
 
@@ -2199,7 +2273,6 @@ end
 Creates a new status bar widget for app-level info.
 
 ```lua
--- signature
 lurek.ui.newStatusBar()
 ```
 
@@ -2207,7 +2280,7 @@ lurek.ui.newStatusBar()
 
 | Type | Description |
 |------|-------------|
-| `LStatusBar` | The new status bar widget table. |
+| [LStatusBar](#lstatusbar-handle) | The new status bar widget table. |
 
 **Example**
 
@@ -2227,7 +2300,6 @@ end
 Creates a new toggle switch widget.
 
 ```lua
--- signature
 lurek.ui.newSwitch(on)
 ```
 
@@ -2235,13 +2307,13 @@ lurek.ui.newSwitch(on)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `on?` | `boolean` | Initial on/off state (default false). |
+| `on?` | boolean | Initial on/off state (default false). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSwitch` | The new switch widget table. |
+| [LSwitch](#lswitch-handle) | The new switch widget table. |
 
 **Example**
 
@@ -2261,7 +2333,6 @@ end
 Creates a new tab bar widget for tabbed navigation.
 
 ```lua
--- signature
 lurek.ui.newTabBar()
 ```
 
@@ -2269,7 +2340,7 @@ lurek.ui.newTabBar()
 
 | Type | Description |
 |------|-------------|
-| `LTabBar` | The new tab bar widget table. |
+| [LTabBar](#ltabbar-handle) | The new tab bar widget table. |
 
 **Example**
 
@@ -2289,7 +2360,6 @@ end
 Creates a new table widget for tabular data display.
 
 ```lua
--- signature
 lurek.ui.newTable()
 ```
 
@@ -2297,7 +2367,7 @@ lurek.ui.newTable()
 
 | Type | Description |
 |------|-------------|
-| `LGuiTable` | The new table widget. |
+| [LGuiTable](#lguitable-handle) | The new table widget. |
 
 **Example**
 
@@ -2326,7 +2396,6 @@ end
 Creates a new text input widget for user entry.
 
 ```lua
--- signature
 lurek.ui.newTextInput()
 ```
 
@@ -2334,7 +2403,7 @@ lurek.ui.newTextInput()
 
 | Type | Description |
 |------|-------------|
-| `LTextInput` | The new text input widget table. |
+| [LTextInput](#ltextinput-handle) | The new text input widget table. |
 
 **Example**
 
@@ -2355,7 +2424,6 @@ end
 Creates a new UI theme for styling widgets.
 
 ```lua
--- signature
 lurek.ui.newTheme()
 ```
 
@@ -2363,7 +2431,7 @@ lurek.ui.newTheme()
 
 | Type | Description |
 |------|-------------|
-| `LTheme` | The new theme userdata. |
+| [LTheme](#ltheme-handle) | The new theme userdata. |
 
 **Example**
 
@@ -2385,7 +2453,6 @@ end
 Creates a new toast notification widget.
 
 ```lua
--- signature
 lurek.ui.newToast(message, duration)
 ```
 
@@ -2393,14 +2460,14 @@ lurek.ui.newToast(message, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `message?` | `string` | The toast message. |
-| `duration?` | `number` | Display duration in seconds (default 3). |
+| `message?` | string | The toast message. |
+| `duration?` | number | Display duration in seconds (default 3). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LToast` | The new toast widget table. |
+| [LToast](#ltoast-handle) | The new toast widget table. |
 
 **Example**
 
@@ -2423,7 +2490,6 @@ end
 Creates a new toolbar widget for action buttons.
 
 ```lua
--- signature
 lurek.ui.newToolbar(orientation)
 ```
 
@@ -2431,13 +2497,13 @@ lurek.ui.newToolbar(orientation)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `orientation?` | `string` | "horizontal" or "vertical" (default "horizontal"). |
+| `orientation?` | string | "horizontal" or "vertical" (default "horizontal"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LToolbar` | The new toolbar widget table. |
+| [LToolbar](#ltoolbar-handle) | The new toolbar widget table. |
 
 **Example**
 
@@ -2456,7 +2522,6 @@ end
 Creates a new tooltip panel widget.
 
 ```lua
--- signature
 lurek.ui.newTooltipPanel(text)
 ```
 
@@ -2464,13 +2529,13 @@ lurek.ui.newTooltipPanel(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text?` | `string` | The tooltip text. |
+| `text?` | string | The tooltip text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTooltipPanel` | The new tooltip panel widget table. |
+| [LTooltipPanel](#ltooltippanel-handle) | The new tooltip panel widget table. |
 
 **Example**
 
@@ -2495,7 +2560,6 @@ end
 Creates a new tree view widget for hierarchical data.
 
 ```lua
--- signature
 lurek.ui.newTreeView()
 ```
 
@@ -2503,7 +2567,7 @@ lurek.ui.newTreeView()
 
 | Type | Description |
 |------|-------------|
-| `LTreeView` | The new tree view widget table. |
+| [LTreeView](#ltreeview-handle) | The new tree view widget table. |
 
 **Example**
 
@@ -2524,7 +2588,6 @@ end
 Creates a new GUI window widget with an optional title.
 
 ```lua
--- signature
 lurek.ui.newWindow(title)
 ```
 
@@ -2532,13 +2595,13 @@ lurek.ui.newWindow(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title?` | `string` | The window title. |
+| `title?` | string | The window title. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGuiWindow` | The new window widget table. |
+| [LGuiWindow](#lguiwindow-handle) | The new window widget table. |
 
 **Example**
 
@@ -2574,7 +2637,6 @@ end
 Validates and normalizes a widget state string.
 
 ```lua
--- signature
 lurek.ui.parseWidgetState(state)
 ```
 
@@ -2582,13 +2644,13 @@ lurek.ui.parseWidgetState(state)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `state` | `string` | The state name to parse (e.g. "normal", "hovered"). |
+| `state` | string | The state name to parse (e.g. "normal", "hovered"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The normalized state string, or nil if invalid. |
+| string | The normalized state string, or nil if invalid. |
 
 **Example**
 
@@ -2608,7 +2670,6 @@ end
 Renders the entire UI to a PNG image file.
 
 ```lua
--- signature
 lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath)
 ```
 
@@ -2616,9 +2677,9 @@ lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pathOrWidth` | `any` | Output file path for path-first calls, or image width for canonical calls. |
-| `widthOrHeight` | `number` | Image width for path-first calls, or image height for canonical calls. |
-| `heightOrPath` | `any` | Image height for path-first calls, or output file path for canonical calls. |
+| `pathOrWidth` | any | Output file path for path-first calls, or image width for canonical calls. |
+| `widthOrHeight` | number | Image width for path-first calls, or image height for canonical calls. |
+| `heightOrPath` | any | Image height for path-first calls, or output file path for canonical calls. |
 
 **Example**
 
@@ -2638,7 +2699,6 @@ end
 Set the logical base resolution the UI was designed for.
 
 ```lua
--- signature
 lurek.ui.setBaseResolution(width, height)
 ```
 
@@ -2646,8 +2706,8 @@ lurek.ui.setBaseResolution(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Base width (default 1920). |
-| `height` | `number` | Base height (default 1080). |
+| `width` | number | Base width (default 1920). |
+| `height` | number | Base height (default 1080). |
 
 **Example**
 
@@ -2665,7 +2725,6 @@ end
 Applies the built-in default theme to the UI context.
 
 ```lua
--- signature
 lurek.ui.setDefaultTheme()
 ```
 
@@ -2689,7 +2748,6 @@ end
 Sets keyboard focus to a widget, or clears focus if nil.
 
 ```lua
--- signature
 lurek.ui.setFocus(widget)
 ```
 
@@ -2697,7 +2755,7 @@ lurek.ui.setFocus(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget?` | `table` | The widget table to focus, or nil to clear. |
+| `widget?` | table | The widget table to focus, or nil to clear. |
 
 **Example**
 
@@ -2720,7 +2778,6 @@ end
 Sets the global UI font by applying it to the root widget.
 
 ```lua
--- signature
 lurek.ui.setFont(font)
 ```
 
@@ -2728,7 +2785,7 @@ lurek.ui.setFont(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle used by the UI when widgets do not override it. |
+| `font` | [LFont](#lfont-handle) | Font handle used by the UI when widgets do not override it. |
 
 **Example**
 
@@ -2750,7 +2807,6 @@ end
 Applies a theme to the entire UI context.
 
 ```lua
--- signature
 lurek.ui.setTheme(theme_ud)
 ```
 
@@ -2758,7 +2814,7 @@ lurek.ui.setTheme(theme_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `theme_ud` | `LTheme` | The theme userdata to apply. |
+| `theme_ud` | [LTheme](#ltheme-handle) | The theme userdata to apply. |
 
 **Example**
 
@@ -2780,7 +2836,6 @@ end
 Sets the viewport size for the UI context.
 
 ```lua
--- signature
 lurek.ui.setViewport(w, h)
 ```
 
@@ -2788,8 +2843,8 @@ lurek.ui.setViewport(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Viewport width. |
-| `h` | `number` | Viewport height. |
+| `w` | number | Viewport width. |
+| `h` | number | Viewport height. |
 
 **Example**
 
@@ -2811,7 +2866,6 @@ end
 Delivers a text input event to the UI.
 
 ```lua
--- signature
 lurek.ui.textinput(text)
 ```
 
@@ -2819,13 +2873,13 @@ lurek.ui.textinput(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The input text. |
+| `text` | string | The input text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a widget consumed the event. |
+| boolean | True if a widget consumed the event. |
 
 **Example**
 
@@ -2847,7 +2901,6 @@ end
 Updates the UI context and dispatches pending events to callbacks.
 
 ```lua
--- signature
 lurek.ui.update(dt)
 ```
 
@@ -2855,7 +2908,7 @@ lurek.ui.update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -2874,7 +2927,6 @@ end
 Updates data bindings for widgets that reference binding keys.
 
 ```lua
--- signature
 lurek.ui.updateBindings(data)
 ```
 
@@ -2882,13 +2934,13 @@ lurek.ui.updateBindings(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | A table mapping binding keys to values. |
+| `data` | table | A table mapping binding keys to values. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The number of widgets whose state changed. |
+| number | The number of widgets whose state changed. |
 
 **Example**
 
@@ -2910,7 +2962,6 @@ end
 Update the current viewport resolution and recompute UI scale factor.
 
 ```lua
--- signature
 lurek.ui.updateResolution(width, height)
 ```
 
@@ -2918,8 +2969,8 @@ lurek.ui.updateResolution(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | New viewport width in pixels. |
-| `height` | `number` | New viewport height in pixels. |
+| `width` | number | New viewport width in pixels. |
+| `height` | number | New viewport height in pixels. |
 
 **Example**
 
@@ -2937,7 +2988,6 @@ end
 Updates data bindings for widgets that reference binding keys.
 
 ```lua
--- signature
 lurek.ui.update_bindings(data)
 ```
 
@@ -2945,13 +2995,13 @@ lurek.ui.update_bindings(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | A table mapping binding keys to values. |
+| `data` | table | A table mapping binding keys to values. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The number of widgets whose state changed. |
+| number | The number of widgets whose state changed. |
 
 **Example**
 
@@ -2973,7 +3023,6 @@ end
 Calculate the visible item range for a scrollable list widget.
 
 ```lua
--- signature
 lurek.ui.visibleRange(widget, item_count, item_height)
 ```
 
@@ -2981,16 +3030,16 @@ lurek.ui.visibleRange(widget, item_count, item_height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | `table` | Widget table with _idx field. |
-| `item_count` | `number` | Total number of items. |
-| `item_height` | `number` | Height of each item in pixels. |
+| `widget` | table | Widget table with _idx field. |
+| `item_count` | number | Total number of items. |
+| `item_height` | number | Height of each item in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Start index (0-based). |
-| `number` | b End index (exclusive). |
+| number | Start index (0-based). |
+| number | End index (exclusive). |
 
 **Example**
 
@@ -3009,7 +3058,6 @@ end
 Delivers a mouse wheel event to the UI.
 
 ```lua
--- signature
 lurek.ui.wheelmoved(x, y)
 ```
 
@@ -3017,14 +3065,14 @@ lurek.ui.wheelmoved(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Horizontal scroll delta. |
-| `y` | `number` | Vertical scroll delta. |
+| `x` | number | Horizontal scroll delta. |
+| `y` | number | Vertical scroll delta. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a widget consumed the event. |
+| boolean | True if a widget consumed the event. |
 
 **Example**
 
@@ -3044,14 +3092,81 @@ end
 
 ---
 
-## LAccordion
+## Module Fields
 
-### `LAccordion:addSection`
+*No module-level fields documented.*
+
+## Types
+
+- [LAccordion Handle](#laccordion-handle)
+- [LAreaChart Handle](#lareachart-handle)
+- [LBadge Handle](#lbadge-handle)
+- [LBarChart Handle](#lbarchart-handle)
+- [LButton Handle](#lbutton-handle)
+- [LCheckbox Handle](#lcheckbox-handle)
+- [LColorPicker Handle](#lcolorpicker-handle)
+- [LComboBox Handle](#lcombobox-handle)
+- [LCustomWidget Handle](#lcustomwidget-handle)
+- [LDialog Handle](#ldialog-handle)
+- [LDockPanel Handle](#ldockpanel-handle)
+- [LFont Handle](#lfont-handle)
+- [LGuiTable Handle](#lguitable-handle)
+- [LGuiWindow Handle](#lguiwindow-handle)
+- [LImageData Handle](#limagedata-handle)
+- [LImageWidget Handle](#limagewidget-handle)
+- [LLabel Handle](#llabel-handle)
+- [LLayout Handle](#llayout-handle)
+- [LLineChart Handle](#llinechart-handle)
+- [LList Handle](#llist-handle)
+- [LListBox Handle](#llistbox-handle)
+- [LMenuBar Handle](#lmenubar-handle)
+- [LMenuItem Handle](#lmenuitem-handle)
+- [LNinePatch Handle](#lninepatch-handle)
+- [LPanel Handle](#lpanel-handle)
+- [LPieChart Handle](#lpiechart-handle)
+- [LProgressBar Handle](#lprogressbar-handle)
+- [LRadioButton Handle](#lradiobutton-handle)
+- [LScatterPlot Handle](#lscatterplot-handle)
+- [LScrollBar Handle](#lscrollbar-handle)
+- [LScrollPanel Handle](#lscrollpanel-handle)
+- [LSeparator Handle](#lseparator-handle)
+- [LSlider Handle](#lslider-handle)
+- [LSpinBox Handle](#lspinbox-handle)
+- [LSplitPanel Handle](#lsplitpanel-handle)
+- [LStatusBar Handle](#lstatusbar-handle)
+- [LSwitch Handle](#lswitch-handle)
+- [LTabBar Handle](#ltabbar-handle)
+- [LTable Handle](#ltable-handle)
+- [LTextInput Handle](#ltextinput-handle)
+- [LTheme Handle](#ltheme-handle)
+- [LToast Handle](#ltoast-handle)
+- [LToolbar Handle](#ltoolbar-handle)
+- [LTooltipPanel Handle](#ltooltippanel-handle)
+- [LTreeView Handle](#ltreeview-handle)
+- [LUiWidget Handle](#luiwidget-handle)
+- [LWindow Handle](#lwindow-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAccordion Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAccordion:addSection`
 
 Adds a collapsible section to this accordion.
 
 ```lua
--- signature
 LAccordion:addSection(title, content_idx)
 ```
 
@@ -3059,8 +3174,8 @@ LAccordion:addSection(title, content_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | The section title. |
-| `content_idx?` | `number` | Optional widget index for the section content. |
+| `title` | string | The section title. |
+| `content_idx?` | number | Optional widget index for the section content. |
 
 **Example**
 
@@ -3078,12 +3193,11 @@ end
 
 ---
 
-### `LAccordion:getSectionCount`
+#### `LAccordion:getSectionCount`
 
 Returns the number of sections in this accordion.
 
 ```lua
--- signature
 LAccordion:getSectionCount()
 ```
 
@@ -3091,7 +3205,7 @@ LAccordion:getSectionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The section count. |
+| number | The section count. |
 
 **Example**
 
@@ -3109,12 +3223,11 @@ end
 
 ---
 
-### `LAccordion:getSectionTitle`
+#### `LAccordion:getSectionTitle`
 
 Returns the title of an accordion section by its 1-based index.
 
 ```lua
--- signature
 LAccordion:getSectionTitle(section_idx)
 ```
 
@@ -3122,13 +3235,13 @@ LAccordion:getSectionTitle(section_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `section_idx` | `number` | The 1-based section index. |
+| `section_idx` | number | The 1-based section index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The section title, or nil if out of range. |
+| string | The section title, or nil if out of range. |
 
 **Example**
 
@@ -3146,12 +3259,11 @@ end
 
 ---
 
-### `LAccordion:isExclusive`
+#### `LAccordion:isExclusive`
 
 Returns whether this accordion is in exclusive mode (only one section open at a time).
 
 ```lua
--- signature
 LAccordion:isExclusive()
 ```
 
@@ -3159,7 +3271,7 @@ LAccordion:isExclusive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if exclusive. |
+| boolean | True if exclusive. |
 
 **Example**
 
@@ -3182,12 +3294,11 @@ end
 
 ---
 
-### `LAccordion:isSectionExpanded`
+#### `LAccordion:isSectionExpanded`
 
 Returns whether an accordion section is expanded.
 
 ```lua
--- signature
 LAccordion:isSectionExpanded(section_idx)
 ```
 
@@ -3195,13 +3306,13 @@ LAccordion:isSectionExpanded(section_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `section_idx` | `number` | The 1-based section index. |
+| `section_idx` | number | The 1-based section index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if expanded. |
+| boolean | True if expanded. |
 
 **Example**
 
@@ -3223,12 +3334,11 @@ end
 
 ---
 
-### `LAccordion:setExclusive`
+#### `LAccordion:setExclusive`
 
 Sets exclusive mode. When true, expanding one section collapses all others.
 
 ```lua
--- signature
 LAccordion:setExclusive(v)
 ```
 
@@ -3236,7 +3346,7 @@ LAccordion:setExclusive(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True for exclusive mode. |
+| `v` | boolean | True for exclusive mode. |
 
 **Example**
 
@@ -3258,12 +3368,11 @@ end
 
 ---
 
-### `LAccordion:toggleSection`
+#### `LAccordion:toggleSection`
 
 Toggles the expanded state of an accordion section by its 1-based index.
 
 ```lua
--- signature
 LAccordion:toggleSection(section_idx)
 ```
 
@@ -3271,13 +3380,13 @@ LAccordion:toggleSection(section_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `section_idx` | `number` | The 1-based section index. |
+| `section_idx` | number | The 1-based section index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | The new expanded state. |
+| boolean | The new expanded state. |
 
 **Example**
 
@@ -3299,14 +3408,19 @@ end
 
 ---
 
-## LAreaChart
+## LAreaChart Handle
 
-### `LAreaChart:addLayer`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAreaChart:addLayer`
 
 Adds a data layer to this area chart.
 
 ```lua
--- signature
 LAreaChart:addLayer(name, vals_tbl, r, g, b)
 ```
 
@@ -3314,11 +3428,11 @@ LAreaChart:addLayer(name, vals_tbl, r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The layer name. |
-| `vals_tbl` | `table` | Array of numeric values. |
-| `r` | `number` | Red color component. |
-| `g` | `number` | Green color component. |
-| `b` | `number` | Blue color component. |
+| `name` | string | The layer name. |
+| `vals_tbl` | table | Array of numeric values. |
+| `r` | number | Red color component. |
+| `g` | number | Green color component. |
+| `b` | number | Blue color component. |
 
 **Example**
 
@@ -3335,12 +3449,11 @@ end
 
 ---
 
-### `LAreaChart:addLayerFromDataFrame`
+#### `LAreaChart:addLayerFromDataFrame`
 
 Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
 
 ```lua
--- signature
 LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts)
 ```
 
@@ -3348,19 +3461,19 @@ LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The layer name. |
-| `df` | `LDataFrame` | Source dataframe. |
-| `value_col` | `string` | Column name for layer values. |
-| `r` | `number` | Red color component. |
-| `g` | `number` | Green color component. |
-| `b` | `number` | Blue color component. |
-| `opts?` | `table` | Optional table with maxRows integer. |
+| `name` | string | The layer name. |
+| `df` | LDataFrame | Source dataframe. |
+| `value_col` | string | Column name for layer values. |
+| `r` | number | Red color component. |
+| `g` | number | Green color component. |
+| `b` | number | Blue color component. |
+| `opts?` | table | Optional table with maxRows integer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of values copied into the layer. |
+| number | Number of values copied into the layer. |
 
 **Example**
 
@@ -3375,12 +3488,11 @@ end
 
 ---
 
-### `LAreaChart:addSeries`
+#### `LAreaChart:addSeries`
 
 Add a named data series to the area chart (stacked above previous).
 
 ```lua
--- signature
 LAreaChart:addSeries(name, data, color)
 ```
 
@@ -3388,29 +3500,27 @@ LAreaChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Display name of the series. |
-| `data` | `table` | Array of {x, y} point tables. |
-| `color?` | `table` | Optional RGBA color {r, g, b, a}. |
+| `name` | string | Display name of the series. |
+| `data` | table | Array of {x, y} point tables. |
+| `color?` | table | Optional RGBA color {r, g, b, a}. |
 
 ---
 
-### `LAreaChart:clear`
+#### `LAreaChart:clear`
 
 Removes all data series from this chart.
 
 ```lua
--- signature
 LAreaChart:clear()
 ```
 
 ---
 
-### `LAreaChart:drawToImage`
+#### `LAreaChart:drawToImage`
 
 Renders this area chart to an image buffer.
 
 ```lua
--- signature
 LAreaChart:drawToImage(target)
 ```
 
@@ -3418,7 +3528,7 @@ LAreaChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | The image to draw into. |
+| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
 
 **Example**
 
@@ -3437,12 +3547,11 @@ end
 
 ---
 
-### `LAreaChart:getHeight`
+#### `LAreaChart:getHeight`
 
 Get the chart output height in pixels.
 
 ```lua
--- signature
 LAreaChart:getHeight()
 ```
 
@@ -3450,16 +3559,15 @@ LAreaChart:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 ---
 
-### `LAreaChart:getWidth`
+#### `LAreaChart:getWidth`
 
 Get the chart output width in pixels.
 
 ```lua
--- signature
 LAreaChart:getWidth()
 ```
 
@@ -3467,16 +3575,15 @@ LAreaChart:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 ---
 
-### `LAreaChart:render`
+#### `LAreaChart:render`
 
 Renders the chart contents into a new pixel buffer.
 
 ```lua
--- signature
 LAreaChart:render()
 ```
 
@@ -3484,18 +3591,17 @@ LAreaChart:render()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Output width in pixels. |
-| `number` | b Output height in pixels. |
-| `string` | c RGBA8 pixel data as a binary string. |
+| number | Output width in pixels. |
+| number | Output height in pixels. |
+| string | RGBA8 pixel data as a binary string. |
 
 ---
 
-### `LAreaChart:setTitle`
+#### `LAreaChart:setTitle`
 
 Set or update the chart's displayed title.
 
 ```lua
--- signature
 LAreaChart:setTitle(title)
 ```
 
@@ -3503,16 +3609,15 @@ LAreaChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | New chart title text. |
+| `title` | string | New chart title text. |
 
 ---
 
-### `LAreaChart:setYMax`
+#### `LAreaChart:setYMax`
 
 Sets the maximum Y-axis value for this area chart.
 
 ```lua
--- signature
 LAreaChart:setYMax(v)
 ```
 
@@ -3520,7 +3625,7 @@ LAreaChart:setYMax(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The Y-axis maximum. |
+| `v` | number | The Y-axis maximum. |
 
 **Example**
 
@@ -3537,12 +3642,11 @@ end
 
 ---
 
-### `LAreaChart:type`
+#### `LAreaChart:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LAreaChart:type()
 ```
 
@@ -3550,7 +3654,7 @@ LAreaChart:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LAreaChart". |
+| string | Always "[LAreaChart](#lareachart-handle)". |
 
 **Example**
 
@@ -3569,12 +3673,11 @@ end
 
 ---
 
-### `LAreaChart:typeOf`
+#### `LAreaChart:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LAreaChart:typeOf(name)
 ```
 
@@ -3582,13 +3685,13 @@ LAreaChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -3607,14 +3710,19 @@ end
 
 ---
 
-## LBadge
+## LBadge Handle
 
-### `LBadge:getCount`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBadge:getCount`
 
 Returns the current notification count of this badge.
 
 ```lua
--- signature
 LBadge:getCount()
 ```
 
@@ -3622,7 +3730,7 @@ LBadge:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The badge count. |
+| number | The badge count. |
 
 **Example**
 
@@ -3640,12 +3748,11 @@ end
 
 ---
 
-### `LBadge:getDisplayText`
+#### `LBadge:getDisplayText`
 
 Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
 
 ```lua
--- signature
 LBadge:getDisplayText()
 ```
 
@@ -3653,7 +3760,7 @@ LBadge:getDisplayText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The display text. |
+| string | The display text. |
 
 **Example**
 
@@ -3671,12 +3778,11 @@ end
 
 ---
 
-### `LBadge:setCount`
+#### `LBadge:setCount`
 
 Sets the notification count displayed by this badge.
 
 ```lua
--- signature
 LBadge:setCount(count)
 ```
 
@@ -3684,7 +3790,7 @@ LBadge:setCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | The notification count. |
+| `count` | number | The notification count. |
 
 **Example**
 
@@ -3702,14 +3808,19 @@ end
 
 ---
 
-## LBarChart
+## LBarChart Handle
 
-### `LBarChart:addCategoriesFromDataFrame`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBarChart:addCategoriesFromDataFrame`
 
 Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
 
 ```lua
--- signature
 LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 ```
 
@@ -3717,16 +3828,16 @@ LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | `LDataFrame` | Source dataframe. |
-| `label_col` | `string` | Column name for category labels. |
-| `value_cols` | `string[]` | Value columns matching registered series order. |
-| `opts?` | `table` | Optional table with maxRows integer. |
+| `df` | LDataFrame | Source dataframe. |
+| `label_col` | string | Column name for category labels. |
+| `value_cols` | string[] | Value columns matching registered series order. |
+| `opts?` | table | Optional table with maxRows integer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of categories added. |
+| number | Number of categories added. |
 
 **Example**
 
@@ -3743,12 +3854,11 @@ end
 
 ---
 
-### `LBarChart:addCategory`
+#### `LBarChart:addCategory`
 
 Adds a category with values for each series.
 
 ```lua
--- signature
 LBarChart:addCategory(label, vals_tbl)
 ```
 
@@ -3756,8 +3866,8 @@ LBarChart:addCategory(label, vals_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | `string` | The category label. |
-| `vals_tbl` | `table` | Array of values, one per series. |
+| `label` | string | The category label. |
+| `vals_tbl` | table | Array of values, one per series. |
 
 **Example**
 
@@ -3776,12 +3886,11 @@ end
 
 ---
 
-### `LBarChart:addSeries`
+#### `LBarChart:addSeries`
 
 Add a named data series to the bar chart.
 
 ```lua
--- signature
 LBarChart:addSeries(name, data, color)
 ```
 
@@ -3789,29 +3898,27 @@ LBarChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Display name of the series. |
-| `data` | `table` | Array of {x, y} point tables. |
-| `color?` | `table` | Optional RGBA color {r, g, b, a}. |
+| `name` | string | Display name of the series. |
+| `data` | table | Array of {x, y} point tables. |
+| `color?` | table | Optional RGBA color {r, g, b, a}. |
 
 ---
 
-### `LBarChart:clear`
+#### `LBarChart:clear`
 
 Removes all data series from this chart.
 
 ```lua
--- signature
 LBarChart:clear()
 ```
 
 ---
 
-### `LBarChart:drawToImage`
+#### `LBarChart:drawToImage`
 
 Renders this bar chart to an image buffer.
 
 ```lua
--- signature
 LBarChart:drawToImage(target)
 ```
 
@@ -3819,7 +3926,7 @@ LBarChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | The image to draw into. |
+| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
 
 **Example**
 
@@ -3838,12 +3945,11 @@ end
 
 ---
 
-### `LBarChart:getHeight`
+#### `LBarChart:getHeight`
 
 Get the chart output height in pixels.
 
 ```lua
--- signature
 LBarChart:getHeight()
 ```
 
@@ -3851,16 +3957,15 @@ LBarChart:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 ---
 
-### `LBarChart:getWidth`
+#### `LBarChart:getWidth`
 
 Get the chart output width in pixels.
 
 ```lua
--- signature
 LBarChart:getWidth()
 ```
 
@@ -3868,16 +3973,15 @@ LBarChart:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 ---
 
-### `LBarChart:render`
+#### `LBarChart:render`
 
 Renders the chart contents into a new pixel buffer.
 
 ```lua
--- signature
 LBarChart:render()
 ```
 
@@ -3885,18 +3989,17 @@ LBarChart:render()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Output width in pixels. |
-| `number` | b Output height in pixels. |
-| `string` | c RGBA8 pixel data as a binary string. |
+| number | Output width in pixels. |
+| number | Output height in pixels. |
+| string | RGBA8 pixel data as a binary string. |
 
 ---
 
-### `LBarChart:setBarWidth`
+#### `LBarChart:setBarWidth`
 
 Set the pixel width of individual bars in this chart.
 
 ```lua
--- signature
 LBarChart:setBarWidth(width)
 ```
 
@@ -3904,16 +4007,15 @@ LBarChart:setBarWidth(width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Bar width in pixels (minimum 1). |
+| `width` | number | Bar width in pixels (minimum 1). |
 
 ---
 
-### `LBarChart:setTitle`
+#### `LBarChart:setTitle`
 
 Set or update the chart's displayed title.
 
 ```lua
--- signature
 LBarChart:setTitle(title)
 ```
 
@@ -3921,16 +4023,15 @@ LBarChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | New chart title text. |
+| `title` | string | New chart title text. |
 
 ---
 
-### `LBarChart:type`
+#### `LBarChart:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LBarChart:type()
 ```
 
@@ -3938,7 +4039,7 @@ LBarChart:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LBarChart". |
+| string | Always "[LBarChart](#lbarchart-handle)". |
 
 **Example**
 
@@ -3954,12 +4055,11 @@ end
 
 ---
 
-### `LBarChart:typeOf`
+#### `LBarChart:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LBarChart:typeOf(name)
 ```
 
@@ -3967,13 +4067,13 @@ LBarChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -3989,14 +4089,19 @@ end
 
 ---
 
-## LButton
+## LButton Handle
 
-### `LButton:getText`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LButton:getText`
 
 Returns the current display text of this button.
 
 ```lua
--- signature
 LButton:getText()
 ```
 
@@ -4004,7 +4109,7 @@ LButton:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The button label. |
+| string | The button label. |
 
 **Example**
 
@@ -4021,12 +4126,11 @@ end
 
 ---
 
-### `LButton:setText`
+#### `LButton:setText`
 
 Sets the display text on this button.
 
 ```lua
--- signature
 LButton:setText(text)
 ```
 
@@ -4034,7 +4138,7 @@ LButton:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The button label text. |
+| `text` | string | The button label text. |
 
 **Example**
 
@@ -4051,14 +4155,19 @@ end
 
 ---
 
-## LCheckbox
+## LCheckbox Handle
 
-### `LCheckbox:getText`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCheckbox:getText`
 
 Returns the label text of this checkbox.
 
 ```lua
--- signature
 LCheckbox:getText()
 ```
 
@@ -4066,7 +4175,7 @@ LCheckbox:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The checkbox label. |
+| string | The checkbox label. |
 
 **Example**
 
@@ -4082,12 +4191,11 @@ end
 
 ---
 
-### `LCheckbox:isChecked`
+#### `LCheckbox:isChecked`
 
 Returns whether this checkbox is currently checked.
 
 ```lua
--- signature
 LCheckbox:isChecked()
 ```
 
@@ -4095,7 +4203,7 @@ LCheckbox:isChecked()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if checked. |
+| boolean | True if checked. |
 
 **Example**
 
@@ -4111,12 +4219,11 @@ end
 
 ---
 
-### `LCheckbox:setChecked`
+#### `LCheckbox:setChecked`
 
 Sets the checked state of this checkbox.
 
 ```lua
--- signature
 LCheckbox:setChecked(checked)
 ```
 
@@ -4124,7 +4231,7 @@ LCheckbox:setChecked(checked)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `checked` | `boolean` | True to check, false to uncheck. |
+| `checked` | boolean | True to check, false to uncheck. |
 
 **Example**
 
@@ -4142,12 +4249,11 @@ end
 
 ---
 
-### `LCheckbox:setText`
+#### `LCheckbox:setText`
 
 Sets the label text displayed next to this checkbox.
 
 ```lua
--- signature
 LCheckbox:setText(text)
 ```
 
@@ -4155,7 +4261,7 @@ LCheckbox:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The checkbox label. |
+| `text` | string | The checkbox label. |
 
 **Example**
 
@@ -4173,14 +4279,19 @@ end
 
 ---
 
-## LColorPicker
+## LColorPicker Handle
 
-### `LColorPicker:getColor`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LColorPicker:getColor`
 
 Returns the current color as RGBA components (0.0 to 1.0).
 
 ```lua
--- signature
 LColorPicker:getColor()
 ```
 
@@ -4188,10 +4299,10 @@ LColorPicker:getColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red component. |
-| `number` | b Green component. |
-| `number` | c Blue component. |
-| `number` | d Alpha component. |
+| number | Red component. |
+| number | Green component. |
+| number | Blue component. |
+| number | Alpha component. |
 
 **Example**
 
@@ -4215,12 +4326,11 @@ end
 
 ---
 
-### `LColorPicker:getColorMode`
+#### `LColorPicker:getColorMode`
 
 Returns the color mode of this picker (e.g. "rgb", "hsv").
 
 ```lua
--- signature
 LColorPicker:getColorMode()
 ```
 
@@ -4228,7 +4338,7 @@ LColorPicker:getColorMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | The color mode. |
+| string | The color mode. |
 
 **Example**
 
@@ -4250,12 +4360,11 @@ end
 
 ---
 
-### `LColorPicker:getShowAlpha`
+#### `LColorPicker:getShowAlpha`
 
 Returns whether the alpha channel slider is visible.
 
 ```lua
--- signature
 LColorPicker:getShowAlpha()
 ```
 
@@ -4263,7 +4372,7 @@ LColorPicker:getShowAlpha()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the alpha slider is shown. |
+| boolean | True if the alpha slider is shown. |
 
 **Example**
 
@@ -4285,12 +4394,11 @@ end
 
 ---
 
-### `LColorPicker:setColor`
+#### `LColorPicker:setColor`
 
 Sets the current color as RGBA components.
 
 ```lua
--- signature
 LColorPicker:setColor(r, g, b, a)
 ```
 
@@ -4298,10 +4406,10 @@ LColorPicker:setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red (0.0 to 1.0). |
-| `g` | `number` | Green (0.0 to 1.0). |
-| `b` | `number` | Blue (0.0 to 1.0). |
-| `a?` | `number` | Alpha (0.0 to 1.0), keeps current if omitted. |
+| `r` | number | Red (0.0 to 1.0). |
+| `g` | number | Green (0.0 to 1.0). |
+| `b` | number | Blue (0.0 to 1.0). |
+| `a?` | number | Alpha (0.0 to 1.0), keeps current if omitted. |
 
 **Example**
 
@@ -4323,12 +4431,11 @@ end
 
 ---
 
-### `LColorPicker:setColorMode`
+#### `LColorPicker:setColorMode`
 
 Sets the color mode of this picker (e.g. "rgb", "hsv").
 
 ```lua
--- signature
 LColorPicker:setColorMode(mode)
 ```
 
@@ -4336,7 +4443,7 @@ LColorPicker:setColorMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | The color mode. |
+| `mode` | string | The color mode. |
 
 **Example**
 
@@ -4358,12 +4465,11 @@ end
 
 ---
 
-### `LColorPicker:setOnChange`
+#### `LColorPicker:setOnChange`
 
 Registers a callback invoked when this color picker's value changes.
 
 ```lua
--- signature
 LColorPicker:setOnChange(f)
 ```
 
@@ -4371,7 +4477,7 @@ LColorPicker:setOnChange(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -4393,12 +4499,11 @@ end
 
 ---
 
-### `LColorPicker:setShowAlpha`
+#### `LColorPicker:setShowAlpha`
 
 Sets whether the alpha channel slider is visible.
 
 ```lua
--- signature
 LColorPicker:setShowAlpha(v)
 ```
 
@@ -4406,7 +4511,7 @@ LColorPicker:setShowAlpha(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to show the alpha slider. |
+| `v` | boolean | True to show the alpha slider. |
 
 **Example**
 
@@ -4428,14 +4533,19 @@ end
 
 ---
 
-## LComboBox
+## LComboBox Handle
 
-### `LComboBox:addItem`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LComboBox:addItem`
 
 Appends a new text item to this combo box's dropdown list.
 
 ```lua
--- signature
 LComboBox:addItem(text)
 ```
 
@@ -4443,7 +4553,7 @@ LComboBox:addItem(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The item label to add. |
+| `text` | string | The item label to add. |
 
 **Example**
 
@@ -4462,12 +4572,11 @@ end
 
 ---
 
-### `LComboBox:clearItems`
+#### `LComboBox:clearItems`
 
 Removes all items from this combo box.
 
 ```lua
--- signature
 LComboBox:clearItems()
 ```
 
@@ -4491,12 +4600,11 @@ end
 
 ---
 
-### `LComboBox:getItem`
+#### `LComboBox:getItem`
 
 Returns the text of the item at the given 1-based index.
 
 ```lua
--- signature
 LComboBox:getItem(index)
 ```
 
@@ -4504,13 +4612,13 @@ LComboBox:getItem(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based item index. |
+| `index` | number | The 1-based item index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The item text, or nil if out of range. |
+| string | The item text, or nil if out of range. |
 
 **Example**
 
@@ -4529,12 +4637,11 @@ end
 
 ---
 
-### `LComboBox:getItemCount`
+#### `LComboBox:getItemCount`
 
 Returns the number of items in this combo box.
 
 ```lua
--- signature
 LComboBox:getItemCount()
 ```
 
@@ -4542,7 +4649,7 @@ LComboBox:getItemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The item count. |
+| number | The item count. |
 
 **Example**
 
@@ -4561,12 +4668,11 @@ end
 
 ---
 
-### `LComboBox:getSelectedIndex`
+#### `LComboBox:getSelectedIndex`
 
 Returns the 1-based index of the currently selected item, or 0 if none is selected.
 
 ```lua
--- signature
 LComboBox:getSelectedIndex()
 ```
 
@@ -4574,7 +4680,7 @@ LComboBox:getSelectedIndex()
 
 | Type | Description |
 |------|-------------|
-| `number` | The selected index. |
+| number | The selected index. |
 
 **Example**
 
@@ -4596,12 +4702,11 @@ end
 
 ---
 
-### `LComboBox:getSelectedItem`
+#### `LComboBox:getSelectedItem`
 
 Returns the text of the currently selected item, or nil if none is selected.
 
 ```lua
--- signature
 LComboBox:getSelectedItem()
 ```
 
@@ -4609,7 +4714,7 @@ LComboBox:getSelectedItem()
 
 | Type | Description |
 |------|-------------|
-| `string` | The selected item text. |
+| string | The selected item text. |
 
 **Example**
 
@@ -4631,12 +4736,11 @@ end
 
 ---
 
-### `LComboBox:removeItem`
+#### `LComboBox:removeItem`
 
 Removes the item at the given 1-based index from this combo box.
 
 ```lua
--- signature
 LComboBox:removeItem(index)
 ```
 
@@ -4644,13 +4748,13 @@ LComboBox:removeItem(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based index of the item to remove. |
+| `index` | number | The 1-based index of the item to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the item was removed. |
+| boolean | True if the item was removed. |
 
 **Example**
 
@@ -4668,12 +4772,11 @@ end
 
 ---
 
-### `LComboBox:setSelectedIndex`
+#### `LComboBox:setSelectedIndex`
 
 Sets the selected item by 1-based index.
 
 ```lua
--- signature
 LComboBox:setSelectedIndex(index)
 ```
 
@@ -4681,7 +4784,7 @@ LComboBox:setSelectedIndex(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based index of the item to select. |
+| `index` | number | The 1-based index of the item to select. |
 
 **Example**
 
@@ -4699,14 +4802,29 @@ end
 
 ---
 
-## LDialog
+## LCustomWidget Handle
 
-### `LDialog:addButton`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*
+
+## LDialog Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDialog:addButton`
 
 Adds a footer button to this dialog and returns its 1-based index.
 
 ```lua
--- signature
 LDialog:addButton(text, cb)
 ```
 
@@ -4714,14 +4832,14 @@ LDialog:addButton(text, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The button label. |
-| `cb?` | `function` | Optional click callback (reserved for future use). |
+| `text` | string | The button label. |
+| `cb?` | function | Optional click callback (reserved for future use). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The 1-based button index. |
+| number | The 1-based button index. |
 
 **Example**
 
@@ -4738,12 +4856,11 @@ end
 
 ---
 
-### `LDialog:close`
+#### `LDialog:close`
 
 Closes this dialog and fires the onClose callback if it was open.
 
 ```lua
--- signature
 LDialog:close()
 ```
 
@@ -4762,12 +4879,11 @@ end
 
 ---
 
-### `LDialog:getContent`
+#### `LDialog:getContent`
 
 Returns the widget index of this dialog's content, or nil if not set.
 
 ```lua
--- signature
 LDialog:getContent()
 ```
 
@@ -4775,7 +4891,7 @@ LDialog:getContent()
 
 | Type | Description |
 |------|-------------|
-| `number` | The content widget index. |
+| number | The content widget index. |
 
 **Example**
 
@@ -4792,12 +4908,11 @@ end
 
 ---
 
-### `LDialog:getTitle`
+#### `LDialog:getTitle`
 
 Returns the title text of this dialog.
 
 ```lua
--- signature
 LDialog:getTitle()
 ```
 
@@ -4805,7 +4920,7 @@ LDialog:getTitle()
 
 | Type | Description |
 |------|-------------|
-| `string` | The dialog title. |
+| string | The dialog title. |
 
 **Example**
 
@@ -4822,12 +4937,11 @@ end
 
 ---
 
-### `LDialog:isModal`
+#### `LDialog:isModal`
 
 Returns whether this dialog is modal (blocks interaction with other widgets).
 
 ```lua
--- signature
 LDialog:isModal()
 ```
 
@@ -4835,7 +4949,7 @@ LDialog:isModal()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if modal. |
+| boolean | True if modal. |
 
 **Example**
 
@@ -4852,12 +4966,11 @@ end
 
 ---
 
-### `LDialog:isOpen`
+#### `LDialog:isOpen`
 
 Returns whether this dialog is currently open and visible.
 
 ```lua
--- signature
 LDialog:isOpen()
 ```
 
@@ -4865,7 +4978,7 @@ LDialog:isOpen()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if open. |
+| boolean | True if open. |
 
 **Example**
 
@@ -4882,12 +4995,11 @@ end
 
 ---
 
-### `LDialog:open`
+#### `LDialog:open`
 
 Opens this dialog, making it visible.
 
 ```lua
--- signature
 LDialog:open()
 ```
 
@@ -4906,12 +5018,11 @@ end
 
 ---
 
-### `LDialog:setContent`
+#### `LDialog:setContent`
 
 Sets the content widget for this dialog.
 
 ```lua
--- signature
 LDialog:setContent(content_idx)
 ```
 
@@ -4919,7 +5030,7 @@ LDialog:setContent(content_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `content_idx?` | `number` | The widget index to show as content, or nil to clear. |
+| `content_idx?` | number | The widget index to show as content, or nil to clear. |
 
 **Example**
 
@@ -4936,12 +5047,11 @@ end
 
 ---
 
-### `LDialog:setModal`
+#### `LDialog:setModal`
 
 Sets whether this dialog widget is modal.
 
 ```lua
--- signature
 LDialog:setModal(v)
 ```
 
@@ -4949,7 +5059,7 @@ LDialog:setModal(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to make modal. |
+| `v` | boolean | True to make modal. |
 
 **Example**
 
@@ -4966,12 +5076,11 @@ end
 
 ---
 
-### `LDialog:setOnClose`
+#### `LDialog:setOnClose`
 
 Registers a callback invoked when this dialog is closed.
 
 ```lua
--- signature
 LDialog:setOnClose(f)
 ```
 
@@ -4979,7 +5088,7 @@ LDialog:setOnClose(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -4996,12 +5105,11 @@ end
 
 ---
 
-### `LDialog:setTitle`
+#### `LDialog:setTitle`
 
 Sets the title text of this dialog widget.
 
 ```lua
--- signature
 LDialog:setTitle(title)
 ```
 
@@ -5009,7 +5117,7 @@ LDialog:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | The dialog title. |
+| `title` | string | The dialog title. |
 
 **Example**
 
@@ -5026,14 +5134,19 @@ end
 
 ---
 
-## LDockPanel
+## LDockPanel Handle
 
-### `LDockPanel:dock`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDockPanel:dock`
 
 Docks a child widget to the specified side of this dock panel.
 
 ```lua
--- signature
 LDockPanel:dock(child_idx, side)
 ```
 
@@ -5041,8 +5154,8 @@ LDockPanel:dock(child_idx, side)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | `number` | The widget index to dock. |
-| `side` | `string` | The dock side ("left", "right", "top", "bottom", "center"). |
+| `child_idx` | number | The widget index to dock. |
+| `side` | string | The dock side ("left", "right", "top", "bottom", "center"). |
 
 **Example**
 
@@ -5063,12 +5176,11 @@ end
 
 ---
 
-### `LDockPanel:getDockedCount`
+#### `LDockPanel:getDockedCount`
 
 Returns the number of widgets docked in this dock panel.
 
 ```lua
--- signature
 LDockPanel:getDockedCount()
 ```
 
@@ -5076,7 +5188,7 @@ LDockPanel:getDockedCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The docked widget count. |
+| number | The docked widget count. |
 
 **Example**
 
@@ -5097,12 +5209,11 @@ end
 
 ---
 
-### `LDockPanel:getSplitSize`
+#### `LDockPanel:getSplitSize`
 
 Returns the size configured for a dock panel side region.
 
 ```lua
--- signature
 LDockPanel:getSplitSize(side)
 ```
 
@@ -5110,13 +5221,13 @@ LDockPanel:getSplitSize(side)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `side` | `string` | The dock side. |
+| `side` | string | The dock side. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The size in pixels, or nil if not set. |
+| number | The size in pixels, or nil if not set. |
 
 **Example**
 
@@ -5137,12 +5248,11 @@ end
 
 ---
 
-### `LDockPanel:setSplitSize`
+#### `LDockPanel:setSplitSize`
 
 Sets the size of a dock panel side region.
 
 ```lua
--- signature
 LDockPanel:setSplitSize(side, size)
 ```
 
@@ -5150,8 +5260,8 @@ LDockPanel:setSplitSize(side, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `side` | `string` | The dock side ("left", "right", "top", "bottom"). |
-| `size` | `number` | The size in pixels. |
+| `side` | string | The dock side ("left", "right", "top", "bottom"). |
+| `size` | number | The size in pixels. |
 
 **Example**
 
@@ -5172,12 +5282,11 @@ end
 
 ---
 
-### `LDockPanel:undock`
+#### `LDockPanel:undock`
 
 Removes a child widget from this dock panel.
 
 ```lua
--- signature
 LDockPanel:undock(child_idx)
 ```
 
@@ -5185,7 +5294,7 @@ LDockPanel:undock(child_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | `number` | The widget index to undock. |
+| `child_idx` | number | The widget index to undock. |
 
 **Example**
 
@@ -5203,14 +5312,357 @@ end
 
 ---
 
-## LGuiTable
+## LFont Handle
 
-### `LGuiTable:addColumn`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFont:containsGlyph`
+
+Returns whether the font contains a glyph for the given character. This method is available to Lua scripts.
+
+```lua
+LFont:containsGlyph(char)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `char` | string | A single-character string to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the font has a glyph for this character. |
+
+---
+
+#### `LFont:getAscent`
+
+Returns the ascent (pixels above the baseline) of this font.
+
+```lua
+LFont:getAscent()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Ascent in pixels. |
+
+---
+
+#### `LFont:getDescent`
+
+Returns the descent (pixels below the baseline) of this font.
+
+```lua
+LFont:getDescent()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Descent in pixels (positive value extending downward). |
+
+---
+
+#### `LFont:getHeight`
+
+Returns the line height of this font in pixels.
+
+```lua
+LFont:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Line height in pixels. |
+
+---
+
+#### `LFont:getLineHeight`
+
+Returns the spacing between consecutive lines of text.
+
+```lua
+LFont:getLineHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Line height in pixels. |
+
+---
+
+#### `LFont:getName`
+
+Returns the human-readable name of this font. This method is available to Lua scripts.
+
+```lua
+LFont:getName()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Font name. |
+
+---
+
+#### `LFont:getSize`
+
+Returns the point size of this font. This method is available to Lua scripts.
+
+```lua
+LFont:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Point size. |
+
+---
+
+#### `LFont:getStyle`
+
+Returns the style string of this font. This method is available to Lua scripts.
+
+```lua
+LFont:getStyle()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Style name ("regular", "bold"). |
+
+---
+
+#### `LFont:getWidth`
+
+Measures the pixel width of a string when rendered with this font.
+
+```lua
+LFont:getWidth(text)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | The text to measure. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LFont:getWrap`
+
+Word-wraps text to fit within a pixel width limit and returns the resulting lines.
+
+```lua
+LFont:getWrap(text, limit)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | The text to wrap. |
+| `limit` | number | Maximum line width in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of wrapped line strings; and the widest line width. (value 1). |
+| number | Array of wrapped line strings; and the widest line width. (value 2). |
+
+---
+
+#### `LFont:isBold`
+
+Returns whether this font is the bold variant. This method is available to Lua scripts.
+
+```lua
+LFont:isBold()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if font style is bold. |
+
+---
+
+#### `LFont:lineHeight`
+
+Returns the line height of this font in pixels. This method is available to Lua scripts.
+
+```lua
+LFont:lineHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Line height in pixels. |
+
+---
+
+#### `LFont:measure`
+
+Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
+
+```lua
+LFont:measure(text, scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | Text to measure. |
+| `scale?` | number | Scale factor applied to dimensions. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
+
+---
+
+#### `LFont:release`
+
+Releases the font resource. The handle becomes invalid after this call.
+
+```lua
+LFont:release()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the font was still valid and was released. |
+
+---
+
+#### `LFont:setLineHeight`
+
+Overrides the line height used for multi-line text rendering.
+
+```lua
+LFont:setLineHeight(height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `height` | number | New line height in pixels. |
+
+---
+
+#### `LFont:type`
+
+Returns the type name string for this font object.
+
+```lua
+LFont:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always "[LFont](#lfont-handle)". |
+
+---
+
+#### `LFont:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LFont:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check ("Font" or "Object"). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the name matches. |
+
+---
+
+#### `LFont:wrapText`
+
+Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
+
+```lua
+LFont:wrapText(text, maxWidth, scale)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | Text to wrap. |
+| `maxWidth` | number | Maximum line width in pixels. |
+| `scale?` | number | Scale factor. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of wrapped line strings. |
+
+---
+
+## LGuiTable Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGuiTable:addColumn`
 
 Adds a new column to this table widget.
 
 ```lua
--- signature
 LGuiTable:addColumn(header, width)
 ```
 
@@ -5218,8 +5670,8 @@ LGuiTable:addColumn(header, width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `header` | `string` | The column header text. |
-| `width?` | `number` | The column width in pixels (default 100). |
+| `header` | string | The column header text. |
+| `width?` | number | The column width in pixels (default 100). |
 
 **Example**
 
@@ -5242,12 +5694,11 @@ end
 
 ---
 
-### `LGuiTable:addRow`
+#### `LGuiTable:addRow`
 
 Adds a row of data to this table widget.
 
 ```lua
--- signature
 LGuiTable:addRow(cells)
 ```
 
@@ -5255,7 +5706,7 @@ LGuiTable:addRow(cells)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cells` | `table` | Array of cell text values. |
+| `cells` | table | Array of cell text values. |
 
 **Example**
 
@@ -5279,12 +5730,11 @@ end
 
 ---
 
-### `LGuiTable:clearRows`
+#### `LGuiTable:clearRows`
 
 Clears all rows and the selected row in this table widget.
 
 ```lua
--- signature
 LGuiTable:clearRows()
 ```
 
@@ -5302,12 +5752,11 @@ end
 
 ---
 
-### `LGuiTable:getCell`
+#### `LGuiTable:getCell`
 
 Returns the text of a cell at the given 1-based row and column.
 
 ```lua
--- signature
 LGuiTable:getCell(row, col)
 ```
 
@@ -5315,14 +5764,14 @@ LGuiTable:getCell(row, col)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | `number` | The 1-based row index. |
-| `col` | `number` | The 1-based column index. |
+| `row` | number | The 1-based row index. |
+| `col` | number | The 1-based column index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The cell text, or nil if out of range. |
+| string | The cell text, or nil if out of range. |
 
 **Example**
 
@@ -5346,12 +5795,11 @@ end
 
 ---
 
-### `LGuiTable:getColumnCount`
+#### `LGuiTable:getColumnCount`
 
 Returns the number of columns in this table widget.
 
 ```lua
--- signature
 LGuiTable:getColumnCount()
 ```
 
@@ -5359,7 +5807,7 @@ LGuiTable:getColumnCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The column count. |
+| number | The column count. |
 
 **Example**
 
@@ -5383,12 +5831,11 @@ end
 
 ---
 
-### `LGuiTable:getRowCount`
+#### `LGuiTable:getRowCount`
 
 Returns the number of rows in this table widget.
 
 ```lua
--- signature
 LGuiTable:getRowCount()
 ```
 
@@ -5396,7 +5843,7 @@ LGuiTable:getRowCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The row count. |
+| number | The row count. |
 
 **Example**
 
@@ -5420,12 +5867,11 @@ end
 
 ---
 
-### `LGuiTable:getSelectedRow`
+#### `LGuiTable:getSelectedRow`
 
 Returns the 1-based index of the currently selected row, or nil.
 
 ```lua
--- signature
 LGuiTable:getSelectedRow()
 ```
 
@@ -5433,7 +5879,7 @@ LGuiTable:getSelectedRow()
 
 | Type | Description |
 |------|-------------|
-| `number` | The selected row index. |
+| number | The selected row index. |
 
 **Example**
 
@@ -5457,12 +5903,11 @@ end
 
 ---
 
-### `LGuiTable:isSortable`
+#### `LGuiTable:isSortable`
 
 Returns whether columns in this table can be sorted by clicking headers.
 
 ```lua
--- signature
 LGuiTable:isSortable()
 ```
 
@@ -5470,7 +5915,7 @@ LGuiTable:isSortable()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if sortable. |
+| boolean | True if sortable. |
 
 **Example**
 
@@ -5488,12 +5933,11 @@ end
 
 ---
 
-### `LGuiTable:setCell`
+#### `LGuiTable:setCell`
 
 Sets the text of a cell at the given 1-based row and column.
 
 ```lua
--- signature
 LGuiTable:setCell(row, col, text)
 ```
 
@@ -5501,9 +5945,9 @@ LGuiTable:setCell(row, col, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | `number` | The 1-based row index. |
-| `col` | `number` | The 1-based column index. |
-| `text` | `string` | The new cell text. |
+| `row` | number | The 1-based row index. |
+| `col` | number | The 1-based column index. |
+| `text` | string | The new cell text. |
 
 **Example**
 
@@ -5527,12 +5971,11 @@ end
 
 ---
 
-### `LGuiTable:setDataFrame`
+#### `LGuiTable:setDataFrame`
 
 Replaces columns and rows from a dataframe, stringifying cell values for display.
 
 ```lua
--- signature
 LGuiTable:setDataFrame(df, opts)
 ```
 
@@ -5540,14 +5983,14 @@ LGuiTable:setDataFrame(df, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | `LDataFrame` | Source dataframe. |
-| `opts?` | `table` | Optional table with maxRows integer, columns string[], and includeHeaders boolean. |
+| `df` | LDataFrame | Source dataframe. |
+| `opts?` | table | Optional table with maxRows integer, columns string[], and includeHeaders boolean. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The resulting row count. |
+| number | The resulting row count. |
 
 **Example**
 
@@ -5562,12 +6005,11 @@ end
 
 ---
 
-### `LGuiTable:setOnSelect`
+#### `LGuiTable:setOnSelect`
 
 Registers a callback invoked when a table row is selected.
 
 ```lua
--- signature
 LGuiTable:setOnSelect(f)
 ```
 
@@ -5575,7 +6017,7 @@ LGuiTable:setOnSelect(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -5593,12 +6035,11 @@ end
 
 ---
 
-### `LGuiTable:setRows`
+#### `LGuiTable:setRows`
 
 Replaces all rows with an array of row arrays.
 
 ```lua
--- signature
 LGuiTable:setRows(rows)
 ```
 
@@ -5606,13 +6047,13 @@ LGuiTable:setRows(rows)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rows` | `table` | Array of row arrays containing scalar cell values. |
+| `rows` | table | Array of row arrays containing scalar cell values. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The resulting row count. |
+| number | The resulting row count. |
 
 **Example**
 
@@ -5626,12 +6067,11 @@ end
 
 ---
 
-### `LGuiTable:setSelectedRow`
+#### `LGuiTable:setSelectedRow`
 
 Sets the selected row by its 1-based index, or nil to deselect.
 
 ```lua
--- signature
 LGuiTable:setSelectedRow(row)
 ```
 
@@ -5639,7 +6079,7 @@ LGuiTable:setSelectedRow(row)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row?` | `number` | The 1-based row index, or nil. |
+| `row?` | number | The 1-based row index, or nil. |
 
 **Example**
 
@@ -5663,12 +6103,11 @@ end
 
 ---
 
-### `LGuiTable:setSortable`
+#### `LGuiTable:setSortable`
 
 Sets whether columns in this table can be sorted by clicking headers.
 
 ```lua
--- signature
 LGuiTable:setSortable(v)
 ```
 
@@ -5676,7 +6115,7 @@ LGuiTable:setSortable(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to enable sorting. |
+| `v` | boolean | True to enable sorting. |
 
 **Example**
 
@@ -5700,14 +6139,19 @@ end
 
 ---
 
-## LGuiWindow
+## LGuiWindow Handle
 
-### `LGuiWindow:getTitle`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGuiWindow:getTitle`
 
 Returns the title bar text of this GUI window.
 
 ```lua
--- signature
 LGuiWindow:getTitle()
 ```
 
@@ -5715,7 +6159,7 @@ LGuiWindow:getTitle()
 
 | Type | Description |
 |------|-------------|
-| `string` | The window title. |
+| string | The window title. |
 
 **Example**
 
@@ -5735,12 +6179,11 @@ end
 
 ---
 
-### `LGuiWindow:isCloseable`
+#### `LGuiWindow:isCloseable`
 
 Returns whether this window shows a close button.
 
 ```lua
--- signature
 LGuiWindow:isCloseable()
 ```
 
@@ -5748,7 +6191,7 @@ LGuiWindow:isCloseable()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if closeable. |
+| boolean | True if closeable. |
 
 **Example**
 
@@ -5764,12 +6207,11 @@ end
 
 ---
 
-### `LGuiWindow:isDraggable`
+#### `LGuiWindow:isDraggable`
 
 Returns whether this window can be dragged by its title bar.
 
 ```lua
--- signature
 LGuiWindow:isDraggable()
 ```
 
@@ -5777,7 +6219,7 @@ LGuiWindow:isDraggable()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if draggable. |
+| boolean | True if draggable. |
 
 **Example**
 
@@ -5793,12 +6235,11 @@ end
 
 ---
 
-### `LGuiWindow:isResizable`
+#### `LGuiWindow:isResizable`
 
 Returns whether this window can be resized by dragging its edges.
 
 ```lua
--- signature
 LGuiWindow:isResizable()
 ```
 
@@ -5806,7 +6247,7 @@ LGuiWindow:isResizable()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if resizable. |
+| boolean | True if resizable. |
 
 **Example**
 
@@ -5822,12 +6263,11 @@ end
 
 ---
 
-### `LGuiWindow:setCloseable`
+#### `LGuiWindow:setCloseable`
 
 Sets whether this window shows a close button.
 
 ```lua
--- signature
 LGuiWindow:setCloseable(v)
 ```
 
@@ -5835,7 +6275,7 @@ LGuiWindow:setCloseable(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to show the close button. |
+| `v` | boolean | True to show the close button. |
 
 **Example**
 
@@ -5851,12 +6291,11 @@ end
 
 ---
 
-### `LGuiWindow:setDraggable`
+#### `LGuiWindow:setDraggable`
 
 Sets whether this window can be dragged by its title bar.
 
 ```lua
--- signature
 LGuiWindow:setDraggable(v)
 ```
 
@@ -5864,7 +6303,7 @@ LGuiWindow:setDraggable(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to allow dragging. |
+| `v` | boolean | True to allow dragging. |
 
 **Example**
 
@@ -5880,12 +6319,11 @@ end
 
 ---
 
-### `LGuiWindow:setOnClose`
+#### `LGuiWindow:setOnClose`
 
 Registers a callback invoked when this window is closed.
 
 ```lua
--- signature
 LGuiWindow:setOnClose(f)
 ```
 
@@ -5893,7 +6331,7 @@ LGuiWindow:setOnClose(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -5909,12 +6347,11 @@ end
 
 ---
 
-### `LGuiWindow:setResizable`
+#### `LGuiWindow:setResizable`
 
 Sets whether this window can be resized.
 
 ```lua
--- signature
 LGuiWindow:setResizable(v)
 ```
 
@@ -5922,7 +6359,7 @@ LGuiWindow:setResizable(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to allow resizing. |
+| `v` | boolean | True to allow resizing. |
 
 **Example**
 
@@ -5939,12 +6376,11 @@ end
 
 ---
 
-### `LGuiWindow:setTitle`
+#### `LGuiWindow:setTitle`
 
 Sets the title bar text of this GUI window.
 
 ```lua
--- signature
 LGuiWindow:setTitle(title)
 ```
 
@@ -5952,7 +6388,7 @@ LGuiWindow:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | The window title. |
+| `title` | string | The window title. |
 
 **Example**
 
@@ -5969,14 +6405,823 @@ end
 
 ---
 
-## LImageWidget
+## LImageData Handle
 
-### `LImageWidget:getScaleMode`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageData:alphaMask`
+
+Multiplies this image alpha channel by a factor in place.
+
+```lua
+LImageData:alphaMask(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Alpha multiplier. |
+
+---
+
+#### `LImageData:applyPaletteLut`
+
+Applies a palette lookup table to this image in place.
+
+```lua
+LImageData:applyPaletteLut(lut_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+
+---
+
+#### `LImageData:blit`
+
+Copies a source image into this image at a destination coordinate.
+
+```lua
+LImageData:blit(src_ud, dst_x, dst_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:blur`
+
+Returns a blurred copy of this image.
+
+```lua
+LImageData:blur(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Blur radius. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Blurred image data handle. |
+
+---
+
+#### `LImageData:brightness`
+
+Applies a brightness factor to this image in place.
+
+```lua
+LImageData:brightness(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Brightness multiplier or adjustment factor. |
+
+---
+
+#### `LImageData:contrast`
+
+Applies a contrast factor to this image in place.
+
+```lua
+LImageData:contrast(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Contrast factor. |
+
+---
+
+#### `LImageData:convolve`
+
+Applies a convolution kernel and returns the filtered image.
+
+```lua
+LImageData:convolve(kernel_t, ksize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Convolved image data handle. |
+
+---
+
+#### `LImageData:crop`
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+```lua
+LImageData:crop(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Cropped image data handle. |
+
+---
+
+#### `LImageData:diff`
+
+Computes a difference metric against another image.
+
+```lua
+LImageData:diff(other_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Difference score. |
+
+---
+
+#### `LImageData:drawCircle`
+
+Draws a filled circle into this image.
+
+```lua
+LImageData:drawCircle(cx, cy, radius, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawLine`
+
+Draws a line into this image. This method is available to Lua scripts.
+
+```lua
+LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawNineSlice`
+
+Draws a nine-slice region from a source image into this image.
+
+```lua
+LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_x` | number | Source region x coordinate. |
+| `src_y` | number | Source region y coordinate. |
+| `src_w` | number | Source region width. |
+| `src_h` | number | Source region height. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+| `dst_w` | number | Destination width. |
+| `dst_h` | number | Destination height. |
+| `inset_left` | number | Left inset width. |
+| `inset_right` | number | Right inset width. |
+| `inset_top` | number | Top inset height. |
+| `inset_bottom` | number | Bottom inset height. |
+
+---
+
+#### `LImageData:drawRect`
+
+Draws a filled rectangle into this image.
+
+```lua
+LImageData:drawRect(x, y, w, h, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:encode`
+
+Encodes image data in a supported format.
+
+```lua
+LImageData:encode(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Format name; currently `png`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded image bytes. |
+
+---
+
+#### `LImageData:fill`
+
+Fills the whole image with one RGBA color.
+
+```lua
+LImageData:fill(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:flipHorizontal`
+
+Flips this image horizontally in place.
+
+```lua
+LImageData:flipHorizontal()
+```
+
+---
+
+#### `LImageData:flipVertical`
+
+Flips this image vertically in place.
+
+```lua
+LImageData:flipVertical()
+```
+
+---
+
+#### `LImageData:gamma`
+
+Applies gamma correction to this image in place.
+
+```lua
+LImageData:gamma(gamma)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gamma` | number | Gamma value. |
+
+---
+
+#### `LImageData:getDimensions`
+
+Returns image dimensions. This method is available to Lua scripts.
+
+```lua
+LImageData:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getHeight`
+
+Returns image height. This method is available to Lua scripts.
+
+```lua
+LImageData:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getPixel`
+
+Returns RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:getPixel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LImageData:getRawBytes`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getRawBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getRegion`
+
+Returns an image region when the requested rectangle is inside bounds.
+
+```lua
+LImageData:getRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+
+---
+
+#### `LImageData:getString`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getString()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getWidth`
+
+Returns image width. This method is available to Lua scripts.
+
+```lua
+LImageData:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LImageData:grayscale`
+
+Converts this image to grayscale in place.
+
+```lua
+LImageData:grayscale()
+```
+
+---
+
+#### `LImageData:invert`
+
+Inverts image color channels in place.
+
+```lua
+LImageData:invert()
+```
+
+---
+
+#### `LImageData:mapPixel`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixel(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:mapPixels`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixels(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:noise`
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+```lua
+LImageData:noise(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Noise amount. |
+
+---
+
+#### `LImageData:paste`
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+```lua
+LImageData:paste(src_ud, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:posterize`
+
+Reduces image colors to a fixed number of levels in place.
+
+```lua
+LImageData:posterize(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels` | number | Number of posterization levels. |
+
+---
+
+#### `LImageData:resize`
+
+Returns a resized image using an optional named filter.
+
+```lua
+LImageData:resize(width, height, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+
+---
+
+#### `LImageData:resizeNearest`
+
+Returns a resized image using nearest-neighbor sampling.
+
+```lua
+LImageData:resizeNearest(new_w, new_h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Resized image data handle. |
+
+---
+
+#### `LImageData:rotate90cw`
+
+Returns a new image rotated ninety degrees clockwise.
+
+```lua
+LImageData:rotate90cw()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Rotated image data handle. |
+
+---
+
+#### `LImageData:saturation`
+
+Applies a saturation factor to this image in place.
+
+```lua
+LImageData:saturation(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Saturation factor. |
+
+---
+
+#### `LImageData:sepia`
+
+Applies a sepia filter to this image in place.
+
+```lua
+LImageData:sepia()
+```
+
+---
+
+#### `LImageData:setPixel`
+
+Sets RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:setPixel(x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:setRawData`
+
+Replaces the image byte buffer with raw bytes.
+
+```lua
+LImageData:setRawData(bytes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bytes` | string | Raw byte string matching the image storage size. |
+
+---
+
+#### `LImageData:sharpen`
+
+Returns a sharpened copy of this image.
+
+```lua
+LImageData:sharpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+
+---
+
+#### `LImageData:threshold`
+
+Applies a threshold filter to this image in place.
+
+```lua
+LImageData:threshold(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | number | Threshold channel value. |
+
+---
+
+#### `LImageData:tint`
+
+Blends this image toward a tint color in place.
+
+```lua
+LImageData:tint(tr, tg, tb, factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:type`
+
+Returns the Lua-visible type name for this image data handle.
+
+```lua
+LImageData:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LImageData](#limagedata-handle)`. |
+
+---
+
+#### `LImageData:typeOf`
+
+Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+
+```lua
+LImageData:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+---
+
+## LImageWidget Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageWidget:getScaleMode`
 
 Returns the image scaling mode (e.g. "fit", "fill", "stretch").
 
 ```lua
--- signature
 LImageWidget:getScaleMode()
 ```
 
@@ -5984,7 +7229,7 @@ LImageWidget:getScaleMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | The scale mode. |
+| string | The scale mode. |
 
 **Example**
 
@@ -6003,12 +7248,11 @@ end
 
 ---
 
-### `LImageWidget:getTint`
+#### `LImageWidget:getTint`
 
 Returns the tint color of this image widget as RGBA components.
 
 ```lua
--- signature
 LImageWidget:getTint()
 ```
 
@@ -6016,10 +7260,10 @@ LImageWidget:getTint()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red component. |
-| `number` | b Green component. |
-| `number` | c Blue component. |
-| `number` | d Alpha component. |
+| number | Red component. |
+| number | Green component. |
+| number | Blue component. |
+| number | Alpha component. |
 
 **Example**
 
@@ -6038,12 +7282,11 @@ end
 
 ---
 
-### `LImageWidget:setScaleMode`
+#### `LImageWidget:setScaleMode`
 
 Sets the image scaling mode (e.g. "fit", "fill", "stretch").
 
 ```lua
--- signature
 LImageWidget:setScaleMode(mode)
 ```
 
@@ -6051,7 +7294,7 @@ LImageWidget:setScaleMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | The scale mode. |
+| `mode` | string | The scale mode. |
 
 **Example**
 
@@ -6070,12 +7313,11 @@ end
 
 ---
 
-### `LImageWidget:setTint`
+#### `LImageWidget:setTint`
 
 Sets the tint color of this image widget as RGBA components.
 
 ```lua
--- signature
 LImageWidget:setTint(r, g, b, a)
 ```
 
@@ -6083,10 +7325,10 @@ LImageWidget:setTint(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red (0.0 to 1.0). |
-| `g` | `number` | Green (0.0 to 1.0). |
-| `b` | `number` | Blue (0.0 to 1.0). |
-| `a?` | `number` | Alpha (0.0 to 1.0), defaults to 1.0. |
+| `r` | number | Red (0.0 to 1.0). |
+| `g` | number | Green (0.0 to 1.0). |
+| `b` | number | Blue (0.0 to 1.0). |
+| `a?` | number | Alpha (0.0 to 1.0), defaults to 1.0. |
 
 **Example**
 
@@ -6105,14 +7347,19 @@ end
 
 ---
 
-## LLabel
+## LLabel Handle
 
-### `LLabel:getText`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLabel:getText`
 
 Returns the current display text of this label.
 
 ```lua
--- signature
 LLabel:getText()
 ```
 
@@ -6120,7 +7367,7 @@ LLabel:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The label text. |
+| string | The label text. |
 
 **Example**
 
@@ -6136,12 +7383,11 @@ end
 
 ---
 
-### `LLabel:setText`
+#### `LLabel:setText`
 
 Sets the display text on this label.
 
 ```lua
--- signature
 LLabel:setText(text)
 ```
 
@@ -6149,7 +7395,7 @@ LLabel:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The label text. |
+| `text` | string | The label text. |
 
 **Example**
 
@@ -6165,14 +7411,19 @@ end
 
 ---
 
-## LLayout
+## LLayout Handle
 
-### `LLayout:getAlign`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLayout:getAlign`
 
 Returns the current cross-axis alignment mode.
 
 ```lua
--- signature
 LLayout:getAlign()
 ```
 
@@ -6180,7 +7431,7 @@ LLayout:getAlign()
 
 | Type | Description |
 |------|-------------|
-| `string` | The alignment mode. |
+| string | The alignment mode. |
 
 **Example**
 
@@ -6196,12 +7447,11 @@ end
 
 ---
 
-### `LLayout:getDirection`
+#### `LLayout:getDirection`
 
 Returns the current layout direction.
 
 ```lua
--- signature
 LLayout:getDirection()
 ```
 
@@ -6209,7 +7459,7 @@ LLayout:getDirection()
 
 | Type | Description |
 |------|-------------|
-| `string` | The direction name. |
+| string | The direction name. |
 
 **Example**
 
@@ -6225,12 +7475,11 @@ end
 
 ---
 
-### `LLayout:getJustify`
+#### `LLayout:getJustify`
 
 Returns the current main-axis justification mode.
 
 ```lua
--- signature
 LLayout:getJustify()
 ```
 
@@ -6238,7 +7487,7 @@ LLayout:getJustify()
 
 | Type | Description |
 |------|-------------|
-| `string` | The justification mode. |
+| string | The justification mode. |
 
 **Example**
 
@@ -6254,12 +7503,11 @@ end
 
 ---
 
-### `LLayout:getSpacing`
+#### `LLayout:getSpacing`
 
 Returns the current spacing between children.
 
 ```lua
--- signature
 LLayout:getSpacing()
 ```
 
@@ -6267,7 +7515,7 @@ LLayout:getSpacing()
 
 | Type | Description |
 |------|-------------|
-| `number` | The spacing in pixels. |
+| number | The spacing in pixels. |
 
 **Example**
 
@@ -6283,12 +7531,11 @@ end
 
 ---
 
-### `LLayout:getWrap`
+#### `LLayout:getWrap`
 
 Returns whether wrapping is enabled for this layout.
 
 ```lua
--- signature
 LLayout:getWrap()
 ```
 
@@ -6296,7 +7543,7 @@ LLayout:getWrap()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if wrapping is on. |
+| boolean | True if wrapping is on. |
 
 **Example**
 
@@ -6312,12 +7559,11 @@ end
 
 ---
 
-### `LLayout:setAlign`
+#### `LLayout:setAlign`
 
 Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
 
 ```lua
--- signature
 LLayout:setAlign(align)
 ```
 
@@ -6325,13 +7571,13 @@ LLayout:setAlign(align)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `align` | `string` | The alignment mode. |
+| `align` | string | The alignment mode. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layout exists and the alignment was set. |
+| boolean | True when the layout exists and the alignment was set. |
 
 **Example**
 
@@ -6347,12 +7593,11 @@ end
 
 ---
 
-### `LLayout:setColumns`
+#### `LLayout:setColumns`
 
 Sets the number of columns for grid layout mode (minimum 1).
 
 ```lua
--- signature
 LLayout:setColumns(n)
 ```
 
@@ -6360,7 +7605,7 @@ LLayout:setColumns(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Column count. |
+| `n` | number | Column count. |
 
 **Example**
 
@@ -6376,12 +7621,11 @@ end
 
 ---
 
-### `LLayout:setDirection`
+#### `LLayout:setDirection`
 
 Sets the layout direction for child arrangement ("horizontal", "vertical", or "grid").
 
 ```lua
--- signature
 LLayout:setDirection(dir)
 ```
 
@@ -6389,7 +7633,7 @@ LLayout:setDirection(dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dir` | `string` | The layout direction. |
+| `dir` | string | The layout direction. |
 
 **Example**
 
@@ -6405,12 +7649,11 @@ end
 
 ---
 
-### `LLayout:setJustify`
+#### `LLayout:setJustify`
 
 Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
 
 ```lua
--- signature
 LLayout:setJustify(justify)
 ```
 
@@ -6418,13 +7661,13 @@ LLayout:setJustify(justify)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `justify` | `string` | The justification mode. |
+| `justify` | string | The justification mode. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layout exists and the justification was set. |
+| boolean | True when the layout exists and the justification was set. |
 
 **Example**
 
@@ -6440,12 +7683,11 @@ end
 
 ---
 
-### `LLayout:setSpacing`
+#### `LLayout:setSpacing`
 
 Sets the spacing in pixels between child widgets in this layout.
 
 ```lua
--- signature
 LLayout:setSpacing(spacing)
 ```
 
@@ -6453,7 +7695,7 @@ LLayout:setSpacing(spacing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `spacing` | `number` | Gap between children in pixels. |
+| `spacing` | number | Gap between children in pixels. |
 
 **Example**
 
@@ -6469,12 +7711,11 @@ end
 
 ---
 
-### `LLayout:setWrap`
+#### `LLayout:setWrap`
 
 Enables or disables wrapping of children to the next row/column when they overflow.
 
 ```lua
--- signature
 LLayout:setWrap(wrap)
 ```
 
@@ -6482,7 +7723,7 @@ LLayout:setWrap(wrap)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wrap` | `boolean` | True to enable wrapping. |
+| `wrap` | boolean | True to enable wrapping. |
 
 **Example**
 
@@ -6498,14 +7739,19 @@ end
 
 ---
 
-## LLineChart
+## LLineChart Handle
 
-### `LLineChart:addSeries`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLineChart:addSeries`
 
 Add a named data series to the line chart.
 
 ```lua
--- signature
 LLineChart:addSeries(name, data, color)
 ```
 
@@ -6513,18 +7759,17 @@ LLineChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Display name of the series. |
-| `data` | `table` | Array of {x, y} point tables. |
-| `color?` | `table` | Optional RGBA color {r, g, b, a}. |
+| `name` | string | Display name of the series. |
+| `data` | table | Array of {x, y} point tables. |
+| `color?` | table | Optional RGBA color {r, g, b, a}. |
 
 ---
 
-### `LLineChart:addSeriesFromDataFrame`
+#### `LLineChart:addSeriesFromDataFrame`
 
 Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
 
 ```lua
--- signature
 LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 ```
 
@@ -6532,20 +7777,20 @@ LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The series name. |
-| `df` | `LDataFrame` | Source dataframe. |
-| `x_col` | `string` | Column name for X values. |
-| `y_col` | `string` | Column name for Y values. |
-| `r` | `number` | Red color component. |
-| `g` | `number` | Green color component. |
-| `b` | `number` | Blue color component. |
-| `opts?` | `table` | Optional table with maxRows integer. |
+| `name` | string | The series name. |
+| `df` | LDataFrame | Source dataframe. |
+| `x_col` | string | Column name for X values. |
+| `y_col` | string | Column name for Y values. |
+| `r` | number | Red color component. |
+| `g` | number | Green color component. |
+| `b` | number | Blue color component. |
+| `opts?` | table | Optional table with maxRows integer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of accepted points added to the series. |
+| number | Number of accepted points added to the series. |
 
 **Example**
 
@@ -6560,23 +7805,21 @@ end
 
 ---
 
-### `LLineChart:clear`
+#### `LLineChart:clear`
 
 Removes all data series from this chart.
 
 ```lua
--- signature
 LLineChart:clear()
 ```
 
 ---
 
-### `LLineChart:drawToImage`
+#### `LLineChart:drawToImage`
 
 Renders this line chart to an image buffer.
 
 ```lua
--- signature
 LLineChart:drawToImage(target)
 ```
 
@@ -6584,7 +7827,7 @@ LLineChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | The image to draw into. |
+| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
 
 **Example**
 
@@ -6602,12 +7845,11 @@ end
 
 ---
 
-### `LLineChart:getHeight`
+#### `LLineChart:getHeight`
 
 Get the chart output height in pixels.
 
 ```lua
--- signature
 LLineChart:getHeight()
 ```
 
@@ -6615,16 +7857,15 @@ LLineChart:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 ---
 
-### `LLineChart:getWidth`
+#### `LLineChart:getWidth`
 
 Get the chart output width in pixels.
 
 ```lua
--- signature
 LLineChart:getWidth()
 ```
 
@@ -6632,16 +7873,15 @@ LLineChart:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 ---
 
-### `LLineChart:render`
+#### `LLineChart:render`
 
 Renders the chart contents into a new pixel buffer.
 
 ```lua
--- signature
 LLineChart:render()
 ```
 
@@ -6649,18 +7889,17 @@ LLineChart:render()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Output width in pixels. |
-| `number` | b Output height in pixels. |
-| `string` | c RGBA8 pixel data as a binary string. |
+| number | Output width in pixels. |
+| number | Output height in pixels. |
+| string | RGBA8 pixel data as a binary string. |
 
 ---
 
-### `LLineChart:setTitle`
+#### `LLineChart:setTitle`
 
 Set or update the chart's displayed title.
 
 ```lua
--- signature
 LLineChart:setTitle(title)
 ```
 
@@ -6668,16 +7907,15 @@ LLineChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | New chart title text. |
+| `title` | string | New chart title text. |
 
 ---
 
-### `LLineChart:setXMax`
+#### `LLineChart:setXMax`
 
 Sets the maximum X-axis value for this line chart.
 
 ```lua
--- signature
 LLineChart:setXMax(v)
 ```
 
@@ -6685,7 +7923,7 @@ LLineChart:setXMax(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The X-axis maximum. |
+| `v` | number | The X-axis maximum. |
 
 **Example**
 
@@ -6702,12 +7940,11 @@ end
 
 ---
 
-### `LLineChart:setYMax`
+#### `LLineChart:setYMax`
 
 Sets the maximum Y-axis value for this line chart.
 
 ```lua
--- signature
 LLineChart:setYMax(v)
 ```
 
@@ -6715,7 +7952,7 @@ LLineChart:setYMax(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The Y-axis maximum. |
+| `v` | number | The Y-axis maximum. |
 
 **Example**
 
@@ -6732,12 +7969,11 @@ end
 
 ---
 
-### `LLineChart:type`
+#### `LLineChart:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LLineChart:type()
 ```
 
@@ -6745,7 +7981,7 @@ LLineChart:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LLineChart". |
+| string | Always "[LLineChart](#llinechart-handle)". |
 
 **Example**
 
@@ -6762,12 +7998,11 @@ end
 
 ---
 
-### `LLineChart:typeOf`
+#### `LLineChart:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LLineChart:typeOf(name)
 ```
 
@@ -6775,13 +8010,13 @@ LLineChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -6796,14 +8031,19 @@ end
 
 ---
 
-## LList
+## LList Handle
 
-### `LList:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LList:add`
 
 Append a value to the end of the list.
 
 ```lua
--- signature
 LList:add(value)
 ```
 
@@ -6811,27 +8051,25 @@ LList:add(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to append. |
+| `value` | any | The value to append. |
 
 ---
 
-### `LList:clear`
+#### `LList:clear`
 
 Remove all items from the list. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:clear()
 ```
 
 ---
 
-### `LList:contains`
+#### `LList:contains`
 
 Check whether the list contains a specific value.
 
 ```lua
--- signature
 LList:contains(value)
 ```
 
@@ -6839,22 +8077,21 @@ LList:contains(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `string` | The value to search for. |
+| `value` | string | The value to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if found. |
+| boolean | True if found. |
 
 ---
 
-### `LList:get`
+#### `LList:get`
 
 Get the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LList:get(index)
 ```
 
@@ -6862,23 +8099,22 @@ LList:get(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
+| `index` | number | 1-based position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The value. |
-| `nil` | b When not available. |
+| string | The value. |
+| nil | When not available. |
 
 ---
 
-### `LList:indexOf`
+#### `LList:indexOf`
 
 Find the 1-based index of the first occurrence of a value. Returns nil if not found.
 
 ```lua
--- signature
 LList:indexOf(value)
 ```
 
@@ -6886,22 +8122,21 @@ LList:indexOf(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `string` | The value to search for. |
+| `value` | string | The value to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The 1-based index, or nil when the value is not found. |
+| number | The 1-based index, or nil when the value is not found. |
 
 ---
 
-### `LList:insert`
+#### `LList:insert`
 
 Insert a value at a 1-based index, shifting subsequent items right.
 
 ```lua
--- signature
 LList:insert(index, value)
 ```
 
@@ -6909,17 +8144,16 @@ LList:insert(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based insertion position. |
-| `value` | `any` | The value to insert. |
+| `index` | number | 1-based insertion position. |
+| `value` | any | The value to insert. |
 
 ---
 
-### `LList:isEmpty`
+#### `LList:isEmpty`
 
 Check whether the list is empty. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:isEmpty()
 ```
 
@@ -6927,16 +8161,15 @@ LList:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 ---
 
-### `LList:len`
+#### `LList:len`
 
 Return the number of items in the list.
 
 ```lua
--- signature
 LList:len()
 ```
 
@@ -6944,16 +8177,15 @@ LList:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 ---
 
-### `LList:pop`
+#### `LList:pop`
 
 Remove and return the last value. Returns nil if empty.
 
 ```lua
--- signature
 LList:pop()
 ```
 
@@ -6961,17 +8193,16 @@ LList:pop()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The popped value. |
-| `nil` | b When not available. |
+| string | The popped value. |
+| nil | When not available. |
 
 ---
 
-### `LList:push`
+#### `LList:push`
 
 Append a value to the end of the list (alias for add).
 
 ```lua
--- signature
 LList:push(value)
 ```
 
@@ -6979,16 +8210,15 @@ LList:push(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to append. |
+| `value` | any | The value to append. |
 
 ---
 
-### `LList:remove`
+#### `LList:remove`
 
 Remove and return the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LList:remove(index)
 ```
 
@@ -6996,34 +8226,32 @@ LList:remove(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position to remove. |
+| `index` | number | 1-based position to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The removed value. |
-| `nil` | b When not available. |
+| string | The removed value. |
+| nil | When not available. |
 
 ---
 
-### `LList:reverse`
+#### `LList:reverse`
 
 Reverse the order of all items in the list in-place.
 
 ```lua
--- signature
 LList:reverse()
 ```
 
 ---
 
-### `LList:set`
+#### `LList:set`
 
 Replace the value at a 1-based index. Errors if index is 0 or out of range.
 
 ```lua
--- signature
 LList:set(index, value)
 ```
 
@@ -7031,17 +8259,16 @@ LList:set(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
-| `value` | `any` | The new value. |
+| `index` | number | 1-based position. |
+| `value` | any | The new value. |
 
 ---
 
-### `LList:shift`
+#### `LList:shift`
 
 Remove and return the first value. Returns nil if empty.
 
 ```lua
--- signature
 LList:shift()
 ```
 
@@ -7049,17 +8276,16 @@ LList:shift()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The shifted value. |
-| `nil` | b When not available. |
+| string | The shifted value. |
+| nil | When not available. |
 
 ---
 
-### `LList:toArray`
+#### `LList:toArray`
 
 Return all items as an array table. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:toArray()
 ```
 
@@ -7067,16 +8293,15 @@ LList:toArray()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of all values. |
+| number[] | Array of all values. |
 
 ---
 
-### `LList:unshift`
+#### `LList:unshift`
 
 Insert a value at the beginning of the list.
 
 ```lua
--- signature
 LList:unshift(value)
 ```
 
@@ -7084,18 +8309,23 @@ LList:unshift(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to prepend. |
+| `value` | any | The value to prepend. |
 
 ---
 
-## LListBox
+## LListBox Handle
 
-### `LListBox:addItem`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LListBox:addItem`
 
 Appends a new text item to this list box.
 
 ```lua
--- signature
 LListBox:addItem(text)
 ```
 
@@ -7103,7 +8333,7 @@ LListBox:addItem(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The item text to add. |
+| `text` | string | The item text to add. |
 
 **Example**
 
@@ -7122,12 +8352,11 @@ end
 
 ---
 
-### `LListBox:clearItems`
+#### `LListBox:clearItems`
 
 Removes all items from this list box.
 
 ```lua
--- signature
 LListBox:clearItems()
 ```
 
@@ -7150,12 +8379,11 @@ end
 
 ---
 
-### `LListBox:getItem`
+#### `LListBox:getItem`
 
 Returns the text of the item at the given 1-based index.
 
 ```lua
--- signature
 LListBox:getItem(index)
 ```
 
@@ -7163,13 +8391,13 @@ LListBox:getItem(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based item index. |
+| `index` | number | The 1-based item index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The item text, or empty string if out of range. |
+| string | The item text, or empty string if out of range. |
 
 **Example**
 
@@ -7188,12 +8416,11 @@ end
 
 ---
 
-### `LListBox:getItemCount`
+#### `LListBox:getItemCount`
 
 Returns the number of items in this list box.
 
 ```lua
--- signature
 LListBox:getItemCount()
 ```
 
@@ -7201,7 +8428,7 @@ LListBox:getItemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The item count. |
+| number | The item count. |
 
 **Example**
 
@@ -7220,12 +8447,11 @@ end
 
 ---
 
-### `LListBox:getSelectedIndex`
+#### `LListBox:getSelectedIndex`
 
 Returns the 1-based index of the currently selected item, or 0 if none.
 
 ```lua
--- signature
 LListBox:getSelectedIndex()
 ```
 
@@ -7233,7 +8459,7 @@ LListBox:getSelectedIndex()
 
 | Type | Description |
 |------|-------------|
-| `number` | The selected index. |
+| number | The selected index. |
 
 **Example**
 
@@ -7252,12 +8478,11 @@ end
 
 ---
 
-### `LListBox:removeItem`
+#### `LListBox:removeItem`
 
 Removes the item at the given 1-based index from this list box.
 
 ```lua
--- signature
 LListBox:removeItem(index)
 ```
 
@@ -7265,7 +8490,7 @@ LListBox:removeItem(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based index to remove. |
+| `index` | number | The 1-based index to remove. |
 
 **Example**
 
@@ -7286,12 +8511,11 @@ end
 
 ---
 
-### `LListBox:setItemHeight`
+#### `LListBox:setItemHeight`
 
 Sets the pixel height of each item row in this list box.
 
 ```lua
--- signature
 LListBox:setItemHeight(h)
 ```
 
@@ -7299,7 +8523,7 @@ LListBox:setItemHeight(h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `h` | `number` | Row height in pixels. |
+| `h` | number | Row height in pixels. |
 
 **Example**
 
@@ -7320,12 +8544,11 @@ end
 
 ---
 
-### `LListBox:setSelectedIndex`
+#### `LListBox:setSelectedIndex`
 
 Sets the selected item by 1-based index.
 
 ```lua
--- signature
 LListBox:setSelectedIndex(index)
 ```
 
@@ -7333,7 +8556,7 @@ LListBox:setSelectedIndex(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based index of the item to select. |
+| `index` | number | The 1-based index of the item to select. |
 
 **Example**
 
@@ -7352,14 +8575,19 @@ end
 
 ---
 
-## LMenuBar
+## LMenuBar Handle
 
-### `LMenuBar:addMenu`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMenuBar:addMenu`
 
 Adds a menu (by its widget index) to this menu bar.
 
 ```lua
--- signature
 LMenuBar:addMenu(menu_idx)
 ```
 
@@ -7367,7 +8595,7 @@ LMenuBar:addMenu(menu_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `menu_idx` | `number` | The widget index of the menu to add. |
+| `menu_idx` | number | The widget index of the menu to add. |
 
 **Example**
 
@@ -7388,12 +8616,11 @@ end
 
 ---
 
-### `LMenuBar:getMenuCount`
+#### `LMenuBar:getMenuCount`
 
 Returns the number of menus in this menu bar.
 
 ```lua
--- signature
 LMenuBar:getMenuCount()
 ```
 
@@ -7401,7 +8628,7 @@ LMenuBar:getMenuCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The menu count. |
+| number | The menu count. |
 
 **Example**
 
@@ -7422,12 +8649,11 @@ end
 
 ---
 
-### `LMenuBar:getMenus`
+#### `LMenuBar:getMenus`
 
 Returns a table of widget indices for all menus in this menu bar.
 
 ```lua
--- signature
 LMenuBar:getMenus()
 ```
 
@@ -7435,7 +8661,7 @@ LMenuBar:getMenus()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Menu widget indices. |
+| number[] | Menu widget indices. |
 
 **Example**
 
@@ -7456,12 +8682,11 @@ end
 
 ---
 
-### `LMenuBar:removeMenu`
+#### `LMenuBar:removeMenu`
 
 Removes a menu from this menu bar by its widget index.
 
 ```lua
--- signature
 LMenuBar:removeMenu(menu_idx)
 ```
 
@@ -7469,13 +8694,13 @@ LMenuBar:removeMenu(menu_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `menu_idx` | `number` | The widget index of the menu to remove. |
+| `menu_idx` | number | The widget index of the menu to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the menu was found and removed. |
+| boolean | True if the menu was found and removed. |
 
 **Example**
 
@@ -7493,14 +8718,19 @@ end
 
 ---
 
-## LMenuItem
+## LMenuItem Handle
 
-### `LMenuItem:addSubItem`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMenuItem:addSubItem`
 
 Adds a sub-item to this menu item for building nested menus.
 
 ```lua
--- signature
 LMenuItem:addSubItem(child_idx)
 ```
 
@@ -7508,7 +8738,7 @@ LMenuItem:addSubItem(child_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | `number` | The widget index of the sub-item to add. |
+| `child_idx` | number | The widget index of the sub-item to add. |
 
 **Example**
 
@@ -7530,12 +8760,11 @@ end
 
 ---
 
-### `LMenuItem:getShortcut`
+#### `LMenuItem:getShortcut`
 
 Returns the keyboard shortcut string associated with this menu item.
 
 ```lua
--- signature
 LMenuItem:getShortcut()
 ```
 
@@ -7543,7 +8772,7 @@ LMenuItem:getShortcut()
 
 | Type | Description |
 |------|-------------|
-| `string` | The shortcut text. |
+| string | The shortcut text. |
 
 **Example**
 
@@ -7561,12 +8790,11 @@ end
 
 ---
 
-### `LMenuItem:getSubItems`
+#### `LMenuItem:getSubItems`
 
 Returns a table of widget indices for all sub-items of this menu item.
 
 ```lua
--- signature
 LMenuItem:getSubItems()
 ```
 
@@ -7574,7 +8802,7 @@ LMenuItem:getSubItems()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Sub-item widget indices. |
+| number[] | Sub-item widget indices. |
 
 **Example**
 
@@ -7596,12 +8824,11 @@ end
 
 ---
 
-### `LMenuItem:getText`
+#### `LMenuItem:getText`
 
 Returns the display text of this menu item.
 
 ```lua
--- signature
 LMenuItem:getText()
 ```
 
@@ -7609,7 +8836,7 @@ LMenuItem:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The menu item text. |
+| string | The menu item text. |
 
 **Example**
 
@@ -7626,12 +8853,11 @@ end
 
 ---
 
-### `LMenuItem:isChecked`
+#### `LMenuItem:isChecked`
 
 Returns whether this menu item is checked (for checkable menu items).
 
 ```lua
--- signature
 LMenuItem:isChecked()
 ```
 
@@ -7639,7 +8865,7 @@ LMenuItem:isChecked()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if checked. |
+| boolean | True if checked. |
 
 **Example**
 
@@ -7659,12 +8885,11 @@ end
 
 ---
 
-### `LMenuItem:setChecked`
+#### `LMenuItem:setChecked`
 
 Sets the checked state of this menu item.
 
 ```lua
--- signature
 LMenuItem:setChecked(v)
 ```
 
@@ -7672,7 +8897,7 @@ LMenuItem:setChecked(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to check. |
+| `v` | boolean | True to check. |
 
 **Example**
 
@@ -7692,12 +8917,11 @@ end
 
 ---
 
-### `LMenuItem:setOnClick`
+#### `LMenuItem:setOnClick`
 
 Registers a callback invoked when this menu item is clicked.
 
 ```lua
--- signature
 LMenuItem:setOnClick(f)
 ```
 
@@ -7705,7 +8929,7 @@ LMenuItem:setOnClick(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -7725,12 +8949,11 @@ end
 
 ---
 
-### `LMenuItem:setShortcut`
+#### `LMenuItem:setShortcut`
 
 Sets the keyboard shortcut text displayed next to this menu item.
 
 ```lua
--- signature
 LMenuItem:setShortcut(shortcut)
 ```
 
@@ -7738,7 +8961,7 @@ LMenuItem:setShortcut(shortcut)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shortcut` | `string` | The shortcut text (e.g. "Ctrl+S"). |
+| `shortcut` | string | The shortcut text (e.g. "Ctrl+S"). |
 
 **Example**
 
@@ -7754,12 +8977,11 @@ end
 
 ---
 
-### `LMenuItem:setText`
+#### `LMenuItem:setText`
 
 Sets the display text of this menu item.
 
 ```lua
--- signature
 LMenuItem:setText(text)
 ```
 
@@ -7767,7 +8989,7 @@ LMenuItem:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The menu item text. |
+| `text` | string | The menu item text. |
 
 **Example**
 
@@ -7787,14 +9009,19 @@ end
 
 ---
 
-## LNinePatch
+## LNinePatch Handle
 
-### `LNinePatch:getImageDimensions`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNinePatch:getImageDimensions`
 
 Returns the original image dimensions of this nine-patch.
 
 ```lua
--- signature
 LNinePatch:getImageDimensions()
 ```
 
@@ -7802,8 +9029,8 @@ LNinePatch:getImageDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Image width and height. |
-| `number` | b Image width and height. |
+| number | Image width and height. (value 1). |
+| number | Image width and height. (value 2). |
 
 **Example**
 
@@ -7824,12 +9051,11 @@ end
 
 ---
 
-### `LNinePatch:getInsets`
+#### `LNinePatch:getInsets`
 
 Returns the border insets of this nine-patch.
 
 ```lua
--- signature
 LNinePatch:getInsets()
 ```
 
@@ -7837,10 +9063,10 @@ LNinePatch:getInsets()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Left, top, right, and bottom insets. |
-| `number` | b Left, top, right, and bottom insets. |
-| `number` | c Left, top, right, and bottom insets. |
-| `number` | d Left, top, right, and bottom insets. |
+| number | Left; top; right; and bottom insets. (value 1). |
+| number | Left; top; right; and bottom insets. (value 2). |
+| number | Left; top; right; and bottom insets. (value 3). |
+| number | Left; top; right; and bottom insets. (value 4). |
 
 **Example**
 
@@ -7861,12 +9087,11 @@ end
 
 ---
 
-### `LNinePatch:getSlices`
+#### `LNinePatch:getSlices`
 
 Returns the computed nine-patch slices as a table of source/dest rectangles for rendering.
 
 ```lua
--- signature
 LNinePatch:getSlices()
 ```
 
@@ -7874,7 +9099,7 @@ LNinePatch:getSlices()
 
 | Type | Description |
 |------|-------------|
-| `LNinePatchGetSlicesResult` | Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil. |
+| LNinePatchGetSlicesResult | Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil. |
 
 **Example**
 
@@ -7895,12 +9120,11 @@ end
 
 ---
 
-### `LNinePatch:setImageDimensions`
+#### `LNinePatch:setImageDimensions`
 
 Sets the original image dimensions used for nine-patch slice calculations.
 
 ```lua
--- signature
 LNinePatch:setImageDimensions(w, h)
 ```
 
@@ -7908,8 +9132,8 @@ LNinePatch:setImageDimensions(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width in pixels. |
-| `h` | `number` | Image height in pixels. |
+| `w` | number | Image width in pixels. |
+| `h` | number | Image height in pixels. |
 
 **Example**
 
@@ -7930,12 +9154,11 @@ end
 
 ---
 
-### `LNinePatch:setInsets`
+#### `LNinePatch:setInsets`
 
 Sets the border insets defining the stretchable center region of the nine-patch image.
 
 ```lua
--- signature
 LNinePatch:setInsets(left, top, right, bottom)
 ```
 
@@ -7943,10 +9166,10 @@ LNinePatch:setInsets(left, top, right, bottom)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `left` | `number` | Left inset in pixels. |
-| `top` | `number` | Top inset in pixels. |
-| `right` | `number` | Right inset in pixels. |
-| `bottom` | `number` | Bottom inset in pixels. |
+| `left` | number | Left inset in pixels. |
+| `top` | number | Top inset in pixels. |
+| `right` | number | Right inset in pixels. |
+| `bottom` | number | Bottom inset in pixels. |
 
 **Example**
 
@@ -7967,14 +9190,19 @@ end
 
 ---
 
-## LPanel
+## LPanel Handle
 
-### `LPanel:getTitle`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPanel:getTitle`
 
 Returns the title text of this panel.
 
 ```lua
--- signature
 LPanel:getTitle()
 ```
 
@@ -7982,7 +9210,7 @@ LPanel:getTitle()
 
 | Type | Description |
 |------|-------------|
-| `string` | The panel title. |
+| string | The panel title. |
 
 **Example**
 
@@ -8001,12 +9229,11 @@ end
 
 ---
 
-### `LPanel:setScrollable`
+#### `LPanel:setScrollable`
 
 Enables or disables scrolling within this panel.
 
 ```lua
--- signature
 LPanel:setScrollable(scrollable)
 ```
 
@@ -8014,7 +9241,7 @@ LPanel:setScrollable(scrollable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scrollable` | `boolean` | True to enable scrolling. |
+| `scrollable` | boolean | True to enable scrolling. |
 
 **Example**
 
@@ -8033,12 +9260,11 @@ end
 
 ---
 
-### `LPanel:setTitle`
+#### `LPanel:setTitle`
 
 Sets the title text displayed on this panel's header.
 
 ```lua
--- signature
 LPanel:setTitle(title)
 ```
 
@@ -8046,7 +9272,7 @@ LPanel:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | The panel title. |
+| `title` | string | The panel title. |
 
 **Example**
 
@@ -8065,14 +9291,19 @@ end
 
 ---
 
-## LPieChart
+## LPieChart Handle
 
-### `LPieChart:addSegment`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPieChart:addSegment`
 
 Adds a labeled segment to this pie chart widget.
 
 ```lua
--- signature
 LPieChart:addSegment(label, value, r, g, b)
 ```
 
@@ -8080,11 +9311,11 @@ LPieChart:addSegment(label, value, r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | `string` | The segment label. |
-| `value` | `number` | The segment value. |
-| `r` | `number` | Red color component. |
-| `g` | `number` | Green color component. |
-| `b` | `number` | Blue color component. |
+| `label` | string | The segment label. |
+| `value` | number | The segment value. |
+| `r` | number | Red color component. |
+| `g` | number | Green color component. |
+| `b` | number | Blue color component. |
 
 **Example**
 
@@ -8103,12 +9334,11 @@ end
 
 ---
 
-### `LPieChart:addSegmentsFromDataFrame`
+#### `LPieChart:addSegmentsFromDataFrame`
 
 Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
 
 ```lua
--- signature
 LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 ```
 
@@ -8116,16 +9346,16 @@ LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | `LDataFrame` | Source dataframe. |
-| `label_col` | `string` | Column name for segment labels. |
-| `value_col` | `string` | Column name for segment values. |
-| `opts?` | `table` | Optional table with maxRows integer. |
+| `df` | LDataFrame | Source dataframe. |
+| `label_col` | string | Column name for segment labels. |
+| `value_col` | string | Column name for segment values. |
+| `opts?` | table | Optional table with maxRows integer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of segments added. |
+| number | Number of segments added. |
 
 **Example**
 
@@ -8140,12 +9370,11 @@ end
 
 ---
 
-### `LPieChart:addSlice`
+#### `LPieChart:addSlice`
 
-Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
+Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LPieChart:addSlice(label, value, color)
 ```
 
@@ -8153,29 +9382,27 @@ LPieChart:addSlice(label, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | `string` | Display label for the slice. |
-| `value` | `number` | Numeric value determining the slice proportion. |
-| `color?` | `table` | Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil. |
+| `label` | string | Display label for the slice. |
+| `value` | number | Numeric value determining the slice proportion. |
+| `color?` | table | Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil. |
 
 ---
 
-### `LPieChart:clear`
+#### `LPieChart:clear`
 
 Removes all pie data slices from this chart.
 
 ```lua
--- signature
 LPieChart:clear()
 ```
 
 ---
 
-### `LPieChart:drawToImage`
+#### `LPieChart:drawToImage`
 
 Renders this pie chart to an image buffer.
 
 ```lua
--- signature
 LPieChart:drawToImage(target)
 ```
 
@@ -8183,7 +9410,7 @@ LPieChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | The image to draw into. |
+| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
 
 **Example**
 
@@ -8202,12 +9429,11 @@ end
 
 ---
 
-### `LPieChart:getHeight`
+#### `LPieChart:getHeight`
 
 Get the chart output height in pixels.
 
 ```lua
--- signature
 LPieChart:getHeight()
 ```
 
@@ -8215,16 +9441,15 @@ LPieChart:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 ---
 
-### `LPieChart:getWidth`
+#### `LPieChart:getWidth`
 
 Get the chart output width in pixels.
 
 ```lua
--- signature
 LPieChart:getWidth()
 ```
 
@@ -8232,16 +9457,15 @@ LPieChart:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 ---
 
-### `LPieChart:render`
+#### `LPieChart:render`
 
 Renders the chart contents into a new pixel buffer.
 
 ```lua
--- signature
 LPieChart:render()
 ```
 
@@ -8249,18 +9473,17 @@ LPieChart:render()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Output width in pixels. |
-| `number` | b Output height in pixels. |
-| `string` | c RGBA8 pixel data as a binary string. |
+| number | Output width in pixels. |
+| number | Output height in pixels. |
+| string | RGBA8 pixel data as a binary string. |
 
 ---
 
-### `LPieChart:setTitle`
+#### `LPieChart:setTitle`
 
 Set or update the chart's displayed title.
 
 ```lua
--- signature
 LPieChart:setTitle(title)
 ```
 
@@ -8268,16 +9491,15 @@ LPieChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | New chart title text. |
+| `title` | string | New chart title text. |
 
 ---
 
-### `LPieChart:type`
+#### `LPieChart:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LPieChart:type()
 ```
 
@@ -8285,7 +9507,7 @@ LPieChart:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LPieChart". |
+| string | Always "[LPieChart](#lpiechart-handle)". |
 
 **Example**
 
@@ -8304,12 +9526,11 @@ end
 
 ---
 
-### `LPieChart:typeOf`
+#### `LPieChart:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LPieChart:typeOf(name)
 ```
 
@@ -8317,13 +9538,13 @@ LPieChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -8342,14 +9563,19 @@ end
 
 ---
 
-## LProgressBar
+## LProgressBar Handle
 
-### `LProgressBar:getMax`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LProgressBar:getMax`
 
 Returns the maximum value of this progress bar's range.
 
 ```lua
--- signature
 LProgressBar:getMax()
 ```
 
@@ -8357,7 +9583,7 @@ LProgressBar:getMax()
 
 | Type | Description |
 |------|-------------|
-| `number` | The maximum value. |
+| number | The maximum value. |
 
 **Example**
 
@@ -8377,12 +9603,11 @@ end
 
 ---
 
-### `LProgressBar:getMin`
+#### `LProgressBar:getMin`
 
 Returns the minimum value of this progress bar's range.
 
 ```lua
--- signature
 LProgressBar:getMin()
 ```
 
@@ -8390,7 +9615,7 @@ LProgressBar:getMin()
 
 | Type | Description |
 |------|-------------|
-| `number` | The minimum value. |
+| number | The minimum value. |
 
 **Example**
 
@@ -8410,12 +9635,11 @@ end
 
 ---
 
-### `LProgressBar:getProgress`
+#### `LProgressBar:getProgress`
 
 Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
 
 ```lua
--- signature
 LProgressBar:getProgress()
 ```
 
@@ -8423,7 +9647,7 @@ LProgressBar:getProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | The normalized progress. |
+| number | The normalized progress. |
 
 **Example**
 
@@ -8443,12 +9667,11 @@ end
 
 ---
 
-### `LProgressBar:getValue`
+#### `LProgressBar:getValue`
 
 Returns the current value of this progress bar.
 
 ```lua
--- signature
 LProgressBar:getValue()
 ```
 
@@ -8456,7 +9679,7 @@ LProgressBar:getValue()
 
 | Type | Description |
 |------|-------------|
-| `number` | The progress value. |
+| number | The progress value. |
 
 **Example**
 
@@ -8476,12 +9699,11 @@ end
 
 ---
 
-### `LProgressBar:setRange`
+#### `LProgressBar:setRange`
 
 Sets the minimum and maximum bounds for this progress bar.
 
 ```lua
--- signature
 LProgressBar:setRange(min, max)
 ```
 
@@ -8489,8 +9711,8 @@ LProgressBar:setRange(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum value. |
-| `max` | `number` | Maximum value. |
+| `min` | number | Minimum value. |
+| `max` | number | Maximum value. |
 
 **Example**
 
@@ -8510,12 +9732,11 @@ end
 
 ---
 
-### `LProgressBar:setValue`
+#### `LProgressBar:setValue`
 
 Sets the current fill value of this progress bar, clamped to its range.
 
 ```lua
--- signature
 LProgressBar:setValue(v)
 ```
 
@@ -8523,7 +9744,7 @@ LProgressBar:setValue(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The progress value. |
+| `v` | number | The progress value. |
 
 **Example**
 
@@ -8543,14 +9764,19 @@ end
 
 ---
 
-## LRadioButton
+## LRadioButton Handle
 
-### `LRadioButton:getGroup`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRadioButton:getGroup`
 
 Returns the radio button group name. Buttons in the same group are mutually exclusive.
 
 ```lua
--- signature
 LRadioButton:getGroup()
 ```
 
@@ -8558,7 +9784,7 @@ LRadioButton:getGroup()
 
 | Type | Description |
 |------|-------------|
-| `string` | The group name. |
+| string | The group name. |
 
 **Example**
 
@@ -8577,12 +9803,11 @@ end
 
 ---
 
-### `LRadioButton:getText`
+#### `LRadioButton:getText`
 
 Returns the label text of this radio button.
 
 ```lua
--- signature
 LRadioButton:getText()
 ```
 
@@ -8590,7 +9815,7 @@ LRadioButton:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The radio button label. |
+| string | The radio button label. |
 
 **Example**
 
@@ -8609,12 +9834,11 @@ end
 
 ---
 
-### `LRadioButton:isSelected`
+#### `LRadioButton:isSelected`
 
 Returns whether this radio button is currently selected.
 
 ```lua
--- signature
 LRadioButton:isSelected()
 ```
 
@@ -8622,7 +9846,7 @@ LRadioButton:isSelected()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if selected. |
+| boolean | True if selected. |
 
 **Example**
 
@@ -8641,12 +9865,11 @@ end
 
 ---
 
-### `LRadioButton:setGroup`
+#### `LRadioButton:setGroup`
 
 Sets the radio button group name. Buttons in the same group are mutually exclusive.
 
 ```lua
--- signature
 LRadioButton:setGroup(group)
 ```
 
@@ -8654,7 +9877,7 @@ LRadioButton:setGroup(group)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group` | `string` | The group name. |
+| `group` | string | The group name. |
 
 **Example**
 
@@ -8673,12 +9896,11 @@ end
 
 ---
 
-### `LRadioButton:setOnChange`
+#### `LRadioButton:setOnChange`
 
 Registers a callback invoked when this radio button's selection changes.
 
 ```lua
--- signature
 LRadioButton:setOnChange(f)
 ```
 
@@ -8686,7 +9908,7 @@ LRadioButton:setOnChange(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -8703,12 +9925,11 @@ end
 
 ---
 
-### `LRadioButton:setSelected`
+#### `LRadioButton:setSelected`
 
 Sets the selected state of this radio button.
 
 ```lua
--- signature
 LRadioButton:setSelected(v)
 ```
 
@@ -8716,7 +9937,7 @@ LRadioButton:setSelected(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to select. |
+| `v` | boolean | True to select. |
 
 **Example**
 
@@ -8733,12 +9954,11 @@ end
 
 ---
 
-### `LRadioButton:setText`
+#### `LRadioButton:setText`
 
 Sets the label text of this radio button.
 
 ```lua
--- signature
 LRadioButton:setText(text)
 ```
 
@@ -8746,7 +9966,7 @@ LRadioButton:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The radio button label. |
+| `text` | string | The radio button label. |
 
 **Example**
 
@@ -8760,14 +9980,19 @@ end
 
 ---
 
-## LScatterPlot
+## LScatterPlot Handle
 
-### `LScatterPlot:addSeries`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LScatterPlot:addSeries`
 
 Add a named data series to the scatter plot.
 
 ```lua
--- signature
 LScatterPlot:addSeries(name, data, color)
 ```
 
@@ -8775,18 +10000,17 @@ LScatterPlot:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Display name of the series. |
-| `data` | `table` | Array of {x, y} point tables. |
-| `color?` | `table` | Optional RGBA color {r, g, b, a}. |
+| `name` | string | Display name of the series. |
+| `data` | table | Array of {x, y} point tables. |
+| `color?` | table | Optional RGBA color {r, g, b, a}. |
 
 ---
 
-### `LScatterPlot:addSeriesFromDataFrame`
+#### `LScatterPlot:addSeriesFromDataFrame`
 
 Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
 
 ```lua
--- signature
 LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 ```
 
@@ -8794,20 +10018,20 @@ LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The series name. |
-| `df` | `LDataFrame` | Source dataframe. |
-| `x_col` | `string` | Column name for X values. |
-| `y_col` | `string` | Column name for Y values. |
-| `r` | `number` | Red color component. |
-| `g` | `number` | Green color component. |
-| `b` | `number` | Blue color component. |
-| `opts?` | `table` | Optional table with maxRows integer. |
+| `name` | string | The series name. |
+| `df` | LDataFrame | Source dataframe. |
+| `x_col` | string | Column name for X values. |
+| `y_col` | string | Column name for Y values. |
+| `r` | number | Red color component. |
+| `g` | number | Green color component. |
+| `b` | number | Blue color component. |
+| `opts?` | table | Optional table with maxRows integer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of accepted points added to the series. |
+| number | Number of accepted points added to the series. |
 
 **Example**
 
@@ -8824,23 +10048,21 @@ end
 
 ---
 
-### `LScatterPlot:clear`
+#### `LScatterPlot:clear`
 
 Removes all data series from this chart.
 
 ```lua
--- signature
 LScatterPlot:clear()
 ```
 
 ---
 
-### `LScatterPlot:drawToImage`
+#### `LScatterPlot:drawToImage`
 
 Renders this scatter plot to an image buffer.
 
 ```lua
--- signature
 LScatterPlot:drawToImage(target)
 ```
 
@@ -8848,7 +10070,7 @@ LScatterPlot:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | The image to draw into. |
+| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
 
 **Example**
 
@@ -8866,12 +10088,11 @@ end
 
 ---
 
-### `LScatterPlot:getHeight`
+#### `LScatterPlot:getHeight`
 
 Get the chart output height in pixels.
 
 ```lua
--- signature
 LScatterPlot:getHeight()
 ```
 
@@ -8879,16 +10100,15 @@ LScatterPlot:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 ---
 
-### `LScatterPlot:getWidth`
+#### `LScatterPlot:getWidth`
 
 Get the chart output width in pixels.
 
 ```lua
--- signature
 LScatterPlot:getWidth()
 ```
 
@@ -8896,16 +10116,15 @@ LScatterPlot:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 ---
 
-### `LScatterPlot:render`
+#### `LScatterPlot:render`
 
 Renders the chart contents into a new pixel buffer.
 
 ```lua
--- signature
 LScatterPlot:render()
 ```
 
@@ -8913,18 +10132,17 @@ LScatterPlot:render()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Output width in pixels. |
-| `number` | b Output height in pixels. |
-| `string` | c RGBA8 pixel data as a binary string. |
+| number | Output width in pixels. |
+| number | Output height in pixels. |
+| string | RGBA8 pixel data as a binary string. |
 
 ---
 
-### `LScatterPlot:setDotRadius`
+#### `LScatterPlot:setDotRadius`
 
 Set the radius of the dot drawn for each data point.
 
 ```lua
--- signature
 LScatterPlot:setDotRadius(r)
 ```
 
@@ -8932,16 +10150,15 @@ LScatterPlot:setDotRadius(r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Dot radius in pixels (minimum 1). |
+| `r` | number | Dot radius in pixels (minimum 1). |
 
 ---
 
-### `LScatterPlot:setTitle`
+#### `LScatterPlot:setTitle`
 
 Set or update the chart's displayed title.
 
 ```lua
--- signature
 LScatterPlot:setTitle(title)
 ```
 
@@ -8949,16 +10166,15 @@ LScatterPlot:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | New chart title text. |
+| `title` | string | New chart title text. |
 
 ---
 
-### `LScatterPlot:setXRange`
+#### `LScatterPlot:setXRange`
 
 Sets the X-axis range for this scatter plot.
 
 ```lua
--- signature
 LScatterPlot:setXRange(mn, mx)
 ```
 
@@ -8966,8 +10182,8 @@ LScatterPlot:setXRange(mn, mx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mn` | `number` | Minimum X value. |
-| `mx` | `number` | Maximum X value. |
+| `mn` | number | Minimum X value. |
+| `mx` | number | Maximum X value. |
 
 **Example**
 
@@ -8985,12 +10201,11 @@ end
 
 ---
 
-### `LScatterPlot:setYRange`
+#### `LScatterPlot:setYRange`
 
 Sets the Y-axis range for this scatter plot.
 
 ```lua
--- signature
 LScatterPlot:setYRange(mn, mx)
 ```
 
@@ -8998,8 +10213,8 @@ LScatterPlot:setYRange(mn, mx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mn` | `number` | Minimum Y value. |
-| `mx` | `number` | Maximum Y value. |
+| `mn` | number | Minimum Y value. |
+| `mx` | number | Maximum Y value. |
 
 **Example**
 
@@ -9016,12 +10231,11 @@ end
 
 ---
 
-### `LScatterPlot:type`
+#### `LScatterPlot:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LScatterPlot:type()
 ```
 
@@ -9029,7 +10243,7 @@ LScatterPlot:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LScatterPlot". |
+| string | Always "[LScatterPlot](#lscatterplot-handle)". |
 
 **Example**
 
@@ -9046,12 +10260,11 @@ end
 
 ---
 
-### `LScatterPlot:typeOf`
+#### `LScatterPlot:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LScatterPlot:typeOf(name)
 ```
 
@@ -9059,13 +10272,13 @@ LScatterPlot:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -9082,14 +10295,19 @@ end
 
 ---
 
-## LScrollBar
+## LScrollBar Handle
 
-### `LScrollBar:getContentSize`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LScrollBar:getContentSize`
 
 Returns the total content size tracked by this scroll bar.
 
 ```lua
--- signature
 LScrollBar:getContentSize()
 ```
 
@@ -9097,7 +10315,7 @@ LScrollBar:getContentSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | The content size. |
+| number | The content size. |
 
 **Example**
 
@@ -9113,12 +10331,11 @@ end
 
 ---
 
-### `LScrollBar:getScrollPosition`
+#### `LScrollBar:getScrollPosition`
 
 Returns the current scroll position of this scroll bar.
 
 ```lua
--- signature
 LScrollBar:getScrollPosition()
 ```
 
@@ -9126,7 +10343,7 @@ LScrollBar:getScrollPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | The scroll position. |
+| number | The scroll position. |
 
 **Example**
 
@@ -9142,12 +10359,11 @@ end
 
 ---
 
-### `LScrollBar:getViewSize`
+#### `LScrollBar:getViewSize`
 
 Returns the visible viewport size tracked by this scroll bar.
 
 ```lua
--- signature
 LScrollBar:getViewSize()
 ```
 
@@ -9155,7 +10371,7 @@ LScrollBar:getViewSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | The view size. |
+| number | The view size. |
 
 **Example**
 
@@ -9171,12 +10387,11 @@ end
 
 ---
 
-### `LScrollBar:isVertical`
+#### `LScrollBar:isVertical`
 
 Returns whether this scroll bar is oriented vertically.
 
 ```lua
--- signature
 LScrollBar:isVertical()
 ```
 
@@ -9184,7 +10399,7 @@ LScrollBar:isVertical()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if vertical. |
+| boolean | True if vertical. |
 
 **Example**
 
@@ -9201,12 +10416,11 @@ end
 
 ---
 
-### `LScrollBar:setContentSize`
+#### `LScrollBar:setContentSize`
 
 Sets the total content size that this scroll bar represents.
 
 ```lua
--- signature
 LScrollBar:setContentSize(v)
 ```
 
@@ -9214,7 +10428,7 @@ LScrollBar:setContentSize(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The content size. |
+| `v` | number | The content size. |
 
 **Example**
 
@@ -9231,12 +10445,11 @@ end
 
 ---
 
-### `LScrollBar:setOnChange`
+#### `LScrollBar:setOnChange`
 
 Registers a callback invoked when this scroll bar's position changes.
 
 ```lua
--- signature
 LScrollBar:setOnChange(f)
 ```
 
@@ -9244,7 +10457,7 @@ LScrollBar:setOnChange(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index. |
+| `f` | function | Callback receiving the widget index. |
 
 **Example**
 
@@ -9261,12 +10474,11 @@ end
 
 ---
 
-### `LScrollBar:setScrollPosition`
+#### `LScrollBar:setScrollPosition`
 
 Sets the scroll position of this scroll bar, clamped to the valid range.
 
 ```lua
--- signature
 LScrollBar:setScrollPosition(v)
 ```
 
@@ -9274,7 +10486,7 @@ LScrollBar:setScrollPosition(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The scroll position. |
+| `v` | number | The scroll position. |
 
 **Example**
 
@@ -9293,12 +10505,11 @@ end
 
 ---
 
-### `LScrollBar:setViewSize`
+#### `LScrollBar:setViewSize`
 
 Sets the visible viewport size for this scroll bar.
 
 ```lua
--- signature
 LScrollBar:setViewSize(v)
 ```
 
@@ -9306,7 +10517,7 @@ LScrollBar:setViewSize(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The view size. |
+| `v` | number | The view size. |
 
 **Example**
 
@@ -9325,14 +10536,19 @@ end
 
 ---
 
-## LScrollPanel
+## LScrollPanel Handle
 
-### `LScrollPanel:getContentSize`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LScrollPanel:getContentSize`
 
 Returns the virtual content dimensions of this scroll panel.
 
 ```lua
--- signature
 LScrollPanel:getContentSize()
 ```
 
@@ -9340,8 +10556,8 @@ LScrollPanel:getContentSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Content width and height in pixels. |
-| `number` | b Content width and height in pixels. |
+| number | Content width and height in pixels. (value 1). |
+| number | Content width and height in pixels. (value 2). |
 
 **Example**
 
@@ -9360,12 +10576,11 @@ end
 
 ---
 
-### `LScrollPanel:getMaxScroll`
+#### `LScrollPanel:getMaxScroll`
 
 Returns the maximum scroll offset allowed in each axis.
 
 ```lua
--- signature
 LScrollPanel:getMaxScroll()
 ```
 
@@ -9373,8 +10588,8 @@ LScrollPanel:getMaxScroll()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Maximum horizontal and vertical scroll values. |
-| `number` | b Maximum horizontal and vertical scroll values. |
+| number | Maximum horizontal and vertical scroll values. (value 1). |
+| number | Maximum horizontal and vertical scroll values. (value 2). |
 
 **Example**
 
@@ -9390,12 +10605,11 @@ end
 
 ---
 
-### `LScrollPanel:getScrollPosition`
+#### `LScrollPanel:getScrollPosition`
 
 Returns the current scroll offset of this scroll panel.
 
 ```lua
--- signature
 LScrollPanel:getScrollPosition()
 ```
 
@@ -9403,8 +10617,8 @@ LScrollPanel:getScrollPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Horizontal and vertical scroll offsets. |
-| `number` | b Horizontal and vertical scroll offsets. |
+| number | Horizontal and vertical scroll offsets. (value 1). |
+| number | Horizontal and vertical scroll offsets. (value 2). |
 
 **Example**
 
@@ -9420,12 +10634,11 @@ end
 
 ---
 
-### `LScrollPanel:getScrollSpeed`
+#### `LScrollPanel:getScrollSpeed`
 
 Returns the current scroll speed multiplier.
 
 ```lua
--- signature
 LScrollPanel:getScrollSpeed()
 ```
 
@@ -9433,7 +10646,7 @@ LScrollPanel:getScrollSpeed()
 
 | Type | Description |
 |------|-------------|
-| `number` | The scroll speed. |
+| number | The scroll speed. |
 
 **Example**
 
@@ -9448,12 +10661,11 @@ end
 
 ---
 
-### `LScrollPanel:setContentSize`
+#### `LScrollPanel:setContentSize`
 
 Sets the virtual content dimensions of this scroll panel.
 
 ```lua
--- signature
 LScrollPanel:setContentSize(w, h)
 ```
 
@@ -9461,8 +10673,8 @@ LScrollPanel:setContentSize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Content width in pixels. |
-| `h` | `number` | Content height in pixels. |
+| `w` | number | Content width in pixels. |
+| `h` | number | Content height in pixels. |
 
 **Example**
 
@@ -9481,12 +10693,11 @@ end
 
 ---
 
-### `LScrollPanel:setScrollPosition`
+#### `LScrollPanel:setScrollPosition`
 
 Sets the scroll offset position of this scroll panel.
 
 ```lua
--- signature
 LScrollPanel:setScrollPosition(x, y)
 ```
 
@@ -9494,8 +10705,8 @@ LScrollPanel:setScrollPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Horizontal scroll offset. |
-| `y` | `number` | Vertical scroll offset. |
+| `x` | number | Horizontal scroll offset. |
+| `y` | number | Vertical scroll offset. |
 
 **Example**
 
@@ -9514,12 +10725,11 @@ end
 
 ---
 
-### `LScrollPanel:setScrollSpeed`
+#### `LScrollPanel:setScrollSpeed`
 
 Sets the scroll speed multiplier for mouse wheel scrolling.
 
 ```lua
--- signature
 LScrollPanel:setScrollSpeed(speed)
 ```
 
@@ -9527,7 +10737,7 @@ LScrollPanel:setScrollSpeed(speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `speed` | `number` | Scroll speed in pixels per scroll tick. |
+| `speed` | number | Scroll speed in pixels per scroll tick. |
 
 **Example**
 
@@ -9542,14 +10752,19 @@ end
 
 ---
 
-## LSeparator
+## LSeparator Handle
 
-### `LSeparator:getThickness`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSeparator:getThickness`
 
 Returns the line thickness of this separator.
 
 ```lua
--- signature
 LSeparator:getThickness()
 ```
 
@@ -9557,7 +10772,7 @@ LSeparator:getThickness()
 
 | Type | Description |
 |------|-------------|
-| `number` | The thickness in pixels. |
+| number | The thickness in pixels. |
 
 **Example**
 
@@ -9574,12 +10789,11 @@ end
 
 ---
 
-### `LSeparator:isVertical`
+#### `LSeparator:isVertical`
 
 Returns whether this separator is oriented vertically.
 
 ```lua
--- signature
 LSeparator:isVertical()
 ```
 
@@ -9587,7 +10801,7 @@ LSeparator:isVertical()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if vertical. |
+| boolean | True if vertical. |
 
 **Example**
 
@@ -9604,12 +10818,11 @@ end
 
 ---
 
-### `LSeparator:setThickness`
+#### `LSeparator:setThickness`
 
 Sets the line thickness of this separator in pixels.
 
 ```lua
--- signature
 LSeparator:setThickness(thickness)
 ```
 
@@ -9617,7 +10830,7 @@ LSeparator:setThickness(thickness)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `thickness` | `number` | Thickness in pixels. |
+| `thickness` | number | Thickness in pixels. |
 
 **Example**
 
@@ -9634,12 +10847,11 @@ end
 
 ---
 
-### `LSeparator:setVertical`
+#### `LSeparator:setVertical`
 
 Sets whether this separator draws vertically or horizontally.
 
 ```lua
--- signature
 LSeparator:setVertical(v)
 ```
 
@@ -9647,7 +10859,7 @@ LSeparator:setVertical(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True for vertical, false for horizontal. |
+| `v` | boolean | True for vertical, false for horizontal. |
 
 **Example**
 
@@ -9664,14 +10876,19 @@ end
 
 ---
 
-## LSlider
+## LSlider Handle
 
-### `LSlider:getMax`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSlider:getMax`
 
 Returns the maximum value of this slider's range.
 
 ```lua
--- signature
 LSlider:getMax()
 ```
 
@@ -9679,7 +10896,7 @@ LSlider:getMax()
 
 | Type | Description |
 |------|-------------|
-| `number` | The maximum value. |
+| number | The maximum value. |
 
 **Example**
 
@@ -9696,12 +10913,11 @@ end
 
 ---
 
-### `LSlider:getMin`
+#### `LSlider:getMin`
 
 Returns the minimum value of this slider's range.
 
 ```lua
--- signature
 LSlider:getMin()
 ```
 
@@ -9709,7 +10925,7 @@ LSlider:getMin()
 
 | Type | Description |
 |------|-------------|
-| `number` | The minimum value. |
+| number | The minimum value. |
 
 **Example**
 
@@ -9726,12 +10942,11 @@ end
 
 ---
 
-### `LSlider:getValue`
+#### `LSlider:getValue`
 
 Returns the current value of this slider.
 
 ```lua
--- signature
 LSlider:getValue()
 ```
 
@@ -9739,7 +10954,7 @@ LSlider:getValue()
 
 | Type | Description |
 |------|-------------|
-| `number` | The slider value. |
+| number | The slider value. |
 
 **Example**
 
@@ -9757,12 +10972,11 @@ end
 
 ---
 
-### `LSlider:setRange`
+#### `LSlider:setRange`
 
 Sets the minimum and maximum bounds for this slider.
 
 ```lua
--- signature
 LSlider:setRange(min, max)
 ```
 
@@ -9770,8 +10984,8 @@ LSlider:setRange(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum value. |
-| `max` | `number` | Maximum value. |
+| `min` | number | Minimum value. |
+| `max` | number | Maximum value. |
 
 **Example**
 
@@ -9787,12 +11001,11 @@ end
 
 ---
 
-### `LSlider:setStep`
+#### `LSlider:setStep`
 
 Sets the step increment for this slider's value snapping.
 
 ```lua
--- signature
 LSlider:setStep(step)
 ```
 
@@ -9800,7 +11013,7 @@ LSlider:setStep(step)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `step` | `number` | The step size. |
+| `step` | number | The step size. |
 
 **Example**
 
@@ -9817,12 +11030,11 @@ end
 
 ---
 
-### `LSlider:setValue`
+#### `LSlider:setValue`
 
 Sets the current value of this slider, clamped to its range.
 
 ```lua
--- signature
 LSlider:setValue(v)
 ```
 
@@ -9830,7 +11042,7 @@ LSlider:setValue(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The value to set. |
+| `v` | number | The value to set. |
 
 **Example**
 
@@ -9847,14 +11059,19 @@ end
 
 ---
 
-## LSpinBox
+## LSpinBox Handle
 
-### `LSpinBox:decrement`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpinBox:decrement`
 
 Decreases this spin box's value by one step.
 
 ```lua
--- signature
 LSpinBox:decrement()
 ```
 
@@ -9875,12 +11092,11 @@ end
 
 ---
 
-### `LSpinBox:getValue`
+#### `LSpinBox:getValue`
 
 Returns the current numeric value of this spin box.
 
 ```lua
--- signature
 LSpinBox:getValue()
 ```
 
@@ -9888,7 +11104,7 @@ LSpinBox:getValue()
 
 | Type | Description |
 |------|-------------|
-| `number` | The spin box value. |
+| number | The spin box value. |
 
 **Example**
 
@@ -9909,12 +11125,11 @@ end
 
 ---
 
-### `LSpinBox:increment`
+#### `LSpinBox:increment`
 
 Increases this spin box's value by one step.
 
 ```lua
--- signature
 LSpinBox:increment()
 ```
 
@@ -9935,12 +11150,11 @@ end
 
 ---
 
-### `LSpinBox:setRange`
+#### `LSpinBox:setRange`
 
 Sets the minimum and maximum bounds for this spin box.
 
 ```lua
--- signature
 LSpinBox:setRange(min, max)
 ```
 
@@ -9948,8 +11162,8 @@ LSpinBox:setRange(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum value. |
-| `max` | `number` | Maximum value. |
+| `min` | number | Minimum value. |
+| `max` | number | Maximum value. |
 
 **Example**
 
@@ -9965,12 +11179,11 @@ end
 
 ---
 
-### `LSpinBox:setStep`
+#### `LSpinBox:setStep`
 
 Sets the step increment for this spin box.
 
 ```lua
--- signature
 LSpinBox:setStep(step)
 ```
 
@@ -9978,7 +11191,7 @@ LSpinBox:setStep(step)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `step` | `number` | The step size (minimum 1e-9). |
+| `step` | number | The step size (minimum 1e-9). |
 
 **Example**
 
@@ -9997,12 +11210,11 @@ end
 
 ---
 
-### `LSpinBox:setValue`
+#### `LSpinBox:setValue`
 
 Sets the numeric value of this spin box, clamped to its range.
 
 ```lua
--- signature
 LSpinBox:setValue(v)
 ```
 
@@ -10010,7 +11222,7 @@ LSpinBox:setValue(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The value to set. |
+| `v` | number | The value to set. |
 
 **Example**
 
@@ -10031,14 +11243,19 @@ end
 
 ---
 
-## LSplitPanel
+## LSplitPanel Handle
 
-### `LSplitPanel:getFirstChild`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSplitPanel:getFirstChild`
 
 Returns the widget index of the first (left/top) child panel.
 
 ```lua
--- signature
 LSplitPanel:getFirstChild()
 ```
 
@@ -10046,7 +11263,7 @@ LSplitPanel:getFirstChild()
 
 | Type | Description |
 |------|-------------|
-| `number` | The widget index, or nil if not set. |
+| number | The widget index, or nil if not set. |
 
 **Example**
 
@@ -10074,12 +11291,11 @@ end
 
 ---
 
-### `LSplitPanel:getMinPanelSize`
+#### `LSplitPanel:getMinPanelSize`
 
 Returns the minimum pixel size of each split sub-panel.
 
 ```lua
--- signature
 LSplitPanel:getMinPanelSize()
 ```
 
@@ -10087,7 +11303,7 @@ LSplitPanel:getMinPanelSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | The minimum size in pixels. |
+| number | The minimum size in pixels. |
 
 **Example**
 
@@ -10113,12 +11329,11 @@ end
 
 ---
 
-### `LSplitPanel:getOrientation`
+#### `LSplitPanel:getOrientation`
 
 Returns the orientation of this split panel ("horizontal" or "vertical").
 
 ```lua
--- signature
 LSplitPanel:getOrientation()
 ```
 
@@ -10126,7 +11341,7 @@ LSplitPanel:getOrientation()
 
 | Type | Description |
 |------|-------------|
-| `string` | The orientation. |
+| string | The orientation. |
 
 **Example**
 
@@ -10152,12 +11367,11 @@ end
 
 ---
 
-### `LSplitPanel:getSecondChild`
+#### `LSplitPanel:getSecondChild`
 
 Returns the widget index of the second (right/bottom) child panel.
 
 ```lua
--- signature
 LSplitPanel:getSecondChild()
 ```
 
@@ -10165,7 +11379,7 @@ LSplitPanel:getSecondChild()
 
 | Type | Description |
 |------|-------------|
-| `number` | The widget index, or nil if not set. |
+| number | The widget index, or nil if not set. |
 
 **Example**
 
@@ -10191,12 +11405,11 @@ end
 
 ---
 
-### `LSplitPanel:getSplitPosition`
+#### `LSplitPanel:getSplitPosition`
 
 Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
 
 ```lua
--- signature
 LSplitPanel:getSplitPosition()
 ```
 
@@ -10204,7 +11417,7 @@ LSplitPanel:getSplitPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | The split fraction. |
+| number | The split fraction. |
 
 **Example**
 
@@ -10230,12 +11443,11 @@ end
 
 ---
 
-### `LSplitPanel:setFirstChild`
+#### `LSplitPanel:setFirstChild`
 
 Sets the widget index for the first (left/top) panel.
 
 ```lua
--- signature
 LSplitPanel:setFirstChild(child_idx)
 ```
 
@@ -10243,7 +11455,7 @@ LSplitPanel:setFirstChild(child_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | `number` | The widget index. |
+| `child_idx` | number | The widget index. |
 
 **Example**
 
@@ -10269,12 +11481,11 @@ end
 
 ---
 
-### `LSplitPanel:setMinPanelSize`
+#### `LSplitPanel:setMinPanelSize`
 
 Sets the minimum pixel size of each split sub-panel.
 
 ```lua
--- signature
 LSplitPanel:setMinPanelSize(v)
 ```
 
@@ -10282,7 +11493,7 @@ LSplitPanel:setMinPanelSize(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The minimum size in pixels. |
+| `v` | number | The minimum size in pixels. |
 
 **Example**
 
@@ -10308,12 +11519,11 @@ end
 
 ---
 
-### `LSplitPanel:setOrientation`
+#### `LSplitPanel:setOrientation`
 
 Sets the orientation of this split panel ("horizontal" or "vertical").
 
 ```lua
--- signature
 LSplitPanel:setOrientation(v)
 ```
 
@@ -10321,7 +11531,7 @@ LSplitPanel:setOrientation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `string` | The orientation. |
+| `v` | string | The orientation. |
 
 **Example**
 
@@ -10347,12 +11557,11 @@ end
 
 ---
 
-### `LSplitPanel:setSecondChild`
+#### `LSplitPanel:setSecondChild`
 
 Sets the widget index for the second (right/bottom) panel.
 
 ```lua
--- signature
 LSplitPanel:setSecondChild(child_idx)
 ```
 
@@ -10360,7 +11569,7 @@ LSplitPanel:setSecondChild(child_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | `number` | The widget index. |
+| `child_idx` | number | The widget index. |
 
 **Example**
 
@@ -10386,12 +11595,11 @@ end
 
 ---
 
-### `LSplitPanel:setSplitPosition`
+#### `LSplitPanel:setSplitPosition`
 
 Sets the split position as a fraction (0.0 to 1.0).
 
 ```lua
--- signature
 LSplitPanel:setSplitPosition(v)
 ```
 
@@ -10399,7 +11607,7 @@ LSplitPanel:setSplitPosition(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The split fraction. |
+| `v` | number | The split fraction. |
 
 **Example**
 
@@ -10425,14 +11633,19 @@ end
 
 ---
 
-## LStatusBar
+## LStatusBar Handle
 
-### `LStatusBar:addSection`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LStatusBar:addSection`
 
 Adds a labeled section to this status bar.
 
 ```lua
--- signature
 LStatusBar:addSection(text, width)
 ```
 
@@ -10440,8 +11653,8 @@ LStatusBar:addSection(text, width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The section display text. |
-| `width?` | `number` | The section width in pixels (default 100). |
+| `text` | string | The section display text. |
+| `width?` | number | The section width in pixels (default 100). |
 
 **Example**
 
@@ -10460,12 +11673,11 @@ end
 
 ---
 
-### `LStatusBar:getSectionCount`
+#### `LStatusBar:getSectionCount`
 
 Returns the number of sections in this status bar.
 
 ```lua
--- signature
 LStatusBar:getSectionCount()
 ```
 
@@ -10473,7 +11685,7 @@ LStatusBar:getSectionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The section count. |
+| number | The section count. |
 
 **Example**
 
@@ -10492,12 +11704,11 @@ end
 
 ---
 
-### `LStatusBar:getSectionText`
+#### `LStatusBar:getSectionText`
 
 Returns the text of a status bar section by its 1-based index.
 
 ```lua
--- signature
 LStatusBar:getSectionText(section_idx)
 ```
 
@@ -10505,13 +11716,13 @@ LStatusBar:getSectionText(section_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `section_idx` | `number` | The 1-based section index. |
+| `section_idx` | number | The 1-based section index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The section text, or nil if out of range. |
+| string | The section text, or nil if out of range. |
 
 **Example**
 
@@ -10530,12 +11741,11 @@ end
 
 ---
 
-### `LStatusBar:setSectionCount`
+#### `LStatusBar:setSectionCount`
 
 Sets the number of sections, truncating or adding empty sections as needed.
 
 ```lua
--- signature
 LStatusBar:setSectionCount(count)
 ```
 
@@ -10543,7 +11753,7 @@ LStatusBar:setSectionCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | The desired section count. |
+| `count` | number | The desired section count. |
 
 **Example**
 
@@ -10561,12 +11771,11 @@ end
 
 ---
 
-### `LStatusBar:setSectionText`
+#### `LStatusBar:setSectionText`
 
 Sets the text of a status bar section by its 1-based index.
 
 ```lua
--- signature
 LStatusBar:setSectionText(section_idx, text)
 ```
 
@@ -10574,8 +11783,8 @@ LStatusBar:setSectionText(section_idx, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `section_idx` | `number` | The 1-based section index. |
-| `text` | `string` | The new section text. |
+| `section_idx` | number | The 1-based section index. |
+| `text` | string | The new section text. |
 
 **Example**
 
@@ -10594,12 +11803,11 @@ end
 
 ---
 
-### `LStatusBar:setSectionWidget`
+#### `LStatusBar:setSectionWidget`
 
 Associates a widget with a status bar section (reserved for future use).
 
 ```lua
--- signature
 LStatusBar:setSectionWidget(section_idx, widget)
 ```
 
@@ -10607,8 +11815,8 @@ LStatusBar:setSectionWidget(section_idx, widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `section_idx` | `number` | The 1-based section index. |
-| `widget?` | `table` | The widget table to associate, or nil to clear. |
+| `section_idx` | number | The 1-based section index. |
+| `widget?` | table | The widget table to associate, or nil to clear. |
 
 **Example**
 
@@ -10627,14 +11835,19 @@ end
 
 ---
 
-## LSwitch
+## LSwitch Handle
 
-### `LSwitch:isOn`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSwitch:isOn`
 
 Returns whether this switch is currently in the on state.
 
 ```lua
--- signature
 LSwitch:isOn()
 ```
 
@@ -10642,7 +11855,7 @@ LSwitch:isOn()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the switch is on. |
+| boolean | True if the switch is on. |
 
 **Example**
 
@@ -10659,12 +11872,11 @@ end
 
 ---
 
-### `LSwitch:setOn`
+#### `LSwitch:setOn`
 
 Sets the on/off state of this toggle switch.
 
 ```lua
--- signature
 LSwitch:setOn(on)
 ```
 
@@ -10672,7 +11884,7 @@ LSwitch:setOn(on)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `on` | `boolean` | True to turn on, false to turn off. |
+| `on` | boolean | True to turn on, false to turn off. |
 
 **Example**
 
@@ -10689,12 +11901,11 @@ end
 
 ---
 
-### `LSwitch:toggle`
+#### `LSwitch:toggle`
 
 Toggles this switch between on and off states.
 
 ```lua
--- signature
 LSwitch:toggle()
 ```
 
@@ -10713,14 +11924,19 @@ end
 
 ---
 
-## LTabBar
+## LTabBar Handle
 
-### `LTabBar:addTab`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTabBar:addTab`
 
 Adds a new tab with the given label to this tab bar.
 
 ```lua
--- signature
 LTabBar:addTab(label)
 ```
 
@@ -10728,7 +11944,7 @@ LTabBar:addTab(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | `string` | The tab label text. |
+| `label` | string | The tab label text. |
 
 **Example**
 
@@ -10747,12 +11963,11 @@ end
 
 ---
 
-### `LTabBar:getActiveTab`
+#### `LTabBar:getActiveTab`
 
 Returns the 1-based index of the currently active tab.
 
 ```lua
--- signature
 LTabBar:getActiveTab()
 ```
 
@@ -10760,7 +11975,7 @@ LTabBar:getActiveTab()
 
 | Type | Description |
 |------|-------------|
-| `number` | The active tab index. |
+| number | The active tab index. |
 
 **Example**
 
@@ -10780,12 +11995,11 @@ end
 
 ---
 
-### `LTabBar:getTab`
+#### `LTabBar:getTab`
 
 Returns the label of the tab at the given 1-based index.
 
 ```lua
--- signature
 LTabBar:getTab(index)
 ```
 
@@ -10793,13 +12007,13 @@ LTabBar:getTab(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based tab index. |
+| `index` | number | The 1-based tab index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The tab label, or nil if out of range. |
+| string | The tab label, or nil if out of range. |
 
 **Example**
 
@@ -10818,12 +12032,11 @@ end
 
 ---
 
-### `LTabBar:getTabCount`
+#### `LTabBar:getTabCount`
 
 Returns the total number of tabs in this tab bar.
 
 ```lua
--- signature
 LTabBar:getTabCount()
 ```
 
@@ -10831,7 +12044,7 @@ LTabBar:getTabCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The tab count. |
+| number | The tab count. |
 
 **Example**
 
@@ -10850,12 +12063,11 @@ end
 
 ---
 
-### `LTabBar:removeTab`
+#### `LTabBar:removeTab`
 
 Removes the tab at the given 1-based index.
 
 ```lua
--- signature
 LTabBar:removeTab(index)
 ```
 
@@ -10863,13 +12075,13 @@ LTabBar:removeTab(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based tab index. |
+| `index` | number | The 1-based tab index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the tab was removed. |
+| boolean | True if the tab was removed. |
 
 **Example**
 
@@ -10889,12 +12101,11 @@ end
 
 ---
 
-### `LTabBar:setActiveTab`
+#### `LTabBar:setActiveTab`
 
 Sets the active (selected) tab by 1-based index.
 
 ```lua
--- signature
 LTabBar:setActiveTab(index)
 ```
 
@@ -10902,7 +12113,7 @@ LTabBar:setActiveTab(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based tab index to activate. |
+| `index` | number | The 1-based tab index to activate. |
 
 **Example**
 
@@ -10922,14 +12133,29 @@ end
 
 ---
 
-## LTextInput
+## LTable Handle
 
-### `LTextInput:getCursorPosition`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*
+
+## LTextInput Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTextInput:getCursorPosition`
 
 Returns the current cursor position (character index) within the text input.
 
 ```lua
--- signature
 LTextInput:getCursorPosition()
 ```
 
@@ -10937,7 +12163,7 @@ LTextInput:getCursorPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | The zero-based cursor position. |
+| number | The zero-based cursor position. |
 
 **Example**
 
@@ -10954,12 +12180,11 @@ end
 
 ---
 
-### `LTextInput:getPlaceholder`
+#### `LTextInput:getPlaceholder`
 
 Returns the placeholder text of this text input.
 
 ```lua
--- signature
 LTextInput:getPlaceholder()
 ```
 
@@ -10967,7 +12192,7 @@ LTextInput:getPlaceholder()
 
 | Type | Description |
 |------|-------------|
-| `string` | The placeholder text. |
+| string | The placeholder text. |
 
 **Example**
 
@@ -10982,12 +12207,11 @@ end
 
 ---
 
-### `LTextInput:getText`
+#### `LTextInput:getText`
 
 Returns the current text content of this text input field.
 
 ```lua
--- signature
 LTextInput:getText()
 ```
 
@@ -10995,7 +12219,7 @@ LTextInput:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The input text. |
+| string | The input text. |
 
 **Example**
 
@@ -11013,12 +12237,11 @@ end
 
 ---
 
-### `LTextInput:isFocused`
+#### `LTextInput:isFocused`
 
 Returns whether this text input currently has keyboard focus.
 
 ```lua
--- signature
 LTextInput:isFocused()
 ```
 
@@ -11026,7 +12249,7 @@ LTextInput:isFocused()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if focused. |
+| boolean | True if focused. |
 
 **Example**
 
@@ -11043,12 +12266,11 @@ end
 
 ---
 
-### `LTextInput:setMaxLength`
+#### `LTextInput:setMaxLength`
 
 Sets the maximum number of characters allowed in this text input.
 
 ```lua
--- signature
 LTextInput:setMaxLength(n)
 ```
 
@@ -11056,7 +12278,7 @@ LTextInput:setMaxLength(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Maximum character count. |
+| `n` | number | Maximum character count. |
 
 **Example**
 
@@ -11073,12 +12295,11 @@ end
 
 ---
 
-### `LTextInput:setPlaceholder`
+#### `LTextInput:setPlaceholder`
 
 Sets the placeholder text shown when the input is empty.
 
 ```lua
--- signature
 LTextInput:setPlaceholder(text)
 ```
 
@@ -11086,7 +12307,7 @@ LTextInput:setPlaceholder(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The placeholder text. |
+| `text` | string | The placeholder text. |
 
 **Example**
 
@@ -11101,12 +12322,11 @@ end
 
 ---
 
-### `LTextInput:setText`
+#### `LTextInput:setText`
 
 Sets the text content of this text input field and moves the cursor to the end.
 
 ```lua
--- signature
 LTextInput:setText(text)
 ```
 
@@ -11114,7 +12334,7 @@ LTextInput:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The text to set. |
+| `text` | string | The text to set. |
 
 **Example**
 
@@ -11132,14 +12352,19 @@ end
 
 ---
 
-## LTheme
+## LTheme Handle
 
-### `LTheme:setStyle`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTheme:setStyle`
 
 Sets a style entry for the given widget type and state, optionally restricted to a style class.
 
 ```lua
--- signature
 LTheme:setStyle(widget_type, state, styleOrClass, styleTable)
 ```
 
@@ -11147,16 +12372,16 @@ LTheme:setStyle(widget_type, state, styleOrClass, styleTable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget_type` | `string` | The widget type name (e.g. "button"). |
-| `state` | `string` | The widget state (e.g. "normal", "hovered"). |
-| `styleOrClass` | `any` | Style table for default styles, or a class string when `styleTable` is supplied. |
-| `styleTable?` | `table` | Style table used when `styleOrClass` is a class string. |
+| `widget_type` | string | The widget type name (e.g. "button"). |
+| `state` | string | The widget state (e.g. "normal", "hovered"). |
+| `styleOrClass` | any | Style table for default styles, or a class string when `styleTable` is supplied. |
+| `styleTable?` | table | Style table used when `styleOrClass` is a class string. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the style is applied. |
+| boolean | True when the style is applied. |
 
 **Example**
 
@@ -11174,12 +12399,11 @@ end
 
 ---
 
-### `LTheme:type`
+#### `LTheme:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LTheme:type()
 ```
 
@@ -11187,7 +12411,7 @@ LTheme:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LTheme". |
+| string | Always "[LTheme](#ltheme-handle)". |
 
 **Example**
 
@@ -11205,12 +12429,11 @@ end
 
 ---
 
-### `LTheme:typeOf`
+#### `LTheme:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LTheme:typeOf(name)
 ```
 
@@ -11218,13 +12441,13 @@ LTheme:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check. |
+| `name` | string | Type name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches this userdata type. |
+| boolean | True if the name matches this userdata type. |
 
 **Example**
 
@@ -11241,14 +12464,19 @@ end
 
 ---
 
-## LToast
+## LToast Handle
 
-### `LToast:getDuration`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LToast:getDuration`
 
 Returns the display duration of this toast in seconds.
 
 ```lua
--- signature
 LToast:getDuration()
 ```
 
@@ -11256,7 +12484,7 @@ LToast:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | The duration. |
+| number | The duration. |
 
 **Example**
 
@@ -11277,12 +12505,11 @@ end
 
 ---
 
-### `LToast:getMessage`
+#### `LToast:getMessage`
 
 Returns the message text of this toast.
 
 ```lua
--- signature
 LToast:getMessage()
 ```
 
@@ -11290,7 +12517,7 @@ LToast:getMessage()
 
 | Type | Description |
 |------|-------------|
-| `string` | The toast message. |
+| string | The toast message. |
 
 **Example**
 
@@ -11311,12 +12538,11 @@ end
 
 ---
 
-### `LToast:getProgress`
+#### `LToast:getProgress`
 
 Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
 
 ```lua
--- signature
 LToast:getProgress()
 ```
 
@@ -11324,7 +12550,7 @@ LToast:getProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | The progress fraction. |
+| number | The progress fraction. |
 
 **Example**
 
@@ -11345,12 +12571,11 @@ end
 
 ---
 
-### `LToast:isExpired`
+#### `LToast:isExpired`
 
 Returns whether this toast has exceeded its display duration.
 
 ```lua
--- signature
 LToast:isExpired()
 ```
 
@@ -11358,7 +12583,7 @@ LToast:isExpired()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if expired. |
+| boolean | True if expired. |
 
 **Example**
 
@@ -11379,12 +12604,11 @@ end
 
 ---
 
-### `LToast:setDuration`
+#### `LToast:setDuration`
 
 Sets how long this toast is displayed in seconds.
 
 ```lua
--- signature
 LToast:setDuration(d)
 ```
 
@@ -11392,7 +12616,7 @@ LToast:setDuration(d)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `d` | `number` | Duration in seconds. |
+| `d` | number | Duration in seconds. |
 
 **Example**
 
@@ -11413,12 +12637,11 @@ end
 
 ---
 
-### `LToast:setMessage`
+#### `LToast:setMessage`
 
 Sets the message text displayed by this toast notification.
 
 ```lua
--- signature
 LToast:setMessage(msg)
 ```
 
@@ -11426,7 +12649,7 @@ LToast:setMessage(msg)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `msg` | `string` | The toast message. |
+| `msg` | string | The toast message. |
 
 **Example**
 
@@ -11447,14 +12670,19 @@ end
 
 ---
 
-## LToolbar
+## LToolbar Handle
 
-### `LToolbar:addButton`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LToolbar:addButton`
 
 Adds a new button to this toolbar and returns its 1-based index.
 
 ```lua
--- signature
 LToolbar:addButton(id, tooltip)
 ```
 
@@ -11462,14 +12690,14 @@ LToolbar:addButton(id, tooltip)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | The button identifier. |
-| `tooltip?` | `string` | Optional tooltip text for the button. |
+| `id` | string | The button identifier. |
+| `tooltip?` | string | Optional tooltip text for the button. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The 1-based index of the added button. |
+| number | The 1-based index of the added button. |
 
 **Example**
 
@@ -11483,12 +12711,11 @@ end
 
 ---
 
-### `LToolbar:addSeparator`
+#### `LToolbar:addSeparator`
 
 Adds a visual separator to this toolbar.
 
 ```lua
--- signature
 LToolbar:addSeparator()
 ```
 
@@ -11505,12 +12732,11 @@ end
 
 ---
 
-### `LToolbar:addSpacer`
+#### `LToolbar:addSpacer`
 
 Adds a flexible spacer to this toolbar.
 
 ```lua
--- signature
 LToolbar:addSpacer(_size)
 ```
 
@@ -11518,7 +12744,7 @@ LToolbar:addSpacer(_size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `_size?` | `number` | Optional size hint (reserved for future use). |
+| `_size?` | number | Optional size hint (reserved for future use). |
 
 **Example**
 
@@ -11536,12 +12762,11 @@ end
 
 ---
 
-### `LToolbar:getButton`
+#### `LToolbar:getButton`
 
 Returns a table describing the toolbar button with the given ID.
 
 ```lua
--- signature
 LToolbar:getButton(id)
 ```
 
@@ -11549,13 +12774,13 @@ LToolbar:getButton(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | The button identifier. |
+| `id` | string | The button identifier. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LToolbarGetButtonResult` | Table with id, tooltip, enabled, toggled fields, or nil if not found. |
+| LToolbarGetButtonResult | Table with id, tooltip, enabled, toggled fields, or nil if not found. |
 
 **Example**
 
@@ -11570,12 +12795,11 @@ end
 
 ---
 
-### `LToolbar:getOrientation`
+#### `LToolbar:getOrientation`
 
 Returns the toolbar orientation ("horizontal" or "vertical").
 
 ```lua
--- signature
 LToolbar:getOrientation()
 ```
 
@@ -11583,7 +12807,7 @@ LToolbar:getOrientation()
 
 | Type | Description |
 |------|-------------|
-| `string` | The orientation. |
+| string | The orientation. |
 
 **Example**
 
@@ -11596,12 +12820,11 @@ end
 
 ---
 
-### `LToolbar:isButtonToggled`
+#### `LToolbar:isButtonToggled`
 
 Returns whether a toolbar button is toggled on.
 
 ```lua
--- signature
 LToolbar:isButtonToggled(id)
 ```
 
@@ -11609,13 +12832,13 @@ LToolbar:isButtonToggled(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | The button identifier. |
+| `id` | string | The button identifier. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if toggled, nil if not found. |
+| boolean | True if toggled, nil if not found. |
 
 **Example**
 
@@ -11629,12 +12852,11 @@ end
 
 ---
 
-### `LToolbar:setButtonEnabled`
+#### `LToolbar:setButtonEnabled`
 
 Enables or disables a toolbar button by its ID.
 
 ```lua
--- signature
 LToolbar:setButtonEnabled(id, enabled)
 ```
 
@@ -11642,14 +12864,14 @@ LToolbar:setButtonEnabled(id, enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | The button identifier. |
-| `enabled` | `boolean` | True to enable. |
+| `id` | string | The button identifier. |
+| `enabled` | boolean | True to enable. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the button was found. |
+| boolean | True if the button was found. |
 
 **Example**
 
@@ -11664,12 +12886,11 @@ end
 
 ---
 
-### `LToolbar:setButtonToggled`
+#### `LToolbar:setButtonToggled`
 
 Sets the toggle state of a toolbar button by its ID.
 
 ```lua
--- signature
 LToolbar:setButtonToggled(id, toggled)
 ```
 
@@ -11677,14 +12898,14 @@ LToolbar:setButtonToggled(id, toggled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | The button identifier. |
-| `toggled` | `boolean` | True to toggle on. |
+| `id` | string | The button identifier. |
+| `toggled` | boolean | True to toggle on. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the button was found. |
+| boolean | True if the button was found. |
 
 **Example**
 
@@ -11699,12 +12920,11 @@ end
 
 ---
 
-### `LToolbar:setOrientation`
+#### `LToolbar:setOrientation`
 
 Sets the toolbar orientation ("horizontal" or "vertical").
 
 ```lua
--- signature
 LToolbar:setOrientation(v)
 ```
 
@@ -11712,7 +12932,7 @@ LToolbar:setOrientation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `string` | The orientation. |
+| `v` | string | The orientation. |
 
 **Example**
 
@@ -11726,14 +12946,19 @@ end
 
 ---
 
-## LTooltipPanel
+## LTooltipPanel Handle
 
-### `LTooltipPanel:getDelay`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTooltipPanel:getDelay`
 
 Returns the delay in seconds before this tooltip appears.
 
 ```lua
--- signature
 LTooltipPanel:getDelay()
 ```
 
@@ -11741,7 +12966,7 @@ LTooltipPanel:getDelay()
 
 | Type | Description |
 |------|-------------|
-| `number` | The delay in seconds. |
+| number | The delay in seconds. |
 
 **Example**
 
@@ -11759,12 +12984,11 @@ end
 
 ---
 
-### `LTooltipPanel:getTarget`
+#### `LTooltipPanel:getTarget`
 
 Returns the widget index that this tooltip is attached to.
 
 ```lua
--- signature
 LTooltipPanel:getTarget()
 ```
 
@@ -11772,7 +12996,7 @@ LTooltipPanel:getTarget()
 
 | Type | Description |
 |------|-------------|
-| `number` | The target widget index, or nil if unset. |
+| number | The target widget index, or nil if unset. |
 
 **Example**
 
@@ -11790,12 +13014,11 @@ end
 
 ---
 
-### `LTooltipPanel:getText`
+#### `LTooltipPanel:getText`
 
 Returns the current tooltip display text.
 
 ```lua
--- signature
 LTooltipPanel:getText()
 ```
 
@@ -11803,7 +13026,7 @@ LTooltipPanel:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The tooltip text. |
+| string | The tooltip text. |
 
 **Example**
 
@@ -11821,12 +13044,11 @@ end
 
 ---
 
-### `LTooltipPanel:setDelay`
+#### `LTooltipPanel:setDelay`
 
 Sets the delay in seconds before this tooltip appears.
 
 ```lua
--- signature
 LTooltipPanel:setDelay(v)
 ```
 
@@ -11834,7 +13056,7 @@ LTooltipPanel:setDelay(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | The delay in seconds. |
+| `v` | number | The delay in seconds. |
 
 **Example**
 
@@ -11852,12 +13074,11 @@ end
 
 ---
 
-### `LTooltipPanel:setTarget`
+#### `LTooltipPanel:setTarget`
 
 Sets the widget index that this tooltip is attached to.
 
 ```lua
--- signature
 LTooltipPanel:setTarget(target)
 ```
 
@@ -11865,7 +13086,7 @@ LTooltipPanel:setTarget(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target?` | `number` | The target widget index, or nil to detach. |
+| `target?` | number | The target widget index, or nil to detach. |
 
 **Example**
 
@@ -11883,12 +13104,11 @@ end
 
 ---
 
-### `LTooltipPanel:setText`
+#### `LTooltipPanel:setText`
 
 Sets the tooltip panel display text content.
 
 ```lua
--- signature
 LTooltipPanel:setText(text)
 ```
 
@@ -11896,7 +13116,7 @@ LTooltipPanel:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The tooltip text. |
+| `text` | string | The tooltip text. |
 
 **Example**
 
@@ -11914,14 +13134,19 @@ end
 
 ---
 
-## LTreeView
+## LTreeView Handle
 
-### `LTreeView:addNode`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTreeView:addNode`
 
 Adds a new node to this tree view, optionally under a parent node.
 
 ```lua
--- signature
 LTreeView:addNode(text, parent_index)
 ```
 
@@ -11929,14 +13154,14 @@ LTreeView:addNode(text, parent_index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The node label text. |
-| `parent_index?` | `number` | The 1-based parent node index, or nil for a root node. |
+| `text` | string | The node label text. |
+| `parent_index?` | number | The 1-based parent node index, or nil for a root node. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The 1-based index of the newly added node. |
+| number | The 1-based index of the newly added node. |
 
 **Example**
 
@@ -11951,12 +13176,11 @@ end
 
 ---
 
-### `LTreeView:clearNodes`
+#### `LTreeView:clearNodes`
 
 Removes all nodes from this tree view.
 
 ```lua
--- signature
 LTreeView:clearNodes()
 ```
 
@@ -11974,12 +13198,11 @@ end
 
 ---
 
-### `LTreeView:collapseAll`
+#### `LTreeView:collapseAll`
 
 Collapses all nodes in this tree view.
 
 ```lua
--- signature
 LTreeView:collapseAll()
 ```
 
@@ -11998,12 +13221,11 @@ end
 
 ---
 
-### `LTreeView:collapseNode`
+#### `LTreeView:collapseNode`
 
 Collapses the node at the given 1-based index to hide its children.
 
 ```lua
--- signature
 LTreeView:collapseNode(index)
 ```
 
@@ -12011,13 +13233,13 @@ LTreeView:collapseNode(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node was collapsed. |
+| boolean | True if the node was collapsed. |
 
 **Example**
 
@@ -12033,12 +13255,11 @@ end
 
 ---
 
-### `LTreeView:expandAll`
+#### `LTreeView:expandAll`
 
 Expands all nodes in this tree view.
 
 ```lua
--- signature
 LTreeView:expandAll()
 ```
 
@@ -12056,12 +13277,11 @@ end
 
 ---
 
-### `LTreeView:expandNode`
+#### `LTreeView:expandNode`
 
 Expands the node at the given 1-based index to show its children.
 
 ```lua
--- signature
 LTreeView:expandNode(index)
 ```
 
@@ -12069,13 +13289,13 @@ LTreeView:expandNode(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node was expanded. |
+| boolean | True if the node was expanded. |
 
 **Example**
 
@@ -12090,12 +13310,11 @@ end
 
 ---
 
-### `LTreeView:getChildNodes`
+#### `LTreeView:getChildNodes`
 
 Returns a table of 1-based child node indices for the node at the given index.
 
 ```lua
--- signature
 LTreeView:getChildNodes(index)
 ```
 
@@ -12103,13 +13322,13 @@ LTreeView:getChildNodes(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based parent node index. |
+| `index` | number | The 1-based parent node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | 1-based child indices. |
+| number[] | 1-based child indices. |
 
 **Example**
 
@@ -12126,12 +13345,11 @@ end
 
 ---
 
-### `LTreeView:getNodeCount`
+#### `LTreeView:getNodeCount`
 
 Returns the total number of nodes in this tree view.
 
 ```lua
--- signature
 LTreeView:getNodeCount()
 ```
 
@@ -12139,7 +13357,7 @@ LTreeView:getNodeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The node count. |
+| number | The node count. |
 
 **Example**
 
@@ -12154,12 +13372,11 @@ end
 
 ---
 
-### `LTreeView:getNodeDepth`
+#### `LTreeView:getNodeDepth`
 
 Returns the nesting depth of the node at the given index (0 for root nodes).
 
 ```lua
--- signature
 LTreeView:getNodeDepth(index)
 ```
 
@@ -12167,13 +13384,13 @@ LTreeView:getNodeDepth(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The depth, or nil if index is invalid. |
+| number | The depth, or nil if index is invalid. |
 
 **Example**
 
@@ -12188,12 +13405,11 @@ end
 
 ---
 
-### `LTreeView:getNodeText`
+#### `LTreeView:getNodeText`
 
 Returns the text of the node at the given 1-based index.
 
 ```lua
--- signature
 LTreeView:getNodeText(index)
 ```
 
@@ -12201,13 +13417,13 @@ LTreeView:getNodeText(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The node text, or nil if the index is invalid. |
+| string | The node text, or nil if the index is invalid. |
 
 **Example**
 
@@ -12222,12 +13438,11 @@ end
 
 ---
 
-### `LTreeView:getParentNode`
+#### `LTreeView:getParentNode`
 
 Returns the 1-based index of the parent of the node at the given index.
 
 ```lua
--- signature
 LTreeView:getParentNode(index)
 ```
 
@@ -12235,13 +13450,13 @@ LTreeView:getParentNode(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The parent node index, or nil for root nodes. |
+| number | The parent node index, or nil for root nodes. |
 
 **Example**
 
@@ -12256,12 +13471,11 @@ end
 
 ---
 
-### `LTreeView:getSelectedNode`
+#### `LTreeView:getSelectedNode`
 
 Returns the 1-based index of the currently selected node.
 
 ```lua
--- signature
 LTreeView:getSelectedNode()
 ```
 
@@ -12269,7 +13483,7 @@ LTreeView:getSelectedNode()
 
 | Type | Description |
 |------|-------------|
-| `number` | The selected node index, or nil if none. |
+| number | The selected node index, or nil if none. |
 
 **Example**
 
@@ -12285,12 +13499,11 @@ end
 
 ---
 
-### `LTreeView:isExpanded`
+#### `LTreeView:isExpanded`
 
 Returns whether the node at the given 1-based index is currently expanded.
 
 ```lua
--- signature
 LTreeView:isExpanded(index)
 ```
 
@@ -12298,13 +13511,13 @@ LTreeView:isExpanded(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if expanded. |
+| boolean | True if expanded. |
 
 **Example**
 
@@ -12319,12 +13532,11 @@ end
 
 ---
 
-### `LTreeView:isNodeExpanded`
+#### `LTreeView:isNodeExpanded`
 
 Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
 
 ```lua
--- signature
 LTreeView:isNodeExpanded(index)
 ```
 
@@ -12332,13 +13544,13 @@ LTreeView:isNodeExpanded(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if expanded, false if collapsed, nil if invalid. |
+| boolean | True if expanded, false if collapsed, nil if invalid. |
 
 **Example**
 
@@ -12353,12 +13565,11 @@ end
 
 ---
 
-### `LTreeView:removeNode`
+#### `LTreeView:removeNode`
 
 Removes the node at the given 1-based index from this tree view.
 
 ```lua
--- signature
 LTreeView:removeNode(index)
 ```
 
@@ -12366,13 +13577,13 @@ LTreeView:removeNode(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node was removed. |
+| boolean | True if the node was removed. |
 
 **Example**
 
@@ -12389,12 +13600,11 @@ end
 
 ---
 
-### `LTreeView:setNodeIcon`
+#### `LTreeView:setNodeIcon`
 
 Sets the icon of the node at the given 1-based index.
 
 ```lua
--- signature
 LTreeView:setNodeIcon(index, icon)
 ```
 
@@ -12402,14 +13612,14 @@ LTreeView:setNodeIcon(index, icon)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
-| `icon` | `string` | The icon identifier string. |
+| `index` | number | The 1-based node index. |
+| `icon` | string | The icon identifier string. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the icon was set. |
+| boolean | True if the icon was set. |
 
 **Example**
 
@@ -12425,12 +13635,11 @@ end
 
 ---
 
-### `LTreeView:setNodeText`
+#### `LTreeView:setNodeText`
 
 Sets the text of the node at the given 1-based index.
 
 ```lua
--- signature
 LTreeView:setNodeText(index, text)
 ```
 
@@ -12438,14 +13647,14 @@ LTreeView:setNodeText(index, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
-| `text` | `string` | The new node text. |
+| `index` | number | The 1-based node index. |
+| `text` | string | The new node text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node text was set. |
+| boolean | True if the node text was set. |
 
 **Example**
 
@@ -12461,12 +13670,11 @@ end
 
 ---
 
-### `LTreeView:setSelectedNode`
+#### `LTreeView:setSelectedNode`
 
 Sets the selected node by 1-based index.
 
 ```lua
--- signature
 LTreeView:setSelectedNode(index)
 ```
 
@@ -12474,13 +13682,13 @@ LTreeView:setSelectedNode(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node was selected. |
+| boolean | True if the node was selected. |
 
 **Example**
 
@@ -12496,12 +13704,11 @@ end
 
 ---
 
-### `LTreeView:toggleNode`
+#### `LTreeView:toggleNode`
 
 Toggles the expanded/collapsed state of the node at the given 1-based index.
 
 ```lua
--- signature
 LTreeView:toggleNode(index)
 ```
 
@@ -12509,13 +13716,13 @@ LTreeView:toggleNode(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | The 1-based node index. |
+| `index` | number | The 1-based node index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node is now expanded, false if collapsed. |
+| boolean | True if the node is now expanded, false if collapsed. |
 
 **Example**
 
@@ -12532,14 +13739,19 @@ end
 
 ---
 
-## LUiWidget
+## LUiWidget Handle
 
-### `LUiWidget:addChild`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LUiWidget:addChild`
 
 Adds a child widget to this widget's hierarchy.
 
 ```lua
--- signature
 LUiWidget:addChild(child)
 ```
 
@@ -12547,7 +13759,7 @@ LUiWidget:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | `LUiWidget|number` | The child widget table or widget index to add. |
+| `child` | [LUiWidget](#luiwidget-handle)|number | The child widget table or widget index to add. |
 
 **Example**
 
@@ -12568,12 +13780,11 @@ end
 
 ---
 
-### `LUiWidget:animateAlpha`
+#### `LUiWidget:animateAlpha`
 
 Smoothly animates this widget's opacity toward a target value over the given duration.
 
 ```lua
--- signature
 LUiWidget:animateAlpha(target, duration, hide_on_complete)
 ```
 
@@ -12581,15 +13792,15 @@ LUiWidget:animateAlpha(target, duration, hide_on_complete)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `number` | Target alpha value (0.0 to 1.0). |
-| `duration?` | `number` | Animation duration in seconds. Defaults to 0.2. |
-| `hide_on_complete?` | `boolean` | If true, hides the widget when alpha reaches 0. |
+| `target` | number | Target alpha value (0.0 to 1.0). |
+| `duration?` | number | Animation duration in seconds. Defaults to 0.2. |
+| `hide_on_complete?` | boolean | If true, hides the widget when alpha reaches 0. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Table result returned by this call. |
+| table | Table result returned by this call. |
 
 **Example**
 
@@ -12607,12 +13818,11 @@ end
 
 ---
 
-### `LUiWidget:animatePosition`
+#### `LUiWidget:animatePosition`
 
 Smoothly animates this widget's position toward the target coordinates.
 
 ```lua
--- signature
 LUiWidget:animatePosition(x, y, duration)
 ```
 
@@ -12620,15 +13830,15 @@ LUiWidget:animatePosition(x, y, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Target x position. |
-| `y` | `number` | Target y position. |
-| `duration?` | `number` | Animation duration in seconds. Defaults to 0.2. |
+| `x` | number | Target x position. |
+| `y` | number | Target y position. |
+| `duration?` | number | Animation duration in seconds. Defaults to 0.2. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Table result returned by this call. |
+| table | Table result returned by this call. |
 
 **Example**
 
@@ -12644,12 +13854,11 @@ end
 
 ---
 
-### `LUiWidget:attachToEntity`
+#### `LUiWidget:attachToEntity`
 
 Attaches this widget to a game entity so it follows the entity's position on screen.
 
 ```lua
--- signature
 LUiWidget:attachToEntity(entity_id)
 ```
 
@@ -12657,7 +13866,7 @@ LUiWidget:attachToEntity(entity_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `entity_id` | `number` | The entity ID to attach to. |
+| `entity_id` | number | The entity ID to attach to. |
 
 **Example**
 
@@ -12676,12 +13885,11 @@ end
 
 ---
 
-### `LUiWidget:bind`
+#### `LUiWidget:bind`
 
 Binds this widget to a data key for use with update_bindings.
 
 ```lua
--- signature
 LUiWidget:bind(key)
 ```
 
@@ -12689,7 +13897,7 @@ LUiWidget:bind(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The binding key name. |
+| `key` | string | The binding key name. |
 
 **Example**
 
@@ -12708,12 +13916,11 @@ end
 
 ---
 
-### `LUiWidget:cancelAnimations`
+#### `LUiWidget:cancelAnimations`
 
 Cancels all active animations on this widget, leaving it at its current state.
 
 ```lua
--- signature
 LUiWidget:cancelAnimations()
 ```
 
@@ -12721,7 +13928,7 @@ LUiWidget:cancelAnimations()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if any animations were cancelled. |
+| boolean | True if any animations were cancelled. |
 
 **Example**
 
@@ -12740,12 +13947,11 @@ end
 
 ---
 
-### `LUiWidget:clearAnchor`
+#### `LUiWidget:clearAnchor`
 
 Removes all anchor constraints from this widget.
 
 ```lua
--- signature
 LUiWidget:clearAnchor()
 ```
 
@@ -12764,12 +13970,11 @@ end
 
 ---
 
-### `LUiWidget:clearFont`
+#### `LUiWidget:clearFont`
 
 Clears any font override on this widget so it inherits from its parent again.
 
 ```lua
--- signature
 LUiWidget:clearFont()
 ```
 
@@ -12788,12 +13993,11 @@ end
 
 ---
 
-### `LUiWidget:containsPoint`
+#### `LUiWidget:containsPoint`
 
 Tests whether the given screen-space point is inside this widget's bounds.
 
 ```lua
--- signature
 LUiWidget:containsPoint(x, y)
 ```
 
@@ -12801,14 +14005,14 @@ LUiWidget:containsPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate in screen pixels. |
-| `y` | `number` | Y coordinate in screen pixels. |
+| `x` | number | X coordinate in screen pixels. |
+| `y` | number | Y coordinate in screen pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the point is within the widget. |
+| boolean | True if the point is within the widget. |
 
 **Example**
 
@@ -12824,12 +14028,11 @@ end
 
 ---
 
-### `LUiWidget:detachFromEntity`
+#### `LUiWidget:detachFromEntity`
 
 Detaches this widget from any previously attached entity.
 
 ```lua
--- signature
 LUiWidget:detachFromEntity()
 ```
 
@@ -12850,12 +14053,11 @@ end
 
 ---
 
-### `LUiWidget:fadeIn`
+#### `LUiWidget:fadeIn`
 
 Instantly makes this widget fully opaque and visible.
 
 ```lua
--- signature
 LUiWidget:fadeIn()
 ```
 
@@ -12873,12 +14075,11 @@ end
 
 ---
 
-### `LUiWidget:fadeOut`
+#### `LUiWidget:fadeOut`
 
 Instantly makes this widget fully transparent and hidden.
 
 ```lua
--- signature
 LUiWidget:fadeOut()
 ```
 
@@ -12895,12 +14096,11 @@ end
 
 ---
 
-### `LUiWidget:findById`
+#### `LUiWidget:findById`
 
 Searches this widget's subtree for a child with the given ID.
 
 ```lua
--- signature
 LUiWidget:findById(id)
 ```
 
@@ -12908,13 +14108,13 @@ LUiWidget:findById(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | The widget ID to search for. |
+| `id` | string | The widget ID to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The found widget table, or nil if not found. |
+| LWidget | The found widget table, or nil if not found. |
 
 **Example**
 
@@ -12931,12 +14131,11 @@ end
 
 ---
 
-### `LUiWidget:getAlpha`
+#### `LUiWidget:getAlpha`
 
 Returns the current opacity of this widget.
 
 ```lua
--- signature
 LUiWidget:getAlpha()
 ```
 
@@ -12944,7 +14143,7 @@ LUiWidget:getAlpha()
 
 | Type | Description |
 |------|-------------|
-| `number` | The alpha value between 0.0 and 1.0. |
+| number | The alpha value between 0.0 and 1.0. |
 
 **Example**
 
@@ -12960,12 +14159,11 @@ end
 
 ---
 
-### `LUiWidget:getChildCount`
+#### `LUiWidget:getChildCount`
 
 Returns the number of direct child widgets attached to this widget.
 
 ```lua
--- signature
 LUiWidget:getChildCount()
 ```
 
@@ -12973,7 +14171,7 @@ LUiWidget:getChildCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | The child count. |
+| number | The child count. |
 
 **Example**
 
@@ -12994,12 +14192,11 @@ end
 
 ---
 
-### `LUiWidget:getChildren`
+#### `LUiWidget:getChildren`
 
 Returns a table of lightweight child widget references, each containing an _idx field.
 
 ```lua
--- signature
 LUiWidget:getChildren()
 ```
 
@@ -13007,7 +14204,7 @@ LUiWidget:getChildren()
 
 | Type | Description |
 |------|-------------|
-| `LUiWidgetGetChildrenResult` | Array of child widget tables. |
+| LUiWidgetGetChildrenResult | Array of child widget tables. |
 
 **Example**
 
@@ -13024,12 +14221,11 @@ end
 
 ---
 
-### `LUiWidget:getFlexGrow`
+#### `LUiWidget:getFlexGrow`
 
 Returns the flex-grow factor of this widget.
 
 ```lua
--- signature
 LUiWidget:getFlexGrow()
 ```
 
@@ -13037,7 +14233,7 @@ LUiWidget:getFlexGrow()
 
 | Type | Description |
 |------|-------------|
-| `number` | The grow factor. |
+| number | The grow factor. |
 
 **Example**
 
@@ -13057,12 +14253,11 @@ end
 
 ---
 
-### `LUiWidget:getFlexShrink`
+#### `LUiWidget:getFlexShrink`
 
 Returns the flex-shrink factor of this widget.
 
 ```lua
--- signature
 LUiWidget:getFlexShrink()
 ```
 
@@ -13070,7 +14265,7 @@ LUiWidget:getFlexShrink()
 
 | Type | Description |
 |------|-------------|
-| `number` | The shrink factor. |
+| number | The shrink factor. |
 
 **Example**
 
@@ -13086,12 +14281,11 @@ end
 
 ---
 
-### `LUiWidget:getId`
+#### `LUiWidget:getId`
 
 Returns the string identifier assigned to this widget.
 
 ```lua
--- signature
 LUiWidget:getId()
 ```
 
@@ -13099,7 +14293,7 @@ LUiWidget:getId()
 
 | Type | Description |
 |------|-------------|
-| `string` | The widget ID, or an empty string if none was set. |
+| string | The widget ID, or an empty string if none was set. |
 
 **Example**
 
@@ -13115,12 +14309,11 @@ end
 
 ---
 
-### `LUiWidget:getMargin`
+#### `LUiWidget:getMargin`
 
 Returns the outer margin of this widget.
 
 ```lua
--- signature
 LUiWidget:getMargin()
 ```
 
@@ -13128,10 +14321,10 @@ LUiWidget:getMargin()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Top, right, bottom, and left margin in pixels. |
-| `number` | b Top, right, bottom, and left margin in pixels. |
-| `number` | c Top, right, bottom, and left margin in pixels. |
-| `number` | d Top, right, bottom, and left margin in pixels. |
+| number | Top; right; bottom; and left margin in pixels. (value 1). |
+| number | Top; right; bottom; and left margin in pixels. (value 2). |
+| number | Top; right; bottom; and left margin in pixels. (value 3). |
+| number | Top; right; bottom; and left margin in pixels. (value 4). |
 
 **Example**
 
@@ -13149,12 +14342,11 @@ end
 
 ---
 
-### `LUiWidget:getMaxSize`
+#### `LUiWidget:getMaxSize`
 
 Returns the maximum width and height of this widget.
 
 ```lua
--- signature
 LUiWidget:getMaxSize()
 ```
 
@@ -13162,8 +14354,8 @@ LUiWidget:getMaxSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Maximum width and height in pixels. |
-| `number` | b Maximum width and height in pixels. |
+| number | Maximum width and height in pixels. (value 1). |
+| number | Maximum width and height in pixels. (value 2). |
 
 **Example**
 
@@ -13181,12 +14373,11 @@ end
 
 ---
 
-### `LUiWidget:getMinSize`
+#### `LUiWidget:getMinSize`
 
 Returns the minimum width and height of this widget.
 
 ```lua
--- signature
 LUiWidget:getMinSize()
 ```
 
@@ -13194,8 +14385,8 @@ LUiWidget:getMinSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum width and height in pixels. |
-| `number` | b Minimum width and height in pixels. |
+| number | Minimum width and height in pixels. (value 1). |
+| number | Minimum width and height in pixels. (value 2). |
 
 **Example**
 
@@ -13213,12 +14404,11 @@ end
 
 ---
 
-### `LUiWidget:getMouseFilter`
+#### `LUiWidget:getMouseFilter`
 
 Returns the mouse filter of this widget.
 
 ```lua
--- signature
 LUiWidget:getMouseFilter()
 ```
 
@@ -13226,7 +14416,7 @@ LUiWidget:getMouseFilter()
 
 | Type | Description |
 |------|-------------|
-| `string` | The mouse filter type. |
+| string | The mouse filter type. |
 
 **Example**
 
@@ -13242,12 +14432,11 @@ end
 
 ---
 
-### `LUiWidget:getPadding`
+#### `LUiWidget:getPadding`
 
 Returns the inner padding of this widget.
 
 ```lua
--- signature
 LUiWidget:getPadding()
 ```
 
@@ -13255,10 +14444,10 @@ LUiWidget:getPadding()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Top, right, bottom, and left padding in pixels. |
-| `number` | b Top, right, bottom, and left padding in pixels. |
-| `number` | c Top, right, bottom, and left padding in pixels. |
-| `number` | d Top, right, bottom, and left padding in pixels. |
+| number | Top; right; bottom; and left padding in pixels. (value 1). |
+| number | Top; right; bottom; and left padding in pixels. (value 2). |
+| number | Top; right; bottom; and left padding in pixels. (value 3). |
+| number | Top; right; bottom; and left padding in pixels. (value 4). |
 
 **Example**
 
@@ -13274,12 +14463,11 @@ end
 
 ---
 
-### `LUiWidget:getPosition`
+#### `LUiWidget:getPosition`
 
 Returns the local position of this widget relative to its parent.
 
 ```lua
--- signature
 LUiWidget:getPosition()
 ```
 
@@ -13287,8 +14475,8 @@ LUiWidget:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a The x and y coordinates in pixels. |
-| `number` | b The x and y coordinates in pixels. |
+| number | The x and y coordinates in pixels. (value 1). |
+| number | The x and y coordinates in pixels. (value 2). |
 
 **Example**
 
@@ -13304,12 +14492,11 @@ end
 
 ---
 
-### `LUiWidget:getRect`
+#### `LUiWidget:getRect`
 
 Returns the computed bounding rectangle of this widget in screen coordinates after layout.
 
 ```lua
--- signature
 LUiWidget:getRect()
 ```
 
@@ -13317,10 +14504,10 @@ LUiWidget:getRect()
 
 | Type | Description |
 |------|-------------|
-| `number` | a The x, y, width, and height of the computed rect. |
-| `number` | b The x, y, width, and height of the computed rect. |
-| `number` | c The x, y, width, and height of the computed rect. |
-| `number` | d The x, y, width, and height of the computed rect. |
+| number | The x; y; width; and height of the computed rect. (value 1). |
+| number | The x; y; width; and height of the computed rect. (value 2). |
+| number | The x; y; width; and height of the computed rect. (value 3). |
+| number | The x; y; width; and height of the computed rect. (value 4). |
 
 **Example**
 
@@ -13336,12 +14523,11 @@ end
 
 ---
 
-### `LUiWidget:getSize`
+#### `LUiWidget:getSize`
 
 Returns the width and height of this widget.
 
 ```lua
--- signature
 LUiWidget:getSize()
 ```
 
@@ -13349,8 +14535,8 @@ LUiWidget:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a The width and height in pixels. |
-| `number` | b The width and height in pixels. |
+| number | The width and height in pixels. (value 1). |
+| number | The width and height in pixels. (value 2). |
 
 **Example**
 
@@ -13366,12 +14552,11 @@ end
 
 ---
 
-### `LUiWidget:getState`
+#### `LUiWidget:getState`
 
 Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 
 ```lua
--- signature
 LUiWidget:getState()
 ```
 
@@ -13379,7 +14564,7 @@ LUiWidget:getState()
 
 | Type | Description |
 |------|-------------|
-| `string` | The widget state name. |
+| string | The widget state name. |
 
 **Example**
 
@@ -13394,12 +14579,11 @@ end
 
 ---
 
-### `LUiWidget:getStyleClass`
+#### `LUiWidget:getStyleClass`
 
 Returns the style class of this widget.
 
 ```lua
--- signature
 LUiWidget:getStyleClass()
 ```
 
@@ -13407,7 +14591,7 @@ LUiWidget:getStyleClass()
 
 | Type | Description |
 |------|-------------|
-| `string` | The style class name, or an empty string if none is set. |
+| string | The style class name, or an empty string if none is set. |
 
 **Example**
 
@@ -13423,12 +14607,11 @@ end
 
 ---
 
-### `LUiWidget:getTooltip`
+#### `LUiWidget:getTooltip`
 
 Returns the tooltip text of this widget.
 
 ```lua
--- signature
 LUiWidget:getTooltip()
 ```
 
@@ -13436,7 +14619,7 @@ LUiWidget:getTooltip()
 
 | Type | Description |
 |------|-------------|
-| `string` | The tooltip text, or an empty string if none is set. |
+| string | The tooltip text, or an empty string if none is set. |
 
 **Example**
 
@@ -13452,12 +14635,11 @@ end
 
 ---
 
-### `LUiWidget:getZOrder`
+#### `LUiWidget:getZOrder`
 
 Returns the z-order (draw priority) of this widget.
 
 ```lua
--- signature
 LUiWidget:getZOrder()
 ```
 
@@ -13465,7 +14647,7 @@ LUiWidget:getZOrder()
 
 | Type | Description |
 |------|-------------|
-| `number` | The z-order value. |
+| number | The z-order value. |
 
 **Example**
 
@@ -13482,12 +14664,11 @@ end
 
 ---
 
-### `LUiWidget:isAnimating`
+#### `LUiWidget:isAnimating`
 
 Returns whether this widget currently has an active animation.
 
 ```lua
--- signature
 LUiWidget:isAnimating()
 ```
 
@@ -13495,7 +14676,7 @@ LUiWidget:isAnimating()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if an animation is in progress. |
+| boolean | True if an animation is in progress. |
 
 **Example**
 
@@ -13513,12 +14694,11 @@ end
 
 ---
 
-### `LUiWidget:isEnabled`
+#### `LUiWidget:isEnabled`
 
 Returns whether this widget is currently enabled and can receive input.
 
 ```lua
--- signature
 LUiWidget:isEnabled()
 ```
 
@@ -13526,7 +14706,7 @@ LUiWidget:isEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the widget is enabled. |
+| boolean | True if the widget is enabled. |
 
 **Example**
 
@@ -13542,12 +14722,11 @@ end
 
 ---
 
-### `LUiWidget:isVisible`
+#### `LUiWidget:isVisible`
 
 Returns whether this widget is currently visible.
 
 ```lua
--- signature
 LUiWidget:isVisible()
 ```
 
@@ -13555,7 +14734,7 @@ LUiWidget:isVisible()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the widget is visible. |
+| boolean | True if the widget is visible. |
 
 **Example**
 
@@ -13571,12 +14750,11 @@ end
 
 ---
 
-### `LUiWidget:removeChild`
+#### `LUiWidget:removeChild`
 
 Removes a child widget from this widget's hierarchy.
 
 ```lua
--- signature
 LUiWidget:removeChild(child)
 ```
 
@@ -13584,7 +14762,7 @@ LUiWidget:removeChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | `LUiWidget|number` | The child widget table or widget index to remove. |
+| `child` | [LUiWidget](#luiwidget-handle)|number | The child widget table or widget index to remove. |
 
 **Example**
 
@@ -13605,12 +14783,11 @@ end
 
 ---
 
-### `LUiWidget:setAlpha`
+#### `LUiWidget:setAlpha`
 
 Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
 
 ```lua
--- signature
 LUiWidget:setAlpha(alpha)
 ```
 
@@ -13618,7 +14795,7 @@ LUiWidget:setAlpha(alpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `alpha` | `number` | The opacity value. |
+| `alpha` | number | The opacity value. |
 
 **Example**
 
@@ -13634,12 +14811,11 @@ end
 
 ---
 
-### `LUiWidget:setAnchor`
+#### `LUiWidget:setAnchor`
 
 Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.
 
 ```lua
--- signature
 LUiWidget:setAnchor(left, top, right, bottom)
 ```
 
@@ -13647,10 +14823,10 @@ LUiWidget:setAnchor(left, top, right, bottom)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `left?` | `number` | Distance from parent's left edge, or nil. |
-| `top?` | `number` | Distance from parent's top edge, or nil. |
-| `right?` | `number` | Distance from parent's right edge, or nil. |
-| `bottom?` | `number` | Distance from parent's bottom edge, or nil. |
+| `left?` | number | Distance from parent's left edge, or nil. |
+| `top?` | number | Distance from parent's top edge, or nil. |
+| `right?` | number | Distance from parent's right edge, or nil. |
+| `bottom?` | number | Distance from parent's bottom edge, or nil. |
 
 **Example**
 
@@ -13667,12 +14843,11 @@ end
 
 ---
 
-### `LUiWidget:setAnchorCenter`
+#### `LUiWidget:setAnchorCenter`
 
 Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).
 
 ```lua
--- signature
 LUiWidget:setAnchorCenter(cx, cy)
 ```
 
@@ -13680,8 +14855,8 @@ LUiWidget:setAnchorCenter(cx, cy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx?` | `number` | Horizontal center fraction (0.5 = centered). |
-| `cy?` | `number` | Vertical center fraction (0.5 = centered). |
+| `cx?` | number | Horizontal center fraction (0.5 = centered). |
+| `cy?` | number | Vertical center fraction (0.5 = centered). |
 
 **Example**
 
@@ -13698,12 +14873,11 @@ end
 
 ---
 
-### `LUiWidget:setAriaName`
+#### `LUiWidget:setAriaName`
 
 Sets the accessible name metadata for this widget.
 
 ```lua
--- signature
 LUiWidget:setAriaName(name)
 ```
 
@@ -13711,7 +14885,7 @@ LUiWidget:setAriaName(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Accessible name value. |
+| `name` | string | Accessible name value. |
 
 **Example**
 
@@ -13724,12 +14898,11 @@ end
 
 ---
 
-### `LUiWidget:setBindKey`
+#### `LUiWidget:setBindKey`
 
 Binds this widget to a data key and reports whether the widget exists.
 
 ```lua
--- signature
 LUiWidget:setBindKey(key)
 ```
 
@@ -13737,13 +14910,13 @@ LUiWidget:setBindKey(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The binding key name. |
+| `key` | string | The binding key name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the widget exists and the binding key was set. |
+| boolean | True when the widget exists and the binding key was set. |
 
 **Example**
 
@@ -13760,12 +14933,11 @@ end
 
 ---
 
-### `LUiWidget:setEnabled`
+#### `LUiWidget:setEnabled`
 
 Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
 
 ```lua
--- signature
 LUiWidget:setEnabled(v)
 ```
 
@@ -13773,7 +14945,7 @@ LUiWidget:setEnabled(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to enable, false to disable. |
+| `v` | boolean | True to enable, false to disable. |
 
 **Example**
 
@@ -13788,12 +14960,11 @@ end
 
 ---
 
-### `LUiWidget:setFlexGrow`
+#### `LUiWidget:setFlexGrow`
 
 Sets the flex-grow factor controlling how much extra space this widget receives in a layout.
 
 ```lua
--- signature
 LUiWidget:setFlexGrow(grow)
 ```
 
@@ -13801,7 +14972,7 @@ LUiWidget:setFlexGrow(grow)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grow` | `number` | The grow factor (0 = no growth). |
+| `grow` | number | The grow factor (0 = no growth). |
 
 **Example**
 
@@ -13821,12 +14992,11 @@ end
 
 ---
 
-### `LUiWidget:setFlexShrink`
+#### `LUiWidget:setFlexShrink`
 
 Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
 
 ```lua
--- signature
 LUiWidget:setFlexShrink(shrink)
 ```
 
@@ -13834,7 +15004,7 @@ LUiWidget:setFlexShrink(shrink)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shrink` | `number` | The shrink factor (0 = no shrinkage). |
+| `shrink` | number | The shrink factor (0 = no shrinkage). |
 
 **Example**
 
@@ -13850,12 +15020,11 @@ end
 
 ---
 
-### `LUiWidget:setFocusGroup`
+#### `LUiWidget:setFocusGroup`
 
 Sets the focus traversal group for this widget.
 
 ```lua
--- signature
 LUiWidget:setFocusGroup(group)
 ```
 
@@ -13863,7 +15032,7 @@ LUiWidget:setFocusGroup(group)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group` | `string` | Focus group name; empty string means the default/global group. |
+| `group` | string | Focus group name; empty string means the default/global group. |
 
 **Example**
 
@@ -13876,12 +15045,11 @@ end
 
 ---
 
-### `LUiWidget:setFocusNeighbor`
+#### `LUiWidget:setFocusNeighbor`
 
 Sets an explicit directional focus neighbor for this widget.
 
 ```lua
--- signature
 LUiWidget:setFocusNeighbor(direction, target)
 ```
 
@@ -13889,14 +15057,14 @@ LUiWidget:setFocusNeighbor(direction, target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `direction` | `string` | Neighbor direction: "up", "down", "left", or "right". |
-| `target?` | `number` | Target widget index, or nil to clear the neighbor. |
+| `direction` | string | Neighbor direction: "up", "down", "left", or "right". |
+| `target?` | number | Target widget index, or nil to clear the neighbor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when direction is valid; false otherwise. |
+| boolean | True when direction is valid; false otherwise. |
 
 **Example**
 
@@ -13910,12 +15078,11 @@ end
 
 ---
 
-### `LUiWidget:setFocusable`
+#### `LUiWidget:setFocusable`
 
 Sets whether this widget participates in keyboard focus traversal.
 
 ```lua
--- signature
 LUiWidget:setFocusable(value)
 ```
 
@@ -13923,7 +15090,7 @@ LUiWidget:setFocusable(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `boolean` | True to allow focus traversal; false to skip this widget. |
+| `value` | boolean | True to allow focus traversal; false to skip this widget. |
 
 **Example**
 
@@ -13936,12 +15103,11 @@ end
 
 ---
 
-### `LUiWidget:setFont`
+#### `LUiWidget:setFont`
 
 Assigns a specific font to this widget and its descendants unless overridden further down the tree.
 
 ```lua
--- signature
 LUiWidget:setFont(font)
 ```
 
@@ -13949,7 +15115,7 @@ LUiWidget:setFont(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to use for this widget subtree. |
+| `font` | [LFont](#lfont-handle) | Font handle to use for this widget subtree. |
 
 **Example**
 
@@ -13966,12 +15132,11 @@ end
 
 ---
 
-### `LUiWidget:setId`
+#### `LUiWidget:setId`
 
 Assigns a string identifier to this widget for lookup with findById.
 
 ```lua
--- signature
 LUiWidget:setId(id)
 ```
 
@@ -13979,7 +15144,7 @@ LUiWidget:setId(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `string` | A unique identifier string. |
+| `id` | string | A unique identifier string. |
 
 **Example**
 
@@ -13995,12 +15160,11 @@ end
 
 ---
 
-### `LUiWidget:setMargin`
+#### `LUiWidget:setMargin`
 
 Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 
 ```lua
--- signature
 LUiWidget:setMargin(top, right, bottom, left)
 ```
 
@@ -14008,10 +15172,10 @@ LUiWidget:setMargin(top, right, bottom, left)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `top` | `number` | Top margin in pixels (also used as default for other sides). |
-| `right?` | `number` | Right margin. Defaults to top. |
-| `bottom?` | `number` | Bottom margin. Defaults to top. |
-| `left?` | `number` | Left margin. Defaults to right. |
+| `top` | number | Top margin in pixels (also used as default for other sides). |
+| `right?` | number | Right margin. Defaults to top. |
+| `bottom?` | number | Bottom margin. Defaults to top. |
+| `left?` | number | Left margin. Defaults to right. |
 
 **Example**
 
@@ -14029,12 +15193,11 @@ end
 
 ---
 
-### `LUiWidget:setMaxSize`
+#### `LUiWidget:setMaxSize`
 
 Sets the maximum allowed width and height for this widget during layout.
 
 ```lua
--- signature
 LUiWidget:setMaxSize(w, h)
 ```
 
@@ -14042,8 +15205,8 @@ LUiWidget:setMaxSize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Maximum width in pixels. |
-| `h` | `number` | Maximum height in pixels. |
+| `w` | number | Maximum width in pixels. |
+| `h` | number | Maximum height in pixels. |
 
 **Example**
 
@@ -14061,12 +15224,11 @@ end
 
 ---
 
-### `LUiWidget:setMinSize`
+#### `LUiWidget:setMinSize`
 
 Sets the minimum allowed width and height for this widget during layout.
 
 ```lua
--- signature
 LUiWidget:setMinSize(w, h)
 ```
 
@@ -14074,8 +15236,8 @@ LUiWidget:setMinSize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Minimum width in pixels. |
-| `h` | `number` | Minimum height in pixels. |
+| `w` | number | Minimum width in pixels. |
+| `h` | number | Minimum height in pixels. |
 
 **Example**
 
@@ -14093,12 +15255,11 @@ end
 
 ---
 
-### `LUiWidget:setMouseFilter`
+#### `LUiWidget:setMouseFilter`
 
 Sets the mouse filter for this widget ("stop", "pass", "ignore").
 
 ```lua
--- signature
 LUiWidget:setMouseFilter(filter)
 ```
 
@@ -14106,13 +15267,13 @@ LUiWidget:setMouseFilter(filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filter` | `string` | The mouse filter type. |
+| `filter` | string | The mouse filter type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True for a valid filter, false when reset to "stop". |
+| boolean | True for a valid filter, false when reset to "stop". |
 
 **Example**
 
@@ -14128,12 +15289,11 @@ end
 
 ---
 
-### `LUiWidget:setOnChange`
+#### `LUiWidget:setOnChange`
 
 Registers a callback function invoked when this widget's value changes.
 
 ```lua
--- signature
 LUiWidget:setOnChange(f)
 ```
 
@@ -14141,7 +15301,7 @@ LUiWidget:setOnChange(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index as argument. |
+| `f` | function | Callback receiving the widget index as argument. |
 
 **Example**
 
@@ -14159,12 +15319,11 @@ end
 
 ---
 
-### `LUiWidget:setOnClick`
+#### `LUiWidget:setOnClick`
 
 Registers a callback function invoked when this widget is clicked.
 
 ```lua
--- signature
 LUiWidget:setOnClick(f)
 ```
 
@@ -14172,7 +15331,7 @@ LUiWidget:setOnClick(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving the widget index as argument. |
+| `f` | function | Callback receiving the widget index as argument. |
 
 **Example**
 
@@ -14190,12 +15349,11 @@ end
 
 ---
 
-### `LUiWidget:setOnDraw`
+#### `LUiWidget:setOnDraw`
 
 Registers a custom draw callback for this widget, invoked each frame during the draw pass.
 
 ```lua
--- signature
 LUiWidget:setOnDraw(f)
 ```
 
@@ -14203,7 +15361,7 @@ LUiWidget:setOnDraw(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving a rect table {x, y, w, h} with the computed bounds. |
+| `f` | function | Callback receiving a rect table {x, y, w, h} with the computed bounds. |
 
 **Example**
 
@@ -14221,12 +15379,11 @@ end
 
 ---
 
-### `LUiWidget:setPadding`
+#### `LUiWidget:setPadding`
 
 Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 
 ```lua
--- signature
 LUiWidget:setPadding(top, right, bottom, left)
 ```
 
@@ -14234,10 +15391,10 @@ LUiWidget:setPadding(top, right, bottom, left)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `top` | `number` | Top padding in pixels (also used as default for other sides). |
-| `right?` | `number` | Right padding. Defaults to top. |
-| `bottom?` | `number` | Bottom padding. Defaults to top. |
-| `left?` | `number` | Left padding. Defaults to right. |
+| `top` | number | Top padding in pixels (also used as default for other sides). |
+| `right?` | number | Right padding. Defaults to top. |
+| `bottom?` | number | Bottom padding. Defaults to top. |
+| `left?` | number | Left padding. Defaults to right. |
 
 **Example**
 
@@ -14253,12 +15410,11 @@ end
 
 ---
 
-### `LUiWidget:setPosition`
+#### `LUiWidget:setPosition`
 
 Sets the local position of this widget relative to its parent.
 
 ```lua
--- signature
 LUiWidget:setPosition(x, y)
 ```
 
@@ -14266,8 +15422,8 @@ LUiWidget:setPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Horizontal position in pixels. |
-| `y` | `number` | Vertical position in pixels. |
+| `x` | number | Horizontal position in pixels. |
+| `y` | number | Vertical position in pixels. |
 
 **Example**
 
@@ -14283,12 +15439,11 @@ end
 
 ---
 
-### `LUiWidget:setRole`
+#### `LUiWidget:setRole`
 
 Sets a semantic role string for this widget.
 
 ```lua
--- signature
 LUiWidget:setRole(role)
 ```
 
@@ -14296,7 +15451,7 @@ LUiWidget:setRole(role)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `role` | `string` | Semantic role name. |
+| `role` | string | Semantic role name. |
 
 **Example**
 
@@ -14309,12 +15464,11 @@ end
 
 ---
 
-### `LUiWidget:setSize`
+#### `LUiWidget:setSize`
 
 Sets the width and height of this widget in pixels.
 
 ```lua
--- signature
 LUiWidget:setSize(w, h)
 ```
 
@@ -14322,8 +15476,8 @@ LUiWidget:setSize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width in pixels. |
-| `h` | `number` | Height in pixels. |
+| `w` | number | Width in pixels. |
+| `h` | number | Height in pixels. |
 
 **Example**
 
@@ -14339,12 +15493,11 @@ end
 
 ---
 
-### `LUiWidget:setStyleClass`
+#### `LUiWidget:setStyleClass`
 
 Sets the style class of this widget.
 
 ```lua
--- signature
 LUiWidget:setStyleClass(class)
 ```
 
@@ -14352,13 +15505,13 @@ LUiWidget:setStyleClass(class)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `class` | `string` | The style class name. |
+| `class` | string | The style class name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the widget exists and the class was set. |
+| boolean | True when the widget exists and the class was set. |
 
 **Example**
 
@@ -14374,12 +15527,11 @@ end
 
 ---
 
-### `LUiWidget:setTabIndex`
+#### `LUiWidget:setTabIndex`
 
 Sets the tab-order index for this widget.
 
 ```lua
--- signature
 LUiWidget:setTabIndex(value)
 ```
 
@@ -14387,7 +15539,7 @@ LUiWidget:setTabIndex(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `number` | Tab-order index. |
+| `value` | number | Tab-order index. |
 
 **Example**
 
@@ -14400,12 +15552,11 @@ end
 
 ---
 
-### `LUiWidget:setTextEllipsis`
+#### `LUiWidget:setTextEllipsis`
 
 Enables or disables ellipsis clipping for overflowing single-line text.
 
 ```lua
--- signature
 LUiWidget:setTextEllipsis(ellipsis)
 ```
 
@@ -14413,7 +15564,7 @@ LUiWidget:setTextEllipsis(ellipsis)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ellipsis` | `boolean` | True to enable ellipsis on overflow. |
+| `ellipsis` | boolean | True to enable ellipsis on overflow. |
 
 **Example**
 
@@ -14426,12 +15577,11 @@ end
 
 ---
 
-### `LUiWidget:setTextVAlign`
+#### `LUiWidget:setTextVAlign`
 
 Sets the vertical alignment of text inside this widget.
 
 ```lua
--- signature
 LUiWidget:setTextVAlign(align)
 ```
 
@@ -14439,13 +15589,13 @@ LUiWidget:setTextVAlign(align)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `align` | `string` | Vertical alignment: "top", "middle", or "bottom". |
+| `align` | string | Vertical alignment: "top", "middle", or "bottom". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the alignment string is recognised; false leaves the previous value unchanged. |
+| boolean | True when the alignment string is recognised; false leaves the previous value unchanged. |
 
 **Example**
 
@@ -14458,12 +15608,11 @@ end
 
 ---
 
-### `LUiWidget:setTextWrap`
+#### `LUiWidget:setTextWrap`
 
 Enables or disables word-wrap for text inside this widget.
 
 ```lua
--- signature
 LUiWidget:setTextWrap(wrap)
 ```
 
@@ -14471,7 +15620,7 @@ LUiWidget:setTextWrap(wrap)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wrap` | `boolean` | True to wrap text, false for single-line. |
+| `wrap` | boolean | True to wrap text, false for single-line. |
 
 **Example**
 
@@ -14484,12 +15633,11 @@ end
 
 ---
 
-### `LUiWidget:setTooltip`
+#### `LUiWidget:setTooltip`
 
 Sets the tooltip text shown when the user hovers over this widget.
 
 ```lua
--- signature
 LUiWidget:setTooltip(text)
 ```
 
@@ -14497,7 +15645,7 @@ LUiWidget:setTooltip(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The tooltip message. |
+| `text` | string | The tooltip message. |
 
 **Example**
 
@@ -14513,12 +15661,11 @@ end
 
 ---
 
-### `LUiWidget:setVisible`
+#### `LUiWidget:setVisible`
 
 Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
 
 ```lua
--- signature
 LUiWidget:setVisible(v)
 ```
 
@@ -14526,7 +15673,7 @@ LUiWidget:setVisible(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | True to show, false to hide. |
+| `v` | boolean | True to show, false to hide. |
 
 **Example**
 
@@ -14541,12 +15688,11 @@ end
 
 ---
 
-### `LUiWidget:setZOrder`
+#### `LUiWidget:setZOrder`
 
 Sets the z-order (draw priority) of this widget. Higher values draw on top.
 
 ```lua
--- signature
 LUiWidget:setZOrder(z)
 ```
 
@@ -14554,7 +15700,7 @@ LUiWidget:setZOrder(z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | The z-order integer value. |
+| `z` | number | The z-order integer value. |
 
 **Example**
 
@@ -14571,12 +15717,11 @@ end
 
 ---
 
-### `LUiWidget:slideIn`
+#### `LUiWidget:slideIn`
 
 Moves this widget to the given position and makes it visible.
 
 ```lua
--- signature
 LUiWidget:slideIn(x, y)
 ```
 
@@ -14584,8 +15729,8 @@ LUiWidget:slideIn(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Target x position. |
-| `y` | `number` | Target y position. |
+| `x` | number | Target x position. |
+| `y` | number | Target y position. |
 
 **Example**
 
@@ -14602,12 +15747,11 @@ end
 
 ---
 
-### `LUiWidget:slideOut`
+#### `LUiWidget:slideOut`
 
 Moves this widget to the given position and hides it.
 
 ```lua
--- signature
 LUiWidget:slideOut(x, y)
 ```
 
@@ -14615,8 +15759,8 @@ LUiWidget:slideOut(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Target x position. |
-| `y` | `number` | Target y position. |
+| `x` | number | Target x position. |
+| `y` | number | Target y position. |
 
 **Example**
 
@@ -14634,12 +15778,11 @@ end
 
 ---
 
-### `LUiWidget:type`
+#### `LUiWidget:type`
 
-Returns the type name string of this widget (e.g. "LButton", "LSlider").
+Returns the type name string of this widget (e.g. "[LButton](#lbutton-handle)", "[LSlider](#lslider-handle)").
 
 ```lua
--- signature
 LUiWidget:type()
 ```
 
@@ -14647,7 +15790,7 @@ LUiWidget:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The widget type name. |
+| string | The widget type name. |
 
 **Example**
 
@@ -14665,12 +15808,11 @@ end
 
 ---
 
-### `LUiWidget:typeOf`
+#### `LUiWidget:typeOf`
 
 Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
 
 ```lua
--- signature
 LUiWidget:typeOf(name)
 ```
 
@@ -14678,13 +15820,13 @@ LUiWidget:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The type name to check against. |
+| `name` | string | The type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the widget is of the given type. |
+| boolean | True if the widget is of the given type. |
 
 **Example**
 
@@ -14702,12 +15844,11 @@ end
 
 ---
 
-### `LUiWidget:unbind`
+#### `LUiWidget:unbind`
 
 Removes the data binding from this widget.
 
 ```lua
--- signature
 LUiWidget:unbind()
 ```
 
@@ -14726,3 +15867,13 @@ end
 ```
 
 ---
+
+## LWindow Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*

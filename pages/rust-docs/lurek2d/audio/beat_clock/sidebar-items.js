@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["JudgementResult"],"struct":["BeatClock","BeatClockEvents","BeatClockOpts","BeatPosition","JudgementWindows"]};

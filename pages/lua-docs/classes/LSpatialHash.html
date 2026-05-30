@@ -3,125 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LSpatialHash - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LSpatialHash Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/math.html#lspatialhash-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a class="active" href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LSpatialHash</h1>
-  <p>Lua-side wrapper for a spatial hash index.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/math.html">lurek.math</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    sh:insert(&quot;a&quot;, 50, 50, 10, 10)
-    print(&quot;items = &quot; .. sh:getItemCount())
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LSpatialHash userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LSpatialHash:clear()</pre><p>Clears all items from the spatial hash.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1067</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    sh:insert(&quot;a&quot;, 50, 50, 10, 10)
-    sh:clear()
-    print(&quot;count = &quot; .. sh:getItemCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-getcellsize"><div class="item-row-main"><h3>getCellSize</h3><pre class="inline-signature">LSpatialHash:getCellSize() -&gt; number</pre><p>Returns the spatial hash cell size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1127</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    print(&quot;cell size = &quot; .. sh:getCellSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-getitemcount"><div class="item-row-main"><h3>getItemCount</h3><pre class="inline-signature">LSpatialHash:getItemCount() -&gt; integer</pre><p>Returns the number of items in the spatial hash.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1131</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    sh:insert(&quot;a&quot;, 50, 50, 10, 10)
-    print(&quot;items = &quot; .. sh:getItemCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-insert"><div class="item-row-main"><h3>insert</h3><pre class="inline-signature">LSpatialHash:insert(id: string, x: number, y: number, w: number, h: number)</pre><p>Inserts an item rectangle into the spatial hash.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1037</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    sh:insert(&quot;a&quot;, 50, 50, 10, 10)
-    print(&quot;items = &quot; .. sh:getItemCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-querycircle"><div class="item-row-main"><h3>queryCircle</h3><pre class="inline-signature">LSpatialHash:queryCircle(cx: number, cy: number, radius: number) -&gt; integer[]</pre><p>Returns ids intersecting a query circle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1095</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(16)
-    sh:insert(&quot;a&quot;, 0, 0, 10, 10)
-    sh:insert(&quot;b&quot;, 5, 5, 10, 10)
-    local hits = sh:queryCircle(5, 5, 10)
-    print(&quot;circle hits = &quot; .. #hits)
-end</code></pre></details></article><article class="item-row api-row" id="method-queryrect"><div class="item-row-main"><h3>queryRect</h3><pre class="inline-signature">LSpatialHash:queryRect(x: number, y: number, w: number, h: number) -&gt; integer[]</pre><p>Returns ids intersecting a query rectangle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1078</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(16)
-    sh:insert(&quot;a&quot;, 0, 0, 10, 10)
-    sh:insert(&quot;b&quot;, 5, 5, 10, 10)
-    local hits = sh:queryRect(0, 0, 12, 12)
-    print(&quot;rect hits = &quot; .. #hits)
-end</code></pre></details></article><article class="item-row api-row" id="method-querysegment"><div class="item-row-main"><h3>querySegment</h3><pre class="inline-signature">LSpatialHash:querySegment(x1: number, y1: number, x2: number, y2: number) -&gt; integer[]</pre><p>Returns ids intersecting a query line segment.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1113</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(16)
-    sh:insert(&quot;a&quot;, 0, 0, 10, 10)
-    sh:insert(&quot;b&quot;, 5, 5, 10, 10)
-    local hits = sh:querySegment(0, 0, 50, 50)
-    print(&quot;segment hits = &quot; .. #hits)
-end</code></pre></details></article><article class="item-row api-row" id="method-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">LSpatialHash:remove(id: string)</pre><p>Removes an item from the spatial hash.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1061</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(16)
-    sh:insert(&quot;a&quot;, 0, 0, 10, 10)
-    sh:insert(&quot;b&quot;, 5, 5, 10, 10)
-    sh:remove(&quot;b&quot;)
-    print(&quot;items = &quot; .. sh:getItemCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LSpatialHash:type() -&gt; string</pre><p>Returns the Lua-visible type name for this spatial hash handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1135</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    print(sh:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LSpatialHash:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this spatial hash handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1140</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(32)
-    print(tostring(sh:typeOf(&quot;LSpatialHash&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LSpatialHash:update(id: string, x: number, y: number, w: number, h: number)</pre><p>Updates an item rectangle in the spatial hash.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:1051</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
-    local sh = lurek.math.newSpatialHash(16)
-    sh:insert(&quot;a&quot;, 0, 0, 10, 10)
-    sh:update(&quot;a&quot;, 200, 200, 10, 10)
-    local hits = sh:queryRect(190, 190, 20, 20)
-    print(&quot;rect hits = &quot; .. #hits)
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/math.html#lspatialhash-handle">../../modules/math.html#lspatialhash-handle</a>…</p>
 </body>
 </html>

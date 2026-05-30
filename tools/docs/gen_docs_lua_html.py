@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Generate a static HTML browser for the Lurek2D Lua API.
+"""Generate compatibility redirects for legacy ``/lua-docs`` URLs.
 
-The output is a folder-based static site with separate HTML pages, CSS, JS,
-and a generated search index. It stays independent from Rust docs and lives in
-its own output directory.
+The canonical Lua API surface now lives in MkDocs pages (``/lua-api.html`` and
+``/modules/<module>.html``). This script keeps old ``/lua-docs/*`` URLs
+working by emitting tiny redirect pages to the new location.
 
 Usage:
     python tools/docs/gen_docs_lua_html.py
@@ -55,28 +55,15 @@ _EXAMPLE_FILE_ALIASES = {
     "system": "runtime.lua",
 }
 
-_CALLBACKS = [
-    ("lurek.init", "function lurek.init()", "Called once when the engine initialises."),
-    ("lurek.ready", "function lurek.ready()", "Called after the first init pass, when assets are ready."),
-    ("lurek.process", "function lurek.process(dt)", "Runs once per frame for variable-step game logic."),
-    ("lurek.process_physics", "function lurek.process_physics(dt)", "Runs on the fixed physics step; dt is the fixed-step delta."),
-    ("lurek.process_late", "function lurek.process_late(dt)", "Runs after main update work, before drawing."),
-    ("lurek.draw", "function lurek.draw()", "Draw world-space content for the current frame."),
-    ("lurek.draw_ui", "function lurek.draw_ui()", "Draw screen-space HUD and UI layers."),
-    ("lurek.resize", "function lurek.resize(w, h)", "Called when the window size changes."),
-    ("lurek.keypressed", "function lurek.keypressed(key, scancode, isrepeat)", "Called when a key is pressed."),
-    ("lurek.keyreleased", "function lurek.keyreleased(key, scancode)", "Called when a key is released."),
-    ("lurek.mousepressed", "function lurek.mousepressed(x, y, button, istouch, presses)", "Called when a mouse button is pressed."),
-    ("lurek.mousereleased", "function lurek.mousereleased(x, y, button, istouch, presses)", "Called when a mouse button is released."),
-    ("lurek.mousemoved", "function lurek.mousemoved(x, y, dx, dy, istouch)", "Called when the cursor moves."),
-    ("lurek.wheelmoved", "function lurek.wheelmoved(x, y)", "Called when the mouse wheel moves."),
-    ("lurek.textinput", "function lurek.textinput(text)", "Called when text input is received from the platform IME."),
-    ("lurek.gamepadpressed", "function lurek.gamepadpressed(joystick, button)", "Called when a gamepad button is pressed."),
-    ("lurek.gamepadreleased", "function lurek.gamepadreleased(joystick, button)", "Called when a gamepad button is released."),
-    ("lurek.gamepadaxis", "function lurek.gamepadaxis(joystick, axis, value)", "Called when a gamepad axis value changes."),
-    ("lurek.focus", "function lurek.focus(focused)", "Called when the game window gains or loses focus."),
-    ("lurek.quit", "function lurek.quit()", "Called before the runtime shuts down."),
-]
+def _callbacks_from_data(data: dict[str, Any]) -> list[tuple[str, str, str]]:
+  rows: list[tuple[str, str, str]] = []
+  for cb in sorted(data.get("engine_callbacks", []) or [], key=lambda item: item.get("name", "")):
+    name = f"lurek.{cb.get('name', '').strip()}"
+    signature = (cb.get("signature") or "").strip()
+    description = (cb.get("description") or "").strip()
+    if name and signature:
+      rows.append((name, signature, description))
+  return rows
 
 LUREK_COLORS = {
     "ink": "#17385f",
@@ -651,20 +638,29 @@ def _render_class_page(class_name: str, module_name: str, class_data: dict[str, 
     (output_dir / "classes" / f"{class_name}.html").write_text(html, encoding="utf-8")
 
 
-def _render_callbacks_page(output_dir: Path, ordered: list[str], modules: dict[str, Any], icon_path: str | None) -> None:
-    callback_cards: list[str] = []
-    for name, signature, description in _CALLBACKS:
-        callback_cards.append(
-            _render_api_card(
-                "callback",
-                name,
-                signature,
-                description,
-                "runtime hook",
-                f"callback-{_slug(name)}",
-                _render_example_block("Example", ExampleSnippet(_callback_example(signature, name), "generated callback skeleton", "module")),
-            )
-        )
+def _render_callbacks_page(
+  output_dir: Path,
+  ordered: list[str],
+  modules: dict[str, Any],
+  callbacks: list[tuple[str, str, str]],
+  icon_path: str | None,
+) -> None:
+  callback_cards: list[str] = []
+  for name, signature, description in callbacks:
+    callback_cards.append(
+      _render_api_card(
+        "callback",
+        name,
+        signature,
+        description,
+        "runtime hook",
+        f"callback-{_slug(name)}",
+        _render_example_block(
+          "Example",
+          ExampleSnippet(_callback_example(signature, name), "generated callback skeleton", "module"),
+        ),
+      )
+    )
 
     body_html = f"""
 <header class="page-header">
@@ -791,7 +787,7 @@ def _render_types_page(data: dict[str, Any], ordered: list[str], output_dir: Pat
     (output_dir / "types.html").write_text(html, encoding="utf-8")
 
 
-def _build_search_index(data: dict[str, Any], ordered: list[str]) -> list[dict[str, str]]:
+def _build_search_index(data: dict[str, Any], ordered: list[str], callbacks: list[tuple[str, str, str]]) -> list[dict[str, str]]:
     modules = data["lua_api"]["modules"]
     items: list[dict[str, str]] = []
     for module_name in ordered:
@@ -837,7 +833,7 @@ def _build_search_index(data: dict[str, Any], ordered: list[str]) -> list[dict[s
                     "keywords": f"{class_name} {name} method {namespace} {_signature(name, entry)}",
                 })
 
-    for name, signature, description in _CALLBACKS:
+    for name, signature, description in callbacks:
         items.append({
             "kind": "callback",
             "module": "callbacks",
@@ -1508,23 +1504,58 @@ def generate_site(data: dict[str, Any], output_dir: Path) -> None:
 
     modules = data["lua_api"]["modules"]
     ordered = _ordered_modules(modules)
-    callable_examples, _ = _build_example_indexes()
-    search_index = _build_search_index(data, ordered)
-    icon_path = _write_assets(output_dir, search_index)
 
-    _render_home(data, ordered, output_dir, icon_path, callable_examples)
-    _render_callbacks_page(output_dir, ordered, modules, icon_path)
-    _render_search_page(ordered, modules, output_dir, icon_path)
-    _render_types_page(data, ordered, output_dir, icon_path)
+    def redirect_html(target: str, title: str) -> str:
+        target_e = escape(target)
+        title_e = escape(title)
+        return f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+  <title>{title_e}</title>
+  <meta http-equiv=\"refresh\" content=\"0; url={target_e}\">
+  <style>
+  body {{ font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }}
+  a {{ color: #1b6ca8; }}
+  </style>
+</head>
+<body>
+  <p>Redirecting to <a href=\"{target_e}\">{target_e}</a>…</p>
+</body>
+</html>
+"""
 
+    # Root/global legacy pages.
+    (output_dir / "index.html").write_text(redirect_html("../lua-api.html", "Lua API Redirect"), encoding="utf-8")
+    (output_dir / "callbacks.html").write_text(redirect_html("../callbacks.html", "Callbacks Redirect"), encoding="utf-8")
+    (output_dir / "types.html").write_text(redirect_html("../lua-api.html", "Types Redirect"), encoding="utf-8")
+    (output_dir / "search.html").write_text(redirect_html("../lua-api.html", "Search Redirect"), encoding="utf-8")
+
+    # Module and class legacy pages.
+    class_to_module: dict[str, str] = {}
     for module_name in ordered:
-        mod_data = modules[module_name]
-        _render_module_page(module_name, mod_data, ordered, modules, output_dir, icon_path, callable_examples)
-        for class_name, class_data in mod_data.get("classes", {}).items():
-            _render_class_page(class_name, module_name, class_data, ordered, modules, output_dir, icon_path, callable_examples)
+        (output_dir / "modules" / f"{module_name}.html").write_text(
+            redirect_html(f"../../modules/{module_name}.html", f"Module {module_name} Redirect"),
+            encoding="utf-8",
+        )
+        mod_data = modules.get(module_name, {})
+        for class_name in (mod_data.get("classes") or {}).keys():
+            class_to_module[str(class_name)] = module_name
 
-    (output_dir / "search-index.json").write_text(
-        json.dumps(search_index, ensure_ascii=False, indent=2),
+    for class_name, module_name in sorted(class_to_module.items()):
+        anchor = _slug(class_name) + "-handle"
+        (output_dir / "classes" / f"{class_name}.html").write_text(
+            redirect_html(
+                f"../../modules/{module_name}.html#{anchor}",
+                f"Class {class_name} Redirect",
+            ),
+            encoding="utf-8",
+        )
+
+    (output_dir / "README.txt").write_text(
+        "This directory contains compatibility redirects from legacy /lua-docs URLs "
+        "to the new MkDocs Lua API pages.\n",
         encoding="utf-8",
     )
 

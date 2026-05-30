@@ -1,12 +1,209 @@
 # Image
 
-- The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data.
+## Summary
 
 The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
 
 Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
 
 The `image` module features specialized systems for game development, most notably the `ProvinceGrid`. This system performs high-speed flood-fill analysis on color-coded PNG maps to generate optimized spatial indexes, identifying distinct provinces, calculating adjacencies, tracing polygonal borders, and exporting compressed shape data for Geoscape-style games. Additionally, `PaletteLUT` provides hardware-accelerated color remapping for retro palette-swapping effects. The module also contains an extensive set of debug visualization renderers for animation, audio, camera bounds, easing curves, and procedural generation (Voronoi, noise, cellular automata). The entire API, including CPU-to-GPU texture upload helpers, is fully exposed to Lua via the `lurek.image.*` namespace.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### compressed.rs
+
+- Decodes DDS-style compressed textures into structured payloads used by higher-level image loading.
+- Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload.
+- Detects desktop and mobile block-compression families from DXGI and legacy format descriptors.
+- Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines.
+- Returns stable data carriers containing format tags and raw compressed mip chains.
+
+### effects.rs
+
+- Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing.
+- Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel.
+- Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing.
+- Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows.
+- Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice.
+- Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples.
+- Offers alpha-blended blit and nine-slice stretching for practical sprite and panel assembly tasks.
+- Computes byte-level difference scores for test assertions and regression image comparisons.
+- Normalizes effect behavior around mutable `ImageData` buffers without hidden global state.
+- Exposes filter-selection enums parsed from textual inputs used at scripting boundaries.
+
+### image_data.rs
+
+- Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic.
+- Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads.
+- Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants.
+- Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays.
+- Supports blending and paste semantics that keep alpha composition behavior explicit and predictable.
+- Carries width, height, and packed bytes in a compact row-major memory representation.
+- Encodes images back to portable formats for persistence, export, and diagnostics.
+- Includes comparison and utility helpers used by tests and content validation steps.
+- Serves as the common interchange type between image operations and render-facing code paths.
+- Keeps all mutation local to the instance to avoid hidden shared-state side effects.
+
+### layers.rs
+
+- Implements layered image editing with per-layer visibility, opacity, naming, and pixel ownership.
+- Maintains ordered stacks so compositing results stay deterministic during insert and reorder actions.
+- Supports add, remove, rename, swap, and move operations for non-destructive content workflows.
+- Merges the stack into flat output using alpha-over compositing compatible with engine image buffers.
+- Provides practical layer primitives for editors, tooling pipelines, and scripted content generation.
+
+### mod.rs
+
+- High-level image module that unifies pixel buffers, effects, serialization, and atlas-oriented helpers.
+- Re-exports core image types and decoding utilities used across runtime systems and content pipelines.
+- Defines the integration boundary between CPU image manipulation and render-upload preparation.
+
+### palette_lut.rs
+
+- Provides palette lookup remapping that transforms source colors into target colors across images.
+- Stores parallel source and destination palettes to express deterministic recolor tables.
+- Applies in-place remap passes optimized by direct scan or hash-assisted lookup by palette size.
+- Supports rotation-style remap workflows for palette cycling and stylized animation effects.
+- Supplies reusable color-map primitives for procedural art and runtime theme variation.
+
+### rect_packing.rs
+
+- Implements shelf-based rectangle packing used to place sprites into compact atlas layouts.
+- Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions.
+- Places rectangles in insertion order while tracking shelf growth and remaining horizontal space.
+- Returns deterministic packed coordinates that map back to source asset identities.
+- Reports occupancy metrics useful for tuning atlas size and packing efficiency.
+
+### render.rs
+
+- Bridges CPU `ImageData` content into render-command payloads consumed by the draw pipeline.
+- Provides lightweight conversion helpers that reference texture keys and screen placement.
+- Includes image snapshot utilities used where value-copy semantics are required.
+
+### serial.rs
+
+- Implements LIMG binary serialization for flat and layered images with versioned format guards.
+- Encodes and decodes pixel payloads with compression to reduce storage and transfer overhead.
+- Validates magic headers, version bytes, and payload type tags before accepting input data.
+- Preserves layer metadata such as names, opacity, and visibility across save-load round trips.
+- Exposes both in-memory byte APIs and filesystem helpers for flexible integration contexts.
+- Keeps format handling deterministic so tooling and runtime produce consistent binary artifacts.
+
+### texture.rs
+
+- Manages CPU texture ingestion and staging before GPU-side renderer upload and sampling.
+- Decodes files and raw buffers into validated RGBA payloads keyed in slot-map storage.
+- Applies premultiplied-alpha conversion paths to align blending behavior with render expectations.
+- Tracks texture color-space intent so pipelines can distinguish sRGB and linear content.
+- Supplies safe construction and validation helpers used by asset loading and runtime creation flows.
+
+### texture_atlas.rs
+
+- Builds and maintains texture atlases that group many named regions inside one packed image.
+- Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees.
+- Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion.
+- Supports name-based lookup, mutation, and reset operations for dynamic atlas management.
+- Exposes region geometry and atlas dimensions needed by render and layout call sites.
+
+### visualization/animation.rs
+
+- Renders animation timelines and frame grids into debug images for rapid visual inspection.
+- Highlights current playback position against surrounding frames to expose timing behavior.
+- Draws state-oriented overlays for running, paused, and resumed playback diagnostics.
+- Provides quick wrappers with sensible cell sizing for tool and test screenshot generation.
+- Uses consistent color accents so active and inactive frame regions are instantly readable.
+
+### visualization/audio.rs
+
+- Converts audio sample streams into waveform images suitable for tooling and in-engine diagnostics.
+- Renders mono and stereo views with channel separation and baseline guides for quick interpretation.
+- Supports zoom-oriented sampling views to inspect transient detail in dense signal regions.
+- Adds labels and configurable color accents so waveform panels fit different UI styles.
+- Normalizes peak ranges to keep amplitude visualization stable across varying source loudness.
+- Shares column-based raster logic to keep waveform output deterministic and lightweight.
+
+### visualization/camera.rs
+
+- Produces camera-debug imagery that visualizes framing, motion, and transform behavior in world space.
+- Draws viewport boxes, crosshairs, and coordinate guides for position and anchor verification.
+- Compares multiple zoom factors to reveal scale-dependent composition and clipping effects.
+- Renders rotation-aware grids that expose world-to-screen mapping under angular transforms.
+- Displays bounds and follow trails to inspect dead-zone tuning and target-tracking responses.
+- Visualizes shake offsets against center references for temporal stability checks.
+- Provides wrapper entry points for fast full-panel generation in tests and tooling flows.
+- Uses hue-based color differentiation to keep layered debug signals visually distinct.
+
+### visualization/easing.rs
+
+- Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows.
+- Produces labeled curve galleries arranged in grids for side-by-side behavior comparison.
+- Draws overlay traces that contrast multiple easing functions on shared coordinate axes.
+- Includes Bezier-focused views with control-point and segment cues for shape inspection.
+- Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios.
+- Uses chart backgrounds and guides that preserve readability across dense trace overlays.
+
+### visualization/facade.rs
+
+- Provides shared visualization color conversion from HSV space into RGB byte tuples.
+- Centralizes hue-driven palette logic used by charts, graphs, and debug overlays.
+- Keeps color mapping behavior consistent across all image visualization submodules.
+
+### visualization/geometry.rs
+
+- Generates geometry-focused debug images that visualize shape algorithms and spatial relationships.
+- Renders polygon galleries, primitive fills, and line rasterization examples for correctness checks.
+- Shows convex hull and centroid style outputs to inspect geometric post-processing behavior.
+- Illustrates intersection outcomes between segments, circles, and lines with clear overlays.
+- Draws spiral and ring patterns to stress sampling consistency and color-mapping utilities.
+- Provides rich visual evidence for math and geometry routines used by higher-level systems.
+
+### visualization/graph.rs
+
+- Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays.
+- Visualizes active and removed connections using distinct styling for topology change analysis.
+- Supports item-flow style arrows and annotation text for simulation and logic debugging.
+- Places titles and stats summaries to contextualize rendered graph snapshots.
+- Uses circle-node layouts and adjacency-driven links for readable relationship visualization.
+
+### visualization/image_ops.rs
+
+- Composes side-by-side image operation previews for fast visual comparison of processing outputs.
+- Builds slot-based layouts with scaling and padding so varied source sizes stay presentable.
+- Labels each panel to make transform deltas clear during review and regression analysis.
+- Includes color-wheel and transform showcase helpers for broad image-operation demonstrations.
+- Keeps composite rendering deterministic for repeatable screenshot-based validation.
+
+### visualization/mod.rs
+
+- High-level visualization module wiring that groups image-debug renderers by domain.
+- Re-exports category entry points to provide one flat surface for visualization consumers.
+- Shares internal facade utilities while keeping submodule responsibilities clearly separated.
+
+### visualization/noise.rs
+
+- Turns scalar noise functions into image outputs for terrain tuning and generator diagnostics.
+- Renders normalized and raw grayscale maps to compare contrast handling across noise sources.
+- Provides biome and elevation band coloring to inspect threshold-driven terrain classification.
+- Supports sliced and tiled comparison views for spotting artifacts across parameter variations.
+- Keeps sampling and raster paths deterministic for stable test and documentation visuals.
+
+### visualization/procgen.rs
+
+- Visualizes procedural-generation data structures as images for analysis and tuning loops.
+- Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics.
+- Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior.
+- Displays point samples and topology overlays for algorithm-step debugging.
+- Provides compact visual proof artifacts for procgen experimentation and regression checks.
+
+### visualization/ui.rs
+
+- Renders UI-oriented mockups into images to preview panel composition and widget styling.
+- Draws settings-style panels with controls, sliders, and button affordances for layout checks.
+- Produces HUD bars and cooldown visuals used to validate gameplay HUD readability.
+- Includes swatches and progress widgets for color and status presentation experiments.
+- Supplies deterministic UI snapshots useful in examples, tests, and design iteration loops.
 
 ## Functions
 
@@ -15,7 +212,6 @@ The `image` module features specialized systems for game development, most notab
 Returns a completed screen capture image or requests one for a future call.
 
 ```lua
--- signature
 lurek.image.fromScreen()
 ```
 
@@ -23,7 +219,7 @@ lurek.image.fromScreen()
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | nil | `LImageData` when capture data is ready, or nil after requesting capture. |
+| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` when capture data is ready, or nil after requesting capture. |
 
 **Example**
 
@@ -42,7 +238,6 @@ end
 Returns whether a GameFS image file begins with DDS compressed image magic bytes.
 
 ```lua
--- signature
 lurek.image.isCompressed(filename)
 ```
 
@@ -50,13 +245,13 @@ lurek.image.isCompressed(filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filename` | `string` | GameFS path to inspect. |
+| `filename` | string | GameFS path to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the file appears to be DDS compressed data. |
+| boolean | True when the file appears to be DDS compressed data. |
 
 **Example**
 
@@ -74,7 +269,6 @@ end
 Loads and decodes image data from GameFS.
 
 ```lua
--- signature
 lurek.image.loadImage(filename)
 ```
 
@@ -82,13 +276,13 @@ lurek.image.loadImage(filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filename` | `string` | GameFS path to an encoded image. |
+| `filename` | string | GameFS path to an encoded image. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Loaded image data handle. |
+| [LImageData](#limagedata-handle) | Loaded image data handle. |
 
 **Example**
 
@@ -109,7 +303,6 @@ end
 Loads a serialized layered image stack from GameFS.
 
 ```lua
--- signature
 lurek.image.loadLayered(filename)
 ```
 
@@ -117,13 +310,13 @@ lurek.image.loadLayered(filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filename` | `string` | GameFS path to the layered image file. |
+| `filename` | string | GameFS path to the layered image file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLayeredImage` | Loaded layered image handle. |
+| [LLayeredImage](#llayeredimage-handle) | Loaded layered image handle. |
 
 **Example**
 
@@ -145,7 +338,6 @@ end
 Loads DDS compressed image data from GameFS.
 
 ```lua
--- signature
 lurek.image.newCompressedData(filename)
 ```
 
@@ -153,13 +345,13 @@ lurek.image.newCompressedData(filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filename` | `string` | GameFS path to a DDS file. |
+| `filename` | string | GameFS path to a DDS file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCompressedImageData` | New compressed image data handle. |
+| [LCompressedImageData](#lcompressedimagedata-handle) | New compressed image data handle. |
 
 **Example**
 
@@ -179,7 +371,6 @@ end
 Creates empty image data from dimensions or decodes image data from a GameFS filename.
 
 ```lua
--- signature
 lurek.image.newImageData(width_or_filename, height)
 ```
 
@@ -187,14 +378,14 @@ lurek.image.newImageData(width_or_filename, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width_or_filename` | `number|string` | Width in pixels for a blank canvas, or a GameFS filename string to load from disk. |
-| `height?` | `number` | Height in pixels; required when the first argument is a width integer. Omit when loading from filename. |
+| `width_or_filename` | number|string | Width in pixels for a blank canvas, or a GameFS filename string to load from disk. |
+| `height?` | number | Height in pixels; required when the first argument is a width integer. Omit when loading from filename. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | New image data handle. |
+| [LImageData](#limagedata-handle) | New image data handle. |
 
 **Example**
 
@@ -212,7 +403,6 @@ end
 Creates image data from raw RGBA bytes and explicit dimensions.
 
 ```lua
--- signature
 lurek.image.newImageDataFromBytes(w, h, bytes)
 ```
 
@@ -220,15 +410,15 @@ lurek.image.newImageDataFromBytes(w, h, bytes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width in pixels. |
-| `h` | `number` | Height in pixels. |
-| `bytes` | `string` | Raw RGBA byte string. |
+| `w` | number | Width in pixels. |
+| `h` | number | Height in pixels. |
+| `bytes` | string | Raw RGBA byte string. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | New image data handle. |
+| [LImageData](#limagedata-handle) | New image data handle. |
 
 **Example**
 
@@ -247,7 +437,6 @@ end
 Creates a layered image stack with one or more blank layers.
 
 ```lua
--- signature
 lurek.image.newLayeredImage(width, height)
 ```
 
@@ -255,14 +444,14 @@ lurek.image.newLayeredImage(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Width in pixels. |
-| `height` | `number` | Height in pixels. |
+| `width` | number | Width in pixels. |
+| `height` | number | Height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLayeredImage` | New layered image handle. |
+| [LLayeredImage](#llayeredimage-handle) | New layered image handle. |
 
 **Example**
 
@@ -281,7 +470,6 @@ end
 Creates an empty palette lookup table.
 
 ```lua
--- signature
 lurek.image.newPaletteLut()
 ```
 
@@ -289,7 +477,7 @@ lurek.image.newPaletteLut()
 
 | Type | Description |
 |------|-------------|
-| `LPaletteLUT` | New palette lookup table handle. |
+| [LPaletteLUT](#lpalettelut-handle) | New palette lookup table handle. |
 
 **Example**
 
@@ -307,7 +495,6 @@ end
 Loads a province id grid from an image file under the current game directory.
 
 ```lua
--- signature
 lurek.image.newProvinceGrid(filename)
 ```
 
@@ -315,13 +502,13 @@ lurek.image.newProvinceGrid(filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filename` | `string` | Province map image filename relative to game directory. |
+| `filename` | string | Province map image filename relative to game directory. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LProvinceGrid` | New province grid handle. |
+| [LProvinceGrid](#lprovincegrid-handle) | New province grid handle. |
 
 **Example**
 
@@ -340,7 +527,6 @@ end
 Saves an image data object to a path under the current game directory.
 
 ```lua
--- signature
 lurek.image.saveImage(img_ud, filename)
 ```
 
@@ -348,8 +534,8 @@ lurek.image.saveImage(img_ud, filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `img_ud` | `LImageData` | Image data handle to save. |
-| `filename` | `string` | Output filename relative to game directory. |
+| `img_ud` | [LImageData](#limagedata-handle) | Image data handle to save. |
+| `filename` | string | Output filename relative to game directory. |
 
 **Example**
 
@@ -369,7 +555,6 @@ end
 Encodes image data as PNG and writes it under the current game directory.
 
 ```lua
--- signature
 lurek.image.savePNG(img_ud, filename)
 ```
 
@@ -377,8 +562,8 @@ lurek.image.savePNG(img_ud, filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `img_ud` | `LImageData` | Image data handle to encode. |
-| `filename` | `string` | Output filename relative to game directory. |
+| `img_ud` | [LImageData](#limagedata-handle) | Image data handle to encode. |
+| `filename` | string | Output filename relative to game directory. |
 
 **Example**
 
@@ -393,14 +578,39 @@ end
 
 ---
 
-## LCompressedImageData
+## Module Fields
 
-### `LCompressedImageData:getDimensions`
+*No module-level fields documented.*
+
+## Types
+
+- [LCompressedImageData Handle](#lcompressedimagedata-handle)
+- [LImageData Handle](#limagedata-handle)
+- [LLayeredImage Handle](#llayeredimage-handle)
+- [LPaletteLUT Handle](#lpalettelut-handle)
+- [LProvinceGrid Handle](#lprovincegrid-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LCompressedImageData Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCompressedImageData:getDimensions`
 
 Returns compressed image dimensions.
 
 ```lua
--- signature
 LCompressedImageData:getDimensions()
 ```
 
@@ -408,8 +618,8 @@ LCompressedImageData:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width in pixels. |
-| `number` | b Height in pixels. |
+| number | Width in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -423,12 +633,11 @@ end
 
 ---
 
-### `LCompressedImageData:getFormat`
+#### `LCompressedImageData:getFormat`
 
 Returns the compressed image format name.
 
 ```lua
--- signature
 LCompressedImageData:getFormat()
 ```
 
@@ -436,7 +645,7 @@ LCompressedImageData:getFormat()
 
 | Type | Description |
 |------|-------------|
-| `string` | Format name. |
+| string | Format name. |
 
 **Example**
 
@@ -449,12 +658,11 @@ end
 
 ---
 
-### `LCompressedImageData:getHeight`
+#### `LCompressedImageData:getHeight`
 
 Returns compressed image height. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCompressedImageData:getHeight()
 ```
 
@@ -462,7 +670,7 @@ LCompressedImageData:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -478,12 +686,11 @@ end
 
 ---
 
-### `LCompressedImageData:getMipmapCount`
+#### `LCompressedImageData:getMipmapCount`
 
 Returns the number of mipmap levels in this compressed image.
 
 ```lua
--- signature
 LCompressedImageData:getMipmapCount()
 ```
 
@@ -491,7 +698,7 @@ LCompressedImageData:getMipmapCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Mipmap level count. |
+| number | Mipmap level count. |
 
 **Example**
 
@@ -504,12 +711,11 @@ end
 
 ---
 
-### `LCompressedImageData:getWidth`
+#### `LCompressedImageData:getWidth`
 
 Returns compressed image width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCompressedImageData:getWidth()
 ```
 
@@ -517,7 +723,7 @@ LCompressedImageData:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -533,12 +739,11 @@ end
 
 ---
 
-### `LCompressedImageData:type`
+#### `LCompressedImageData:type`
 
 Returns the Lua-visible type name for this compressed image handle.
 
 ```lua
--- signature
 LCompressedImageData:type()
 ```
 
@@ -546,7 +751,7 @@ LCompressedImageData:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LCompressedImageData`. |
+| string | The string `[LCompressedImageData](#lcompressedimagedata-handle)`. |
 
 **Example**
 
@@ -560,12 +765,11 @@ end
 
 ---
 
-### `LCompressedImageData:typeOf`
+#### `LCompressedImageData:typeOf`
 
 Returns whether this compressed image handle matches a supported type name.
 
 ```lua
--- signature
 LCompressedImageData:typeOf(name)
 ```
 
@@ -573,13 +777,13 @@ LCompressedImageData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LCompressedImageData` and `Object`. |
+| `name` | string | Type name to compare against `[LCompressedImageData](#lcompressedimagedata-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -593,14 +797,19 @@ end
 
 ---
 
-## LImageData
+## LImageData Handle
 
-### `LImageData:alphaMask`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageData:alphaMask`
 
 Multiplies this image alpha channel by a factor in place.
 
 ```lua
--- signature
 LImageData:alphaMask(factor)
 ```
 
@@ -608,7 +817,7 @@ LImageData:alphaMask(factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `factor` | `number` | Alpha multiplier. |
+| `factor` | number | Alpha multiplier. |
 
 **Example**
 
@@ -624,12 +833,11 @@ end
 
 ---
 
-### `LImageData:applyPaletteLut`
+#### `LImageData:applyPaletteLut`
 
 Applies a palette lookup table to this image in place.
 
 ```lua
--- signature
 LImageData:applyPaletteLut(lut_ud)
 ```
 
@@ -637,7 +845,7 @@ LImageData:applyPaletteLut(lut_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lut_ud` | `LPaletteLUT` | Palette lookup table handle. |
+| `lut_ud` | [LPaletteLUT](#lpalettelut-handle) | Palette lookup table handle. |
 
 **Example**
 
@@ -654,12 +862,11 @@ end
 
 ---
 
-### `LImageData:blit`
+#### `LImageData:blit`
 
 Copies a source image into this image at a destination coordinate.
 
 ```lua
--- signature
 LImageData:blit(src_ud, dst_x, dst_y)
 ```
 
@@ -667,9 +874,9 @@ LImageData:blit(src_ud, dst_x, dst_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LImageData` | Source image data handle. |
-| `dst_x` | `number` | Destination x coordinate. |
-| `dst_y` | `number` | Destination y coordinate. |
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
 
 **Example**
 
@@ -685,12 +892,11 @@ end
 
 ---
 
-### `LImageData:blur`
+#### `LImageData:blur`
 
 Returns a blurred copy of this image.
 
 ```lua
--- signature
 LImageData:blur(radius)
 ```
 
@@ -698,13 +904,13 @@ LImageData:blur(radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `radius` | `number` | Blur radius. |
+| `radius` | number | Blur radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Blurred image data handle. |
+| [LImageData](#limagedata-handle) | Blurred image data handle. |
 
 **Example**
 
@@ -719,12 +925,11 @@ end
 
 ---
 
-### `LImageData:brightness`
+#### `LImageData:brightness`
 
 Applies a brightness factor to this image in place.
 
 ```lua
--- signature
 LImageData:brightness(factor)
 ```
 
@@ -732,7 +937,7 @@ LImageData:brightness(factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `factor` | `number` | Brightness multiplier or adjustment factor. |
+| `factor` | number | Brightness multiplier or adjustment factor. |
 
 **Example**
 
@@ -747,12 +952,11 @@ end
 
 ---
 
-### `LImageData:contrast`
+#### `LImageData:contrast`
 
 Applies a contrast factor to this image in place.
 
 ```lua
--- signature
 LImageData:contrast(factor)
 ```
 
@@ -760,7 +964,7 @@ LImageData:contrast(factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `factor` | `number` | Contrast factor. |
+| `factor` | number | Contrast factor. |
 
 **Example**
 
@@ -775,12 +979,11 @@ end
 
 ---
 
-### `LImageData:convolve`
+#### `LImageData:convolve`
 
 Applies a convolution kernel and returns the filtered image.
 
 ```lua
--- signature
 LImageData:convolve(kernel_t, ksize)
 ```
 
@@ -788,14 +991,14 @@ LImageData:convolve(kernel_t, ksize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kernel_t` | `table` | Array table of numeric kernel weights. |
-| `ksize` | `number` | Kernel width and height. |
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Convolved image data handle. |
+| [LImageData](#limagedata-handle) | Convolved image data handle. |
 
 **Example**
 
@@ -810,12 +1013,11 @@ end
 
 ---
 
-### `LImageData:crop`
+#### `LImageData:crop`
 
 Returns a cropped image region. This method is available to Lua scripts.
 
 ```lua
--- signature
 LImageData:crop(x, y, w, h)
 ```
 
@@ -823,16 +1025,16 @@ LImageData:crop(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Source x coordinate. |
-| `y` | `number` | Source y coordinate. |
-| `w` | `number` | Crop width. |
-| `h` | `number` | Crop height. |
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Cropped image data handle. |
+| [LImageData](#limagedata-handle) | Cropped image data handle. |
 
 **Example**
 
@@ -846,12 +1048,11 @@ end
 
 ---
 
-### `LImageData:diff`
+#### `LImageData:diff`
 
 Computes a difference metric against another image.
 
 ```lua
--- signature
 LImageData:diff(other_ud)
 ```
 
@@ -859,13 +1060,13 @@ LImageData:diff(other_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other_ud` | `LImageData` | Image data handle to compare with this image. |
+| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Difference score. |
+| number | Difference score. |
 
 **Example**
 
@@ -881,12 +1082,11 @@ end
 
 ---
 
-### `LImageData:drawCircle`
+#### `LImageData:drawCircle`
 
 Draws a filled circle into this image.
 
 ```lua
--- signature
 LImageData:drawCircle(cx, cy, radius, r, g, b, a)
 ```
 
@@ -894,13 +1094,13 @@ LImageData:drawCircle(cx, cy, radius, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Circle center x coordinate. |
-| `cy` | `number` | Circle center y coordinate. |
-| `radius` | `number` | Circle radius. |
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -914,12 +1114,11 @@ end
 
 ---
 
-### `LImageData:drawLine`
+#### `LImageData:drawLine`
 
 Draws a line into this image. This method is available to Lua scripts.
 
 ```lua
--- signature
 LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
 ```
 
@@ -927,14 +1126,14 @@ LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x0` | `number` | Start x coordinate. |
-| `y0` | `number` | Start y coordinate. |
-| `x1` | `number` | End x coordinate. |
-| `y1` | `number` | End y coordinate. |
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -948,12 +1147,11 @@ end
 
 ---
 
-### `LImageData:drawNineSlice`
+#### `LImageData:drawNineSlice`
 
 Draws a nine-slice region from a source image into this image.
 
 ```lua
--- signature
 LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
 ```
 
@@ -961,19 +1159,19 @@ LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LImageData` | Source image data handle. |
-| `src_x` | `number` | Source region x coordinate. |
-| `src_y` | `number` | Source region y coordinate. |
-| `src_w` | `number` | Source region width. |
-| `src_h` | `number` | Source region height. |
-| `dst_x` | `number` | Destination x coordinate. |
-| `dst_y` | `number` | Destination y coordinate. |
-| `dst_w` | `number` | Destination width. |
-| `dst_h` | `number` | Destination height. |
-| `inset_left` | `number` | Left inset width. |
-| `inset_right` | `number` | Right inset width. |
-| `inset_top` | `number` | Top inset height. |
-| `inset_bottom` | `number` | Bottom inset height. |
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_x` | number | Source region x coordinate. |
+| `src_y` | number | Source region y coordinate. |
+| `src_w` | number | Source region width. |
+| `src_h` | number | Source region height. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+| `dst_w` | number | Destination width. |
+| `dst_h` | number | Destination height. |
+| `inset_left` | number | Left inset width. |
+| `inset_right` | number | Right inset width. |
+| `inset_top` | number | Top inset height. |
+| `inset_bottom` | number | Bottom inset height. |
 
 **Example**
 
@@ -989,12 +1187,11 @@ end
 
 ---
 
-### `LImageData:drawRect`
+#### `LImageData:drawRect`
 
 Draws a filled rectangle into this image.
 
 ```lua
--- signature
 LImageData:drawRect(x, y, w, h, r, g, b, a)
 ```
 
@@ -1002,14 +1199,14 @@ LImageData:drawRect(x, y, w, h, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Rectangle x coordinate. |
-| `y` | `number` | Rectangle y coordinate. |
-| `w` | `number` | Rectangle width. |
-| `h` | `number` | Rectangle height. |
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -1023,12 +1220,11 @@ end
 
 ---
 
-### `LImageData:encode`
+#### `LImageData:encode`
 
 Encodes image data in a supported format.
 
 ```lua
--- signature
 LImageData:encode(format)
 ```
 
@@ -1036,13 +1232,13 @@ LImageData:encode(format)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format` | `string` | Format name; currently `png`. |
+| `format` | string | Format name; currently `png`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Encoded image bytes. |
+| string | Encoded image bytes. |
 
 **Example**
 
@@ -1057,12 +1253,11 @@ end
 
 ---
 
-### `LImageData:fill`
+#### `LImageData:fill`
 
 Fills the whole image with one RGBA color.
 
 ```lua
--- signature
 LImageData:fill(r, g, b, a)
 ```
 
@@ -1070,10 +1265,10 @@ LImageData:fill(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -1087,12 +1282,11 @@ end
 
 ---
 
-### `LImageData:flipHorizontal`
+#### `LImageData:flipHorizontal`
 
 Flips this image horizontally in place.
 
 ```lua
--- signature
 LImageData:flipHorizontal()
 ```
 
@@ -1110,12 +1304,11 @@ end
 
 ---
 
-### `LImageData:flipVertical`
+#### `LImageData:flipVertical`
 
 Flips this image vertically in place.
 
 ```lua
--- signature
 LImageData:flipVertical()
 ```
 
@@ -1133,12 +1326,11 @@ end
 
 ---
 
-### `LImageData:gamma`
+#### `LImageData:gamma`
 
 Applies gamma correction to this image in place.
 
 ```lua
--- signature
 LImageData:gamma(gamma)
 ```
 
@@ -1146,7 +1338,7 @@ LImageData:gamma(gamma)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gamma` | `number` | Gamma value. |
+| `gamma` | number | Gamma value. |
 
 **Example**
 
@@ -1161,12 +1353,11 @@ end
 
 ---
 
-### `LImageData:getDimensions`
+#### `LImageData:getDimensions`
 
 Returns image dimensions. This method is available to Lua scripts.
 
 ```lua
--- signature
 LImageData:getDimensions()
 ```
 
@@ -1174,8 +1365,8 @@ LImageData:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width in pixels. |
-| `number` | b Height in pixels. |
+| number | Width in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -1189,12 +1380,11 @@ end
 
 ---
 
-### `LImageData:getHeight`
+#### `LImageData:getHeight`
 
 Returns image height. This method is available to Lua scripts.
 
 ```lua
--- signature
 LImageData:getHeight()
 ```
 
@@ -1202,7 +1392,7 @@ LImageData:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -1215,12 +1405,11 @@ end
 
 ---
 
-### `LImageData:getPixel`
+#### `LImageData:getPixel`
 
 Returns RGBA channels at a pixel coordinate.
 
 ```lua
--- signature
 LImageData:getPixel(x, y)
 ```
 
@@ -1228,17 +1417,17 @@ LImageData:getPixel(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red channel. |
-| `number` | b Green channel. |
-| `number` | c Blue channel. |
-| `number` | d Alpha channel. |
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
 
 **Example**
 
@@ -1253,12 +1442,11 @@ end
 
 ---
 
-### `LImageData:getRawBytes`
+#### `LImageData:getRawBytes`
 
 Returns raw image bytes as a Lua string.
 
 ```lua
--- signature
 LImageData:getRawBytes()
 ```
 
@@ -1266,7 +1454,7 @@ LImageData:getRawBytes()
 
 | Type | Description |
 |------|-------------|
-| `string` | Raw image byte string. |
+| string | Raw image byte string. |
 
 **Example**
 
@@ -1280,12 +1468,11 @@ end
 
 ---
 
-### `LImageData:getRegion`
+#### `LImageData:getRegion`
 
 Returns an image region when the requested rectangle is inside bounds.
 
 ```lua
--- signature
 LImageData:getRegion(x, y, w, h)
 ```
 
@@ -1293,16 +1480,16 @@ LImageData:getRegion(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Region x coordinate. |
-| `y` | `number` | Region y coordinate. |
-| `w` | `number` | Region width. |
-| `h` | `number` | Region height. |
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | nil | `LImageData` handle, or nil when the region is out of bounds. |
+| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
 
 **Example**
 
@@ -1318,12 +1505,11 @@ end
 
 ---
 
-### `LImageData:getString`
+#### `LImageData:getString`
 
 Returns raw image bytes as a Lua string.
 
 ```lua
--- signature
 LImageData:getString()
 ```
 
@@ -1331,7 +1517,7 @@ LImageData:getString()
 
 | Type | Description |
 |------|-------------|
-| `string` | Raw image byte string. |
+| string | Raw image byte string. |
 
 **Example**
 
@@ -1345,12 +1531,11 @@ end
 
 ---
 
-### `LImageData:getWidth`
+#### `LImageData:getWidth`
 
 Returns image width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LImageData:getWidth()
 ```
 
@@ -1358,7 +1543,7 @@ LImageData:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -1371,12 +1556,11 @@ end
 
 ---
 
-### `LImageData:grayscale`
+#### `LImageData:grayscale`
 
 Converts this image to grayscale in place.
 
 ```lua
--- signature
 LImageData:grayscale()
 ```
 
@@ -1394,12 +1578,11 @@ end
 
 ---
 
-### `LImageData:invert`
+#### `LImageData:invert`
 
 Inverts image color channels in place.
 
 ```lua
--- signature
 LImageData:invert()
 ```
 
@@ -1417,12 +1600,11 @@ end
 
 ---
 
-### `LImageData:mapPixel`
+#### `LImageData:mapPixel`
 
 Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
 
 ```lua
--- signature
 LImageData:mapPixel(func)
 ```
 
@@ -1430,7 +1612,7 @@ LImageData:mapPixel(func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
 
 **Example**
 
@@ -1447,12 +1629,11 @@ end
 
 ---
 
-### `LImageData:mapPixels`
+#### `LImageData:mapPixels`
 
 Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
 
 ```lua
--- signature
 LImageData:mapPixels(func)
 ```
 
@@ -1460,7 +1641,7 @@ LImageData:mapPixels(func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
 
 **Example**
 
@@ -1476,12 +1657,11 @@ end
 
 ---
 
-### `LImageData:noise`
+#### `LImageData:noise`
 
 Adds noise to this image in place. This method is available to Lua scripts.
 
 ```lua
--- signature
 LImageData:noise(amount)
 ```
 
@@ -1489,7 +1669,7 @@ LImageData:noise(amount)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `amount` | `number` | Noise amount. |
+| `amount` | number | Noise amount. |
 
 **Example**
 
@@ -1504,12 +1684,11 @@ end
 
 ---
 
-### `LImageData:paste`
+#### `LImageData:paste`
 
 Pastes a source image into this image at unsigned destination coordinates.
 
 ```lua
--- signature
 LImageData:paste(src_ud, dx, dy)
 ```
 
@@ -1517,9 +1696,9 @@ LImageData:paste(src_ud, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LImageData` | Source image data handle. |
-| `dx` | `number` | Destination x coordinate. |
-| `dy` | `number` | Destination y coordinate. |
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
 
 **Example**
 
@@ -1535,12 +1714,11 @@ end
 
 ---
 
-### `LImageData:posterize`
+#### `LImageData:posterize`
 
 Reduces image colors to a fixed number of levels in place.
 
 ```lua
--- signature
 LImageData:posterize(levels)
 ```
 
@@ -1548,7 +1726,7 @@ LImageData:posterize(levels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `levels` | `number` | Number of posterization levels. |
+| `levels` | number | Number of posterization levels. |
 
 **Example**
 
@@ -1563,12 +1741,11 @@ end
 
 ---
 
-### `LImageData:resize`
+#### `LImageData:resize`
 
 Returns a resized image using an optional named filter.
 
 ```lua
--- signature
 LImageData:resize(width, height, filter)
 ```
 
@@ -1576,15 +1753,15 @@ LImageData:resize(width, height, filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Output width. |
-| `height` | `number` | Output height. |
-| `filter` | `string` | Optional filter name, defaulting to `bilinear`. |
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | nil | Resized `LImageData` handle, or nil when resizing fails. |
+| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
 
 **Example**
 
@@ -1598,12 +1775,11 @@ end
 
 ---
 
-### `LImageData:resizeNearest`
+#### `LImageData:resizeNearest`
 
 Returns a resized image using nearest-neighbor sampling.
 
 ```lua
--- signature
 LImageData:resizeNearest(new_w, new_h)
 ```
 
@@ -1611,14 +1787,14 @@ LImageData:resizeNearest(new_w, new_h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `new_w` | `number` | Output width. |
-| `new_h` | `number` | Output height. |
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Resized image data handle. |
+| [LImageData](#limagedata-handle) | Resized image data handle. |
 
 **Example**
 
@@ -1632,12 +1808,11 @@ end
 
 ---
 
-### `LImageData:rotate90cw`
+#### `LImageData:rotate90cw`
 
 Returns a new image rotated ninety degrees clockwise.
 
 ```lua
--- signature
 LImageData:rotate90cw()
 ```
 
@@ -1645,7 +1820,7 @@ LImageData:rotate90cw()
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Rotated image data handle. |
+| [LImageData](#limagedata-handle) | Rotated image data handle. |
 
 **Example**
 
@@ -1659,12 +1834,11 @@ end
 
 ---
 
-### `LImageData:saturation`
+#### `LImageData:saturation`
 
 Applies a saturation factor to this image in place.
 
 ```lua
--- signature
 LImageData:saturation(factor)
 ```
 
@@ -1672,7 +1846,7 @@ LImageData:saturation(factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `factor` | `number` | Saturation factor. |
+| `factor` | number | Saturation factor. |
 
 **Example**
 
@@ -1687,12 +1861,11 @@ end
 
 ---
 
-### `LImageData:sepia`
+#### `LImageData:sepia`
 
 Applies a sepia filter to this image in place.
 
 ```lua
--- signature
 LImageData:sepia()
 ```
 
@@ -1709,12 +1882,11 @@ end
 
 ---
 
-### `LImageData:setPixel`
+#### `LImageData:setPixel`
 
 Sets RGBA channels at a pixel coordinate.
 
 ```lua
--- signature
 LImageData:setPixel(x, y, r, g, b, a)
 ```
 
@@ -1722,12 +1894,12 @@ LImageData:setPixel(x, y, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -1742,12 +1914,11 @@ end
 
 ---
 
-### `LImageData:setRawData`
+#### `LImageData:setRawData`
 
 Replaces the image byte buffer with raw bytes.
 
 ```lua
--- signature
 LImageData:setRawData(bytes)
 ```
 
@@ -1755,7 +1926,7 @@ LImageData:setRawData(bytes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bytes` | `string` | Raw byte string matching the image storage size. |
+| `bytes` | string | Raw byte string matching the image storage size. |
 
 **Example**
 
@@ -1770,12 +1941,11 @@ end
 
 ---
 
-### `LImageData:sharpen`
+#### `LImageData:sharpen`
 
 Returns a sharpened copy of this image.
 
 ```lua
--- signature
 LImageData:sharpen()
 ```
 
@@ -1783,7 +1953,7 @@ LImageData:sharpen()
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Sharpened image data handle. |
+| [LImageData](#limagedata-handle) | Sharpened image data handle. |
 
 **Example**
 
@@ -1798,12 +1968,11 @@ end
 
 ---
 
-### `LImageData:threshold`
+#### `LImageData:threshold`
 
 Applies a threshold filter to this image in place.
 
 ```lua
--- signature
 LImageData:threshold(value)
 ```
 
@@ -1811,7 +1980,7 @@ LImageData:threshold(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `number` | Threshold channel value. |
+| `value` | number | Threshold channel value. |
 
 **Example**
 
@@ -1826,12 +1995,11 @@ end
 
 ---
 
-### `LImageData:tint`
+#### `LImageData:tint`
 
 Blends this image toward a tint color in place.
 
 ```lua
--- signature
 LImageData:tint(tr, tg, tb, factor)
 ```
 
@@ -1839,10 +2007,10 @@ LImageData:tint(tr, tg, tb, factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tr` | `number` | Tint red channel. |
-| `tg` | `number` | Tint green channel. |
-| `tb` | `number` | Tint blue channel. |
-| `factor` | `number` | Tint blend factor. |
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
 
 **Example**
 
@@ -1857,12 +2025,11 @@ end
 
 ---
 
-### `LImageData:type`
+#### `LImageData:type`
 
 Returns the Lua-visible type name for this image data handle.
 
 ```lua
--- signature
 LImageData:type()
 ```
 
@@ -1870,7 +2037,7 @@ LImageData:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LImageData`. |
+| string | The string `[LImageData](#limagedata-handle)`. |
 
 **Example**
 
@@ -1883,12 +2050,11 @@ end
 
 ---
 
-### `LImageData:typeOf`
+#### `LImageData:typeOf`
 
-Returns whether this image data handle matches the `LImageData` type name.
+Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
 
 ```lua
--- signature
 LImageData:typeOf(name)
 ```
 
@@ -1896,13 +2062,13 @@ LImageData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LImageData` or `Object`. |
+| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches. |
+| boolean | True when the supplied type name matches. |
 
 **Example**
 
@@ -1915,14 +2081,19 @@ end
 
 ---
 
-## LLayeredImage
+## LLayeredImage Handle
 
-### `LLayeredImage:addLayer`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLayeredImage:addLayer`
 
 Adds a blank layer with an optional name.
 
 ```lua
--- signature
 LLayeredImage:addLayer(name)
 ```
 
@@ -1930,13 +2101,13 @@ LLayeredImage:addLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional layer name. |
+| `name?` | string | Optional layer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based index of the new layer. |
+| number | One-based index of the new layer. |
 
 **Example**
 
@@ -1951,12 +2122,11 @@ end
 
 ---
 
-### `LLayeredImage:getHeight`
+#### `LLayeredImage:getHeight`
 
 Returns the layered image height. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLayeredImage:getHeight()
 ```
 
@@ -1964,7 +2134,7 @@ LLayeredImage:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -1977,12 +2147,11 @@ end
 
 ---
 
-### `LLayeredImage:getLayer`
+#### `LLayeredImage:getLayer`
 
 Returns image data for a layer by one-based index.
 
 ```lua
--- signature
 LLayeredImage:getLayer(index)
 ```
 
@@ -1990,13 +2159,13 @@ LLayeredImage:getLayer(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
+| `index` | number | One-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Layer image data handle. |
+| [LImageData](#limagedata-handle) | Layer image data handle. |
 
 **Example**
 
@@ -2011,12 +2180,11 @@ end
 
 ---
 
-### `LLayeredImage:getName`
+#### `LLayeredImage:getName`
 
 Returns a layer name by one-based index.
 
 ```lua
--- signature
 LLayeredImage:getName(index)
 ```
 
@@ -2024,13 +2192,13 @@ LLayeredImage:getName(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
+| `index` | number | One-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Layer name. |
+| string | Layer name. |
 
 **Example**
 
@@ -2045,12 +2213,11 @@ end
 
 ---
 
-### `LLayeredImage:getOpacity`
+#### `LLayeredImage:getOpacity`
 
 Returns a layer opacity by one-based index.
 
 ```lua
--- signature
 LLayeredImage:getOpacity(index)
 ```
 
@@ -2058,13 +2225,13 @@ LLayeredImage:getOpacity(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
+| `index` | number | One-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Layer opacity. |
+| number | Layer opacity. |
 
 **Example**
 
@@ -2078,12 +2245,11 @@ end
 
 ---
 
-### `LLayeredImage:getWidth`
+#### `LLayeredImage:getWidth`
 
 Returns the layered image width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLayeredImage:getWidth()
 ```
 
@@ -2091,7 +2257,7 @@ LLayeredImage:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 **Example**
 
@@ -2104,12 +2270,11 @@ end
 
 ---
 
-### `LLayeredImage:isVisible`
+#### `LLayeredImage:isVisible`
 
 Returns layer visibility by one-based index.
 
 ```lua
--- signature
 LLayeredImage:isVisible(index)
 ```
 
@@ -2117,13 +2282,13 @@ LLayeredImage:isVisible(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
+| `index` | number | One-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer is visible. |
+| boolean | True when the layer is visible. |
 
 **Example**
 
@@ -2137,12 +2302,11 @@ end
 
 ---
 
-### `LLayeredImage:layerCount`
+#### `LLayeredImage:layerCount`
 
 Returns the number of layers in the stack.
 
 ```lua
--- signature
 LLayeredImage:layerCount()
 ```
 
@@ -2150,7 +2314,7 @@ LLayeredImage:layerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Layer count. |
+| number | Layer count. |
 
 **Example**
 
@@ -2163,12 +2327,11 @@ end
 
 ---
 
-### `LLayeredImage:merge`
+#### `LLayeredImage:merge`
 
 Merges visible layers into a single image data object.
 
 ```lua
--- signature
 LLayeredImage:merge()
 ```
 
@@ -2176,7 +2339,7 @@ LLayeredImage:merge()
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Merged image data handle. |
+| [LImageData](#limagedata-handle) | Merged image data handle. |
 
 **Example**
 
@@ -2191,12 +2354,11 @@ end
 
 ---
 
-### `LLayeredImage:moveLayer`
+#### `LLayeredImage:moveLayer`
 
 Moves a layer from one one-based index to another.
 
 ```lua
--- signature
 LLayeredImage:moveLayer(from_idx, to_idx)
 ```
 
@@ -2204,14 +2366,14 @@ LLayeredImage:moveLayer(from_idx, to_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_idx` | `number` | Source one-based layer index. |
-| `to_idx` | `number` | Destination one-based layer index. |
+| `from_idx` | number | Source one-based layer index. |
+| `to_idx` | number | Destination one-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the move succeeds. |
+| boolean | True when the move succeeds. |
 
 **Example**
 
@@ -2227,12 +2389,11 @@ end
 
 ---
 
-### `LLayeredImage:removeLayer`
+#### `LLayeredImage:removeLayer`
 
 Removes a layer by one-based index.
 
 ```lua
--- signature
 LLayeredImage:removeLayer(index)
 ```
 
@@ -2240,13 +2401,13 @@ LLayeredImage:removeLayer(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
+| `index` | number | One-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a layer was removed. |
+| boolean | True when a layer was removed. |
 
 **Example**
 
@@ -2261,12 +2422,11 @@ end
 
 ---
 
-### `LLayeredImage:save`
+#### `LLayeredImage:save`
 
 Saves the layered image stack to a file.
 
 ```lua
--- signature
 LLayeredImage:save(path)
 ```
 
@@ -2274,7 +2434,7 @@ LLayeredImage:save(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Output path. |
+| `path` | string | Output path. |
 
 **Example**
 
@@ -2289,12 +2449,11 @@ end
 
 ---
 
-### `LLayeredImage:setLayer`
+#### `LLayeredImage:setLayer`
 
 Replaces a layer's image data by one-based index.
 
 ```lua
--- signature
 LLayeredImage:setLayer(index, img)
 ```
 
@@ -2302,14 +2461,14 @@ LLayeredImage:setLayer(index, img)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
-| `img` | `LImageData` | Image data assigned to the layer. |
+| `index` | number | One-based layer index. |
+| `img` | [LImageData](#limagedata-handle) | Image data assigned to the layer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer was replaced. |
+| boolean | True when the layer was replaced. |
 
 **Example**
 
@@ -2324,12 +2483,11 @@ end
 
 ---
 
-### `LLayeredImage:setName`
+#### `LLayeredImage:setName`
 
 Sets a layer name by one-based index.
 
 ```lua
--- signature
 LLayeredImage:setName(index, name)
 ```
 
@@ -2337,14 +2495,14 @@ LLayeredImage:setName(index, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
-| `name` | `string` | New layer name. |
+| `index` | number | One-based layer index. |
+| `name` | string | New layer name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -2359,12 +2517,11 @@ end
 
 ---
 
-### `LLayeredImage:setOpacity`
+#### `LLayeredImage:setOpacity`
 
 Sets a layer opacity by one-based index.
 
 ```lua
--- signature
 LLayeredImage:setOpacity(index, opacity)
 ```
 
@@ -2372,14 +2529,14 @@ LLayeredImage:setOpacity(index, opacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
-| `opacity` | `number` | New layer opacity. |
+| `index` | number | One-based layer index. |
+| `opacity` | number | New layer opacity. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -2394,12 +2551,11 @@ end
 
 ---
 
-### `LLayeredImage:setVisible`
+#### `LLayeredImage:setVisible`
 
 Sets layer visibility by one-based index.
 
 ```lua
--- signature
 LLayeredImage:setVisible(index, visible)
 ```
 
@@ -2407,14 +2563,14 @@ LLayeredImage:setVisible(index, visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | One-based layer index. |
-| `visible` | `boolean` | New visibility flag. |
+| `index` | number | One-based layer index. |
+| `visible` | boolean | New visibility flag. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -2429,12 +2585,11 @@ end
 
 ---
 
-### `LLayeredImage:swapLayers`
+#### `LLayeredImage:swapLayers`
 
 Swaps two layers by one-based indices.
 
 ```lua
--- signature
 LLayeredImage:swapLayers(a, b)
 ```
 
@@ -2442,14 +2597,14 @@ LLayeredImage:swapLayers(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First one-based layer index. |
-| `b` | `number` | Second one-based layer index. |
+| `a` | number | First one-based layer index. |
+| `b` | number | Second one-based layer index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when both layers exist. |
+| boolean | True when both layers exist. |
 
 **Example**
 
@@ -2465,12 +2620,11 @@ end
 
 ---
 
-### `LLayeredImage:type`
+#### `LLayeredImage:type`
 
 Returns the Lua-visible type name for this layered image handle.
 
 ```lua
--- signature
 LLayeredImage:type()
 ```
 
@@ -2478,7 +2632,7 @@ LLayeredImage:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LLayeredImage`. |
+| string | The string `[LLayeredImage](#llayeredimage-handle)`. |
 
 **Example**
 
@@ -2492,12 +2646,11 @@ end
 
 ---
 
-### `LLayeredImage:typeOf`
+#### `LLayeredImage:typeOf`
 
 Returns whether this layered image handle matches a supported type name.
 
 ```lua
--- signature
 LLayeredImage:typeOf(name)
 ```
 
@@ -2505,13 +2658,13 @@ LLayeredImage:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LLayeredImage` and `Object`. |
+| `name` | string | Type name to compare against `[LLayeredImage](#llayeredimage-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2525,14 +2678,19 @@ end
 
 ---
 
-## LPaletteLUT
+## LPaletteLUT Handle
 
-### `LPaletteLUT:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPaletteLUT:clear`
 
 Removes every color mapping from this palette lookup table.
 
 ```lua
--- signature
 LPaletteLUT:clear()
 ```
 
@@ -2549,12 +2707,11 @@ end
 
 ---
 
-### `LPaletteLUT:cycle`
+#### `LPaletteLUT:cycle`
 
 Cycles palette mappings by an offset.
 
 ```lua
--- signature
 LPaletteLUT:cycle(offset)
 ```
 
@@ -2562,7 +2719,7 @@ LPaletteLUT:cycle(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Mapping offset. |
+| `offset` | number | Mapping offset. |
 
 **Example**
 
@@ -2578,12 +2735,11 @@ end
 
 ---
 
-### `LPaletteLUT:getColorCount`
+#### `LPaletteLUT:getColorCount`
 
 Returns the number of color mappings in this palette lookup table.
 
 ```lua
--- signature
 LPaletteLUT:getColorCount()
 ```
 
@@ -2591,7 +2747,7 @@ LPaletteLUT:getColorCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Color mapping count. |
+| number | Color mapping count. |
 
 **Example**
 
@@ -2605,12 +2761,11 @@ end
 
 ---
 
-### `LPaletteLUT:setColor`
+#### `LPaletteLUT:setColor`
 
 Adds a color mapping from source RGBA channels to destination RGBA channels.
 
 ```lua
--- signature
 LPaletteLUT:setColor(fr, fg, fb, fa, tr, tg, tb, ta)
 ```
 
@@ -2618,14 +2773,14 @@ LPaletteLUT:setColor(fr, fg, fb, fa, tr, tg, tb, ta)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fr` | `number` | Source red channel. |
-| `fg` | `number` | Source green channel. |
-| `fb` | `number` | Source blue channel. |
-| `fa` | `number` | Source alpha channel. |
-| `tr` | `number` | Destination red channel. |
-| `tg` | `number` | Destination green channel. |
-| `tb` | `number` | Destination blue channel. |
-| `ta` | `number` | Destination alpha channel. |
+| `fr` | number | Source red channel. |
+| `fg` | number | Source green channel. |
+| `fb` | number | Source blue channel. |
+| `fa` | number | Source alpha channel. |
+| `tr` | number | Destination red channel. |
+| `tg` | number | Destination green channel. |
+| `tb` | number | Destination blue channel. |
+| `ta` | number | Destination alpha channel. |
 
 **Example**
 
@@ -2639,12 +2794,11 @@ end
 
 ---
 
-### `LPaletteLUT:type`
+#### `LPaletteLUT:type`
 
 Returns the Lua-visible type name for this palette lookup table handle.
 
 ```lua
--- signature
 LPaletteLUT:type()
 ```
 
@@ -2652,7 +2806,7 @@ LPaletteLUT:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LPaletteLUT`. |
+| string | The string `[LPaletteLUT](#lpalettelut-handle)`. |
 
 **Example**
 
@@ -2666,12 +2820,11 @@ end
 
 ---
 
-### `LPaletteLUT:typeOf`
+#### `LPaletteLUT:typeOf`
 
 Returns whether this palette lookup table handle matches a supported type name.
 
 ```lua
--- signature
 LPaletteLUT:typeOf(name)
 ```
 
@@ -2679,13 +2832,13 @@ LPaletteLUT:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LPaletteLUT` and `Object`. |
+| `name` | string | Type name to compare against `[LPaletteLUT](#lpalettelut-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2699,14 +2852,19 @@ end
 
 ---
 
-## LProvinceGrid
+## LProvinceGrid Handle
 
-### `LProvinceGrid:adjacencies`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LProvinceGrid:adjacencies`
 
 Returns province adjacency records and shared border pixel counts.
 
 ```lua
--- signature
 LProvinceGrid:adjacencies()
 ```
 
@@ -2714,7 +2872,7 @@ LProvinceGrid:adjacencies()
 
 | Type | Description |
 |------|-------------|
-| `LProvinceGridAdjacenciesResult` | Array table with `province_a`, `province_b`, and `border_pixels` fields. |
+| LProvinceGridAdjacenciesResult | Array table with `province_a`, `province_b`, and `border_pixels` fields. |
 
 **Example**
 
@@ -2728,12 +2886,11 @@ end
 
 ---
 
-### `LProvinceGrid:borderSegments`
+#### `LProvinceGrid:borderSegments`
 
 Returns border line segments between neighboring provinces.
 
 ```lua
--- signature
 LProvinceGrid:borderSegments()
 ```
 
@@ -2741,7 +2898,7 @@ LProvinceGrid:borderSegments()
 
 | Type | Description |
 |------|-------------|
-| `LProvinceGridBorderSegmentsResult` | Array table with province ids and segment coordinates. |
+| LProvinceGridBorderSegmentsResult | Array table with province ids and segment coordinates. |
 
 **Example**
 
@@ -2755,12 +2912,11 @@ end
 
 ---
 
-### `LProvinceGrid:deserializeShapeData`
+#### `LProvinceGrid:deserializeShapeData`
 
 Decodes serialized province shape data into span and segment tables.
 
 ```lua
--- signature
 LProvinceGrid:deserializeShapeData(bytes)
 ```
 
@@ -2768,13 +2924,13 @@ LProvinceGrid:deserializeShapeData(bytes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bytes` | `string` | Serialized shape data bytes. |
+| `bytes` | string | Serialized shape data bytes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Table with `spans` and `segments`, or nil when decoding fails. |
+| LuaValue | Table with `spans` and `segments`, or nil when decoding fails. |
 
 **Example**
 
@@ -2790,12 +2946,11 @@ end
 
 ---
 
-### `LProvinceGrid:drawShapes`
+#### `LProvinceGrid:drawShapes`
 
 Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
 
 ```lua
--- signature
 LProvinceGrid:drawShapes(x, y, w, h)
 ```
 
@@ -2803,16 +2958,16 @@ LProvinceGrid:drawShapes(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x?` | `number` | Viewport left edge (required if providing a viewport). |
-| `y?` | `number` | Viewport top edge (required if providing a viewport). |
-| `w?` | `number` | Viewport width (required if providing a viewport). |
-| `h?` | `number` | Viewport height (required if providing a viewport). |
+| `x?` | number | Viewport left edge (required if providing a viewport). |
+| `y?` | number | Viewport top edge (required if providing a viewport). |
+| `w?` | number | Viewport width (required if providing a viewport). |
+| `h?` | number | Viewport height (required if providing a viewport). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of polygons emitted to the render command queue. |
+| number | Number of polygons emitted to the render command queue. |
 
 **Example**
 
@@ -2826,12 +2981,11 @@ end
 
 ---
 
-### `LProvinceGrid:getAt`
+#### `LProvinceGrid:getAt`
 
 Returns the province id stored at grid coordinates.
 
 ```lua
--- signature
 LProvinceGrid:getAt(x, y)
 ```
 
@@ -2839,14 +2993,14 @@ LProvinceGrid:getAt(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | X coordinate. |
-| `y` | `number` | Y coordinate. |
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Province id at the pixel. |
+| number | Province id at the pixel. |
 
 **Example**
 
@@ -2860,12 +3014,11 @@ end
 
 ---
 
-### `LProvinceGrid:getHeight`
+#### `LProvinceGrid:getHeight`
 
 Returns the province grid height. This method is available to Lua scripts.
 
 ```lua
--- signature
 LProvinceGrid:getHeight()
 ```
 
@@ -2873,7 +3026,7 @@ LProvinceGrid:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Grid height in pixels. |
+| number | Grid height in pixels. |
 
 **Example**
 
@@ -2886,12 +3039,11 @@ end
 
 ---
 
-### `LProvinceGrid:getPolygons`
+#### `LProvinceGrid:getPolygons`
 
 Returns polygon rings for every province.
 
 ```lua
--- signature
 LProvinceGrid:getPolygons()
 ```
 
@@ -2899,7 +3051,7 @@ LProvinceGrid:getPolygons()
 
 | Type | Description |
 |------|-------------|
-| `LProvinceGridGetPolygonsResult` | Array table of province polygon records with `province_id` and `rings` fields. |
+| LProvinceGridGetPolygonsResult | Array table of province polygon records with `province_id` and `rings` fields. |
 
 **Example**
 
@@ -2913,12 +3065,11 @@ end
 
 ---
 
-### `LProvinceGrid:getPolygonsSimplified`
+#### `LProvinceGrid:getPolygonsSimplified`
 
 Returns simplified polygon rings for every province.
 
 ```lua
--- signature
 LProvinceGrid:getPolygonsSimplified()
 ```
 
@@ -2926,7 +3077,7 @@ LProvinceGrid:getPolygonsSimplified()
 
 | Type | Description |
 |------|-------------|
-| `LProvinceGridGetPolygonsSimplifiedResult` | Array table of simplified province polygon records with `province_id` and `rings` fields. |
+| LProvinceGridGetPolygonsSimplifiedResult | Array table of simplified province polygon records with `province_id` and `rings` fields. |
 
 **Example**
 
@@ -2940,12 +3091,11 @@ end
 
 ---
 
-### `LProvinceGrid:getWidth`
+#### `LProvinceGrid:getWidth`
 
 Returns the province grid width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LProvinceGrid:getWidth()
 ```
 
@@ -2953,7 +3103,7 @@ LProvinceGrid:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Grid width in pixels. |
+| number | Grid width in pixels. |
 
 **Example**
 
@@ -2966,12 +3116,11 @@ end
 
 ---
 
-### `LProvinceGrid:provinceCount`
+#### `LProvinceGrid:provinceCount`
 
 Returns the number of distinct provinces in the grid.
 
 ```lua
--- signature
 LProvinceGrid:provinceCount()
 ```
 
@@ -2979,7 +3128,7 @@ LProvinceGrid:provinceCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Province count. |
+| number | Province count. |
 
 **Example**
 
@@ -2992,12 +3141,11 @@ end
 
 ---
 
-### `LProvinceGrid:provinceSpans`
+#### `LProvinceGrid:provinceSpans`
 
 Returns horizontal province spans by row.
 
 ```lua
--- signature
 LProvinceGrid:provinceSpans()
 ```
 
@@ -3005,7 +3153,7 @@ LProvinceGrid:provinceSpans()
 
 | Type | Description |
 |------|-------------|
-| `LProvinceGridProvinceSpansResult` | Array table with `province_id`, `y`, `x0`, and `x1` fields. |
+| LProvinceGridProvinceSpansResult | Array table with `province_id`, `y`, `x0`, and `x1` fields. |
 
 **Example**
 
@@ -3019,12 +3167,11 @@ end
 
 ---
 
-### `LProvinceGrid:serializeShapeData`
+#### `LProvinceGrid:serializeShapeData`
 
 Serializes province span and border shape data into a binary Lua string.
 
 ```lua
--- signature
 LProvinceGrid:serializeShapeData()
 ```
 
@@ -3032,7 +3179,7 @@ LProvinceGrid:serializeShapeData()
 
 | Type | Description |
 |------|-------------|
-| `string` | Serialized shape data bytes. |
+| string | Serialized shape data bytes. |
 
 **Example**
 
@@ -3048,12 +3195,11 @@ end
 
 ---
 
-### `LProvinceGrid:type`
+#### `LProvinceGrid:type`
 
 Returns the Lua-visible type name for this province grid handle.
 
 ```lua
--- signature
 LProvinceGrid:type()
 ```
 
@@ -3061,7 +3207,7 @@ LProvinceGrid:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LProvinceGrid`. |
+| string | The string `[LProvinceGrid](#lprovincegrid-handle)`. |
 
 **Example**
 
@@ -3075,12 +3221,11 @@ end
 
 ---
 
-### `LProvinceGrid:typeOf`
+#### `LProvinceGrid:typeOf`
 
 Returns whether this province grid handle matches a supported type name.
 
 ```lua
--- signature
 LProvinceGrid:typeOf(name)
 ```
 
@@ -3088,13 +3233,13 @@ LProvinceGrid:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LProvinceGrid` and `Object`. |
+| `name` | string | Type name to compare against `[LProvinceGrid](#lprovincegrid-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

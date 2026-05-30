@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["apply_terrain","apply_terrain_palette","apply_visibility"]};

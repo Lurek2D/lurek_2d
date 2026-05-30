@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Edge","LayerMode","MapOrientation","MapSize","StepType"],"struct":["MapBlock","MapGen","MapGroup","MapScript","MapZone","ScriptStep"]};

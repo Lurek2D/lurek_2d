@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["channel","pool","promise","worker"]};

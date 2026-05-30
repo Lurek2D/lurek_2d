@@ -160,43 +160,20 @@ def _code_block(entries):
     return ["```lua"] + lines + ["```"]
 
 
-def _callbacks():
-    CB = [
-        ("function lurek.init()",                                                   "Called once when the engine initialises."),
-        ("function lurek.ready()",                                                  "Called once after init, when the active runtime is ready."),
-        ("function lurek.process_physics( dt : number )",                           "Called on the fixed physics step; dt = fixed-step seconds."),
-        ("function lurek.fixedUpdate( dt : number )",                               "Deprecated alias for process_physics. Use lurek.process_physics(dt)."),
-        ("function lurek.process( dt : number )",                                   "Called every frame for game logic; dt = elapsed seconds."),
-        ("function lurek.process_late( dt : number )",                              "Called every frame after process for late updates."),
-        ("function lurek.draw()",                                                   "Called every frame for rendering."),
-        ("function lurek.draw_ui()",                                                "Called every frame after draw for UI overlay rendering."),
-        ("function lurek.keypressed( key : string, scancode : string, isrepeat : boolean )", "Key press event."),
-        ("function lurek.keyreleased( key : string, scancode : string )",           "Key release event."),
-        ("function lurek.textinput( text : string )",                               "Unicode character typed."),
-        ("function lurek.textedited( text : string, start : number, length : number )", "IME composition text changed."),
-        ("function lurek.mousepressed( x : number, y : number, button : number )", "Mouse button press."),
-        ("function lurek.mousereleased( x : number, y : number, button : number )","Mouse button release."),
-        ("function lurek.mousemoved( x : number, y : number, dx : number, dy : number )", "Mouse move event."),
-        ("function lurek.wheelmoved( x : number, y : number )",                    "Mouse wheel scroll."),
-        ("function lurek.gamepadpressed( id : number, button : string )",          "Gamepad button press."),
-        ("function lurek.gamepadreleased( id : number, button : string )",         "Gamepad button release."),
-        ("function lurek.gamepadaxis( id : number, axis : string, value : number )","Gamepad axis; value in -1..1."),
-        ("function lurek.joystickadded( id : number )",                            "Gamepad connected."),
-        ("function lurek.joystickremoved( id : number )",                          "Gamepad disconnected."),
-        ("function lurek.touchpressed( id, x : number, y : number, dx : number, dy : number, pressure : number )", "Touch begin."),
-        ("function lurek.touchmoved(  id, x : number, y : number, dx : number, dy : number, pressure : number )", "Touch move."),
-        ("function lurek.touchreleased(id, x : number, y : number, dx : number, dy : number, pressure : number )", "Touch end."),
-        ("function lurek.focus( focused : boolean )",                              "Window focus change."),
-        ("function lurek.visible( visible : boolean )",                            "Window show/hide."),
-        ("function lurek.resize( w : number, h : number )",                        "Window resized."),
-        ("function lurek.quit()",                                                   "Return true to cancel quit."),
-        ("function lurek.exit()",                                                   "Called when the engine is shutting down."),
-        ("function lurek.errorhandler( msg : string )",                            "Unhandled Lua error."),
-    ]
+def _callbacks(engine_callbacks):
+    cb_rows = []
+    for cb in sorted(engine_callbacks or [], key=lambda item: item.get("name", "")):
+        signature = (cb.get("signature") or "").strip()
+        description = (cb.get("description") or "").strip()
+        if signature:
+            cb_rows.append((signature, description))
+
     out = ["## Callbacks","",
            "All callbacks are optional. Define any in `main.lua` and the engine calls them automatically.",
            ""]
-    return out + _code_block(CB)
+    if cb_rows:
+        return out + _code_block(cb_rows)
+    return out + ["_No documented engine callbacks._"]
 
 
 def _render_module(mod_name, mod_data):
@@ -300,7 +277,7 @@ def generate(data):
         out.append(f"- [`lurek.{lua_ns}`](#{anchor}){suffix}")
 
     out += ["","---",""]
-    out += _callbacks()
+    out += _callbacks(data.get("engine_callbacks", []))
     out += ["","---",""]
 
     for m in ordered:

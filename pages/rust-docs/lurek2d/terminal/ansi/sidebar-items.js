@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["parse_ansi_spans","strip_ansi_codes"],"struct":["AnsiColor","AnsiSpan"]};

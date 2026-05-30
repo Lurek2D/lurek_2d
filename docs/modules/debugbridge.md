@@ -1,12 +1,45 @@
 # Debugbridge
 
-- The `debugbridge` module provides a powerful TCP-based communication layer that enables external tools—such as the VS Code extension, remote inspectors, and diagnostic dashboards—to connect directly to a running Lurek2D instance.
+## Summary
 
-Situated within the Edge/Integration tier, the bridge operates primarily over a lightweight JSON-RPC protocol. It accepts requests for real-time engine interactions, including breakpoint management, variable inspection, expression evaluation, screenshot capture, and print history retrieval. By design, the module is disabled by default in release builds for security and performance reasons, activating only when explicitly started from Lua via `lurek.debugbridge.start()`.
+The `debugbridge` module provides runtime-to-tool communication primitives for debugging workflows, centered on shared bridge state and server-side JSON-RPC style message handling. Its purpose is integration: shuttle requests/responses and debug prints between engine runtime and external tooling while preserving thread-safe queue semantics.
 
-At the architectural core of the module is `BridgeShared`, a synchronized state container wrapped in an `Arc<Mutex<>>`. This structure safely brokers data between the main game thread and the dedicated background TCP I/O thread. It holds pending request and response queues, frame-time performance metrics with bounded sampling windows, and a broadcast queue for event delivery to all connected clients. One of its key features is print capture: it intercepts `lurek.log` and standard Lua `print` output, storing it in a bounded ring buffer so that external editors can natively display runtime textual output without needing to scrape the system's stdout.
+`bridge.rs` owns shared data structures (`BridgeShared`, pending request/response buffers, print entries), and `server.rs` owns client message handling plus server-thread lifecycle. The module then re-exports these integration types/functions for runtime layers that start and drive the bridge.
 
-The server loop manages non-blocking TCP connections, executing protocol handshakes, nonce authentication, and version negotiations to ensure secure tooling connections. It handles background-safe JSON-RPC messages immediately, while queuing game-state-dependent operations as `PendingRequest` records for the main thread to poll via `lurek.debugbridge.poll()`. The Lua API fully exposes these capabilities, allowing script developers to programmatically trigger broadcasts, request screenshots, track connected client counts, and consume hot-reload requests dynamically.
+This module should stay transport-focused. It is not a replacement for gameplay introspection logic; it is the conduit that carries those operations between processes.
+
+Operationally, quality depends on predictable queue behavior, clear message contracts, and failure-safe networking boundaries so debug tooling cannot silently corrupt runtime state.
+
+Implementation detail and boundary guarantees for debugbridge: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: bridge.rs: Define shared state and queue structures for the debug bridge protocol.; mod.rs: Expose the debug bridge subsystem for runtime-to-IDE communication.; server.rs: Run a non-blocking TCP server loop accepting debug bridge client connections.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### bridge.rs
+
+- Implements shared state and queue structures for runtime-to-client debug bridge communication.
+- Stores pending requests and responses exchanged between network server and runtime logic.
+- Tracks rolling performance metrics and bounded print history for debugger-side inspection.
+- Maintains session configuration and capability metadata used across active bridge connections.
+- Provides broadcast event queues for fan-out delivery to all connected debug clients.
+- Serves as the core synchronization layer under the debug bridge protocol subsystem.
+
+### mod.rs
+
+- Defines the debugbridge module boundary for runtime-to-IDE transport and state exchange.
+- Groups shared bridge state and TCP server functionality under one integration surface.
+- Serves as the composition entry for engine-side debugbridge capabilities.
+
+### server.rs
+
+- Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch.
+- Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers.
+- Delivers queued responses and broadcast events across connected debugger endpoints.
+- Handles handshake, protocol version checks, and nonce-based authentication workflows.
+- Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests.
+- Serves as the network transport execution layer for the debugbridge subsystem.
+- Preserves deterministic request lifecycle behavior across concurrent debugger client sessions.
 
 ## Functions
 
@@ -15,7 +48,6 @@ The server loop manages non-blocking TCP connections, executing protocol handsha
 Queues a JSON string payload broadcast for debug bridge clients.
 
 ```lua
--- signature
 lurek.debugbridge.broadcast(event, json_data)
 ```
 
@@ -23,8 +55,8 @@ lurek.debugbridge.broadcast(event, json_data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | Event name sent to clients. |
-| `json_data` | `string` | Payload string wrapped as JSON for clients. |
+| `event` | string | Event name sent to clients. |
+| `json_data` | string | Payload string wrapped as JSON for clients. |
 
 **Example**
 
@@ -42,7 +74,6 @@ end
 Captures a print message and broadcasts it to debug bridge clients.
 
 ```lua
--- signature
 lurek.debugbridge.capturePrint(msg, source, line)
 ```
 
@@ -50,9 +81,9 @@ lurek.debugbridge.capturePrint(msg, source, line)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `msg` | `string` | Printed message text. |
-| `source?` | `string` | Source label; defaults to `?`. |
-| `line?` | `number` | Source line; defaults to zero. |
+| `msg` | string | Printed message text. |
+| `source?` | string | Source label; defaults to `?`. |
+| `line?` | number | Source line; defaults to zero. |
 
 **Example**
 
@@ -71,7 +102,6 @@ end
 Clears all entries from the captured print history buffer.
 
 ```lua
--- signature
 lurek.debugbridge.clearPrintHistory()
 ```
 
@@ -93,7 +123,6 @@ end
 Returns and clears the pending hot reload request flag.
 
 ```lua
--- signature
 lurek.debugbridge.consumeHotReloadRequest()
 ```
 
@@ -101,7 +130,7 @@ lurek.debugbridge.consumeHotReloadRequest()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a hot reload request was pending. |
+| boolean | True when a hot reload request was pending. |
 
 **Example**
 
@@ -119,7 +148,6 @@ end
 Returns the number of connected debug bridge clients.
 
 ```lua
--- signature
 lurek.debugbridge.getClientCount()
 ```
 
@@ -127,7 +155,7 @@ lurek.debugbridge.getClientCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Connected client count. |
+| number | Connected client count. |
 
 **Example**
 
@@ -145,7 +173,6 @@ end
 Returns debug bridge performance metrics.
 
 ```lua
--- signature
 lurek.debugbridge.getPerformance()
 ```
 
@@ -153,7 +180,7 @@ lurek.debugbridge.getPerformance()
 
 | Type | Description |
 |------|-------------|
-| `table` | Table of numeric performance metrics. |
+| table | Table of numeric performance metrics. |
 
 **Example**
 
@@ -172,7 +199,6 @@ end
 Returns the configured TCP port for the debug bridge.
 
 ```lua
--- signature
 lurek.debugbridge.getPort()
 ```
 
@@ -180,7 +206,7 @@ lurek.debugbridge.getPort()
 
 | Type | Description |
 |------|-------------|
-| `number` | Active or configured port, or zero when unavailable. |
+| number | Active or configured port, or zero when unavailable. |
 
 **Example**
 
@@ -198,7 +224,6 @@ end
 Returns captured print history entries.
 
 ```lua
--- signature
 lurek.debugbridge.getPrintHistory(count)
 ```
 
@@ -206,13 +231,13 @@ lurek.debugbridge.getPrintHistory(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Number of newest entries; nil or zero returns all entries. |
+| `count?` | number | Number of newest entries; nil or zero returns all entries. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `DebugbridgeGetPrintHistoryResult` | Array table of entries with `timestamp`, `message`, `source`, and `line` fields. |
+| LDebugbridgeGetPrintHistoryResult | Array table of entries with `timestamp`, `message`, `source`, and `line` fields. |
 
 **Example**
 
@@ -234,7 +259,6 @@ end
 Returns debug bridge protocol version, capabilities, and handshake nonce.
 
 ```lua
--- signature
 lurek.debugbridge.getProtocolInfo()
 ```
 
@@ -242,7 +266,7 @@ lurek.debugbridge.getProtocolInfo()
 
 | Type | Description |
 |------|-------------|
-| `DebugbridgeGetProtocolInfoResult` | Protocol info table with `version`, `capabilities`, and `nonce` fields. |
+| LDebugbridgeGetProtocolInfoResult | Protocol info table with `version`, `capabilities`, and `nonce` fields. |
 
 **Example**
 
@@ -261,7 +285,6 @@ end
 Returns whether the debug bridge server is currently running.
 
 ```lua
--- signature
 lurek.debugbridge.isRunning()
 ```
 
@@ -269,7 +292,7 @@ lurek.debugbridge.isRunning()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the server thread is active. |
+| boolean | True when the server thread is active. |
 
 **Example**
 
@@ -287,7 +310,6 @@ end
 Returns whether a screenshot request is pending.
 
 ```lua
--- signature
 lurek.debugbridge.isScreenshotRequested()
 ```
 
@@ -295,7 +317,7 @@ lurek.debugbridge.isScreenshotRequested()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a screenshot request is pending. |
+| boolean | True when a screenshot request is pending. |
 
 **Example**
 
@@ -314,7 +336,6 @@ end
 Polls pending debugger requests, evaluates supported methods, and queues responses.
 
 ```lua
--- signature
 lurek.debugbridge.poll()
 ```
 
@@ -322,7 +343,7 @@ lurek.debugbridge.poll()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No return value. |
+| nil | No return value. |
 
 **Example**
 
@@ -340,7 +361,6 @@ end
 Requests a screenshot from the runtime.
 
 ```lua
--- signature
 lurek.debugbridge.requestScreenshot(scale)
 ```
 
@@ -348,7 +368,7 @@ lurek.debugbridge.requestScreenshot(scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scale?` | `number` | Screenshot scale clamped from 1 to 8; defaults to 1. |
+| `scale?` | number | Screenshot scale clamped from 1 to 8; defaults to 1. |
 
 **Example**
 
@@ -367,7 +387,6 @@ end
 Sets the maximum retained print history entry count.
 
 ```lua
--- signature
 lurek.debugbridge.setMaxPrintHistory(max)
 ```
 
@@ -375,7 +394,7 @@ lurek.debugbridge.setMaxPrintHistory(max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max` | `number` | Maximum retained print entries. |
+| `max` | number | Maximum retained print entries. |
 
 **Example**
 
@@ -394,7 +413,6 @@ end
 Starts the localhost debug bridge server on a port.
 
 ```lua
--- signature
 lurek.debugbridge.start(port)
 ```
 
@@ -402,13 +420,13 @@ lurek.debugbridge.start(port)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `port?` | `number` | TCP port to bind on `127.0.0.1`; defaults to 19740 and must be at least 1024. |
+| `port?` | number | TCP port to bind on `127.0.0.1`; defaults to 19740 and must be at least 1024. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the server was started, false when it was already running. |
+| boolean | True when the server was started, false when it was already running. |
 
 **Example**
 
@@ -429,7 +447,6 @@ end
 Stops the debug bridge server and joins its server thread.
 
 ```lua
--- signature
 lurek.debugbridge.stop()
 ```
 
@@ -445,3 +462,19 @@ end
 ```
 
 ---
+
+## Module Fields
+
+*No module-level fields documented.*
+
+## Types
+
+*No Lua userdata types detected for this module.*
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*

@@ -1,12 +1,74 @@
 # Tween
 
-- The `tween` module is a versatile Feature Systems tier component responsible for smooth value interpolation, easing, and spring-physics animations.
+## Summary
 
 It provides a robust engine for animating numeric properties over time, making it ideal for UI transitions, camera movements, and gameplay juice. At its core, `LuaTween` interpolates a single numeric property (or multiple numeric fields on a single Lua table) from a start value to a target value over a specified duration. Developers can choose from over 30 built-in easing curves—including linear, quadratic, cubic, elastic, bounce, and back—or register custom easing functions to achieve the exact feel required. Tweens support full lifecycle callbacks (`onUpdate`, `onComplete`, `onCancel`) and can be configured to repeat infinitely, yoyo (reverse direction on repeat), or operate in relative mode where targets act as offsets.
 
 To handle complex animation choreography, the module provides powerful combinators. `LuaTweenSequence` enables the chaining of multiple tweens, delays, and callbacks into an ordered execution pipeline, where each step seamlessly transitions to the next while carrying over leftover frame delta time. Conversely, `LuaTweenParallel` groups multiple tweens together, executing them simultaneously and completing only when the longest-running child finishes. For a more organic, physics-driven feel, `SpringSystem` offers damped spring interpolation with configurable stiffness and damping. This eliminates fixed durations in favor of natural settling dynamics, which is particularly effective for responsive UI elements or following camera logic.
 
 The entire system is driven by a centralized `TweenEngine` that efficiently updates all active tweens, sequences, parallels, and springs every frame. The module is fully integrated with Lua coroutines via the `await()` method, allowing developers to yield execution until an animation completes, drastically simplifying sequential scripting without callback hell. Exposed via the comprehensive `lurek.tween.*` Lua API, this module is an essential tool for bringing fluid, polished motion to Lurek2D games.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### chain.rs
+
+- This file provides composable tween chains for staged motion and timing choreography.
+- It supports sequential and grouped progression so animation beats can be orchestrated clearly.
+- It carries optional step labels that let scripts react to completion boundaries.
+- It advances with frame delta while preserving deterministic chain state transitions.
+- It translates complex cinematic timing into a readable structure for runtime execution.
+- It keeps multi-step animation flow explicit for tools, debugging, and script control.
+
+### engine.rs
+
+- This file provides the active tween engine that updates all running animation handles.
+- It tracks tweens, sequences, parallels, and springs through one coordinated update surface.
+- It resolves easing behavior and value writes directly onto Lua-owned target tables.
+- It manages lifecycle cleanup so completed animations exit without stale runtime state.
+- It keeps tween progression synchronous with frame updates for deterministic visual output.
+
+### handle.rs
+
+- This file provides Lua-facing tween handle types that expose animation control to scripts.
+- It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract.
+- It stores progression state, target bindings, and callback hooks close to each animation unit.
+- It writes interpolated values to Lua tables each frame through explicit field mappings.
+- It supports repeat, yoyo, relative targets, and custom easing for expressive motion design.
+- It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps.
+- It advances parallel lanes together and resolves completion only when all lanes settle.
+- It resumes waiting coroutines on completion so asynchronous script flow stays ergonomic.
+
+### interpolator.rs
+
+- This file provides the multi-channel interpolator that converts progress into animated values.
+- It resolves easing names through flexible aliases so script-facing naming remains forgiving.
+- It keeps independent tween clocks with reset and seek support for controlled playback.
+- It interpolates registered channels each frame using the resolved easing curve semantics.
+- It falls back to linear behavior when easing names are unknown to preserve continuity.
+
+### mod.rs
+
+- This module delivers the motion interpolation stack used for scripted and systemic animation.
+- It combines timed easing, spring dynamics, and composition primitives in one cohesive surface.
+- It gives the runtime one predictable path for updating all active tween workflows.
+
+### spring.rs
+
+- This file provides damped spring simulation for motion that should feel physical and responsive.
+- It models spring parameters and settle rules so values converge smoothly toward targets.
+- It groups named spring axes under shared defaults for coordinated multi-field behaviors.
+- It integrates state each tick and snaps on settle to remove micro-jitter residue.
+- It offers a natural animation path where fixed-duration easing is not a good fit.
+
+### state.rs
+
+- This file provides canonical tween progress state shared across animation handle types.
+- It tracks elapsed time, duration, pause state, and resolved easing behavior in one unit.
+- It resolves easing names case-insensitively with aliases that match common script habits.
+- It exposes built-in easing catalog data for tooling, validation, and autocomplete features.
+- It keeps progress semantics stable so tween updates remain deterministic across runtime paths.
 
 ## Functions
 
@@ -15,7 +77,6 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
 
 ```lua
--- signature
 lurek.tween.cancelAll()
 ```
 
@@ -40,7 +101,6 @@ end
 Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
 
 ```lua
--- signature
 lurek.tween.delay(seconds, cb)
 ```
 
@@ -48,14 +108,14 @@ lurek.tween.delay(seconds, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seconds` | `number` | Duration to wait in seconds. |
-| `cb?` | `function` | Optional callback fired when the delay completes. |
+| `seconds` | number | Duration to wait in seconds. |
+| `cb?` | function | Optional callback fired when the delay completes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | A sequence handle representing the delay. |
+| [LTweenSequence](#ltweensequence-handle) | A sequence handle representing the delay. |
 
 **Example**
 
@@ -75,7 +135,6 @@ end
 Returns the total number of currently active tweens, sequences, and parallels.
 
 ```lua
--- signature
 lurek.tween.getActiveCount()
 ```
 
@@ -83,7 +142,7 @@ lurek.tween.getActiveCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of active tween objects. |
+| number | Count of active tween objects. |
 
 **Example**
 
@@ -106,7 +165,6 @@ end
 Returns an array of all available easing function names, including both built-in and custom-registered easings.
 
 ```lua
--- signature
 lurek.tween.getEasingNames()
 ```
 
@@ -114,7 +172,7 @@ lurek.tween.getEasingNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Easing name strings. |
+| string[] | Easing name strings. |
 
 **Example**
 
@@ -132,12 +190,42 @@ end
 
 ---
 
+### `lurek.tween.newChain`
+
+Creates a sequential tween chain for cinematic value-interpolation sequences.
+
+```lua
+lurek.tween.newChain(looping)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `looping?` | boolean | True to loop back to step 0 after the last step (default false). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | New tween chain handle. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("newChain ok = " .. tostring(chain ~= nil))
+end
+```
+
+---
+
 ### `lurek.tween.newState`
 
 Creates a standalone tween state for manual interpolation. Useful when you need eased progress without automatic property updates.
 
 ```lua
--- signature
 lurek.tween.newState(duration, easing)
 ```
 
@@ -145,14 +233,14 @@ lurek.tween.newState(duration, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `duration` | `number` | Duration in seconds. |
-| `easing?` | `string` | Easing function name (default `"linear"`). |
+| `duration` | number | Duration in seconds. |
+| `easing?` | string | Easing function name (default `"linear"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenState` | The new tween state handle. |
+| [LTweenState](#ltweenstate-handle) | The new tween state handle. |
 
 **Example**
 
@@ -181,7 +269,6 @@ end
 Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
 
 ```lua
--- signature
 lurek.tween.parallel()
 ```
 
@@ -189,7 +276,7 @@ lurek.tween.parallel()
 
 | Type | Description |
 |------|-------------|
-| `LTweenParallel` | The new parallel group handle. |
+| [LTweenParallel](#ltweenparallel-handle) | The new parallel group handle. |
 
 **Example**
 
@@ -221,7 +308,6 @@ end
 Registers a custom easing function by name. The function receives a progress value (0..1) and must return an eased value.
 
 ```lua
--- signature
 lurek.tween.registerEasing(name, f)
 ```
 
@@ -229,8 +315,8 @@ lurek.tween.registerEasing(name, f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for the custom easing. |
-| `f` | `function` | Easing function `f(t) -> number` where t is 0..1. |
+| `name` | string | Unique name for the custom easing. |
+| `f` | function | Easing function `f(t) -> number` where t is 0..1. |
 
 **Example**
 
@@ -256,7 +342,6 @@ end
 Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
 
 ```lua
--- signature
 lurek.tween.sequence()
 ```
 
@@ -264,7 +349,7 @@ lurek.tween.sequence()
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | The new sequence handle. |
+| [LTweenSequence](#ltweensequence-handle) | The new sequence handle. |
 
 **Example**
 
@@ -293,7 +378,6 @@ end
 Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and settle behavior.
 
 ```lua
--- signature
 lurek.tween.spring(target, fields, opts)
 ```
 
@@ -301,15 +385,15 @@ lurek.tween.spring(target, fields, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `table` | The table whose fields will be animated by the spring. |
-| `fields` | `table` | Key-value pairs mapping field names to their spring target values. |
-| `opts?` | `table` | Optional settings: `stiffness` (default 100), `damping` (default 10), `precision` (default 0.001). |
+| `target` | table | The table whose fields will be animated by the spring. |
+| `fields` | table | Key-value pairs mapping field names to their spring target values. |
+| `opts?` | table | Optional settings: `stiffness` (default 100), `damping` (default 10), `precision` (default 0.001). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSpring` | The active spring handle. |
+| [LSpring](#lspring-handle) | The active spring handle. |
 
 **Example**
 
@@ -337,7 +421,6 @@ end
 Creates and starts a property tween with a different parameter order: target first, then fields, duration, easing.
 
 ```lua
--- signature
 lurek.tween.to(target, fields, duration, easing)
 ```
 
@@ -345,16 +428,16 @@ lurek.tween.to(target, fields, duration, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `table` | The table whose fields will be animated. |
-| `fields` | `table` | Key-value pairs mapping field names to their target end values. |
-| `duration` | `number` | Duration in seconds. |
-| `easing?` | `string` | Easing function name (default `"linear"`). |
+| `target` | table | The table whose fields will be animated. |
+| `fields` | table | Key-value pairs mapping field names to their target end values. |
+| `duration` | number | Duration in seconds. |
+| `easing?` | string | Easing function name (default `"linear"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The active tween handle. |
+| [LTween](#ltween-handle) | The active tween handle. |
 
 **Example**
 
@@ -374,7 +457,6 @@ end
 Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 
 ```lua
--- signature
 lurek.tween.tween(duration, target, fields, easing)
 ```
 
@@ -382,16 +464,16 @@ lurek.tween.tween(duration, target, fields, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `duration` | `number` | Duration in seconds for the tween. |
-| `target` | `table` | The table whose fields will be animated. |
-| `fields` | `table` | Key-value pairs mapping field names to their target end values. |
-| `easing?` | `string` | Easing function name (default `"linear"`). |
+| `duration` | number | Duration in seconds for the tween. |
+| `target` | table | The table whose fields will be animated. |
+| `fields` | table | Key-value pairs mapping field names to their target end values. |
+| `easing?` | string | Easing function name (default `"linear"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The active tween handle. |
+| [LTween](#ltween-handle) | The active tween handle. |
 
 **Example**
 
@@ -412,7 +494,6 @@ end
 Creates a sequence from a table of step descriptors. Each step is a table with `duration`, `target`, `fields`, optional `easing`, optional `callback`, or a `delay` key for pauses.
 
 ```lua
--- signature
 lurek.tween.tweenChain(steps)
 ```
 
@@ -420,13 +501,13 @@ lurek.tween.tweenChain(steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `steps` | `table` | Array of step tables describing the chain. |
+| `steps` | table | Array of step tables describing the chain. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | The active sequence handle. |
+| [LTweenSequence](#ltweensequence-handle) | The active sequence handle. |
 
 **Example**
 
@@ -452,7 +533,6 @@ end
 Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table.
 
 ```lua
--- signature
 lurek.tween.tweenColor(duration, target, color, easing)
 ```
 
@@ -460,16 +540,16 @@ lurek.tween.tweenColor(duration, target, color, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `duration` | `number` | Duration in seconds. |
-| `target` | `table` | The table containing color fields (`r`, `g`, `b`, `a`). |
-| `color` | `table` | Target color values as `{r=, g=, b=, a=}`. Only present keys are tweened. |
-| `easing?` | `string` | Easing function name (default `"linear"`). |
+| `duration` | number | Duration in seconds. |
+| `target` | table | The table containing color fields (`r`, `g`, `b`, `a`). |
+| `color` | table | Target color values as `{r=, g=, b=, a=}`. Only present keys are tweened. |
+| `easing?` | string | Easing function name (default `"linear"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The active tween handle. |
+| [LTween](#ltween-handle) | The active tween handle. |
 
 **Example**
 
@@ -492,7 +572,6 @@ end
 Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
 
 ```lua
--- signature
 lurek.tween.update(dt)
 ```
 
@@ -500,7 +579,7 @@ lurek.tween.update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds since the last frame. |
+| `dt` | number | Delta time in seconds since the last frame. |
 
 **Example**
 
@@ -515,14 +594,44 @@ end
 
 ---
 
-## LSpring
+## Module Fields
 
-### `LSpring:cancel`
+*No module-level fields documented.*
+
+## Types
+
+- [LSpring Handle](#lspring-handle)
+- [LTween Handle](#ltween-handle)
+- [LTweenChain Handle](#ltweenchain-handle)
+- [LTweenParallel Handle](#ltweenparallel-handle)
+- [LTweenSequence Handle](#ltweensequence-handle)
+- [LTweenState Handle](#ltweenstate-handle)
+- [Lparallel Handle](#lparallel-handle)
+- [Lsequence Handle](#lsequence-handle)
+- [Lto Handle](#lto-handle)
+
+## Callbacks
+
+- `lurek.tween.delay` param `cb?` (`function`): Optional callback fired when the delay completes.
+- `lurek.tween.registerEasing` param `f` (`function`): Easing function `f(t) -> number` where t is 0..1.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LSpring Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSpring:cancel`
 
 Cancels this spring animation and cleans up the on-settle callback if one was registered.
 
 ```lua
--- signature
 LSpring:cancel()
 ```
 
@@ -540,12 +649,11 @@ end
 
 ---
 
-### `LSpring:getPosition`
+#### `LSpring:getPosition`
 
 Returns the current position of the given spring axis, or `nil` if the axis does not exist.
 
 ```lua
--- signature
 LSpring:getPosition(field)
 ```
 
@@ -553,13 +661,13 @@ LSpring:getPosition(field)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `field` | `string` | Name of the axis to query. |
+| `field` | string | Name of the axis to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Current position value, or nil when the axis does not exist. |
+| LuaValue | Current position value, or nil when the axis does not exist. |
 
 **Example**
 
@@ -577,12 +685,11 @@ end
 
 ---
 
-### `LSpring:isActive`
+#### `LSpring:isActive`
 
 Returns whether this spring is still actively animating.
 
 ```lua
--- signature
 LSpring:isActive()
 ```
 
@@ -590,7 +697,7 @@ LSpring:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if active. |
+| boolean | `true` if active. |
 
 **Example**
 
@@ -607,12 +714,11 @@ end
 
 ---
 
-### `LSpring:isSettled`
+#### `LSpring:isSettled`
 
 Returns whether all spring axes have reached their targets within the precision threshold.
 
 ```lua
--- signature
 LSpring:isSettled()
 ```
 
@@ -620,7 +726,7 @@ LSpring:isSettled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the spring has settled. |
+| boolean | `true` if the spring has settled. |
 
 **Example**
 
@@ -637,12 +743,11 @@ end
 
 ---
 
-### `LSpring:setDamping`
+#### `LSpring:setDamping`
 
 Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.
 
 ```lua
--- signature
 LSpring:setDamping(value)
 ```
 
@@ -650,7 +755,7 @@ LSpring:setDamping(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `number` | Damping coefficient (default 10). |
+| `value` | number | Damping coefficient (default 10). |
 
 **Example**
 
@@ -667,12 +772,11 @@ end
 
 ---
 
-### `LSpring:setStiffness`
+#### `LSpring:setStiffness`
 
 Sets the spring stiffness for all axes. Higher values make the spring snap faster.
 
 ```lua
--- signature
 LSpring:setStiffness(value)
 ```
 
@@ -680,7 +784,7 @@ LSpring:setStiffness(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `number` | Stiffness coefficient (default 100). |
+| `value` | number | Stiffness coefficient (default 100). |
 
 **Example**
 
@@ -697,12 +801,11 @@ end
 
 ---
 
-### `LSpring:setTarget`
+#### `LSpring:setTarget`
 
 Changes the spring target values for one or more axes. Re-activates the spring if it was settled.
 
 ```lua
--- signature
 LSpring:setTarget(fields)
 ```
 
@@ -710,7 +813,7 @@ LSpring:setTarget(fields)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fields` | `table` | Key-value pairs mapping axis names to new target values. |
+| `fields` | table | Key-value pairs mapping axis names to new target values. |
 
 **Example**
 
@@ -739,12 +842,11 @@ end
 
 ---
 
-### `LSpring:type`
+#### `LSpring:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LSpring:type()
 ```
 
@@ -752,7 +854,7 @@ LSpring:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LSpring"`. |
+| string | Always `"[LSpring](#lspring-handle)"`. |
 
 **Example**
 
@@ -768,12 +870,11 @@ end
 
 ---
 
-### `LSpring:typeOf`
+#### `LSpring:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSpring:typeOf(name)
 ```
 
@@ -781,13 +882,13 @@ LSpring:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against (`"LSpring"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LSpring](#lspring-handle)"` or `"Object"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the name matches. |
+| boolean | `true` if the name matches. |
 
 **Example**
 
@@ -803,12 +904,11 @@ end
 
 ---
 
-### `LSpring:update`
+#### `LSpring:update`
 
 Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
 
 ```lua
--- signature
 LSpring:update(dt)
 ```
 
@@ -816,13 +916,13 @@ LSpring:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the spring is still moving, `false` if settled. |
+| boolean | `true` if the spring is still moving, `false` if settled. |
 
 **Example**
 
@@ -838,14 +938,19 @@ end
 
 ---
 
-## LTween
+## LTween Handle
 
-### `LTween:addValue`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTween:addValue`
 
 Adds a value track to this tween. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:addValue(start, target)
 ```
 
@@ -853,23 +958,22 @@ LTween:addValue(start, target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | Start value. |
-| `target` | `number` | Target value. |
+| `start` | number | Start value. |
+| `target` | number | Target value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based index of the new value track. |
+| number | One-based index of the new value track. |
 
 ---
 
-### `LTween:await`
+#### `LTween:await`
 
 Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
 
 ```lua
--- signature
 LTween:await()
 ```
 
@@ -892,12 +996,11 @@ end
 
 ---
 
-### `LTween:cancel`
+#### `LTween:cancel`
 
 Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
 
 ```lua
--- signature
 LTween:cancel()
 ```
 
@@ -919,12 +1022,11 @@ end
 
 ---
 
-### `LTween:getAllValues`
+#### `LTween:getAllValues`
 
 Returns all current tween values. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getAllValues()
 ```
 
@@ -932,16 +1034,15 @@ LTween:getAllValues()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Numeric tween values. |
+| number[] | Numeric tween values. |
 
 ---
 
-### `LTween:getClock`
+#### `LTween:getClock`
 
 Returns this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getClock()
 ```
 
@@ -949,16 +1050,15 @@ LTween:getClock()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current time in seconds. |
+| number | Current time in seconds. |
 
 ---
 
-### `LTween:getDuration`
+#### `LTween:getDuration`
 
 Returns this tween duration. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getDuration()
 ```
 
@@ -966,7 +1066,7 @@ LTween:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -981,12 +1081,11 @@ end
 
 ---
 
-### `LTween:getEasingName`
+#### `LTween:getEasingName`
 
 Returns this tween easing function name.
 
 ```lua
--- signature
 LTween:getEasingName()
 ```
 
@@ -994,7 +1093,7 @@ LTween:getEasingName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Easing function name. |
+| string | Easing function name. |
 
 **Example**
 
@@ -1009,12 +1108,11 @@ end
 
 ---
 
-### `LTween:getElapsed`
+#### `LTween:getElapsed`
 
 Returns the number of seconds that have elapsed since the tween started.
 
 ```lua
--- signature
 LTween:getElapsed()
 ```
 
@@ -1022,7 +1120,7 @@ LTween:getElapsed()
 
 | Type | Description |
 |------|-------------|
-| `number` | Elapsed time in seconds. |
+| number | Elapsed time in seconds. |
 
 **Example**
 
@@ -1038,12 +1136,11 @@ end
 
 ---
 
-### `LTween:getFields`
+#### `LTween:getFields`
 
 Returns an array of field names being tweened on the target table.
 
 ```lua
--- signature
 LTween:getFields()
 ```
 
@@ -1051,7 +1148,7 @@ LTween:getFields()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Field name strings. |
+| string[] | Field name strings. |
 
 **Example**
 
@@ -1067,12 +1164,11 @@ end
 
 ---
 
-### `LTween:getProgress`
+#### `LTween:getProgress`
 
 Returns the eased progress of this tween as a value from 0.0 to 1.0.
 
 ```lua
--- signature
 LTween:getProgress()
 ```
 
@@ -1080,7 +1176,7 @@ LTween:getProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased progress ratio. |
+| number | Eased progress ratio. |
 
 **Example**
 
@@ -1096,12 +1192,11 @@ end
 
 ---
 
-### `LTween:getRemaining`
+#### `LTween:getRemaining`
 
 Returns the number of seconds remaining until this tween completes.
 
 ```lua
--- signature
 LTween:getRemaining()
 ```
 
@@ -1109,7 +1204,7 @@ LTween:getRemaining()
 
 | Type | Description |
 |------|-------------|
-| `number` | Remaining time in seconds. |
+| number | Remaining time in seconds. |
 
 **Example**
 
@@ -1125,12 +1220,11 @@ end
 
 ---
 
-### `LTween:getTime`
+#### `LTween:getTime`
 
 Returns this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:getTime()
 ```
 
@@ -1138,16 +1232,15 @@ LTween:getTime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current time in seconds. |
+| number | Current time in seconds. |
 
 ---
 
-### `LTween:getValue`
+#### `LTween:getValue`
 
 Returns one tween value by one-based index or all values when no index is provided.
 
 ```lua
--- signature
 LTween:getValue(index)
 ```
 
@@ -1155,22 +1248,21 @@ LTween:getValue(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index?` | `number` | One-based value index; omit to return all values as a table. |
+| `index?` | number | One-based value index; omit to return all values as a table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tween value at the given index, or a table of all values when index is omitted. |
+| number | Tween value at the given index, or a table of all values when index is omitted. |
 
 ---
 
-### `LTween:getValueCount`
+#### `LTween:getValueCount`
 
 Returns the number of values animated by this tween.
 
 ```lua
--- signature
 LTween:getValueCount()
 ```
 
@@ -1178,16 +1270,15 @@ LTween:getValueCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tween value count. |
+| number | Tween value count. |
 
 ---
 
-### `LTween:isActive`
+#### `LTween:isActive`
 
 Returns whether this tween is still running (not cancelled or completed).
 
 ```lua
--- signature
 LTween:isActive()
 ```
 
@@ -1195,7 +1286,7 @@ LTween:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the tween is active. |
+| boolean | `true` if the tween is active. |
 
 **Example**
 
@@ -1211,12 +1302,11 @@ end
 
 ---
 
-### `LTween:isComplete`
+#### `LTween:isComplete`
 
 Returns whether this tween is complete.
 
 ```lua
--- signature
 LTween:isComplete()
 ```
 
@@ -1224,16 +1314,15 @@ LTween:isComplete()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when complete. |
+| boolean | True when complete. |
 
 ---
 
-### `LTween:onCancel`
+#### `LTween:onCancel`
 
 Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
 
 ```lua
--- signature
 LTween:onCancel(f)
 ```
 
@@ -1241,13 +1330,13 @@ LTween:onCancel(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback fired when the tween is cancelled. |
+| `f` | function | Callback fired when the tween is cancelled. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1262,12 +1351,11 @@ end
 
 ---
 
-### `LTween:onComplete`
+#### `LTween:onComplete`
 
 Sets a callback to fire when the tween completes. Returns the tween for chaining.
 
 ```lua
--- signature
 LTween:onComplete(f)
 ```
 
@@ -1275,13 +1363,13 @@ LTween:onComplete(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback fired when the tween finishes. |
+| `f` | function | Callback fired when the tween finishes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1296,12 +1384,11 @@ end
 
 ---
 
-### `LTween:onUpdate`
+#### `LTween:onUpdate`
 
 Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
 
 ```lua
--- signature
 LTween:onUpdate(f)
 ```
 
@@ -1309,13 +1396,13 @@ LTween:onUpdate(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback fired each frame with the current progress `t` (0..1). |
+| `f` | function | Callback fired each frame with the current progress `t` (0..1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1330,12 +1417,11 @@ end
 
 ---
 
-### `LTween:pause`
+#### `LTween:pause`
 
 Pauses this tween so it stops advancing until resumed.
 
 ```lua
--- signature
 LTween:pause()
 ```
 
@@ -1356,12 +1442,11 @@ end
 
 ---
 
-### `LTween:relative`
+#### `LTween:relative`
 
 Chainable version of `setRelative`. Returns the tween for fluent API usage.
 
 ```lua
--- signature
 LTween:relative(enabled)
 ```
 
@@ -1369,13 +1454,13 @@ LTween:relative(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | `true` for relative mode, `false` for absolute. |
+| `enabled` | boolean | `true` for relative mode, `false` for absolute. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTween` | The same tween handle for chaining. |
+| [LTween](#ltween-handle) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1391,23 +1476,21 @@ end
 
 ---
 
-### `LTween:reset`
+#### `LTween:reset`
 
 Resets the tween clock to the beginning.
 
 ```lua
--- signature
 LTween:reset()
 ```
 
 ---
 
-### `LTween:resume`
+#### `LTween:resume`
 
 Resumes a paused tween so it continues advancing.
 
 ```lua
--- signature
 LTween:resume()
 ```
 
@@ -1432,12 +1515,11 @@ end
 
 ---
 
-### `LTween:set`
+#### `LTween:set`
 
 Sets this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:set(t)
 ```
 
@@ -1445,16 +1527,15 @@ LTween:set(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | New time in seconds. |
+| `t` | number | New time in seconds. |
 
 ---
 
-### `LTween:setRelative`
+#### `LTween:setRelative`
 
 Sets whether the tween end values are relative to the start values instead of absolute.
 
 ```lua
--- signature
 LTween:setRelative(enabled)
 ```
 
@@ -1462,7 +1543,7 @@ LTween:setRelative(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | `true` for relative mode, `false` for absolute. |
+| `enabled` | boolean | `true` for relative mode, `false` for absolute. |
 
 **Example**
 
@@ -1479,12 +1560,11 @@ end
 
 ---
 
-### `LTween:setRepeat`
+#### `LTween:setRepeat`
 
 Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
 
 ```lua
--- signature
 LTween:setRepeat(n)
 ```
 
@@ -1492,7 +1572,7 @@ LTween:setRepeat(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of additional repeats (0 = play once, -1 = infinite). |
+| `n` | number | Number of additional repeats (0 = play once, -1 = infinite). |
 
 **Example**
 
@@ -1508,12 +1588,11 @@ end
 
 ---
 
-### `LTween:setTime`
+#### `LTween:setTime`
 
 Sets this tween clock time. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTween:setTime(t)
 ```
 
@@ -1521,16 +1600,15 @@ LTween:setTime(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | New time in seconds. |
+| `t` | number | New time in seconds. |
 
 ---
 
-### `LTween:setYoyo`
+#### `LTween:setYoyo`
 
 Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
 
 ```lua
--- signature
 LTween:setYoyo(enabled)
 ```
 
@@ -1538,7 +1616,7 @@ LTween:setYoyo(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | `true` to enable yoyo, `false` to disable. |
+| `enabled` | boolean | `true` to enable yoyo, `false` to disable. |
 
 **Example**
 
@@ -1554,12 +1632,11 @@ end
 
 ---
 
-### `LTween:type`
+#### `LTween:type`
 
 Returns the Lua-visible type name for this tween handle.
 
 ```lua
--- signature
 LTween:type()
 ```
 
@@ -1567,7 +1644,7 @@ LTween:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LTween`. |
+| string | The string `[LTween](#ltween-handle)`. |
 
 **Example**
 
@@ -1582,12 +1659,11 @@ end
 
 ---
 
-### `LTween:typeOf`
+#### `LTween:typeOf`
 
 Returns whether this tween handle matches a supported type name.
 
 ```lua
--- signature
 LTween:typeOf(name)
 ```
 
@@ -1595,13 +1671,13 @@ LTween:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LTween` and `Object`. |
+| `name` | string | Type name to compare against `[LTween](#ltween-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1616,12 +1692,11 @@ end
 
 ---
 
-### `LTween:update`
+#### `LTween:update`
 
 Advances the tween clock and returns whether it is complete.
 
 ```lua
--- signature
 LTween:update(dt)
 ```
 
@@ -1629,24 +1704,758 @@ LTween:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the tween is complete. |
+| boolean | True when the tween is complete. |
 
 ---
 
-## LTweenParallel
+## LTweenChain Handle
 
-### `LTweenParallel:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTweenChain:call`
+
+Adds a fluent callback step that executes once at this point in the chain.
+
+```lua
+LTweenChain:call(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Callback to execute. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("call marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:clear`
+
+Clears all fluent and legacy steps.
+
+```lua
+LTweenChain:clear()
+```
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("clear marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:cursor`
+
+Returns one-based current legacy step index.
+
+```lua
+LTweenChain:cursor()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Step index. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("cursor marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:getIteration`
+
+Returns current iteration number.
+
+```lua
+LTweenChain:getIteration()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Iteration (0 before first start). |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("getIteration marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:getProgress`
+
+Returns normalized fluent chain progress in range `[0, 1]`.
+
+```lua
+LTweenChain:getProgress()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Progress ratio. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("getProgress marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:isActive`
+
+Returns whether fluent playback is active.
+
+```lua
+LTweenChain:isActive()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Active flag. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("isActive marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:isComplete`
+
+Returns whether fluent playback reached final completion.
+
+```lua
+LTweenChain:isComplete()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Completion flag. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("isComplete marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:isFinished`
+
+Returns whether legacy playback reached completion for the active pass.
+
+```lua
+LTweenChain:isFinished()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Finished flag. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("isFinished marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:isLooping`
+
+Returns whether chain is in infinite loop mode.
+
+```lua
+LTweenChain:isLooping()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Looping flag. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("isLooping marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:jumpTo`
+
+Jumps legacy chain cursor to given one-based step.
+
+```lua
+LTweenChain:jumpTo(step)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `step` | number | Step index (one-based). |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("jumpTo marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:len`
+
+Returns legacy step count currently stored in this tween chain.
+
+```lua
+LTweenChain:len()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Step count. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("len marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:loop`
+
+Sets fluent loop count where `0` means infinite looping behavior.
+
+```lua
+LTweenChain:loop(n)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | number | Number of passes. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("loop marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:onComplete`
+
+Sets callback fired after the final fluent pass fully completes.
+
+```lua
+LTweenChain:onComplete(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Completion callback. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("onComplete marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:onLoop`
+
+Sets callback fired when entering the next fluent loop iteration.
+
+```lua
+LTweenChain:onLoop(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Callback receiving iteration number. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("onLoop marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:pause`
+
+Pauses fluent playback while preserving timeline progress and cursor state.
+
+```lua
+LTweenChain:pause()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("pause marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:push`
+
+Appends a legacy scalar step to the compatibility chain.
+
+```lua
+LTweenChain:push(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | Step descriptor: `from`, `to`, `duration`, `easing?`, `label?`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Zero-based index of the new step. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("push marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:reset`
+
+Resets both fluent and legacy playback cursors.
+
+```lua
+LTweenChain:reset()
+```
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("reset marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:resume`
+
+Resumes fluent playback from the previously paused timeline position.
+
+```lua
+LTweenChain:resume()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("resume marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:setLooping`
+
+Enables/disables infinite loop compatibility mode.
+
+```lua
+LTweenChain:setLooping(looping)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `looping` | boolean | Looping flag. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("setLooping marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:start`
+
+Starts fluent chain playback and registers this chain in the update queue.
+
+```lua
+LTweenChain:start()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("start marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:stop`
+
+Stops fluent playback and leaves the chain ready for a later restart.
+
+```lua
+LTweenChain:stop()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("stop marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:tick`
+
+Advances the legacy scalar chain and returns completion events.
+
+```lua
+LTweenChain:tick(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Delta time in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of event tables. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("tick marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:to`
+
+Adds a fluent tween step to this chain.
+
+```lua
+LTweenChain:to(target, fields, dur, easing)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | table | Target table. |
+| `fields` | table | Field-to-value map. |
+| `dur` | number | Duration in seconds. |
+| `easing?` | string | Easing name (default `linear`). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("to marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LTweenChain:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LTweenChain](#ltweenchain-handle)`. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("type marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:typeOf`
+
+Returns whether this handle matches the given type name.
+
+```lua
+LTweenChain:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when matched. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("typeOf marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:value`
+
+Returns current legacy scalar value.
+
+```lua
+LTweenChain:value()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current value. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("value marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+#### `LTweenChain:wait`
+
+Adds a fluent delay step to the chain timeline and keeps fluent chaining enabled.
+
+```lua
+LTweenChain:wait(seconds, callback)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `seconds` | number | Delay duration. |
+| `callback?` | function | Optional callback fired after wait. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTweenChain](#ltweenchain-handle) | This chain. |
+
+**Example**
+
+```lua
+do
+    local chain = lurek.tween.newChain()
+    print("wait marker chain=" .. tostring(chain ~= nil))
+end
+```
+
+---
+
+## LTweenParallel Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTweenParallel:add`
 
 Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
 
 ```lua
--- signature
 LTweenParallel:add(tw_ud)
 ```
 
@@ -1654,7 +2463,7 @@ LTweenParallel:add(tw_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tw_ud` | `LTween` | The tween handle returned by `lurek.tween.tween()` to add to this group. |
+| `tw_ud` | [LTween](#ltween-handle) | The tween handle returned by `lurek.tween.tween()` to add to this group. |
 
 **Example**
 
@@ -1678,12 +2487,11 @@ end
 
 ---
 
-### `LTweenParallel:cancel`
+#### `LTweenParallel:cancel`
 
 Cancels all tweens in this parallel group immediately.
 
 ```lua
--- signature
 LTweenParallel:cancel()
 ```
 
@@ -1707,12 +2515,11 @@ end
 
 ---
 
-### `LTweenParallel:isActive`
+#### `LTweenParallel:isActive`
 
 Returns whether this parallel group is still running.
 
 ```lua
--- signature
 LTweenParallel:isActive()
 ```
 
@@ -1720,7 +2527,7 @@ LTweenParallel:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if any tween in the group is still active. |
+| boolean | `true` if any tween in the group is still active. |
 
 **Example**
 
@@ -1736,12 +2543,11 @@ end
 
 ---
 
-### `LTweenParallel:onComplete`
+#### `LTweenParallel:onComplete`
 
 Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
 
 ```lua
--- signature
 LTweenParallel:onComplete(f)
 ```
 
@@ -1749,13 +2555,13 @@ LTweenParallel:onComplete(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Function to call when all tweens in the group complete. |
+| `f` | function | Function to call when all tweens in the group complete. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenParallel` | This parallel group for chaining. |
+| [LTweenParallel](#ltweenparallel-handle) | This parallel group for chaining. |
 
 **Example**
 
@@ -1771,12 +2577,11 @@ end
 
 ---
 
-### `LTweenParallel:start`
+#### `LTweenParallel:start`
 
 Starts all tweens in this parallel group simultaneously.
 
 ```lua
--- signature
 LTweenParallel:start()
 ```
 
@@ -1784,7 +2589,7 @@ LTweenParallel:start()
 
 | Type | Description |
 |------|-------------|
-| `LTweenParallel` | This parallel group for chaining. |
+| [LTweenParallel](#ltweenparallel-handle) | This parallel group for chaining. |
 
 **Example**
 
@@ -1800,12 +2605,11 @@ end
 
 ---
 
-### `LTweenParallel:tween`
+#### `LTweenParallel:tween`
 
 Creates and adds a new tween step directly to this parallel group.
 
 ```lua
--- signature
 LTweenParallel:tween(duration, target, fields, easing)
 ```
 
@@ -1813,16 +2617,16 @@ LTweenParallel:tween(duration, target, fields, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `duration` | `number` | Duration in seconds. |
-| `target` | `table` | The table whose fields will be animated. |
-| `fields` | `table` | Key-value pairs mapping field names to target end values. |
-| `easing?` | `string` | Easing function name (default `"linear"`). |
+| `duration` | number | Duration in seconds. |
+| `target` | table | The table whose fields will be animated. |
+| `fields` | table | Key-value pairs mapping field names to target end values. |
+| `easing?` | string | Easing function name (default `"linear"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenParallel` | This parallel group for chaining. |
+| [LTweenParallel](#ltweenparallel-handle) | This parallel group for chaining. |
 
 **Example**
 
@@ -1838,12 +2642,11 @@ end
 
 ---
 
-### `LTweenParallel:type`
+#### `LTweenParallel:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LTweenParallel:type()
 ```
 
@@ -1851,7 +2654,7 @@ LTweenParallel:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LTweenParallel"`. |
+| string | Always `"[LTweenParallel](#ltweenparallel-handle)"`. |
 
 **Example**
 
@@ -1867,12 +2670,11 @@ end
 
 ---
 
-### `LTweenParallel:typeOf`
+#### `LTweenParallel:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LTweenParallel:typeOf(name)
 ```
 
@@ -1880,13 +2682,13 @@ LTweenParallel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against (`"LTweenParallel"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LTweenParallel](#ltweenparallel-handle)"` or `"Object"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the name matches. |
+| boolean | `true` if the name matches. |
 
 **Example**
 
@@ -1902,14 +2704,19 @@ end
 
 ---
 
-## LTweenSequence
+## LTweenSequence Handle
 
-### `LTweenSequence:await`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTweenSequence:await`
 
 Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
 
 ```lua
--- signature
 LTweenSequence:await()
 ```
 
@@ -1934,12 +2741,11 @@ end
 
 ---
 
-### `LTweenSequence:callback`
+#### `LTweenSequence:callback`
 
 Appends a callback step to this sequence that fires when reached during playback.
 
 ```lua
--- signature
 LTweenSequence:callback(f)
 ```
 
@@ -1947,13 +2753,13 @@ LTweenSequence:callback(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Function called when this step is reached during playback. |
+| `f` | function | Function called when this step is reached during playback. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
 
 **Example**
 
@@ -1974,12 +2780,11 @@ end
 
 ---
 
-### `LTweenSequence:cancel`
+#### `LTweenSequence:cancel`
 
 Cancels this sequence immediately and resumes any coroutines waiting on it.
 
 ```lua
--- signature
 LTweenSequence:cancel()
 ```
 
@@ -2002,12 +2807,11 @@ end
 
 ---
 
-### `LTweenSequence:delay`
+#### `LTweenSequence:delay`
 
 Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
 
 ```lua
--- signature
 LTweenSequence:delay(seconds, cb)
 ```
 
@@ -2015,14 +2819,14 @@ LTweenSequence:delay(seconds, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seconds` | `number` | Duration to wait in seconds. |
-| `cb?` | `function` | Optional callback fired when the delay elapses. |
+| `seconds` | number | Duration to wait in seconds. |
+| `cb?` | function | Optional callback fired when the delay elapses. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
 
 **Example**
 
@@ -2046,12 +2850,11 @@ end
 
 ---
 
-### `LTweenSequence:getProgress`
+#### `LTweenSequence:getProgress`
 
 Returns the overall progress ratio of this sequence from 0.0 to 1.0.
 
 ```lua
--- signature
 LTweenSequence:getProgress()
 ```
 
@@ -2059,7 +2862,7 @@ LTweenSequence:getProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Progress ratio. |
+| number | Progress ratio. |
 
 **Example**
 
@@ -2080,12 +2883,11 @@ end
 
 ---
 
-### `LTweenSequence:isActive`
+#### `LTweenSequence:isActive`
 
 Returns whether this sequence is still running.
 
 ```lua
--- signature
 LTweenSequence:isActive()
 ```
 
@@ -2093,7 +2895,7 @@ LTweenSequence:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the sequence is active. |
+| boolean | `true` if the sequence is active. |
 
 **Example**
 
@@ -2110,12 +2912,11 @@ end
 
 ---
 
-### `LTweenSequence:onComplete`
+#### `LTweenSequence:onComplete`
 
 Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
 
 ```lua
--- signature
 LTweenSequence:onComplete(f)
 ```
 
@@ -2123,13 +2924,13 @@ LTweenSequence:onComplete(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Function to call when the sequence completes. |
+| `f` | function | Function to call when the sequence completes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
 
 **Example**
 
@@ -2147,12 +2948,11 @@ end
 
 ---
 
-### `LTweenSequence:start`
+#### `LTweenSequence:start`
 
 Starts playback of this sequence from the first step.
 
 ```lua
--- signature
 LTweenSequence:start()
 ```
 
@@ -2160,7 +2960,7 @@ LTweenSequence:start()
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
 
 **Example**
 
@@ -2178,12 +2978,11 @@ end
 
 ---
 
-### `LTweenSequence:tween`
+#### `LTweenSequence:tween`
 
 Appends a tween step to this sequence that animates numeric fields on the target table.
 
 ```lua
--- signature
 LTweenSequence:tween(duration, target, fields, easing)
 ```
 
@@ -2191,16 +2990,16 @@ LTweenSequence:tween(duration, target, fields, easing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `duration` | `number` | Duration in seconds. |
-| `target` | `table` | The table whose fields will be animated. |
-| `fields` | `table` | Key-value pairs mapping field names to target end values. |
-| `easing?` | `string` | Easing function name (default `"linear"`). |
+| `duration` | number | Duration in seconds. |
+| `target` | table | The table whose fields will be animated. |
+| `fields` | table | Key-value pairs mapping field names to target end values. |
+| `easing?` | string | Easing function name (default `"linear"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTweenSequence` | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
 
 **Example**
 
@@ -2219,12 +3018,11 @@ end
 
 ---
 
-### `LTweenSequence:type`
+#### `LTweenSequence:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LTweenSequence:type()
 ```
 
@@ -2232,7 +3030,7 @@ LTweenSequence:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LTweenSequence"`. |
+| string | Always `"[LTweenSequence](#ltweensequence-handle)"`. |
 
 **Example**
 
@@ -2246,12 +3044,11 @@ end
 
 ---
 
-### `LTweenSequence:typeOf`
+#### `LTweenSequence:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LTweenSequence:typeOf(name)
 ```
 
@@ -2259,13 +3056,13 @@ LTweenSequence:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against (`"LTweenSequence"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LTweenSequence](#ltweensequence-handle)"` or `"Object"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the name matches. |
+| boolean | `true` if the name matches. |
 
 **Example**
 
@@ -2279,14 +3076,21 @@ end
 
 ---
 
-## LTweenState
+## LTweenState Handle
 
-### `LTweenState:isComplete`
+### Fields
+
+| Name | Type | Description |
+|------|------|-------------|
+| `paused` | any |  |
+
+### Methods
+
+#### `LTweenState:isComplete`
 
 Returns whether this tween state has finished its full duration.
 
 ```lua
--- signature
 LTweenState:isComplete()
 ```
 
@@ -2294,7 +3098,7 @@ LTweenState:isComplete()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the tween has reached its end. |
+| boolean | `true` if the tween has reached its end. |
 
 **Example**
 
@@ -2312,12 +3116,11 @@ end
 
 ---
 
-### `LTweenState:lerp`
+#### `LTweenState:lerp`
 
 Linearly interpolates between two values using the current eased progress.
 
 ```lua
--- signature
 LTweenState:lerp(start, finish)
 ```
 
@@ -2325,14 +3128,14 @@ LTweenState:lerp(start, finish)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | Value at progress 0. |
-| `finish` | `number` | Value at progress 1. |
+| `start` | number | Value at progress 0. |
+| `finish` | number | Value at progress 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Interpolated value. |
+| number | Interpolated value. |
 
 **Example**
 
@@ -2350,12 +3153,11 @@ end
 
 ---
 
-### `LTweenState:reset`
+#### `LTweenState:reset`
 
 Resets the tween state to the beginning so it can be replayed.
 
 ```lua
--- signature
 LTweenState:reset()
 ```
 
@@ -2374,12 +3176,11 @@ end
 
 ---
 
-### `LTweenState:t`
+#### `LTweenState:t`
 
 Returns the raw (un-eased) progress value from 0.0 to 1.0.
 
 ```lua
--- signature
 LTweenState:t()
 ```
 
@@ -2387,7 +3188,7 @@ LTweenState:t()
 
 | Type | Description |
 |------|-------------|
-| `number` | Linear progress ratio. |
+| number | Linear progress ratio. |
 
 **Example**
 
@@ -2405,12 +3206,11 @@ end
 
 ---
 
-### `LTweenState:tick`
+#### `LTweenState:tick`
 
 Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
 
 ```lua
--- signature
 LTweenState:tick(dt)
 ```
 
@@ -2418,13 +3218,13 @@ LTweenState:tick(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds to advance. |
+| `dt` | number | Delta time in seconds to advance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Eased value between 0 and 1. |
+| number | Eased value between 0 and 1. |
 
 **Example**
 
@@ -2442,12 +3242,11 @@ end
 
 ---
 
-### `LTweenState:type`
+#### `LTweenState:type`
 
 Returns the type name of this object.
 
 ```lua
--- signature
 LTweenState:type()
 ```
 
@@ -2455,7 +3254,7 @@ LTweenState:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LTweenState"`. |
+| string | Always `"[LTweenState](#ltweenstate-handle)"`. |
 
 **Example**
 
@@ -2473,12 +3272,11 @@ end
 
 ---
 
-### `LTweenState:typeOf`
+#### `LTweenState:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LTweenState:typeOf(name)
 ```
 
@@ -2486,13 +3284,13 @@ LTweenState:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against (`"LTweenState"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LTweenState](#ltweenstate-handle)"` or `"Object"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the name matches. |
+| boolean | `true` if the name matches. |
 
 **Example**
 
@@ -2509,3 +3307,33 @@ end
 ```
 
 ---
+
+## Lparallel Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*
+
+## Lsequence Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*
+
+## Lto Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*

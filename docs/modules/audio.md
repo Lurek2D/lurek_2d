@@ -1,23 +1,145 @@
 # Audio
 
-- The `audio` module provides a comprehensive, high-performance sound engine for Lurek2D, built on top of `rodio` and positioned within the Platform Services tier.
+## Summary
 
-It manages the entire audio lifecycle, including loading, real-time playback, bus mixing, DSP effects, spatial 2D audio, MIDI synthesis, and offline processing. At the core of the module is the `Mixer`, which serves as the central registry for all audio operations. It utilizes a highly efficient `SlotMap` to provide O(1) handle lookups for `AudioEntry` records, ensuring that the engine can effortlessly manage hundreds of concurrent sound instances. Audio sources can be loaded as fully decoded `Static` in-memory buffers for zero-latency sound effects, or as `Stream` sources for memory-efficient incremental decoding of longer music and voice tracks.
+The `audio` module is the playback and routing runtime for sound in Lurek2D. Its center is the `Mixer`, which manages active sources, buses, queueable streams, and runtime state transitions while delegating specialized transforms to dedicated components. The module covers source lifecycle, bus-level controls, playback state, and integration hooks for spatial and effect-aware processing.
 
-A standout feature of the `audio` module is its advanced `Bus` routing system. It supports hierarchical audio buses—such as Master, SFX, Music, and Voice—each equipped with its own volume, pitch, pause state, and dynamic `EffectChain`. The DSP effect system provides a rich suite of audio filters, including low-pass, high-pass, biquad EQ, reverb, chorus, flanger, phaser, distortion, limiter, and compressor. These effects operate using lock-free atomic parameters, allowing Lua scripts to modulate audio parameters dynamically without blocking the audio thread. Additionally, buses support automatic ducking, meaning a 'Voice' bus can automatically suppress the volume of a 'Music' bus when active.
+`decoder.rs` and `sound_data.rs` provide format decode and in-memory PCM containers, while source metadata and movement context live in `source.rs`. Bus orchestration (`bus.rs`) handles named routing and per-bus controls, and mixer-side APIs expose operations scripts and systems need for starting, stopping, and inspecting playback safely.
 
-For environmental immersion, the module includes a robust spatial audio system. It tracks the 3D position, velocity, and orientation of both the listener and individual audio sources. This enables realistic distance attenuation (using configurable drop-off models), stereo panning, and accurate Doppler shift effects based on relative velocities. Furthermore, to prevent audio stuttering during intense scenes, the `SoundPool` implements a round-robin polyphonic voice pool with intelligent voice stealing for one-shot playback of heavily reused assets like footsteps or weapon fire.
+The module intentionally does not absorb every signal-processing concern. DSP-heavy logic is split into `crate::dsp`, and MIDI-specific functionality is split into `crate::midi`, with `audio` acting as the operational transport and policy layer that composes these services into real playback flows. This keeps the boundary clear between "signal transformation" and "sound scheduling/output".
 
-Beyond standard PCM playback, the module natively supports MIDI file playback via a built-in software synthesizer. The `MidiPlayer` translates MIDI note events into PCM audio using loaded SoundFont data, offering complete transport controls, per-channel muting, and instrument assignment. Finally, an `offline` processing suite allows developers to apply DSP effect chains or perform peak normalization on audio files directly to disk without requiring real-time playback, which is invaluable for asset pipelining. The entire feature set is cleanly exposed to Lua through the `lurek.audio.*` namespace, giving script developers full control over sound design and dynamic mixing.
+In short, `audio` owns runtime sound orchestration and stable playback contracts, while neighboring modules provide decode, synthesis, and advanced processing capabilities that are plugged into this path.
+
+Implementation detail and boundary guarantees for audio: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: beat_clock.rs: Musical beat clock â€” tempo and measure tracking for rhythm games and procedural audio.; bus.rs: Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.; decoder.rs: Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.; facade.rs: Stub device enumeration and selection for the audio output backend.; mixer.rs: Mixer central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.; mod.rs: Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.; pool.rs: SoundPool round-robin polyphonic voice pool for one-shot playback of a single sound asset.; sound_data.rs: SoundData in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.; source.rs: SpatialState 3D position, velocity, and orientation for positional audio.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### beat_clock.rs
+
+- Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses.
+- Supports tempo and meter changes while preserving coherent phase continuity over runtime updates.
+- Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination.
+- Applies latency and swing parameters to shape musical timing feel without audio-thread coupling.
+- Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries.
+- Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source.
+- Serves rhythm, sequencing, and procedural trigger systems that require stable musical time.
+- Functions as the temporal backbone for Lua callbacks aligned to musical structure.
+
+### bus.rs
+
+- Implements named audio routing channels that apply shared gain, pitch, pause, and ducking control.
+- Maintains per-bus processing parameters and effect-chain references for downstream mixer application.
+- Supports duck-target relationships so one bus can attenuate others during priority playback.
+- Enforces bounded parameter updates to keep runtime routing behavior stable and predictable.
+
+### decoder.rs
+
+- Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer.
+- Provides random-access cursor movement for rewind, seek, and chunked iteration workflows.
+- Exposes duration and playback-position metrics derived from decoded sample metadata.
+- Serves as the decode bridge between file assets and streaming or buffered playback paths.
+
+### facade.rs
+
+- Provides the audio device facade used for output listing and active-device selection hooks.
+- Exposes a stable API surface while backend-specific device enumeration remains minimal.
+- Validates requested device names against known outputs before accepting selection changes.
+
+### mixer.rs
+
+- Implements the central audio mixer registry that owns sources, buses, streams, and listener state.
+- Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable.
+- Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows.
+- Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping.
+- Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior.
+- Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics.
+- Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues.
+- Applies distance-model and doppler controls for runtime spatialization consistency.
+- Tracks metering data across source, bus, and master levels for diagnostics and gameplay feedback.
+- Provides utility controls for stereo width, random pitch spread, crossfade behavior, and pooled playback.
+- Preserves stable key-based lookup so script calls map deterministically to mixer-owned runtime entities.
+- Coordinates effect processing boundaries while leaving advanced DSP behavior to dedicated modules.
+- Centralizes audio concurrency decisions so frame systems interact through one coherent control plane.
+- Serves as the primary engine-side audio execution surface behind Lua-facing playback APIs.
+- Anchors all real-time audio state mutation under a deterministic, runtime-safe ownership model.
+
+### mod.rs
+
+- Defines the audio module boundary that groups playback, routing, decode, and source-data primitives.
+- Exposes coherent core audio contracts while delegating specialized processing to adjacent modules.
+- Serves as the composition entry for engine-side runtime audio behavior and shared types.
+
+### pool.rs
+
+- Implements round-robin voice pooling for low-latency repeated playback of one sound asset.
+- Cycles preloaded source keys to distribute trigger load across reusable playback voices.
+- Stores per-pool gain and optional bus assignment for grouped routing behavior.
+- Validates pool integrity so empty or invalid voice sets are rejected early.
+
+### sound_data.rs
+
+- Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation.
+- Supports decode from file and direct buffer creation for generated or procedural audio content.
+- Provides waveform synthesis helpers for common tonal and noise signal generation workflows.
+- Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations.
+- Exposes encode paths for export-ready WAV byte output from runtime sample data.
+- Supplies duration and shape queries for tools, previews, and script-side audio reasoning.
+- Bridges sample data to visual workflows through waveform drawing integration points.
+- Serves as the core raw sound-data container for playback and preprocessing pipelines.
+
+### source.rs
+
+- Defines source-level audio metadata and spatial attributes used by mixer-side playback control.
+- Encapsulates position, velocity, and orientation state for positional and motion-aware rendering.
+- Stores identity and basic playback defaults that classify each loaded runtime source.
+- Serves as the foundational source contract shared across routing, playback, and spatialization paths.
 
 ## Functions
+
+### `lurek.audio.beatClockFromSource`
+
+Creates a new beat clock and synchronizes it to an audio source position.
+
+```lua
+lurek.audio.beatClockFromSource(source, bpm, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | [LSource](#lsource-handle)|number | Source handle or numeric source id. |
+| `bpm` | number | Initial BPM. |
+| `opts?` | table | Optional beat clock options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBeatClock](#lbeatclock-handle) | New beat clock handle synced to source time. |
+
+**Example**
+
+```lua
+do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    local clock = lurek.audio.beatClockFromSource(src, 128.0, { subdivision = 4 })
+    print("synced clock beat = " .. tostring(clock:getBeat()))
+    print("synced clock running = " .. tostring(clock:isRunning()))
+end
+```
+
+---
 
 ### `lurek.audio.clearFilter`
 
 Removes all frequency filters from a source.
 
 ```lua
--- signature
 lurek.audio.clearFilter(source)
 ```
 
@@ -25,7 +147,7 @@ lurek.audio.clearFilter(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -47,7 +169,6 @@ end
 Clears the loaded SoundFont and reverts MIDI synthesis to default.
 
 ```lua
--- signature
 lurek.audio.clearMidiSoundFont()
 ```
 
@@ -67,7 +188,6 @@ end
 Clears any random pitch range previously set on the source.
 
 ```lua
--- signature
 lurek.audio.clearRandomPitch(src_ud)
 ```
 
@@ -75,7 +195,7 @@ lurek.audio.clearRandomPitch(src_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LSource` | The audio source to reset. |
+| `src_ud` | [LSource](#lsource-handle) | The audio source to reset. |
 
 **Example**
 
@@ -97,7 +217,6 @@ end
 Creates an independent copy of a source sharing the same audio data.
 
 ```lua
--- signature
 lurek.audio.clone(source)
 ```
 
@@ -105,13 +224,13 @@ lurek.audio.clone(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID to clone. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID to clone. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSource` | A new source instance with identical settings. |
+| [LSource](#lsource-handle) | A new source instance with identical settings. |
 
 **Example**
 
@@ -133,7 +252,6 @@ end
 Creates a named audio bus, optionally parented to another bus.
 
 ```lua
--- signature
 lurek.audio.create_bus(name, parent_name)
 ```
 
@@ -141,8 +259,8 @@ lurek.audio.create_bus(name, parent_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for the new bus. |
-| `parent_name?` | `string` | Name of the parent bus, or nil for a root bus. |
+| `name` | string | Unique name for the new bus. |
+| `parent_name?` | string | Name of the parent bus, or nil for a root bus. |
 
 **Example**
 
@@ -161,7 +279,6 @@ end
 Crossfades from one audio source to another over the given duration.
 
 ```lua
--- signature
 lurek.audio.crossfade(from_ud, to_ud, duration)
 ```
 
@@ -169,9 +286,9 @@ lurek.audio.crossfade(from_ud, to_ud, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | `LSource` | The source to fade out. |
-| `to_ud` | `LSource` | The source to fade in. |
-| `duration` | `number` | Crossfade duration in seconds. |
+| `from_ud` | [LSource](#lsource-handle) | The source to fade out. |
+| `to_ud` | [LSource](#lsource-handle) | The source to fade in. |
+| `duration` | number | Crossfade duration in seconds. |
 
 **Example**
 
@@ -196,7 +313,6 @@ end
 Sets the fade-in duration for a source so it ramps from silence on play.
 
 ```lua
--- signature
 lurek.audio.fadeIn(source, dur)
 ```
 
@@ -204,8 +320,8 @@ lurek.audio.fadeIn(source, dur)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `dur` | `number` | Fade-in duration in seconds. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `dur` | number | Fade-in duration in seconds. |
 
 **Example**
 
@@ -226,7 +342,6 @@ end
 Returns the number of sources currently playing audio.
 
 ```lua
--- signature
 lurek.audio.getActiveSourceCount()
 ```
 
@@ -234,7 +349,7 @@ lurek.audio.getActiveSourceCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of active (playing) sources. |
+| number | Count of active (playing) sources. |
 
 **Example**
 
@@ -253,7 +368,6 @@ end
 Returns the peak amplitude of the named audio bus over the last processing frame.
 
 ```lua
--- signature
 lurek.audio.getBusPeak(bus_name)
 ```
 
@@ -261,13 +375,13 @@ lurek.audio.getBusPeak(bus_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bus_name` | `string` | Name of the audio bus to query. |
+| `bus_name` | string | Name of the audio bus to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Peak amplitude in the range [0.0, 1.0+]. |
+| number | Peak amplitude in the range [0.0, 1.0+]. |
 
 **Example**
 
@@ -286,7 +400,6 @@ end
 Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
 
 ```lua
--- signature
 lurek.audio.getBusRms(bus_name)
 ```
 
@@ -294,13 +407,13 @@ lurek.audio.getBusRms(bus_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bus_name` | `string` | Name of the audio bus to query. |
+| `bus_name` | string | Name of the audio bus to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | RMS amplitude in the range [0.0, 1.0+]. |
+| number | RMS amplitude in the range [0.0, 1.0+]. |
 
 **Example**
 
@@ -319,7 +432,6 @@ end
 Returns the current distance attenuation model name.
 
 ```lua
--- signature
 lurek.audio.getDistanceModel()
 ```
 
@@ -327,7 +439,7 @@ lurek.audio.getDistanceModel()
 
 | Type | Description |
 |------|-------------|
-| `string` | Distance model name. |
+| string | Distance model name. |
 
 **Example**
 
@@ -347,7 +459,6 @@ end
 Returns the current global Doppler effect scale.
 
 ```lua
--- signature
 lurek.audio.getDopplerScale()
 ```
 
@@ -355,7 +466,7 @@ lurek.audio.getDopplerScale()
 
 | Type | Description |
 |------|-------------|
-| `number` | Doppler scale factor. |
+| number | Doppler scale factor. |
 
 **Example**
 
@@ -375,7 +486,6 @@ end
 Returns the total duration of a source in seconds.
 
 ```lua
--- signature
 lurek.audio.getDuration(source)
 ```
 
@@ -383,13 +493,13 @@ lurek.audio.getDuration(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -410,7 +520,6 @@ end
 Returns the configured fade-in duration of a source.
 
 ```lua
--- signature
 lurek.audio.getFadeIn(source)
 ```
 
@@ -418,13 +527,13 @@ lurek.audio.getFadeIn(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Fade-in duration in seconds. |
+| number | Fade-in duration in seconds. |
 
 **Example**
 
@@ -446,7 +555,6 @@ end
 Returns the number of free (available) buffer slots on a queueable source.
 
 ```lua
--- signature
 lurek.audio.getFreeBufferCount(qsource_id)
 ```
 
@@ -454,13 +562,13 @@ lurek.audio.getFreeBufferCount(qsource_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qsource_id` | `number` | Queueable source handle returned by `newQueueableSource`. |
+| `qsource_id` | number | Queueable source handle returned by `newQueueableSource`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of free buffer slots available for queuing. |
+| number | Number of free buffer slots available for queuing. |
 
 **Example**
 
@@ -480,7 +588,6 @@ end
 Returns the current highpass filter cutoff of a source.
 
 ```lua
--- signature
 lurek.audio.getHighpass(source)
 ```
 
@@ -488,13 +595,13 @@ lurek.audio.getHighpass(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Cutoff frequency in Hz, or 0 if not set. |
+| number | Cutoff frequency in Hz, or 0 if not set. |
 
 **Example**
 
@@ -511,12 +618,36 @@ end
 
 ---
 
+### `lurek.audio.getJudgementWindows`
+
+Returns global default timing windows used by beat-clock judgement.
+
+```lua
+lurek.audio.getJudgementWindows()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with `perfect`, `great`, `good` in seconds. |
+
+**Example**
+
+```lua
+do
+    local windows = lurek.audio.getJudgementWindows()
+    print("getJudgementWindows marker = " .. tostring(windows ~= nil))
+end
+```
+
+---
+
 ### `lurek.audio.getListener`
 
 Returns the current 3D listener position.
 
 ```lua
--- signature
 lurek.audio.getListener()
 ```
 
@@ -524,9 +655,9 @@ lurek.audio.getListener()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X, Y, and Z position of the listener. |
-| `number` | b X, Y, and Z position of the listener. |
-| `number` | c X, Y, and Z position of the listener. |
+| number | X; Y; and Z position of the listener. (value 1). |
+| number | X; Y; and Z position of the listener. (value 2). |
+| number | X; Y; and Z position of the listener. (value 3). |
 
 **Example**
 
@@ -546,7 +677,6 @@ end
 Returns the current 2D listener position.
 
 ```lua
--- signature
 lurek.audio.getListener2D()
 ```
 
@@ -554,8 +684,8 @@ lurek.audio.getListener2D()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X and Y position of the listener. |
-| `number` | b X and Y position of the listener. |
+| number | X and Y position of the listener. (value 1). |
+| number | X and Y position of the listener. (value 2). |
 
 **Example**
 
@@ -575,7 +705,6 @@ end
 Returns the current lowpass filter cutoff of a source.
 
 ```lua
--- signature
 lurek.audio.getLowpass(source)
 ```
 
@@ -583,13 +712,13 @@ lurek.audio.getLowpass(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Cutoff frequency in Hz, or 0 if not set. |
+| number | Cutoff frequency in Hz, or 0 if not set. |
 
 **Example**
 
@@ -611,7 +740,6 @@ end
 Returns the current global master volume level.
 
 ```lua
--- signature
 lurek.audio.getMasterVolume()
 ```
 
@@ -619,7 +747,7 @@ lurek.audio.getMasterVolume()
 
 | Type | Description |
 |------|-------------|
-| `number` | Master volume multiplier. |
+| number | Master volume multiplier. |
 
 **Example**
 
@@ -639,7 +767,6 @@ end
 Returns the maximum number of simultaneous audio sources supported.
 
 ```lua
--- signature
 lurek.audio.getMaxSources()
 ```
 
@@ -647,7 +774,7 @@ lurek.audio.getMaxSources()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum source count (64). |
+| number | Maximum source count (64). |
 
 **Example**
 
@@ -666,7 +793,6 @@ end
 Returns the current master peak level for VU-meter displays.
 
 ```lua
--- signature
 lurek.audio.getMeter()
 ```
 
@@ -674,7 +800,7 @@ lurek.audio.getMeter()
 
 | Type | Description |
 |------|-------------|
-| `number` | Peak level from 0.0 to 1.0. |
+| number | Peak level from 0.0 to 1.0. |
 
 **Example**
 
@@ -694,7 +820,6 @@ end
 Returns the orientation vectors of a source.
 
 ```lua
--- signature
 lurek.audio.getOrientation(source)
 ```
 
@@ -702,18 +827,18 @@ lurek.audio.getOrientation(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Forward (fx,fy,fz) and up (ux,uy,uz) vectors. |
-| `number` | b Forward (fx,fy,fz) and up (ux,uy,uz) vectors. |
-| `number` | c Forward (fx,fy,fz) and up (ux,uy,uz) vectors. |
-| `number` | d Forward (fx,fy,fz) and up (ux,uy,uz) vectors. |
-| `number` | e Forward (fx,fy,fz) and up (ux,uy,uz) vectors. |
-| `number` | f Forward (fx,fy,fz) and up (ux,uy,uz) vectors. |
+| number | Forward (fx;fy;fz) and up (ux;uy;uz) vectors. (value 1). |
+| number | Forward (fx;fy;fz) and up (ux;uy;uz) vectors. (value 2). |
+| number | Forward (fx;fy;fz) and up (ux;uy;uz) vectors. (value 3). |
+| number | Forward (fx;fy;fz) and up (ux;uy;uz) vectors. (value 4). |
+| number | Forward (fx;fy;fz) and up (ux;uy;uz) vectors. (value 5). |
+| number | Forward (fx;fy;fz) and up (ux;uy;uz) vectors. (value 6). |
 
 **Example**
 
@@ -736,7 +861,6 @@ end
 Returns the current stereo pan position of a source.
 
 ```lua
--- signature
 lurek.audio.getPan(source)
 ```
 
@@ -744,13 +868,13 @@ lurek.audio.getPan(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Pan value from -1.0 (left) to 1.0 (right). |
+| number | Pan value from -1.0 (left) to 1.0 (right). |
 
 **Example**
 
@@ -772,7 +896,6 @@ end
 Returns the current pitch multiplier of a source.
 
 ```lua
--- signature
 lurek.audio.getPitch(source)
 ```
 
@@ -780,13 +903,13 @@ lurek.audio.getPitch(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Current pitch multiplier. |
+| number | Current pitch multiplier. |
 
 **Example**
 
@@ -808,7 +931,6 @@ end
 Returns the name of the currently active audio playback device.
 
 ```lua
--- signature
 lurek.audio.getPlaybackDevice()
 ```
 
@@ -816,7 +938,7 @@ lurek.audio.getPlaybackDevice()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current playback device name. |
+| string | Current playback device name. |
 
 **Example**
 
@@ -835,7 +957,6 @@ end
 Returns a list of available audio playback device names.
 
 ```lua
--- signature
 lurek.audio.getPlaybackDevices()
 ```
 
@@ -843,7 +964,7 @@ lurek.audio.getPlaybackDevices()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Device name strings. |
+| string[] | Device name strings. |
 
 **Example**
 
@@ -862,7 +983,6 @@ end
 Returns the 3D position of a source.
 
 ```lua
--- signature
 lurek.audio.getPosition(source)
 ```
 
@@ -870,15 +990,15 @@ lurek.audio.getPosition(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X, Y, and Z position. |
-| `number` | b X, Y, and Z position. |
-| `number` | c X, Y, and Z position. |
+| number | X; Y; and Z position. (value 1). |
+| number | X; Y; and Z position. (value 2). |
+| number | X; Y; and Z position. (value 3). |
 
 **Example**
 
@@ -900,7 +1020,6 @@ end
 Returns the bus a source is routed through.
 
 ```lua
--- signature
 lurek.audio.getSourceBus(source)
 ```
 
@@ -908,13 +1027,13 @@ lurek.audio.getSourceBus(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBus` | The assigned bus, or nil if using direct output. |
+| [LBus](#lbus-handle) | The assigned bus, or nil if using direct output. |
 
 **Example**
 
@@ -937,7 +1056,6 @@ end
 Returns the total number of loaded audio sources (playing or idle).
 
 ```lua
--- signature
 lurek.audio.getSourceCount()
 ```
 
@@ -945,7 +1063,7 @@ lurek.audio.getSourceCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total source count. |
+| number | Total source count. |
 
 **Example**
 
@@ -964,7 +1082,6 @@ end
 Returns whether a source is static or streaming.
 
 ```lua
--- signature
 lurek.audio.getSourceType(source)
 ```
 
@@ -972,13 +1089,13 @@ lurek.audio.getSourceType(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Either "static" or "stream". |
+| string | Either "static" or "stream". |
 
 **Example**
 
@@ -999,7 +1116,6 @@ end
 Returns the current stereo width factor of an audio source.
 
 ```lua
--- signature
 lurek.audio.getStereoWidth(src_ud)
 ```
 
@@ -1007,13 +1123,13 @@ lurek.audio.getStereoWidth(src_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LSource` | The audio source to query. |
+| `src_ud` | [LSource](#lsource-handle) | The audio source to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Stereo width factor (0.0 = mono, 1.0 = full stereo). |
+| number | Stereo width factor (0.0 = mono, 1.0 = full stereo). |
 
 **Example**
 
@@ -1035,7 +1151,6 @@ end
 Returns the velocity vector of a source.
 
 ```lua
--- signature
 lurek.audio.getVelocity(source)
 ```
 
@@ -1043,15 +1158,15 @@ lurek.audio.getVelocity(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X, Y, and Z velocity components. |
-| `number` | b X, Y, and Z velocity components. |
-| `number` | c X, Y, and Z velocity components. |
+| number | X; Y; and Z velocity components. (value 1). |
+| number | X; Y; and Z velocity components. (value 2). |
+| number | X; Y; and Z velocity components. (value 3). |
 
 **Example**
 
@@ -1073,7 +1188,6 @@ end
 Returns the current volume of a source.
 
 ```lua
--- signature
 lurek.audio.getVolume(source)
 ```
 
@@ -1081,13 +1195,13 @@ lurek.audio.getVolume(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Current volume multiplier. |
+| number | Current volume multiplier. |
 
 **Example**
 
@@ -1109,7 +1223,6 @@ end
 Returns whether a SoundFont file has been loaded for MIDI synthesis.
 
 ```lua
--- signature
 lurek.audio.hasMidiSoundFont()
 ```
 
@@ -1117,7 +1230,7 @@ lurek.audio.hasMidiSoundFont()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a SoundFont is loaded. |
+| boolean | True if a SoundFont is loaded. |
 
 **Example**
 
@@ -1136,7 +1249,6 @@ end
 Returns whether a source has looping enabled.
 
 ```lua
--- signature
 lurek.audio.isLooping(source)
 ```
 
@@ -1144,13 +1256,13 @@ lurek.audio.isLooping(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if looping is enabled. |
+| boolean | True if looping is enabled. |
 
 **Example**
 
@@ -1171,7 +1283,6 @@ end
 Returns whether a source is currently paused.
 
 ```lua
--- signature
 lurek.audio.isPaused(source)
 ```
 
@@ -1179,13 +1290,13 @@ lurek.audio.isPaused(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source is paused. |
+| boolean | True if the source is paused. |
 
 **Example**
 
@@ -1207,7 +1318,6 @@ end
 Returns whether a source is currently playing.
 
 ```lua
--- signature
 lurek.audio.isPlaying(source)
 ```
 
@@ -1215,13 +1325,13 @@ lurek.audio.isPlaying(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source is playing. |
+| boolean | True if the source is playing. |
 
 **Example**
 
@@ -1242,7 +1352,6 @@ end
 Returns whether a source is currently stopped.
 
 ```lua
--- signature
 lurek.audio.isStopped(source)
 ```
 
@@ -1250,13 +1359,13 @@ lurek.audio.isStopped(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source is stopped. |
+| boolean | True if the source is stopped. |
 
 **Example**
 
@@ -1271,12 +1380,47 @@ end
 
 ---
 
+### `lurek.audio.judgeBeat`
+
+Judges timing against the nearest beat grid for a beat clock.
+
+```lua
+lurek.audio.judgeBeat(clock, division, hit_offset)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `clock` | [LBeatClock](#lbeatclock-handle) | Beat clock handle. |
+| `division?` | number | Beat division (defaults to clock subdivision). |
+| `hit_offset?` | number | Signed hit offset in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of `perfect`; `great`; `good`; `miss`. |
+| number | Signed timing error in seconds. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    local verdict, err = lurek.audio.judgeBeat(clock, 4, 0.0)
+    print("judgeBeat verdict = " .. tostring(verdict))
+    print("judgeBeat error = " .. tostring(err))
+end
+```
+
+---
+
 ### `lurek.audio.mixInto`
 
 Mixes the samples of `src` into `dest` in-place (both must have the same format).
 
 ```lua
--- signature
 lurek.audio.mixInto(dest_ud, src_ud)
 ```
 
@@ -1284,8 +1428,8 @@ lurek.audio.mixInto(dest_ud, src_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dest_ud` | `LSoundData` | Destination sound data to mix into. |
-| `src_ud` | `LSoundData` | Source sound data to mix from. |
+| `dest_ud` | [LSoundData](#lsounddata-handle) | Destination sound data to mix into. |
+| `src_ud` | [LSoundData](#lsounddata-handle) | Source sound data to mix from. |
 
 **Example**
 
@@ -1300,12 +1444,47 @@ end
 
 ---
 
+### `lurek.audio.newBeatClock`
+
+Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
+
+```lua
+lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bpm` | number | Initial beats-per-minute (minimum 1). |
+| `beats_per_bar_or_opts` | any | Beats per bar (legacy) or options table. |
+| `opts?` | table | Optional options table when second argument is numeric. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBeatClock](#lbeatclock-handle) | New beat clock handle. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, { subdivision = 8, swing = 0.2, latency_ms = 5 })
+    clock:start()
+    clock:update(0.25)
+    print("beat clock beat = " .. tostring(clock:getBeat()))
+    print("beat clock bar = " .. tostring(clock:getBar()))
+end
+```
+
+---
+
 ### `lurek.audio.newBus`
 
 Creates a new audio mixing bus for grouping and controlling sources.
 
 ```lua
--- signature
 lurek.audio.newBus(name)
 ```
 
@@ -1313,13 +1492,13 @@ lurek.audio.newBus(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique name for the bus (e.g. "music", "sfx"). |
+| `name` | string | Unique name for the bus (e.g. "music", "sfx"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBus` | The new audio bus handle. |
+| [LBus](#lbus-handle) | The new audio bus handle. |
 
 **Example**
 
@@ -1338,7 +1517,6 @@ end
 Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
 
 ```lua
--- signature
 lurek.audio.newDecoder(source, buffersize)
 ```
 
@@ -1346,14 +1524,14 @@ lurek.audio.newDecoder(source, buffersize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `string` | Relative path to the audio file (WAV, OGG, MP3, or FLAC). |
-| `buffersize?` | `number` | Number of samples per decode chunk; defaults to 2048. |
+| `source` | string | Relative path to the audio file (WAV, OGG, MP3, or FLAC). |
+| `buffersize?` | number | Number of samples per decode chunk; defaults to 2048. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDecoder` | A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods. |
+| [LDecoder](#ldecoder-handle) | A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods. |
 
 **Example**
 
@@ -1374,7 +1552,6 @@ end
 Creates a new MIDI player instance, optionally loading a file immediately.
 
 ```lua
--- signature
 lurek.audio.newMidiPlayer(path)
 ```
 
@@ -1382,13 +1559,13 @@ lurek.audio.newMidiPlayer(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path?` | `string` | Optional relative path to a .mid file to load. |
+| `path?` | string | Optional relative path to a .mid file to load. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMidiPlayer` | A new MIDI player ready for playback. |
+| [LMidiPlayer](#lmidiplayer-handle) | A new MIDI player ready for playback. |
 
 **Example**
 
@@ -1407,7 +1584,6 @@ end
 Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
 
 ```lua
--- signature
 lurek.audio.newPool(file_path, voice_count)
 ```
 
@@ -1415,14 +1591,14 @@ lurek.audio.newPool(file_path, voice_count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `file_path` | `string` | Relative path to the audio file shared by all voices in the pool. |
-| `voice_count` | `number` | Number of concurrent voices to pre-allocate. |
+| `file_path` | string | Relative path to the audio file shared by all voices in the pool. |
+| `voice_count` | number | Number of concurrent voices to pre-allocate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSoundPool` | A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods. |
+| [LSoundPool](#lsoundpool-handle) | A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods. |
 
 **Example**
 
@@ -1441,7 +1617,6 @@ end
 Creates a new queueable audio source for streaming PCM data buffer by buffer.
 
 ```lua
--- signature
 lurek.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count)
 ```
 
@@ -1449,16 +1624,16 @@ lurek.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sample_rate` | `number` | Sample rate in Hz (e.g. 44100). |
-| `bit_depth` | `number` | Bit depth per sample (8 or 16). |
-| `channels` | `number` | Channel count (1 = mono, 2 = stereo). |
-| `buffer_count?` | `number` | Number of internal buffers to pre-allocate; defaults to 4. |
+| `sample_rate` | number | Sample rate in Hz (e.g. 44100). |
+| `bit_depth` | number | Bit depth per sample (8 or 16). |
+| `channels` | number | Channel count (1 = mono, 2 = stereo). |
+| `buffer_count?` | number | Number of internal buffers to pre-allocate; defaults to 4. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`. |
+| number | An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`. |
 
 **Example**
 
@@ -1478,7 +1653,6 @@ end
 Creates a new SoundData object from a file path or blank buffer for procedural audio.
 
 ```lua
--- signature
 lurek.audio.newSoundData(pathOrCount, sampleRate, channels)
 ```
 
@@ -1486,15 +1660,15 @@ lurek.audio.newSoundData(pathOrCount, sampleRate, channels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pathOrCount` | `string|number` | File path to decode, or sample count for blank buffer. |
-| `sampleRate` | `number` | Sample rate in Hz (e.g. 44100, 48000). |
-| `channels?` | `number` | Channel count (1 = mono, 2 = stereo), defaults to 1. |
+| `pathOrCount` | string|number | File path to decode, or sample count for blank buffer. |
+| `sampleRate` | number | Sample rate in Hz (e.g. 44100, 48000). |
+| `channels?` | number | Channel count (1 = mono, 2 = stereo), defaults to 1. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSoundData` | Raw PCM sample data for manipulation or playback. |
+| [LSoundData](#lsounddata-handle) | Raw PCM sample data for manipulation or playback. |
 
 **Example**
 
@@ -1514,7 +1688,6 @@ end
 Creates a new audio source from a file path, either fully loaded or streaming.
 
 ```lua
--- signature
 lurek.audio.newSource(path, sourceType)
 ```
 
@@ -1522,14 +1695,14 @@ lurek.audio.newSource(path, sourceType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to the audio file (WAV, OGG, MP3, FLAC). |
-| `sourceType?` | `string` | "static" to load fully into memory, or "stream" (default) for streaming. |
+| `path` | string | Relative path to the audio file (WAV, OGG, MP3, FLAC). |
+| `sourceType?` | string | "static" to load fully into memory, or "stream" (default) for streaming. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSource` | A new audio source ready for playback. |
+| [LSource](#lsource-handle) | A new audio source ready for playback. |
 
 **Example**
 
@@ -1551,7 +1724,6 @@ end
 Pauses playback of a source at its current position.
 
 ```lua
--- signature
 lurek.audio.pause(source)
 ```
 
@@ -1559,7 +1731,7 @@ lurek.audio.pause(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -1581,7 +1753,6 @@ end
 Pauses all currently playing audio sources.
 
 ```lua
--- signature
 lurek.audio.pauseAll()
 ```
 
@@ -1605,7 +1776,6 @@ end
 Starts playback of a source by handle, optionally routing through a named bus.
 
 ```lua
--- signature
 lurek.audio.play(source, options)
 ```
 
@@ -1613,14 +1783,14 @@ lurek.audio.play(source, options)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `options?` | `table` | Optional table with "bus" field for bus routing. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `options?` | table | Optional table with "bus" field for bus routing. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Numeric source ID of the playing source. |
+| number | Numeric source ID of the playing source. |
 
 **Example**
 
@@ -1641,7 +1811,6 @@ end
 Starts playback of a source with looping enabled in one call.
 
 ```lua
--- signature
 lurek.audio.playLooping(source)
 ```
 
@@ -1649,7 +1818,7 @@ lurek.audio.playLooping(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -1670,7 +1839,6 @@ end
 Starts playback of a queueable audio source.
 
 ```lua
--- signature
 lurek.audio.playQueueable(qsource_id)
 ```
 
@@ -1678,7 +1846,7 @@ lurek.audio.playQueueable(qsource_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qsource_id` | `number` | Queueable source handle returned by newQueueableSource. |
+| `qsource_id` | number | Queueable source handle returned by newQueueableSource. |
 
 **Example**
 
@@ -1700,7 +1868,6 @@ end
 Queues a decoded audio chunk for playback on a queueable source.
 
 ```lua
--- signature
 lurek.audio.queueSource(qsource_id, sd)
 ```
 
@@ -1708,8 +1875,8 @@ lurek.audio.queueSource(qsource_id, sd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qsource_id` | `number` | Queueable source handle returned by `newQueueableSource`. |
-| `sd` | `LSoundData` | Sound data chunk to enqueue for playback. |
+| `qsource_id` | number | Queueable source handle returned by `newQueueableSource`. |
+| `sd` | [LSoundData](#lsounddata-handle) | Sound data chunk to enqueue for playback. |
 
 **Example**
 
@@ -1732,7 +1899,6 @@ end
 Releases an audio source, freeing its memory and stopping playback.
 
 ```lua
--- signature
 lurek.audio.release(source)
 ```
 
@@ -1740,13 +1906,13 @@ lurek.audio.release(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID to release. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID to release. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source was successfully released. |
+| boolean | True if the source was successfully released. |
 
 **Example**
 
@@ -1768,7 +1934,6 @@ end
 Resumes playback of a paused source.
 
 ```lua
--- signature
 lurek.audio.resume(source)
 ```
 
@@ -1776,7 +1941,7 @@ lurek.audio.resume(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -1799,7 +1964,6 @@ end
 Resumes all paused audio sources. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.audio.resumeAll()
 ```
 
@@ -1824,7 +1988,6 @@ end
 Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 
 ```lua
--- signature
 lurek.audio.saveWAV(sd_ud, filename)
 ```
 
@@ -1832,8 +1995,8 @@ lurek.audio.saveWAV(sd_ud, filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | `LSoundData` | The sound data to encode and save. |
-| `filename` | `string` | Relative output path for the WAV file. |
+| `sd_ud` | [LSoundData](#lsounddata-handle) | The sound data to encode and save. |
+| `filename` | string | Relative output path for the WAV file. |
 
 **Example**
 
@@ -1852,7 +2015,6 @@ end
 Seeks a source to a specific position in seconds.
 
 ```lua
--- signature
 lurek.audio.seek(source, pos)
 ```
 
@@ -1860,8 +2022,8 @@ lurek.audio.seek(source, pos)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `pos` | `number` | Target position in seconds. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `pos` | number | Target position in seconds. |
 
 **Example**
 
@@ -1883,7 +2045,6 @@ end
 Sets the distance attenuation model for spatial audio.
 
 ```lua
--- signature
 lurek.audio.setDistanceModel(model)
 ```
 
@@ -1891,7 +2052,7 @@ lurek.audio.setDistanceModel(model)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `model` | `string` | Model name (e.g. "inverse", "linear", "exponent", "none"). |
+| `model` | string | Model name (e.g. "inverse", "linear", "exponent", "none"). |
 
 **Example**
 
@@ -1911,7 +2072,6 @@ end
 Sets the global Doppler effect intensity multiplier.
 
 ```lua
--- signature
 lurek.audio.setDopplerScale(scale)
 ```
 
@@ -1919,7 +2079,7 @@ lurek.audio.setDopplerScale(scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scale` | `number` | Doppler scale (0 = disabled, 1.0 = realistic). |
+| `scale` | number | Doppler scale (0 = disabled, 1.0 = realistic). |
 
 **Example**
 
@@ -1940,7 +2100,6 @@ end
 Applies a highpass filter to a source, attenuating low frequencies.
 
 ```lua
--- signature
 lurek.audio.setHighpass(source, cutoff_hz)
 ```
 
@@ -1948,8 +2107,8 @@ lurek.audio.setHighpass(source, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `cutoff_hz` | `number` | Cutoff frequency in Hertz. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `cutoff_hz` | number | Cutoff frequency in Hertz. |
 
 **Example**
 
@@ -1965,12 +2124,36 @@ end
 
 ---
 
+### `lurek.audio.setJudgementWindows`
+
+Sets global default timing windows used by beat-clock judgement.
+
+```lua
+lurek.audio.setJudgementWindows(windows)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `windows` | table | Table with optional `perfect`, `great`, `good` in seconds. |
+
+**Example**
+
+```lua
+do
+    lurek.audio.setJudgementWindows({ perfect = 0.03, good = 0.08, ok = 0.12 })
+    print("setJudgementWindows marker")
+end
+```
+
+---
+
 ### `lurek.audio.setListener`
 
 Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).
 
 ```lua
--- signature
 lurek.audio.setListener(x, y, z)
 ```
 
@@ -1978,9 +2161,9 @@ lurek.audio.setListener(x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Listener X position. |
-| `y` | `number` | Listener Y position. |
-| `z?` | `number` | Listener Z position (defaults to 0). |
+| `x` | number | Listener X position. |
+| `y` | number | Listener Y position. |
+| `z?` | number | Listener Z position (defaults to 0). |
 
 **Example**
 
@@ -2000,7 +2183,6 @@ end
 Sets the 2D listener position for spatial audio calculations.
 
 ```lua
--- signature
 lurek.audio.setListener2D(x, y)
 ```
 
@@ -2008,8 +2190,8 @@ lurek.audio.setListener2D(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Listener X position in world units. |
-| `y` | `number` | Listener Y position in world units. |
+| `x` | number | Listener X position in world units. |
+| `y` | number | Listener Y position in world units. |
 
 **Example**
 
@@ -2029,7 +2211,6 @@ end
 Enables or disables looping for a source.
 
 ```lua
--- signature
 lurek.audio.setLooping(source, looping)
 ```
 
@@ -2037,8 +2218,8 @@ lurek.audio.setLooping(source, looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `looping` | `boolean` | True to loop, false to play once. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `looping` | boolean | True to loop, false to play once. |
 
 **Example**
 
@@ -2059,7 +2240,6 @@ end
 Applies a lowpass filter to a source, attenuating high frequencies.
 
 ```lua
--- signature
 lurek.audio.setLowpass(source, cutoff_hz)
 ```
 
@@ -2067,8 +2247,8 @@ lurek.audio.setLowpass(source, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `cutoff_hz` | `number` | Cutoff frequency in Hertz. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `cutoff_hz` | number | Cutoff frequency in Hertz. |
 
 **Example**
 
@@ -2089,7 +2269,6 @@ end
 Sets the global master volume affecting all audio output.
 
 ```lua
--- signature
 lurek.audio.setMasterVolume(vol)
 ```
 
@@ -2097,7 +2276,7 @@ lurek.audio.setMasterVolume(vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vol` | `number` | Master volume multiplier (0.0 = silent, 1.0 = normal). |
+| `vol` | number | Master volume multiplier (0.0 = silent, 1.0 = normal). |
 
 **Example**
 
@@ -2117,7 +2296,6 @@ end
 Sets the master peak level for metering purposes.
 
 ```lua
--- signature
 lurek.audio.setMeter(level)
 ```
 
@@ -2125,7 +2303,7 @@ lurek.audio.setMeter(level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `level` | `number` | Peak level clamped to 0.0-1.0. |
+| `level` | number | Peak level clamped to 0.0-1.0. |
 
 **Example**
 
@@ -2145,7 +2323,6 @@ end
 Sets the SoundFont file used for MIDI synthesis.
 
 ```lua
--- signature
 lurek.audio.setMidiSoundFont(path)
 ```
 
@@ -2153,7 +2330,7 @@ lurek.audio.setMidiSoundFont(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to the .sf2 SoundFont file. |
+| `path` | string | Relative path to the .sf2 SoundFont file. |
 
 **Example**
 
@@ -2174,7 +2351,6 @@ end
 Sets the orientation of a source using forward and up vectors.
 
 ```lua
--- signature
 lurek.audio.setOrientation(source, fx, fy, fz, ux, uy, uz)
 ```
 
@@ -2182,13 +2358,13 @@ lurek.audio.setOrientation(source, fx, fy, fz, ux, uy, uz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `fx` | `number` | Forward vector X. |
-| `fy` | `number` | Forward vector Y. |
-| `fz` | `number` | Forward vector Z. |
-| `ux` | `number` | Up vector X. |
-| `uy` | `number` | Up vector Y. |
-| `uz` | `number` | Up vector Z. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `fx` | number | Forward vector X. |
+| `fy` | number | Forward vector Y. |
+| `fz` | number | Forward vector Z. |
+| `ux` | number | Up vector X. |
+| `uy` | number | Up vector Y. |
+| `uz` | number | Up vector Z. |
 
 **Example**
 
@@ -2211,7 +2387,6 @@ end
 Sets the stereo panning of a source.
 
 ```lua
--- signature
 lurek.audio.setPan(source, pan)
 ```
 
@@ -2219,8 +2394,8 @@ lurek.audio.setPan(source, pan)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `pan` | `number` | Pan from -1.0 (left) to 1.0 (right), 0.0 is center. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `pan` | number | Pan from -1.0 (left) to 1.0 (right), 0.0 is center. |
 
 **Example**
 
@@ -2241,7 +2416,6 @@ end
 Sets the pitch multiplier of a source, affecting playback speed and tone.
 
 ```lua
--- signature
 lurek.audio.setPitch(source, pitch)
 ```
 
@@ -2249,8 +2423,8 @@ lurek.audio.setPitch(source, pitch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `pitch` | `number` | Pitch multiplier (1.0 = normal, 2.0 = octave up). |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `pitch` | number | Pitch multiplier (1.0 = normal, 2.0 = octave up). |
 
 **Example**
 
@@ -2271,7 +2445,6 @@ end
 Sets the active audio playback device by name.
 
 ```lua
--- signature
 lurek.audio.setPlaybackDevice(name)
 ```
 
@@ -2279,7 +2452,7 @@ lurek.audio.setPlaybackDevice(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the playback device to activate. |
+| `name` | string | Name of the playback device to activate. |
 
 **Example**
 
@@ -2300,7 +2473,6 @@ end
 Sets the 3D position of a source for spatial audio panning and attenuation.
 
 ```lua
--- signature
 lurek.audio.setPosition(source, x, y, z)
 ```
 
@@ -2308,10 +2480,10 @@ lurek.audio.setPosition(source, x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `x` | `number` | X position in world units. |
-| `y` | `number` | Y position in world units. |
-| `z?` | `number` | Z position (defaults to 0). |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `x` | number | X position in world units. |
+| `y` | number | Y position in world units. |
+| `z?` | number | Z position (defaults to 0). |
 
 **Example**
 
@@ -2333,7 +2505,6 @@ end
 Sets a random pitch range for a source; each play picks a random pitch between min and max.
 
 ```lua
--- signature
 lurek.audio.setRandomPitch(src_ud, min, max)
 ```
 
@@ -2341,9 +2512,9 @@ lurek.audio.setRandomPitch(src_ud, min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LSource` | The audio source to configure. |
-| `min` | `number` | Minimum pitch multiplier. |
-| `max` | `number` | Maximum pitch multiplier. |
+| `src_ud` | [LSource](#lsource-handle) | The audio source to configure. |
+| `min` | number | Minimum pitch multiplier. |
+| `max` | number | Maximum pitch multiplier. |
 
 **Example**
 
@@ -2364,7 +2535,6 @@ end
 Routes a source through a specific audio bus for grouped mixing.
 
 ```lua
--- signature
 lurek.audio.setSourceBus(source, bus)
 ```
 
@@ -2372,8 +2542,8 @@ lurek.audio.setSourceBus(source, bus)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `bus` | `LBus` | The bus to route through. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `bus` | [LBus](#lbus-handle) | The bus to route through. |
 
 **Example**
 
@@ -2396,7 +2566,6 @@ end
 Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 
 ```lua
--- signature
 lurek.audio.setStereoWidth(src_ud, width)
 ```
 
@@ -2404,8 +2573,8 @@ lurek.audio.setStereoWidth(src_ud, width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | `LSource` | The audio source to adjust. |
-| `width` | `number` | Stereo width factor (0.0 = mono, 1.0 = full stereo). |
+| `src_ud` | [LSource](#lsource-handle) | The audio source to adjust. |
+| `width` | number | Stereo width factor (0.0 = mono, 1.0 = full stereo). |
 
 **Example**
 
@@ -2426,7 +2595,6 @@ end
 Sets the velocity of a source for Doppler effect calculations.
 
 ```lua
--- signature
 lurek.audio.setVelocity(source, x, y, z)
 ```
 
@@ -2434,10 +2602,10 @@ lurek.audio.setVelocity(source, x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `x` | `number` | X velocity component. |
-| `y` | `number` | Y velocity component. |
-| `z?` | `number` | Z velocity component (defaults to 0). |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `x` | number | X velocity component. |
+| `y` | number | Y velocity component. |
+| `z?` | number | Z velocity component (defaults to 0). |
 
 **Example**
 
@@ -2459,7 +2627,6 @@ end
 Sets the volume of a source by handle.
 
 ```lua
--- signature
 lurek.audio.setVolume(source, vol)
 ```
 
@@ -2467,8 +2634,8 @@ lurek.audio.setVolume(source, vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
-| `vol` | `number` | Volume multiplier (0.0 = silent, 1.0 = normal). |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `vol` | number | Volume multiplier (0.0 = silent, 1.0 = normal). |
 
 **Example**
 
@@ -2489,7 +2656,6 @@ end
 Sets the volume of a named audio bus.
 
 ```lua
--- signature
 lurek.audio.set_bus_volume(name, volume)
 ```
 
@@ -2497,8 +2663,8 @@ lurek.audio.set_bus_volume(name, volume)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the audio bus. |
-| `volume` | `number` | Volume level (0.0 = silent, 1.0 = full, >1.0 = boost). |
+| `name` | string | Name of the audio bus. |
+| `volume` | number | Volume level (0.0 = silent, 1.0 = full, >1.0 = boost). |
 
 **Example**
 
@@ -2518,7 +2684,6 @@ end
 Stops playback of a source and resets its position to the beginning.
 
 ```lua
--- signature
 lurek.audio.stop(source)
 ```
 
@@ -2526,7 +2691,7 @@ lurek.audio.stop(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -2548,7 +2713,6 @@ end
 Stops all audio sources and resets their positions.
 
 ```lua
--- signature
 lurek.audio.stopAll()
 ```
 
@@ -2572,7 +2736,6 @@ end
 Stops playback of a queueable audio source.
 
 ```lua
--- signature
 lurek.audio.stopQueueable(qsource_id)
 ```
 
@@ -2580,7 +2743,7 @@ lurek.audio.stopQueueable(qsource_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `qsource_id` | `number` | Queueable source handle returned by newQueueableSource. |
+| `qsource_id` | number | Queueable source handle returned by newQueueableSource. |
 
 **Example**
 
@@ -2600,7 +2763,6 @@ end
 Returns the current playback position of a source in seconds.
 
 ```lua
--- signature
 lurek.audio.tell(source)
 ```
 
@@ -2608,13 +2770,13 @@ lurek.audio.tell(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `LSource|number` | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Current position in seconds. |
+| number | Current position in seconds. |
 
 **Example**
 
@@ -2631,14 +2793,1004 @@ end
 
 ---
 
-## LBus
+## Module Fields
 
-### `LBus:clearDuck`
+*No module-level fields documented.*
+
+## Types
+
+- [LBeatClock Handle](#lbeatclock-handle)
+- [LBus Handle](#lbus-handle)
+- [LDecoder Handle](#ldecoder-handle)
+- [LMidiPlayer Handle](#lmidiplayer-handle)
+- [LSoundData Handle](#lsounddata-handle)
+- [LSoundPool Handle](#lsoundpool-handle)
+- [LSource Handle](#lsource-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LBeatClock Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBeatClock:at`
+
+Registers a one-shot callback fired when `beat` is crossed.
+
+```lua
+LBeatClock:at(beat, fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `beat` | number | Beat value threshold. |
+| `fn` | function | Callback receiving the scheduled beat. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Handle table usable with `cancel`. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local at_h = clock:at(1.0, function() end)
+    print("at handle = " .. tostring(at_h))
+end
+```
+
+---
+
+#### `LBeatClock:beatTimeRemaining`
+
+Returns seconds until the next division boundary.
+
+```lua
+LBeatClock:beatTimeRemaining(division)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `division?` | number | Beat division. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Seconds remaining. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("beatTimeRemaining marker")
+end
+```
+
+---
+
+#### `LBeatClock:beatsPerBar`
+
+Returns the number of beats per bar.
+
+```lua
+LBeatClock:beatsPerBar()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Beats per bar. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("beatsPerBar marker")
+end
+```
+
+---
+
+#### `LBeatClock:bpm`
+
+Returns the current tempo as beats-per-minute for this clock.
+
+```lua
+LBeatClock:bpm()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Beats-per-minute. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("bpm marker")
+end
+```
+
+---
+
+#### `LBeatClock:cancel`
+
+Cancels a scheduled callback handle.
+
+```lua
+LBeatClock:cancel(handle)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `handle` | any | Handle table returned by `every`/`at`/`pattern` or numeric id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a schedule was cancelled. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local handle = clock:every(4, function() end)
+    local cancelled = clock:cancel(handle)
+    print("cancel returned = " .. tostring(cancelled))
+end
+```
+
+---
+
+#### `LBeatClock:cancelAll`
+
+Cancels all scheduled callback handles registered on this clock.
+
+```lua
+LBeatClock:cancelAll()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Always true. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    clock:every(4, function() end)
+    clock:cancelAll()
+    print("cancelAll ok")
+end
+```
+
+---
+
+#### `LBeatClock:drainFired`
+
+Returns and removes all scheduled beats that have now passed.
+
+```lua
+LBeatClock:drainFired()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of fired beat numbers. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("drainFired marker")
+end
+```
+
+---
+
+#### `LBeatClock:dump`
+
+Returns a snapshot of clock state for debug and HUDs.
+
+```lua
+LBeatClock:dump()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with bpm, beat, bar, phase, and running. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("dump marker")
+end
+```
+
+---
+
+#### `LBeatClock:every`
+
+Registers a callback fired on each crossed step of `division`.
+
+```lua
+LBeatClock:every(division, fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `division` | number | Beat division grid (e.g. 4 for quarter-beat steps). |
+| `fn` | function | Callback receiving `step_index`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Handle table usable with `cancel`. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local every_h = clock:every(4, function() end)
+    print("every handle = " .. tostring(every_h))
+end
+```
+
+---
+
+#### `LBeatClock:getBar`
+
+Returns the current fractional bar position across elapsed musical time.
+
+```lua
+LBeatClock:getBar()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Fractional bar. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getBar marker")
+end
+```
+
+---
+
+#### `LBeatClock:getBeat`
+
+Returns fractional beat position.
+
+```lua
+LBeatClock:getBeat()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Fractional beat. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getBeat marker")
+end
+```
+
+---
+
+#### `LBeatClock:getBpm`
+
+Returns the current tempo as beats-per-minute for this clock.
+
+```lua
+LBeatClock:getBpm()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Beats-per-minute. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getBpm marker")
+end
+```
+
+---
+
+#### `LBeatClock:getPhase`
+
+Returns phase within the current division in [0, 1).
+
+```lua
+LBeatClock:getPhase(division)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `division?` | number | Beat division. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Phase value. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getPhase marker")
+end
+```
+
+---
+
+#### `LBeatClock:isOnBeat`
+
+Returns true when the clock is near a beat boundary.
+
+```lua
+LBeatClock:isOnBeat(division, tolerance)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `division?` | number | Beat division. |
+| `tolerance?` | number | Tolerance in seconds (default 0.05). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when within tolerance. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("isOnBeat marker")
+end
+```
+
+---
+
+#### `LBeatClock:isRunning`
+
+Returns true when the clock is running.
+
+```lua
+LBeatClock:isRunning()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Running state. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("isRunning marker")
+end
+```
+
+---
+
+#### `LBeatClock:nearestBeat`
+
+Returns nearest beat and signed timing error in seconds.
+
+```lua
+LBeatClock:nearestBeat(division)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `division?` | number | Beat division. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Nearest beat and signed error in seconds. (value 1). |
+| number | Nearest beat and signed error in seconds. (value 2). |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("nearestBeat marker")
+end
+```
+
+---
+
+#### `LBeatClock:pattern`
+
+Registers a repeating pattern callback where `x` triggers and `.` skips.
+
+```lua
+LBeatClock:pattern(pattern, fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pattern` | string | Pattern string like `x.x.`. |
+| `fn` | function | Callback receiving 1-based pattern step index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Handle table usable with `cancel`. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local pattern_h = clock:pattern("x.x.", function() end)
+    print("pattern handle = " .. tostring(pattern_h))
+end
+```
+
+---
+
+#### `LBeatClock:position`
+
+Returns the current beat position.
+
+```lua
+LBeatClock:position()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with `beat`, `bar`, `beat_in_bar`, `phase` fields. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("position marker")
+end
+```
+
+---
+
+#### `LBeatClock:quantise`
+
+Quantises `beat` to the nearest `grid` beat grid (static utility).
+
+```lua
+LBeatClock:quantise(beat, grid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `beat` | number | Beat value to quantise. |
+| `grid` | number | Grid size (e.g. 0.25 for 16th notes). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Quantised beat value. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("quantise marker")
+end
+```
+
+---
+
+#### `LBeatClock:rampBpm`
+
+Ramps BPM linearly to a target value over time.
+
+```lua
+LBeatClock:rampBpm(target, seconds)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | number | Target BPM. |
+| `seconds` | number | Ramp duration in seconds. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("rampBpm marker")
+end
+```
+
+---
+
+#### `LBeatClock:reset`
+
+Resets elapsed time to zero without changing running state.
+
+```lua
+LBeatClock:reset()
+```
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("reset marker")
+end
+```
+
+---
+
+#### `LBeatClock:scheduleAt`
+
+Schedules a one-shot event at `beat`. Returns true when the beat is in the future.
+
+```lua
+LBeatClock:scheduleAt(beat)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `beat` | number | Beat number to schedule. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when scheduled. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("scheduleAt marker")
+end
+```
+
+---
+
+#### `LBeatClock:secondsPerBeat`
+
+Returns seconds-per-beat at the current BPM.
+
+```lua
+LBeatClock:secondsPerBeat()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Seconds per beat. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("secondsPerBeat marker")
+end
+```
+
+---
+
+#### `LBeatClock:secondsToNextBeat`
+
+Returns seconds until the next whole beat boundary.
+
+```lua
+LBeatClock:secondsToNextBeat()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Seconds until next beat. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("secondsToNextBeat marker")
+end
+```
+
+---
+
+#### `LBeatClock:setBeatsPerBar`
+
+Changes the time-signature beats-per-bar.
+
+```lua
+LBeatClock:setBeatsPerBar(beats)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `beats` | number | New beats per bar (clamped to â‰Ą1). |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("setBeatsPerBar marker")
+end
+```
+
+---
+
+#### `LBeatClock:setBpm`
+
+Sets a new BPM. Elapsed time is preserved.
+
+```lua
+LBeatClock:setBpm(bpm)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bpm` | number | New BPM (clamped to â‰Ą1). |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("setBpm marker")
+end
+```
+
+---
+
+#### `LBeatClock:setSwing`
+
+Sets rhythmic swing amount in `[0.0, 0.5]` for off-beat timing feel.
+
+```lua
+LBeatClock:setSwing(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Swing amount. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("setSwing marker")
+end
+```
+
+---
+
+#### `LBeatClock:start`
+
+Starts beat-clock playback so scheduled beat callbacks can begin firing.
+
+```lua
+LBeatClock:start()
+```
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("start marker")
+end
+```
+
+---
+
+#### `LBeatClock:stop`
+
+Stops beat-clock playback while preserving the current musical position.
+
+```lua
+LBeatClock:stop()
+```
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("stop marker")
+end
+```
+
+---
+
+#### `LBeatClock:syncToSource`
+
+Synchronizes beat position to an audio source playback position.
+
+```lua
+LBeatClock:syncToSource(source)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `source` | [LSource](#lsource-handle)|number | Source handle or source id. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("syncToSource marker")
+end
+```
+
+---
+
+#### `LBeatClock:tap`
+
+Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).
+
+```lua
+LBeatClock:tap(wall_time_secs)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wall_time_secs` | number | Current real-world time in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Estimated BPM, or 0.0 when not enough taps. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("tap marker")
+end
+```
+
+---
+
+#### `LBeatClock:tick`
+
+Advances the clock by `dt` seconds. Returns an array of whole-beat crossings.
+
+```lua
+LBeatClock:tick(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Delta time in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of beat numbers crossed during this tick. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("tick marker")
+end
+```
+
+---
+
+#### `LBeatClock:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LBeatClock:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LBeatClock](#lbeatclock-handle)`. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("type marker")
+end
+```
+
+---
+
+#### `LBeatClock:typeOf`
+
+Returns whether this handle matches the given type name.
+
+```lua
+LBeatClock:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when matched. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("typeOf marker")
+end
+```
+
+---
+
+#### `LBeatClock:update`
+
+Advances the clock by `dt` seconds and returns beat/bar transitions.
+
+```lua
+LBeatClock:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Delta time in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with optional `beat` and `bar` integer fields. |
+
+**Example**
+
+```lua
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("update marker")
+end
+```
+
+---
+
+## LBus Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBus:clearDuck`
 
 Removes the ducking configuration from this bus.
 
 ```lua
--- signature
 LBus:clearDuck()
 ```
 
@@ -2655,12 +3807,11 @@ end
 
 ---
 
-### `LBus:getName`
+#### `LBus:getName`
 
 Returns the name of this audio bus. This method is available to Lua scripts.
 
 ```lua
--- signature
 LBus:getName()
 ```
 
@@ -2668,7 +3819,7 @@ LBus:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Bus name as registered during creation. |
+| string | Bus name as registered during creation. |
 
 **Example**
 
@@ -2681,12 +3832,11 @@ end
 
 ---
 
-### `LBus:getPeak`
+#### `LBus:getPeak`
 
 Returns the current peak amplitude level of this bus for VU-meter displays.
 
 ```lua
--- signature
 LBus:getPeak()
 ```
 
@@ -2694,7 +3844,7 @@ LBus:getPeak()
 
 | Type | Description |
 |------|-------------|
-| `number` | Peak level from 0.0 to 1.0. |
+| number | Peak level from 0.0 to 1.0. |
 
 **Example**
 
@@ -2708,12 +3858,11 @@ end
 
 ---
 
-### `LBus:getPitch`
+#### `LBus:getPitch`
 
 Returns the current pitch multiplier of this bus.
 
 ```lua
--- signature
 LBus:getPitch()
 ```
 
@@ -2721,7 +3870,7 @@ LBus:getPitch()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current pitch multiplier (defaults to 1.0). |
+| number | Current pitch multiplier (defaults to 1.0). |
 
 **Example**
 
@@ -2736,12 +3885,11 @@ end
 
 ---
 
-### `LBus:getVolume`
+#### `LBus:getVolume`
 
 Returns the current volume multiplier of this bus.
 
 ```lua
--- signature
 LBus:getVolume()
 ```
 
@@ -2749,7 +3897,7 @@ LBus:getVolume()
 
 | Type | Description |
 |------|-------------|
-| `number` | Volume multiplier (defaults to 1.0). |
+| number | Volume multiplier (defaults to 1.0). |
 
 **Example**
 
@@ -2764,12 +3912,11 @@ end
 
 ---
 
-### `LBus:isPaused`
+#### `LBus:isPaused`
 
 Returns whether this bus is currently paused.
 
 ```lua
--- signature
 LBus:isPaused()
 ```
 
@@ -2777,7 +3924,7 @@ LBus:isPaused()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the bus is paused. |
+| boolean | True if the bus is paused. |
 
 **Example**
 
@@ -2791,12 +3938,11 @@ end
 
 ---
 
-### `LBus:pause`
+#### `LBus:pause`
 
 Pauses all sources routed through this bus.
 
 ```lua
--- signature
 LBus:pause()
 ```
 
@@ -2812,12 +3958,11 @@ end
 
 ---
 
-### `LBus:resume`
+#### `LBus:resume`
 
 Resumes all sources routed through this bus that were paused.
 
 ```lua
--- signature
 LBus:resume()
 ```
 
@@ -2834,12 +3979,11 @@ end
 
 ---
 
-### `LBus:setDuckTarget`
+#### `LBus:setDuckTarget`
 
 Configures ducking so this bus lowers the volume of a target bus when active.
 
 ```lua
--- signature
 LBus:setDuckTarget(target_name, duck_vol)
 ```
 
@@ -2847,8 +3991,8 @@ LBus:setDuckTarget(target_name, duck_vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target_name` | `string` | Name of the bus to duck. |
-| `duck_vol` | `number` | Volume multiplier applied to the target when ducking (0.0-1.0). |
+| `target_name` | string | Name of the bus to duck. |
+| `duck_vol` | number | Volume multiplier applied to the target when ducking (0.0-1.0). |
 
 **Example**
 
@@ -2863,12 +4007,11 @@ end
 
 ---
 
-### `LBus:setPitch`
+#### `LBus:setPitch`
 
 Sets the pitch multiplier applied to all sources routed through this bus.
 
 ```lua
--- signature
 LBus:setPitch(pitch)
 ```
 
@@ -2876,7 +4019,7 @@ LBus:setPitch(pitch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pitch` | `number` | Pitch multiplier (1.0 = normal speed). |
+| `pitch` | number | Pitch multiplier (1.0 = normal speed). |
 
 **Example**
 
@@ -2890,12 +4033,11 @@ end
 
 ---
 
-### `LBus:setVolume`
+#### `LBus:setVolume`
 
 Sets the volume multiplier for all sources routed through this bus.
 
 ```lua
--- signature
 LBus:setVolume(vol)
 ```
 
@@ -2903,7 +4045,7 @@ LBus:setVolume(vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vol` | `number` | Volume multiplier (0.0 = silent, 1.0 = normal). |
+| `vol` | number | Volume multiplier (0.0 = silent, 1.0 = normal). |
 
 **Example**
 
@@ -2917,12 +4059,11 @@ end
 
 ---
 
-### `LBus:type`
+#### `LBus:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LBus:type()
 ```
 
@@ -2930,7 +4071,7 @@ LBus:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LBus". |
+| string | Always returns "[LBus](#lbus-handle)". |
 
 **Example**
 
@@ -2943,12 +4084,11 @@ end
 
 ---
 
-### `LBus:typeOf`
+#### `LBus:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LBus:typeOf(name)
 ```
 
@@ -2956,13 +4096,13 @@ LBus:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LBus", "Bus", or "Object"). |
+| `name` | string | Type name to check (e.g. "[LBus](#lbus-handle)", "Bus", or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -2975,14 +4115,19 @@ end
 
 ---
 
-## LDecoder
+## LDecoder Handle
 
-### `LDecoder:decode`
+### Fields
 
-Decodes the next chunk of audio data and returns it as a LSoundData object.
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDecoder:decode`
+
+Decodes the next chunk of audio data and returns it as a [LSoundData](#lsounddata-handle) object.
 
 ```lua
--- signature
 LDecoder:decode()
 ```
 
@@ -2990,7 +4135,7 @@ LDecoder:decode()
 
 | Type | Description |
 |------|-------------|
-| `LSoundData` | Decoded PCM data, or nil if end of stream reached. |
+| [LSoundData](#lsounddata-handle) | Decoded PCM data, or nil if end of stream reached. |
 
 **Example**
 
@@ -3005,12 +4150,11 @@ end
 
 ---
 
-### `LDecoder:getBitDepth`
+#### `LDecoder:getBitDepth`
 
 Returns the bit depth of the source audio file.
 
 ```lua
--- signature
 LDecoder:getBitDepth()
 ```
 
@@ -3018,7 +4162,7 @@ LDecoder:getBitDepth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Bits per sample (e.g. 16, 24). |
+| number | Bits per sample (e.g. 16, 24). |
 
 **Example**
 
@@ -3033,12 +4177,11 @@ end
 
 ---
 
-### `LDecoder:getChannelCount`
+#### `LDecoder:getChannelCount`
 
 Returns the number of audio channels in the source file.
 
 ```lua
--- signature
 LDecoder:getChannelCount()
 ```
 
@@ -3046,7 +4189,7 @@ LDecoder:getChannelCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Channel count (1 = mono, 2 = stereo). |
+| number | Channel count (1 = mono, 2 = stereo). |
 
 **Example**
 
@@ -3061,12 +4204,11 @@ end
 
 ---
 
-### `LDecoder:getDuration`
+#### `LDecoder:getDuration`
 
 Returns the total duration of the source audio file in seconds.
 
 ```lua
--- signature
 LDecoder:getDuration()
 ```
 
@@ -3074,7 +4216,7 @@ LDecoder:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -3089,12 +4231,11 @@ end
 
 ---
 
-### `LDecoder:getSampleRate`
+#### `LDecoder:getSampleRate`
 
 Returns the sample rate of the source audio file.
 
 ```lua
--- signature
 LDecoder:getSampleRate()
 ```
 
@@ -3102,7 +4243,7 @@ LDecoder:getSampleRate()
 
 | Type | Description |
 |------|-------------|
-| `number` | Sample rate in Hz. |
+| number | Sample rate in Hz. |
 
 **Example**
 
@@ -3117,12 +4258,11 @@ end
 
 ---
 
-### `LDecoder:isSeekable`
+#### `LDecoder:isSeekable`
 
 Returns whether this decoder supports seeking.
 
 ```lua
--- signature
 LDecoder:isSeekable()
 ```
 
@@ -3130,7 +4270,7 @@ LDecoder:isSeekable()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if seek operations are supported. |
+| boolean | True if seek operations are supported. |
 
 **Example**
 
@@ -3144,12 +4284,11 @@ end
 
 ---
 
-### `LDecoder:release`
+#### `LDecoder:release`
 
 Releases decoder resources (no-op, kept for API symmetry).
 
 ```lua
--- signature
 LDecoder:release()
 ```
 
@@ -3166,12 +4305,11 @@ end
 
 ---
 
-### `LDecoder:rewind`
+#### `LDecoder:rewind`
 
 Rewinds the decoder back to the beginning of the audio stream.
 
 ```lua
--- signature
 LDecoder:rewind()
 ```
 
@@ -3189,12 +4327,11 @@ end
 
 ---
 
-### `LDecoder:seek`
+#### `LDecoder:seek`
 
 Seeks to a specific position in the audio stream.
 
 ```lua
--- signature
 LDecoder:seek(offset)
 ```
 
@@ -3202,7 +4339,7 @@ LDecoder:seek(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Target position in seconds. |
+| `offset` | number | Target position in seconds. |
 
 **Example**
 
@@ -3217,12 +4354,11 @@ end
 
 ---
 
-### `LDecoder:tell`
+#### `LDecoder:tell`
 
 Returns the current read position in the audio stream in seconds.
 
 ```lua
--- signature
 LDecoder:tell()
 ```
 
@@ -3230,7 +4366,7 @@ LDecoder:tell()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current position in seconds. |
+| number | Current position in seconds. |
 
 **Example**
 
@@ -3246,12 +4382,11 @@ end
 
 ---
 
-### `LDecoder:type`
+#### `LDecoder:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LDecoder:type()
 ```
 
@@ -3259,7 +4394,7 @@ LDecoder:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LDecoder". |
+| string | Always returns "[LDecoder](#ldecoder-handle)". |
 
 **Example**
 
@@ -3273,12 +4408,11 @@ end
 
 ---
 
-### `LDecoder:typeOf`
+#### `LDecoder:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LDecoder:typeOf(name)
 ```
 
@@ -3286,13 +4420,13 @@ LDecoder:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LDecoder" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LDecoder](#ldecoder-handle)" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -3306,14 +4440,19 @@ end
 
 ---
 
-## LMidiPlayer
+## LMidiPlayer Handle
 
-### `LMidiPlayer:getBus`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMidiPlayer:getBus`
 
 Returns the audio bus this MIDI player is routed through.
 
 ```lua
--- signature
 LMidiPlayer:getBus()
 ```
 
@@ -3321,7 +4460,7 @@ LMidiPlayer:getBus()
 
 | Type | Description |
 |------|-------------|
-| `LBus` | The assigned bus, or nil if using direct output. |
+| [LBus](#lbus-handle) | The assigned bus, or nil if using direct output. |
 
 **Example**
 
@@ -3337,12 +4476,11 @@ end
 
 ---
 
-### `LMidiPlayer:getChannelCount`
+#### `LMidiPlayer:getChannelCount`
 
 Returns the number of active MIDI channels in the loaded file.
 
 ```lua
--- signature
 LMidiPlayer:getChannelCount()
 ```
 
@@ -3350,7 +4488,7 @@ LMidiPlayer:getChannelCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of active channels. |
+| number | Number of active channels. |
 
 **Example**
 
@@ -3365,12 +4503,11 @@ end
 
 ---
 
-### `LMidiPlayer:getChannelInstrument`
+#### `LMidiPlayer:getChannelInstrument`
 
 Returns the current GM instrument program for a channel.
 
 ```lua
--- signature
 LMidiPlayer:getChannelInstrument(ch)
 ```
 
@@ -3378,13 +4515,13 @@ LMidiPlayer:getChannelInstrument(ch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16). |
+| `ch` | number | Channel number (1-16). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | GM instrument program number (0-127). |
+| number | GM instrument program number (0-127). |
 
 **Example**
 
@@ -3399,12 +4536,11 @@ end
 
 ---
 
-### `LMidiPlayer:getChannelVolume`
+#### `LMidiPlayer:getChannelVolume`
 
 Returns the volume of a specific MIDI channel.
 
 ```lua
--- signature
 LMidiPlayer:getChannelVolume(ch)
 ```
 
@@ -3412,13 +4548,13 @@ LMidiPlayer:getChannelVolume(ch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16). |
+| `ch` | number | Channel number (1-16). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Channel volume (0.0-1.0). |
+| number | Channel volume (0.0-1.0). |
 
 **Example**
 
@@ -3433,12 +4569,11 @@ end
 
 ---
 
-### `LMidiPlayer:getChannels`
+#### `LMidiPlayer:getChannels`
 
 Returns the number of output audio channels for MIDI synthesis.
 
 ```lua
--- signature
 LMidiPlayer:getChannels()
 ```
 
@@ -3446,7 +4581,7 @@ LMidiPlayer:getChannels()
 
 | Type | Description |
 |------|-------------|
-| `number` | Channel count (1 = mono, 2 = stereo). |
+| number | Channel count (1 = mono, 2 = stereo). |
 
 **Example**
 
@@ -3460,12 +4595,11 @@ end
 
 ---
 
-### `LMidiPlayer:getDuration`
+#### `LMidiPlayer:getDuration`
 
 Returns the total duration of the loaded MIDI file in seconds.
 
 ```lua
--- signature
 LMidiPlayer:getDuration()
 ```
 
@@ -3473,7 +4607,7 @@ LMidiPlayer:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -3488,12 +4622,11 @@ end
 
 ---
 
-### `LMidiPlayer:getFilePath`
+#### `LMidiPlayer:getFilePath`
 
 Returns the file path of the currently loaded MIDI file.
 
 ```lua
--- signature
 LMidiPlayer:getFilePath()
 ```
 
@@ -3501,7 +4634,7 @@ LMidiPlayer:getFilePath()
 
 | Type | Description |
 |------|-------------|
-| `string` | File path string or nil if no file is loaded. |
+| string | File path string or nil if no file is loaded. |
 
 **Example**
 
@@ -3515,12 +4648,11 @@ end
 
 ---
 
-### `LMidiPlayer:getNoteCount`
+#### `LMidiPlayer:getNoteCount`
 
 Returns the total number of note events in the loaded MIDI file.
 
 ```lua
--- signature
 LMidiPlayer:getNoteCount()
 ```
 
@@ -3528,7 +4660,7 @@ LMidiPlayer:getNoteCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total note count. |
+| number | Total note count. |
 
 **Example**
 
@@ -3543,12 +4675,11 @@ end
 
 ---
 
-### `LMidiPlayer:getOriginalTempo`
+#### `LMidiPlayer:getOriginalTempo`
 
 Returns the original tempo of the MIDI file as authored.
 
 ```lua
--- signature
 LMidiPlayer:getOriginalTempo()
 ```
 
@@ -3556,7 +4687,7 @@ LMidiPlayer:getOriginalTempo()
 
 | Type | Description |
 |------|-------------|
-| `number` | Original tempo in BPM. |
+| number | Original tempo in BPM. |
 
 **Example**
 
@@ -3571,12 +4702,11 @@ end
 
 ---
 
-### `LMidiPlayer:getSampleRate`
+#### `LMidiPlayer:getSampleRate`
 
 Returns the output sample rate used for MIDI synthesis.
 
 ```lua
--- signature
 LMidiPlayer:getSampleRate()
 ```
 
@@ -3584,7 +4714,7 @@ LMidiPlayer:getSampleRate()
 
 | Type | Description |
 |------|-------------|
-| `number` | Sample rate in Hz (e.g. 44100). |
+| number | Sample rate in Hz (e.g. 44100). |
 
 **Example**
 
@@ -3598,12 +4728,11 @@ end
 
 ---
 
-### `LMidiPlayer:getSoundFontPath`
+#### `LMidiPlayer:getSoundFontPath`
 
 Returns the path of the currently set SoundFont (stub, not yet implemented).
 
 ```lua
--- signature
 LMidiPlayer:getSoundFontPath()
 ```
 
@@ -3611,7 +4740,7 @@ LMidiPlayer:getSoundFontPath()
 
 | Type | Description |
 |------|-------------|
-| `string` | SoundFont path or nil. |
+| string | SoundFont path or nil. |
 
 **Example**
 
@@ -3627,12 +4756,11 @@ end
 
 ---
 
-### `LMidiPlayer:getTempo`
+#### `LMidiPlayer:getTempo`
 
 Returns the current effective tempo in beats per minute.
 
 ```lua
--- signature
 LMidiPlayer:getTempo()
 ```
 
@@ -3640,7 +4768,7 @@ LMidiPlayer:getTempo()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current tempo in BPM. |
+| number | Current tempo in BPM. |
 
 **Example**
 
@@ -3655,12 +4783,11 @@ end
 
 ---
 
-### `LMidiPlayer:getTempoScale`
+#### `LMidiPlayer:getTempoScale`
 
 Returns the current tempo scale multiplier.
 
 ```lua
--- signature
 LMidiPlayer:getTempoScale()
 ```
 
@@ -3668,7 +4795,7 @@ LMidiPlayer:getTempoScale()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tempo scale factor. |
+| number | Tempo scale factor. |
 
 **Example**
 
@@ -3683,12 +4810,11 @@ end
 
 ---
 
-### `LMidiPlayer:getTicksPerBeat`
+#### `LMidiPlayer:getTicksPerBeat`
 
 Returns the MIDI file's resolution in ticks per beat (PPQN).
 
 ```lua
--- signature
 LMidiPlayer:getTicksPerBeat()
 ```
 
@@ -3696,7 +4822,7 @@ LMidiPlayer:getTicksPerBeat()
 
 | Type | Description |
 |------|-------------|
-| `number` | Ticks per quarter note. |
+| number | Ticks per quarter note. |
 
 **Example**
 
@@ -3711,12 +4837,11 @@ end
 
 ---
 
-### `LMidiPlayer:getTrackCount`
+#### `LMidiPlayer:getTrackCount`
 
 Returns the number of tracks in the loaded MIDI file.
 
 ```lua
--- signature
 LMidiPlayer:getTrackCount()
 ```
 
@@ -3724,7 +4849,7 @@ LMidiPlayer:getTrackCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of MIDI tracks. |
+| number | Number of MIDI tracks. |
 
 **Example**
 
@@ -3739,12 +4864,11 @@ end
 
 ---
 
-### `LMidiPlayer:getTrackName`
+#### `LMidiPlayer:getTrackName`
 
 Returns the name of a MIDI track by 1-based index.
 
 ```lua
--- signature
 LMidiPlayer:getTrackName(idx)
 ```
 
@@ -3752,13 +4876,13 @@ LMidiPlayer:getTrackName(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Track index (1-based). |
+| `idx` | number | Track index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Track name or nil if not available. |
+| string | Track name or nil if not available. |
 
 **Example**
 
@@ -3773,12 +4897,11 @@ end
 
 ---
 
-### `LMidiPlayer:getVolume`
+#### `LMidiPlayer:getVolume`
 
 Returns the current master volume of the MIDI player.
 
 ```lua
--- signature
 LMidiPlayer:getVolume()
 ```
 
@@ -3786,7 +4909,7 @@ LMidiPlayer:getVolume()
 
 | Type | Description |
 |------|-------------|
-| `number` | Volume multiplier. |
+| number | Volume multiplier. |
 
 **Example**
 
@@ -3801,12 +4924,11 @@ end
 
 ---
 
-### `LMidiPlayer:isChannelMuted`
+#### `LMidiPlayer:isChannelMuted`
 
 Returns whether a specific MIDI channel is muted.
 
 ```lua
--- signature
 LMidiPlayer:isChannelMuted(ch)
 ```
 
@@ -3814,13 +4936,13 @@ LMidiPlayer:isChannelMuted(ch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16). |
+| `ch` | number | Channel number (1-16). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the channel is muted. |
+| boolean | True if the channel is muted. |
 
 **Example**
 
@@ -3834,12 +4956,11 @@ end
 
 ---
 
-### `LMidiPlayer:isLoaded`
+#### `LMidiPlayer:isLoaded`
 
 Returns whether a MIDI file is currently loaded and ready to play.
 
 ```lua
--- signature
 LMidiPlayer:isLoaded()
 ```
 
@@ -3847,7 +4968,7 @@ LMidiPlayer:isLoaded()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a MIDI file is loaded. |
+| boolean | True if a MIDI file is loaded. |
 
 **Example**
 
@@ -3860,12 +4981,11 @@ end
 
 ---
 
-### `LMidiPlayer:isLooping`
+#### `LMidiPlayer:isLooping`
 
 Returns whether MIDI looping is enabled.
 
 ```lua
--- signature
 LMidiPlayer:isLooping()
 ```
 
@@ -3873,7 +4993,7 @@ LMidiPlayer:isLooping()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if looping. |
+| boolean | True if looping. |
 
 **Example**
 
@@ -3888,12 +5008,11 @@ end
 
 ---
 
-### `LMidiPlayer:isPaused`
+#### `LMidiPlayer:isPaused`
 
 Returns whether the MIDI player is currently paused.
 
 ```lua
--- signature
 LMidiPlayer:isPaused()
 ```
 
@@ -3901,7 +5020,7 @@ LMidiPlayer:isPaused()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if paused. |
+| boolean | True if paused. |
 
 **Example**
 
@@ -3917,12 +5036,11 @@ end
 
 ---
 
-### `LMidiPlayer:isPlaying`
+#### `LMidiPlayer:isPlaying`
 
 Returns whether the MIDI player is currently playing.
 
 ```lua
--- signature
 LMidiPlayer:isPlaying()
 ```
 
@@ -3930,7 +5048,7 @@ LMidiPlayer:isPlaying()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if playing. |
+| boolean | True if playing. |
 
 **Example**
 
@@ -3945,12 +5063,11 @@ end
 
 ---
 
-### `LMidiPlayer:isTrackMuted`
+#### `LMidiPlayer:isTrackMuted`
 
 Returns whether a specific MIDI track is muted.
 
 ```lua
--- signature
 LMidiPlayer:isTrackMuted(idx)
 ```
 
@@ -3958,13 +5075,13 @@ LMidiPlayer:isTrackMuted(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Track index (1-based). |
+| `idx` | number | Track index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the track is muted. |
+| boolean | True if the track is muted. |
 
 **Example**
 
@@ -3979,12 +5096,11 @@ end
 
 ---
 
-### `LMidiPlayer:load`
+#### `LMidiPlayer:load`
 
 Loads a MIDI file from the given path relative to the game directory.
 
 ```lua
--- signature
 LMidiPlayer:load(path)
 ```
 
@@ -3992,13 +5108,13 @@ LMidiPlayer:load(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to the .mid file. |
+| `path` | string | Relative path to the .mid file. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the file was loaded successfully. |
+| boolean | True if the file was loaded successfully. |
 
 **Example**
 
@@ -4013,12 +5129,11 @@ end
 
 ---
 
-### `LMidiPlayer:loadData`
+#### `LMidiPlayer:loadData`
 
 Loads MIDI data from a raw byte string in memory.
 
 ```lua
--- signature
 LMidiPlayer:loadData(data)
 ```
 
@@ -4026,13 +5141,13 @@ LMidiPlayer:loadData(data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `string` | Raw MIDI binary data. |
+| `data` | string | Raw MIDI binary data. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the data was parsed successfully. |
+| boolean | True if the data was parsed successfully. |
 
 **Example**
 
@@ -4047,12 +5162,11 @@ end
 
 ---
 
-### `LMidiPlayer:pause`
+#### `LMidiPlayer:pause`
 
 Pauses MIDI playback at the current position.
 
 ```lua
--- signature
 LMidiPlayer:pause()
 ```
 
@@ -4070,12 +5184,11 @@ end
 
 ---
 
-### `LMidiPlayer:play`
+#### `LMidiPlayer:play`
 
 Starts MIDI playback from the current position using the audio output stream.
 
 ```lua
--- signature
 LMidiPlayer:play()
 ```
 
@@ -4092,12 +5205,11 @@ end
 
 ---
 
-### `LMidiPlayer:seek`
+#### `LMidiPlayer:seek`
 
 Seeks to a specific position in the MIDI file.
 
 ```lua
--- signature
 LMidiPlayer:seek(secs)
 ```
 
@@ -4105,7 +5217,7 @@ LMidiPlayer:seek(secs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `secs` | `number` | Target position in seconds. |
+| `secs` | number | Target position in seconds. |
 
 **Example**
 
@@ -4121,12 +5233,11 @@ end
 
 ---
 
-### `LMidiPlayer:setBus`
+#### `LMidiPlayer:setBus`
 
 Routes this MIDI player's output through the specified audio bus.
 
 ```lua
--- signature
 LMidiPlayer:setBus(bus)
 ```
 
@@ -4134,7 +5245,7 @@ LMidiPlayer:setBus(bus)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bus?` | `LBus` | Bus to route through, or nil for direct output. |
+| `bus?` | [LBus](#lbus-handle) | Bus to route through, or nil for direct output. |
 
 **Example**
 
@@ -4149,12 +5260,11 @@ end
 
 ---
 
-### `LMidiPlayer:setChannelInstrument`
+#### `LMidiPlayer:setChannelInstrument`
 
 Sets the General MIDI instrument program for a channel.
 
 ```lua
--- signature
 LMidiPlayer:setChannelInstrument(ch, inst)
 ```
 
@@ -4162,8 +5272,8 @@ LMidiPlayer:setChannelInstrument(ch, inst)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16). |
-| `inst` | `number` | GM instrument program number (0-127). |
+| `ch` | number | Channel number (1-16). |
+| `inst` | number | GM instrument program number (0-127). |
 
 **Example**
 
@@ -4177,12 +5287,11 @@ end
 
 ---
 
-### `LMidiPlayer:setChannelMuted`
+#### `LMidiPlayer:setChannelMuted`
 
 Mutes or unmutes a specific MIDI channel.
 
 ```lua
--- signature
 LMidiPlayer:setChannelMuted(ch, muted)
 ```
 
@@ -4190,8 +5299,8 @@ LMidiPlayer:setChannelMuted(ch, muted)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16). |
-| `muted` | `boolean` | True to mute, false to unmute. |
+| `ch` | number | Channel number (1-16). |
+| `muted` | boolean | True to mute, false to unmute. |
 
 **Example**
 
@@ -4205,12 +5314,11 @@ end
 
 ---
 
-### `LMidiPlayer:setChannelVolume`
+#### `LMidiPlayer:setChannelVolume`
 
 Sets the volume for a specific MIDI channel (1-16).
 
 ```lua
--- signature
 LMidiPlayer:setChannelVolume(ch, vol)
 ```
 
@@ -4218,8 +5326,8 @@ LMidiPlayer:setChannelVolume(ch, vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16). |
-| `vol` | `number` | Volume multiplier (0.0-1.0). |
+| `ch` | number | Channel number (1-16). |
+| `vol` | number | Volume multiplier (0.0-1.0). |
 
 **Example**
 
@@ -4233,12 +5341,11 @@ end
 
 ---
 
-### `LMidiPlayer:setChannels`
+#### `LMidiPlayer:setChannels`
 
 Sets the number of output audio channels for MIDI synthesis.
 
 ```lua
--- signature
 LMidiPlayer:setChannels(channels)
 ```
 
@@ -4246,7 +5353,7 @@ LMidiPlayer:setChannels(channels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channels` | `number` | Channel count (1 = mono, 2 = stereo). |
+| `channels` | number | Channel count (1 = mono, 2 = stereo). |
 
 **Example**
 
@@ -4260,12 +5367,11 @@ end
 
 ---
 
-### `LMidiPlayer:setLooping`
+#### `LMidiPlayer:setLooping`
 
 Enables or disables looping for MIDI playback.
 
 ```lua
--- signature
 LMidiPlayer:setLooping(looping)
 ```
 
@@ -4273,7 +5379,7 @@ LMidiPlayer:setLooping(looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `looping` | `boolean` | True to loop, false to play once. |
+| `looping` | boolean | True to loop, false to play once. |
 
 **Example**
 
@@ -4288,12 +5394,11 @@ end
 
 ---
 
-### `LMidiPlayer:setOnEnd`
+#### `LMidiPlayer:setOnEnd`
 
 Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
 
 ```lua
--- signature
 LMidiPlayer:setOnEnd(cb)
 ```
 
@@ -4301,7 +5406,7 @@ LMidiPlayer:setOnEnd(cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cb?` | `function` | Callback function or nil to clear. |
+| `cb?` | function | Callback function or nil to clear. |
 
 **Example**
 
@@ -4317,12 +5422,11 @@ end
 
 ---
 
-### `LMidiPlayer:setOnNoteOff`
+#### `LMidiPlayer:setOnNoteOff`
 
 Registers a callback for MIDI note-off events (stub, not yet implemented).
 
 ```lua
--- signature
 LMidiPlayer:setOnNoteOff(cb)
 ```
 
@@ -4330,7 +5434,7 @@ LMidiPlayer:setOnNoteOff(cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cb?` | `function` | Callback function or nil to clear. |
+| `cb?` | function | Callback function or nil to clear. |
 
 **Example**
 
@@ -4346,12 +5450,11 @@ end
 
 ---
 
-### `LMidiPlayer:setOnNoteOn`
+#### `LMidiPlayer:setOnNoteOn`
 
 Registers a callback for MIDI note-on events (stub, not yet implemented).
 
 ```lua
--- signature
 LMidiPlayer:setOnNoteOn(cb)
 ```
 
@@ -4359,7 +5462,7 @@ LMidiPlayer:setOnNoteOn(cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cb?` | `function` | Callback function or nil to clear. |
+| `cb?` | function | Callback function or nil to clear. |
 
 **Example**
 
@@ -4375,12 +5478,11 @@ end
 
 ---
 
-### `LMidiPlayer:setSampleRate`
+#### `LMidiPlayer:setSampleRate`
 
 Sets the output sample rate for MIDI synthesis.
 
 ```lua
--- signature
 LMidiPlayer:setSampleRate(rate)
 ```
 
@@ -4388,7 +5490,7 @@ LMidiPlayer:setSampleRate(rate)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rate` | `number` | Sample rate in Hz (e.g. 44100, 48000). |
+| `rate` | number | Sample rate in Hz (e.g. 44100, 48000). |
 
 **Example**
 
@@ -4402,12 +5504,11 @@ end
 
 ---
 
-### `LMidiPlayer:setSoundFont`
+#### `LMidiPlayer:setSoundFont`
 
 Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
 
 ```lua
--- signature
 LMidiPlayer:setSoundFont(path)
 ```
 
@@ -4415,7 +5516,7 @@ LMidiPlayer:setSoundFont(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to the .sf2 file. |
+| `path` | string | Relative path to the .sf2 file. |
 
 **Example**
 
@@ -4430,12 +5531,11 @@ end
 
 ---
 
-### `LMidiPlayer:setTempo`
+#### `LMidiPlayer:setTempo`
 
 Sets the playback tempo in beats per minute.
 
 ```lua
--- signature
 LMidiPlayer:setTempo(bpm)
 ```
 
@@ -4443,7 +5543,7 @@ LMidiPlayer:setTempo(bpm)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bpm` | `number` | Desired tempo in BPM. |
+| `bpm` | number | Desired tempo in BPM. |
 
 **Example**
 
@@ -4457,12 +5557,11 @@ end
 
 ---
 
-### `LMidiPlayer:setTempoScale`
+#### `LMidiPlayer:setTempoScale`
 
 Sets a tempo multiplier relative to the original speed.
 
 ```lua
--- signature
 LMidiPlayer:setTempoScale(scale)
 ```
 
@@ -4470,7 +5569,7 @@ LMidiPlayer:setTempoScale(scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scale` | `number` | Tempo scale (1.0 = original, 2.0 = double speed). |
+| `scale` | number | Tempo scale (1.0 = original, 2.0 = double speed). |
 
 **Example**
 
@@ -4484,12 +5583,11 @@ end
 
 ---
 
-### `LMidiPlayer:setTrackMuted`
+#### `LMidiPlayer:setTrackMuted`
 
 Mutes or unmutes a specific MIDI track.
 
 ```lua
--- signature
 LMidiPlayer:setTrackMuted(idx, muted)
 ```
 
@@ -4497,8 +5595,8 @@ LMidiPlayer:setTrackMuted(idx, muted)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Track index (1-based). |
-| `muted` | `boolean` | True to mute, false to unmute. |
+| `idx` | number | Track index (1-based). |
+| `muted` | boolean | True to mute, false to unmute. |
 
 **Example**
 
@@ -4513,12 +5611,11 @@ end
 
 ---
 
-### `LMidiPlayer:setVolume`
+#### `LMidiPlayer:setVolume`
 
 Sets the master volume for MIDI playback.
 
 ```lua
--- signature
 LMidiPlayer:setVolume(vol)
 ```
 
@@ -4526,7 +5623,7 @@ LMidiPlayer:setVolume(vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vol` | `number` | Volume multiplier (0.0 = silent, 1.0 = normal). |
+| `vol` | number | Volume multiplier (0.0 = silent, 1.0 = normal). |
 
 **Example**
 
@@ -4540,12 +5637,11 @@ end
 
 ---
 
-### `LMidiPlayer:soloChannel`
+#### `LMidiPlayer:soloChannel`
 
 Solos a specific MIDI channel, muting all others.
 
 ```lua
--- signature
 LMidiPlayer:soloChannel(ch)
 ```
 
@@ -4553,7 +5649,7 @@ LMidiPlayer:soloChannel(ch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ch` | `number` | Channel number (1-16) to solo. |
+| `ch` | number | Channel number (1-16) to solo. |
 
 **Example**
 
@@ -4567,12 +5663,11 @@ end
 
 ---
 
-### `LMidiPlayer:stop`
+#### `LMidiPlayer:stop`
 
 Stops MIDI playback and resets position to the beginning.
 
 ```lua
--- signature
 LMidiPlayer:stop()
 ```
 
@@ -4590,12 +5685,11 @@ end
 
 ---
 
-### `LMidiPlayer:tell`
+#### `LMidiPlayer:tell`
 
 Returns the current playback position of the MIDI player in seconds.
 
 ```lua
--- signature
 LMidiPlayer:tell()
 ```
 
@@ -4603,7 +5697,7 @@ LMidiPlayer:tell()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current position in seconds. |
+| number | Current position in seconds. |
 
 **Example**
 
@@ -4619,12 +5713,11 @@ end
 
 ---
 
-### `LMidiPlayer:type`
+#### `LMidiPlayer:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LMidiPlayer:type()
 ```
 
@@ -4632,7 +5725,7 @@ LMidiPlayer:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LMidiPlayer". |
+| string | Always returns "[LMidiPlayer](#lmidiplayer-handle)". |
 
 **Example**
 
@@ -4645,12 +5738,11 @@ end
 
 ---
 
-### `LMidiPlayer:typeOf`
+#### `LMidiPlayer:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMidiPlayer:typeOf(name)
 ```
 
@@ -4658,13 +5750,13 @@ LMidiPlayer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object"). |
+| `name` | string | Type name to check (e.g. "[LMidiPlayer](#lmidiplayer-handle)", "MidiPlayer", or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -4677,12 +5769,11 @@ end
 
 ---
 
-### `LMidiPlayer:unsoloAll`
+#### `LMidiPlayer:unsoloAll`
 
 Removes solo from all channels, restoring normal playback.
 
 ```lua
--- signature
 LMidiPlayer:unsoloAll()
 ```
 
@@ -4699,12 +5790,11 @@ end
 
 ---
 
-### `LMidiPlayer:useDefaultSoundFont`
+#### `LMidiPlayer:useDefaultSoundFont`
 
 Reverts to the built-in default SoundFont (stub, not yet implemented).
 
 ```lua
--- signature
 LMidiPlayer:useDefaultSoundFont()
 ```
 
@@ -4720,14 +5810,19 @@ end
 
 ---
 
-## LSoundData
+## LSoundData Handle
 
-### `LSoundData:drawWaveform`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSoundData:drawWaveform`
 
 Draws this sound buffer as a waveform into an image buffer.
 
 ```lua
--- signature
 LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a)
 ```
 
@@ -4735,15 +5830,15 @@ LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | `LImageData` | Target image to draw into. |
-| `x` | `number` | Left pixel coordinate. |
-| `y` | `number` | Top pixel coordinate. |
-| `w` | `number` | Waveform width in pixels. |
-| `h` | `number` | Waveform height in pixels. |
-| `r` | `number` | Red channel from 0 to 255. |
-| `g` | `number` | Green channel from 0 to 255. |
-| `b` | `number` | Blue channel from 0 to 255. |
-| `a` | `number` | Alpha channel from 0 to 255. |
+| `target` | LImageData | Target image to draw into. |
+| `x` | number | Left pixel coordinate. |
+| `y` | number | Top pixel coordinate. |
+| `w` | number | Waveform width in pixels. |
+| `h` | number | Waveform height in pixels. |
+| `r` | number | Red channel from 0 to 255. |
+| `g` | number | Green channel from 0 to 255. |
+| `b` | number | Blue channel from 0 to 255. |
+| `a` | number | Alpha channel from 0 to 255. |
 
 **Example**
 
@@ -4758,12 +5853,11 @@ end
 
 ---
 
-### `LSoundData:getBitDepth`
+#### `LSoundData:getBitDepth`
 
 Returns the sample bit depth of this sound buffer.
 
 ```lua
--- signature
 LSoundData:getBitDepth()
 ```
 
@@ -4771,7 +5865,7 @@ LSoundData:getBitDepth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Bit depth per sample. |
+| number | Bit depth per sample. |
 
 **Example**
 
@@ -4785,12 +5879,11 @@ end
 
 ---
 
-### `LSoundData:getChannelCount`
+#### `LSoundData:getChannelCount`
 
 Returns the number of audio channels stored in this sound buffer.
 
 ```lua
--- signature
 LSoundData:getChannelCount()
 ```
 
@@ -4798,7 +5891,7 @@ LSoundData:getChannelCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Channel count. |
+| number | Channel count. |
 
 **Example**
 
@@ -4812,12 +5905,11 @@ end
 
 ---
 
-### `LSoundData:getDuration`
+#### `LSoundData:getDuration`
 
 Returns the approximate playback duration of this sound buffer.
 
 ```lua
--- signature
 LSoundData:getDuration()
 ```
 
@@ -4825,7 +5917,7 @@ LSoundData:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -4839,12 +5931,11 @@ end
 
 ---
 
-### `LSoundData:getSample`
+#### `LSoundData:getSample`
 
 Returns the sample value at the given zero-based sample index.
 
 ```lua
--- signature
 LSoundData:getSample(index)
 ```
 
@@ -4852,13 +5943,13 @@ LSoundData:getSample(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | Zero-based sample index. |
+| `index` | number | Zero-based sample index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Sample value at the requested index. |
+| number | Sample value at the requested index. |
 
 **Example**
 
@@ -4872,12 +5963,11 @@ end
 
 ---
 
-### `LSoundData:getSampleCount`
+#### `LSoundData:getSampleCount`
 
 Returns the total number of samples stored in this sound buffer.
 
 ```lua
--- signature
 LSoundData:getSampleCount()
 ```
 
@@ -4885,7 +5975,7 @@ LSoundData:getSampleCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total sample count. |
+| number | Total sample count. |
 
 **Example**
 
@@ -4899,12 +5989,11 @@ end
 
 ---
 
-### `LSoundData:getSampleRate`
+#### `LSoundData:getSampleRate`
 
 Returns the playback sample rate of this sound buffer.
 
 ```lua
--- signature
 LSoundData:getSampleRate()
 ```
 
@@ -4912,7 +6001,7 @@ LSoundData:getSampleRate()
 
 | Type | Description |
 |------|-------------|
-| `number` | Sample rate in Hz. |
+| number | Sample rate in Hz. |
 
 **Example**
 
@@ -4926,12 +6015,11 @@ end
 
 ---
 
-### `LSoundData:setSample`
+#### `LSoundData:setSample`
 
 Overwrites the sample value at the given zero-based sample index.
 
 ```lua
--- signature
 LSoundData:setSample(index, value)
 ```
 
@@ -4939,8 +6027,8 @@ LSoundData:setSample(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | Zero-based sample index. |
-| `value` | `number` | New sample value. |
+| `index` | number | Zero-based sample index. |
+| `value` | number | New sample value. |
 
 **Example**
 
@@ -4955,12 +6043,11 @@ end
 
 ---
 
-### `LSoundData:type`
+#### `LSoundData:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LSoundData:type()
 ```
 
@@ -4968,7 +6055,7 @@ LSoundData:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LSoundData". |
+| string | Always returns "[LSoundData](#lsounddata-handle)". |
 
 **Example**
 
@@ -4981,12 +6068,11 @@ end
 
 ---
 
-### `LSoundData:typeOf`
+#### `LSoundData:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSoundData:typeOf(name)
 ```
 
@@ -4994,13 +6080,13 @@ LSoundData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LSoundData" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSoundData](#lsounddata-handle)" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -5013,14 +6099,19 @@ end
 
 ---
 
-## LSoundPool
+## LSoundPool Handle
 
-### `LSoundPool:getVoiceCount`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSoundPool:getVoiceCount`
 
 Returns the number of pre-allocated voices in this pool.
 
 ```lua
--- signature
 LSoundPool:getVoiceCount()
 ```
 
@@ -5028,7 +6119,7 @@ LSoundPool:getVoiceCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Voice count. |
+| number | Voice count. |
 
 **Example**
 
@@ -5042,12 +6133,11 @@ end
 
 ---
 
-### `LSoundPool:play`
+#### `LSoundPool:play`
 
 Plays the next available voice from the pool in round-robin order.
 
 ```lua
--- signature
 LSoundPool:play()
 ```
 
@@ -5055,7 +6145,7 @@ LSoundPool:play()
 
 | Type | Description |
 |------|-------------|
-| `number` | Numeric source ID of the voice that started playing. |
+| number | Numeric source ID of the voice that started playing. |
 
 **Example**
 
@@ -5070,12 +6160,11 @@ end
 
 ---
 
-### `LSoundPool:release`
+#### `LSoundPool:release`
 
 Releases all voices and frees audio resources held by this pool.
 
 ```lua
--- signature
 LSoundPool:release()
 ```
 
@@ -5092,12 +6181,11 @@ end
 
 ---
 
-### `LSoundPool:setBus`
+#### `LSoundPool:setBus`
 
 Routes all voices in this pool through the named audio bus.
 
 ```lua
--- signature
 LSoundPool:setBus(name)
 ```
 
@@ -5105,7 +6193,7 @@ LSoundPool:setBus(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Name of the target bus. |
+| `name` | string | Name of the target bus. |
 
 **Example**
 
@@ -5121,12 +6209,11 @@ end
 
 ---
 
-### `LSoundPool:setVolume`
+#### `LSoundPool:setVolume`
 
 Sets the volume for all voices in this pool.
 
 ```lua
--- signature
 LSoundPool:setVolume(vol)
 ```
 
@@ -5134,7 +6221,7 @@ LSoundPool:setVolume(vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vol` | `number` | Volume multiplier (0.0 = silent, 1.0 = normal). |
+| `vol` | number | Volume multiplier (0.0 = silent, 1.0 = normal). |
 
 **Example**
 
@@ -5149,12 +6236,11 @@ end
 
 ---
 
-### `LSoundPool:stopAll`
+#### `LSoundPool:stopAll`
 
 Stops all voices in this sound pool immediately.
 
 ```lua
--- signature
 LSoundPool:stopAll()
 ```
 
@@ -5172,12 +6258,11 @@ end
 
 ---
 
-### `LSoundPool:type`
+#### `LSoundPool:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LSoundPool:type()
 ```
 
@@ -5185,7 +6270,7 @@ LSoundPool:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LSoundPool". |
+| string | Always returns "[LSoundPool](#lsoundpool-handle)". |
 
 **Example**
 
@@ -5199,12 +6284,11 @@ end
 
 ---
 
-### `LSoundPool:typeOf`
+#### `LSoundPool:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LSoundPool:typeOf(name)
 ```
 
@@ -5212,13 +6296,13 @@ LSoundPool:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LSoundPool" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSoundPool](#lsoundpool-handle)" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -5232,14 +6316,19 @@ end
 
 ---
 
-## LSource
+## LSource Handle
 
-### `LSource:clearFilter`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSource:clearFilter`
 
 Removes all frequency filters (lowpass and highpass) from this source.
 
 ```lua
--- signature
 LSource:clearFilter()
 ```
 
@@ -5257,12 +6346,11 @@ end
 
 ---
 
-### `LSource:clone`
+#### `LSource:clone`
 
 Creates an independent copy of this source sharing the same audio data.
 
 ```lua
--- signature
 LSource:clone()
 ```
 
@@ -5270,7 +6358,7 @@ LSource:clone()
 
 | Type | Description |
 |------|-------------|
-| `LSource` | A new source instance with identical settings. |
+| [LSource](#lsource-handle) | A new source instance with identical settings. |
 
 **Example**
 
@@ -5286,12 +6374,11 @@ end
 
 ---
 
-### `LSource:fadeIn`
+#### `LSource:fadeIn`
 
 Sets the fade-in duration so the source ramps from silence to full volume on play.
 
 ```lua
--- signature
 LSource:fadeIn(dur)
 ```
 
@@ -5299,7 +6386,7 @@ LSource:fadeIn(dur)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dur` | `number` | Fade-in duration in seconds. |
+| `dur` | number | Fade-in duration in seconds. |
 
 **Example**
 
@@ -5314,12 +6401,11 @@ end
 
 ---
 
-### `LSource:getDuration`
+#### `LSource:getDuration`
 
 Returns the total duration of this audio source in seconds.
 
 ```lua
--- signature
 LSource:getDuration()
 ```
 
@@ -5327,7 +6413,7 @@ LSource:getDuration()
 
 | Type | Description |
 |------|-------------|
-| `number` | Duration in seconds. |
+| number | Duration in seconds. |
 
 **Example**
 
@@ -5342,12 +6428,11 @@ end
 
 ---
 
-### `LSource:getFadeIn`
+#### `LSource:getFadeIn`
 
 Returns the configured fade-in duration for this source.
 
 ```lua
--- signature
 LSource:getFadeIn()
 ```
 
@@ -5355,7 +6440,7 @@ LSource:getFadeIn()
 
 | Type | Description |
 |------|-------------|
-| `number` | Fade-in duration in seconds. |
+| number | Fade-in duration in seconds. |
 
 **Example**
 
@@ -5371,12 +6456,11 @@ end
 
 ---
 
-### `LSource:getHighpass`
+#### `LSource:getHighpass`
 
 Returns the current highpass filter cutoff frequency in Hertz.
 
 ```lua
--- signature
 LSource:getHighpass()
 ```
 
@@ -5384,7 +6468,7 @@ LSource:getHighpass()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cutoff frequency in Hz, or 0 if no highpass is set. |
+| number | Cutoff frequency in Hz, or 0 if no highpass is set. |
 
 **Example**
 
@@ -5400,12 +6484,11 @@ end
 
 ---
 
-### `LSource:getLowpass`
+#### `LSource:getLowpass`
 
 Returns the current lowpass filter cutoff frequency in Hertz.
 
 ```lua
--- signature
 LSource:getLowpass()
 ```
 
@@ -5413,7 +6496,7 @@ LSource:getLowpass()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cutoff frequency in Hz, or 0 if no lowpass is set. |
+| number | Cutoff frequency in Hz, or 0 if no lowpass is set. |
 
 **Example**
 
@@ -5429,12 +6512,11 @@ end
 
 ---
 
-### `LSource:getPan`
+#### `LSource:getPan`
 
 Returns the current stereo panning position of this source.
 
 ```lua
--- signature
 LSource:getPan()
 ```
 
@@ -5442,7 +6524,7 @@ LSource:getPan()
 
 | Type | Description |
 |------|-------------|
-| `number` | Pan value from -1.0 (left) to 1.0 (right). |
+| number | Pan value from -1.0 (left) to 1.0 (right). |
 
 **Example**
 
@@ -5458,12 +6540,11 @@ end
 
 ---
 
-### `LSource:getPitch`
+#### `LSource:getPitch`
 
 Returns the current pitch multiplier of this audio source.
 
 ```lua
--- signature
 LSource:getPitch()
 ```
 
@@ -5471,7 +6552,7 @@ LSource:getPitch()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current pitch multiplier. |
+| number | Current pitch multiplier. |
 
 **Example**
 
@@ -5487,12 +6568,11 @@ end
 
 ---
 
-### `LSource:getType`
+#### `LSource:getType`
 
 Returns whether this source was loaded as static (fully in memory) or streaming.
 
 ```lua
--- signature
 LSource:getType()
 ```
 
@@ -5500,7 +6580,7 @@ LSource:getType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Either "static" or "stream". |
+| string | Either "static" or "stream". |
 
 **Example**
 
@@ -5514,12 +6594,11 @@ end
 
 ---
 
-### `LSource:getVolume`
+#### `LSource:getVolume`
 
 Returns the current volume level of this audio source.
 
 ```lua
--- signature
 LSource:getVolume()
 ```
 
@@ -5527,7 +6606,7 @@ LSource:getVolume()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current volume multiplier. |
+| number | Current volume multiplier. |
 
 **Example**
 
@@ -5543,12 +6622,11 @@ end
 
 ---
 
-### `LSource:isLooping`
+#### `LSource:isLooping`
 
 Returns whether this source is set to loop continuously.
 
 ```lua
--- signature
 LSource:isLooping()
 ```
 
@@ -5556,7 +6634,7 @@ LSource:isLooping()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if looping is enabled. |
+| boolean | True if looping is enabled. |
 
 **Example**
 
@@ -5571,12 +6649,11 @@ end
 
 ---
 
-### `LSource:isPaused`
+#### `LSource:isPaused`
 
 Returns whether this source is currently paused.
 
 ```lua
--- signature
 LSource:isPaused()
 ```
 
@@ -5584,7 +6661,7 @@ LSource:isPaused()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source is paused. |
+| boolean | True if the source is paused. |
 
 **Example**
 
@@ -5600,12 +6677,11 @@ end
 
 ---
 
-### `LSource:isPlaying`
+#### `LSource:isPlaying`
 
 Returns whether this source is currently playing audio.
 
 ```lua
--- signature
 LSource:isPlaying()
 ```
 
@@ -5613,7 +6689,7 @@ LSource:isPlaying()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source is actively playing. |
+| boolean | True if the source is actively playing. |
 
 **Example**
 
@@ -5628,12 +6704,11 @@ end
 
 ---
 
-### `LSource:isStopped`
+#### `LSource:isStopped`
 
 Returns whether this source is currently stopped (not playing or paused).
 
 ```lua
--- signature
 LSource:isStopped()
 ```
 
@@ -5641,7 +6716,7 @@ LSource:isStopped()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the source is stopped. |
+| boolean | True if the source is stopped. |
 
 **Example**
 
@@ -5655,12 +6730,11 @@ end
 
 ---
 
-### `LSource:pause`
+#### `LSource:pause`
 
 Pauses playback at the current position, allowing later resumption.
 
 ```lua
--- signature
 LSource:pause()
 ```
 
@@ -5678,12 +6752,11 @@ end
 
 ---
 
-### `LSource:play`
+#### `LSource:play`
 
 Starts playback of this audio source from the current position.
 
 ```lua
--- signature
 LSource:play()
 ```
 
@@ -5700,12 +6773,11 @@ end
 
 ---
 
-### `LSource:resume`
+#### `LSource:resume`
 
 Resumes playback from the position where the source was paused.
 
 ```lua
--- signature
 LSource:resume()
 ```
 
@@ -5724,12 +6796,11 @@ end
 
 ---
 
-### `LSource:seek`
+#### `LSource:seek`
 
 Seeks to a specific position in seconds within this audio source.
 
 ```lua
--- signature
 LSource:seek(pos)
 ```
 
@@ -5737,7 +6808,7 @@ LSource:seek(pos)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pos` | `number` | Target position in seconds. |
+| `pos` | number | Target position in seconds. |
 
 **Example**
 
@@ -5753,12 +6824,11 @@ end
 
 ---
 
-### `LSource:setHighpass`
+#### `LSource:setHighpass`
 
 Applies a highpass filter that attenuates frequencies below the cutoff.
 
 ```lua
--- signature
 LSource:setHighpass(cutoff_hz)
 ```
 
@@ -5766,7 +6836,7 @@ LSource:setHighpass(cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cutoff_hz` | `number` | Cutoff frequency in Hertz. |
+| `cutoff_hz` | number | Cutoff frequency in Hertz. |
 
 **Example**
 
@@ -5781,12 +6851,11 @@ end
 
 ---
 
-### `LSource:setLooping`
+#### `LSource:setLooping`
 
 Enables or disables looping so the source restarts automatically after finishing.
 
 ```lua
--- signature
 LSource:setLooping(looping)
 ```
 
@@ -5794,7 +6863,7 @@ LSource:setLooping(looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `looping` | `boolean` | True to loop continuously, false to play once. |
+| `looping` | boolean | True to loop continuously, false to play once. |
 
 **Example**
 
@@ -5809,12 +6878,11 @@ end
 
 ---
 
-### `LSource:setLowpass`
+#### `LSource:setLowpass`
 
 Applies a lowpass filter that attenuates frequencies above the cutoff.
 
 ```lua
--- signature
 LSource:setLowpass(cutoff_hz)
 ```
 
@@ -5822,7 +6890,7 @@ LSource:setLowpass(cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cutoff_hz` | `number` | Cutoff frequency in Hertz. |
+| `cutoff_hz` | number | Cutoff frequency in Hertz. |
 
 **Example**
 
@@ -5837,12 +6905,11 @@ end
 
 ---
 
-### `LSource:setPan`
+#### `LSource:setPan`
 
 Sets the stereo panning position of this source.
 
 ```lua
--- signature
 LSource:setPan(pan)
 ```
 
@@ -5850,7 +6917,7 @@ LSource:setPan(pan)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pan` | `number` | Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center. |
+| `pan` | number | Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center. |
 
 **Example**
 
@@ -5865,12 +6932,11 @@ end
 
 ---
 
-### `LSource:setPitch`
+#### `LSource:setPitch`
 
 Sets the playback speed multiplier, affecting both pitch and duration.
 
 ```lua
--- signature
 LSource:setPitch(pitch)
 ```
 
@@ -5878,7 +6944,7 @@ LSource:setPitch(pitch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pitch` | `number` | Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up). |
+| `pitch` | number | Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up). |
 
 **Example**
 
@@ -5893,12 +6959,11 @@ end
 
 ---
 
-### `LSource:setVolume`
+#### `LSource:setVolume`
 
 Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
 
 ```lua
--- signature
 LSource:setVolume(vol)
 ```
 
@@ -5906,7 +6971,7 @@ LSource:setVolume(vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vol` | `number` | Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified). |
+| `vol` | number | Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified). |
 
 **Example**
 
@@ -5921,12 +6986,11 @@ end
 
 ---
 
-### `LSource:stop`
+#### `LSource:stop`
 
 Stops playback and resets the source position to the beginning.
 
 ```lua
--- signature
 LSource:stop()
 ```
 
@@ -5944,12 +7008,11 @@ end
 
 ---
 
-### `LSource:tell`
+#### `LSource:tell`
 
 Returns the current playback position of this source in seconds.
 
 ```lua
--- signature
 LSource:tell()
 ```
 
@@ -5957,7 +7020,7 @@ LSource:tell()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current position in seconds from the start. |
+| number | Current position in seconds from the start. |
 
 **Example**
 
@@ -5973,12 +7036,11 @@ end
 
 ---
 
-### `LSource:type`
+#### `LSource:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LSource:type()
 ```
 
@@ -5986,7 +7048,7 @@ LSource:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LSource". |
+| string | Always returns "[LSource](#lsource-handle)". |
 
 **Example**
 
@@ -6000,12 +7062,11 @@ end
 
 ---
 
-### `LSource:typeOf`
+#### `LSource:typeOf`
 
 Checks whether this object is of the given type name or a parent type.
 
 ```lua
--- signature
 LSource:typeOf(name)
 ```
 
@@ -6013,13 +7074,13 @@ LSource:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LSource" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSource](#lsource-handle)" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 

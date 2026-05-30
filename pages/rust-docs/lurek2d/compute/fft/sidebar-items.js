@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["fft","fft_magnitude","ifft","next_power_of_two"]};

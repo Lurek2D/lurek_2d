@@ -1,10 +1,51 @@
 # Font
 
-- CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts.
+## Summary
 
 The font module provides the CPU-side data layer for text rendering: bitmap font atlas loading with Latin-1 glyph coverage, per-glyph and per-text metrics, text alignment, word and character wrapping, and a central font registry for named handles. The module does not own GPU resources — texture management for font atlases remains in the render module. Fourteen bundled Courier New bitmap atlases are shipped in `assets/fonts/`.
 
 This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### bitmap_font.rs
+
+- Provides bitmap-font loading and atlas-backed glyph lookup for pre-rasterized text rendering workflows.
+- Parses descriptor data to build codepoint-to-glyph mappings with stable UV and metric records.
+- Preserves kerning and sizing information needed for accurate spacing during layout and shaping.
+- Delivers fixed-size sprite font support for pipelines that prefer atlas sampling over runtime rasterization.
+
+### metrics.rs
+
+- Provides glyph and line metric structures used to measure text blocks in logical pixel space.
+- Computes single-line and multiline dimensions with kerning-aware advance accumulation.
+- Tracks per-line width and source ranges so layout systems can map metrics back to input text.
+- Exposes aggregate text bounds including line count and total height for UI sizing flows.
+- Delivers measurement primitives required by shaping, wrapping, and render preparation paths.
+
+### mod.rs
+
+- Provides the high-level font module boundary for glyph data, layout shaping, and registry access.
+- Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface.
+- Delivers stable text-measurement and font-resolution capabilities for rendering and UI systems.
+
+### registry.rs
+
+- Provides the runtime font registry that stores, resolves, and returns loaded font handles by name.
+- Maps style and size metadata onto cached font assets for consistent lookup semantics.
+- Supports registration and replacement flows while maintaining stable handle-based access patterns.
+- Centralizes font ownership so rendering systems consume one authoritative source of text assets.
+- Delivers the font-management layer that coordinates typography resources across the engine.
+
+### shaping.rs
+
+- Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts.
+- Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs.
+- Computes aligned line placement using measured advances and target width constraints.
+- Emits shaped line collections with offsets and widths for downstream rendering stages.
+- Delivers the layout layer that bridges font metrics and final text draw preparation.
 
 ## Functions
 
@@ -13,7 +54,6 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 Returns the array of built-in bitmap font point sizes available in the engine.
 
 ```lua
--- signature
 lurek.font.availableSizes()
 ```
 
@@ -21,7 +61,7 @@ lurek.font.availableSizes()
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of integer point sizes available as built-in fonts. |
+| table | Array of integer point sizes available as built-in fonts. |
 
 **Example**
 
@@ -40,7 +80,6 @@ end
 Returns the horizontal advance width in pixels of a single character using the given font.
 
 ```lua
--- signature
 lurek.font.charAdvance(font, char, scale)
 ```
 
@@ -48,15 +87,15 @@ lurek.font.charAdvance(font, char, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle. |
-| `char` | `string` | A single-character string. |
-| `scale?` | `number` | Scale factor (default 1.0). |
+| `font` | [LFont](#lfont-handle) | Font handle. |
+| `char` | string | A single-character string. |
+| `scale?` | number | Scale factor (default 1.0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Horizontal advance width in pixels. |
+| number | Horizontal advance width in pixels. |
 
 **Example**
 
@@ -72,10 +111,9 @@ end
 
 ### `lurek.font.getDefault`
 
-Returns the default engine font as an LFont userdata handle.
+Returns the default engine font as an [LFont](#lfont-handle) userdata handle.
 
 ```lua
--- signature
 lurek.font.getDefault()
 ```
 
@@ -83,7 +121,7 @@ lurek.font.getDefault()
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The default engine font handle. |
+| [LFont](#lfont-handle) | The default engine font handle. |
 
 **Example**
 
@@ -101,7 +139,6 @@ end
 Returns the line height of the given font in pixels.
 
 ```lua
--- signature
 lurek.font.lineHeight(font)
 ```
 
@@ -109,13 +146,13 @@ lurek.font.lineHeight(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to query. |
+| `font` | [LFont](#lfont-handle) | Font handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 **Example**
 
@@ -134,7 +171,6 @@ end
 Lists all registered fonts with their name, size, and style metadata.
 
 ```lua
--- signature
 lurek.font.list()
 ```
 
@@ -142,7 +178,7 @@ lurek.font.list()
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of tables with fields: name (string), size (number), style (string). |
+| table | Array of tables with fields: name (string), size (number), style (string). |
 
 **Example**
 
@@ -157,10 +193,9 @@ end
 
 ### `lurek.font.load`
 
-Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
+Loads a TTF/OTF/PNG font file at the given point size and returns an [LFont](#lfont-handle) handle.
 
 ```lua
--- signature
 lurek.font.load(path, size)
 ```
 
@@ -168,14 +203,14 @@ lurek.font.load(path, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to the font file. |
-| `size` | `number` | Point size for rasterisation. |
+| `path` | string | Relative path to the font file. |
+| `size` | number | Point size for rasterisation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The loaded font handle. |
+| [LFont](#lfont-handle) | The loaded font handle. |
 
 **Example**
 
@@ -194,10 +229,9 @@ end
 
 ### `lurek.font.loadBitmap`
 
-Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
+Loads a bitmap font atlas PNG with the given cell dimensions and returns an [LFont](#lfont-handle) handle.
 
 ```lua
--- signature
 lurek.font.loadBitmap(path, cellWidth, cellHeight)
 ```
 
@@ -205,15 +239,15 @@ lurek.font.loadBitmap(path, cellWidth, cellHeight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | Relative path to the PNG atlas. |
-| `cellWidth` | `number` | Cell width in pixels. |
-| `cellHeight` | `number` | Cell height in pixels. |
+| `path` | string | Relative path to the PNG atlas. |
+| `cellWidth` | number | Cell width in pixels. |
+| `cellHeight` | number | Cell height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFont` | The loaded bitmap font handle. |
+| [LFont](#lfont-handle) | The loaded bitmap font handle. |
 
 **Example**
 
@@ -235,7 +269,6 @@ end
 Measures the pixel dimensions of a text string using the given font handle and scale.
 
 ```lua
--- signature
 lurek.font.measure(font, text, scale)
 ```
 
@@ -243,15 +276,15 @@ lurek.font.measure(font, text, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to measure with. |
-| `text` | `string` | Text string to measure. |
-| `scale?` | `number` | Scale factor (default 1.0). |
+| `font` | [LFont](#lfont-handle) | Font handle to measure with. |
+| `text` | string | Text string to measure. |
+| `scale?` | number | Scale factor (default 1.0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels (height returned as second value). |
+| number | Width in pixels (height returned as second value). |
 
 **Example**
 
@@ -270,7 +303,6 @@ end
 Measures the pixel width and height of a single line of text with the given font.
 
 ```lua
--- signature
 lurek.font.measureLine(font, text, scale)
 ```
 
@@ -278,15 +310,15 @@ lurek.font.measureLine(font, text, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle to measure with. |
-| `text` | `string` | Single-line text string to measure. |
-| `scale?` | `number` | Scale factor (default 1.0). |
+| `font` | [LFont](#lfont-handle) | Font handle to measure with. |
+| `text` | string | Single-line text string to measure. |
+| `scale?` | number | Scale factor (default 1.0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels (height returned as second value). |
+| number | Width in pixels (height returned as second value). |
 
 **Example**
 
@@ -305,7 +337,6 @@ end
 Shapes and aligns text into wrapped lines with x-offset data for rendering.
 
 ```lua
--- signature
 lurek.font.shapeText(font, text, maxWidth, scale, align, wrap)
 ```
 
@@ -313,18 +344,18 @@ lurek.font.shapeText(font, text, maxWidth, scale, align, wrap)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle used for shaping. |
-| `text` | `string` | Text to shape. |
-| `maxWidth` | `number` | Maximum line width in pixels. |
-| `scale` | `number` | Scale factor (default 1.0). |
-| `align` | `string` | Alignment: "left", "center", "right", or "justify". |
-| `wrap` | `string` | Wrap mode: "none", "word", or "char". |
+| `font` | [LFont](#lfont-handle) | Font handle used for shaping. |
+| `text` | string | Text to shape. |
+| `maxWidth` | number | Maximum line width in pixels. |
+| `scale` | number | Scale factor (default 1.0). |
+| `align` | string | Alignment: "left", "center", "right", or "justify". |
+| `wrap` | string | Wrap mode: "none", "word", or "char". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of tables with fields: text (string), width (number), xOffset (number). |
+| table | Array of tables with fields: text (string), width (number), xOffset (number). |
 
 **Example**
 
@@ -353,7 +384,6 @@ end
 Wraps a text string into lines that fit within the given maximum pixel width.
 
 ```lua
--- signature
 lurek.font.wrapText(font, text, maxWidth, scale, mode)
 ```
 
@@ -361,17 +391,17 @@ lurek.font.wrapText(font, text, maxWidth, scale, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | `LFont` | Font handle used for measurement. |
-| `text` | `string` | Text to wrap. |
-| `maxWidth` | `number` | Maximum line width in pixels. |
-| `scale` | `number` | Scale factor (default 1.0). |
-| `mode` | `string` | Wrap mode: "none", "word", or "char". |
+| `font` | [LFont](#lfont-handle) | Font handle used for measurement. |
+| `text` | string | Text to wrap. |
+| `maxWidth` | number | Maximum line width in pixels. |
+| `scale` | number | Scale factor (default 1.0). |
+| `mode` | string | Wrap mode: "none", "word", or "char". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of wrapped line strings. |
+| table | Array of wrapped line strings. |
 
 **Example**
 
@@ -391,14 +421,36 @@ end
 
 ---
 
-## LFont
+## Module Fields
 
-### `LFont:containsGlyph`
+*No module-level fields documented.*
+
+## Types
+
+- [LFont Handle](#lfont-handle)
+- [LuaFont Handle](#luafont-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LFont Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFont:containsGlyph`
 
 Returns whether the font contains a glyph for the given character. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:containsGlyph(char)
 ```
 
@@ -406,13 +458,13 @@ LFont:containsGlyph(char)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `char` | `string` | A single-character string to check. |
+| `char` | string | A single-character string to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the font has a glyph for this character. |
+| boolean | True if the font has a glyph for this character. |
 
 **Example**
 
@@ -426,12 +478,11 @@ end
 
 ---
 
-### `LFont:getAscent`
+#### `LFont:getAscent`
 
 Returns the ascent (pixels above the baseline) of this font.
 
 ```lua
--- signature
 LFont:getAscent()
 ```
 
@@ -439,16 +490,15 @@ LFont:getAscent()
 
 | Type | Description |
 |------|-------------|
-| `number` | Ascent in pixels. |
+| number | Ascent in pixels. |
 
 ---
 
-### `LFont:getDescent`
+#### `LFont:getDescent`
 
 Returns the descent (pixels below the baseline) of this font.
 
 ```lua
--- signature
 LFont:getDescent()
 ```
 
@@ -456,16 +506,15 @@ LFont:getDescent()
 
 | Type | Description |
 |------|-------------|
-| `number` | Descent in pixels (positive value extending downward). |
+| number | Descent in pixels (positive value extending downward). |
 
 ---
 
-### `LFont:getHeight`
+#### `LFont:getHeight`
 
 Returns the line height of this font in pixels.
 
 ```lua
--- signature
 LFont:getHeight()
 ```
 
@@ -473,16 +522,15 @@ LFont:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 ---
 
-### `LFont:getLineHeight`
+#### `LFont:getLineHeight`
 
 Returns the spacing between consecutive lines of text.
 
 ```lua
--- signature
 LFont:getLineHeight()
 ```
 
@@ -490,16 +538,15 @@ LFont:getLineHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 ---
 
-### `LFont:getName`
+#### `LFont:getName`
 
 Returns the human-readable name of this font. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:getName()
 ```
 
@@ -507,7 +554,7 @@ LFont:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Font name. |
+| string | Font name. |
 
 **Example**
 
@@ -521,12 +568,11 @@ end
 
 ---
 
-### `LFont:getSize`
+#### `LFont:getSize`
 
 Returns the point size of this font. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:getSize()
 ```
 
@@ -534,7 +580,7 @@ LFont:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Point size. |
+| number | Point size. |
 
 **Example**
 
@@ -548,12 +594,11 @@ end
 
 ---
 
-### `LFont:getStyle`
+#### `LFont:getStyle`
 
 Returns the style string of this font. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:getStyle()
 ```
 
@@ -561,7 +606,7 @@ LFont:getStyle()
 
 | Type | Description |
 |------|-------------|
-| `string` | Style name ("regular", "bold"). |
+| string | Style name ("regular", "bold"). |
 
 **Example**
 
@@ -575,12 +620,11 @@ end
 
 ---
 
-### `LFont:getWidth`
+#### `LFont:getWidth`
 
 Measures the pixel width of a string when rendered with this font.
 
 ```lua
--- signature
 LFont:getWidth(text)
 ```
 
@@ -588,22 +632,21 @@ LFont:getWidth(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The text to measure. |
+| `text` | string | The text to measure. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in pixels. |
+| number | Width in pixels. |
 
 ---
 
-### `LFont:getWrap`
+#### `LFont:getWrap`
 
 Word-wraps text to fit within a pixel width limit and returns the resulting lines.
 
 ```lua
--- signature
 LFont:getWrap(text, limit)
 ```
 
@@ -611,24 +654,23 @@ LFont:getWrap(text, limit)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The text to wrap. |
-| `limit` | `number` | Maximum line width in pixels. |
+| `text` | string | The text to wrap. |
+| `limit` | number | Maximum line width in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | a Array of wrapped line strings, and the widest line width. |
-| `number` | b Array of wrapped line strings, and the widest line width. |
+| table | Array of wrapped line strings; and the widest line width. (value 1). |
+| number | Array of wrapped line strings; and the widest line width. (value 2). |
 
 ---
 
-### `LFont:isBold`
+#### `LFont:isBold`
 
 Returns whether this font is the bold variant. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:isBold()
 ```
 
@@ -636,7 +678,7 @@ LFont:isBold()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if font style is bold. |
+| boolean | True if font style is bold. |
 
 **Example**
 
@@ -650,12 +692,11 @@ end
 
 ---
 
-### `LFont:lineHeight`
+#### `LFont:lineHeight`
 
 Returns the line height of this font in pixels. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:lineHeight()
 ```
 
@@ -663,7 +704,7 @@ LFont:lineHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Line height in pixels. |
+| number | Line height in pixels. |
 
 **Example**
 
@@ -677,12 +718,11 @@ end
 
 ---
 
-### `LFont:measure`
+#### `LFont:measure`
 
 Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:measure(text, scale)
 ```
 
@@ -690,15 +730,15 @@ LFont:measure(text, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to measure. |
-| `scale?` | `number` | Scale factor applied to dimensions. |
+| `text` | string | Text to measure. |
+| `scale?` | number | Scale factor applied to dimensions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width and height in pixels. |
-| `number` | b Width and height in pixels. |
+| number | Width and height in pixels. (value 1). |
+| number | Width and height in pixels. (value 2). |
 
 **Example**
 
@@ -712,12 +752,11 @@ end
 
 ---
 
-### `LFont:release`
+#### `LFont:release`
 
 Releases the font resource. The handle becomes invalid after this call.
 
 ```lua
--- signature
 LFont:release()
 ```
 
@@ -725,16 +764,15 @@ LFont:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the font was still valid and was released. |
+| boolean | True if the font was still valid and was released. |
 
 ---
 
-### `LFont:setLineHeight`
+#### `LFont:setLineHeight`
 
 Overrides the line height used for multi-line text rendering.
 
 ```lua
--- signature
 LFont:setLineHeight(height)
 ```
 
@@ -742,16 +780,15 @@ LFont:setLineHeight(height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `height` | `number` | New line height in pixels. |
+| `height` | number | New line height in pixels. |
 
 ---
 
-### `LFont:type`
+#### `LFont:type`
 
 Returns the type name string for this font object.
 
 ```lua
--- signature
 LFont:type()
 ```
 
@@ -759,16 +796,15 @@ LFont:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LFont". |
+| string | Always "[LFont](#lfont-handle)". |
 
 ---
 
-### `LFont:typeOf`
+#### `LFont:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LFont:typeOf(name)
 ```
 
@@ -776,22 +812,21 @@ LFont:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check ("Font" or "Object"). |
+| `name` | string | Type name to check ("Font" or "Object"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 ---
 
-### `LFont:wrapText`
+#### `LFont:wrapText`
 
 Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
 
 ```lua
--- signature
 LFont:wrapText(text, maxWidth, scale)
 ```
 
@@ -799,15 +834,15 @@ LFont:wrapText(text, maxWidth, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to wrap. |
-| `maxWidth` | `number` | Maximum line width in pixels. |
-| `scale?` | `number` | Scale factor. |
+| `text` | string | Text to wrap. |
+| `maxWidth` | number | Maximum line width in pixels. |
+| `scale?` | number | Scale factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of wrapped line strings. |
+| table | Array of wrapped line strings. |
 
 **Example**
 
@@ -820,3 +855,13 @@ end
 ```
 
 ---
+
+## LuaFont Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+*No documented methods for this handle.*

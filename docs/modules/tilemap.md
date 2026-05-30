@@ -1,12 +1,153 @@
 # Tilemap
 
-- The `tilemap` module is an expansive Feature Systems tier component that provides comprehensive support for multi-layer 2D tilemaps.
+## Summary
 
 Central to this module is the `TileMap` struct, which stores stacked `TileLayer` grids, managing per-cell tile IDs (GIDs), flip flags, collision data, and layer-specific properties like tint and parallax scroll factors. Maps can be populated dynamically or imported from standard industry formats; the module includes robust parsers for both TMX (Tiled) and LDtk map files, seamlessly transforming their XML or JSON data into engine-native structures while supporting orthogonal, staggered, hexagonal, and isometric orientations.
 
 To support massive, open-world environments, the module implements a sophisticated `ChunkMap` system alongside a `LargeMapRenderer`. These tools partition infinite sparse tile grids into fixed-size square chunks, facilitating on-demand loading, unloading, and view-frustum culling, which drastically reduces memory usage and GPU load for oversized maps. For complex terrain, the `AutoTileSheet` simplifies level design by using bitmask-based neighbor rules to automatically select the correct tile index for seamless terrain transitions (supporting 4-bit and 8-bit matching). Additionally, specialized components like `IsoMap` provide dedicated handling for multi-level isometric projection, ensuring proper depth sorting (painter's algorithm) across intricate 3D-like structures.
 
 The module also goes far beyond simple rendering. It features a robust procedural generation engine (`MapGen`) that constructs maps deterministically from reusable `MapBlock` prefabs and scripted operations (fill, scatter, path). For physics and gameplay logic, the map supports continuous AABB sweep-cast collision detection directly against solid tiles. `PolygonMap` enables the definition and spatial querying of named convex/concave regions (useful for zones or provinces), while `TileWalker` provides utilities for grid-based discrete movement and facing logic. Supported by the extensive `lurek.tilemap.*` Lua API, this module is a foundational pillar for building complex, optimized, and interactive 2D worlds.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### autotile_sheet.rs
+
+- This file provides the autotile sheet model that turns neighborhood context into final tile picks.
+- It keeps multiple atlas layouts coherent so different terrain styles share one usage contract.
+- It centralizes bitmask interpretation and rule matching in a single graphics selection layer.
+- It resolves corner relationships carefully so terrain seams stay clean across transitions.
+- It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends.
+- It connects sheet logic to tileset data so runtime autotiling remains deterministic.
+- It forms a stable foundation for roads, biomes, and organic borders in grid-based worlds.
+
+### chunk.rs
+
+- This file provides sparse chunk storage for very large tile worlds that load data on demand.
+- It decouples tile access from raw memory layout so map scale can grow without full allocation.
+- It keeps world-to-chunk and local cell transforms precise for predictable addressing.
+- It exposes range operations and visible-chunk selection to drive rendering and streaming paths.
+- It stabilizes spatial boundaries so culling and update logic stay consistent under scale.
+
+### coords.rs
+
+- This file provides coordinate transforms for isometric and hex grids used across map systems.
+- It keeps one geometric language between screen space, tile space, and movement direction logic.
+- It offers orientation, rotation, and side classification helpers for grid navigation flows.
+- It supports hex metrics and neighborhoods so pathing and range tools share a stable base.
+- It delivers line, ring, and spiral traversals for tactical gameplay and map UI overlays.
+
+### isomap.rs
+
+- This file provides a multi-level isometric map model with separate parts per tile cell.
+- It maps tile coordinates to diamond-projected screen space for coherent scene placement.
+- It iterates draw order by diagonal progression so elevation layering reads correctly.
+- It lets each elevation level be shown or hidden to support staged world presentation.
+- It keeps part ordering configurable so floor, wall, and object composition remains flexible.
+- It supports both bulk writes and precise per-slot updates for runtime editing workflows.
+- It anchors isometric world structure in a form that is predictable for rendering and tools.
+
+### large_map_renderer.rs
+
+- This file provides chunk-oriented rendering support for tilemaps that exceed single-pass scale.
+- It partitions the full grid into fixed blocks with dirty tracking for incremental refresh.
+- It uses camera and viewport state to cull work at chunk granularity before draw emission.
+- It supports per-tile mutation with automatic invalidation so updates stay localized.
+- It applies optional zoom-aware detail reduction to keep large-world rendering responsive.
+- It preserves tileset atlas geometry inputs needed by backend UV mapping logic.
+
+### ldtk.rs
+
+- This file provides LDtk JSON import into the engine-native tilemap representation.
+- It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps.
+- It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation.
+- It keeps external level content aligned with the engine's layered tile data model.
+- It enables deterministic content ingestion from LDtk authoring workflows.
+
+### mapgen.rs
+
+- This file provides scripted procedural generation for tile worlds built from reusable block pieces.
+- It models block edges and matching rules so assembled regions connect with coherent boundaries.
+- It groups reusable content and scripts into named generation palettes for targeted world styles.
+- It defines step-driven operations for fill, placement, scatter, flood spread, and path carving.
+- It orchestrates generation with seeded randomness so outputs are repeatable and testable.
+- It supports both single-map and multi-region production with independent deterministic seeds.
+- It applies zone and orientation metadata so generated content matches downstream render expectations.
+- It controls how layers receive writes, enabling unified or split composition strategies.
+- It gives runtime and tools one procedural contract that scales from prototypes to full maps.
+- It keeps generation intent explicit so scripts remain readable and maintainable over time.
+- It enables data-driven map variety without requiring hand-authored full layouts for every scene.
+- It anchors procedural authoring in predictable structures that can be debugged and replayed.
+
+### mod.rs
+
+- This module delivers the high-level tile world stack for storage, generation, import, and rendering.
+- It unifies layered map data for orthogonal and isometric play spaces under one runtime contract.
+- It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline.
+- It provides the structural backbone for large interactive 2D worlds in Lurek2D.
+
+### polygon_map.rs
+
+- This file provides named polygon regions for zone semantics layered over tile-based worlds.
+- It supports convex and concave shapes with fill styling and optional in-region text labels.
+- It answers point-in-region queries for selection, triggers, and gameplay ownership checks.
+- It maintains shared outline and highlight styling to keep region feedback visually consistent.
+- It includes region lifecycle operations so zones can be created, updated, and removed at runtime.
+- It computes bounds and centroids to support layout decisions, framing, and camera behaviors.
+
+### render.rs
+
+- This file provides tilemap render-command emission with camera-aware culling across map layers.
+- It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling.
+- It applies per-layer visibility and tint state when composing command output for the renderer.
+- It keeps draw generation predictable so map visualization remains stable during updates.
+- It provides a stable debug visualization path when textured rendering is unavailable.
+
+### tile_walker.rs
+
+- This file provides a discrete grid walker model with stable cardinal facing semantics.
+- It supports forward, backward, and strafe movement as first-class motion primitives.
+- It tracks previous state snapshots so interpolation can smooth visual motion between ticks.
+- It classifies neighboring cells relative to facing for directional interaction logic.
+- It separates passability queries from concrete collision backends for flexible integration.
+- It keeps movement intent readable for gameplay, AI steering, and tactical controls.
+
+### tilemap.rs
+
+- This file provides the core layered tilemap data model used by simulation and rendering paths.
+- It stores per-cell tile IDs, per-layer state, tint metadata, and parallax movement factors.
+- It resolves global IDs through attached tilesets so tile ownership stays deterministic.
+- It computes autotile neighborhood masks and substitution outputs for terrain continuity.
+- It performs swept collision checks against solid tiles for top-down and platform movement.
+- It advances tile animation timelines from tileset frame data during runtime updates.
+- It converts world and tile coordinates in both directions using map geometry settings.
+- It emits culled draw commands for viewport-scoped visualization and debug rendering.
+- It exports walkability structures so pathfinding systems can consume map topology directly.
+- It maintains reverse lookup caches from tile IDs to positions for fast spatial queries.
+- It supports image-based debug outputs for inspection, tooling, and regression validation.
+- It anchors gameplay-critical map behavior in one consistent and testable runtime surface.
+
+### tileset.rs
+
+- This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels.
+- It computes source rectangles from local IDs so render code can sample the correct sprite area.
+- It stores solidity metadata per tile to support collision and gameplay filtering decisions.
+- It tracks frame-based tile animations so animated map cells advance with deterministic timing.
+- It holds autotile rule tables that translate neighborhood masks into terrain transition IDs.
+
+### tmx.rs
+
+- This file provides TMX import that converts Tiled XML maps into engine-native map structures.
+- It supports major TMX orientation modes so authored content can target varied 2D projections.
+- It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams.
+- It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation.
+- It parses object layers to retain placement, sizing, and semantic type annotations.
+- It strips flip flags from raw gids so stored tile identity stays clean and comparable.
+- It infers solid tiles from embedded markers and custom properties used by authoring tools.
+- It reports parse failures with contextual messages to speed debugging of malformed assets.
+- It reads TMX color encodings so visual defaults are preserved during map import.
+- It delivers a predictable bridge between external level authoring and runtime world assembly.
 
 ## Functions
 
@@ -15,7 +156,6 @@ The module also goes far beyond simple rendering. It features a robust procedura
 Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 
 ```lua
--- signature
 lurek.tilemap.fromLDtk(jsonStr, levelName)
 ```
 
@@ -23,14 +163,14 @@ lurek.tilemap.fromLDtk(jsonStr, levelName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jsonStr` | `string` | Raw LDtk JSON content. |
-| `levelName?` | `string` | Level name to load, or nil for the first level. |
+| `jsonStr` | string | Raw LDtk JSON content. |
+| `levelName?` | string | Level name to load, or nil for the first level. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileMap` | Loaded tilemap. |
+| [LTileMap](#ltilemap-handle) | Loaded tilemap. |
 
 **Example**
 
@@ -51,7 +191,6 @@ end
 Converts screen-space pixel coordinates to axial hex coordinates.
 
 ```lua
--- signature
 lurek.tilemap.fromScreenHex(sx, sy, size)
 ```
 
@@ -59,16 +198,16 @@ lurek.tilemap.fromScreenHex(sx, sy, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Screen X. |
-| `sy` | `number` | Screen Y. |
-| `size` | `number` | Hex cell size in pixels. |
+| `sx` | number | Screen X. |
+| `sy` | number | Screen Y. |
+| `size` | number | Hex cell size in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Axial Q. |
-| `number` | b Axial R. |
+| number | Axial Q. |
+| number | Axial R. |
 
 **Example**
 
@@ -86,7 +225,6 @@ end
 Converts screen-space coordinates back to tile coordinates for isometric projection.
 
 ```lua
--- signature
 lurek.tilemap.fromScreenIso(sx, sy, tw, th)
 ```
 
@@ -94,17 +232,17 @@ lurek.tilemap.fromScreenIso(sx, sy, tw, th)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Screen X. |
-| `sy` | `number` | Screen Y. |
-| `tw` | `number` | Tile width in pixels. |
-| `th` | `number` | Tile height in pixels. |
+| `sx` | number | Screen X. |
+| `sy` | number | Screen Y. |
+| `tw` | number | Tile width in pixels. |
+| `th` | number | Tile height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Tile X. |
-| `number` | b Tile Y. |
+| number | Tile X. |
+| number | Tile Y. |
 
 **Example**
 
@@ -122,7 +260,6 @@ end
 Returns all hex cells within a filled area of a given radius.
 
 ```lua
--- signature
 lurek.tilemap.hexArea(q, r, radius)
 ```
 
@@ -130,15 +267,15 @@ lurek.tilemap.hexArea(q, r, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Center Q. |
-| `r` | `number` | Center R. |
-| `radius` | `number` | Area radius. |
+| `q` | number | Center Q. |
+| `r` | number | Center R. |
+| `radius` | number | Area radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilemapHexAreaResult` | Array of `{q, r}` pairs inside the area. |
+| LTilemapHexAreaResult | Array of `{q, r}` pairs inside the area. |
 
 **Example**
 
@@ -158,7 +295,6 @@ end
 Computes the hex grid distance between two axial coordinates.
 
 ```lua
--- signature
 lurek.tilemap.hexDistance(q1, r1, q2, r2)
 ```
 
@@ -166,16 +302,16 @@ lurek.tilemap.hexDistance(q1, r1, q2, r2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q1` | `number` | First Q. |
-| `r1` | `number` | First R. |
-| `q2` | `number` | Second Q. |
-| `r2` | `number` | Second R. |
+| `q1` | number | First Q. |
+| `r1` | number | First R. |
+| `q2` | number | Second Q. |
+| `r2` | number | Second R. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Distance in hex steps. |
+| number | Distance in hex steps. |
 
 **Example**
 
@@ -197,7 +333,6 @@ end
 Returns all hex cells along a line between two axial coordinates.
 
 ```lua
--- signature
 lurek.tilemap.hexLine(q1, r1, q2, r2)
 ```
 
@@ -205,16 +340,16 @@ lurek.tilemap.hexLine(q1, r1, q2, r2)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q1` | `number` | Start Q. |
-| `r1` | `number` | Start R. |
-| `q2` | `number` | End Q. |
-| `r2` | `number` | End R. |
+| `q1` | number | Start Q. |
+| `r1` | number | Start R. |
+| `q2` | number | End Q. |
+| `r2` | number | End R. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilemapHexLineResult` | Array of `{q, r}` pairs along the line. |
+| LTilemapHexLineResult | Array of `{q, r}` pairs along the line. |
 
 **Example**
 
@@ -235,7 +370,6 @@ end
 Returns the six neighboring hex cells of a given axial coordinate.
 
 ```lua
--- signature
 lurek.tilemap.hexNeighbors(q, r)
 ```
 
@@ -243,14 +377,14 @@ lurek.tilemap.hexNeighbors(q, r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Axial Q. |
-| `r` | `number` | Axial R. |
+| `q` | number | Axial Q. |
+| `r` | number | Axial R. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilemapHexNeighborsResult` | Array of `{q=number, r=number}` neighbor cells. |
+| LTilemapHexNeighborsResult | Array of `{q=number, r=number}` neighbor cells. |
 
 **Example**
 
@@ -271,7 +405,6 @@ end
 Reflects a hex cell across an axis through a center point.
 
 ```lua
--- signature
 lurek.tilemap.hexReflect(q, r, centerQ, centerR, axis)
 ```
 
@@ -279,18 +412,18 @@ lurek.tilemap.hexReflect(q, r, centerQ, centerR, axis)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Cell Q. |
-| `r` | `number` | Cell R. |
-| `centerQ` | `number` | Pivot Q. |
-| `centerR` | `number` | Pivot R. |
-| `axis` | `string` | Reflection axis name. |
+| `q` | number | Cell Q. |
+| `r` | number | Cell R. |
+| `centerQ` | number | Pivot Q. |
+| `centerR` | number | Pivot R. |
+| `axis` | string | Reflection axis name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Reflected Q. |
-| `number` | b Reflected R. |
+| number | Reflected Q. |
+| number | Reflected R. |
 
 **Example**
 
@@ -310,7 +443,6 @@ end
 Returns all hex cells forming a ring at a given radius around a center.
 
 ```lua
--- signature
 lurek.tilemap.hexRing(q, r, radius)
 ```
 
@@ -318,15 +450,15 @@ lurek.tilemap.hexRing(q, r, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Center Q. |
-| `r` | `number` | Center R. |
-| `radius` | `number` | Ring radius in hex steps. |
+| `q` | number | Center Q. |
+| `r` | number | Center R. |
+| `radius` | number | Ring radius in hex steps. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilemapHexRingResult` | Array of `{q, r}` pairs on the ring. |
+| LTilemapHexRingResult | Array of `{q, r}` pairs on the ring. |
 
 **Example**
 
@@ -347,7 +479,6 @@ end
 Rotates a hex cell around a center point by a number of 60-degree steps.
 
 ```lua
--- signature
 lurek.tilemap.hexRotate(q, r, centerQ, centerR, steps)
 ```
 
@@ -355,18 +486,18 @@ lurek.tilemap.hexRotate(q, r, centerQ, centerR, steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Cell Q. |
-| `r` | `number` | Cell R. |
-| `centerQ` | `number` | Pivot Q. |
-| `centerR` | `number` | Pivot R. |
-| `steps` | `number` | Number of 60-degree rotation steps (positive = clockwise). |
+| `q` | number | Cell Q. |
+| `r` | number | Cell R. |
+| `centerQ` | number | Pivot Q. |
+| `centerR` | number | Pivot R. |
+| `steps` | number | Number of 60-degree rotation steps (positive = clockwise). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Rotated Q. |
-| `number` | b Rotated R. |
+| number | Rotated Q. |
+| number | Rotated R. |
 
 **Example**
 
@@ -386,7 +517,6 @@ end
 Rounds fractional axial hex coordinates to the nearest integer hex cell.
 
 ```lua
--- signature
 lurek.tilemap.hexRound(q, r)
 ```
 
@@ -394,15 +524,15 @@ lurek.tilemap.hexRound(q, r)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Fractional Q. |
-| `r` | `number` | Fractional R. |
+| `q` | number | Fractional Q. |
+| `r` | number | Fractional R. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Rounded Q. |
-| `number` | b Rounded R. |
+| number | Rounded Q. |
+| number | Rounded R. |
 
 **Example**
 
@@ -422,7 +552,6 @@ end
 Returns all hex cells in a spiral pattern out to a given radius.
 
 ```lua
--- signature
 lurek.tilemap.hexSpiral(q, r, radius)
 ```
 
@@ -430,15 +559,15 @@ lurek.tilemap.hexSpiral(q, r, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Center Q. |
-| `r` | `number` | Center R. |
-| `radius` | `number` | Maximum radius. |
+| `q` | number | Center Q. |
+| `r` | number | Center R. |
+| `radius` | number | Maximum radius. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilemapHexSpiralResult` | Array of `{q, r}` pairs in spiral order. |
+| LTilemapHexSpiralResult | Array of `{q, r}` pairs in spiral order. |
 
 **Example**
 
@@ -457,7 +586,6 @@ end
 Converts an angle in degrees to the nearest isometric direction index.
 
 ```lua
--- signature
 lurek.tilemap.isoDirectionFromAngle(angle)
 ```
 
@@ -465,13 +593,13 @@ lurek.tilemap.isoDirectionFromAngle(angle)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `angle` | `number` | Angle in degrees. |
+| `angle` | number | Angle in degrees. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Direction index. |
+| number | Direction index. |
 
 **Example**
 
@@ -489,7 +617,6 @@ end
 Returns a human-readable name for an isometric direction index.
 
 ```lua
--- signature
 lurek.tilemap.isoDirectionName(direction)
 ```
 
@@ -497,13 +624,13 @@ lurek.tilemap.isoDirectionName(direction)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `direction` | `number` | Direction index. |
+| `direction` | number | Direction index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`). |
+| string | Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`). |
 
 **Example**
 
@@ -521,7 +648,6 @@ end
 Rotates an isometric direction index by a number of 90-degree steps.
 
 ```lua
--- signature
 lurek.tilemap.isoRotate(direction, steps)
 ```
 
@@ -529,14 +655,14 @@ lurek.tilemap.isoRotate(direction, steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `direction` | `number` | Current direction (0..3). |
-| `steps` | `number` | Number of 90-degree steps. |
+| `direction` | number | Current direction (0..3). |
+| `steps` | number | Number of 90-degree steps. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Rotated direction. |
+| number | Rotated direction. |
 
 **Example**
 
@@ -554,7 +680,6 @@ end
 Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 
 ```lua
--- signature
 lurek.tilemap.loadTMX(xml)
 ```
 
@@ -562,13 +687,13 @@ lurek.tilemap.loadTMX(xml)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `xml` | `string` | Raw TMX XML content. |
+| `xml` | string | Raw TMX XML content. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TilemapLoadTMXResult` | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`. |
+| LTilemapLoadTMXResult | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`. |
 
 **Example**
 
@@ -591,7 +716,6 @@ end
 Creates an auto-tile sheet with a given tile size and layout.
 
 ```lua
--- signature
 lurek.tilemap.newAutoTileSheet(tileW, tileH, layout)
 ```
 
@@ -599,15 +723,15 @@ lurek.tilemap.newAutoTileSheet(tileW, tileH, layout)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileW` | `number` | Tile width in pixels. |
-| `tileH` | `number` | Tile height in pixels. |
-| `layout` | `string` | Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`. |
+| `tileW` | number | Tile width in pixels. |
+| `tileH` | number | Tile height in pixels. |
+| `layout` | string | Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAutoTileSheet` | New auto-tile sheet. |
+| [LAutoTileSheet](#lautotilesheet-handle) | New auto-tile sheet. |
 
 **Example**
 
@@ -629,7 +753,6 @@ end
 Creates a new infinite chunk-based tile map.
 
 ```lua
--- signature
 lurek.tilemap.newChunkMap(chunkSize)
 ```
 
@@ -637,13 +760,13 @@ lurek.tilemap.newChunkMap(chunkSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `chunkSize?` | `number` | Tiles per chunk side (default 16). |
+| `chunkSize?` | number | Tiles per chunk side (default 16). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LChunkMap` | New chunk map. |
+| [LChunkMap](#lchunkmap-handle) | New chunk map. |
 
 **Example**
 
@@ -663,7 +786,6 @@ end
 Creates a new isometric map with the given dimensions and tile geometry.
 
 ```lua
--- signature
 lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount)
 ```
 
@@ -671,18 +793,18 @@ lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Map width in tiles. |
-| `height` | `number` | Map height in tiles. |
-| `tileW` | `number` | Tile width in pixels. |
-| `tileH` | `number` | Tile height in pixels. |
-| `levelHeight` | `number` | Vertical pixel offset between levels. |
-| `partCount?` | `number` | Number of tile parts per cell (default 4). |
+| `width` | number | Map width in tiles. |
+| `height` | number | Map height in tiles. |
+| `tileW` | number | Tile width in pixels. |
+| `tileH` | number | Tile height in pixels. |
+| `levelHeight` | number | Vertical pixel offset between levels. |
+| `partCount?` | number | Number of tile parts per cell (default 4). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LIsoMap` | New isometric map. |
+| [LIsoMap](#lisomap-handle) | New isometric map. |
 
 **Example**
 
@@ -703,7 +825,6 @@ end
 Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 
 ```lua
--- signature
 lurek.tilemap.newLargeMapRenderer(tileW, tileH)
 ```
 
@@ -711,14 +832,14 @@ lurek.tilemap.newLargeMapRenderer(tileW, tileH)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileW` | `number` | Tile width in pixels. |
-| `tileH` | `number` | Tile height in pixels. |
+| `tileW` | number | Tile width in pixels. |
+| `tileH` | number | Tile height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LLargeMapRenderer` | New large-map renderer. |
+| [LLargeMapRenderer](#llargemaprenderer-handle) | New large-map renderer. |
 
 **Example**
 
@@ -738,7 +859,6 @@ end
 Creates a new procedural map block with the given dimensions.
 
 ```lua
--- signature
 lurek.tilemap.newMapBlock(width, height, layers, segmentSize)
 ```
 
@@ -746,16 +866,16 @@ lurek.tilemap.newMapBlock(width, height, layers, segmentSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Block width in tiles. |
-| `height` | `number` | Block height in tiles. |
-| `layers?` | `number` | Number of tile layers (default 1). |
-| `segmentSize?` | `number` | Edge segment size in tiles (default 1). |
+| `width` | number | Block width in tiles. |
+| `height` | number | Block height in tiles. |
+| `layers?` | number | Number of tile layers (default 1). |
+| `segmentSize?` | number | Edge segment size in tiles (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMapBlock` | New map block. |
+| [LMapBlock](#lmapblock-handle) | New map block. |
 
 **Example**
 
@@ -776,7 +896,6 @@ end
 Creates a procedural map generator from a group and either a size preset or explicit dimensions.
 
 ```lua
--- signature
 lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize)
 ```
 
@@ -784,16 +903,16 @@ lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group` | `LMapGroup` | Block group to generate from. |
-| `presetOrWidth` | `string|number` | Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles. |
-| `segmentSizeOrHeight` | `number` | Segment size (if preset) or height in tiles. |
-| `segmentSize?` | `number` | Segment size when using explicit dimensions. |
+| `group` | [LMapGroup](#lmapgroup-handle) | Block group to generate from. |
+| `presetOrWidth` | string|number | Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles. |
+| `segmentSizeOrHeight` | number | Segment size (if preset) or height in tiles. |
+| `segmentSize?` | number | Segment size when using explicit dimensions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMapGen` | New map generator. |
+| [LMapGen](#lmapgen-handle) | New map generator. |
 
 **Example**
 
@@ -814,7 +933,6 @@ end
 Creates a new map group to hold blocks and generation scripts.
 
 ```lua
--- signature
 lurek.tilemap.newMapGroup(name)
 ```
 
@@ -822,13 +940,13 @@ lurek.tilemap.newMapGroup(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Group name. |
+| `name` | string | Group name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMapGroup` | New map group. |
+| [LMapGroup](#lmapgroup-handle) | New map group. |
 
 **Example**
 
@@ -849,7 +967,6 @@ end
 Creates a new empty map-generation script.
 
 ```lua
--- signature
 lurek.tilemap.newMapScript()
 ```
 
@@ -857,7 +974,7 @@ lurek.tilemap.newMapScript()
 
 | Type | Description |
 |------|-------------|
-| `LMapScript` | New script. |
+| [LMapScript](#lmapscript-handle) | New script. |
 
 **Example**
 
@@ -878,7 +995,6 @@ end
 Creates a new empty tilemap with the given tile dimensions.
 
 ```lua
--- signature
 lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize)
 ```
 
@@ -886,15 +1002,15 @@ lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileWidth` | `number` | Tile width in pixels. |
-| `tileHeight` | `number` | Tile height in pixels. |
-| `chunkSize?` | `number` | Internal chunk size in tiles (default 16). |
+| `tileWidth` | number | Tile width in pixels. |
+| `tileHeight` | number | Tile height in pixels. |
+| `chunkSize?` | number | Internal chunk size in tiles (default 16). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileMap` | New tilemap. |
+| [LTileMap](#ltilemap-handle) | New tilemap. |
 
 **Example**
 
@@ -915,7 +1031,6 @@ end
 Creates a new tileset from atlas parameters.
 
 ```lua
--- signature
 lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin)
 ```
 
@@ -923,19 +1038,19 @@ lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, sp
 
 | Name | Type | Description |
 |------|------|-------------|
-| `firstGid` | `number` | First global tile ID. |
-| `tileCount` | `number` | Total tiles in the set. |
-| `columns` | `number` | Columns in the atlas image. |
-| `tileWidth` | `number` | Tile width in pixels. |
-| `tileHeight` | `number` | Tile height in pixels. |
-| `spacing?` | `number` | Pixel spacing between tiles (default 0). |
-| `margin?` | `number` | Pixel margin around the atlas edge (default 0). |
+| `firstGid` | number | First global tile ID. |
+| `tileCount` | number | Total tiles in the set. |
+| `columns` | number | Columns in the atlas image. |
+| `tileWidth` | number | Tile width in pixels. |
+| `tileHeight` | number | Tile height in pixels. |
+| `spacing?` | number | Pixel spacing between tiles (default 0). |
+| `margin?` | number | Pixel margin around the atlas edge (default 0). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileSet` | New tileset. |
+| [LTileSet](#ltileset-handle) | New tileset. |
 
 **Example**
 
@@ -956,7 +1071,6 @@ end
 Converts axial hex coordinates to screen-space pixel position.
 
 ```lua
--- signature
 lurek.tilemap.toScreenHex(q, r, size)
 ```
 
@@ -964,16 +1078,16 @@ lurek.tilemap.toScreenHex(q, r, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `q` | `number` | Axial Q coordinate. |
-| `r` | `number` | Axial R coordinate. |
-| `size` | `number` | Hex cell size in pixels. |
+| `q` | number | Axial Q coordinate. |
+| `r` | number | Axial R coordinate. |
+| `size` | number | Hex cell size in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Screen X. |
-| `number` | b Screen Y. |
+| number | Screen X. |
+| number | Screen Y. |
 
 **Example**
 
@@ -991,7 +1105,6 @@ end
 Converts tile coordinates to screen-space position for isometric projection.
 
 ```lua
--- signature
 lurek.tilemap.toScreenIso(tx, ty, tw, th)
 ```
 
@@ -999,17 +1112,17 @@ lurek.tilemap.toScreenIso(tx, ty, tw, th)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Tile X. |
-| `ty` | `number` | Tile Y. |
-| `tw` | `number` | Tile width in pixels. |
-| `th` | `number` | Tile height in pixels. |
+| `tx` | number | Tile X. |
+| `ty` | number | Tile Y. |
+| `tw` | number | Tile width in pixels. |
+| `th` | number | Tile height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Screen X. |
-| `number` | b Screen Y. |
+| number | Screen X. |
+| number | Screen Y. |
 
 **Example**
 
@@ -1022,14 +1135,44 @@ end
 
 ---
 
-## LAutoTileSheet
+## Module Fields
 
-### `LAutoTileSheet:applyToTileSet`
+*No module-level fields documented.*
+
+## Types
+
+- [LAutoTileSheet Handle](#lautotilesheet-handle)
+- [LChunkMap Handle](#lchunkmap-handle)
+- [LIsoMap Handle](#lisomap-handle)
+- [LLargeMapRenderer Handle](#llargemaprenderer-handle)
+- [LMapBlock Handle](#lmapblock-handle)
+- [LMapGen Handle](#lmapgen-handle)
+- [LMapGroup Handle](#lmapgroup-handle)
+- [LMapScript Handle](#lmapscript-handle)
+- [LTileMap Handle](#ltilemap-handle)
+- [LTileSet Handle](#ltileset-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAutoTileSheet Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAutoTileSheet:applyToTileSet`
 
 Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 
 ```lua
--- signature
 LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid)
 ```
 
@@ -1037,9 +1180,9 @@ LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | `LTileSet` | Target tileset to receive the rules. |
-| `typeName` | `string` | Logical tile type name to register under. |
-| `startGid?` | `number` | Optional first GID offset. |
+| `tileSet` | [LTileSet](#ltileset-handle) | Target tileset to receive the rules. |
+| `typeName` | string | Logical tile type name to register under. |
+| `startGid?` | number | Optional first GID offset. |
 
 **Example**
 
@@ -1060,12 +1203,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getBitmaskForTile`
+#### `LAutoTileSheet:getBitmaskForTile`
 
 Returns the bitmask associated with a tile in this auto-tile sheet.
 
 ```lua
--- signature
 LAutoTileSheet:getBitmaskForTile(tileId)
 ```
 
@@ -1073,13 +1215,13 @@ LAutoTileSheet:getBitmaskForTile(tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID (1-based). |
+| `tileId` | number | Tile ID (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Bitmask value, or nil if not found. |
+| number | Bitmask value, or nil if not found. |
 
 **Example**
 
@@ -1094,12 +1236,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getLayout`
+#### `LAutoTileSheet:getLayout`
 
 Returns the auto-tile layout type as a string.
 
 ```lua
--- signature
 LAutoTileSheet:getLayout()
 ```
 
@@ -1107,7 +1248,7 @@ LAutoTileSheet:getLayout()
 
 | Type | Description |
 |------|-------------|
-| `string` | One of `"blob47"`, `"composite48"`, `"minimal16"`. |
+| string | One of `"blob47"`, `"composite48"`, `"minimal16"`. |
 
 **Example**
 
@@ -1121,12 +1262,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getQuad`
+#### `LAutoTileSheet:getQuad`
 
 Returns the source rectangle for a tile in the auto-tile sheet.
 
 ```lua
--- signature
 LAutoTileSheet:getQuad(tileId)
 ```
 
@@ -1134,16 +1274,16 @@ LAutoTileSheet:getQuad(tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID (1-based). |
+| `tileId` | number | Tile ID (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X offset in pixels. |
-| `number` | b Y offset in pixels. |
-| `number` | c Width in pixels. |
-| `number` | d Height in pixels. |
+| number | X offset in pixels. |
+| number | Y offset in pixels. |
+| number | Width in pixels. |
+| number | Height in pixels. |
 
 **Example**
 
@@ -1159,12 +1299,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getTileCount`
+#### `LAutoTileSheet:getTileCount`
 
 Returns the total number of tiles in this auto-tile sheet.
 
 ```lua
--- signature
 LAutoTileSheet:getTileCount()
 ```
 
@@ -1172,7 +1311,7 @@ LAutoTileSheet:getTileCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile count. |
+| number | Tile count. |
 
 **Example**
 
@@ -1186,12 +1325,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getTileForBitmask`
+#### `LAutoTileSheet:getTileForBitmask`
 
 Looks up which tile corresponds to a given bitmask value.
 
 ```lua
--- signature
 LAutoTileSheet:getTileForBitmask(bitmask)
 ```
 
@@ -1199,13 +1337,13 @@ LAutoTileSheet:getTileForBitmask(bitmask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bitmask` | `number` | Bitmask to resolve. |
+| `bitmask` | number | Bitmask to resolve. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile ID (1-based), or nil if no tile matches. |
+| number | Tile ID (1-based), or nil if no tile matches. |
 
 **Example**
 
@@ -1220,12 +1358,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getTileHeight`
+#### `LAutoTileSheet:getTileHeight`
 
 Returns the height of each tile in the auto-tile sheet, in pixels.
 
 ```lua
--- signature
 LAutoTileSheet:getTileHeight()
 ```
 
@@ -1233,7 +1370,7 @@ LAutoTileSheet:getTileHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile height. |
+| number | Tile height. |
 
 **Example**
 
@@ -1247,12 +1384,11 @@ end
 
 ---
 
-### `LAutoTileSheet:getTileWidth`
+#### `LAutoTileSheet:getTileWidth`
 
 Returns the width of each tile in the auto-tile sheet, in pixels.
 
 ```lua
--- signature
 LAutoTileSheet:getTileWidth()
 ```
 
@@ -1260,7 +1396,7 @@ LAutoTileSheet:getTileWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile width. |
+| number | Tile width. |
 
 **Example**
 
@@ -1274,12 +1410,11 @@ end
 
 ---
 
-### `LAutoTileSheet:type`
+#### `LAutoTileSheet:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LAutoTileSheet:type()
 ```
 
@@ -1287,7 +1422,7 @@ LAutoTileSheet:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LAutoTileSheet"`. |
+| string | Always `"[LAutoTileSheet](#lautotilesheet-handle)"`. |
 
 **Example**
 
@@ -1301,12 +1436,11 @@ end
 
 ---
 
-### `LAutoTileSheet:typeOf`
+#### `LAutoTileSheet:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LAutoTileSheet:typeOf(name)
 ```
 
@@ -1314,13 +1448,13 @@ LAutoTileSheet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LAutoTileSheet"` or `"Object"`. |
+| boolean | True if `name` is `"[LAutoTileSheet](#lautotilesheet-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -1334,14 +1468,19 @@ end
 
 ---
 
-## LChunkMap
+## LChunkMap Handle
 
-### `LChunkMap:chunkTileRange`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LChunkMap:chunkTileRange`
 
 Returns the tile-coordinate range covered by a specific chunk.
 
 ```lua
--- signature
 LChunkMap:chunkTileRange(cx, cy)
 ```
 
@@ -1349,17 +1488,17 @@ LChunkMap:chunkTileRange(cx, cy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Chunk X coordinate. |
-| `cy` | `number` | Chunk Y coordinate. |
+| `cx` | number | Chunk X coordinate. |
+| `cy` | number | Chunk Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum tile X. |
-| `number` | b Minimum tile Y. |
-| `number` | c Maximum tile X. |
-| `number` | d Maximum tile Y. |
+| number | Minimum tile X. |
+| number | Minimum tile Y. |
+| number | Maximum tile X. |
+| number | Maximum tile Y. |
 
 **Example**
 
@@ -1375,12 +1514,11 @@ end
 
 ---
 
-### `LChunkMap:clearTile`
+#### `LChunkMap:clearTile`
 
 Removes the tile at the given world-tile coordinate.
 
 ```lua
--- signature
 LChunkMap:clearTile(x, y)
 ```
 
@@ -1388,8 +1526,8 @@ LChunkMap:clearTile(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Tile X coordinate. |
-| `y` | `number` | Tile Y coordinate. |
+| `x` | number | Tile X coordinate. |
+| `y` | number | Tile Y coordinate. |
 
 **Example**
 
@@ -1405,12 +1543,11 @@ end
 
 ---
 
-### `LChunkMap:fillRect`
+#### `LChunkMap:fillRect`
 
 Fills a rectangular region of tiles with a given GID.
 
 ```lua
--- signature
 LChunkMap:fillRect(x0, y0, x1, y1, gid)
 ```
 
@@ -1418,11 +1555,11 @@ LChunkMap:fillRect(x0, y0, x1, y1, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x0` | `number` | Left tile coordinate. |
-| `y0` | `number` | Top tile coordinate. |
-| `x1` | `number` | Right tile coordinate (inclusive). |
-| `y1` | `number` | Bottom tile coordinate (inclusive). |
-| `gid` | `number` | Global tile ID to fill with. |
+| `x0` | number | Left tile coordinate. |
+| `y0` | number | Top tile coordinate. |
+| `x1` | number | Right tile coordinate (inclusive). |
+| `y1` | number | Bottom tile coordinate (inclusive). |
+| `gid` | number | Global tile ID to fill with. |
 
 **Example**
 
@@ -1438,12 +1575,11 @@ end
 
 ---
 
-### `LChunkMap:getChunkSize`
+#### `LChunkMap:getChunkSize`
 
 Returns the size of each chunk in tiles per side.
 
 ```lua
--- signature
 LChunkMap:getChunkSize()
 ```
 
@@ -1451,7 +1587,7 @@ LChunkMap:getChunkSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Chunk size. |
+| number | Chunk size. |
 
 **Example**
 
@@ -1465,12 +1601,11 @@ end
 
 ---
 
-### `LChunkMap:getChunksInView`
+#### `LChunkMap:getChunksInView`
 
 Returns chunk coordinates that overlap a viewport region, given tile dimensions.
 
 ```lua
--- signature
 LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th)
 ```
 
@@ -1478,18 +1613,18 @@ LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vx` | `number` | Viewport left edge in world pixels. |
-| `vy` | `number` | Viewport top edge in world pixels. |
-| `vw` | `number` | Viewport width in pixels. |
-| `vh` | `number` | Viewport height in pixels. |
-| `tw` | `number` | Tile width in pixels. |
-| `th` | `number` | Tile height in pixels. |
+| `vx` | number | Viewport left edge in world pixels. |
+| `vy` | number | Viewport top edge in world pixels. |
+| `vw` | number | Viewport width in pixels. |
+| `vh` | number | Viewport height in pixels. |
+| `tw` | number | Tile width in pixels. |
+| `th` | number | Tile height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LChunkMapGetChunksInViewResult` | Array of `{cx, cy}` pairs. |
+| LChunkMapGetChunksInViewResult | Array of `{cx, cy}` pairs. |
 
 **Example**
 
@@ -1504,12 +1639,11 @@ end
 
 ---
 
-### `LChunkMap:getLoadedChunks`
+#### `LChunkMap:getLoadedChunks`
 
 Returns a list of all currently loaded chunk coordinates.
 
 ```lua
--- signature
 LChunkMap:getLoadedChunks()
 ```
 
@@ -1517,7 +1651,7 @@ LChunkMap:getLoadedChunks()
 
 | Type | Description |
 |------|-------------|
-| `LChunkMapGetLoadedChunksResult` | Array of `{cx, cy}` pairs. |
+| LChunkMapGetLoadedChunksResult | Array of `{cx, cy}` pairs. |
 
 **Example**
 
@@ -1533,12 +1667,11 @@ end
 
 ---
 
-### `LChunkMap:getTile`
+#### `LChunkMap:getTile`
 
 Returns the tile GID at the given world-tile coordinate.
 
 ```lua
--- signature
 LChunkMap:getTile(x, y)
 ```
 
@@ -1546,14 +1679,14 @@ LChunkMap:getTile(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Tile X coordinate. |
-| `y` | `number` | Tile Y coordinate. |
+| `x` | number | Tile X coordinate. |
+| `y` | number | Tile Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Global tile ID. |
+| number | Global tile ID. |
 
 **Example**
 
@@ -1569,12 +1702,11 @@ end
 
 ---
 
-### `LChunkMap:loadChunk`
+#### `LChunkMap:loadChunk`
 
 Loads a chunk into memory at the given chunk coordinates.
 
 ```lua
--- signature
 LChunkMap:loadChunk(cx, cy)
 ```
 
@@ -1582,8 +1714,8 @@ LChunkMap:loadChunk(cx, cy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Chunk X coordinate. |
-| `cy` | `number` | Chunk Y coordinate. |
+| `cx` | number | Chunk X coordinate. |
+| `cy` | number | Chunk Y coordinate. |
 
 **Example**
 
@@ -1599,12 +1731,11 @@ end
 
 ---
 
-### `LChunkMap:setTile`
+#### `LChunkMap:setTile`
 
 Sets the tile GID at the given world-tile coordinate.
 
 ```lua
--- signature
 LChunkMap:setTile(x, y, gid)
 ```
 
@@ -1612,9 +1743,9 @@ LChunkMap:setTile(x, y, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Tile X coordinate. |
-| `y` | `number` | Tile Y coordinate. |
-| `gid` | `number` | Global tile ID to place. |
+| `x` | number | Tile X coordinate. |
+| `y` | number | Tile Y coordinate. |
+| `gid` | number | Global tile ID to place. |
 
 **Example**
 
@@ -1630,12 +1761,11 @@ end
 
 ---
 
-### `LChunkMap:type`
+#### `LChunkMap:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LChunkMap:type()
 ```
 
@@ -1643,7 +1773,7 @@ LChunkMap:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LChunkMap"`. |
+| string | Always `"[LChunkMap](#lchunkmap-handle)"`. |
 
 **Example**
 
@@ -1657,12 +1787,11 @@ end
 
 ---
 
-### `LChunkMap:typeOf`
+#### `LChunkMap:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LChunkMap:typeOf(name)
 ```
 
@@ -1670,13 +1799,13 @@ LChunkMap:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LChunkMap"` or `"Object"`. |
+| boolean | True if `name` is `"[LChunkMap](#lchunkmap-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -1690,12 +1819,11 @@ end
 
 ---
 
-### `LChunkMap:unloadChunk`
+#### `LChunkMap:unloadChunk`
 
 Unloads a chunk from memory at the given chunk coordinates.
 
 ```lua
--- signature
 LChunkMap:unloadChunk(cx, cy)
 ```
 
@@ -1703,8 +1831,8 @@ LChunkMap:unloadChunk(cx, cy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Chunk X coordinate. |
-| `cy` | `number` | Chunk Y coordinate. |
+| `cx` | number | Chunk X coordinate. |
+| `cy` | number | Chunk Y coordinate. |
 
 **Example**
 
@@ -1720,14 +1848,19 @@ end
 
 ---
 
-## LIsoMap
+## LIsoMap Handle
 
-### `LIsoMap:addLevel`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LIsoMap:addLevel`
 
 Adds a new vertical level to the isometric map and returns its index.
 
 ```lua
--- signature
 LIsoMap:addLevel()
 ```
 
@@ -1735,7 +1868,7 @@ LIsoMap:addLevel()
 
 | Type | Description |
 |------|-------------|
-| `number` | Index of the new level (1-based). |
+| number | Index of the new level (1-based). |
 
 **Example**
 
@@ -1750,12 +1883,11 @@ end
 
 ---
 
-### `LIsoMap:fillLevel`
+#### `LIsoMap:fillLevel`
 
 Fills all tiles on a level for a given part with a single GID.
 
 ```lua
--- signature
 LIsoMap:fillLevel(z, part, gid)
 ```
 
@@ -1763,9 +1895,9 @@ LIsoMap:fillLevel(z, part, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | Level index (1-based). |
-| `part` | `number` | Part index to fill. |
-| `gid` | `number` | Global tile ID to fill with. |
+| `z` | number | Level index (1-based). |
+| `part` | number | Part index to fill. |
+| `gid` | number | Global tile ID to fill with. |
 
 **Example**
 
@@ -1781,12 +1913,11 @@ end
 
 ---
 
-### `LIsoMap:getHeight`
+#### `LIsoMap:getHeight`
 
 Returns the map height in tiles. This method is available to Lua scripts.
 
 ```lua
--- signature
 LIsoMap:getHeight()
 ```
 
@@ -1794,7 +1925,7 @@ LIsoMap:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height. |
+| number | Height. |
 
 **Example**
 
@@ -1808,12 +1939,11 @@ end
 
 ---
 
-### `LIsoMap:getLevelCount`
+#### `LIsoMap:getLevelCount`
 
 Returns the number of vertical levels in the isometric map.
 
 ```lua
--- signature
 LIsoMap:getLevelCount()
 ```
 
@@ -1821,7 +1951,7 @@ LIsoMap:getLevelCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Level count. |
+| number | Level count. |
 
 **Example**
 
@@ -1836,12 +1966,11 @@ end
 
 ---
 
-### `LIsoMap:getLevelHeight`
+#### `LIsoMap:getLevelHeight`
 
 Returns the vertical pixel offset between levels.
 
 ```lua
--- signature
 LIsoMap:getLevelHeight()
 ```
 
@@ -1849,7 +1978,7 @@ LIsoMap:getLevelHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Level height in pixels. |
+| number | Level height in pixels. |
 
 **Example**
 
@@ -1863,12 +1992,11 @@ end
 
 ---
 
-### `LIsoMap:getPartCount`
+#### `LIsoMap:getPartCount`
 
 Returns the number of tile parts per cell.
 
 ```lua
--- signature
 LIsoMap:getPartCount()
 ```
 
@@ -1876,7 +2004,7 @@ LIsoMap:getPartCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Part count. |
+| number | Part count. |
 
 **Example**
 
@@ -1890,12 +2018,11 @@ end
 
 ---
 
-### `LIsoMap:getPartOrder`
+#### `LIsoMap:getPartOrder`
 
 Returns the rendering order of tile parts as an array of part indices.
 
 ```lua
--- signature
 LIsoMap:getPartOrder()
 ```
 
@@ -1903,7 +2030,7 @@ LIsoMap:getPartOrder()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Part index values. |
+| number[] | Part index values. |
 
 **Example**
 
@@ -1919,12 +2046,11 @@ end
 
 ---
 
-### `LIsoMap:getTileHeight`
+#### `LIsoMap:getTileHeight`
 
 Returns the height of an isometric tile in pixels.
 
 ```lua
--- signature
 LIsoMap:getTileHeight()
 ```
 
@@ -1932,7 +2058,7 @@ LIsoMap:getTileHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile height. |
+| number | Tile height. |
 
 **Example**
 
@@ -1946,12 +2072,11 @@ end
 
 ---
 
-### `LIsoMap:getTilePart`
+#### `LIsoMap:getTilePart`
 
 Returns the GID for a specific part of a tile at a given position and level.
 
 ```lua
--- signature
 LIsoMap:getTilePart(z, x, y, part)
 ```
 
@@ -1959,16 +2084,16 @@ LIsoMap:getTilePart(z, x, y, part)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | Level index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
-| `part` | `number` | Part index. |
+| `z` | number | Level index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `part` | number | Part index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Global tile ID. |
+| number | Global tile ID. |
 
 **Example**
 
@@ -1984,12 +2109,11 @@ end
 
 ---
 
-### `LIsoMap:getTileWidth`
+#### `LIsoMap:getTileWidth`
 
 Returns the width of an isometric tile in pixels.
 
 ```lua
--- signature
 LIsoMap:getTileWidth()
 ```
 
@@ -1997,7 +2121,7 @@ LIsoMap:getTileWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile width. |
+| number | Tile width. |
 
 **Example**
 
@@ -2011,12 +2135,11 @@ end
 
 ---
 
-### `LIsoMap:getWidth`
+#### `LIsoMap:getWidth`
 
 Returns the map width in tiles. This method is available to Lua scripts.
 
 ```lua
--- signature
 LIsoMap:getWidth()
 ```
 
@@ -2024,7 +2147,7 @@ LIsoMap:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width. |
+| number | Width. |
 
 **Example**
 
@@ -2038,12 +2161,11 @@ end
 
 ---
 
-### `LIsoMap:isLevelVisible`
+#### `LIsoMap:isLevelVisible`
 
 Returns whether a vertical level is currently visible.
 
 ```lua
--- signature
 LIsoMap:isLevelVisible(z)
 ```
 
@@ -2051,13 +2173,13 @@ LIsoMap:isLevelVisible(z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | Level index (1-based). |
+| `z` | number | Level index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the level is visible. |
+| boolean | True if the level is visible. |
 
 **Example**
 
@@ -2072,12 +2194,11 @@ end
 
 ---
 
-### `LIsoMap:screenToTile`
+#### `LIsoMap:screenToTile`
 
 Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
 
 ```lua
--- signature
 LIsoMap:screenToTile(sx, sy)
 ```
 
@@ -2085,15 +2206,15 @@ LIsoMap:screenToTile(sx, sy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sx` | `number` | Screen X. |
-| `sy` | `number` | Screen Y. |
+| `sx` | number | Screen X. |
+| `sy` | number | Screen Y. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Tile X. |
-| `number` | b Tile Y. |
+| number | Tile X. |
+| number | Tile Y. |
 
 **Example**
 
@@ -2109,12 +2230,11 @@ end
 
 ---
 
-### `LIsoMap:setLevelVisible`
+#### `LIsoMap:setLevelVisible`
 
 Sets whether a vertical level is drawn during rendering.
 
 ```lua
--- signature
 LIsoMap:setLevelVisible(z, visible)
 ```
 
@@ -2122,8 +2242,8 @@ LIsoMap:setLevelVisible(z, visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | Level index (1-based). |
-| `visible` | `boolean` | True to show, false to hide. |
+| `z` | number | Level index (1-based). |
+| `visible` | boolean | True to show, false to hide. |
 
 **Example**
 
@@ -2139,12 +2259,11 @@ end
 
 ---
 
-### `LIsoMap:setOrigin`
+#### `LIsoMap:setOrigin`
 
 Sets the screen-space origin (top-left anchor) for isometric rendering.
 
 ```lua
--- signature
 LIsoMap:setOrigin(x, y)
 ```
 
@@ -2152,8 +2271,8 @@ LIsoMap:setOrigin(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Origin X in pixels. |
-| `y` | `number` | Origin Y in pixels. |
+| `x` | number | Origin X in pixels. |
+| `y` | number | Origin Y in pixels. |
 
 **Example**
 
@@ -2168,12 +2287,11 @@ end
 
 ---
 
-### `LIsoMap:setPartOrder`
+#### `LIsoMap:setPartOrder`
 
 Overrides the rendering order of tile parts.
 
 ```lua
--- signature
 LIsoMap:setPartOrder(order)
 ```
 
@@ -2181,7 +2299,7 @@ LIsoMap:setPartOrder(order)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `order` | `table` | Array of part indices in desired draw order. |
+| `order` | table | Array of part indices in desired draw order. |
 
 **Example**
 
@@ -2197,12 +2315,11 @@ end
 
 ---
 
-### `LIsoMap:setTilePart`
+#### `LIsoMap:setTilePart`
 
 Sets the GID for a specific part of a tile at a given position and level.
 
 ```lua
--- signature
 LIsoMap:setTilePart(z, x, y, part, gid)
 ```
 
@@ -2210,11 +2327,11 @@ LIsoMap:setTilePart(z, x, y, part, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `z` | `number` | Level index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
-| `part` | `number` | Part index (e.g. floor, wall, object). |
-| `gid` | `number` | Global tile ID to place. |
+| `z` | number | Level index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `part` | number | Part index (e.g. floor, wall, object). |
+| `gid` | number | Global tile ID to place. |
 
 **Example**
 
@@ -2230,12 +2347,11 @@ end
 
 ---
 
-### `LIsoMap:tileToScreen`
+#### `LIsoMap:tileToScreen`
 
 Converts tile-grid coordinates to screen-space pixel position.
 
 ```lua
--- signature
 LIsoMap:tileToScreen(tx, ty, tz)
 ```
 
@@ -2243,16 +2359,16 @@ LIsoMap:tileToScreen(tx, ty, tz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Tile X. |
-| `ty` | `number` | Tile Y. |
-| `tz` | `number` | Tile Z (level). |
+| `tx` | number | Tile X. |
+| `ty` | number | Tile Y. |
+| `tz` | number | Tile Z (level). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Screen X. |
-| `number` | b Screen Y. |
+| number | Screen X. |
+| number | Screen Y. |
 
 **Example**
 
@@ -2268,12 +2384,11 @@ end
 
 ---
 
-### `LIsoMap:type`
+#### `LIsoMap:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LIsoMap:type()
 ```
 
@@ -2281,7 +2396,7 @@ LIsoMap:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LIsoMap"`. |
+| string | Always `"[LIsoMap](#lisomap-handle)"`. |
 
 **Example**
 
@@ -2295,12 +2410,11 @@ end
 
 ---
 
-### `LIsoMap:typeOf`
+#### `LIsoMap:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LIsoMap:typeOf(name)
 ```
 
@@ -2308,13 +2422,13 @@ LIsoMap:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LIsoMap"` or `"Object"`. |
+| boolean | True if `name` is `"[LIsoMap](#lisomap-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -2328,14 +2442,19 @@ end
 
 ---
 
-## LLargeMapRenderer
+## LLargeMapRenderer Handle
 
-### `LLargeMapRenderer:getChunkSize`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLargeMapRenderer:getChunkSize`
 
 Returns the current chunk size. This method is available to Lua scripts.
 
 ```lua
--- signature
 LLargeMapRenderer:getChunkSize()
 ```
 
@@ -2343,7 +2462,7 @@ LLargeMapRenderer:getChunkSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Chunk size in tiles per side. |
+| number | Chunk size in tiles per side. |
 
 **Example**
 
@@ -2357,12 +2476,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:getMapSize`
+#### `LLargeMapRenderer:getMapSize`
 
 Returns the map dimensions in tiles.
 
 ```lua
--- signature
 LLargeMapRenderer:getMapSize()
 ```
 
@@ -2370,8 +2488,8 @@ LLargeMapRenderer:getMapSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width in tiles. |
-| `number` | b Height in tiles. |
+| number | Width in tiles. |
+| number | Height in tiles. |
 
 **Example**
 
@@ -2387,12 +2505,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:getTile`
+#### `LLargeMapRenderer:getTile`
 
 Returns the tile GID at a given position.
 
 ```lua
--- signature
 LLargeMapRenderer:getTile(x, y)
 ```
 
@@ -2400,14 +2517,14 @@ LLargeMapRenderer:getTile(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Column. |
-| `y` | `number` | Row. |
+| `x` | number | Column. |
+| `y` | number | Row. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile GID. |
+| number | Tile GID. |
 
 **Example**
 
@@ -2423,12 +2540,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:getTilesetColumns`
+#### `LLargeMapRenderer:getTilesetColumns`
 
 Returns the tileset column count used for UV calculation.
 
 ```lua
--- signature
 LLargeMapRenderer:getTilesetColumns()
 ```
 
@@ -2436,7 +2552,7 @@ LLargeMapRenderer:getTilesetColumns()
 
 | Type | Description |
 |------|-------------|
-| `number` | Column count. |
+| number | Column count. |
 
 **Example**
 
@@ -2450,12 +2566,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:getTotalChunks`
+#### `LLargeMapRenderer:getTotalChunks`
 
 Returns the total number of chunks in the map.
 
 ```lua
--- signature
 LLargeMapRenderer:getTotalChunks()
 ```
 
@@ -2463,7 +2578,7 @@ LLargeMapRenderer:getTotalChunks()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total chunk count. |
+| number | Total chunk count. |
 
 **Example**
 
@@ -2479,12 +2594,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:getVisibleChunks`
+#### `LLargeMapRenderer:getVisibleChunks`
 
 Returns the number of chunks currently visible in the viewport.
 
 ```lua
--- signature
 LLargeMapRenderer:getVisibleChunks()
 ```
 
@@ -2492,7 +2606,7 @@ LLargeMapRenderer:getVisibleChunks()
 
 | Type | Description |
 |------|-------------|
-| `number` | Visible chunk count. |
+| number | Visible chunk count. |
 
 **Example**
 
@@ -2508,12 +2622,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:invalidateAll`
+#### `LLargeMapRenderer:invalidateAll`
 
 Marks all chunks as dirty, forcing a full rebuild on the next render.
 
 ```lua
--- signature
 LLargeMapRenderer:invalidateAll()
 ```
 
@@ -2531,12 +2644,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:invalidateChunk`
+#### `LLargeMapRenderer:invalidateChunk`
 
 Marks a specific chunk as dirty so it will be rebuilt on the next render.
 
 ```lua
--- signature
 LLargeMapRenderer:invalidateChunk(cx, cy)
 ```
 
@@ -2544,8 +2656,8 @@ LLargeMapRenderer:invalidateChunk(cx, cy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cx` | `number` | Chunk X index. |
-| `cy` | `number` | Chunk Y index. |
+| `cx` | number | Chunk X index. |
+| `cy` | number | Chunk Y index. |
 
 **Example**
 
@@ -2561,12 +2673,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:isLodEnabled`
+#### `LLargeMapRenderer:isLodEnabled`
 
 Returns whether LOD rendering is currently enabled.
 
 ```lua
--- signature
 LLargeMapRenderer:isLodEnabled()
 ```
 
@@ -2574,7 +2685,7 @@ LLargeMapRenderer:isLodEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if LOD is enabled. |
+| boolean | True if LOD is enabled. |
 
 **Example**
 
@@ -2590,12 +2701,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setCamera`
+#### `LLargeMapRenderer:setCamera`
 
 Sets the camera position and zoom level for determining visible chunks.
 
 ```lua
--- signature
 LLargeMapRenderer:setCamera(x, y, zoom)
 ```
 
@@ -2603,9 +2713,9 @@ LLargeMapRenderer:setCamera(x, y, zoom)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Camera center X in world pixels. |
-| `y` | `number` | Camera center Y in world pixels. |
-| `zoom` | `number` | Zoom factor (1.0 = normal). |
+| `x` | number | Camera center X in world pixels. |
+| `y` | number | Camera center Y in world pixels. |
+| `zoom` | number | Zoom factor (1.0 = normal). |
 
 **Example**
 
@@ -2621,12 +2731,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setChunkSize`
+#### `LLargeMapRenderer:setChunkSize`
 
 Sets the chunk size used for rendering subdivision.
 
 ```lua
--- signature
 LLargeMapRenderer:setChunkSize(size)
 ```
 
@@ -2634,7 +2743,7 @@ LLargeMapRenderer:setChunkSize(size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Chunk size in tiles per side. |
+| `size` | number | Chunk size in tiles per side. |
 
 **Example**
 
@@ -2650,12 +2759,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setLodEnabled`
+#### `LLargeMapRenderer:setLodEnabled`
 
 Enables or disables level-of-detail rendering for distant chunks.
 
 ```lua
--- signature
 LLargeMapRenderer:setLodEnabled(enabled)
 ```
 
@@ -2663,7 +2771,7 @@ LLargeMapRenderer:setLodEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to enable LOD. |
+| `enabled` | boolean | True to enable LOD. |
 
 **Example**
 
@@ -2679,12 +2787,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setLodThresholds`
+#### `LLargeMapRenderer:setLodThresholds`
 
 Sets the zoom thresholds at which LOD levels change.
 
 ```lua
--- signature
 LLargeMapRenderer:setLodThresholds(levels)
 ```
 
@@ -2692,7 +2799,7 @@ LLargeMapRenderer:setLodThresholds(levels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `levels` | `table` | Array of zoom threshold values. |
+| `levels` | table | Array of zoom threshold values. |
 
 **Example**
 
@@ -2708,12 +2815,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setMapData`
+#### `LLargeMapRenderer:setMapData`
 
 Replaces all tile data with a flat array of GIDs for the given dimensions.
 
 ```lua
--- signature
 LLargeMapRenderer:setMapData(data, width, height)
 ```
 
@@ -2721,9 +2827,9 @@ LLargeMapRenderer:setMapData(data, width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `data` | `table` | Flat array of tile GIDs (row-major order). |
-| `width` | `number` | Map width in tiles. |
-| `height` | `number` | Map height in tiles. |
+| `data` | table | Flat array of tile GIDs (row-major order). |
+| `width` | number | Map width in tiles. |
+| `height` | number | Map height in tiles. |
 
 **Example**
 
@@ -2739,12 +2845,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setTile`
+#### `LLargeMapRenderer:setTile`
 
 Sets a single tile GID at a given position.
 
 ```lua
--- signature
 LLargeMapRenderer:setTile(x, y, tileId)
 ```
 
@@ -2752,9 +2857,9 @@ LLargeMapRenderer:setTile(x, y, tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Column. |
-| `y` | `number` | Row. |
-| `tileId` | `number` | Tile GID to place. |
+| `x` | number | Column. |
+| `y` | number | Row. |
+| `tileId` | number | Tile GID to place. |
 
 **Example**
 
@@ -2770,12 +2875,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setTilesetColumns`
+#### `LLargeMapRenderer:setTilesetColumns`
 
 Sets the column count of the associated tileset atlas for UV calculation.
 
 ```lua
--- signature
 LLargeMapRenderer:setTilesetColumns(cols)
 ```
 
@@ -2783,7 +2887,7 @@ LLargeMapRenderer:setTilesetColumns(cols)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cols` | `number` | Number of columns in the tileset image. |
+| `cols` | number | Number of columns in the tileset image. |
 
 **Example**
 
@@ -2799,12 +2903,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:setViewport`
+#### `LLargeMapRenderer:setViewport`
 
 Sets the viewport dimensions for visibility calculations.
 
 ```lua
--- signature
 LLargeMapRenderer:setViewport(w, h)
 ```
 
@@ -2812,8 +2915,8 @@ LLargeMapRenderer:setViewport(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Viewport width in pixels. |
-| `h` | `number` | Viewport height in pixels. |
+| `w` | number | Viewport width in pixels. |
+| `h` | number | Viewport height in pixels. |
 
 **Example**
 
@@ -2829,12 +2932,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:type`
+#### `LLargeMapRenderer:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LLargeMapRenderer:type()
 ```
 
@@ -2842,7 +2944,7 @@ LLargeMapRenderer:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LLargeMapRenderer"`. |
+| string | Always `"[LLargeMapRenderer](#llargemaprenderer-handle)"`. |
 
 **Example**
 
@@ -2856,12 +2958,11 @@ end
 
 ---
 
-### `LLargeMapRenderer:typeOf`
+#### `LLargeMapRenderer:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LLargeMapRenderer:typeOf(name)
 ```
 
@@ -2869,13 +2970,13 @@ LLargeMapRenderer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LLargeMapRenderer"` or `"Object"`. |
+| boolean | True if `name` is `"[LLargeMapRenderer](#llargemaprenderer-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -2889,14 +2990,19 @@ end
 
 ---
 
-## LMapBlock
+## LMapBlock Handle
 
-### `LMapBlock:getDimensions`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapBlock:getDimensions`
 
 Returns both width and height of the block in tiles.
 
 ```lua
--- signature
 LMapBlock:getDimensions()
 ```
 
@@ -2904,8 +3010,8 @@ LMapBlock:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width. |
-| `number` | b Height. |
+| number | Width. |
+| number | Height. |
 
 **Example**
 
@@ -2919,12 +3025,11 @@ end
 
 ---
 
-### `LMapBlock:getHeight`
+#### `LMapBlock:getHeight`
 
 Get height in tiles for this object.
 
 ```lua
--- signature
 LMapBlock:getHeight()
 ```
 
@@ -2932,16 +3037,15 @@ LMapBlock:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Block height. |
+| number | Block height. |
 
 ---
 
-### `LMapBlock:getHeightInSegments`
+#### `LMapBlock:getHeightInSegments`
 
 Returns the block height measured in segments.
 
 ```lua
--- signature
 LMapBlock:getHeightInSegments()
 ```
 
@@ -2949,7 +3053,7 @@ LMapBlock:getHeightInSegments()
 
 | Type | Description |
 |------|-------------|
-| `number` | Height in segments. |
+| number | Height in segments. |
 
 **Example**
 
@@ -2963,12 +3067,11 @@ end
 
 ---
 
-### `LMapBlock:getLayerCount`
+#### `LMapBlock:getLayerCount`
 
 Get the number of tile layers in this map block.
 
 ```lua
--- signature
 LMapBlock:getLayerCount()
 ```
 
@@ -2976,16 +3079,15 @@ LMapBlock:getLayerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of layers. |
+| number | Number of layers. |
 
 ---
 
-### `LMapBlock:getName`
+#### `LMapBlock:getName`
 
 Get the map block's display or lookup name string value.
 
 ```lua
--- signature
 LMapBlock:getName()
 ```
 
@@ -2993,16 +3095,15 @@ LMapBlock:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Block name. |
+| string | Block name. |
 
 ---
 
-### `LMapBlock:getSegmentSize`
+#### `LMapBlock:getSegmentSize`
 
 Returns the segment size used for edge matching.
 
 ```lua
--- signature
 LMapBlock:getSegmentSize()
 ```
 
@@ -3010,7 +3111,7 @@ LMapBlock:getSegmentSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Segment size in tiles. |
+| number | Segment size in tiles. |
 
 **Example**
 
@@ -3024,12 +3125,11 @@ end
 
 ---
 
-### `LMapBlock:getSide`
+#### `LMapBlock:getSide`
 
 Returns the side ID for an edge segment.
 
 ```lua
--- signature
 LMapBlock:getSide(edge, segment)
 ```
 
@@ -3037,14 +3137,14 @@ LMapBlock:getSide(edge, segment)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge` | `string` | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
-| `segment` | `number` | Segment index along the edge (1-based). |
+| `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
+| `segment` | number | Segment index along the edge (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Side identifier. |
+| number | Side identifier. |
 
 **Example**
 
@@ -3060,12 +3160,11 @@ end
 
 ---
 
-### `LMapBlock:getTile`
+#### `LMapBlock:getTile`
 
 Get the tile GID at a specified row and column position.
 
 ```lua
--- signature
 LMapBlock:getTile(layer, x, y, slot)
 ```
 
@@ -3073,25 +3172,24 @@ LMapBlock:getTile(layer, x, y, slot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index. |
-| `x` | `number` | Tile X. |
-| `y` | `number` | Tile Y. |
-| `slot` | `number` | Slot index. |
+| `layer` | number | Layer index. |
+| `x` | number | Tile X. |
+| `y` | number | Tile Y. |
+| `slot` | number | Slot index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile GID. |
+| number | Tile GID. |
 
 ---
 
-### `LMapBlock:getWeight`
+#### `LMapBlock:getWeight`
 
 Returns the current selection weight.
 
 ```lua
--- signature
 LMapBlock:getWeight()
 ```
 
@@ -3099,7 +3197,7 @@ LMapBlock:getWeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Weight value. |
+| number | Weight value. |
 
 **Example**
 
@@ -3113,12 +3211,11 @@ end
 
 ---
 
-### `LMapBlock:getWidth`
+#### `LMapBlock:getWidth`
 
 Get the block width measured in tile grid units.
 
 ```lua
--- signature
 LMapBlock:getWidth()
 ```
 
@@ -3126,16 +3223,15 @@ LMapBlock:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Block width. |
+| number | Block width. |
 
 ---
 
-### `LMapBlock:getWidthInSegments`
+#### `LMapBlock:getWidthInSegments`
 
 Returns the block width measured in segments.
 
 ```lua
--- signature
 LMapBlock:getWidthInSegments()
 ```
 
@@ -3143,7 +3239,7 @@ LMapBlock:getWidthInSegments()
 
 | Type | Description |
 |------|-------------|
-| `number` | Width in segments. |
+| number | Width in segments. |
 
 **Example**
 
@@ -3157,12 +3253,11 @@ end
 
 ---
 
-### `LMapBlock:setEdge`
+#### `LMapBlock:setEdge`
 
 Set edge type for a side and segment.
 
 ```lua
--- signature
 LMapBlock:setEdge(edge, segment, edge_type)
 ```
 
@@ -3170,18 +3265,17 @@ LMapBlock:setEdge(edge, segment, edge_type)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge` | `string` | Edge direction: "north", "east", "south", "west". |
-| `segment` | `number` | Segment index along the edge. |
-| `edge_type` | `number` | Edge type identifier. |
+| `edge` | string | Edge direction: "north", "east", "south", "west". |
+| `segment` | number | Segment index along the edge. |
+| `edge_type` | number | Edge type identifier. |
 
 ---
 
-### `LMapBlock:setEdgeOnly`
+#### `LMapBlock:setEdgeOnly`
 
 Set whether block must be on map edge.
 
 ```lua
--- signature
 LMapBlock:setEdgeOnly(edge_only)
 ```
 
@@ -3189,16 +3283,15 @@ LMapBlock:setEdgeOnly(edge_only)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge_only` | `boolean` | True if edge-only. |
+| `edge_only` | boolean | True if edge-only. |
 
 ---
 
-### `LMapBlock:setInteriorOnly`
+#### `LMapBlock:setInteriorOnly`
 
 Set whether block must be in interior.
 
 ```lua
--- signature
 LMapBlock:setInteriorOnly(interior_only)
 ```
 
@@ -3206,16 +3299,15 @@ LMapBlock:setInteriorOnly(interior_only)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `interior_only` | `boolean` | True if interior-only. |
+| `interior_only` | boolean | True if interior-only. |
 
 ---
 
-### `LMapBlock:setLevelSpan`
+#### `LMapBlock:setLevelSpan`
 
 Set multi-level span for this object.
 
 ```lua
--- signature
 LMapBlock:setLevelSpan(levels)
 ```
 
@@ -3223,16 +3315,15 @@ LMapBlock:setLevelSpan(levels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `levels` | `number` | Number of levels this block spans. |
+| `levels` | number | Number of levels this block spans. |
 
 ---
 
-### `LMapBlock:setName`
+#### `LMapBlock:setName`
 
 Set the map block's display or lookup name string value.
 
 ```lua
--- signature
 LMapBlock:setName(name)
 ```
 
@@ -3240,16 +3331,15 @@ LMapBlock:setName(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Block name. |
+| `name` | string | Block name. |
 
 ---
 
-### `LMapBlock:setSide`
+#### `LMapBlock:setSide`
 
 Sets the side ID for an edge segment, used for edge matching in map generation.
 
 ```lua
--- signature
 LMapBlock:setSide(edge, segment, sideId)
 ```
 
@@ -3257,9 +3347,9 @@ LMapBlock:setSide(edge, segment, sideId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `edge` | `string` | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
-| `segment` | `number` | Segment index along the edge (1-based). |
-| `sideId` | `number` | Side identifier for matching. |
+| `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
+| `segment` | number | Segment index along the edge (1-based). |
+| `sideId` | number | Side identifier for matching. |
 
 **Example**
 
@@ -3275,12 +3365,11 @@ end
 
 ---
 
-### `LMapBlock:setTile`
+#### `LMapBlock:setTile`
 
-Set a tile slot value — Lua userdata object exposed by the engine.
+Set a tile slot value â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
 ```
 
@@ -3288,21 +3377,20 @@ LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (0-based). |
-| `x` | `number` | Tile X position. |
-| `y` | `number` | Tile Y position. |
-| `slot` | `number` | Slot index. |
-| `tileset_id` | `number` | Tileset ID. |
-| `gid` | `number` | Tile GID. |
+| `layer` | number | Layer index (0-based). |
+| `x` | number | Tile X position. |
+| `y` | number | Tile Y position. |
+| `slot` | number | Slot index. |
+| `tileset_id` | number | Tileset ID. |
+| `gid` | number | Tile GID. |
 
 ---
 
-### `LMapBlock:setWeight`
+#### `LMapBlock:setWeight`
 
 Set block weight for random selection.
 
 ```lua
--- signature
 LMapBlock:setWeight(weight)
 ```
 
@@ -3310,16 +3398,15 @@ LMapBlock:setWeight(weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `weight` | `number` | Weight value (higher = more likely). |
+| `weight` | number | Weight value (higher = more likely). |
 
 ---
 
-### `LMapBlock:type`
+#### `LMapBlock:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapBlock:type()
 ```
 
@@ -3327,7 +3414,7 @@ LMapBlock:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapBlock"`. |
+| string | Always `"[LMapBlock](#lmapblock-handle)"`. |
 
 **Example**
 
@@ -3341,12 +3428,11 @@ end
 
 ---
 
-### `LMapBlock:typeOf`
+#### `LMapBlock:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapBlock:typeOf(name)
 ```
 
@@ -3354,13 +3440,13 @@ LMapBlock:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapBlock"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapBlock](#lmapblock-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -3375,14 +3461,19 @@ end
 
 ---
 
-## LMapGen
+## LMapGen Handle
 
-### `LMapGen:generate`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapGen:generate`
 
 Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
 
 ```lua
--- signature
 LMapGen:generate(scriptIdx, seed, layerName)
 ```
 
@@ -3390,15 +3481,15 @@ LMapGen:generate(scriptIdx, seed, layerName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scriptIdx?` | `number` | Script index in the group (1-based), or nil for default. |
-| `seed?` | `number` | Random seed, or nil for random. |
-| `layerName?` | `string` | Output layer name (default `"main"`). |
+| `scriptIdx?` | number | Script index in the group (1-based), or nil for default. |
+| `seed?` | number | Random seed, or nil for random. |
+| `layerName?` | string | Output layer name (default `"main"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileMap` | Generated tilemap. |
+| [LTileMap](#ltilemap-handle) | Generated tilemap. |
 
 **Example**
 
@@ -3414,12 +3505,11 @@ end
 
 ---
 
-### `LMapGen:type`
+#### `LMapGen:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapGen:type()
 ```
 
@@ -3427,7 +3517,7 @@ LMapGen:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapGen"`. |
+| string | Always `"[LMapGen](#lmapgen-handle)"`. |
 
 **Example**
 
@@ -3443,12 +3533,11 @@ end
 
 ---
 
-### `LMapGen:typeOf`
+#### `LMapGen:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapGen:typeOf(name)
 ```
 
@@ -3456,13 +3545,13 @@ LMapGen:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapGen"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapGen](#lmapgen-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -3478,14 +3567,19 @@ end
 
 ---
 
-## LMapGroup
+## LMapGroup Handle
 
-### `LMapGroup:addBlock`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapGroup:addBlock`
 
 Add a block to this group for this object.
 
 ```lua
--- signature
 LMapGroup:addBlock(block)
 ```
 
@@ -3493,16 +3587,15 @@ LMapGroup:addBlock(block)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `block` | `MapBlock` | Block to add. |
+| `block` | [LMapBlock](#lmapblock-handle) | Block to add. |
 
 ---
 
-### `LMapGroup:addScript`
+#### `LMapGroup:addScript`
 
 Add a script to this group for this object.
 
 ```lua
--- signature
 LMapGroup:addScript(script)
 ```
 
@@ -3510,16 +3603,15 @@ LMapGroup:addScript(script)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `script` | `MapScript` | Script to add. |
+| `script` | [LMapScript](#lmapscript-handle) | Script to add. |
 
 ---
 
-### `LMapGroup:getBlockCount`
+#### `LMapGroup:getBlockCount`
 
 Get the number of blocks for this object.
 
 ```lua
--- signature
 LMapGroup:getBlockCount()
 ```
 
@@ -3527,16 +3619,15 @@ LMapGroup:getBlockCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Block count. |
+| number | Block count. |
 
 ---
 
-### `LMapGroup:getName`
+#### `LMapGroup:getName`
 
 Get the display name of this map group object.
 
 ```lua
--- signature
 LMapGroup:getName()
 ```
 
@@ -3544,16 +3635,15 @@ LMapGroup:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Group name. |
+| string | Group name. |
 
 ---
 
-### `LMapGroup:getScriptCount`
+#### `LMapGroup:getScriptCount`
 
 Returns how many scripts are attached to this group.
 
 ```lua
--- signature
 LMapGroup:getScriptCount()
 ```
 
@@ -3561,7 +3651,7 @@ LMapGroup:getScriptCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Script count. |
+| number | Script count. |
 
 **Example**
 
@@ -3577,12 +3667,11 @@ end
 
 ---
 
-### `LMapGroup:removeBlock`
+#### `LMapGroup:removeBlock`
 
 Removes a block from the group by index.
 
 ```lua
--- signature
 LMapGroup:removeBlock(idx)
 ```
 
@@ -3590,7 +3679,7 @@ LMapGroup:removeBlock(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Block index (1-based). |
+| `idx` | number | Block index (1-based). |
 
 **Example**
 
@@ -3606,12 +3695,11 @@ end
 
 ---
 
-### `LMapGroup:type`
+#### `LMapGroup:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapGroup:type()
 ```
 
@@ -3619,7 +3707,7 @@ LMapGroup:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapGroup"`. |
+| string | Always `"[LMapGroup](#lmapgroup-handle)"`. |
 
 **Example**
 
@@ -3635,12 +3723,11 @@ end
 
 ---
 
-### `LMapGroup:typeOf`
+#### `LMapGroup:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapGroup:typeOf(name)
 ```
 
@@ -3648,13 +3735,13 @@ LMapGroup:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapGroup"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapGroup](#lmapgroup-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -3668,14 +3755,19 @@ end
 
 ---
 
-## LMapScript
+## LMapScript Handle
 
-### `LMapScript:addStep`
+### Fields
 
-Add a generation step — Lua userdata object exposed by the engine.
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMapScript:addStep`
+
+Add a generation step â€” Lua userdata object exposed by the engine.
 
 ```lua
--- signature
 LMapScript:addStep(step_type, opts)
 ```
 
@@ -3683,28 +3775,26 @@ LMapScript:addStep(step_type, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `step_type` | `string` | Step type name. |
-| `opts?` | `table` | Step configuration options. |
+| `step_type` | string | Step type name. |
+| `opts?` | table | Step configuration options. |
 
 ---
 
-### `LMapScript:clear`
+#### `LMapScript:clear`
 
 Clear all queued script steps from this map script.
 
 ```lua
--- signature
 LMapScript:clear()
 ```
 
 ---
 
-### `LMapScript:getName`
+#### `LMapScript:getName`
 
 Get the script name for this object.
 
 ```lua
--- signature
 LMapScript:getName()
 ```
 
@@ -3712,16 +3802,15 @@ LMapScript:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Script name. |
+| string | Script name. |
 
 ---
 
-### `LMapScript:getStepCount`
+#### `LMapScript:getStepCount`
 
 Get the number of steps for this object.
 
 ```lua
--- signature
 LMapScript:getStepCount()
 ```
 
@@ -3729,16 +3818,15 @@ LMapScript:getStepCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Step count. |
+| number | Step count. |
 
 ---
 
-### `LMapScript:type`
+#### `LMapScript:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LMapScript:type()
 ```
 
@@ -3746,7 +3834,7 @@ LMapScript:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LMapScript"`. |
+| string | Always `"[LMapScript](#lmapscript-handle)"`. |
 
 **Example**
 
@@ -3760,12 +3848,11 @@ end
 
 ---
 
-### `LMapScript:typeOf`
+#### `LMapScript:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LMapScript:typeOf(name)
 ```
 
@@ -3773,13 +3860,13 @@ LMapScript:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LMapScript"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapScript](#lmapscript-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -3793,14 +3880,19 @@ end
 
 ---
 
-## LTileMap
+## LTileMap Handle
 
-### `LTileMap:addLayer`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTileMap:addLayer`
 
 Creates a new tile layer with the given name and dimensions.
 
 ```lua
--- signature
 LTileMap:addLayer(name, w, h)
 ```
 
@@ -3808,15 +3900,15 @@ LTileMap:addLayer(name, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name. |
-| `w` | `number` | Width in tiles. |
-| `h` | `number` | Height in tiles. |
+| `name` | string | Layer name. |
+| `w` | number | Width in tiles. |
+| `h` | number | Height in tiles. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Index of the new layer (1-based). |
+| number | Index of the new layer (1-based). |
 
 **Example**
 
@@ -3831,12 +3923,11 @@ end
 
 ---
 
-### `LTileMap:addTileSet`
+#### `LTileMap:addTileSet`
 
 Attaches a tileset to this map for tile rendering.
 
 ```lua
--- signature
 LTileMap:addTileSet(tileSet)
 ```
 
@@ -3844,7 +3935,7 @@ LTileMap:addTileSet(tileSet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | `LTileSet` | Tileset to add. |
+| `tileSet` | [LTileSet](#ltileset-handle) | Tileset to add. |
 
 **Example**
 
@@ -3862,12 +3953,11 @@ end
 
 ---
 
-### `LTileMap:applyAutoTile`
+#### `LTileMap:applyAutoTile`
 
 Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
 
 ```lua
--- signature
 LTileMap:applyAutoTile(layer, typeName)
 ```
 
@@ -3875,8 +3965,8 @@ LTileMap:applyAutoTile(layer, typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `typeName` | `string` | Tile type name whose rules to apply. |
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
 
 **Example**
 
@@ -3901,12 +3991,11 @@ end
 
 ---
 
-### `LTileMap:applyAutoTile8`
+#### `LTileMap:applyAutoTile8`
 
 Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
 
 ```lua
--- signature
 LTileMap:applyAutoTile8(layer, typeName)
 ```
 
@@ -3914,8 +4003,8 @@ LTileMap:applyAutoTile8(layer, typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `typeName` | `string` | Tile type name whose rules to apply. |
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
 
 **Example**
 
@@ -3941,12 +4030,11 @@ end
 
 ---
 
-### `LTileMap:applyAutoTile8At`
+#### `LTileMap:applyAutoTile8At`
 
 Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
 
 ```lua
--- signature
 LTileMap:applyAutoTile8At(layer, x, y, typeName)
 ```
 
@@ -3954,10 +4042,10 @@ LTileMap:applyAutoTile8At(layer, x, y, typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
-| `typeName` | `string` | Tile type name whose rules to apply. |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
 
 **Example**
 
@@ -3979,12 +4067,11 @@ end
 
 ---
 
-### `LTileMap:applyAutoTileAt`
+#### `LTileMap:applyAutoTileAt`
 
 Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
 
 ```lua
--- signature
 LTileMap:applyAutoTileAt(layer, x, y, typeName)
 ```
 
@@ -3992,10 +4079,10 @@ LTileMap:applyAutoTileAt(layer, x, y, typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
-| `typeName` | `string` | Tile type name whose rules to apply. |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
 
 **Example**
 
@@ -4017,12 +4104,11 @@ end
 
 ---
 
-### `LTileMap:checkEntities`
+#### `LTileMap:checkEntities`
 
 Checks a list of entities against registered tile-enter callbacks on a layer.
 
 ```lua
--- signature
 LTileMap:checkEntities(layer, entities)
 ```
 
@@ -4030,8 +4116,8 @@ LTileMap:checkEntities(layer, entities)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `entities` | `table` | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields. |
+| `layer` | number | Layer index (1-based). |
+| `entities` | table | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields. |
 
 **Example**
 
@@ -4053,12 +4139,11 @@ end
 
 ---
 
-### `LTileMap:clearTile`
+#### `LTileMap:clearTile`
 
 Removes the tile at a specific grid position, setting it to empty (GID 0).
 
 ```lua
--- signature
 LTileMap:clearTile(layer, x, y)
 ```
 
@@ -4066,9 +4151,9 @@ LTileMap:clearTile(layer, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
 
 **Example**
 
@@ -4085,12 +4170,11 @@ end
 
 ---
 
-### `LTileMap:drawToImage`
+#### `LTileMap:drawToImage`
 
 Rasterizes the map into an image using the given tile size, returning an image handle.
 
 ```lua
--- signature
 LTileMap:drawToImage(tileSize)
 ```
 
@@ -4098,13 +4182,13 @@ LTileMap:drawToImage(tileSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSize` | `number` | Pixel size of each tile in the output image. |
+| `tileSize` | number | Pixel size of each tile in the output image. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImage` | Rasterized image of the map. |
+| LImage | Rasterized image of the map. |
 
 **Example**
 
@@ -4121,12 +4205,11 @@ end
 
 ---
 
-### `LTileMap:fill`
+#### `LTileMap:fill`
 
 Fills every cell of a layer with the given GID.
 
 ```lua
--- signature
 LTileMap:fill(layer, gid)
 ```
 
@@ -4134,8 +4217,8 @@ LTileMap:fill(layer, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `gid` | `number` | Global tile ID to fill with. |
+| `layer` | number | Layer index (1-based). |
+| `gid` | number | Global tile ID to fill with. |
 
 **Example**
 
@@ -4151,12 +4234,11 @@ end
 
 ---
 
-### `LTileMap:findTilesByGid`
+#### `LTileMap:findTilesByGid`
 
 Returns all positions on a layer that contain a specific GID.
 
 ```lua
--- signature
 LTileMap:findTilesByGid(layer, gid)
 ```
 
@@ -4164,14 +4246,14 @@ LTileMap:findTilesByGid(layer, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `gid` | `number` | Global tile ID to search for. |
+| `layer` | number | Layer index (1-based). |
+| `gid` | number | Global tile ID to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileMapFindTilesByGidResult` | Array of `{x=number, y=number}` positions. |
+| LTileMapFindTilesByGidResult | Array of `{x=number, y=number}` positions. |
 
 **Example**
 
@@ -4195,12 +4277,11 @@ end
 
 ---
 
-### `LTileMap:fireTileExit`
+#### `LTileMap:fireTileExit`
 
 Manually fires the tile-exit callback for a specific GID and entity at a tile position.
 
 ```lua
--- signature
 LTileMap:fireTileExit(gid, entity, tx, ty)
 ```
 
@@ -4208,10 +4289,10 @@ LTileMap:fireTileExit(gid, entity, tx, ty)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gid` | `number` | Global tile ID. |
-| `entity` | `table` | Entity table to pass to the callback. |
-| `tx` | `number` | Tile column. |
-| `ty` | `number` | Tile row. |
+| `gid` | number | Global tile ID. |
+| `entity` | table | Entity table to pass to the callback. |
+| `tx` | number | Tile column. |
+| `ty` | number | Tile row. |
 
 **Example**
 
@@ -4233,12 +4314,11 @@ end
 
 ---
 
-### `LTileMap:fireTileStep`
+#### `LTileMap:fireTileStep`
 
 Manually fires the tile-step callback for a specific GID and entity at a tile position.
 
 ```lua
--- signature
 LTileMap:fireTileStep(gid, entity, tx, ty)
 ```
 
@@ -4246,10 +4326,10 @@ LTileMap:fireTileStep(gid, entity, tx, ty)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gid` | `number` | Global tile ID. |
-| `entity` | `table` | Entity table to pass to the callback. |
-| `tx` | `number` | Tile column. |
-| `ty` | `number` | Tile row. |
+| `gid` | number | Global tile ID. |
+| `entity` | table | Entity table to pass to the callback. |
+| `tx` | number | Tile column. |
+| `ty` | number | Tile row. |
 
 **Example**
 
@@ -4271,12 +4351,11 @@ end
 
 ---
 
-### `LTileMap:getChunkSize`
+#### `LTileMap:getChunkSize`
 
 Returns the chunk size used for internal tile storage.
 
 ```lua
--- signature
 LTileMap:getChunkSize()
 ```
 
@@ -4284,7 +4363,7 @@ LTileMap:getChunkSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Chunk size in tiles per side. |
+| number | Chunk size in tiles per side. |
 
 **Example**
 
@@ -4298,12 +4377,11 @@ end
 
 ---
 
-### `LTileMap:getLayerColor`
+#### `LTileMap:getLayerColor`
 
 Returns the tint color of a layer as four RGBA components.
 
 ```lua
--- signature
 LTileMap:getLayerColor(idx)
 ```
 
@@ -4311,16 +4389,16 @@ LTileMap:getLayerColor(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
+| `idx` | number | Layer index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red (0..1). |
-| `number` | b Green (0..1). |
-| `number` | c Blue (0..1). |
-| `number` | d Alpha (0..1). |
+| number | Red (0..1). |
+| number | Green (0..1). |
+| number | Blue (0..1). |
+| number | Alpha (0..1). |
 
 **Example**
 
@@ -4336,12 +4414,11 @@ end
 
 ---
 
-### `LTileMap:getLayerCount`
+#### `LTileMap:getLayerCount`
 
 Returns the total number of layers in this map.
 
 ```lua
--- signature
 LTileMap:getLayerCount()
 ```
 
@@ -4349,7 +4426,7 @@ LTileMap:getLayerCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Layer count. |
+| number | Layer count. |
 
 **Example**
 
@@ -4364,12 +4441,11 @@ end
 
 ---
 
-### `LTileMap:getLayerName`
+#### `LTileMap:getLayerName`
 
 Returns the name of a layer by index.
 
 ```lua
--- signature
 LTileMap:getLayerName(idx)
 ```
 
@@ -4377,13 +4453,13 @@ LTileMap:getLayerName(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
+| `idx` | number | Layer index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Layer name, or nil if index is out of range. |
+| string | Layer name, or nil if index is out of range. |
 
 **Example**
 
@@ -4398,12 +4474,11 @@ end
 
 ---
 
-### `LTileMap:getLayerOffset`
+#### `LTileMap:getLayerOffset`
 
 Returns the pixel offset of a layer.
 
 ```lua
--- signature
 LTileMap:getLayerOffset(idx)
 ```
 
@@ -4411,14 +4486,14 @@ LTileMap:getLayerOffset(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
+| `idx` | number | Layer index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Horizontal offset. |
-| `number` | b Vertical offset. |
+| number | Horizontal offset. |
+| number | Vertical offset. |
 
 **Example**
 
@@ -4434,12 +4509,11 @@ end
 
 ---
 
-### `LTileMap:getLayerParallax`
+#### `LTileMap:getLayerParallax`
 
 Returns the parallax scroll factor of a layer.
 
 ```lua
--- signature
 LTileMap:getLayerParallax(idx)
 ```
 
@@ -4447,14 +4521,14 @@ LTileMap:getLayerParallax(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
+| `idx` | number | Layer index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Horizontal parallax factor. |
-| `number` | b Vertical parallax factor. |
+| number | Horizontal parallax factor. |
+| number | Vertical parallax factor. |
 
 **Example**
 
@@ -4470,12 +4544,11 @@ end
 
 ---
 
-### `LTileMap:getLayerVisible`
+#### `LTileMap:getLayerVisible`
 
 Returns whether a layer is currently visible.
 
 ```lua
--- signature
 LTileMap:getLayerVisible(idx)
 ```
 
@@ -4483,13 +4556,13 @@ LTileMap:getLayerVisible(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
+| `idx` | number | Layer index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the layer is visible. |
+| boolean | True if the layer is visible. |
 
 **Example**
 
@@ -4504,12 +4577,11 @@ end
 
 ---
 
-### `LTileMap:getOrientation`
+#### `LTileMap:getOrientation`
 
 Returns the current map orientation as a string.
 
 ```lua
--- signature
 LTileMap:getOrientation()
 ```
 
@@ -4517,7 +4589,7 @@ LTileMap:getOrientation()
 
 | Type | Description |
 |------|-------------|
-| `string` | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+| string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
 
 **Example**
 
@@ -4532,12 +4604,11 @@ end
 
 ---
 
-### `LTileMap:getTile`
+#### `LTileMap:getTile`
 
 Returns the tile GID at a specific grid position on a layer.
 
 ```lua
--- signature
 LTileMap:getTile(layer, x, y)
 ```
 
@@ -4545,15 +4616,15 @@ LTileMap:getTile(layer, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Global tile ID at that position. |
+| number | Global tile ID at that position. |
 
 **Example**
 
@@ -4569,12 +4640,11 @@ end
 
 ---
 
-### `LTileMap:getTileDimensions`
+#### `LTileMap:getTileDimensions`
 
 Returns both tile width and height in pixels.
 
 ```lua
--- signature
 LTileMap:getTileDimensions()
 ```
 
@@ -4582,8 +4652,8 @@ LTileMap:getTileDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Tile width. |
-| `number` | b Tile height. |
+| number | Tile width. |
+| number | Tile height. |
 
 **Example**
 
@@ -4597,12 +4667,11 @@ end
 
 ---
 
-### `LTileMap:getTileHeight`
+#### `LTileMap:getTileHeight`
 
 Returns the height of a single tile in pixels for this map.
 
 ```lua
--- signature
 LTileMap:getTileHeight()
 ```
 
@@ -4610,7 +4679,7 @@ LTileMap:getTileHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile height in pixels. |
+| number | Tile height in pixels. |
 
 **Example**
 
@@ -4624,12 +4693,11 @@ end
 
 ---
 
-### `LTileMap:getTileSet`
+#### `LTileMap:getTileSet`
 
 Returns the tileset at the given index.
 
 ```lua
--- signature
 LTileMap:getTileSet(idx)
 ```
 
@@ -4637,13 +4705,13 @@ LTileMap:getTileSet(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Tileset index (1-based). |
+| `idx` | number | Tileset index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileSet` | The tileset, or nil if index is out of range. |
+| [LTileSet](#ltileset-handle) | The tileset, or nil if index is out of range. |
 
 **Example**
 
@@ -4662,12 +4730,11 @@ end
 
 ---
 
-### `LTileMap:getTileSetCount`
+#### `LTileMap:getTileSetCount`
 
 Returns how many tilesets are attached to this map.
 
 ```lua
--- signature
 LTileMap:getTileSetCount()
 ```
 
@@ -4675,7 +4742,7 @@ LTileMap:getTileSetCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tileset count. |
+| number | Tileset count. |
 
 **Example**
 
@@ -4693,12 +4760,11 @@ end
 
 ---
 
-### `LTileMap:getTileWidth`
+#### `LTileMap:getTileWidth`
 
 Returns the width of a single tile in pixels for this map.
 
 ```lua
--- signature
 LTileMap:getTileWidth()
 ```
 
@@ -4706,7 +4772,7 @@ LTileMap:getTileWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile width in pixels. |
+| number | Tile width in pixels. |
 
 **Example**
 
@@ -4720,12 +4786,11 @@ end
 
 ---
 
-### `LTileMap:getViewport`
+#### `LTileMap:getViewport`
 
 Returns the current viewport rectangle, or nils if none is set.
 
 ```lua
--- signature
 LTileMap:getViewport()
 ```
 
@@ -4733,10 +4798,10 @@ LTileMap:getViewport()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Left edge. |
-| `number` | b Top edge. |
-| `number` | c Width. |
-| `number` | d Height. |
+| number | Left edge. |
+| number | Top edge. |
+| number | Width. |
+| number | Height. |
 
 **Example**
 
@@ -4752,12 +4817,11 @@ end
 
 ---
 
-### `LTileMap:isSolid`
+#### `LTileMap:isSolid`
 
 Checks whether the tile at a given position on a layer is solid.
 
 ```lua
--- signature
 LTileMap:isSolid(layer, x, y)
 ```
 
@@ -4765,15 +4829,15 @@ LTileMap:isSolid(layer, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the tile at that position is marked solid. |
+| boolean | True if the tile at that position is marked solid. |
 
 **Example**
 
@@ -4795,12 +4859,11 @@ end
 
 ---
 
-### `LTileMap:onTileEnter`
+#### `LTileMap:onTileEnter`
 
 Registers a callback invoked when an entity enters a tile with the given GID.
 
 ```lua
--- signature
 LTileMap:onTileEnter(gid, func)
 ```
 
@@ -4808,8 +4871,8 @@ LTileMap:onTileEnter(gid, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gid` | `number` | Global tile ID to watch for. |
-| `func` | `function` | Callback receiving `(wx, wy, tx, ty)`. |
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(wx, wy, tx, ty)`. |
 
 **Example**
 
@@ -4825,12 +4888,11 @@ end
 
 ---
 
-### `LTileMap:onTileExit`
+#### `LTileMap:onTileExit`
 
 Registers a callback invoked when an entity leaves a tile with the given GID.
 
 ```lua
--- signature
 LTileMap:onTileExit(gid, func)
 ```
 
@@ -4838,8 +4900,8 @@ LTileMap:onTileExit(gid, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gid` | `number` | Global tile ID to watch for. |
-| `func` | `function` | Callback receiving `(entity, tx, ty)`. |
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(entity, tx, ty)`. |
 
 **Example**
 
@@ -4855,12 +4917,11 @@ end
 
 ---
 
-### `LTileMap:onTileStep`
+#### `LTileMap:onTileStep`
 
 Registers a callback invoked each frame an entity remains on a tile with the given GID.
 
 ```lua
--- signature
 LTileMap:onTileStep(gid, func)
 ```
 
@@ -4868,8 +4929,8 @@ LTileMap:onTileStep(gid, func)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gid` | `number` | Global tile ID to watch for. |
-| `func` | `function` | Callback receiving `(entity, tx, ty)`. |
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(entity, tx, ty)`. |
 
 **Example**
 
@@ -4885,12 +4946,11 @@ end
 
 ---
 
-### `LTileMap:rectOverlapsSolid`
+#### `LTileMap:rectOverlapsSolid`
 
 Tests whether a world-space rectangle overlaps any solid tile on a layer.
 
 ```lua
--- signature
 LTileMap:rectOverlapsSolid(layer, x, y, w, h)
 ```
 
@@ -4898,17 +4958,17 @@ LTileMap:rectOverlapsSolid(layer, x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Rectangle left edge in world pixels. |
-| `y` | `number` | Rectangle top edge in world pixels. |
-| `w` | `number` | Rectangle width in pixels. |
-| `h` | `number` | Rectangle height in pixels. |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Rectangle left edge in world pixels. |
+| `y` | number | Rectangle top edge in world pixels. |
+| `w` | number | Rectangle width in pixels. |
+| `h` | number | Rectangle height in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if any solid tile is overlapped. |
+| boolean | True if any solid tile is overlapped. |
 
 **Example**
 
@@ -4930,12 +4990,11 @@ end
 
 ---
 
-### `LTileMap:render`
+#### `LTileMap:render`
 
 Submits render commands for all visible tiles, optionally offset by a scroll position.
 
 ```lua
--- signature
 LTileMap:render(ox, oy)
 ```
 
@@ -4943,8 +5002,8 @@ LTileMap:render(ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox?` | `number` | Horizontal scroll offset (default 0). |
-| `oy?` | `number` | Vertical scroll offset (default 0). |
+| `ox?` | number | Horizontal scroll offset (default 0). |
+| `oy?` | number | Vertical scroll offset (default 0). |
 
 **Example**
 
@@ -4963,12 +5022,11 @@ end
 
 ---
 
-### `LTileMap:setLayerColor`
+#### `LTileMap:setLayerColor`
 
 Sets the tint color for an entire layer.
 
 ```lua
--- signature
 LTileMap:setLayerColor(idx, r, g, b, a)
 ```
 
@@ -4976,11 +5034,11 @@ LTileMap:setLayerColor(idx, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
-| `r` | `number` | Red channel (0..1). |
-| `g` | `number` | Green channel (0..1). |
-| `b` | `number` | Blue channel (0..1). |
-| `a` | `number` | Alpha channel (0..1). |
+| `idx` | number | Layer index (1-based). |
+| `r` | number | Red channel (0..1). |
+| `g` | number | Green channel (0..1). |
+| `b` | number | Blue channel (0..1). |
+| `a` | number | Alpha channel (0..1). |
 
 **Example**
 
@@ -4996,12 +5054,11 @@ end
 
 ---
 
-### `LTileMap:setLayerOffset`
+#### `LTileMap:setLayerOffset`
 
 Sets the pixel offset for a layer, shifting all tiles during rendering.
 
 ```lua
--- signature
 LTileMap:setLayerOffset(idx, ox, oy)
 ```
 
@@ -5009,9 +5066,9 @@ LTileMap:setLayerOffset(idx, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
-| `ox` | `number` | Horizontal offset in pixels. |
-| `oy` | `number` | Vertical offset in pixels. |
+| `idx` | number | Layer index (1-based). |
+| `ox` | number | Horizontal offset in pixels. |
+| `oy` | number | Vertical offset in pixels. |
 
 **Example**
 
@@ -5027,12 +5084,11 @@ end
 
 ---
 
-### `LTileMap:setLayerParallax`
+#### `LTileMap:setLayerParallax`
 
 Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
 
 ```lua
--- signature
 LTileMap:setLayerParallax(idx, px, py)
 ```
 
@@ -5040,9 +5096,9 @@ LTileMap:setLayerParallax(idx, px, py)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
-| `px` | `number` | Horizontal parallax factor. |
-| `py` | `number` | Vertical parallax factor. |
+| `idx` | number | Layer index (1-based). |
+| `px` | number | Horizontal parallax factor. |
+| `py` | number | Vertical parallax factor. |
 
 **Example**
 
@@ -5058,12 +5114,11 @@ end
 
 ---
 
-### `LTileMap:setLayerVisible`
+#### `LTileMap:setLayerVisible`
 
 Sets whether a layer is drawn during rendering.
 
 ```lua
--- signature
 LTileMap:setLayerVisible(idx, visible)
 ```
 
@@ -5071,8 +5126,8 @@ LTileMap:setLayerVisible(idx, visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Layer index (1-based). |
-| `visible` | `boolean` | True to show, false to hide. |
+| `idx` | number | Layer index (1-based). |
+| `visible` | boolean | True to show, false to hide. |
 
 **Example**
 
@@ -5088,12 +5143,11 @@ end
 
 ---
 
-### `LTileMap:setOrientation`
+#### `LTileMap:setOrientation`
 
 Sets the map orientation, affecting coordinate transforms and rendering.
 
 ```lua
--- signature
 LTileMap:setOrientation(orientation)
 ```
 
@@ -5101,7 +5155,7 @@ LTileMap:setOrientation(orientation)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `orientation` | `string` | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+| `orientation` | string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
 
 **Example**
 
@@ -5117,12 +5171,11 @@ end
 
 ---
 
-### `LTileMap:setTile`
+#### `LTileMap:setTile`
 
 Sets the tile GID at a specific grid position on a layer.
 
 ```lua
--- signature
 LTileMap:setTile(layer, x, y, gid)
 ```
 
@@ -5130,10 +5183,10 @@ LTileMap:setTile(layer, x, y, gid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
-| `gid` | `number` | Global tile ID to place. |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `gid` | number | Global tile ID to place. |
 
 **Example**
 
@@ -5149,12 +5202,11 @@ end
 
 ---
 
-### `LTileMap:setTileTint`
+#### `LTileMap:setTileTint`
 
 Overrides the color tint for a single tile at a given position.
 
 ```lua
--- signature
 LTileMap:setTileTint(layer, x, y, r, g, b, a)
 ```
 
@@ -5162,13 +5214,13 @@ LTileMap:setTileTint(layer, x, y, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Column (1-based). |
-| `y` | `number` | Row (1-based). |
-| `r` | `number` | Red channel (0..1). |
-| `g` | `number` | Green channel (0..1). |
-| `b` | `number` | Blue channel (0..1). |
-| `a` | `number` | Alpha channel (0..1). |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `r` | number | Red channel (0..1). |
+| `g` | number | Green channel (0..1). |
+| `b` | number | Blue channel (0..1). |
+| `a` | number | Alpha channel (0..1). |
 
 **Example**
 
@@ -5189,12 +5241,11 @@ end
 
 ---
 
-### `LTileMap:setViewport`
+#### `LTileMap:setViewport`
 
 Sets the visible area of the map for culling during rendering.
 
 ```lua
--- signature
 LTileMap:setViewport(x, y, w, h)
 ```
 
@@ -5202,10 +5253,10 @@ LTileMap:setViewport(x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Left edge in world pixels. |
-| `y` | `number` | Top edge in world pixels. |
-| `w` | `number` | Viewport width in pixels. |
-| `h` | `number` | Viewport height in pixels. |
+| `x` | number | Left edge in world pixels. |
+| `y` | number | Top edge in world pixels. |
+| `w` | number | Viewport width in pixels. |
+| `h` | number | Viewport height in pixels. |
 
 **Example**
 
@@ -5221,12 +5272,11 @@ end
 
 ---
 
-### `LTileMap:sweepRect`
+#### `LTileMap:sweepRect`
 
 Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
 
 ```lua
--- signature
 LTileMap:sweepRect(layer, x, y, w, h, dx, dy)
 ```
 
@@ -5234,24 +5284,24 @@ LTileMap:sweepRect(layer, x, y, w, h, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `x` | `number` | Rectangle left edge in world pixels. |
-| `y` | `number` | Rectangle top edge in world pixels. |
-| `w` | `number` | Rectangle width in pixels. |
-| `h` | `number` | Rectangle height in pixels. |
-| `dx` | `number` | Horizontal movement delta. |
-| `dy` | `number` | Vertical movement delta. |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Rectangle left edge in world pixels. |
+| `y` | number | Rectangle top edge in world pixels. |
+| `w` | number | Rectangle width in pixels. |
+| `h` | number | Rectangle height in pixels. |
+| `dx` | number | Horizontal movement delta. |
+| `dy` | number | Vertical movement delta. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Contact X position. |
-| `number` | b Contact Y position. |
-| `number` | c Normal X component. |
-| `number` | d Normal Y component. |
-| `number` | e Tile column hit (1-based, or 0 if no hit). |
-| `number` | f Tile row hit (1-based, or 0 if no hit). |
+| number | Contact X position. |
+| number | Contact Y position. |
+| number | Normal X component. |
+| number | Normal Y component. |
+| number | Tile column hit (1-based; or 0 if no hit). |
+| number | Tile row hit (1-based; or 0 if no hit). |
 
 **Example**
 
@@ -5275,12 +5325,11 @@ end
 
 ---
 
-### `LTileMap:tileToWorld`
+#### `LTileMap:tileToWorld`
 
 Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 
 ```lua
--- signature
 LTileMap:tileToWorld(tx, ty)
 ```
 
@@ -5288,15 +5337,15 @@ LTileMap:tileToWorld(tx, ty)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Tile column (1-based). |
-| `ty` | `number` | Tile row (1-based). |
+| `tx` | number | Tile column (1-based). |
+| `ty` | number | Tile row (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a World X position in pixels. |
-| `number` | b World Y position in pixels. |
+| number | World X position in pixels. |
+| number | World Y position in pixels. |
 
 **Example**
 
@@ -5312,12 +5361,11 @@ end
 
 ---
 
-### `LTileMap:tileTypeIndex`
+#### `LTileMap:tileTypeIndex`
 
 Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
 
 ```lua
--- signature
 LTileMap:tileTypeIndex(layer)
 ```
 
@@ -5325,13 +5373,13 @@ LTileMap:tileTypeIndex(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
+| `layer` | number | Layer index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileMapTileTypeIndexResult` | Table keyed by GID, each value an array of `{x=number, y=number}`. |
+| LTileMapTileTypeIndexResult | Table keyed by GID, each value an array of `{x=number, y=number}`. |
 
 **Example**
 
@@ -5355,12 +5403,11 @@ end
 
 ---
 
-### `LTileMap:toNavGrid`
+#### `LTileMap:toNavGrid`
 
 Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
 
 ```lua
--- signature
 LTileMap:toNavGrid(layer, gids)
 ```
 
@@ -5368,14 +5415,14 @@ LTileMap:toNavGrid(layer, gids)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer index (1-based). |
-| `gids` | `table` | Array of walkable GIDs. |
+| `layer` | number | Layer index (1-based). |
+| `gids` | table | Array of walkable GIDs. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean[]` | Flat walkable grid (true = walkable), row-major order. |
+| boolean[] | Flat walkable grid (true = walkable), row-major order. |
 
 **Example**
 
@@ -5399,12 +5446,11 @@ end
 
 ---
 
-### `LTileMap:type`
+#### `LTileMap:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LTileMap:type()
 ```
 
@@ -5412,7 +5458,7 @@ LTileMap:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LTileMap"`. |
+| string | Always `"[LTileMap](#ltilemap-handle)"`. |
 
 **Example**
 
@@ -5425,12 +5471,11 @@ end
 
 ---
 
-### `LTileMap:typeOf`
+#### `LTileMap:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LTileMap:typeOf(name)
 ```
 
@@ -5438,13 +5483,13 @@ LTileMap:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LTileMap"` or `"Object"`. |
+| boolean | True if `name` is `"[LTileMap](#ltilemap-handle)"` or `"Object"`. |
 
 **Example**
 
@@ -5457,12 +5502,11 @@ end
 
 ---
 
-### `LTileMap:update`
+#### `LTileMap:update`
 
 Advances tile animations by the given delta time.
 
 ```lua
--- signature
 LTileMap:update(dt)
 ```
 
@@ -5470,7 +5514,7 @@ LTileMap:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Time elapsed in seconds since last update. |
+| `dt` | number | Time elapsed in seconds since last update. |
 
 **Example**
 
@@ -5489,12 +5533,11 @@ end
 
 ---
 
-### `LTileMap:worldToTile`
+#### `LTileMap:worldToTile`
 
 Converts world-space pixel coordinates to tile-grid coordinates.
 
 ```lua
--- signature
 LTileMap:worldToTile(wx, wy)
 ```
 
@@ -5502,15 +5545,15 @@ LTileMap:worldToTile(wx, wy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wx` | `number` | World X position in pixels. |
-| `wy` | `number` | World Y position in pixels. |
+| `wx` | number | World X position in pixels. |
+| `wy` | number | World Y position in pixels. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Tile column (1-based). |
-| `number` | b Tile row (1-based). |
+| number | Tile column (1-based). |
+| number | Tile row (1-based). |
 
 **Example**
 
@@ -5526,14 +5569,19 @@ end
 
 ---
 
-## LTileSet
+## LTileSet Handle
 
-### `LTileSet:getAnimation`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTileSet:getAnimation`
 
 Returns the animation frames for a tile, or nil if none are set.
 
 ```lua
--- signature
 LTileSet:getAnimation(tileId)
 ```
 
@@ -5541,13 +5589,13 @@ LTileSet:getAnimation(tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID to query (1-based). |
+| `tileId` | number | Tile ID to query (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileSetGetAnimationResult` | Array of `{tileid=number, duration=number}` frames, or nil. |
+| LTileSetGetAnimationResult | Array of `{tileid=number, duration=number}` frames, or nil. |
 
 **Example**
 
@@ -5573,12 +5621,11 @@ end
 
 ---
 
-### `LTileSet:getAutoTileId`
+#### `LTileSet:getAutoTileId`
 
 Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
 
 ```lua
--- signature
 LTileSet:getAutoTileId(typeName, bitmask)
 ```
 
@@ -5586,14 +5633,14 @@ LTileSet:getAutoTileId(typeName, bitmask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | Logical tile type name. |
-| `bitmask` | `number` | 4-bit neighbor bitmask (0..15). |
+| `typeName` | string | Logical tile type name. |
+| `bitmask` | number | 4-bit neighbor bitmask (0..15). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Resolved tile ID (1-based), or nil if no rule matches. |
+| number | Resolved tile ID (1-based), or nil if no rule matches. |
 
 **Example**
 
@@ -5609,12 +5656,11 @@ end
 
 ---
 
-### `LTileSet:getAutoTileId8`
+#### `LTileSet:getAutoTileId8`
 
 Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
 
 ```lua
--- signature
 LTileSet:getAutoTileId8(typeName, bitmask)
 ```
 
@@ -5622,14 +5668,14 @@ LTileSet:getAutoTileId8(typeName, bitmask)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | Logical tile type name. |
-| `bitmask` | `number` | 8-bit neighbor bitmask (0..255). |
+| `typeName` | string | Logical tile type name. |
+| `bitmask` | number | 8-bit neighbor bitmask (0..255). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Resolved tile ID (1-based), or nil if no rule matches. |
+| number | Resolved tile ID (1-based), or nil if no rule matches. |
 
 **Example**
 
@@ -5645,12 +5691,11 @@ end
 
 ---
 
-### `LTileSet:getColumns`
+#### `LTileSet:getColumns`
 
 Returns the number of columns in the tileset atlas image.
 
 ```lua
--- signature
 LTileSet:getColumns()
 ```
 
@@ -5658,7 +5703,7 @@ LTileSet:getColumns()
 
 | Type | Description |
 |------|-------------|
-| `number` | Column count. |
+| number | Column count. |
 
 **Example**
 
@@ -5671,12 +5716,11 @@ end
 
 ---
 
-### `LTileSet:getFirstGid`
+#### `LTileSet:getFirstGid`
 
 Returns the first global tile ID (GID) of this tileset.
 
 ```lua
--- signature
 LTileSet:getFirstGid()
 ```
 
@@ -5684,7 +5728,7 @@ LTileSet:getFirstGid()
 
 | Type | Description |
 |------|-------------|
-| `number` | First GID assigned to this tileset. |
+| number | First GID assigned to this tileset. |
 
 **Example**
 
@@ -5697,12 +5741,11 @@ end
 
 ---
 
-### `LTileSet:getMargin`
+#### `LTileSet:getMargin`
 
 Returns the margin around the edge of the atlas image, in pixels.
 
 ```lua
--- signature
 LTileSet:getMargin()
 ```
 
@@ -5710,7 +5753,7 @@ LTileSet:getMargin()
 
 | Type | Description |
 |------|-------------|
-| `number` | Margin in pixels. |
+| number | Margin in pixels. |
 
 **Example**
 
@@ -5723,12 +5766,11 @@ end
 
 ---
 
-### `LTileSet:getQuad`
+#### `LTileSet:getQuad`
 
 Returns the source rectangle (UV quad) for a tile in the atlas.
 
 ```lua
--- signature
 LTileSet:getQuad(tileId)
 ```
 
@@ -5736,13 +5778,13 @@ LTileSet:getQuad(tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID (1-based). |
+| `tileId` | number | Tile ID (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTileSetGetQuadResult` | Table with fields `x`, `y`, `width`, `height` in pixels. |
+| LTileSetGetQuadResult | Table with fields `x`, `y`, `width`, `height` in pixels. |
 
 **Example**
 
@@ -5758,12 +5800,11 @@ end
 
 ---
 
-### `LTileSet:getSpacing`
+#### `LTileSet:getSpacing`
 
 Returns the spacing between tiles in the atlas image, in pixels.
 
 ```lua
--- signature
 LTileSet:getSpacing()
 ```
 
@@ -5771,7 +5812,7 @@ LTileSet:getSpacing()
 
 | Type | Description |
 |------|-------------|
-| `number` | Spacing in pixels. |
+| number | Spacing in pixels. |
 
 **Example**
 
@@ -5784,12 +5825,11 @@ end
 
 ---
 
-### `LTileSet:getTileCount`
+#### `LTileSet:getTileCount`
 
 Returns the total number of tiles defined in this tileset.
 
 ```lua
--- signature
 LTileSet:getTileCount()
 ```
 
@@ -5797,7 +5837,7 @@ LTileSet:getTileCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total tile count. |
+| number | Total tile count. |
 
 **Example**
 
@@ -5810,12 +5850,11 @@ end
 
 ---
 
-### `LTileSet:getTileDimensions`
+#### `LTileSet:getTileDimensions`
 
 Returns both tile width and height in pixels.
 
 ```lua
--- signature
 LTileSet:getTileDimensions()
 ```
 
@@ -5823,8 +5862,8 @@ LTileSet:getTileDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Tile width in pixels. |
-| `number` | b Tile height in pixels. |
+| number | Tile width in pixels. |
+| number | Tile height in pixels. |
 
 **Example**
 
@@ -5838,12 +5877,11 @@ end
 
 ---
 
-### `LTileSet:getTileHeight`
+#### `LTileSet:getTileHeight`
 
 Returns the height of a single tile in pixels.
 
 ```lua
--- signature
 LTileSet:getTileHeight()
 ```
 
@@ -5851,7 +5889,7 @@ LTileSet:getTileHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile height in pixels. |
+| number | Tile height in pixels. |
 
 **Example**
 
@@ -5864,12 +5902,11 @@ end
 
 ---
 
-### `LTileSet:getTileWidth`
+#### `LTileSet:getTileWidth`
 
 Returns the width of a single tile in pixels.
 
 ```lua
--- signature
 LTileSet:getTileWidth()
 ```
 
@@ -5877,7 +5914,7 @@ LTileSet:getTileWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Tile width in pixels. |
+| number | Tile width in pixels. |
 
 **Example**
 
@@ -5890,12 +5927,11 @@ end
 
 ---
 
-### `LTileSet:isSolid`
+#### `LTileSet:isSolid`
 
 Checks whether a tile is marked as solid.
 
 ```lua
--- signature
 LTileSet:isSolid(tileId)
 ```
 
@@ -5903,13 +5939,13 @@ LTileSet:isSolid(tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID to check (1-based). |
+| `tileId` | number | Tile ID to check (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the tile is solid. |
+| boolean | True if the tile is solid. |
 
 **Example**
 
@@ -5925,12 +5961,11 @@ end
 
 ---
 
-### `LTileSet:setAnimation`
+#### `LTileSet:setAnimation`
 
 Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
 
 ```lua
--- signature
 LTileSet:setAnimation(tileId, frames)
 ```
 
@@ -5938,8 +5973,8 @@ LTileSet:setAnimation(tileId, frames)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID to animate (1-based). |
-| `frames` | `table` | Array of `{tileid=number, duration=number}` frame definitions. |
+| `tileId` | number | Tile ID to animate (1-based). |
+| `frames` | table | Array of `{tileid=number, duration=number}` frame definitions. |
 
 **Example**
 
@@ -5965,12 +6000,11 @@ end
 
 ---
 
-### `LTileSet:setAutoTileRule`
+#### `LTileSet:setAutoTileRule`
 
 Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 
 ```lua
--- signature
 LTileSet:setAutoTileRule(typeName, bitmask, tileId)
 ```
 
@@ -5978,9 +6012,9 @@ LTileSet:setAutoTileRule(typeName, bitmask, tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | Logical tile type name (e.g. "grass"). |
-| `bitmask` | `number` | 4-bit neighbor bitmask (0..15). |
-| `tileId` | `number` | Tile ID to use for this bitmask (1-based). |
+| `typeName` | string | Logical tile type name (e.g. "grass"). |
+| `bitmask` | number | 4-bit neighbor bitmask (0..15). |
+| `tileId` | number | Tile ID to use for this bitmask (1-based). |
 
 **Example**
 
@@ -5996,12 +6030,11 @@ end
 
 ---
 
-### `LTileSet:setAutoTileRule8`
+#### `LTileSet:setAutoTileRule8`
 
 Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 
 ```lua
--- signature
 LTileSet:setAutoTileRule8(typeName, bitmask, tileId)
 ```
 
@@ -6009,9 +6042,9 @@ LTileSet:setAutoTileRule8(typeName, bitmask, tileId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | Logical tile type name. |
-| `bitmask` | `number` | 8-bit neighbor bitmask (0..255). |
-| `tileId` | `number` | Tile ID to use for this bitmask (1-based). |
+| `typeName` | string | Logical tile type name. |
+| `bitmask` | number | 8-bit neighbor bitmask (0..255). |
+| `tileId` | number | Tile ID to use for this bitmask (1-based). |
 
 **Example**
 
@@ -6027,12 +6060,11 @@ end
 
 ---
 
-### `LTileSet:setSolid`
+#### `LTileSet:setSolid`
 
 Marks a tile as solid or non-solid for collision queries.
 
 ```lua
--- signature
 LTileSet:setSolid(tileId, solid)
 ```
 
@@ -6040,8 +6072,8 @@ LTileSet:setSolid(tileId, solid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileId` | `number` | Tile ID to modify (1-based). |
-| `solid` | `boolean` | Whether the tile blocks movement. |
+| `tileId` | number | Tile ID to modify (1-based). |
+| `solid` | boolean | Whether the tile blocks movement. |
 
 **Example**
 
@@ -6056,12 +6088,11 @@ end
 
 ---
 
-### `LTileSet:type`
+#### `LTileSet:type`
 
 Returns the type name of this userdata.
 
 ```lua
--- signature
 LTileSet:type()
 ```
 
@@ -6069,7 +6100,7 @@ LTileSet:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always `"LTileSet"`. |
+| string | Always `"[LTileSet](#ltileset-handle)"`. |
 
 **Example**
 
@@ -6082,12 +6113,11 @@ end
 
 ---
 
-### `LTileSet:typeOf`
+#### `LTileSet:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LTileSet:typeOf(name)
 ```
 
@@ -6095,13 +6125,13 @@ LTileSet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check against. |
+| `name` | string | Type name to check against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if `name` is `"LTileSet"` or `"Object"`. |
+| boolean | True if `name` is `"[LTileSet](#ltileset-handle)"` or `"Object"`. |
 
 **Example**
 

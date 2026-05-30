@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["aseprite","blend","clip","controller","curve","event","frame","render","spine_bridge","state_machine","sync_group"]};

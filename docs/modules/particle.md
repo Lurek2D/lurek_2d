@@ -1,12 +1,110 @@
 # Particle
 
-- The `particle` module is a powerful Feature Systems tier component that provides comprehensive, emitter-based 2D particle systems for Lurek2D.
+## Summary
 
 Designed for high-performance visual effects, it utilizes bounded, fixed-capacity memory pools and CPU-based Euler integration. At the core of the module is the `ParticleSystem`, an emitter that spawns `Particle` instances according to highly configurable emission shapes, such as point, circle, ring, rectangle, cone, line, and custom callbacks. Once spawned, each particle evolves independently based on a robust physics model that includes linear velocity, gravity, radial/tangential acceleration, linear damping, drag, orbit mechanics, and turbulence, before eventually expiring after a predefined lifetime.
 
 The visual representation of particles is extremely flexible. The system supports both procedural geometric shapes (like squares, circles, sparks, and shrapnel) and fully textured sprites. Throughout their lifetime, particles dynamically interpolate key properties—such as color, size, rotation, and opacity—using customizable multi-stop keyframe curves. To create complex, layered effects, `ParticleSystem`s support sub-emitters, allowing particles to spawn entirely new child particle bursts upon specific events, such as birth, death, or collision. The module also features a robust physics collision integration, allowing particles to bounce realistically off defined bounding boxes or dynamic Rapier2D world geometry with configurable restitution.
 
 Beyond standalone particles, the module implements a sophisticated `Trail` system. This generates connected ribbon segments behind moving particles or standalone points, featuring width tapering, age-based point retirement, and head-to-tail color interpolation. Additional advanced features include point attractors (gravity wells) that dynamically pull or repel live particles, and texture animation that can cycle through sprite atlas frames over a particle's lifetime. For ease of use, the module provides a suite of ready-made `presets` for common effects like fire, smoke, rain, snow, and sparks. The entire module is heavily optimized for deterministic simulation (given the same initial seed) and provides extensive debug visualization tools. It is fully exposed to the Lua scripting environment via the `lurek.particle.*` API, making it an essential tool for bringing dynamic, visually rich effects to Lurek2D games.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### config.rs
+
+- Runtime configuration for particle emitters and their tunable behavior.
+- Carries spawn distribution, insertion order, state, and coordinate mode settings.
+- Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks.
+- Includes attractor and bounce helper types for motion control.
+- Covers world-space versus emitter-attached spawning rules.
+- Packs every serializable knob into one config object for scripts and data files.
+- Serves as the authored contract for building particle systems.
+
+### emission.rs
+
+- Spawn-offset sampling for particle emission shapes and area distributions.
+- Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
+- Handles area-angle rotation so emitted particles respect the configured shape.
+- Keeps emission math separate from the particle runtime.
+- Supplies the offset generator used by emitters and presets.
+
+### emitter.rs
+
+- Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
+- Integrates gravity, drag, orbit, turbulence, and other per-frame forces.
+- Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes.
+- Applies attractors and axis-aligned bounce boundaries to active particles.
+- Runs child emitters on particle death when sub-systems are configured.
+- Tracks active, paused, and stopped states with lifetime-based auto-stop.
+- Builds render commands from current particle state, shape mapping, and interpolation curves.
+- Supports warm-up simulation so systems can start in a settled state.
+- Exposes custom emission-shape callbacks through the Lua bridge without coupling spawn math to rendering.
+- Provides the runtime core for all particle effects.
+
+### math.rs
+
+- Keyframe interpolation for particle size, colour, and alpha over normalized lifetime.
+- Offers uniform and normal random helpers for emission variance.
+- Clamps interpolation inputs and falls back cleanly on empty keyframe sets.
+- Supports the numeric shaping layer used by emitter animation.
+
+### mod.rs
+
+- Particle emitter lifecycle for spawn, simulation, and pooled recycling.
+- Collects emission, physics, trail, rendering, and preset helpers under one namespace.
+- Keeps particle effects modular while exposing a single runtime surface.
+
+### particle.rs
+
+- Per-particle runtime state for position, velocity, lifetime, rotation, and acceleration.
+- Stores spawn origin and shape seed for force calculations and deterministic geometry.
+- Keeps the minimum state needed by the emitter loop.
+
+### physics_collision.rs
+
+- Bounce particles off rapier colliders using AABB overlap probes.
+- Reflects velocity with configurable restitution per collision pass.
+- Operates on all live particles in a system each frame.
+
+### presets.rs
+
+- Ready-made ParticleConfig constructors for common visual effects.
+- Covers fire, smoke, rain, snow, sparks, and other standard patterns.
+- Returns self-contained configs with tuned lifetime, speed, color ramp, and shape.
+- Lets callers start from a stable preset and override fields afterward.
+- Makes quick particle authoring simple without hiding the underlying config.
+
+### render.rs
+
+- Render-command generation for particle systems and trails.
+- Expands textured particle batches into individual draw calls when needed.
+- Keeps untextured particles batched for efficiency.
+- Bridges live particle state to renderer submission.
+
+### shapes.rs
+
+- Geometric shape primitives that control how individual particles are rendered.
+- Covers fills, directional shapes, and composite outlines with inline parameters.
+- Gives emitters a compact vocabulary for particle silhouette design.
+
+### trail.rs
+
+- Ribbon trail built from a deque of aged world-space points.
+- Retires points automatically when they exceed the configured lifetime.
+- Tapers width and interpolates color from head to tail.
+- Can render as triangle-strip commands or as a CPU-rasterized image.
+- Provides a lightweight motion trail for fast effects and debug views.
+
+### visualization.rs
+
+- Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps.
+- Includes a generic renderer plus themed presets for explosions, rain, and spark trails.
+- Supports compositing particles over an existing background or painting in place.
+- Adds a chart-style lifetime view for inspecting particle counts over time.
+- Keeps render inspection separate from the particle simulation core.
+- Helps debug effect tuning without touching the live emitter loop.
 
 ## Functions
 
@@ -15,7 +113,6 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 Draws a lifecycle chart image from `(step, count)` snapshot tables.
 
 ```lua
--- signature
 lurek.particle.drawLifecycleToImage(snapshots, max_particles, w, h)
 ```
 
@@ -23,16 +120,16 @@ lurek.particle.drawLifecycleToImage(snapshots, max_particles, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `snapshots` | `table` | Array of snapshot tables or `{step, count}` arrays. |
-| `max_particles` | `number` | Maximum particle count for chart scaling. |
-| `w` | `number` | Image width. |
-| `h` | `number` | Image height. |
+| `snapshots` | table | Array of snapshot tables or `{step, count}` arrays. |
+| `max_particles` | number | Maximum particle count for chart scaling. |
+| `w` | number | Image width. |
+| `h` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the lifecycle chart. |
+| [LImageData](#limagedata-handle) | Image data containing the lifecycle chart. |
 
 **Example**
 
@@ -56,7 +153,6 @@ end
 Creates a particle system from a TOML config file.
 
 ```lua
--- signature
 lurek.particle.fromTOML(path)
 ```
 
@@ -64,13 +160,13 @@ lurek.particle.fromTOML(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | `string` | TOML file path. |
+| `path` | string | TOML file path. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LParticleSystem` | New particle system handle. |
+| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
 
 **Example**
 
@@ -92,7 +188,6 @@ end
 Creates a particle system from a named preset.
 
 ```lua
--- signature
 lurek.particle.newPreset(name)
 ```
 
@@ -100,13 +195,13 @@ lurek.particle.newPreset(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`. |
+| `name` | string | Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LParticleSystem` | New particle system handle. |
+| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
 
 **Example**
 
@@ -127,7 +222,6 @@ end
 Creates a particle system from an optional config table.
 
 ```lua
--- signature
 lurek.particle.newSystem(config)
 ```
 
@@ -135,13 +229,13 @@ lurek.particle.newSystem(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | `table` | Particle config table. |
+| `config?` | table | Particle config table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LParticleSystem` | New particle system handle. |
+| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
 
 **Example**
 
@@ -166,7 +260,6 @@ end
 Creates a trail effect. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.particle.newTrail(lifetime, start_width)
 ```
 
@@ -174,14 +267,14 @@ lurek.particle.newTrail(lifetime, start_width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lifetime` | `number` | Trail point lifetime. |
-| `start_width` | `number` | Trail start width. |
+| `lifetime` | number | Trail point lifetime. |
+| `start_width` | number | Trail start width. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTrail` | New trail handle. |
+| [LTrail](#ltrail-handle) | New trail handle. |
 
 **Example**
 
@@ -196,14 +289,841 @@ end
 
 ---
 
-## LParticleSystem
+## Module Fields
 
-### `LParticleSystem:addAttractor`
+*No module-level fields documented.*
+
+## Types
+
+- [LImageData Handle](#limagedata-handle)
+- [LParticleSystem Handle](#lparticlesystem-handle)
+- [LTrail Handle](#ltrail-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LImageData Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LImageData:alphaMask`
+
+Multiplies this image alpha channel by a factor in place.
+
+```lua
+LImageData:alphaMask(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Alpha multiplier. |
+
+---
+
+#### `LImageData:applyPaletteLut`
+
+Applies a palette lookup table to this image in place.
+
+```lua
+LImageData:applyPaletteLut(lut_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+
+---
+
+#### `LImageData:blit`
+
+Copies a source image into this image at a destination coordinate.
+
+```lua
+LImageData:blit(src_ud, dst_x, dst_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:blur`
+
+Returns a blurred copy of this image.
+
+```lua
+LImageData:blur(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | number | Blur radius. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Blurred image data handle. |
+
+---
+
+#### `LImageData:brightness`
+
+Applies a brightness factor to this image in place.
+
+```lua
+LImageData:brightness(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Brightness multiplier or adjustment factor. |
+
+---
+
+#### `LImageData:contrast`
+
+Applies a contrast factor to this image in place.
+
+```lua
+LImageData:contrast(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Contrast factor. |
+
+---
+
+#### `LImageData:convolve`
+
+Applies a convolution kernel and returns the filtered image.
+
+```lua
+LImageData:convolve(kernel_t, ksize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_t` | table | Array table of numeric kernel weights. |
+| `ksize` | number | Kernel width and height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Convolved image data handle. |
+
+---
+
+#### `LImageData:crop`
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+```lua
+LImageData:crop(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Source x coordinate. |
+| `y` | number | Source y coordinate. |
+| `w` | number | Crop width. |
+| `h` | number | Crop height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Cropped image data handle. |
+
+---
+
+#### `LImageData:diff`
+
+Computes a difference metric against another image.
+
+```lua
+LImageData:diff(other_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Difference score. |
+
+---
+
+#### `LImageData:drawCircle`
+
+Draws a filled circle into this image.
+
+```lua
+LImageData:drawCircle(cx, cy, radius, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Circle center x coordinate. |
+| `cy` | number | Circle center y coordinate. |
+| `radius` | number | Circle radius. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawLine`
+
+Draws a line into this image. This method is available to Lua scripts.
+
+```lua
+LImageData:drawLine(x0, y0, x1, y1, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x0` | number | Start x coordinate. |
+| `y0` | number | Start y coordinate. |
+| `x1` | number | End x coordinate. |
+| `y1` | number | End y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:drawNineSlice`
+
+Draws a nine-slice region from a source image into this image.
+
+```lua
+LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_x` | number | Source region x coordinate. |
+| `src_y` | number | Source region y coordinate. |
+| `src_w` | number | Source region width. |
+| `src_h` | number | Source region height. |
+| `dst_x` | number | Destination x coordinate. |
+| `dst_y` | number | Destination y coordinate. |
+| `dst_w` | number | Destination width. |
+| `dst_h` | number | Destination height. |
+| `inset_left` | number | Left inset width. |
+| `inset_right` | number | Right inset width. |
+| `inset_top` | number | Top inset height. |
+| `inset_bottom` | number | Bottom inset height. |
+
+---
+
+#### `LImageData:drawRect`
+
+Draws a filled rectangle into this image.
+
+```lua
+LImageData:drawRect(x, y, w, h, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:encode`
+
+Encodes image data in a supported format.
+
+```lua
+LImageData:encode(format)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `format` | string | Format name; currently `png`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded image bytes. |
+
+---
+
+#### `LImageData:fill`
+
+Fills the whole image with one RGBA color.
+
+```lua
+LImageData:fill(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:flipHorizontal`
+
+Flips this image horizontally in place.
+
+```lua
+LImageData:flipHorizontal()
+```
+
+---
+
+#### `LImageData:flipVertical`
+
+Flips this image vertically in place.
+
+```lua
+LImageData:flipVertical()
+```
+
+---
+
+#### `LImageData:gamma`
+
+Applies gamma correction to this image in place.
+
+```lua
+LImageData:gamma(gamma)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gamma` | number | Gamma value. |
+
+---
+
+#### `LImageData:getDimensions`
+
+Returns image dimensions. This method is available to Lua scripts.
+
+```lua
+LImageData:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getHeight`
+
+Returns image height. This method is available to Lua scripts.
+
+```lua
+LImageData:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Height in pixels. |
+
+---
+
+#### `LImageData:getPixel`
+
+Returns RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:getPixel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LImageData:getRawBytes`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getRawBytes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getRegion`
+
+Returns an image region when the requested rectangle is inside bounds.
+
+```lua
+LImageData:getRegion(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Region x coordinate. |
+| `y` | number | Region y coordinate. |
+| `w` | number | Region width. |
+| `h` | number | Region height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+
+---
+
+#### `LImageData:getString`
+
+Returns raw image bytes as a Lua string.
+
+```lua
+LImageData:getString()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Raw image byte string. |
+
+---
+
+#### `LImageData:getWidth`
+
+Returns image width. This method is available to Lua scripts.
+
+```lua
+LImageData:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width in pixels. |
+
+---
+
+#### `LImageData:grayscale`
+
+Converts this image to grayscale in place.
+
+```lua
+LImageData:grayscale()
+```
+
+---
+
+#### `LImageData:invert`
+
+Inverts image color channels in place.
+
+```lua
+LImageData:invert()
+```
+
+---
+
+#### `LImageData:mapPixel`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixel(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:mapPixels`
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+```lua
+LImageData:mapPixels(func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `func` | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels. |
+
+---
+
+#### `LImageData:noise`
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+```lua
+LImageData:noise(amount)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `amount` | number | Noise amount. |
+
+---
+
+#### `LImageData:paste`
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+```lua
+LImageData:paste(src_ud, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `dx` | number | Destination x coordinate. |
+| `dy` | number | Destination y coordinate. |
+
+---
+
+#### `LImageData:posterize`
+
+Reduces image colors to a fixed number of levels in place.
+
+```lua
+LImageData:posterize(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels` | number | Number of posterization levels. |
+
+---
+
+#### `LImageData:resize`
+
+Returns a resized image using an optional named filter.
+
+```lua
+LImageData:resize(width, height, filter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output width. |
+| `height` | number | Output height. |
+| `filter` | string | Optional filter name, defaulting to `bilinear`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+
+---
+
+#### `LImageData:resizeNearest`
+
+Returns a resized image using nearest-neighbor sampling.
+
+```lua
+LImageData:resizeNearest(new_w, new_h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `new_w` | number | Output width. |
+| `new_h` | number | Output height. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Resized image data handle. |
+
+---
+
+#### `LImageData:rotate90cw`
+
+Returns a new image rotated ninety degrees clockwise.
+
+```lua
+LImageData:rotate90cw()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Rotated image data handle. |
+
+---
+
+#### `LImageData:saturation`
+
+Applies a saturation factor to this image in place.
+
+```lua
+LImageData:saturation(factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `factor` | number | Saturation factor. |
+
+---
+
+#### `LImageData:sepia`
+
+Applies a sepia filter to this image in place.
+
+```lua
+LImageData:sepia()
+```
+
+---
+
+#### `LImageData:setPixel`
+
+Sets RGBA channels at a pixel coordinate.
+
+```lua
+LImageData:setPixel(x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
+
+---
+
+#### `LImageData:setRawData`
+
+Replaces the image byte buffer with raw bytes.
+
+```lua
+LImageData:setRawData(bytes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bytes` | string | Raw byte string matching the image storage size. |
+
+---
+
+#### `LImageData:sharpen`
+
+Returns a sharpened copy of this image.
+
+```lua
+LImageData:sharpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+
+---
+
+#### `LImageData:threshold`
+
+Applies a threshold filter to this image in place.
+
+```lua
+LImageData:threshold(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | number | Threshold channel value. |
+
+---
+
+#### `LImageData:tint`
+
+Blends this image toward a tint color in place.
+
+```lua
+LImageData:tint(tr, tg, tb, factor)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tr` | number | Tint red channel. |
+| `tg` | number | Tint green channel. |
+| `tb` | number | Tint blue channel. |
+| `factor` | number | Tint blend factor. |
+
+---
+
+#### `LImageData:type`
+
+Returns the Lua-visible type name for this image data handle.
+
+```lua
+LImageData:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LImageData](#limagedata-handle)`. |
+
+---
+
+#### `LImageData:typeOf`
+
+Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+
+```lua
+LImageData:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches. |
+
+---
+
+## LParticleSystem Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LParticleSystem:addAttractor`
 
 Adds an attractor to the particle system.
 
 ```lua
--- signature
 LParticleSystem:addAttractor(x, y, strength, radius)
 ```
 
@@ -211,10 +1131,10 @@ LParticleSystem:addAttractor(x, y, strength, radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Attractor x position. |
-| `y` | `number` | Attractor y position. |
-| `strength` | `number` | Attraction strength. |
-| `radius` | `number` | Attraction radius. |
+| `x` | number | Attractor x position. |
+| `y` | number | Attractor y position. |
+| `strength` | number | Attraction strength. |
+| `radius` | number | Attraction radius. |
 
 **Example**
 
@@ -236,12 +1156,11 @@ end
 
 ---
 
-### `LParticleSystem:addSubEmitter`
+#### `LParticleSystem:addSubEmitter`
 
 Configures a death sub-emitter from a config table.
 
 ```lua
--- signature
 LParticleSystem:addSubEmitter(config_tbl, burst_count)
 ```
 
@@ -249,8 +1168,8 @@ LParticleSystem:addSubEmitter(config_tbl, burst_count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config_tbl` | `table` | Particle config table. |
-| `burst_count?` | `number` | Burst count per death. |
+| `config_tbl` | table | Particle config table. |
+| `burst_count?` | number | Burst count per death. |
 
 **Example**
 
@@ -273,12 +1192,11 @@ end
 
 ---
 
-### `LParticleSystem:addSubSystem`
+#### `LParticleSystem:addSubSystem`
 
 Adds a particle sub-system from a config table.
 
 ```lua
--- signature
 LParticleSystem:addSubSystem(config_tbl)
 ```
 
@@ -286,13 +1204,13 @@ LParticleSystem:addSubSystem(config_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config_tbl` | `table` | Particle config table. |
+| `config_tbl` | table | Particle config table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | One-based sub-system index. |
+| number | One-based sub-system index. |
 
 **Example**
 
@@ -316,12 +1234,11 @@ end
 
 ---
 
-### `LParticleSystem:clearAttractors`
+#### `LParticleSystem:clearAttractors`
 
 Clears all attractors on this object.
 
 ```lua
--- signature
 LParticleSystem:clearAttractors()
 ```
 
@@ -344,12 +1261,11 @@ end
 
 ---
 
-### `LParticleSystem:clearBounds`
+#### `LParticleSystem:clearBounds`
 
 Clears collision bounds on this object.
 
 ```lua
--- signature
 LParticleSystem:clearBounds()
 ```
 
@@ -368,12 +1284,11 @@ end
 
 ---
 
-### `LParticleSystem:clearCollidesWithPhysics`
+#### `LParticleSystem:clearCollidesWithPhysics`
 
 Disables particle collision against a physics world.
 
 ```lua
--- signature
 LParticleSystem:clearCollidesWithPhysics()
 ```
 
@@ -396,12 +1311,11 @@ end
 
 ---
 
-### `LParticleSystem:clone`
+#### `LParticleSystem:clone`
 
 Clones this particle system configuration into a new system handle.
 
 ```lua
--- signature
 LParticleSystem:clone()
 ```
 
@@ -409,7 +1323,7 @@ LParticleSystem:clone()
 
 | Type | Description |
 |------|-------------|
-| `LParticleSystem` | New particle system handle. |
+| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
 
 **Example**
 
@@ -430,12 +1344,11 @@ end
 
 ---
 
-### `LParticleSystem:count`
+#### `LParticleSystem:count`
 
 Returns the current particle count.
 
 ```lua
--- signature
 LParticleSystem:count()
 ```
 
@@ -443,7 +1356,7 @@ LParticleSystem:count()
 
 | Type | Description |
 |------|-------------|
-| `number` | Particle count. |
+| number | Particle count. |
 
 **Example**
 
@@ -460,12 +1373,11 @@ end
 
 ---
 
-### `LParticleSystem:drawExplosionToImage`
+#### `LParticleSystem:drawExplosionToImage`
 
 Draws particles as an explosion preview image.
 
 ```lua
--- signature
 LParticleSystem:drawExplosionToImage(w, h)
 ```
 
@@ -473,14 +1385,14 @@ LParticleSystem:drawExplosionToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width. |
-| `h` | `number` | Image height. |
+| `w` | number | Image width. |
+| `h` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the explosion preview. |
+| [LImageData](#limagedata-handle) | Image data containing the explosion preview. |
 
 **Example**
 
@@ -499,12 +1411,11 @@ end
 
 ---
 
-### `LParticleSystem:drawOverImage`
+#### `LParticleSystem:drawOverImage`
 
 Draws particles over an existing image and returns a composited copy.
 
 ```lua
--- signature
 LParticleSystem:drawOverImage(image)
 ```
 
@@ -512,13 +1423,13 @@ LParticleSystem:drawOverImage(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImageData` | Background image data handle. |
+| `image` | [LImageData](#limagedata-handle) | Background image data handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the composited result. |
+| [LImageData](#limagedata-handle) | Image data containing the composited result. |
 
 **Example**
 
@@ -539,12 +1450,11 @@ end
 
 ---
 
-### `LParticleSystem:drawRainToImage`
+#### `LParticleSystem:drawRainToImage`
 
 Draws particles as a rain preview image.
 
 ```lua
--- signature
 LParticleSystem:drawRainToImage(w, h)
 ```
 
@@ -552,14 +1462,14 @@ LParticleSystem:drawRainToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width. |
-| `h` | `number` | Image height. |
+| `w` | number | Image width. |
+| `h` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the rain preview. |
+| [LImageData](#limagedata-handle) | Image data containing the rain preview. |
 
 **Example**
 
@@ -578,12 +1488,11 @@ end
 
 ---
 
-### `LParticleSystem:drawSparkTrailToImage`
+#### `LParticleSystem:drawSparkTrailToImage`
 
 Draws particles as a spark-trail preview image.
 
 ```lua
--- signature
 LParticleSystem:drawSparkTrailToImage(w, h)
 ```
 
@@ -591,14 +1500,14 @@ LParticleSystem:drawSparkTrailToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width. |
-| `h` | `number` | Image height. |
+| `w` | number | Image width. |
+| `h` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the spark preview. |
+| [LImageData](#limagedata-handle) | Image data containing the spark preview. |
 
 **Example**
 
@@ -617,12 +1526,11 @@ end
 
 ---
 
-### `LParticleSystem:drawToImage`
+#### `LParticleSystem:drawToImage`
 
 Draws particles to image data. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:drawToImage(w, h)
 ```
 
@@ -630,14 +1538,14 @@ LParticleSystem:drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width. |
-| `h` | `number` | Image height. |
+| `w` | number | Image width. |
+| `h` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the rendered particles. |
+| [LImageData](#limagedata-handle) | Image data containing the rendered particles. |
 
 **Example**
 
@@ -655,12 +1563,11 @@ end
 
 ---
 
-### `LParticleSystem:emit`
+#### `LParticleSystem:emit`
 
 Emits particles immediately. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:emit(count)
 ```
 
@@ -668,7 +1575,7 @@ LParticleSystem:emit(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of particles to emit. |
+| `count` | number | Number of particles to emit. |
 
 **Example**
 
@@ -688,12 +1595,11 @@ end
 
 ---
 
-### `LParticleSystem:getAttractorCount`
+#### `LParticleSystem:getAttractorCount`
 
 Returns attractor count. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getAttractorCount()
 ```
 
@@ -701,7 +1607,7 @@ LParticleSystem:getAttractorCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Attractor count. |
+| number | Attractor count. |
 
 **Example**
 
@@ -720,12 +1626,11 @@ end
 
 ---
 
-### `LParticleSystem:getBufferSize`
+#### `LParticleSystem:getBufferSize`
 
 Returns maximum particle buffer size.
 
 ```lua
--- signature
 LParticleSystem:getBufferSize()
 ```
 
@@ -733,7 +1638,7 @@ LParticleSystem:getBufferSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum particle count. |
+| number | Maximum particle count. |
 
 **Example**
 
@@ -748,12 +1653,11 @@ end
 
 ---
 
-### `LParticleSystem:getColors`
+#### `LParticleSystem:getColors`
 
 Returns particle color keyframes.
 
 ```lua
--- signature
 LParticleSystem:getColors()
 ```
 
@@ -761,7 +1665,7 @@ LParticleSystem:getColors()
 
 | Type | Description |
 |------|-------------|
-| `LParticleSystemGetColorsResult` | Array table of RGBA color tables. |
+| LParticleSystemGetColorsResult | Array table of RGBA color tables. |
 
 **Example**
 
@@ -778,12 +1682,11 @@ end
 
 ---
 
-### `LParticleSystem:getCount`
+#### `LParticleSystem:getCount`
 
 Returns particle count and errors if the handle was released.
 
 ```lua
--- signature
 LParticleSystem:getCount()
 ```
 
@@ -791,7 +1694,7 @@ LParticleSystem:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Particle count. |
+| number | Particle count. |
 
 **Example**
 
@@ -808,12 +1711,11 @@ end
 
 ---
 
-### `LParticleSystem:getDirection`
+#### `LParticleSystem:getDirection`
 
 Returns emission direction. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getDirection()
 ```
 
@@ -821,7 +1723,7 @@ LParticleSystem:getDirection()
 
 | Type | Description |
 |------|-------------|
-| `number` | Direction angle. |
+| number | Direction angle. |
 
 **Example**
 
@@ -836,12 +1738,11 @@ end
 
 ---
 
-### `LParticleSystem:getEmissionArea`
+#### `LParticleSystem:getEmissionArea`
 
 Returns emission area distribution and size.
 
 ```lua
--- signature
 LParticleSystem:getEmissionArea()
 ```
 
@@ -849,9 +1750,9 @@ LParticleSystem:getEmissionArea()
 
 | Type | Description |
 |------|-------------|
-| `string` | a Distribution name. |
-| `number` | b Area width. |
-| `number` | c Area height. |
+| string | Distribution name. |
+| number | Area width. |
+| number | Area height. |
 
 **Example**
 
@@ -867,12 +1768,11 @@ end
 
 ---
 
-### `LParticleSystem:getEmissionRate`
+#### `LParticleSystem:getEmissionRate`
 
 Returns emission rate. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getEmissionRate()
 ```
 
@@ -880,7 +1780,7 @@ LParticleSystem:getEmissionRate()
 
 | Type | Description |
 |------|-------------|
-| `number` | Particles per second. |
+| number | Particles per second. |
 
 **Example**
 
@@ -895,12 +1795,11 @@ end
 
 ---
 
-### `LParticleSystem:getEmitterLifetime`
+#### `LParticleSystem:getEmitterLifetime`
 
 Returns emitter lifetime. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getEmitterLifetime()
 ```
 
@@ -908,7 +1807,7 @@ LParticleSystem:getEmitterLifetime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Emitter lifetime. |
+| number | Emitter lifetime. |
 
 **Example**
 
@@ -923,12 +1822,11 @@ end
 
 ---
 
-### `LParticleSystem:getFlipbook`
+#### `LParticleSystem:getFlipbook`
 
 Returns flipbook grid and frame rate when configured.
 
 ```lua
--- signature
 LParticleSystem:getFlipbook()
 ```
 
@@ -936,9 +1834,9 @@ LParticleSystem:getFlipbook()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Column count, or nil when unconfigured. |
-| `number` | b Row count, or nil when unconfigured. |
-| `number` | c Frame rate, or nil when unconfigured. |
+| number | Column count; or nil when unconfigured. |
+| number | Row count; or nil when unconfigured. |
+| number | Frame rate; or nil when unconfigured. |
 
 **Example**
 
@@ -954,12 +1852,11 @@ end
 
 ---
 
-### `LParticleSystem:getGravity`
+#### `LParticleSystem:getGravity`
 
 Returns particle gravity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getGravity()
 ```
 
@@ -967,8 +1864,8 @@ LParticleSystem:getGravity()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Gravity x. |
-| `number` | b Gravity y. |
+| number | Gravity x. |
+| number | Gravity y. |
 
 **Example**
 
@@ -984,12 +1881,11 @@ end
 
 ---
 
-### `LParticleSystem:getInsertMode`
+#### `LParticleSystem:getInsertMode`
 
 Returns particle insert mode. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getInsertMode()
 ```
 
@@ -997,7 +1893,7 @@ LParticleSystem:getInsertMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | Insert mode name. |
+| string | Insert mode name. |
 
 **Example**
 
@@ -1012,12 +1908,11 @@ end
 
 ---
 
-### `LParticleSystem:getLinearAcceleration`
+#### `LParticleSystem:getLinearAcceleration`
 
 Returns linear acceleration range.
 
 ```lua
--- signature
 LParticleSystem:getLinearAcceleration()
 ```
 
@@ -1025,10 +1920,10 @@ LParticleSystem:getLinearAcceleration()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum x acceleration. |
-| `number` | b Minimum y acceleration. |
-| `number` | c Maximum x acceleration. |
-| `number` | d Maximum y acceleration. |
+| number | Minimum x acceleration. |
+| number | Minimum y acceleration. |
+| number | Maximum x acceleration. |
+| number | Maximum y acceleration. |
 
 **Example**
 
@@ -1044,12 +1939,11 @@ end
 
 ---
 
-### `LParticleSystem:getLinearDamping`
+#### `LParticleSystem:getLinearDamping`
 
 Returns linear damping range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getLinearDamping()
 ```
 
@@ -1057,8 +1951,8 @@ LParticleSystem:getLinearDamping()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum damping. |
-| `number` | b Maximum damping. |
+| number | Minimum damping. |
+| number | Maximum damping. |
 
 **Example**
 
@@ -1074,12 +1968,11 @@ end
 
 ---
 
-### `LParticleSystem:getOffset`
+#### `LParticleSystem:getOffset`
 
 Returns particle spawn offset. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getOffset()
 ```
 
@@ -1087,8 +1980,8 @@ LParticleSystem:getOffset()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Offset x. |
-| `number` | b Offset y. |
+| number | Offset x. |
+| number | Offset y. |
 
 **Example**
 
@@ -1104,12 +1997,11 @@ end
 
 ---
 
-### `LParticleSystem:getParticleLifetime`
+#### `LParticleSystem:getParticleLifetime`
 
 Returns particle lifetime range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getParticleLifetime()
 ```
 
@@ -1117,8 +2009,8 @@ LParticleSystem:getParticleLifetime()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum lifetime. |
-| `number` | b Maximum lifetime. |
+| number | Minimum lifetime. |
+| number | Maximum lifetime. |
 
 **Example**
 
@@ -1134,12 +2026,11 @@ end
 
 ---
 
-### `LParticleSystem:getPosition`
+#### `LParticleSystem:getPosition`
 
 Returns emitter position. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getPosition()
 ```
 
@@ -1147,8 +2038,8 @@ LParticleSystem:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Emitter x coordinate. |
-| `number` | b Emitter y coordinate. |
+| number | Emitter x coordinate. |
+| number | Emitter y coordinate. |
 
 **Example**
 
@@ -1164,12 +2055,11 @@ end
 
 ---
 
-### `LParticleSystem:getRadialAcceleration`
+#### `LParticleSystem:getRadialAcceleration`
 
 Returns radial acceleration range.
 
 ```lua
--- signature
 LParticleSystem:getRadialAcceleration()
 ```
 
@@ -1177,8 +2067,8 @@ LParticleSystem:getRadialAcceleration()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum acceleration. |
-| `number` | b Maximum acceleration. |
+| number | Minimum acceleration. |
+| number | Maximum acceleration. |
 
 **Example**
 
@@ -1194,12 +2084,11 @@ end
 
 ---
 
-### `LParticleSystem:getRotation`
+#### `LParticleSystem:getRotation`
 
 Returns particle rotation range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getRotation()
 ```
 
@@ -1207,8 +2096,8 @@ LParticleSystem:getRotation()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum rotation. |
-| `number` | b Maximum rotation. |
+| number | Minimum rotation. |
+| number | Maximum rotation. |
 
 **Example**
 
@@ -1224,12 +2113,11 @@ end
 
 ---
 
-### `LParticleSystem:getShape`
+#### `LParticleSystem:getShape`
 
 Returns particle shape. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getShape()
 ```
 
@@ -1237,7 +2125,7 @@ LParticleSystem:getShape()
 
 | Type | Description |
 |------|-------------|
-| `string` | Shape name. |
+| string | Shape name. |
 
 **Example**
 
@@ -1252,12 +2140,11 @@ end
 
 ---
 
-### `LParticleSystem:getSizeVariation`
+#### `LParticleSystem:getSizeVariation`
 
 Returns size variation. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getSizeVariation()
 ```
 
@@ -1265,7 +2152,7 @@ LParticleSystem:getSizeVariation()
 
 | Type | Description |
 |------|-------------|
-| `number` | Size variation. |
+| number | Size variation. |
 
 **Example**
 
@@ -1281,12 +2168,11 @@ end
 
 ---
 
-### `LParticleSystem:getSizes`
+#### `LParticleSystem:getSizes`
 
 Returns particle size keyframes. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getSizes()
 ```
 
@@ -1294,7 +2180,7 @@ LParticleSystem:getSizes()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of size values. |
+| number[] | Array table of size values. |
 
 **Example**
 
@@ -1311,12 +2197,11 @@ end
 
 ---
 
-### `LParticleSystem:getSpeed`
+#### `LParticleSystem:getSpeed`
 
 Returns particle speed range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getSpeed()
 ```
 
@@ -1324,8 +2209,8 @@ LParticleSystem:getSpeed()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum speed. |
-| `number` | b Maximum speed. |
+| number | Minimum speed. |
+| number | Maximum speed. |
 
 **Example**
 
@@ -1341,12 +2226,11 @@ end
 
 ---
 
-### `LParticleSystem:getSpin`
+#### `LParticleSystem:getSpin`
 
 Returns particle spin range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getSpin()
 ```
 
@@ -1354,8 +2238,8 @@ LParticleSystem:getSpin()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum spin. |
-| `number` | b Maximum spin. |
+| number | Minimum spin. |
+| number | Maximum spin. |
 
 **Example**
 
@@ -1371,12 +2255,11 @@ end
 
 ---
 
-### `LParticleSystem:getSpinVariation`
+#### `LParticleSystem:getSpinVariation`
 
 Returns spin variation. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getSpinVariation()
 ```
 
@@ -1384,7 +2267,7 @@ LParticleSystem:getSpinVariation()
 
 | Type | Description |
 |------|-------------|
-| `number` | Spin variation. |
+| number | Spin variation. |
 
 **Example**
 
@@ -1399,12 +2282,11 @@ end
 
 ---
 
-### `LParticleSystem:getSpread`
+#### `LParticleSystem:getSpread`
 
 Returns emission spread. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:getSpread()
 ```
 
@@ -1412,7 +2294,7 @@ LParticleSystem:getSpread()
 
 | Type | Description |
 |------|-------------|
-| `number` | Spread angle. |
+| number | Spread angle. |
 
 **Example**
 
@@ -1427,12 +2309,11 @@ end
 
 ---
 
-### `LParticleSystem:getTangentialAcceleration`
+#### `LParticleSystem:getTangentialAcceleration`
 
 Returns tangential acceleration range.
 
 ```lua
--- signature
 LParticleSystem:getTangentialAcceleration()
 ```
 
@@ -1440,8 +2321,8 @@ LParticleSystem:getTangentialAcceleration()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Minimum acceleration. |
-| `number` | b Maximum acceleration. |
+| number | Minimum acceleration. |
+| number | Maximum acceleration. |
 
 **Example**
 
@@ -1457,12 +2338,11 @@ end
 
 ---
 
-### `LParticleSystem:hasCollidesWithPhysics`
+#### `LParticleSystem:hasCollidesWithPhysics`
 
 Returns whether particle physics collision is enabled.
 
 ```lua
--- signature
 LParticleSystem:hasCollidesWithPhysics()
 ```
 
@@ -1470,7 +2350,7 @@ LParticleSystem:hasCollidesWithPhysics()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when collision is enabled. |
+| boolean | True when collision is enabled. |
 
 **Example**
 
@@ -1489,12 +2369,11 @@ end
 
 ---
 
-### `LParticleSystem:hasRelativeRotation`
+#### `LParticleSystem:hasRelativeRotation`
 
 Returns whether relative rotation is enabled.
 
 ```lua
--- signature
 LParticleSystem:hasRelativeRotation()
 ```
 
@@ -1502,7 +2381,7 @@ LParticleSystem:hasRelativeRotation()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when relative rotation is enabled. |
+| boolean | True when relative rotation is enabled. |
 
 **Example**
 
@@ -1517,12 +2396,11 @@ end
 
 ---
 
-### `LParticleSystem:isActive`
+#### `LParticleSystem:isActive`
 
 Returns whether the particle system is active.
 
 ```lua
--- signature
 LParticleSystem:isActive()
 ```
 
@@ -1530,7 +2408,7 @@ LParticleSystem:isActive()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when active. |
+| boolean | True when active. |
 
 **Example**
 
@@ -1546,12 +2424,11 @@ end
 
 ---
 
-### `LParticleSystem:isEmpty`
+#### `LParticleSystem:isEmpty`
 
 Returns whether the particle system has no particles or is missing.
 
 ```lua
--- signature
 LParticleSystem:isEmpty()
 ```
 
@@ -1559,7 +2436,7 @@ LParticleSystem:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when empty. |
+| boolean | True when empty. |
 
 **Example**
 
@@ -1575,12 +2452,11 @@ end
 
 ---
 
-### `LParticleSystem:isFull`
+#### `LParticleSystem:isFull`
 
 Returns whether the particle system has reached capacity.
 
 ```lua
--- signature
 LParticleSystem:isFull()
 ```
 
@@ -1588,7 +2464,7 @@ LParticleSystem:isFull()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when full. |
+| boolean | True when full. |
 
 **Example**
 
@@ -1605,12 +2481,11 @@ end
 
 ---
 
-### `LParticleSystem:isPaused`
+#### `LParticleSystem:isPaused`
 
 Returns whether the particle system is paused.
 
 ```lua
--- signature
 LParticleSystem:isPaused()
 ```
 
@@ -1618,7 +2493,7 @@ LParticleSystem:isPaused()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when paused. |
+| boolean | True when paused. |
 
 **Example**
 
@@ -1635,12 +2510,11 @@ end
 
 ---
 
-### `LParticleSystem:isStopped`
+#### `LParticleSystem:isStopped`
 
 Returns whether the particle system is stopped or missing.
 
 ```lua
--- signature
 LParticleSystem:isStopped()
 ```
 
@@ -1648,7 +2522,7 @@ LParticleSystem:isStopped()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when stopped. |
+| boolean | True when stopped. |
 
 **Example**
 
@@ -1665,12 +2539,11 @@ end
 
 ---
 
-### `LParticleSystem:moveTo`
+#### `LParticleSystem:moveTo`
 
 Moves the particle emitter. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:moveTo(x, y)
 ```
 
@@ -1678,8 +2551,8 @@ LParticleSystem:moveTo(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Emitter x coordinate. |
-| `y` | `number` | Emitter y coordinate. |
+| `x` | number | Emitter x coordinate. |
+| `y` | number | Emitter y coordinate. |
 
 **Example**
 
@@ -1696,12 +2569,11 @@ end
 
 ---
 
-### `LParticleSystem:paintOnto`
+#### `LParticleSystem:paintOnto`
 
 Paints live particles directly onto an existing image in place.
 
 ```lua
--- signature
 LParticleSystem:paintOnto(image)
 ```
 
@@ -1709,7 +2581,7 @@ LParticleSystem:paintOnto(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | `LImageData` | Target image data handle. |
+| `image` | [LImageData](#limagedata-handle) | Target image data handle. |
 
 **Example**
 
@@ -1729,12 +2601,11 @@ end
 
 ---
 
-### `LParticleSystem:pause`
+#### `LParticleSystem:pause`
 
 Pauses particle emission and updates.
 
 ```lua
--- signature
 LParticleSystem:pause()
 ```
 
@@ -1753,12 +2624,11 @@ end
 
 ---
 
-### `LParticleSystem:release`
+#### `LParticleSystem:release`
 
 Releases the particle system from shared storage.
 
 ```lua
--- signature
 LParticleSystem:release()
 ```
 
@@ -1766,7 +2636,7 @@ LParticleSystem:release()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True after release. |
+| boolean | True after release. |
 
 **Example**
 
@@ -1782,12 +2652,11 @@ end
 
 ---
 
-### `LParticleSystem:render`
+#### `LParticleSystem:render`
 
 Enqueues particle render commands with an optional offset.
 
 ```lua
--- signature
 LParticleSystem:render(ox, oy)
 ```
 
@@ -1795,8 +2664,8 @@ LParticleSystem:render(ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox?` | `number` | X offset. |
-| `oy?` | `number` | Y offset. |
+| `ox?` | number | X offset. |
+| `oy?` | number | Y offset. |
 
 **Example**
 
@@ -1825,12 +2694,11 @@ end
 
 ---
 
-### `LParticleSystem:reset`
+#### `LParticleSystem:reset`
 
 Resets particles and emitter state.
 
 ```lua
--- signature
 LParticleSystem:reset()
 ```
 
@@ -1851,12 +2719,11 @@ end
 
 ---
 
-### `LParticleSystem:resume`
+#### `LParticleSystem:resume`
 
 Resumes a paused particle system if it was previously paused.
 
 ```lua
--- signature
 LParticleSystem:resume()
 ```
 
@@ -1877,12 +2744,11 @@ end
 
 ---
 
-### `LParticleSystem:setBounds`
+#### `LParticleSystem:setBounds`
 
 Sets collision bounds for particles.
 
 ```lua
--- signature
 LParticleSystem:setBounds(xmin, xmax, ymin, ymax, restitution)
 ```
 
@@ -1890,11 +2756,11 @@ LParticleSystem:setBounds(xmin, xmax, ymin, ymax, restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `xmin` | `number` | Minimum x bound. |
-| `xmax` | `number` | Maximum x bound. |
-| `ymin` | `number` | Minimum y bound. |
-| `ymax` | `number` | Maximum y bound. |
-| `restitution` | `number` | Bounce restitution factor. |
+| `xmin` | number | Minimum x bound. |
+| `xmax` | number | Maximum x bound. |
+| `ymin` | number | Minimum y bound. |
+| `ymax` | number | Maximum y bound. |
+| `restitution` | number | Bounce restitution factor. |
 
 **Example**
 
@@ -1911,12 +2777,11 @@ end
 
 ---
 
-### `LParticleSystem:setBufferSize`
+#### `LParticleSystem:setBufferSize`
 
 Sets maximum particle buffer size.
 
 ```lua
--- signature
 LParticleSystem:setBufferSize(n)
 ```
 
@@ -1924,7 +2789,7 @@ LParticleSystem:setBufferSize(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Maximum particle count. |
+| `n` | number | Maximum particle count. |
 
 **Example**
 
@@ -1939,12 +2804,11 @@ end
 
 ---
 
-### `LParticleSystem:setCollidesWithPhysics`
+#### `LParticleSystem:setCollidesWithPhysics`
 
 Enables particle collision against a physics world.
 
 ```lua
--- signature
 LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius, restitution)
 ```
 
@@ -1952,9 +2816,9 @@ LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius, restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world_ud` | `LWorld` | Physics world handle. |
-| `probe_radius?` | `number` | Collision probe radius. |
-| `restitution?` | `number` | Bounce restitution. |
+| `world_ud` | LWorld | Physics world handle. |
+| `probe_radius?` | number | Collision probe radius. |
+| `restitution?` | number | Bounce restitution. |
 
 **Example**
 
@@ -1973,12 +2837,11 @@ end
 
 ---
 
-### `LParticleSystem:setColors`
+#### `LParticleSystem:setColors`
 
 Sets particle color keyframes from one or more RGBA tables.
 
 ```lua
--- signature
 LParticleSystem:setColors(...)
 ```
 
@@ -2003,12 +2866,11 @@ end
 
 ---
 
-### `LParticleSystem:setCustomEmissionShape`
+#### `LParticleSystem:setCustomEmissionShape`
 
 Sets a Lua callback for custom emission positions.
 
 ```lua
--- signature
 LParticleSystem:setCustomEmissionShape(cb)
 ```
 
@@ -2016,7 +2878,7 @@ LParticleSystem:setCustomEmissionShape(cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cb` | `function` | Callback returning an x/y position. |
+| `cb` | function | Callback returning an x/y position. |
 
 **Example**
 
@@ -2040,12 +2902,11 @@ end
 
 ---
 
-### `LParticleSystem:setDirection`
+#### `LParticleSystem:setDirection`
 
 Sets emission direction. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setDirection(dir)
 ```
 
@@ -2053,7 +2914,7 @@ LParticleSystem:setDirection(dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dir` | `number` | Direction angle. |
+| `dir` | number | Direction angle. |
 
 **Example**
 
@@ -2068,12 +2929,11 @@ end
 
 ---
 
-### `LParticleSystem:setEmissionArea`
+#### `LParticleSystem:setEmissionArea`
 
 Sets emission area distribution and size.
 
 ```lua
--- signature
 LParticleSystem:setEmissionArea(dist, w, h, angle, dir_rel)
 ```
 
@@ -2081,11 +2941,11 @@ LParticleSystem:setEmissionArea(dist, w, h, angle, dir_rel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dist` | `string` | Distribution name. |
-| `w` | `number` | Area width. |
-| `h` | `number` | Area height. |
-| `angle?` | `number` | Area angle. |
-| `dir_rel?` | `boolean` | Direction-relative flag. |
+| `dist` | string | Distribution name. |
+| `w` | number | Area width. |
+| `h` | number | Area height. |
+| `angle?` | number | Area angle. |
+| `dir_rel?` | boolean | Direction-relative flag. |
 
 **Example**
 
@@ -2105,12 +2965,11 @@ end
 
 ---
 
-### `LParticleSystem:setEmissionRate`
+#### `LParticleSystem:setEmissionRate`
 
 Sets emission rate. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setEmissionRate(rate)
 ```
 
@@ -2118,7 +2977,7 @@ LParticleSystem:setEmissionRate(rate)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rate` | `number` | Particles per second. |
+| `rate` | number | Particles per second. |
 
 **Example**
 
@@ -2133,12 +2992,11 @@ end
 
 ---
 
-### `LParticleSystem:setEmitterLifetime`
+#### `LParticleSystem:setEmitterLifetime`
 
 Sets emitter lifetime. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setEmitterLifetime(t)
 ```
 
@@ -2146,7 +3004,7 @@ LParticleSystem:setEmitterLifetime(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Emitter lifetime. |
+| `t` | number | Emitter lifetime. |
 
 **Example**
 
@@ -2161,12 +3019,11 @@ end
 
 ---
 
-### `LParticleSystem:setFlipbook`
+#### `LParticleSystem:setFlipbook`
 
 Sets flipbook grid and frame rate. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setFlipbook(cols, rows, fps)
 ```
 
@@ -2174,9 +3031,9 @@ LParticleSystem:setFlipbook(cols, rows, fps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cols` | `number` | Grid column count. |
-| `rows` | `number` | Grid row count. |
-| `fps` | `number` | Playback frame rate. |
+| `cols` | number | Grid column count. |
+| `rows` | number | Grid row count. |
+| `fps` | number | Playback frame rate. |
 
 **Example**
 
@@ -2192,12 +3049,11 @@ end
 
 ---
 
-### `LParticleSystem:setGravity`
+#### `LParticleSystem:setGravity`
 
 Sets particle gravity. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setGravity(gx, gy)
 ```
 
@@ -2205,8 +3061,8 @@ LParticleSystem:setGravity(gx, gy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `gx` | `number` | Gravity x. |
-| `gy` | `number` | Gravity y. |
+| `gx` | number | Gravity x. |
+| `gy` | number | Gravity y. |
 
 **Example**
 
@@ -2222,12 +3078,11 @@ end
 
 ---
 
-### `LParticleSystem:setInsertMode`
+#### `LParticleSystem:setInsertMode`
 
 Sets particle insert mode. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setInsertMode(mode)
 ```
 
@@ -2235,7 +3090,7 @@ LParticleSystem:setInsertMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Insert mode: `top`, `bottom`, or `random`. |
+| `mode` | string | Insert mode: `top`, `bottom`, or `random`. |
 
 **Example**
 
@@ -2252,12 +3107,11 @@ end
 
 ---
 
-### `LParticleSystem:setLinearAcceleration`
+#### `LParticleSystem:setLinearAcceleration`
 
 Sets linear acceleration range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setLinearAcceleration(xmin, ymin, xmax, ymax)
 ```
 
@@ -2265,10 +3119,10 @@ LParticleSystem:setLinearAcceleration(xmin, ymin, xmax, ymax)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `xmin` | `number` | Minimum x acceleration. |
-| `ymin` | `number` | Minimum y acceleration. |
-| `xmax` | `number` | Maximum x acceleration. |
-| `ymax` | `number` | Maximum y acceleration. |
+| `xmin` | number | Minimum x acceleration. |
+| `ymin` | number | Minimum y acceleration. |
+| `xmax` | number | Maximum x acceleration. |
+| `ymax` | number | Maximum y acceleration. |
 
 **Example**
 
@@ -2284,12 +3138,11 @@ end
 
 ---
 
-### `LParticleSystem:setLinearDamping`
+#### `LParticleSystem:setLinearDamping`
 
 Sets linear damping range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setLinearDamping(min, max)
 ```
 
@@ -2297,8 +3150,8 @@ LParticleSystem:setLinearDamping(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum damping. |
-| `max` | `number` | Maximum damping. |
+| `min` | number | Minimum damping. |
+| `max` | number | Maximum damping. |
 
 **Example**
 
@@ -2314,12 +3167,11 @@ end
 
 ---
 
-### `LParticleSystem:setOffset`
+#### `LParticleSystem:setOffset`
 
 Sets particle spawn offset. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setOffset(ox, oy)
 ```
 
@@ -2327,8 +3179,8 @@ LParticleSystem:setOffset(ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ox` | `number` | Spawn offset x. |
-| `oy` | `number` | Spawn offset y. |
+| `ox` | number | Spawn offset x. |
+| `oy` | number | Spawn offset y. |
 
 **Example**
 
@@ -2344,12 +3196,11 @@ end
 
 ---
 
-### `LParticleSystem:setOnDeathBatch`
+#### `LParticleSystem:setOnDeathBatch`
 
 Sets a Lua callback invoked with batched particle death records.
 
 ```lua
--- signature
 LParticleSystem:setOnDeathBatch(cb)
 ```
 
@@ -2357,7 +3208,7 @@ LParticleSystem:setOnDeathBatch(cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cb` | `function` | Death batch callback. |
+| `cb` | function | Death batch callback. |
 
 **Example**
 
@@ -2383,12 +3234,11 @@ end
 
 ---
 
-### `LParticleSystem:setParticleLifetime`
+#### `LParticleSystem:setParticleLifetime`
 
 Sets particle lifetime range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setParticleLifetime(min, max)
 ```
 
@@ -2396,8 +3246,8 @@ LParticleSystem:setParticleLifetime(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum lifetime. |
-| `max` | `number` | Maximum lifetime. |
+| `min` | number | Minimum lifetime. |
+| `max` | number | Maximum lifetime. |
 
 **Example**
 
@@ -2413,12 +3263,11 @@ end
 
 ---
 
-### `LParticleSystem:setPosition`
+#### `LParticleSystem:setPosition`
 
 Sets emitter position. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setPosition(x, y)
 ```
 
@@ -2426,8 +3275,8 @@ LParticleSystem:setPosition(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Emitter x coordinate. |
-| `y` | `number` | Emitter y coordinate. |
+| `x` | number | Emitter x coordinate. |
+| `y` | number | Emitter y coordinate. |
 
 **Example**
 
@@ -2443,12 +3292,11 @@ end
 
 ---
 
-### `LParticleSystem:setRadialAcceleration`
+#### `LParticleSystem:setRadialAcceleration`
 
 Sets radial acceleration range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setRadialAcceleration(min, max)
 ```
 
@@ -2456,8 +3304,8 @@ LParticleSystem:setRadialAcceleration(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum radial acceleration. |
-| `max` | `number` | Maximum radial acceleration. |
+| `min` | number | Minimum radial acceleration. |
+| `max` | number | Maximum radial acceleration. |
 
 **Example**
 
@@ -2473,12 +3321,11 @@ end
 
 ---
 
-### `LParticleSystem:setRelativeRotation`
+#### `LParticleSystem:setRelativeRotation`
 
 Sets whether particle rotation is relative to movement.
 
 ```lua
--- signature
 LParticleSystem:setRelativeRotation(v)
 ```
 
@@ -2486,7 +3333,7 @@ LParticleSystem:setRelativeRotation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `boolean` | Relative rotation flag. |
+| `v` | boolean | Relative rotation flag. |
 
 **Example**
 
@@ -2501,12 +3348,11 @@ end
 
 ---
 
-### `LParticleSystem:setRotation`
+#### `LParticleSystem:setRotation`
 
 Sets particle rotation range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setRotation(min, max)
 ```
 
@@ -2514,8 +3360,8 @@ LParticleSystem:setRotation(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum rotation. |
-| `max` | `number` | Maximum rotation. |
+| `min` | number | Minimum rotation. |
+| `max` | number | Maximum rotation. |
 
 **Example**
 
@@ -2531,12 +3377,11 @@ end
 
 ---
 
-### `LParticleSystem:setShape`
+#### `LParticleSystem:setShape`
 
 Sets particle shape. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setShape(shape)
 ```
 
@@ -2544,7 +3389,7 @@ LParticleSystem:setShape(shape)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shape` | `string` | Shape name. |
+| `shape` | string | Shape name. |
 
 **Example**
 
@@ -2559,12 +3404,11 @@ end
 
 ---
 
-### `LParticleSystem:setSizeVariation`
+#### `LParticleSystem:setSizeVariation`
 
 Sets size variation. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setSizeVariation(v)
 ```
 
@@ -2572,7 +3416,7 @@ LParticleSystem:setSizeVariation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Size variation. |
+| `v` | number | Size variation. |
 
 **Example**
 
@@ -2588,12 +3432,11 @@ end
 
 ---
 
-### `LParticleSystem:setSizes`
+#### `LParticleSystem:setSizes`
 
 Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
 
 ```lua
--- signature
 LParticleSystem:setSizes(...)
 ```
 
@@ -2618,12 +3461,11 @@ end
 
 ---
 
-### `LParticleSystem:setSpeed`
+#### `LParticleSystem:setSpeed`
 
 Sets particle speed range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setSpeed(min, max)
 ```
 
@@ -2631,8 +3473,8 @@ LParticleSystem:setSpeed(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum speed. |
-| `max` | `number` | Maximum speed. |
+| `min` | number | Minimum speed. |
+| `max` | number | Maximum speed. |
 
 **Example**
 
@@ -2648,12 +3490,11 @@ end
 
 ---
 
-### `LParticleSystem:setSpin`
+#### `LParticleSystem:setSpin`
 
 Sets particle spin range. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setSpin(min, max)
 ```
 
@@ -2661,8 +3502,8 @@ LParticleSystem:setSpin(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum spin. |
-| `max` | `number` | Maximum spin. |
+| `min` | number | Minimum spin. |
+| `max` | number | Maximum spin. |
 
 **Example**
 
@@ -2678,12 +3519,11 @@ end
 
 ---
 
-### `LParticleSystem:setSpinVariation`
+#### `LParticleSystem:setSpinVariation`
 
 Sets spin variation. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setSpinVariation(v)
 ```
 
@@ -2691,7 +3531,7 @@ LParticleSystem:setSpinVariation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Spin variation factor. |
+| `v` | number | Spin variation factor. |
 
 **Example**
 
@@ -2706,12 +3546,11 @@ end
 
 ---
 
-### `LParticleSystem:setSpread`
+#### `LParticleSystem:setSpread`
 
 Sets emission spread. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:setSpread(spread)
 ```
 
@@ -2719,7 +3558,7 @@ LParticleSystem:setSpread(spread)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `spread` | `number` | Spread angle. |
+| `spread` | number | Spread angle. |
 
 **Example**
 
@@ -2734,12 +3573,11 @@ end
 
 ---
 
-### `LParticleSystem:setTangentialAcceleration`
+#### `LParticleSystem:setTangentialAcceleration`
 
 Sets tangential acceleration range for emitted particles.
 
 ```lua
--- signature
 LParticleSystem:setTangentialAcceleration(min, max)
 ```
 
@@ -2747,8 +3585,8 @@ LParticleSystem:setTangentialAcceleration(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | `number` | Minimum tangential acceleration. |
-| `max` | `number` | Maximum tangential acceleration. |
+| `min` | number | Minimum tangential acceleration. |
+| `max` | number | Maximum tangential acceleration. |
 
 **Example**
 
@@ -2764,12 +3602,11 @@ end
 
 ---
 
-### `LParticleSystem:start`
+#### `LParticleSystem:start`
 
 Starts particle emission on this object.
 
 ```lua
--- signature
 LParticleSystem:start()
 ```
 
@@ -2791,12 +3628,11 @@ end
 
 ---
 
-### `LParticleSystem:stop`
+#### `LParticleSystem:stop`
 
 Stops particle emission on this object.
 
 ```lua
--- signature
 LParticleSystem:stop()
 ```
 
@@ -2819,12 +3655,11 @@ end
 
 ---
 
-### `LParticleSystem:subSystemCount`
+#### `LParticleSystem:subSystemCount`
 
 Returns particle sub-system count.
 
 ```lua
--- signature
 LParticleSystem:subSystemCount()
 ```
 
@@ -2832,7 +3667,7 @@ LParticleSystem:subSystemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Sub-system count. |
+| number | Sub-system count. |
 
 **Example**
 
@@ -2855,12 +3690,11 @@ end
 
 ---
 
-### `LParticleSystem:toImage`
+#### `LParticleSystem:toImage`
 
 Draws particles to image data. This method is available to Lua scripts.
 
 ```lua
--- signature
 LParticleSystem:toImage(w, h)
 ```
 
@@ -2868,14 +3702,14 @@ LParticleSystem:toImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Image width. |
-| `h` | `number` | Image height. |
+| `w` | number | Image width. |
+| `h` | number | Image height. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the rendered particles. |
+| [LImageData](#limagedata-handle) | Image data containing the rendered particles. |
 
 **Example**
 
@@ -2893,12 +3727,11 @@ end
 
 ---
 
-### `LParticleSystem:type`
+#### `LParticleSystem:type`
 
 Returns the Lua-visible type name for this particle system handle.
 
 ```lua
--- signature
 LParticleSystem:type()
 ```
 
@@ -2906,7 +3739,7 @@ LParticleSystem:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LParticleSystem`. |
+| string | The string `[LParticleSystem](#lparticlesystem-handle)`. |
 
 **Example**
 
@@ -2922,12 +3755,11 @@ end
 
 ---
 
-### `LParticleSystem:typeOf`
+#### `LParticleSystem:typeOf`
 
 Returns whether this particle system handle matches a supported type name.
 
 ```lua
--- signature
 LParticleSystem:typeOf(name)
 ```
 
@@ -2935,13 +3767,13 @@ LParticleSystem:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LParticleSystem`, `ParticleSystem`, `Drawable`, and `Object`. |
+| `name` | string | Type name to compare against `[LParticleSystem](#lparticlesystem-handle)`, `ParticleSystem`, `Drawable`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2957,12 +3789,11 @@ end
 
 ---
 
-### `LParticleSystem:update`
+#### `LParticleSystem:update`
 
 Updates the particle system, applies optional physics collision, and invokes pending callbacks.
 
 ```lua
--- signature
 LParticleSystem:update(dt)
 ```
 
@@ -2970,7 +3801,7 @@ LParticleSystem:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 
@@ -2997,12 +3828,11 @@ end
 
 ---
 
-### `LParticleSystem:warmUp`
+#### `LParticleSystem:warmUp`
 
 Advances the system by a warm-up duration.
 
 ```lua
--- signature
 LParticleSystem:warmUp(seconds)
 ```
 
@@ -3010,7 +3840,7 @@ LParticleSystem:warmUp(seconds)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `seconds` | `number` | Warm-up duration in seconds. |
+| `seconds` | number | Warm-up duration in seconds. |
 
 **Example**
 
@@ -3026,14 +3856,19 @@ end
 
 ---
 
-## LTrail
+## LTrail Handle
 
-### `LTrail:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTrail:clear`
 
 Clears all trail points on this object.
 
 ```lua
--- signature
 LTrail:clear()
 ```
 
@@ -3054,12 +3889,11 @@ end
 
 ---
 
-### `LTrail:drawToImage`
+#### `LTrail:drawToImage`
 
 Draws the trail to image data. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTrail:drawToImage(w, h)
 ```
 
@@ -3067,14 +3901,14 @@ LTrail:drawToImage(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Width of output image. |
-| `h` | `number` | Height of output image. |
+| `w` | number | Width of output image. |
+| `h` | number | Height of output image. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LImageData` | Image data containing the rendered trail. |
+| [LImageData](#limagedata-handle) | Image data containing the rendered trail. |
 
 **Example**
 
@@ -3091,12 +3925,11 @@ end
 
 ---
 
-### `LTrail:getLifetime`
+#### `LTrail:getLifetime`
 
 Returns trail point lifetime. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTrail:getLifetime()
 ```
 
@@ -3104,7 +3937,7 @@ LTrail:getLifetime()
 
 | Type | Description |
 |------|-------------|
-| `number` | Lifetime in seconds. |
+| number | Lifetime in seconds. |
 
 **Example**
 
@@ -3119,12 +3952,11 @@ end
 
 ---
 
-### `LTrail:getPointCount`
+#### `LTrail:getPointCount`
 
 Returns trail point count. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTrail:getPointCount()
 ```
 
@@ -3132,7 +3964,7 @@ LTrail:getPointCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Point count. |
+| number | Point count. |
 
 **Example**
 
@@ -3150,12 +3982,11 @@ end
 
 ---
 
-### `LTrail:getWidth`
+#### `LTrail:getWidth`
 
 Returns trail width settings from this object.
 
 ```lua
--- signature
 LTrail:getWidth()
 ```
 
@@ -3163,8 +3994,8 @@ LTrail:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Start width. |
-| `number` | b End width. |
+| number | Start width. |
+| number | End width. |
 
 **Example**
 
@@ -3180,12 +4011,11 @@ end
 
 ---
 
-### `LTrail:pushPoint`
+#### `LTrail:pushPoint`
 
 Adds a point to the trail. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTrail:pushPoint(x, y)
 ```
 
@@ -3193,8 +4023,8 @@ LTrail:pushPoint(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Point x coordinate. |
-| `y` | `number` | Point y coordinate. |
+| `x` | number | Point x coordinate. |
+| `y` | number | Point y coordinate. |
 
 **Example**
 
@@ -3212,12 +4042,11 @@ end
 
 ---
 
-### `LTrail:setHeadColor`
+#### `LTrail:setHeadColor`
 
 Sets the color of the leading edge of the trail.
 
 ```lua
--- signature
 LTrail:setHeadColor(r, g, b, a)
 ```
 
@@ -3225,10 +4054,10 @@ LTrail:setHeadColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -3245,12 +4074,11 @@ end
 
 ---
 
-### `LTrail:setLifetime`
+#### `LTrail:setLifetime`
 
 Sets trail point lifetime. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTrail:setLifetime(lifetime)
 ```
 
@@ -3258,7 +4086,7 @@ LTrail:setLifetime(lifetime)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lifetime` | `number` | Point lifetime in seconds. |
+| `lifetime` | number | Point lifetime in seconds. |
 
 **Example**
 
@@ -3273,12 +4101,11 @@ end
 
 ---
 
-### `LTrail:setMinDistance`
+#### `LTrail:setMinDistance`
 
 Sets minimum distance between trail points.
 
 ```lua
--- signature
 LTrail:setMinDistance(distance)
 ```
 
@@ -3286,7 +4113,7 @@ LTrail:setMinDistance(distance)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `distance` | `number` | Minimum distance between points. |
+| `distance` | number | Minimum distance between points. |
 
 **Example**
 
@@ -3304,12 +4131,11 @@ end
 
 ---
 
-### `LTrail:setTailColor`
+#### `LTrail:setTailColor`
 
 Sets the color of the trailing edge of the trail.
 
 ```lua
--- signature
 LTrail:setTailColor(r, g, b, a)
 ```
 
@@ -3317,10 +4143,10 @@ LTrail:setTailColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a` | `number` | Alpha channel. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a` | number | Alpha channel. |
 
 **Example**
 
@@ -3337,12 +4163,11 @@ end
 
 ---
 
-### `LTrail:setWidth`
+#### `LTrail:setWidth`
 
 Sets trail start and optional end width.
 
 ```lua
--- signature
 LTrail:setWidth(start, end_)
 ```
 
@@ -3350,8 +4175,8 @@ LTrail:setWidth(start, end_)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | Start width. |
-| `end_?` | `number` | End width. |
+| `start` | number | Start width. |
+| `end_?` | number | End width. |
 
 **Example**
 
@@ -3367,12 +4192,11 @@ end
 
 ---
 
-### `LTrail:type`
+#### `LTrail:type`
 
 Returns the Lua-visible type name for this trail handle.
 
 ```lua
--- signature
 LTrail:type()
 ```
 
@@ -3380,7 +4204,7 @@ LTrail:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LTrail`. |
+| string | The string `[LTrail](#ltrail-handle)`. |
 
 **Example**
 
@@ -3394,12 +4218,11 @@ end
 
 ---
 
-### `LTrail:typeOf`
+#### `LTrail:typeOf`
 
 Returns whether this trail handle matches a supported type name.
 
 ```lua
--- signature
 LTrail:typeOf(name)
 ```
 
@@ -3407,13 +4230,13 @@ LTrail:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LTrail` and `Object`. |
+| `name` | string | Type name to compare against `[LTrail](#ltrail-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -3428,12 +4251,11 @@ end
 
 ---
 
-### `LTrail:update`
+#### `LTrail:update`
 
 Updates trail point lifetimes. This method is available to Lua scripts.
 
 ```lua
--- signature
 LTrail:update(dt)
 ```
 
@@ -3441,7 +4263,7 @@ LTrail:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Example**
 

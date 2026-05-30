@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Button","CheckBox","ComboBox","Label","ListBox","ProgressBar","RadioButton","ScrollBar","Slider","SpinBox","Switch","TabBar","TextInput"]};

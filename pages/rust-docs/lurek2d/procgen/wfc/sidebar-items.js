@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["wfc_generate"],"struct":["WfcGrid","WfcOpts","WfcRules","WfcTile"]};

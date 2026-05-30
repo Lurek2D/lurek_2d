@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["handle_client_message","server_thread"]};

@@ -1,12 +1,79 @@
 # Agent
 
-- The `agent` module provides async LLM prompt dispatch, per-agent prompt state, AISystem multi-agent orchestration, keyword-gated skill injection, output format control, automatic retry, thin Lua-facing handles for polling results back into the Lua VM, a direct synchronous LLM API (`configure`, `complete`, `completeJson`, `embed`, etc.), and memory primitives for LLM agents (working, episodic, semantic, and bundled agent memory).
+## Summary
 
 The `agent` module owns the engine-side runtime for LLM-backed assistants. It keeps request state in `AgentState`, dispatches HTTP prompts in the background through `AgentClient`, and converts completed responses into callback payloads that Lua code can poll from the main loop. The module is intentionally split so the heavy request, batching, and response-processing logic lives in `src/agent/`, while `src/lua_api/agent_api.rs` stays a thin registration layer.
 
 The module boundary is narrow. `src/agent/` owns request construction, async callback routing, response parsing for `json` / `csv` / `text`, automatic transient-error retry with back-off, and the secure `evalCode` runtime entry point. The `AISystemState` type provides multi-agent orchestration: a shared system prompt, manually included instruction blocks, and keyword-gated skill blocks that Lurek auto-injects based on prompt keyword overlap. `src/lua_api/agent_api.rs` exposes `lurek.agent.new`, `lurek.agent.newManager`, `lurek.agent.newSystem`, and userdata methods that delegate into the module runtime. Network transport stays delegated to `crate::network::http::execute_request`, and the API remains polling-based so prompt execution never blocks the frame loop.
 
 `src/agent/chat.rs` provides a synchronous direct LLM path (`configure`, `complete`, `completeJson`, `embed`, `isAvailable`, `listModels`) backed by `GlobalLlmConfig`. `LlmChat` maintains a stateful message history for multi-turn conversations. `LlmTemplate` renders `{key}` placeholders. `src/agent/memory.rs` provides `WorkingMemory` (bounded FIFO), `EpisodicMemory` (tick-stamped event log), `SemanticMemory` (fact store), and `AgentMemory` (bundled, optionally persistent).
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### chat.rs
+
+- Implements the direct synchronous conversation surface for immediate model-backed agent interactions.
+- Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls.
+- Preserves reusable global provider configuration so repeated invocations share one operational baseline.
+- Maintains multi-turn message history for session continuity and contextual follow-up reasoning.
+- Applies lightweight prompt templating to inject runtime variables without changing call contracts.
+- Normalizes backend responses into stable Lua-facing shapes with predictable field semantics.
+
+### client.rs
+
+- Provides asynchronous prompt transport that moves network latency off the main update path.
+- Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe.
+- Supports callback-scoped cancellation to discard stale results after gameplay state has changed.
+- Retries transient transport failures with bounded backoff to improve completion reliability.
+- Bridges worker-thread execution and runtime polling with consistent response delivery semantics.
+
+### memory.rs
+
+- Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge.
+- Applies distinct retention strategies so each memory tier fits a different reasoning horizon.
+- Supports bounded working slots for prompt context while preserving ordered recency behavior.
+- Records timestamped episodes for searchable event history and narrative continuity.
+- Stores semantic facts as named durable entries that survive immediate conversational churn.
+- Provides aggregate save and load flows for cross-session continuity of memory state.
+
+### mod.rs
+
+- Defines the `agent` domain module boundary for LLM-backed behavior.
+- Contains transport, state, memory, orchestration logic, and Ollama lifecycle components.
+- Keeps Lua binding/runtime details out of this layer so `src/lua_api/` stays the integration boundary.
+
+### ollama.rs
+
+- Provides backend infrastructure control for local Ollama service lifecycle and operational health checks.
+- Handles start, stop, restart, and version discovery to keep runtime integration state observable.
+- Exposes model inventory queries and availability checks for capability-aware script decisions.
+- Supports model deletion and asynchronous pull workflows with pollable completion tracking.
+- Isolates backend process management from prompt orchestration to keep runtime layering clean.
+- Normalizes infrastructure outcomes into stable results consumed by higher agent control surfaces.
+
+### orchestration.rs
+
+- Agent orchestration logic extracted from Lua runtime glue.
+- Owns batch-task data contracts, callback ID packing, and system-context assembly.
+- This module is runtime-agnostic and intentionally free of `mlua` types.
+
+### state.rs
+
+- Defines runtime state contracts that shape outbound agent requests from script-facing configuration.
+- Aggregates endpoint, model, prompt policy, timeout, and retry controls into deterministic payload inputs.
+- Builds direct and system-routed request variants with consistent field and option mapping.
+- Composes AI-system context from instructions and skill fragments matched to prompt intent signals.
+- Keeps mutable control state separate from transport execution to preserve predictable behavior boundaries.
+- Bridges Lua runtime controls to transport-ready request structures without duplicating orchestration logic.
+
+### types.rs
+
+- Defines shared data contracts for agent requests, responses, and cross-layer failure representation.
+- Aligns state construction, async transport, and callback dispatch on one stable payload vocabulary.
+- Encodes retry semantics and error categories so runtime behavior is consistent across entry points.
+- Serves as the canonical contract layer that keeps agent submodules interoperable and predictable.
 
 ## Functions
 
@@ -15,7 +82,6 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 Sends a single prompt to the global LLM and returns the response text.
 
 ```lua
--- signature
 lurek.agent.complete(prompt)
 ```
 
@@ -23,13 +89,13 @@ lurek.agent.complete(prompt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prompt` | `string` | Prompt text. |
+| `prompt` | string | Prompt text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Response text, or raises an error on failure. |
+| string | Response text, or raises an error on failure. |
 
 **Example**
 
@@ -47,7 +113,6 @@ end
 Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
 
 ```lua
--- signature
 lurek.agent.completeAsync(prompt, callback)
 ```
 
@@ -55,14 +120,14 @@ lurek.agent.completeAsync(prompt, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prompt` | `string` | Prompt text. |
-| `callback` | `function` | Called with `(text, err)` on completion (`err` is `nil` on success). |
+| `prompt` | string | Prompt text. |
+| `callback` | function | Called with `(text, err)` on completion (`err` is `nil` on success). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -85,7 +150,6 @@ end
 Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
 
 ```lua
--- signature
 lurek.agent.completeJson(prompt)
 ```
 
@@ -93,13 +157,13 @@ lurek.agent.completeJson(prompt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prompt` | `string` | Prompt text. |
+| `prompt` | string | Prompt text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Parsed JSON response as a Lua table, or raises an error on failure. |
+| table | Parsed JSON response as a Lua table, or raises an error on failure. |
 
 **Example**
 
@@ -117,7 +181,6 @@ end
 Configures the global LLM provider settings used by module-level functions.
 
 ```lua
--- signature
 lurek.agent.configure(config)
 ```
 
@@ -125,13 +188,13 @@ lurek.agent.configure(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | `table` | Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields. |
+| `config` | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -140,7 +203,7 @@ do
     lurek.agent.configure({
         provider    = "ollama",
         base_url    = "http://127.0.0.1:11434",
-        model       = "llama3",
+        model       = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         timeout_ms  = 30000,
         api_key     = nil,
     })
@@ -154,7 +217,6 @@ end
 Returns an embedding vector for `text` from the global LLM.
 
 ```lua
--- signature
 lurek.agent.embed(text)
 ```
 
@@ -162,13 +224,13 @@ lurek.agent.embed(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Text to embed. |
+| `text` | string | Text to embed. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Number array of float embedding values, or raises an error on failure. |
+| table | Number array of float embedding values, or raises an error on failure. |
 
 **Example**
 
@@ -186,7 +248,6 @@ end
 Returns `true` if the configured LLM server responds within 5 seconds.
 
 ```lua
--- signature
 lurek.agent.isAvailable()
 ```
 
@@ -194,7 +255,7 @@ lurek.agent.isAvailable()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the server is reachable. |
+| boolean | `true` if the server is reachable. |
 
 **Example**
 
@@ -212,7 +273,6 @@ end
 Returns a list of available model names from the configured LLM server.
 
 ```lua
--- signature
 lurek.agent.listModels()
 ```
 
@@ -220,7 +280,7 @@ lurek.agent.listModels()
 
 | Type | Description |
 |------|-------------|
-| `table` | String array of model names; empty if the server is unreachable. |
+| table | String array of model names; empty if the server is unreachable. |
 
 **Example**
 
@@ -235,10 +295,9 @@ end
 
 ### `lurek.agent.new`
 
-Creates a new LLM Agent instance.
+Creates a new configurable LLM Agent runtime instance.
 
 ```lua
--- signature
 lurek.agent.new(config)
 ```
 
@@ -246,13 +305,13 @@ lurek.agent.new(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | `table` | Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table. |
+| `config` | table | Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAgent` | A new agent object. |
+| [LAgent](#lagent-handle) | A new agent object. |
 
 **Example**
 
@@ -260,7 +319,7 @@ lurek.agent.new(config)
 do
     local agent = lurek.agent.new({
         url          = "http://localhost:11434/api/generate",
-        model        = "llama3",
+        model        = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         system_prompt = "You are a helpful game AI.",
         format       = "json",
         name         = "helper",
@@ -284,7 +343,6 @@ end
 Creates a bundled working+episodic+semantic memory with optional disk persistence.
 
 ```lua
--- signature
 lurek.agent.newAgentMemory(config)
 ```
 
@@ -292,13 +350,13 @@ lurek.agent.newAgentMemory(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | `table` | Config with `working_capacity` (integer) and `persist_path` (string?) fields. |
+| `config?` | table | Config with `working_capacity` (integer) and `persist_path` (string?) fields. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAgentMemory` | A new agent memory object. |
+| [LAgentMemory](#lagentmemory-handle) | A new agent memory object. |
 
 **Example**
 
@@ -317,7 +375,6 @@ end
 Creates a new stateful chat session using the global LLM config.
 
 ```lua
--- signature
 lurek.agent.newChat()
 ```
 
@@ -325,7 +382,7 @@ lurek.agent.newChat()
 
 | Type | Description |
 |------|-------------|
-| `LAgentChat` | A new chat session object. |
+| [LAgentChat](#lagentchat-handle) | A new chat session object. |
 
 **Example**
 
@@ -344,7 +401,6 @@ end
 Creates a new episodic memory for recording time-stamped events.
 
 ```lua
--- signature
 lurek.agent.newEpisodicMemory()
 ```
 
@@ -352,7 +408,7 @@ lurek.agent.newEpisodicMemory()
 
 | Type | Description |
 |------|-------------|
-| `LEpisodicMemory` | A new episodic memory object. |
+| [LEpisodicMemory](#lepisodicmemory-handle) | A new episodic memory object. |
 
 **Example**
 
@@ -371,7 +427,6 @@ end
 Creates a new Agent Manager for batching multiple LLM agents over a shared client.
 
 ```lua
--- signature
 lurek.agent.newManager()
 ```
 
@@ -379,7 +434,7 @@ lurek.agent.newManager()
 
 | Type | Description |
 |------|-------------|
-| `LAgentManager` | A new agent manager object. |
+| [LAgentManager](#lagentmanager-handle) | A new agent manager object. |
 
 **Example**
 
@@ -397,7 +452,6 @@ end
 Creates an Ollama infrastructure manager for server lifecycle and model management.
 
 ```lua
--- signature
 lurek.agent.newOllama(config)
 ```
 
@@ -405,13 +459,13 @@ lurek.agent.newOllama(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | `table` | Optional config with `url` (default `"http://127.0.0.1:11434"`). |
+| `config?` | table | Optional config with `url` (default `"http://127.0.0.1:11434"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LOllamaManager` | A new Ollama manager object. |
+| [LOllamaManager](#lollamamanager-handle) | A new Ollama manager object. |
 
 **Example**
 
@@ -429,7 +483,6 @@ end
 Creates a new semantic memory for storing named facts.
 
 ```lua
--- signature
 lurek.agent.newSemanticMemory()
 ```
 
@@ -437,7 +490,7 @@ lurek.agent.newSemanticMemory()
 
 | Type | Description |
 |------|-------------|
-| `LSemanticMemory` | A new semantic memory object. |
+| [LSemanticMemory](#lsemanticmemory-handle) | A new semantic memory object. |
 
 **Example**
 
@@ -456,7 +509,6 @@ end
 Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
 
 ```lua
--- signature
 lurek.agent.newSystem(config)
 ```
 
@@ -464,13 +516,13 @@ lurek.agent.newSystem(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | `table` | Config with `system_prompt` for the shared system context. |
+| `config` | table | Config with `system_prompt` for the shared system context. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAISystem` | A new AI system object. |
+| [LAISystem](#laisystem-handle) | A new AI system object. |
 
 **Example**
 
@@ -490,7 +542,6 @@ end
 Creates a new `{key}` placeholder prompt template.
 
 ```lua
--- signature
 lurek.agent.newTemplate(pattern)
 ```
 
@@ -498,13 +549,13 @@ lurek.agent.newTemplate(pattern)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pattern` | `string` | Template string with `{key}` placeholders. |
+| `pattern` | string | Template string with `{key}` placeholders. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAgentTemplate` | A new template object. |
+| [LAgentTemplate](#lagenttemplate-handle) | A new template object. |
 
 **Example**
 
@@ -523,7 +574,6 @@ end
 Creates a new bounded FIFO working memory with the given capacity.
 
 ```lua
--- signature
 lurek.agent.newWorkingMemory(capacity)
 ```
 
@@ -531,13 +581,13 @@ lurek.agent.newWorkingMemory(capacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `capacity` | `number` | Maximum number of key-value slots (0 = unlimited). |
+| `capacity` | number | Maximum number of key-value slots (0 = unlimited). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWorkingMemory` | A new working memory object. |
+| [LWorkingMemory](#lworkingmemory-handle) | A new working memory object. |
 
 **Example**
 
@@ -551,14 +601,44 @@ end
 
 ---
 
-## LAISystem
+## Module Fields
 
-### `LAISystem:addAgent`
+*No module-level fields documented.*
+
+## Types
+
+- [LAISystem Handle](#laisystem-handle)
+- [LAgent Handle](#lagent-handle)
+- [LAgentChat Handle](#lagentchat-handle)
+- [LAgentManager Handle](#lagentmanager-handle)
+- [LAgentMemory Handle](#lagentmemory-handle)
+- [LAgentTemplate Handle](#lagenttemplate-handle)
+- [LEpisodicMemory Handle](#lepisodicmemory-handle)
+- [LOllamaManager Handle](#lollamamanager-handle)
+- [LSemanticMemory Handle](#lsemanticmemory-handle)
+- [LWorkingMemory Handle](#lworkingmemory-handle)
+
+## Callbacks
+
+- `lurek.agent.completeAsync` param `callback` (`function`): Called with `(text, err)` on completion (`err` is `nil` on success).
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAISystem Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAISystem:addAgent`
 
 Registers a named agent in the system.
 
 ```lua
--- signature
 LAISystem:addAgent(name, agent)
 ```
 
@@ -566,14 +646,14 @@ LAISystem:addAgent(name, agent)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique agent name used for routing. |
-| `agent` | `LAgent` | The agent instance to register. |
+| `name` | string | Unique agent name used for routing. |
+| `agent` | [LAgent](#lagent-handle) | The agent instance to register. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -581,7 +661,7 @@ LAISystem:addAgent(name, agent)
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
 
-    local npc = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local npc = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
     npc:setDescription("Writes NPC dialogue with emotional depth and regional accents.")
 
     system:addAgent("npc_writer", npc)
@@ -591,12 +671,11 @@ end
 
 ---
 
-### `LAISystem:addInstruction`
+#### `LAISystem:addInstruction`
 
 Adds a named instruction block the user can explicitly include per prompt.
 
 ```lua
--- signature
 LAISystem:addInstruction(key, text)
 ```
 
@@ -604,14 +683,14 @@ LAISystem:addInstruction(key, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Unique instruction identifier. |
-| `text` | `string` | Instruction text injected into the system block. |
+| `key` | string | Unique instruction identifier. |
+| `text` | string | Instruction text injected into the system block. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -626,12 +705,11 @@ end
 
 ---
 
-### `LAISystem:addSkill`
+#### `LAISystem:addSkill`
 
 Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
 
 ```lua
--- signature
 LAISystem:addSkill(name, keywords, prompt)
 ```
 
@@ -639,15 +717,15 @@ LAISystem:addSkill(name, keywords, prompt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Skill identifier shown in the injected context. |
-| `keywords` | `table` | String array of trigger keywords (case-insensitive match). |
-| `prompt` | `string` | Instruction text appended when a keyword matches. |
+| `name` | string | Skill identifier shown in the injected context. |
+| `keywords` | table | String array of trigger keywords (case-insensitive match). |
+| `prompt` | string | Instruction text appended when a keyword matches. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -671,12 +749,11 @@ end
 
 ---
 
-### `LAISystem:agentCount`
+#### `LAISystem:agentCount`
 
 Returns the number of registered agents.
 
 ```lua
--- signature
 LAISystem:agentCount()
 ```
 
@@ -684,7 +761,7 @@ LAISystem:agentCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Agent count. |
+| number | Agent count. |
 
 **Example**
 
@@ -700,12 +777,11 @@ end
 
 ---
 
-### `LAISystem:buildContext`
+#### `LAISystem:buildContext`
 
 Builds and returns the full context string that would be sent for a given prompt.
 
 ```lua
--- signature
 LAISystem:buildContext(instruction, opts)
 ```
 
@@ -713,14 +789,14 @@ LAISystem:buildContext(instruction, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `instruction` | `string` | The prompt text used for keyword matching. |
-| `opts?` | `table` | Optional table with `agent` (string) and `instructions` (table) keys. |
+| `instruction` | string | The prompt text used for keyword matching. |
+| `opts?` | table | Optional table with `agent` (string) and `instructions` (table) keys. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The assembled system context block. |
+| string | The assembled system context block. |
 
 **Example**
 
@@ -745,12 +821,11 @@ end
 
 ---
 
-### `LAISystem:hasAgent`
+#### `LAISystem:hasAgent`
 
 Returns `true` if an agent with `name` is registered.
 
 ```lua
--- signature
 LAISystem:hasAgent(name)
 ```
 
@@ -758,13 +833,13 @@ LAISystem:hasAgent(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Agent name to check. |
+| `name` | string | Agent name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the agent exists. |
+| boolean | `true` if the agent exists. |
 
 **Example**
 
@@ -780,12 +855,11 @@ end
 
 ---
 
-### `LAISystem:hasInstruction`
+#### `LAISystem:hasInstruction`
 
 Returns `true` if an instruction with `key` is registered.
 
 ```lua
--- signature
 LAISystem:hasInstruction(key)
 ```
 
@@ -793,13 +867,13 @@ LAISystem:hasInstruction(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Instruction key to check. |
+| `key` | string | Instruction key to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the instruction exists. |
+| boolean | `true` if the instruction exists. |
 
 **Example**
 
@@ -814,12 +888,11 @@ end
 
 ---
 
-### `LAISystem:hasSkill`
+#### `LAISystem:hasSkill`
 
 Returns `true` if a system skill with `name` is registered.
 
 ```lua
--- signature
 LAISystem:hasSkill(name)
 ```
 
@@ -827,13 +900,13 @@ LAISystem:hasSkill(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Skill name to check. |
+| `name` | string | Skill name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the skill exists. |
+| boolean | `true` if the skill exists. |
 
 **Example**
 
@@ -848,12 +921,11 @@ end
 
 ---
 
-### `LAISystem:instructionCount`
+#### `LAISystem:instructionCount`
 
 Returns the number of registered instruction blocks.
 
 ```lua
--- signature
 LAISystem:instructionCount()
 ```
 
@@ -861,7 +933,7 @@ LAISystem:instructionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Instruction count. |
+| number | Instruction count. |
 
 **Example**
 
@@ -876,12 +948,11 @@ end
 
 ---
 
-### `LAISystem:listAgents`
+#### `LAISystem:listAgents`
 
 Returns a sorted list of all registered agent names.
 
 ```lua
--- signature
 LAISystem:listAgents()
 ```
 
@@ -889,7 +960,7 @@ LAISystem:listAgents()
 
 | Type | Description |
 |------|-------------|
-| `table` | String array of agent names. |
+| table | String array of agent names. |
 
 **Example**
 
@@ -908,12 +979,11 @@ end
 
 ---
 
-### `LAISystem:listInstructions`
+#### `LAISystem:listInstructions`
 
 Returns a list of registered instruction keys in insertion order.
 
 ```lua
--- signature
 LAISystem:listInstructions()
 ```
 
@@ -921,7 +991,7 @@ LAISystem:listInstructions()
 
 | Type | Description |
 |------|-------------|
-| `table` | String array of instruction keys. |
+| table | String array of instruction keys. |
 
 **Example**
 
@@ -939,12 +1009,11 @@ end
 
 ---
 
-### `LAISystem:prompt`
+#### `LAISystem:prompt`
 
 Sends a prompt to a named agent through the system, auto-injecting matching context.
 
 ```lua
--- signature
 LAISystem:prompt(agent_name, instruction, callback, opts)
 ```
 
@@ -952,16 +1021,16 @@ LAISystem:prompt(agent_name, instruction, callback, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `agent_name` | `string` | Name of the agent to query. |
-| `instruction` | `string` | The task instruction for the agent. |
-| `callback` | `function` | Function called with `(success, data, err_info)` when complete. |
-| `opts` | `table` | Optional: `{ instructions = {"key1", ...} }` to include manually. |
+| `agent_name` | string | Name of the agent to query. |
+| `instruction` | string | The task instruction for the agent. |
+| `callback` | function | Function called with `(success, data, err_info)` when complete. |
+| `opts` | table | Optional: `{ instructions = {"key1", ...} }` to include manually. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Callback ID. |
+| number | Callback ID. |
 
 **Example**
 
@@ -973,7 +1042,7 @@ do
 
     local designer = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
-        model  = "llama3",
+        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         format = "json",
     })
     designer:setDescription("Visual design specialist focusing on sprites and environments.")
@@ -999,12 +1068,11 @@ end
 
 ---
 
-### `LAISystem:removeAgent`
+#### `LAISystem:removeAgent`
 
 Removes a registered agent by name.
 
 ```lua
--- signature
 LAISystem:removeAgent(name)
 ```
 
@@ -1012,13 +1080,13 @@ LAISystem:removeAgent(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Agent name to remove. |
+| `name` | string | Agent name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the agent was found and removed. |
+| boolean | `true` if the agent was found and removed. |
 
 **Example**
 
@@ -1034,12 +1102,11 @@ end
 
 ---
 
-### `LAISystem:removeInstruction`
+#### `LAISystem:removeInstruction`
 
 Removes an instruction block by key.
 
 ```lua
--- signature
 LAISystem:removeInstruction(key)
 ```
 
@@ -1047,13 +1114,13 @@ LAISystem:removeInstruction(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Instruction key to remove. |
+| `key` | string | Instruction key to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the instruction was found and removed. |
+| boolean | `true` if the instruction was found and removed. |
 
 **Example**
 
@@ -1068,12 +1135,11 @@ end
 
 ---
 
-### `LAISystem:removeSkill`
+#### `LAISystem:removeSkill`
 
-Removes a system skill by name.
+Removes a registered system skill by exact name.
 
 ```lua
--- signature
 LAISystem:removeSkill(name)
 ```
 
@@ -1081,13 +1147,13 @@ LAISystem:removeSkill(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Skill name to remove. |
+| `name` | string | Skill name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the skill was found and removed. |
+| boolean | `true` if the skill was found and removed. |
 
 **Example**
 
@@ -1102,12 +1168,11 @@ end
 
 ---
 
-### `LAISystem:runAll`
+#### `LAISystem:runAll`
 
 Dispatches multiple named-agent tasks in parallel through the system.
 
 ```lua
--- signature
 LAISystem:runAll(tasks, callback)
 ```
 
@@ -1115,14 +1180,14 @@ LAISystem:runAll(tasks, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tasks` | `table` | List of `{ agent = string, instruction = string, instructions = table? }`. |
-| `callback` | `function` | Function called with a results table when all tasks complete. |
+| `tasks` | table | List of `{ agent = string, instruction = string, instructions = table? }`. |
+| `callback` | function | Function called with a results table when all tasks complete. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Batch callback ID. |
+| number | Batch callback ID. |
 
 **Example**
 
@@ -1131,8 +1196,8 @@ do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
     system:addInstruction("art_style", "16-bit pixel art.")
 
-    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
-    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
     writer:setDescription("Writes story and NPC dialogue.")
     designer:setDescription("Designs levels and visual assets.")
 
@@ -1154,12 +1219,11 @@ end
 
 ---
 
-### `LAISystem:skillCount`
+#### `LAISystem:skillCount`
 
 Returns the number of registered system skills.
 
 ```lua
--- signature
 LAISystem:skillCount()
 ```
 
@@ -1167,7 +1231,7 @@ LAISystem:skillCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Skill count. |
+| number | Skill count. |
 
 **Example**
 
@@ -1182,12 +1246,11 @@ end
 
 ---
 
-### `LAISystem:update`
+#### `LAISystem:update`
 
 Polls the system's background client for completed requests and dispatches callbacks.
 
 ```lua
--- signature
 LAISystem:update()
 ```
 
@@ -1195,7 +1258,7 @@ LAISystem:update()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1210,14 +1273,19 @@ end
 
 ---
 
-## LAgent
+## LAgent Handle
 
-### `LAgent:addSkill`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAgent:addSkill`
 
 Appends a named skill prompt to the agent's context block.
 
 ```lua
--- signature
 LAgent:addSkill(name, prompt)
 ```
 
@@ -1225,14 +1293,14 @@ LAgent:addSkill(name, prompt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique skill identifier shown in the injected context. |
-| `prompt` | `string` | Instruction text appended to the system block. |
+| `name` | string | Unique skill identifier shown in the injected context. |
+| `prompt` | string | Instruction text appended to the system block. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1247,29 +1315,11 @@ end
 
 ---
 
-### `LAgent:addTag`
-
-Adds a tag string to this agent when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:addTag(tag)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tag` | `string` | Tag name to insert into the agent tag set. |
-
----
-
-### `LAgent:cancel`
+#### `LAgent:cancel`
 
 Cancels an in-flight or pending request by callback ID.
 
 ```lua
--- signature
 LAgent:cancel(callback_id)
 ```
 
@@ -1277,13 +1327,13 @@ LAgent:cancel(callback_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback_id` | `number` | ID returned by `prompt` or `promptBatch`. |
+| `callback_id` | number | ID returned by `prompt` or `promptBatch`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1291,7 +1341,7 @@ LAgent:cancel(callback_id)
 do
     local agent = lurek.agent.new({
         url = "http://localhost:11434/api/generate",
-        model = "llama3",
+        model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
     })
     local id = agent:prompt("Long-running request.", function() end)
     agent:cancel(id)
@@ -1301,12 +1351,11 @@ end
 
 ---
 
-### `LAgent:clearSkills`
+#### `LAgent:clearSkills`
 
 Removes all registered skills from the agent's context.
 
 ```lua
--- signature
 LAgent:clearSkills()
 ```
 
@@ -1314,7 +1363,7 @@ LAgent:clearSkills()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1329,12 +1378,11 @@ end
 
 ---
 
-### `LAgent:evalCode`
+#### `LAgent:evalCode`
 
 Evaluates a Lua code string inside the active VM.
 
 ```lua
--- signature
 LAgent:evalCode(code)
 ```
 
@@ -1342,13 +1390,13 @@ LAgent:evalCode(code)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `code` | `string` | The Lua code to execute. |
+| `code` | string | The Lua code to execute. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` on success, raises an error on failure. |
+| boolean | `true` on success, raises an error on failure. |
 
 **Example**
 
@@ -1362,46 +1410,11 @@ end
 
 ---
 
-### `LAgent:getBlackboard`
-
-Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
-
-```lua
--- signature
-LAgent:getBlackboard()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `LAIBlackboard` | Blackboard handle initialized from the agent's local blackboard values at call time. |
-
----
-
-### `LAgent:getDecisionModel`
-
-Returns this agent's decision model name or the default model name for a missing agent.
-
-```lua
--- signature
-LAgent:getDecisionModel()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Current decision model name. |
-
----
-
-### `LAgent:getDescription`
+#### `LAgent:getDescription`
 
 Returns the agent's role description.
 
 ```lua
--- signature
 LAgent:getDescription()
 ```
 
@@ -1409,7 +1422,7 @@ LAgent:getDescription()
 
 | Type | Description |
 |------|-------------|
-| `string` | Role description, or `""` if not set. |
+| string | Role description, or `""` if not set. |
 
 **Example**
 
@@ -1424,12 +1437,11 @@ end
 
 ---
 
-### `LAgent:getFormat`
+#### `LAgent:getFormat`
 
 Returns the current response format string.
 
 ```lua
--- signature
 LAgent:getFormat()
 ```
 
@@ -1437,7 +1449,7 @@ LAgent:getFormat()
 
 | Type | Description |
 |------|-------------|
-| `string` | One of `"json"`, `"csv"`, or `"text"`. |
+| string | One of `"json"`, `"csv"`, or `"text"`. |
 
 **Example**
 
@@ -1451,46 +1463,11 @@ end
 
 ---
 
-### `LAgent:getMaxForce`
-
-Returns this agent's maximum steering force or the default force for a missing agent.
-
-```lua
--- signature
-LAgent:getMaxForce()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Maximum steering force value. |
-
----
-
-### `LAgent:getMaxSpeed`
-
-Returns this agent's maximum movement speed or the default speed for a missing agent.
-
-```lua
--- signature
-LAgent:getMaxSpeed()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Maximum speed in world units per second. |
-
----
-
-### `LAgent:getModel`
+#### `LAgent:getModel`
 
 Returns the current model identifier.
 
 ```lua
--- signature
 LAgent:getModel()
 ```
 
@@ -1498,13 +1475,13 @@ LAgent:getModel()
 
 | Type | Description |
 |------|-------------|
-| `string` | Model name. |
+| string | Model name. |
 
 **Example**
 
 ```lua
 do
-    local agent = lurek.agent.new({ model = "llama3" })
+    local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
     local m     = agent:getModel()
     print("Agent model:", m)
 end
@@ -1512,12 +1489,11 @@ end
 
 ---
 
-### `LAgent:getName`
+#### `LAgent:getName`
 
 Returns the agent's name identifier.
 
 ```lua
--- signature
 LAgent:getName()
 ```
 
@@ -1525,7 +1501,7 @@ LAgent:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Agent name, or `""` if not set. |
+| string | Agent name, or `""` if not set. |
 
 **Example**
 
@@ -1540,47 +1516,11 @@ end
 
 ---
 
-### `LAgent:getPosition`
-
-Returns this agent's world position or the origin when the agent has been removed.
-
-```lua
--- signature
-LAgent:getPosition()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | a X and Y position in world units. |
-| `number` | b X and Y position in world units. |
-
----
-
-### `LAgent:getPriority`
-
-Returns this agent's integer priority or zero when the agent has been removed.
-
-```lua
--- signature
-LAgent:getPriority()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Current priority value. |
-
----
-
-### `LAgent:getUrl`
+#### `LAgent:getUrl`
 
 Returns the current LLM endpoint URL.
 
 ```lua
--- signature
 LAgent:getUrl()
 ```
 
@@ -1588,7 +1528,7 @@ LAgent:getUrl()
 
 | Type | Description |
 |------|-------------|
-| `string` | Endpoint URL. |
+| string | Endpoint URL. |
 
 **Example**
 
@@ -1602,30 +1542,11 @@ end
 
 ---
 
-### `LAgent:getVelocity`
-
-Returns this agent's velocity vector or zero velocity when the agent has been removed.
-
-```lua
--- signature
-LAgent:getVelocity()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | a X and Y velocity in world units per second. |
-| `number` | b X and Y velocity in world units per second. |
-
----
-
-### `LAgent:hasSkill`
+#### `LAgent:hasSkill`
 
 Returns `true` if a skill with `name` is registered.
 
 ```lua
--- signature
 LAgent:hasSkill(name)
 ```
 
@@ -1633,13 +1554,13 @@ LAgent:hasSkill(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Skill name to check. |
+| `name` | string | Skill name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the skill exists. |
+| boolean | `true` if the skill exists. |
 
 **Example**
 
@@ -1654,35 +1575,11 @@ end
 
 ---
 
-### `LAgent:hasTag`
-
-Returns whether this agent currently has the given tag.
-
-```lua
--- signature
-LAgent:hasTag(tag)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tag` | `string` | Tag name to check in the agent tag set. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | True when the tag exists on the agent. |
-
----
-
-### `LAgent:listSkills`
+#### `LAgent:listSkills`
 
 Returns a list of registered skill names in insertion order.
 
 ```lua
--- signature
 LAgent:listSkills()
 ```
 
@@ -1690,7 +1587,7 @@ LAgent:listSkills()
 
 | Type | Description |
 |------|-------------|
-| `table` | String array of skill names. |
+| table | String array of skill names. |
 
 **Example**
 
@@ -1708,12 +1605,11 @@ end
 
 ---
 
-### `LAgent:pendingCount`
+#### `LAgent:pendingCount`
 
 Returns the number of in-flight requests that have not yet completed.
 
 ```lua
--- signature
 LAgent:pendingCount()
 ```
 
@@ -1721,7 +1617,7 @@ LAgent:pendingCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of pending requests. |
+| number | Number of pending requests. |
 
 **Example**
 
@@ -1735,12 +1631,11 @@ end
 
 ---
 
-### `LAgent:prompt`
+#### `LAgent:prompt`
 
 Sends an instructional prompt to the LLM asynchronously.
 
 ```lua
--- signature
 LAgent:prompt(instruction, callback)
 ```
 
@@ -1748,14 +1643,14 @@ LAgent:prompt(instruction, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `instruction` | `string` | The specific task instruction for the agent. |
-| `callback` | `function` | Function called with `(success, data, err_info)` when complete. |
+| `instruction` | string | The specific task instruction for the agent. |
+| `callback` | function | Function called with `(success, data, err_info)` when complete. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Callback ID used to cancel the request. |
+| number | Callback ID used to cancel the request. |
 
 **Example**
 
@@ -1763,7 +1658,7 @@ LAgent:prompt(instruction, callback)
 do
     local agent = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
-        model  = "llama3",
+        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         format = "json",
     })
 
@@ -1781,12 +1676,11 @@ end
 
 ---
 
-### `LAgent:promptBatch`
+#### `LAgent:promptBatch`
 
 Sends a batch of prompts to the LLM asynchronously.
 
 ```lua
--- signature
 LAgent:promptBatch(instructions, callback)
 ```
 
@@ -1794,14 +1688,14 @@ LAgent:promptBatch(instructions, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `instructions` | `table` | Ordered list of instruction strings. |
-| `callback` | `function` | Function called with a results table when all complete. |
+| `instructions` | table | Ordered list of instruction strings. |
+| `callback` | function | Function called with a results table when all complete. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Batch callback ID. |
+| number | Batch callback ID. |
 
 **Example**
 
@@ -1809,7 +1703,7 @@ LAgent:promptBatch(instructions, callback)
 do
     local agent = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
-        model  = "llama3",
+        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         format = "json",
     })
 
@@ -1832,29 +1726,11 @@ end
 
 ---
 
-### `LAgent:removeTag`
-
-Removes a tag string from this agent when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:removeTag(tag)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tag` | `string` | Tag name to remove from the agent tag set. |
-
----
-
-### `LAgent:setContextSize`
+#### `LAgent:setContextSize`
 
 Sets the token context window size forwarded to the LLM backend.
 
 ```lua
--- signature
 LAgent:setContextSize(n)
 ```
 
@@ -1862,13 +1738,13 @@ LAgent:setContextSize(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Context size in tokens (e.g. 4096). |
+| `n` | number | Context size in tokens (e.g. 4096). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1882,46 +1758,11 @@ end
 
 ---
 
-### `LAgent:setCustomModel`
-
-Installs a Lua callback as this agent's decision model and stores it in the callback registry.
-
-```lua
--- signature
-LAgent:setCustomModel(callback)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `callback` | `function` | Function called during world updates with `(agent, blackboard, dt)` for this agent. |
-
----
-
-### `LAgent:setDecisionModel`
-
-Sets this agent's built-in decision model from a string name when the name is recognized.
-
-```lua
--- signature
-LAgent:setDecisionModel(model)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `model` | `string` | Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string. |
-
----
-
-### `LAgent:setDescription`
+#### `LAgent:setDescription`
 
 Sets the agent's role description injected after the system prompt when routed through an AISystem.
 
 ```lua
--- signature
 LAgent:setDescription(description)
 ```
 
@@ -1929,13 +1770,13 @@ LAgent:setDescription(description)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `description` | `string` | Role description text. |
+| `description` | string | Role description text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1949,12 +1790,11 @@ end
 
 ---
 
-### `LAgent:setFormat`
+#### `LAgent:setFormat`
 
 Changes the response format for future prompts.
 
 ```lua
--- signature
 LAgent:setFormat(format)
 ```
 
@@ -1962,13 +1802,13 @@ LAgent:setFormat(format)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format` | `string` | One of `"json"`, `"csv"`, or `"text"`. |
+| `format` | string | One of `"json"`, `"csv"`, or `"text"`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -1982,29 +1822,11 @@ end
 
 ---
 
-### `LAgent:setMaxForce`
-
-Sets this agent's maximum steering force when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setMaxForce(v)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `v` | `number` | Maximum steering force applied during steering calculations. |
-
----
-
-### `LAgent:setMaxRetries`
+#### `LAgent:setMaxRetries`
 
 Sets the maximum retry count on transient network or timeout errors.
 
 ```lua
--- signature
 LAgent:setMaxRetries(n)
 ```
 
@@ -2012,13 +1834,13 @@ LAgent:setMaxRetries(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of retries (0 disables retry). |
+| `n` | number | Number of retries (0 disables retry). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2032,29 +1854,11 @@ end
 
 ---
 
-### `LAgent:setMaxSpeed`
-
-Sets this agent's maximum movement speed when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setMaxSpeed(v)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `v` | `number` | Maximum speed in world units per second. |
-
----
-
-### `LAgent:setModel`
+#### `LAgent:setModel`
 
 Changes the model identifier for future prompts.
 
 ```lua
--- signature
 LAgent:setModel(model)
 ```
 
@@ -2062,32 +1866,31 @@ LAgent:setModel(model)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `model` | `string` | Model name (e.g. `"llama3"`, `"mistral"`). |
+| `model` | string | Model name (e.g. `"llama3"`, `"mistral"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
 ```lua
 do
-    local agent = lurek.agent.new({ model = "llama3" })
-    agent:setModel("mistral")
-    print("Agent model changed to mistral.")
+    local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
+    agent:setModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
+    print("Agent model changed to SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M.")
 end
 ```
 
 ---
 
-### `LAgent:setName`
+#### `LAgent:setName`
 
 Sets the agent's name identifier used when added to an AISystem.
 
 ```lua
--- signature
 LAgent:setName(name)
 ```
 
@@ -2095,13 +1898,13 @@ LAgent:setName(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Agent name. |
+| `name` | string | Agent name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2115,12 +1918,11 @@ end
 
 ---
 
-### `LAgent:setOption`
+#### `LAgent:setOption`
 
 Sets a single model option forwarded to the LLM backend.
 
 ```lua
--- signature
 LAgent:setOption(key, value)
 ```
 
@@ -2128,14 +1930,14 @@ LAgent:setOption(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`). |
-| `value` | `any` | Option value forwarded as JSON. |
+| `key` | string | Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`). |
+| `value` | any | Option value forwarded as JSON. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2150,47 +1952,11 @@ end
 
 ---
 
-### `LAgent:setPosition`
-
-Sets this agent's world position when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setPosition(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | `number` | New X position in world units. |
-| `y` | `number` | New Y position in world units. |
-
----
-
-### `LAgent:setPriority`
-
-Sets this agent's integer priority when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setPriority(p)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `p` | `number` | Priority value used by game-side AI scheduling or ordering logic. |
-
----
-
-### `LAgent:setTemperature`
+#### `LAgent:setTemperature`
 
 Sets the sampling temperature forwarded to the LLM backend.
 
 ```lua
--- signature
 LAgent:setTemperature(t)
 ```
 
@@ -2198,13 +1964,13 @@ LAgent:setTemperature(t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `t` | `number` | Temperature value (e.g. 0.7). Higher = more random. |
+| `t` | number | Temperature value (e.g. 0.7). Higher = more random. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2218,12 +1984,11 @@ end
 
 ---
 
-### `LAgent:setTimeout`
+#### `LAgent:setTimeout`
 
 Sets the per-request timeout in seconds (0 uses the default 60 s).
 
 ```lua
--- signature
 LAgent:setTimeout(secs)
 ```
 
@@ -2231,13 +1996,13 @@ LAgent:setTimeout(secs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `secs` | `number` | Timeout in seconds. |
+| `secs` | number | Timeout in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2251,12 +2016,11 @@ end
 
 ---
 
-### `LAgent:setUrl`
+#### `LAgent:setUrl`
 
 Changes the LLM endpoint URL for future prompts.
 
 ```lua
--- signature
 LAgent:setUrl(url)
 ```
 
@@ -2264,13 +2028,13 @@ LAgent:setUrl(url)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | `string` | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`). |
+| `url` | string | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2284,30 +2048,11 @@ end
 
 ---
 
-### `LAgent:setVelocity`
-
-Sets this agent's velocity vector when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setVelocity(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | `number` | New X velocity in world units per second. |
-| `y` | `number` | New Y velocity in world units per second. |
-
----
-
-### `LAgent:skillCount`
+#### `LAgent:skillCount`
 
 Returns the number of registered skills.
 
 ```lua
--- signature
 LAgent:skillCount()
 ```
 
@@ -2315,7 +2060,7 @@ LAgent:skillCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Skill count. |
+| number | Skill count. |
 
 **Example**
 
@@ -2330,52 +2075,11 @@ end
 
 ---
 
-### `LAgent:type`
-
-Returns the Lua-visible type name for this agent handle.
-
-```lua
--- signature
-LAgent:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | The string `LAgent`. |
-
----
-
-### `LAgent:typeOf`
-
-Returns whether this agent handle matches a supported type name.
-
-```lua
--- signature
-LAgent:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | `string` | Type name to compare against `Agent` and `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
-
----
-
-### `LAgent:update`
+#### `LAgent:update`
 
 Polls the background client for completed LLM requests and dispatches callbacks.
 
 ```lua
--- signature
 LAgent:update()
 ```
 
@@ -2383,7 +2087,7 @@ LAgent:update()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2398,14 +2102,19 @@ end
 
 ---
 
-## LAgentChat
+## LAgentChat Handle
 
-### `LAgentChat:addMessage`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAgentChat:addMessage`
 
 Appends a message to the chat history without sending a completion.
 
 ```lua
--- signature
 LAgentChat:addMessage(role, content)
 ```
 
@@ -2413,14 +2122,14 @@ LAgentChat:addMessage(role, content)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `role` | `string` | Role identifier: `"user"`, `"assistant"`, or `"system"`. |
-| `content` | `string` | Message content. |
+| `role` | string | Role identifier: `"user"`, `"assistant"`, or `"system"`. |
+| `content` | string | Message content. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2433,12 +2142,11 @@ end
 
 ---
 
-### `LAgentChat:clear`
+#### `LAgentChat:clear`
 
-Clears the chat history.
+Clears all stored chat history messages.
 
 ```lua
--- signature
 LAgentChat:clear()
 ```
 
@@ -2446,7 +2154,7 @@ LAgentChat:clear()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2460,12 +2168,11 @@ end
 
 ---
 
-### `LAgentChat:complete`
+#### `LAgentChat:complete`
 
 Sends the current history to the LLM and returns the assistant reply.
 
 ```lua
--- signature
 LAgentChat:complete()
 ```
 
@@ -2473,7 +2180,7 @@ LAgentChat:complete()
 
 | Type | Description |
 |------|-------------|
-| `string` | Assistant reply text, or raises an error on failure. |
+| string | Assistant reply text, or raises an error on failure. |
 
 **Example**
 
@@ -2488,12 +2195,11 @@ end
 
 ---
 
-### `LAgentChat:getHistory`
+#### `LAgentChat:getHistory`
 
 Returns the chat history as an array of `{role, content}` tables.
 
 ```lua
--- signature
 LAgentChat:getHistory()
 ```
 
@@ -2501,7 +2207,7 @@ LAgentChat:getHistory()
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of `{ role = string, content = string }` tables. |
+| table | Array of `{ role = string, content = string }` tables. |
 
 **Example**
 
@@ -2515,12 +2221,11 @@ end
 
 ---
 
-### `LAgentChat:setSystemPrompt`
+#### `LAgentChat:setSystemPrompt`
 
 Sets the system prompt used for all completions in this session.
 
 ```lua
--- signature
 LAgentChat:setSystemPrompt(prompt)
 ```
 
@@ -2528,13 +2233,13 @@ LAgentChat:setSystemPrompt(prompt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prompt` | `string` | System prompt text. |
+| `prompt` | string | System prompt text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2547,14 +2252,19 @@ end
 
 ---
 
-## LAgentManager
+## LAgentManager Handle
 
-### `LAgentManager:runAll`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAgentManager:runAll`
 
 Runs multiple agent tasks in parallel and calls a single callback when all finish.
 
 ```lua
--- signature
 LAgentManager:runAll(tasks, callback)
 ```
 
@@ -2562,14 +2272,14 @@ LAgentManager:runAll(tasks, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tasks` | `table` | List of `{ agent = LAgent, instruction = string }` tables. |
-| `callback` | `function` | Function called with a results table when all tasks complete. |
+| `tasks` | table | List of `{ agent = [LAgent](#lagent-handle), instruction = string }` tables. |
+| `callback` | function | Function called with a results table when all tasks complete. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Batch callback ID. |
+| number | Batch callback ID. |
 
 **Example**
 
@@ -2577,8 +2287,8 @@ LAgentManager:runAll(tasks, callback)
 do
     local manager = lurek.agent.newManager()
 
-    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
-    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
 
     local id = manager:runAll({
         { agent = writer,   instruction = "Write a boss intro monologue." },
@@ -2594,12 +2304,11 @@ end
 
 ---
 
-### `LAgentManager:update`
+#### `LAgentManager:update`
 
 Polls the manager's background client for completed tasks and dispatches callbacks.
 
 ```lua
--- signature
 LAgentManager:update()
 ```
 
@@ -2607,7 +2316,7 @@ LAgentManager:update()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2622,14 +2331,19 @@ end
 
 ---
 
-## LAgentMemory
+## LAgentMemory Handle
 
-### `LAgentMemory:episodic`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAgentMemory:episodic`
 
 Returns the episodic memory component.
 
 ```lua
--- signature
 LAgentMemory:episodic()
 ```
 
@@ -2637,7 +2351,7 @@ LAgentMemory:episodic()
 
 | Type | Description |
 |------|-------------|
-| `LEpisodicMemory` | Episodic memory handle. |
+| [LEpisodicMemory](#lepisodicmemory-handle) | Episodic memory handle. |
 
 **Example**
 
@@ -2651,12 +2365,11 @@ end
 
 ---
 
-### `LAgentMemory:load`
+#### `LAgentMemory:load`
 
 Deserialises memory state from the configured persist_path.
 
 ```lua
--- signature
 LAgentMemory:load()
 ```
 
@@ -2664,7 +2377,7 @@ LAgentMemory:load()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` on success, raises an error on failure. |
+| boolean | `true` on success, raises an error on failure. |
 
 **Example**
 
@@ -2678,12 +2391,11 @@ end
 
 ---
 
-### `LAgentMemory:save`
+#### `LAgentMemory:save`
 
 Serialises all memory banks to the configured persist_path.
 
 ```lua
--- signature
 LAgentMemory:save()
 ```
 
@@ -2691,7 +2403,7 @@ LAgentMemory:save()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` on success, raises an error on failure. |
+| boolean | `true` on success, raises an error on failure. |
 
 **Example**
 
@@ -2705,12 +2417,11 @@ end
 
 ---
 
-### `LAgentMemory:semantic`
+#### `LAgentMemory:semantic`
 
 Returns the semantic memory component.
 
 ```lua
--- signature
 LAgentMemory:semantic()
 ```
 
@@ -2718,7 +2429,7 @@ LAgentMemory:semantic()
 
 | Type | Description |
 |------|-------------|
-| `LSemanticMemory` | Semantic memory handle. |
+| [LSemanticMemory](#lsemanticmemory-handle) | Semantic memory handle. |
 
 **Example**
 
@@ -2732,12 +2443,11 @@ end
 
 ---
 
-### `LAgentMemory:working`
+#### `LAgentMemory:working`
 
 Returns the working memory component.
 
 ```lua
--- signature
 LAgentMemory:working()
 ```
 
@@ -2745,7 +2455,7 @@ LAgentMemory:working()
 
 | Type | Description |
 |------|-------------|
-| `LWorkingMemory` | Working memory handle. |
+| [LWorkingMemory](#lworkingmemory-handle) | Working memory handle. |
 
 **Example**
 
@@ -2759,14 +2469,19 @@ end
 
 ---
 
-## LAgentTemplate
+## LAgentTemplate Handle
 
-### `LAgentTemplate:render`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAgentTemplate:render`
 
 Renders the template by substituting `{key}` placeholders from `values`.
 
 ```lua
--- signature
 LAgentTemplate:render(values)
 ```
 
@@ -2774,13 +2489,13 @@ LAgentTemplate:render(values)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `values` | `table` | Map of key → string substitutions. |
+| `values` | table | Map of key Ă˘â€ â€™ string substitutions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Rendered string, or raises an error if a key is missing. |
+| string | Rendered string, or raises an error if a key is missing. |
 
 **Example**
 
@@ -2794,14 +2509,19 @@ end
 
 ---
 
-## LEpisodicMemory
+## LEpisodicMemory Handle
 
-### `LEpisodicMemory:forgetBefore`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LEpisodicMemory:forgetBefore`
 
 Removes all episodes with tick < `cutoff`.
 
 ```lua
--- signature
 LEpisodicMemory:forgetBefore(cutoff)
 ```
 
@@ -2809,13 +2529,13 @@ LEpisodicMemory:forgetBefore(cutoff)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cutoff` | `number` | Tick threshold; episodes older than this are removed. |
+| `cutoff` | number | Tick threshold; episodes older than this are removed. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2831,12 +2551,11 @@ end
 
 ---
 
-### `LEpisodicMemory:len`
+#### `LEpisodicMemory:len`
 
 Returns the number of stored episodes.
 
 ```lua
--- signature
 LEpisodicMemory:len()
 ```
 
@@ -2844,7 +2563,7 @@ LEpisodicMemory:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Episode count. |
+| number | Episode count. |
 
 **Example**
 
@@ -2858,12 +2577,11 @@ end
 
 ---
 
-### `LEpisodicMemory:query`
+#### `LEpisodicMemory:query`
 
 Returns all episodes whose data matches every key-value pair in `filter`.
 
 ```lua
--- signature
 LEpisodicMemory:query(filter)
 ```
 
@@ -2871,13 +2589,13 @@ LEpisodicMemory:query(filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filter` | `table` | Key-value filter table (empty = return all). |
+| `filter` | table | Key-value filter table (empty = return all). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of `{ tick = integer, data = table }` episode tables. |
+| table | Array of `{ tick = integer, data = table }` episode tables. |
 
 **Example**
 
@@ -2892,12 +2610,11 @@ end
 
 ---
 
-### `LEpisodicMemory:record`
+#### `LEpisodicMemory:record`
 
 Records a new episode at `tick` with `data`.
 
 ```lua
--- signature
 LEpisodicMemory:record(tick, data)
 ```
 
@@ -2905,14 +2622,14 @@ LEpisodicMemory:record(tick, data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tick` | `number` | Logical tick or frame counter for this episode. |
-| `data` | `table` | Key-value payload stored with the episode. |
+| `tick` | number | Logical tick or frame counter for this episode. |
+| `data` | table | Key-value payload stored with the episode. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -2925,14 +2642,19 @@ end
 
 ---
 
-## LOllamaManager
+## LOllamaManager Handle
 
-### `LOllamaManager:baseUrl`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LOllamaManager:baseUrl`
 
 Returns the base URL this manager was created with.
 
 ```lua
--- signature
 LOllamaManager:baseUrl()
 ```
 
@@ -2940,7 +2662,7 @@ LOllamaManager:baseUrl()
 
 | Type | Description |
 |------|-------------|
-| `string` | Base URL (e.g. `"http://127.0.0.1:11434"`). |
+| string | Base URL (e.g. `"http://127.0.0.1:11434"`). |
 
 **Example**
 
@@ -2954,12 +2676,11 @@ end
 
 ---
 
-### `LOllamaManager:deleteModel`
+#### `LOllamaManager:deleteModel`
 
 Sends `DELETE /api/delete` to remove a model from local Ollama storage.
 
 ```lua
--- signature
 LOllamaManager:deleteModel(name)
 ```
 
@@ -2967,32 +2688,31 @@ LOllamaManager:deleteModel(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Model name to delete (e.g. `"llama3:latest"`). |
+| `name` | string | Model name to delete (e.g. `"llama3:latest"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the request succeeded. |
+| boolean | `true` if the request succeeded. |
 
 **Example**
 
 ```lua
 do
     local ollama = lurek.agent.newOllama()
-    local ok     = ollama:deleteModel("llama3:latest")
+    local ok     = ollama:deleteModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
     print("Model deleted:", ok)
 end
 ```
 
 ---
 
-### `LOllamaManager:hasModel`
+#### `LOllamaManager:hasModel`
 
 Returns `true` if a model with the given name (or name prefix) is available locally.
 
 ```lua
--- signature
 LOllamaManager:hasModel(name)
 ```
 
@@ -3000,32 +2720,31 @@ LOllamaManager:hasModel(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Model name to check (e.g. `"llama3"` or `"llama3:latest"`). |
+| `name` | string | Model name to check (e.g. `"llama3"` or `"llama3:latest"`). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if found locally. |
+| boolean | `true` if found locally. |
 
 **Example**
 
 ```lua
 do
     local ollama = lurek.agent.newOllama()
-    local found  = ollama:hasModel("llama3")
-    print("llama3 available:", found)
+    local found  = ollama:hasModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
+    print("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M available:", found)
 end
 ```
 
 ---
 
-### `LOllamaManager:isRunning`
+#### `LOllamaManager:isRunning`
 
 Returns `true` if the Ollama HTTP server responds within 5 seconds.
 
 ```lua
--- signature
 LOllamaManager:isRunning()
 ```
 
@@ -3033,7 +2752,7 @@ LOllamaManager:isRunning()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if Ollama is reachable. |
+| boolean | `true` if Ollama is reachable. |
 
 **Example**
 
@@ -3047,12 +2766,11 @@ end
 
 ---
 
-### `LOllamaManager:listModels`
+#### `LOllamaManager:listModels`
 
 Returns a table of locally available models, each with `name` and `size_gb` fields.
 
 ```lua
--- signature
 LOllamaManager:listModels()
 ```
 
@@ -3060,7 +2778,7 @@ LOllamaManager:listModels()
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of `{ name = string, size_gb = number }` tables. |
+| table | Array of `{ name = string, size_gb = number }` tables. |
 
 **Example**
 
@@ -3076,12 +2794,11 @@ end
 
 ---
 
-### `LOllamaManager:modelNames`
+#### `LOllamaManager:modelNames`
 
 Returns a string array of locally available model names; empty if Ollama is not running.
 
 ```lua
--- signature
 LOllamaManager:modelNames()
 ```
 
@@ -3089,7 +2806,7 @@ LOllamaManager:modelNames()
 
 | Type | Description |
 |------|-------------|
-| `table` | String array of model names. |
+| table | String array of model names. |
 
 **Example**
 
@@ -3105,12 +2822,11 @@ end
 
 ---
 
-### `LOllamaManager:pendingCount`
+#### `LOllamaManager:pendingCount`
 
 Returns the number of in-flight model pull operations.
 
 ```lua
--- signature
 LOllamaManager:pendingCount()
 ```
 
@@ -3118,7 +2834,7 @@ LOllamaManager:pendingCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Number of pending pulls. |
+| number | Number of pending pulls. |
 
 **Example**
 
@@ -3132,12 +2848,11 @@ end
 
 ---
 
-### `LOllamaManager:pullModel`
+#### `LOllamaManager:pullModel`
 
 Dispatches an async model download; calls `callback(success, err_msg)` on completion.
 
 ```lua
--- signature
 LOllamaManager:pullModel(name, callback)
 ```
 
@@ -3145,21 +2860,21 @@ LOllamaManager:pullModel(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Model name to download (e.g. `"llama3"`). |
-| `callback` | `function` | Called with `(success, err_msg)` on completion. |
+| `name` | string | Model name to download (e.g. `"llama3"`). |
+| `callback` | function | Called with `(success, err_msg)` on completion. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Callback ID used with `update()`. |
+| number | Callback ID used with `update()`. |
 
 **Example**
 
 ```lua
 do
     local ollama = lurek.agent.newOllama()
-    local id     = ollama:pullModel("llama3", function(success, err_msg)
+    local id     = ollama:pullModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", function(success, err_msg)
         if success then
             print("Model downloaded successfully.")
         else
@@ -3172,12 +2887,11 @@ end
 
 ---
 
-### `LOllamaManager:restart`
+#### `LOllamaManager:restart`
 
 Stops then restarts the managed Ollama process. Returns `true` on success.
 
 ```lua
--- signature
 LOllamaManager:restart()
 ```
 
@@ -3185,7 +2899,7 @@ LOllamaManager:restart()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the restart succeeded. |
+| boolean | `true` if the restart succeeded. |
 
 **Example**
 
@@ -3199,12 +2913,11 @@ end
 
 ---
 
-### `LOllamaManager:start`
+#### `LOllamaManager:start`
 
 Spawns `ollama serve` as a managed child process. Returns `true` on success.
 
 ```lua
--- signature
 LOllamaManager:start()
 ```
 
@@ -3212,7 +2925,7 @@ LOllamaManager:start()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the process started. |
+| boolean | `true` if the process started. |
 
 **Example**
 
@@ -3226,12 +2939,11 @@ end
 
 ---
 
-### `LOllamaManager:stop`
+#### `LOllamaManager:stop`
 
 Kills the Ollama process started by this manager. Returns `true` if it was running.
 
 ```lua
--- signature
 LOllamaManager:stop()
 ```
 
@@ -3239,7 +2951,7 @@ LOllamaManager:stop()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the process was running under this manager. |
+| boolean | `true` if the process was running under this manager. |
 
 **Example**
 
@@ -3253,12 +2965,11 @@ end
 
 ---
 
-### `LOllamaManager:update`
+#### `LOllamaManager:update`
 
 Polls completed pull operations and dispatches registered callbacks.
 
 ```lua
--- signature
 LOllamaManager:update()
 ```
 
@@ -3266,7 +2977,7 @@ LOllamaManager:update()
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -3280,12 +2991,11 @@ end
 
 ---
 
-### `LOllamaManager:version`
+#### `LOllamaManager:version`
 
 Returns the Ollama version string, or an empty string if not running.
 
 ```lua
--- signature
 LOllamaManager:version()
 ```
 
@@ -3293,7 +3003,7 @@ LOllamaManager:version()
 
 | Type | Description |
 |------|-------------|
-| `string` | Ollama version or `""`. |
+| string | Ollama version or `""`. |
 
 **Example**
 
@@ -3307,14 +3017,19 @@ end
 
 ---
 
-## LSemanticMemory
+## LSemanticMemory Handle
 
-### `LSemanticMemory:forget`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSemanticMemory:forget`
 
 Removes the fact at `key`.  Returns `true` if it existed.
 
 ```lua
--- signature
 LSemanticMemory:forget(key)
 ```
 
@@ -3322,13 +3037,13 @@ LSemanticMemory:forget(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Fact key. |
+| `key` | string | Fact key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the fact was removed. |
+| boolean | `true` if the fact was removed. |
 
 **Example**
 
@@ -3343,12 +3058,11 @@ end
 
 ---
 
-### `LSemanticMemory:learn`
+#### `LSemanticMemory:learn`
 
 Inserts or replaces a fact at `key`.
 
 ```lua
--- signature
 LSemanticMemory:learn(key, value)
 ```
 
@@ -3356,14 +3070,14 @@ LSemanticMemory:learn(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Fact key. |
-| `value` | `any` | Fact value. |
+| `key` | string | Fact key. |
+| `value` | any | Fact value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 
@@ -3376,12 +3090,11 @@ end
 
 ---
 
-### `LSemanticMemory:len`
+#### `LSemanticMemory:len`
 
 Returns the number of stored facts.
 
 ```lua
--- signature
 LSemanticMemory:len()
 ```
 
@@ -3389,7 +3102,7 @@ LSemanticMemory:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Fact count. |
+| number | Fact count. |
 
 **Example**
 
@@ -3403,12 +3116,11 @@ end
 
 ---
 
-### `LSemanticMemory:query`
+#### `LSemanticMemory:query`
 
 Returns all facts whose value matches every key-value pair in `filter`.
 
 ```lua
--- signature
 LSemanticMemory:query(filter)
 ```
 
@@ -3416,13 +3128,13 @@ LSemanticMemory:query(filter)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `filter` | `table` | Key-value filter applied to each fact's value object (empty = return all). |
+| `filter` | table | Key-value filter applied to each fact's value object (empty = return all). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of `{ key = string, value = any }` tables. |
+| table | Array of `{ key = string, value = any }` tables. |
 
 **Example**
 
@@ -3438,12 +3150,11 @@ end
 
 ---
 
-### `LSemanticMemory:recall`
+#### `LSemanticMemory:recall`
 
 Returns the fact for `key`, or `nil` if not found.
 
 ```lua
--- signature
 LSemanticMemory:recall(key)
 ```
 
@@ -3451,13 +3162,13 @@ LSemanticMemory:recall(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Fact key. |
+| `key` | string | Fact key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `any` | Stored fact, or `nil`. |
+| table | Stored fact converted from JSON when present; returns nil when missing. |
 
 **Example**
 
@@ -3472,14 +3183,19 @@ end
 
 ---
 
-## LWorkingMemory
+## LWorkingMemory Handle
 
-### `LWorkingMemory:capacity`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LWorkingMemory:capacity`
 
 Returns the configured capacity (0 = unlimited).
 
 ```lua
--- signature
 LWorkingMemory:capacity()
 ```
 
@@ -3487,7 +3203,7 @@ LWorkingMemory:capacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Capacity. |
+| number | Capacity. |
 
 **Example**
 
@@ -3500,12 +3216,11 @@ end
 
 ---
 
-### `LWorkingMemory:forget`
+#### `LWorkingMemory:forget`
 
 Removes the entry with `key`.  Returns `true` if it existed.
 
 ```lua
--- signature
 LWorkingMemory:forget(key)
 ```
 
@@ -3513,13 +3228,13 @@ LWorkingMemory:forget(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Entry key. |
+| `key` | string | Entry key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | `true` if the entry was removed. |
+| boolean | `true` if the entry was removed. |
 
 **Example**
 
@@ -3534,12 +3249,11 @@ end
 
 ---
 
-### `LWorkingMemory:get`
+#### `LWorkingMemory:get`
 
 Returns the value for `key`, or `nil` if not found.
 
 ```lua
--- signature
 LWorkingMemory:get(key)
 ```
 
@@ -3547,13 +3261,13 @@ LWorkingMemory:get(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Entry key. |
+| `key` | string | Entry key. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `any` | Stored value, or `nil`. |
+| table | Stored value converted from JSON when present; returns nil when missing. |
 
 **Example**
 
@@ -3568,12 +3282,11 @@ end
 
 ---
 
-### `LWorkingMemory:getRecent`
+#### `LWorkingMemory:getRecent`
 
 Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
 
 ```lua
--- signature
 LWorkingMemory:getRecent(n)
 ```
 
@@ -3581,13 +3294,13 @@ LWorkingMemory:getRecent(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Maximum number of entries to return. |
+| `n` | number | Maximum number of entries to return. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Array of `{ key = string, value = any }` tables. |
+| table | Array of `{ key = string, value = any }` tables. |
 
 **Example**
 
@@ -3603,12 +3316,11 @@ end
 
 ---
 
-### `LWorkingMemory:len`
+#### `LWorkingMemory:len`
 
 Returns the current number of entries.
 
 ```lua
--- signature
 LWorkingMemory:len()
 ```
 
@@ -3616,7 +3328,7 @@ LWorkingMemory:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Entry count. |
+| number | Entry count. |
 
 **Example**
 
@@ -3630,12 +3342,11 @@ end
 
 ---
 
-### `LWorkingMemory:push`
+#### `LWorkingMemory:push`
 
 Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
 
 ```lua
--- signature
 LWorkingMemory:push(key, value)
 ```
 
@@ -3643,14 +3354,14 @@ LWorkingMemory:push(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Entry key. |
-| `value` | `any` | Entry value (any serialisable Lua value). |
+| `key` | string | Entry key. |
+| `value` | any | Entry value (any serialisable Lua value). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `nil` | No value is returned. |
+| nil | No value is returned. |
 
 **Example**
 

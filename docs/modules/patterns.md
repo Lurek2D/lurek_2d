@@ -1,12 +1,180 @@
 # Patterns
 
-- The `patterns` module is a fundamental Foundations tier library providing a comprehensive suite of twelve classic game-programming design patterns and robust data structures for Lurek2D.
+## Summary
 
 Designed to be highly reusable, completely decoupled from one another, and fully exposed to the Lua environment, these primitives act as high-level building blocks for complex game logic. At the core of AI decision-making is the `BehaviorTree` system, featuring Sequences, Selectors, Parallels, Inverters, Repeats, and Leaf action nodes. For transition-heavy logic, the module offers a hierarchical `StateMachine` with enter/exit/update callbacks, explicit transition rules, and bounded history, alongside a `SimpleState` alternative for simpler needs.
 
 To facilitate decoupled communication across systems, the module provides a robust `EventBus` for pub-sub messaging with wildcard listeners and prioritized execution, as well as a channel-based `Mediator`. The `Observer` pattern is available for reactive property-change notifications, and the `Blackboard` provides a shared, typed key-value store with revision tracking—essential for coordinating AI state. For undo/redo functionality (e.g., in editors or turn-based games), the `CommandStack` offers a cursor-based linear history with batching support. Resource management is handled by the `ObjectPool`, which tracks active and idle IDs to reduce allocation churn for frequently spawned entities like bullets or particles. The `Factory` and `ServiceLocator` patterns provide dynamic object construction and dependency injection.
 
 The module also includes specialized data structures optimized for game development. These include a `Graph` (directed/undirected with BFS/DFS traversals), a `Trie` for rapid prefix searches, a `BiMap` for bidirectional lookups, and a `PriorityQueue` with stable FIFO tie-breaking. Time-based operations are supported by a `Ring` buffer for fixed-size rolling histories (useful for telemetry or combo tracking), a `Funnel` for batching events over a time window, and `Throttle`/`Debounce` primitives for rate-limiting inputs or actions. Additionally, the `WeightedRandom` selector enables deterministic, dynamic picking with or without replacement. All these tools are instantiated via `lurek.patterns.*` and operate as standalone userdata objects, ensuring script developers have robust, C-speed architectural primitives at their fingertips.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### behavior_tree.rs
+
+- Behavior tree runtime for composing game and AI decisions as explicit node graphs that evaluate in a stable left-to-right order.
+- The file provides structural node storage for sequences, selectors, parallels, repeaters, inverters, and named leaf actions without hiding execution flow behind opaque callbacks.
+- It keeps build-time graph authoring and tick-time run state close together so trees can be assembled, reset, and stepped with predictable control over parent-child relationships.
+- Repeat counters, running markers, and root selection live alongside compact integer node addressing, which keeps behavior updates easy to reason about and cheap to traverse.
+- Functionally this file delivers the core decision backbone for scripted actors that need readable branching logic, reusable subtrees, and deterministic per-frame evaluation semantics.
+
+### bimap.rs
+
+- Bidirectional map storage for cases where game code must move between symbolic keys and canonical values with equal ease.
+- The file maintains mirrored forward and reverse tables so each mutation preserves a single authoritative pairing instead of forcing callers to manage two separate maps by hand.
+- Inserts, removals, and containment checks are shaped around keeping that two-way contract coherent even when entries are replaced or deleted from either side.
+- Functionally this delivers fast reversible lookup for registries, id-name bindings, alias tables, and other systems that need symmetry rather than one-directional indexing.
+
+### blackboard.rs
+
+- Shared blackboard storage for gameplay and AI systems that need a common language for state without hard-coding direct dependencies between producers and consumers.
+- The file models values as a compact tagged set of common script-facing types and couples each write to revision tracking so readers can cheaply detect what changed and when.
+- Parent-linked lookup lets a local board inherit broader context while still overriding specific keys, which makes squad, faction, and entity state layering practical.
+- Typed getters, defaults, clears, and revision queries turn the store into more than a raw map by giving behavior code a disciplined way to read uncertain state.
+- Functionally this is the coordination memory for systems that want shared facts, incremental change detection, and hierarchical fallback instead of tightly wired state plumbing.
+
+### collections.rs
+
+- Small shared capacity metadata for collection-style pattern objects that expose bounded or unbounded behavior through one consistent rule set.
+- The file centralizes count, limit, and full-state semantics so stacks, queues, and similar wrappers can agree on what capacity means without duplicating bookkeeping code.
+- Functionally this delivers the lightweight policy layer behind collection limits, especially the convention that zero means unbounded while positive values enforce a hard ceiling.
+
+### command_stack.rs
+
+- Command history storage for features that need explicit undo and redo flow instead of ad hoc reversal logic spread across many systems.
+- The file tracks a linear timeline with a movable cursor, letting callers push new actions, walk backward through applied work, and replay discarded steps in order.
+- Batch grouping keeps multi-step edits together as one logical unit, which matters for editors, tactics actions, and scripted transactions that should reverse atomically.
+- Size limits and eviction rules keep history bounded without losing the current navigation model or forcing clients to hand-roll trimming behavior.
+- Functionally this delivers the memory of reversible work for tooling and gameplay flows that care about chronological intent, replay, and controlled rollback.
+
+### event_bus.rs
+
+- Event bus routing for decoupled gameplay communication where systems publish named signals and interested listeners react without direct caller knowledge.
+- The file organizes subscriptions by event name while preserving listener identity, priority order, and wildcard reach so dispatch can stay predictable as projects grow.
+- One-shot listeners, targeted clearing, and ordered listener extraction make the bus practical both for transient reactions and for long-lived system wiring.
+- Rather than executing script callbacks itself, it prepares the dispatch shape that higher layers can consume while keeping subscription state authoritative in one place.
+- Functionally this is the message circulation core for feature coordination, broadcast-style notifications, and low-friction cross-system signaling.
+
+### factory.rs
+
+- Runtime factory registry for systems that construct objects by declared type names instead of hard-wiring every spawn path to concrete branches.
+- The file keeps canonical names and aliases aligned so different labels can converge on the same build target while still allowing registration changes at runtime.
+- Resolution, replacement, and removal are framed around keeping the name graph explicit and queryable rather than letting construction rules disappear into scattered conditionals.
+- Functionally this delivers the naming and lookup backbone for data-driven spawning, pluggable content registration, and alias-friendly creation flows.
+
+### funnel.rs
+
+- Buffered funnel for gathering small tagged numeric events into controlled flush windows instead of reacting to every sample the instant it arrives.
+- The file couples entry accumulation with elapsed-time tracking and count thresholds so callers can model batch release, burst shaping, or windowed aggregation with simple state.
+- Immediate windows, manual discard, and explicit readiness checks make the behavior usable for both deterministic simulation ticks and script-driven control loops.
+- Functionally this delivers a compact batching primitive for telemetry, combo capture, score staging, and other flows where grouping matters more than raw per-event immediacy.
+
+### graph.rs
+
+- General-purpose graph structure for gameplay relationships, navigation-like topologies, and any domain that benefits from explicit nodes connected by weighted or labelled edges.
+- The file stores graph state as stable integer-addressed nodes and adjacency lists, which keeps structural edits straightforward while preserving identities scripts can hold onto.
+- Directed and undirected operation live behind one representation, including automatic reverse-edge behavior when a connection should semantically exist in both directions.
+- Traversal helpers expose breadth-first and depth-first walks as first-class capabilities so callers can inspect reachability, discover neighborhoods, or derive ordered visits without rebuilding utility code.
+- Connectivity checks, node metadata, and edge labels make the graph more than a bare container by supporting practical gameplay queries around ownership, routes, influence, or dependency webs.
+- Functionally this file delivers the relational map backbone for systems that need editable topology, traversable links, and stable graph identities in script-friendly form.
+
+### mediator.rs
+
+- Mediator registry for coordinating communication through named channels when systems should meet through a broker rather than pointing at each other directly.
+- The file assigns durable handler identities per channel so registration, removal, counting, and inspection all speak the same compact vocabulary.
+- By storing channel membership centrally it becomes easy to clear one lane of traffic or reset the whole routing surface without leaking per-subscriber bookkeeping into callers.
+- Functionally this delivers a message rendezvous layer for decoupled gameplay features, scripted services, and hub-style coordination flows.
+
+### mod.rs
+
+- Foundational gameplay pattern toolbox that packages decision flow, state coordination, messaging, reuse, and selection primitives into small reusable building blocks.
+- The module supplies behavior trees, simple and guarded state machines, observer and event distribution layers, mediator routing, factories, service lookup, and undo-oriented command history.
+- It also delivers practical supporting structures such as graphs, tries, rings, priority ordering, bidirectional lookup, weighted picks, throttling windows, buffered funnels, and object reuse pools.
+- At module level this is the high-level kit for assembling decoupled game logic systems in Lua and Rust without re-implementing common orchestration patterns for each feature.
+
+### object_pool.rs
+
+- Object pool state for reuse-heavy systems that would rather recycle stable ids than continuously allocate and discard short-lived gameplay resources.
+- The file separates idle and active membership, supports prewarming, and enforces optional capacity so callers can shape reuse policy without inventing their own lifecycle bookkeeping.
+- Acquire and release flow is designed around predictable id turnover, which suits bullets, particles, temporary actors, and other bursty populations.
+- Functionally this delivers the reuse scheduler behind allocation-sensitive gameplay loops that want bounded churn and explicit ownership transitions.
+
+### observer.rs
+
+- Observer-style notification store for reactive game state where changes on named keys should wake interested listeners without binding readers to writers.
+- The file keeps subscriptions grouped by key while still supporting wildcard reach, so systems can watch a narrow property or an entire stream of change events.
+- Persistent and one-shot modes share one dispatch model, which simplifies lifecycle handling and ensures cleanup happens in the same place that notifications are tracked.
+- Clear operations, listener ids, and stored observer entries make the structure suitable for long-running scenes where subscriptions need explicit ownership and maintenance.
+- Functionally this delivers the change-broadcast layer for reactive UI, quest logic, AI memory watchers, and any flow that responds to named value transitions.
+
+### priority_queue.rs
+
+- Ordered priority queue for gameplay scheduling and selection tasks that need highest-priority work first without losing deterministic order among ties.
+- The file assigns each entry its own identity and insertion sequence so queue mutation remains inspectable even when multiple items share the same score.
+- Push, pop, peek, and targeted removal operate on one consistently sorted store rather than spreading priority semantics across separate containers and side maps.
+- Functionally this delivers stable urgency-based ordering for task systems, AI planners, turn resolution, and any script logic that needs predictable priority arbitration.
+
+### ring.rs
+
+- Fixed-capacity ring buffer for rolling gameplay history where the newest samples matter most but recent context still needs to remain queryable in order.
+- The file stores tagged entries in arrival order and automatically evicts the oldest data once capacity is reached, keeping the window fresh without manual trimming.
+- Numeric and string payload support makes the structure useful for both measured telemetry and symbolic event trails.
+- Aggregate helpers and ordered iteration turn the buffer into a practical runtime history tool instead of a passive overwrite container.
+- Functionally this delivers short-horizon memory for combo tracking, diagnostics, smoothing inputs, and any system that lives on a moving recent window.
+
+### service_locator.rs
+
+- Lightweight service locator for runtime feature discovery when systems need to find shared capabilities by agreed names instead of direct construction paths.
+- The file keeps registration, removal, lookup, and sorted listing in one compact registry so service presence stays explicit and easy to inspect.
+- Functionally this delivers a simple dependency access hub for loosely coupled gameplay code, especially where availability changes during runtime.
+
+### simple_state.rs
+
+- Minimal named-state tracker for systems that only need one active mode at a time without the heavier transition model of a full state machine.
+- The file focuses on managing the known state set and the current selection, which keeps switching semantics explicit and validation cheap.
+- Enumeration and counting support make the registry easy to inspect from scripts and tooling that want to reason about available modes.
+- Functionally this delivers the lightweight mode switch core for menus, AI phases, control states, and other simple single-state flows.
+
+### state_machine.rs
+
+- Full finite state machine runtime for systems that need named states, validated transitions, and a remembered trail of where control has moved over time.
+- The file separates state membership from transition rules so allowed movement stays explicit and can be guarded rather than implied by arbitrary caller behavior.
+- Bounded history gives each machine a replayable memory of recent changes, which is useful for debugging, analytics, and gameplay rules that depend on prior modes.
+- Current-state management, rule inspection, and history maintenance live together so switching logic stays coherent instead of fragmenting across helpers.
+- Functionally this delivers the structured mode-control layer for actors, encounters, UI flows, and scripted systems with meaningful transition policy.
+
+### strategy.rs
+
+- Strategy registry for features that swap among named behaviors or algorithms while keeping the selection surface explicit and data-driven.
+- The file assigns stable ids to registered strategies and tracks which one is currently active so callers can inspect or switch policy without hidden branching.
+- Registration and removal are treated as first-class operations, which fits systems where available strategies change with content, upgrades, or scripting.
+- Functionally this delivers the hot-swappable behavior catalog behind interchangeable decision rules, tactics, generators, or processing modes.
+
+### throttle.rs
+
+- Timing control primitives for gameplay actions that should be rate-limited or delayed instead of firing on every raw input or event edge.
+- The file pairs throttle and debounce behaviors in one place because both solve cadence control while differing in whether they emit immediately or only after quiet time.
+- Shared state around elapsed time, enable flags, fire counts, and reset flow makes these utilities practical for per-frame ticking and script-side inspection.
+- Progress queries on throttle and trigger-cancel semantics on debounce cover the two common rhythms of spaced repetition and delayed confirmation.
+- Functionally this delivers the pacing layer for input smoothing, cooldown-like gates, UI chatter suppression, and event burst control.
+
+### trie.rs
+
+- Prefix trie storage for string-centric gameplay data where whole-key lookup and shared-prefix discovery should both be fast and structurally related.
+- The file models words as character paths, letting inserts and exact searches coexist naturally with prefix queries that expand into many matching keys.
+- Removal includes branch pruning so the structure sheds dead paths instead of accumulating empty nodes after content churn.
+- Depth-first key collection turns the trie into a practical retrieval tool for completions, dictionaries, filters, and lookup-heavy scripting workflows.
+- Functionally this delivers the text-prefix indexing backbone for command palettes, content search, lexicons, and other systems built around incremental string matching.
+
+### weighted_random.rs
+
+- Weighted random selector for content and gameplay systems that want probability-driven picks while still keeping the candidate set editable at runtime.
+- The file stores named weighted entries and supports structural mutation so drops, spawns, behaviors, or narrative beats can rebalance without rebuilding the container.
+- It covers both single draws and multi-pick selection without replacement, which makes the same structure useful for one-off rolls and curated batches.
+- Revision tracking gives outside code a reliable signal that probabilities or membership changed, helping caches and derived tables stay honest.
+- Functionally this delivers the probability orchestration layer for loot tables, encounter variation, weighted choices, and repeat-aware random selection flows.
 
 ## Functions
 
@@ -15,7 +183,6 @@ The module also includes specialized data structures optimized for game developm
 Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
 
 ```lua
--- signature
 lurek.patterns.newBehaviorTree()
 ```
 
@@ -23,7 +190,7 @@ lurek.patterns.newBehaviorTree()
 
 | Type | Description |
 |------|-------------|
-| `LBehaviorTree` | A new behavior tree instance. |
+| [LBehaviorTree](#lbehaviortree-handle) | A new behavior tree instance. |
 
 **Example**
 
@@ -54,7 +221,6 @@ end
 Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
 
 ```lua
--- signature
 lurek.patterns.newBlackboard(name)
 ```
 
@@ -62,13 +228,13 @@ lurek.patterns.newBlackboard(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional name for debugging. |
+| `name?` | string | Optional name for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBlackboard` | A new blackboard instance. |
+| [LBlackboard](#lblackboard-handle) | A new blackboard instance. |
 
 **Example**
 
@@ -89,7 +255,6 @@ end
 Create a new undo/redo command stack for recording and reversing player or editor actions.
 
 ```lua
--- signature
 lurek.patterns.newCommandStack(maxSize)
 ```
 
@@ -97,13 +262,13 @@ lurek.patterns.newCommandStack(maxSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `maxSize?` | `number` | Maximum history depth (0 = unlimited). |
+| `maxSize?` | number | Maximum history depth (0 = unlimited). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LCommandStack` | A new command stack instance. |
+| [LCommandStack](#lcommandstack-handle) | A new command stack instance. |
 
 **Example**
 
@@ -133,7 +298,6 @@ end
 Create a new debounce that delays firing until input stops for a specified wait period.
 
 ```lua
--- signature
 lurek.patterns.newDebounce(wait)
 ```
 
@@ -141,13 +305,13 @@ lurek.patterns.newDebounce(wait)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `wait` | `number` | Seconds of inactivity before firing. |
+| `wait` | number | Seconds of inactivity before firing. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDebounce` | A new debounce instance. |
+| [LDebounce](#ldebounce-handle) | A new debounce instance. |
 
 **Example**
 
@@ -171,7 +335,6 @@ end
 Create a new publish/subscribe event bus for decoupled communication between game systems.
 
 ```lua
--- signature
 lurek.patterns.newEventBus(name)
 ```
 
@@ -179,13 +342,13 @@ lurek.patterns.newEventBus(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional name for debugging. |
+| `name?` | string | Optional name for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LEventBus` | A new event bus instance. |
+| [LEventBus](#leventbus-handle) | A new event bus instance. |
 
 **Example**
 
@@ -208,7 +371,6 @@ end
 Create a new factory for producing typed game objects from registered constructor functions.
 
 ```lua
--- signature
 lurek.patterns.newFactory()
 ```
 
@@ -216,7 +378,7 @@ lurek.patterns.newFactory()
 
 | Type | Description |
 |------|-------------|
-| `LFactory` | A new factory instance. |
+| [LFactory](#lfactory-handle) | A new factory instance. |
 
 **Example**
 
@@ -239,7 +401,6 @@ end
 Create a new batching funnel that collects events over a time window and flushes them together.
 
 ```lua
--- signature
 lurek.patterns.newFunnel(window, maxEntries, name)
 ```
 
@@ -247,15 +408,15 @@ lurek.patterns.newFunnel(window, maxEntries, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `window` | `number` | Time window in seconds before auto-flush. |
-| `maxEntries?` | `number` | Maximum entries before forced flush (0 = no limit). |
-| `name?` | `string` | Optional name for debugging. |
+| `window` | number | Time window in seconds before auto-flush. |
+| `maxEntries?` | number | Maximum entries before forced flush (0 = no limit). |
+| `name?` | string | Optional name for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LFunnel` | A new funnel instance. |
+| [LFunnel](#lfunnel-handle) | A new funnel instance. |
 
 **Example**
 
@@ -280,7 +441,6 @@ end
 Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
 
 ```lua
--- signature
 lurek.patterns.newGraph(undirected)
 ```
 
@@ -288,13 +448,13 @@ lurek.patterns.newGraph(undirected)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `undirected?` | `boolean` | If true, edges are bidirectional (default false). |
+| `undirected?` | boolean | If true, edges are bidirectional (default false). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPatternGraph` | A new graph instance. |
+| [LPatternGraph](#lpatterngraph-handle) | A new graph instance. |
 
 **Example**
 
@@ -316,7 +476,6 @@ end
 Create a new dynamic array list with indexed access, insertion, removal, and search.
 
 ```lua
--- signature
 lurek.patterns.newList()
 ```
 
@@ -324,7 +483,7 @@ lurek.patterns.newList()
 
 | Type | Description |
 |------|-------------|
-| `LList` | A new list instance. |
+| [LList](#llist-handle) | A new list instance. |
 
 **Example**
 
@@ -346,7 +505,6 @@ end
 Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.
 
 ```lua
--- signature
 lurek.patterns.newMap()
 ```
 
@@ -354,7 +512,7 @@ lurek.patterns.newMap()
 
 | Type | Description |
 |------|-------------|
-| `LMap` | A new map instance. |
+| [LMap](#lmap-handle) | A new map instance. |
 
 **Example**
 
@@ -375,7 +533,6 @@ end
 Create a new mediator for channel-based message passing between decoupled game systems.
 
 ```lua
--- signature
 lurek.patterns.newMediator()
 ```
 
@@ -383,7 +540,7 @@ lurek.patterns.newMediator()
 
 | Type | Description |
 |------|-------------|
-| `LMediator` | A new mediator instance. |
+| [LMediator](#lmediator-handle) | A new mediator instance. |
 
 **Example**
 
@@ -406,7 +563,6 @@ end
 Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.
 
 ```lua
--- signature
 lurek.patterns.newObjectPool()
 ```
 
@@ -414,7 +570,7 @@ lurek.patterns.newObjectPool()
 
 | Type | Description |
 |------|-------------|
-| `LObjectPool` | A new object pool instance. |
+| [LObjectPool](#lobjectpool-handle) | A new object pool instance. |
 
 **Example**
 
@@ -434,7 +590,6 @@ end
 Create a new reactive observer that stores values and notifies subscribers when they change.
 
 ```lua
--- signature
 lurek.patterns.newObserver(name)
 ```
 
@@ -442,13 +597,13 @@ lurek.patterns.newObserver(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional name for debugging. |
+| `name?` | string | Optional name for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LObserver` | A new observer instance. |
+| [LObserver](#lobserver-handle) | A new observer instance. |
 
 **Example**
 
@@ -471,7 +626,6 @@ end
 Create a new priority queue that orders elements by numeric priority (highest first).
 
 ```lua
--- signature
 lurek.patterns.newPriorityQueue(name)
 ```
 
@@ -479,13 +633,13 @@ lurek.patterns.newPriorityQueue(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | `string` | Optional name for debugging. |
+| `name?` | string | Optional name for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LPriorityQueue` | A new priority queue instance. |
+| [LPriorityQueue](#lpriorityqueue-handle) | A new priority queue instance. |
 
 **Example**
 
@@ -506,7 +660,6 @@ end
 Create a new FIFO queue with optional capacity limit.
 
 ```lua
--- signature
 lurek.patterns.newQueue(capacity)
 ```
 
@@ -514,13 +667,13 @@ lurek.patterns.newQueue(capacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `capacity?` | `number` | Maximum items (0 = unlimited). |
+| `capacity?` | number | Maximum items (0 = unlimited). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LQueue` | A new queue instance. |
+| [LQueue](#lqueue-handle) | A new queue instance. |
 
 **Example**
 
@@ -541,7 +694,6 @@ end
 Create a new relationship manager for tracking numeric values and named levels between entity pairs.
 
 ```lua
--- signature
 lurek.patterns.newRelationshipManager()
 ```
 
@@ -549,7 +701,7 @@ lurek.patterns.newRelationshipManager()
 
 | Type | Description |
 |------|-------------|
-| `LRelationshipManager` | A new relationship manager instance. |
+| [LRelationshipManager](#lrelationshipmanager-handle) | A new relationship manager instance. |
 
 **Example**
 
@@ -570,7 +722,6 @@ end
 Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
 
 ```lua
--- signature
 lurek.patterns.newRing(capacity, name)
 ```
 
@@ -578,14 +729,14 @@ lurek.patterns.newRing(capacity, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `capacity` | `number` | Maximum number of entries the ring can hold. |
-| `name?` | `string` | Optional name for debugging. |
+| `capacity` | number | Maximum number of entries the ring can hold. |
+| `name?` | string | Optional name for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRing` | A new ring buffer instance. |
+| [LRing](#lring-handle) | A new ring buffer instance. |
 
 **Example**
 
@@ -607,7 +758,6 @@ end
 Create a new service locator for registering and retrieving shared services by name at runtime.
 
 ```lua
--- signature
 lurek.patterns.newServiceLocator()
 ```
 
@@ -615,7 +765,7 @@ lurek.patterns.newServiceLocator()
 
 | Type | Description |
 |------|-------------|
-| `LServiceLocator` | A new service locator instance. |
+| [LServiceLocator](#lservicelocator-handle) | A new service locator instance. |
 
 **Example**
 
@@ -635,7 +785,6 @@ end
 Create a new string set with add/remove/has operations and set algebra (union, intersection).
 
 ```lua
--- signature
 lurek.patterns.newSet()
 ```
 
@@ -643,7 +792,7 @@ lurek.patterns.newSet()
 
 | Type | Description |
 |------|-------------|
-| `LSet` | A new set instance. |
+| [LSet](#lset-handle) | A new set instance. |
 
 **Example**
 
@@ -664,7 +813,6 @@ end
 Create a new finite state machine with enter/exit/update callbacks per state.
 
 ```lua
--- signature
 lurek.patterns.newSimpleState()
 ```
 
@@ -672,7 +820,7 @@ lurek.patterns.newSimpleState()
 
 | Type | Description |
 |------|-------------|
-| `LSimpleState` | A new state machine instance. |
+| [LSimpleState](#lsimplestate-handle) | A new state machine instance. |
 
 **Example**
 
@@ -700,7 +848,6 @@ end
 Create a new LIFO stack with optional capacity limit.
 
 ```lua
--- signature
 lurek.patterns.newStack(capacity)
 ```
 
@@ -708,13 +855,13 @@ lurek.patterns.newStack(capacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `capacity?` | `number` | Maximum items (0 = unlimited). |
+| `capacity?` | number | Maximum items (0 = unlimited). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LStack` | A new stack instance. |
+| [LStack](#lstack-handle) | A new stack instance. |
 
 **Example**
 
@@ -735,7 +882,6 @@ end
 Create a new strategy pattern container for hot-swappable algorithm implementations.
 
 ```lua
--- signature
 lurek.patterns.newStrategy()
 ```
 
@@ -743,7 +889,7 @@ lurek.patterns.newStrategy()
 
 | Type | Description |
 |------|-------------|
-| `LStrategy` | A new strategy instance. |
+| [LStrategy](#lstrategy-handle) | A new strategy instance. |
 
 **Example**
 
@@ -769,7 +915,6 @@ end
 Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
 
 ```lua
--- signature
 lurek.patterns.newThrottle(interval)
 ```
 
@@ -777,13 +922,13 @@ lurek.patterns.newThrottle(interval)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `interval` | `number` | Minimum seconds between fires. |
+| `interval` | number | Minimum seconds between fires. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LThrottle` | A new throttle instance. |
+| [LThrottle](#lthrottle-handle) | A new throttle instance. |
 
 **Example**
 
@@ -809,7 +954,6 @@ end
 Create a new weighted random selection pool. Add items with weights and pick random selections.
 
 ```lua
--- signature
 lurek.patterns.newWeightedRandom()
 ```
 
@@ -817,7 +961,7 @@ lurek.patterns.newWeightedRandom()
 
 | Type | Description |
 |------|-------------|
-| `LWeightedRandom` | A new weighted random pool instance. |
+| [LWeightedRandom](#lweightedrandom-handle) | A new weighted random pool instance. |
 
 **Example**
 
@@ -833,14 +977,58 @@ end
 
 ---
 
-## LBehaviorTree
+## Module Fields
 
-### `LBehaviorTree:addChild`
+*No module-level fields documented.*
+
+## Types
+
+- [LBehaviorTree Handle](#lbehaviortree-handle)
+- [LBlackboard Handle](#lblackboard-handle)
+- [LCommandStack Handle](#lcommandstack-handle)
+- [LDebounce Handle](#ldebounce-handle)
+- [LEventBus Handle](#leventbus-handle)
+- [LFactory Handle](#lfactory-handle)
+- [LFunnel Handle](#lfunnel-handle)
+- [LList Handle](#llist-handle)
+- [LMap Handle](#lmap-handle)
+- [LMediator Handle](#lmediator-handle)
+- [LObjectPool Handle](#lobjectpool-handle)
+- [LObserver Handle](#lobserver-handle)
+- [LPatternGraph Handle](#lpatterngraph-handle)
+- [LPriorityQueue Handle](#lpriorityqueue-handle)
+- [LQueue Handle](#lqueue-handle)
+- [LRelationshipManager Handle](#lrelationshipmanager-handle)
+- [LRing Handle](#lring-handle)
+- [LServiceLocator Handle](#lservicelocator-handle)
+- [LSet Handle](#lset-handle)
+- [LSimpleState Handle](#lsimplestate-handle)
+- [LStack Handle](#lstack-handle)
+- [LStrategy Handle](#lstrategy-handle)
+- [LThrottle Handle](#lthrottle-handle)
+- [LWeightedRandom Handle](#lweightedrandom-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LBehaviorTree Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBehaviorTree:addChild`
 
 Attach a child node to a parent composite or decorator node.
 
 ```lua
--- signature
 LBehaviorTree:addChild(parentId, childId)
 ```
 
@@ -848,14 +1036,14 @@ LBehaviorTree:addChild(parentId, childId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `parentId` | `number` | The parent node ID. |
-| `childId` | `number` | The child node ID to attach. |
+| `parentId` | number | The parent node ID. |
+| `childId` | number | The child node ID to attach. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if attached successfully. |
+| boolean | True if attached successfully. |
 
 **Example**
 
@@ -881,12 +1069,11 @@ end
 
 ---
 
-### `LBehaviorTree:addInverter`
+#### `LBehaviorTree:addInverter`
 
-Create a decorator node that inverts its child's result (success ↔ failure).
+Create a decorator node that inverts its child's result (success â†” failure).
 
 ```lua
--- signature
 LBehaviorTree:addInverter(label)
 ```
 
@@ -894,13 +1081,13 @@ LBehaviorTree:addInverter(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional debug label. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 **Example**
 
@@ -921,12 +1108,11 @@ end
 
 ---
 
-### `LBehaviorTree:addLeaf`
+#### `LBehaviorTree:addLeaf`
 
 Create a leaf (action) node that will invoke a named callback function on tick.
 
 ```lua
--- signature
 LBehaviorTree:addLeaf(name, label)
 ```
 
@@ -934,14 +1120,14 @@ LBehaviorTree:addLeaf(name, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The leaf name (must match a setLeaf registration). |
-| `label?` | `string` | Optional debug label. |
+| `name` | string | The leaf name (must match a setLeaf registration). |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 **Example**
 
@@ -962,12 +1148,11 @@ end
 
 ---
 
-### `LBehaviorTree:addParallel`
+#### `LBehaviorTree:addParallel`
 
 Create a parallel composite node that runs all children simultaneously.
 
 ```lua
--- signature
 LBehaviorTree:addParallel(minSuccess, label)
 ```
 
@@ -975,14 +1160,14 @@ LBehaviorTree:addParallel(minSuccess, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `minSuccess` | `number` | Minimum successful children required for this node to succeed. |
-| `label?` | `string` | Optional debug label. |
+| `minSuccess` | number | Minimum successful children required for this node to succeed. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 **Example**
 
@@ -1008,12 +1193,11 @@ end
 
 ---
 
-### `LBehaviorTree:addRepeat`
+#### `LBehaviorTree:addRepeat`
 
 Create a decorator node that repeats its child a fixed number of times.
 
 ```lua
--- signature
 LBehaviorTree:addRepeat(count, label)
 ```
 
@@ -1021,14 +1205,14 @@ LBehaviorTree:addRepeat(count, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of repetitions. |
-| `label?` | `string` | Optional debug label. |
+| `count` | number | Number of repetitions. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 **Example**
 
@@ -1051,12 +1235,11 @@ end
 
 ---
 
-### `LBehaviorTree:addSelector`
+#### `LBehaviorTree:addSelector`
 
 Create a selector (fallback) composite node. Succeeds if any child succeeds.
 
 ```lua
--- signature
 LBehaviorTree:addSelector(label)
 ```
 
@@ -1064,13 +1247,13 @@ LBehaviorTree:addSelector(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional debug label. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 **Example**
 
@@ -1096,12 +1279,11 @@ end
 
 ---
 
-### `LBehaviorTree:addSequence`
+#### `LBehaviorTree:addSequence`
 
 Create a sequence composite node. All children must succeed for this node to succeed.
 
 ```lua
--- signature
 LBehaviorTree:addSequence(label)
 ```
 
@@ -1109,13 +1291,13 @@ LBehaviorTree:addSequence(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional debug label. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 **Example**
 
@@ -1136,12 +1318,11 @@ end
 
 ---
 
-### `LBehaviorTree:clearAll`
+#### `LBehaviorTree:clearAll`
 
 Remove all nodes and leaf functions, resetting the tree to empty.
 
 ```lua
--- signature
 LBehaviorTree:clearAll()
 ```
 
@@ -1162,12 +1343,11 @@ end
 
 ---
 
-### `LBehaviorTree:getDebugState`
+#### `LBehaviorTree:getDebugState`
 
 Returns behavior tree debug counters and status in a Lua table.
 
 ```lua
--- signature
 LBehaviorTree:getDebugState()
 ```
 
@@ -1175,16 +1355,15 @@ LBehaviorTree:getDebugState()
 
 | Type | Description |
 |------|-------------|
-| `LBehaviorTreeGetDebugStateResult` | Table containing `node_count` and `last_status` fields. |
+| LBehaviorTreeGetDebugStateResult | Table containing `node_count` and `last_status` fields. |
 
 ---
 
-### `LBehaviorTree:getLastStatus`
+#### `LBehaviorTree:getLastStatus`
 
 Returns the last behavior tree status string recorded by the tree.
 
 ```lua
--- signature
 LBehaviorTree:getLastStatus()
 ```
 
@@ -1192,16 +1371,15 @@ LBehaviorTree:getLastStatus()
 
 | Type | Description |
 |------|-------------|
-| `string` | Last status such as `success`, `failure`, or `running`. |
+| string | Last status such as `success`, `failure`, or `running`. |
 
 ---
 
-### `LBehaviorTree:nodeCount`
+#### `LBehaviorTree:nodeCount`
 
 Return the total number of nodes in the tree.
 
 ```lua
--- signature
 LBehaviorTree:nodeCount()
 ```
 
@@ -1209,7 +1387,7 @@ LBehaviorTree:nodeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Node count. |
+| number | Node count. |
 
 **Example**
 
@@ -1235,12 +1413,11 @@ end
 
 ---
 
-### `LBehaviorTree:resetState`
+#### `LBehaviorTree:resetState`
 
 Reset the tree's running state. Use between encounters or when restarting AI logic.
 
 ```lua
--- signature
 LBehaviorTree:resetState()
 ```
 
@@ -1264,12 +1441,11 @@ end
 
 ---
 
-### `LBehaviorTree:setLeaf`
+#### `LBehaviorTree:setLeaf`
 
 Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
 
 ```lua
--- signature
 LBehaviorTree:setLeaf(name, callback)
 ```
 
@@ -1277,8 +1453,8 @@ LBehaviorTree:setLeaf(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The leaf name (matching addLeaf). |
-| `callback` | `function` | A function returning a status string. |
+| `name` | string | The leaf name (matching addLeaf). |
+| `callback` | function | A function returning a status string. |
 
 **Example**
 
@@ -1300,12 +1476,11 @@ end
 
 ---
 
-### `LBehaviorTree:setRoot`
+#### `LBehaviorTree:setRoot`
 
 Sets the behavior tree root by moving a node handle into the tree.
 
 ```lua
--- signature
 LBehaviorTree:setRoot(node)
 ```
 
@@ -1313,7 +1488,7 @@ LBehaviorTree:setRoot(node)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node` | `LBTNode` | Node handle to consume as the new tree root. |
+| `node` | LBTNode | Node handle to consume as the new tree root. |
 
 **Example**
 
@@ -1339,12 +1514,11 @@ end
 
 ---
 
-### `LBehaviorTree:tick`
+#### `LBehaviorTree:tick`
 
 Execute one tick of the behavior tree from the root. Returns the root node's status.
 
 ```lua
--- signature
 LBehaviorTree:tick()
 ```
 
@@ -1352,7 +1526,7 @@ LBehaviorTree:tick()
 
 | Type | Description |
 |------|-------------|
-| `string` | One of "success", "failure", or "running". |
+| string | One of "success", "failure", or "running". |
 
 **Example**
 
@@ -1373,12 +1547,11 @@ end
 
 ---
 
-### `LBehaviorTree:type`
+#### `LBehaviorTree:type`
 
 Returns the Lua-visible type name for this behavior tree handle.
 
 ```lua
--- signature
 LBehaviorTree:type()
 ```
 
@@ -1386,16 +1559,15 @@ LBehaviorTree:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LBehaviorTree`. |
+| string | The string `[LBehaviorTree](#lbehaviortree-handle)`. |
 
 ---
 
-### `LBehaviorTree:typeOf`
+#### `LBehaviorTree:typeOf`
 
 Returns whether this behavior tree handle matches a supported type name.
 
 ```lua
--- signature
 LBehaviorTree:typeOf(name)
 ```
 
@@ -1403,24 +1575,29 @@ LBehaviorTree:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `BehaviorTree` and `Object`. |
+| `name` | string | Type name to compare against `BehaviorTree` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 ---
 
-## LBlackboard
+## LBlackboard Handle
 
-### `LBlackboard:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBlackboard:clear`
 
 Remove a single key from the blackboard.
 
 ```lua
--- signature
 LBlackboard:clear(key)
 ```
 
@@ -1428,7 +1605,7 @@ LBlackboard:clear(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key to remove. |
+| `key` | string | The key to remove. |
 
 **Example**
 
@@ -1444,12 +1621,11 @@ end
 
 ---
 
-### `LBlackboard:clearAll`
+#### `LBlackboard:clearAll`
 
 Remove all keys and values from the blackboard.
 
 ```lua
--- signature
 LBlackboard:clearAll()
 ```
 
@@ -1468,12 +1644,11 @@ end
 
 ---
 
-### `LBlackboard:get`
+#### `LBlackboard:get`
 
 Retrieve the value stored under a key. Returns nil if the key does not exist.
 
 ```lua
--- signature
 LBlackboard:get(key)
 ```
 
@@ -1481,13 +1656,13 @@ LBlackboard:get(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key name to look up. |
+| `key` | string | The key name to look up. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | number|string|nil | The stored value. |
+| boolean | number|string|nil | The stored value. |
 
 **Example**
 
@@ -1502,12 +1677,11 @@ end
 
 ---
 
-### `LBlackboard:getRevision`
+#### `LBlackboard:getRevision`
 
 Return the current revision counter. Increments on every value change.
 
 ```lua
--- signature
 LBlackboard:getRevision()
 ```
 
@@ -1515,7 +1689,7 @@ LBlackboard:getRevision()
 
 | Type | Description |
 |------|-------------|
-| `number` | The revision number. |
+| number | The revision number. |
 
 **Example**
 
@@ -1531,12 +1705,11 @@ end
 
 ---
 
-### `LBlackboard:has`
+#### `LBlackboard:has`
 
 Check whether a key exists on the blackboard.
 
 ```lua
--- signature
 LBlackboard:has(key)
 ```
 
@@ -1544,13 +1717,13 @@ LBlackboard:has(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key to check. |
+| `key` | string | The key to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the key has a stored value. |
+| boolean | True if the key has a stored value. |
 
 **Example**
 
@@ -1565,12 +1738,11 @@ end
 
 ---
 
-### `LBlackboard:keys`
+#### `LBlackboard:keys`
 
 Return an array of all keys currently stored on the blackboard.
 
 ```lua
--- signature
 LBlackboard:keys()
 ```
 
@@ -1578,7 +1750,7 @@ LBlackboard:keys()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Key name strings. |
+| string[] | Key name strings. |
 
 **Example**
 
@@ -1595,12 +1767,11 @@ end
 
 ---
 
-### `LBlackboard:set`
+#### `LBlackboard:set`
 
 Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
 
 ```lua
--- signature
 LBlackboard:set(key, value)
 ```
 
@@ -1608,8 +1779,8 @@ LBlackboard:set(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key name. |
-| `value` | `boolean|number|string|nil` | The value to store. Pass nil to clear the key. |
+| `key` | string | The key name. |
+| `value` | boolean|number|string|nil | The value to store. Pass nil to clear the key. |
 
 **Example**
 
@@ -1625,12 +1796,11 @@ end
 
 ---
 
-### `LBlackboard:snapshot`
+#### `LBlackboard:snapshot`
 
 Return a table containing all current key-value pairs as a snapshot. Useful for serialization or debug display.
 
 ```lua
--- signature
 LBlackboard:snapshot()
 ```
 
@@ -1638,7 +1808,7 @@ LBlackboard:snapshot()
 
 | Type | Description |
 |------|-------------|
-| `table` | A table mapping key strings to their stored values. |
+| table | A table mapping key strings to their stored values. |
 
 **Example**
 
@@ -1655,12 +1825,11 @@ end
 
 ---
 
-### `LBlackboard:unwatch`
+#### `LBlackboard:unwatch`
 
 Remove a previously registered watcher by its ID.
 
 ```lua
--- signature
 LBlackboard:unwatch(id)
 ```
 
@@ -1668,7 +1837,7 @@ LBlackboard:unwatch(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The watcher ID returned by `watch()`. |
+| `id` | number | The watcher ID returned by `watch()`. |
 
 **Example**
 
@@ -1687,12 +1856,11 @@ end
 
 ---
 
-### `LBlackboard:watch`
+#### `LBlackboard:watch`
 
 Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
 
 ```lua
--- signature
 LBlackboard:watch(key, callback)
 ```
 
@@ -1700,14 +1868,14 @@ LBlackboard:watch(key, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key to watch, or `"*"` for all changes. |
-| `callback` | `function` | Called with (key, newValue) when a change occurs. |
+| `key` | string | The key to watch, or `"*"` for all changes. |
+| `callback` | function | Called with (key, newValue) when a change occurs. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | A watcher ID for later removal with `unwatch()`. |
+| number | A watcher ID for later removal with `unwatch()`. |
 
 **Example**
 
@@ -1726,14 +1894,19 @@ end
 
 ---
 
-## LCommandStack
+## LCommandStack Handle
 
-### `LCommandStack:canRedo`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCommandStack:canRedo`
 
 Check whether a redo operation is possible (there are commands ahead of the pointer).
 
 ```lua
--- signature
 LCommandStack:canRedo()
 ```
 
@@ -1741,7 +1914,7 @@ LCommandStack:canRedo()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if redo is available. |
+| boolean | True if redo is available. |
 
 **Example**
 
@@ -1762,12 +1935,11 @@ end
 
 ---
 
-### `LCommandStack:canUndo`
+#### `LCommandStack:canUndo`
 
 Check whether an undo operation is possible (there is a command with an undo function behind the pointer).
 
 ```lua
--- signature
 LCommandStack:canUndo()
 ```
 
@@ -1775,7 +1947,7 @@ LCommandStack:canUndo()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if undo is available. |
+| boolean | True if undo is available. |
 
 **Example**
 
@@ -1795,12 +1967,11 @@ end
 
 ---
 
-### `LCommandStack:clearAll`
+#### `LCommandStack:clearAll`
 
 Discard all command history and free associated callbacks.
 
 ```lua
--- signature
 LCommandStack:clearAll()
 ```
 
@@ -1823,12 +1994,11 @@ end
 
 ---
 
-### `LCommandStack:execute`
+#### `LCommandStack:execute`
 
 Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
 
 ```lua
--- signature
 LCommandStack:execute(name, execFn, undoFn)
 ```
 
@@ -1836,9 +2006,9 @@ LCommandStack:execute(name, execFn, undoFn)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | A descriptive name for the command (shown in history). |
-| `execFn` | `function` | The function that performs the action. |
-| `undoFn?` | `function` | An optional function that reverses the action. If omitted, command cannot be undone. |
+| `name` | string | A descriptive name for the command (shown in history). |
+| `execFn` | function | The function that performs the action. |
+| `undoFn?` | function | An optional function that reverses the action. If omitted, command cannot be undone. |
 
 **Example**
 
@@ -1863,12 +2033,11 @@ end
 
 ---
 
-### `LCommandStack:getCurrentName`
+#### `LCommandStack:getCurrentName`
 
 Return the name of the most recently executed (or undone-to) command, or nil if history is empty.
 
 ```lua
--- signature
 LCommandStack:getCurrentName()
 ```
 
@@ -1876,7 +2045,7 @@ LCommandStack:getCurrentName()
 
 | Type | Description |
 |------|-------------|
-| `string` | The command name, or nil if history is empty. |
+| string | The command name, or nil if history is empty. |
 
 **Example**
 
@@ -1896,12 +2065,11 @@ end
 
 ---
 
-### `LCommandStack:getHistorySize`
+#### `LCommandStack:getHistorySize`
 
 Return the total number of commands in the history (both undone and available for redo).
 
 ```lua
--- signature
 LCommandStack:getHistorySize()
 ```
 
@@ -1909,7 +2077,7 @@ LCommandStack:getHistorySize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total history depth. |
+| number | Total history depth. |
 
 **Example**
 
@@ -1929,12 +2097,11 @@ end
 
 ---
 
-### `LCommandStack:redo`
+#### `LCommandStack:redo`
 
 Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
 
 ```lua
--- signature
 LCommandStack:redo()
 ```
 
@@ -1942,7 +2109,7 @@ LCommandStack:redo()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if redo succeeded, false if nothing to redo. |
+| boolean | True if redo succeeded, false if nothing to redo. |
 
 **Example**
 
@@ -1969,12 +2136,11 @@ end
 
 ---
 
-### `LCommandStack:undo`
+#### `LCommandStack:undo`
 
 Undo the most recent command by calling its undo function. Moves the pointer back in history.
 
 ```lua
--- signature
 LCommandStack:undo()
 ```
 
@@ -1982,7 +2148,7 @@ LCommandStack:undo()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if undo succeeded, false if nothing to undo or no undo function registered. |
+| boolean | True if undo succeeded, false if nothing to undo or no undo function registered. |
 
 **Example**
 
@@ -2008,14 +2174,19 @@ end
 
 ---
 
-## LDebounce
+## LDebounce Handle
 
-### `LDebounce:cancel`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDebounce:cancel`
 
 Cancel any pending debounce without firing. The callback will not be called until triggered again.
 
 ```lua
--- signature
 LDebounce:cancel()
 ```
 
@@ -2037,12 +2208,11 @@ end
 
 ---
 
-### `LDebounce:getFireCount`
+#### `LDebounce:getFireCount`
 
 Return the total number of times this debounce has fired since creation.
 
 ```lua
--- signature
 LDebounce:getFireCount()
 ```
 
@@ -2050,7 +2220,7 @@ LDebounce:getFireCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total fire count. |
+| number | Total fire count. |
 
 **Example**
 
@@ -2069,12 +2239,11 @@ end
 
 ---
 
-### `LDebounce:isPending`
+#### `LDebounce:isPending`
 
 Check whether the debounce is currently waiting to fire (has been triggered but wait period not yet elapsed).
 
 ```lua
--- signature
 LDebounce:isPending()
 ```
 
@@ -2082,7 +2251,7 @@ LDebounce:isPending()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a fire is pending. |
+| boolean | True if a fire is pending. |
 
 **Example**
 
@@ -2101,12 +2270,11 @@ end
 
 ---
 
-### `LDebounce:onFire`
+#### `LDebounce:onFire`
 
 Set the callback function to invoke when the debounce fires after the wait period.
 
 ```lua
--- signature
 LDebounce:onFire(f)
 ```
 
@@ -2114,7 +2282,7 @@ LDebounce:onFire(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | The callback to execute. |
+| `f` | function | The callback to execute. |
 
 **Example**
 
@@ -2133,12 +2301,11 @@ end
 
 ---
 
-### `LDebounce:trigger`
+#### `LDebounce:trigger`
 
 Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
 
 ```lua
--- signature
 LDebounce:trigger()
 ```
 
@@ -2159,12 +2326,11 @@ end
 
 ---
 
-### `LDebounce:update`
+#### `LDebounce:update`
 
 Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
 
 ```lua
--- signature
 LDebounce:update(dt)
 ```
 
@@ -2172,13 +2338,13 @@ LDebounce:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds since last update. |
+| `dt` | number | Delta time in seconds since last update. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the debounce fired this frame. |
+| boolean | True if the debounce fired this frame. |
 
 **Example**
 
@@ -2197,14 +2363,19 @@ end
 
 ---
 
-## LEventBus
+## LEventBus Handle
 
-### `LEventBus:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LEventBus:clear`
 
 Remove all listeners subscribed to a specific event name.
 
 ```lua
--- signature
 LEventBus:clear(event)
 ```
 
@@ -2212,7 +2383,7 @@ LEventBus:clear(event)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | The event name whose listeners will be removed. |
+| `event` | string | The event name whose listeners will be removed. |
 
 **Example**
 
@@ -2230,12 +2401,11 @@ end
 
 ---
 
-### `LEventBus:clearAll`
+#### `LEventBus:clearAll`
 
 Remove all listeners from every event on this bus. Resets the bus to empty.
 
 ```lua
--- signature
 LEventBus:clearAll()
 ```
 
@@ -2258,12 +2428,11 @@ end
 
 ---
 
-### `LEventBus:emit`
+#### `LEventBus:emit`
 
 Emit an event, invoking all subscribed listeners in priority order with optional payload arguments.
 
 ```lua
--- signature
 LEventBus:emit(event, ...)
 ```
 
@@ -2271,7 +2440,7 @@ LEventBus:emit(event, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | The event name to emit. |
+| `event` | string | The event name to emit. |
 | — | — | @param ... any Additional arguments passed to each listener callback. |
 
 **Example**
@@ -2290,12 +2459,11 @@ end
 
 ---
 
-### `LEventBus:getEvents`
+#### `LEventBus:getEvents`
 
 Return an array of all event names that have at least one listener.
 
 ```lua
--- signature
 LEventBus:getEvents()
 ```
 
@@ -2303,7 +2471,7 @@ LEventBus:getEvents()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Event name strings. |
+| string[] | Event name strings. |
 
 **Example**
 
@@ -2324,12 +2492,11 @@ end
 
 ---
 
-### `LEventBus:getListenerCount`
+#### `LEventBus:getListenerCount`
 
 Return the number of active listeners for a given event name.
 
 ```lua
--- signature
 LEventBus:getListenerCount(event)
 ```
 
@@ -2337,13 +2504,13 @@ LEventBus:getListenerCount(event)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | The event name to query. |
+| `event` | string | The event name to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of currently registered listeners. |
+| number | Count of currently registered listeners. |
 
 **Example**
 
@@ -2363,12 +2530,11 @@ end
 
 ---
 
-### `LEventBus:off`
+#### `LEventBus:off`
 
 Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
 
 ```lua
--- signature
 LEventBus:off(id)
 ```
 
@@ -2376,7 +2542,7 @@ LEventBus:off(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The subscription ID returned by `on()`. |
+| `id` | number | The subscription ID returned by `on()`. |
 
 **Example**
 
@@ -2394,12 +2560,11 @@ end
 
 ---
 
-### `LEventBus:on`
+#### `LEventBus:on`
 
 Subscribe a callback to a named event. Higher priority listeners fire first.
 
 ```lua
--- signature
 LEventBus:on(event, callback, priority)
 ```
 
@@ -2407,15 +2572,15 @@ LEventBus:on(event, callback, priority)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | The event name to listen for. |
-| `callback` | `function` | The function to invoke when the event fires. |
-| `priority?` | `number` | Listener priority (default 0). Higher values execute first. |
+| `event` | string | The event name to listen for. |
+| `callback` | function | The function to invoke when the event fires. |
+| `priority?` | number | Listener priority (default 0). Higher values execute first. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | A subscription ID used to unsubscribe later. |
+| number | A subscription ID used to unsubscribe later. |
 
 **Example**
 
@@ -2433,14 +2598,19 @@ end
 
 ---
 
-## LFactory
+## LFactory Handle
 
-### `LFactory:alias`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFactory:alias`
 
 Create an alias that maps to an existing type name. `create(alias)` will use the canonical constructor.
 
 ```lua
--- signature
 LFactory:alias(alias, canonical)
 ```
 
@@ -2448,8 +2618,8 @@ LFactory:alias(alias, canonical)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `alias` | `string` | The alternative name. |
-| `canonical` | `string` | The existing registered type name. |
+| `alias` | string | The alternative name. |
+| `canonical` | string | The existing registered type name. |
 
 **Example**
 
@@ -2468,12 +2638,11 @@ end
 
 ---
 
-### `LFactory:clearAll`
+#### `LFactory:clearAll`
 
 Remove all registered types and constructors, resetting the factory.
 
 ```lua
--- signature
 LFactory:clearAll()
 ```
 
@@ -2496,12 +2665,11 @@ end
 
 ---
 
-### `LFactory:create`
+#### `LFactory:create`
 
 Create a new object by type name, passing additional arguments to the constructor.
 
 ```lua
--- signature
 LFactory:create(typeName, ...)
 ```
 
@@ -2509,15 +2677,15 @@ LFactory:create(typeName, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | The registered type to instantiate. |
+| `typeName` | string | The registered type to instantiate. |
 | — | — | @param ... any Extra arguments forwarded to the constructor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | a The created object table. |
-| `nil` | b When not available. |
+| table | The created object table. |
+| nil | When not available. |
 
 **Example**
 
@@ -2535,12 +2703,11 @@ end
 
 ---
 
-### `LFactory:getTypes`
+#### `LFactory:getTypes`
 
 Return an array of all registered type names.
 
 ```lua
--- signature
 LFactory:getTypes()
 ```
 
@@ -2548,7 +2715,7 @@ LFactory:getTypes()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Type name strings. |
+| string[] | Type name strings. |
 
 **Example**
 
@@ -2569,12 +2736,11 @@ end
 
 ---
 
-### `LFactory:has`
+#### `LFactory:has`
 
 Check whether a constructor is registered for the given type name.
 
 ```lua
--- signature
 LFactory:has(typeName)
 ```
 
@@ -2582,13 +2748,13 @@ LFactory:has(typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | The type name to query. |
+| `typeName` | string | The type name to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a constructor exists for this type. |
+| boolean | True if a constructor exists for this type. |
 
 **Example**
 
@@ -2605,12 +2771,11 @@ end
 
 ---
 
-### `LFactory:register`
+#### `LFactory:register`
 
 Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
 
 ```lua
--- signature
 LFactory:register(typeName, ctor)
 ```
 
@@ -2618,8 +2783,8 @@ LFactory:register(typeName, ctor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | The type identifier (e.g. "enemy", "bullet"). |
-| `ctor` | `function` | A constructor function that returns a new instance. |
+| `typeName` | string | The type identifier (e.g. "enemy", "bullet"). |
+| `ctor` | function | A constructor function that returns a new instance. |
 
 **Example**
 
@@ -2636,12 +2801,11 @@ end
 
 ---
 
-### `LFactory:remove`
+#### `LFactory:remove`
 
 Unregister a type and discard its constructor function.
 
 ```lua
--- signature
 LFactory:remove(typeName)
 ```
 
@@ -2649,7 +2813,7 @@ LFactory:remove(typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `typeName` | `string` | The type name to remove. |
+| `typeName` | string | The type name to remove. |
 
 **Example**
 
@@ -2667,14 +2831,19 @@ end
 
 ---
 
-## LFunnel
+## LFunnel Handle
 
-### `LFunnel:discard`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LFunnel:discard`
 
 Discard all pending entries without flushing or calling the callback.
 
 ```lua
--- signature
 LFunnel:discard()
 ```
 
@@ -2696,12 +2865,11 @@ end
 
 ---
 
-### `LFunnel:flush`
+#### `LFunnel:flush`
 
 Force an immediate flush of all pending entries, invoking the callback.
 
 ```lua
--- signature
 LFunnel:flush()
 ```
 
@@ -2723,12 +2891,11 @@ end
 
 ---
 
-### `LFunnel:getFlushCount`
+#### `LFunnel:getFlushCount`
 
 Return the total number of times this funnel has flushed since creation.
 
 ```lua
--- signature
 LFunnel:getFlushCount()
 ```
 
@@ -2736,7 +2903,7 @@ LFunnel:getFlushCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total flush count. |
+| number | Total flush count. |
 
 **Example**
 
@@ -2756,12 +2923,11 @@ end
 
 ---
 
-### `LFunnel:onFlush`
+#### `LFunnel:onFlush`
 
 Set the callback invoked when the funnel flushes. Receives an array of {tag, value} entries.
 
 ```lua
--- signature
 LFunnel:onFlush(f)
 ```
 
@@ -2769,7 +2935,7 @@ LFunnel:onFlush(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | Callback receiving a table array of batched entries. |
+| `f` | function | Callback receiving a table array of batched entries. |
 
 **Example**
 
@@ -2789,12 +2955,11 @@ end
 
 ---
 
-### `LFunnel:pendingCount`
+#### `LFunnel:pendingCount`
 
 Return the number of entries waiting to be flushed.
 
 ```lua
--- signature
 LFunnel:pendingCount()
 ```
 
@@ -2802,7 +2967,7 @@ LFunnel:pendingCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Pending entry count. |
+| number | Pending entry count. |
 
 **Example**
 
@@ -2821,12 +2986,11 @@ end
 
 ---
 
-### `LFunnel:push`
+#### `LFunnel:push`
 
 Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
 
 ```lua
--- signature
 LFunnel:push(tag, value)
 ```
 
@@ -2834,8 +2998,8 @@ LFunnel:push(tag, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | A category label for the event. |
-| `value?` | `number` | Optional numeric value (default 0). |
+| `tag` | string | A category label for the event. |
+| `value?` | number | Optional numeric value (default 0). |
 
 **Example**
 
@@ -2855,12 +3019,11 @@ end
 
 ---
 
-### `LFunnel:update`
+#### `LFunnel:update`
 
 Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
 
 ```lua
--- signature
 LFunnel:update(dt)
 ```
 
@@ -2868,13 +3031,13 @@ LFunnel:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds. |
+| `dt` | number | Delta time in seconds. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a flush occurred this frame. |
+| boolean | True if a flush occurred this frame. |
 
 **Example**
 
@@ -2894,14 +3057,19 @@ end
 
 ---
 
-## LList
+## LList Handle
 
-### `LList:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LList:add`
 
 Append a value to the end of the list.
 
 ```lua
--- signature
 LList:add(value)
 ```
 
@@ -2909,7 +3077,7 @@ LList:add(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to append. |
+| `value` | any | The value to append. |
 
 **Example**
 
@@ -2926,12 +3094,11 @@ end
 
 ---
 
-### `LList:clear`
+#### `LList:clear`
 
 Remove all items from the list. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:clear()
 ```
 
@@ -2951,12 +3118,11 @@ end
 
 ---
 
-### `LList:contains`
+#### `LList:contains`
 
 Check whether the list contains a specific value.
 
 ```lua
--- signature
 LList:contains(value)
 ```
 
@@ -2964,13 +3130,13 @@ LList:contains(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `string` | The value to search for. |
+| `value` | string | The value to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if found. |
+| boolean | True if found. |
 
 **Example**
 
@@ -2987,12 +3153,11 @@ end
 
 ---
 
-### `LList:get`
+#### `LList:get`
 
 Get the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LList:get(index)
 ```
 
@@ -3000,14 +3165,14 @@ LList:get(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
+| `index` | number | 1-based position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The value. |
-| `nil` | b When not available. |
+| string | The value. |
+| nil | When not available. |
 
 **Example**
 
@@ -3024,12 +3189,11 @@ end
 
 ---
 
-### `LList:indexOf`
+#### `LList:indexOf`
 
 Find the 1-based index of the first occurrence of a value. Returns nil if not found.
 
 ```lua
--- signature
 LList:indexOf(value)
 ```
 
@@ -3037,13 +3201,13 @@ LList:indexOf(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `string` | The value to search for. |
+| `value` | string | The value to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The 1-based index, or nil when the value is not found. |
+| number | The 1-based index, or nil when the value is not found. |
 
 **Example**
 
@@ -3060,12 +3224,11 @@ end
 
 ---
 
-### `LList:insert`
+#### `LList:insert`
 
 Insert a value at a 1-based index, shifting subsequent items right.
 
 ```lua
--- signature
 LList:insert(index, value)
 ```
 
@@ -3073,8 +3236,8 @@ LList:insert(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based insertion position. |
-| `value` | `any` | The value to insert. |
+| `index` | number | 1-based insertion position. |
+| `value` | any | The value to insert. |
 
 **Example**
 
@@ -3091,12 +3254,11 @@ end
 
 ---
 
-### `LList:isEmpty`
+#### `LList:isEmpty`
 
 Check whether the list is empty. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:isEmpty()
 ```
 
@@ -3104,7 +3266,7 @@ LList:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 **Example**
 
@@ -3119,12 +3281,11 @@ end
 
 ---
 
-### `LList:len`
+#### `LList:len`
 
 Return the number of items in the list.
 
 ```lua
--- signature
 LList:len()
 ```
 
@@ -3132,7 +3293,7 @@ LList:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -3149,12 +3310,11 @@ end
 
 ---
 
-### `LList:pop`
+#### `LList:pop`
 
 Remove and return the last value. Returns nil if empty.
 
 ```lua
--- signature
 LList:pop()
 ```
 
@@ -3162,8 +3322,8 @@ LList:pop()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The popped value. |
-| `nil` | b When not available. |
+| string | The popped value. |
+| nil | When not available. |
 
 **Example**
 
@@ -3181,12 +3341,11 @@ end
 
 ---
 
-### `LList:push`
+#### `LList:push`
 
 Append a value to the end of the list (alias for add).
 
 ```lua
--- signature
 LList:push(value)
 ```
 
@@ -3194,7 +3353,7 @@ LList:push(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to append. |
+| `value` | any | The value to append. |
 
 **Example**
 
@@ -3211,12 +3370,11 @@ end
 
 ---
 
-### `LList:remove`
+#### `LList:remove`
 
 Remove and return the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LList:remove(index)
 ```
 
@@ -3224,14 +3382,14 @@ LList:remove(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position to remove. |
+| `index` | number | 1-based position to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The removed value. |
-| `nil` | b When not available. |
+| string | The removed value. |
+| nil | When not available. |
 
 **Example**
 
@@ -3249,12 +3407,11 @@ end
 
 ---
 
-### `LList:reverse`
+#### `LList:reverse`
 
 Reverse the order of all items in the list in-place.
 
 ```lua
--- signature
 LList:reverse()
 ```
 
@@ -3274,12 +3431,11 @@ end
 
 ---
 
-### `LList:set`
+#### `LList:set`
 
 Replace the value at a 1-based index. Errors if index is 0 or out of range.
 
 ```lua
--- signature
 LList:set(index, value)
 ```
 
@@ -3287,8 +3443,8 @@ LList:set(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
-| `value` | `any` | The new value. |
+| `index` | number | 1-based position. |
+| `value` | any | The new value. |
 
 **Example**
 
@@ -3305,12 +3461,11 @@ end
 
 ---
 
-### `LList:shift`
+#### `LList:shift`
 
 Remove and return the first value. Returns nil if empty.
 
 ```lua
--- signature
 LList:shift()
 ```
 
@@ -3318,8 +3473,8 @@ LList:shift()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The shifted value. |
-| `nil` | b When not available. |
+| string | The shifted value. |
+| nil | When not available. |
 
 **Example**
 
@@ -3337,12 +3492,11 @@ end
 
 ---
 
-### `LList:toArray`
+#### `LList:toArray`
 
 Return all items as an array table. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:toArray()
 ```
 
@@ -3350,7 +3504,7 @@ LList:toArray()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of all values. |
+| number[] | Array of all values. |
 
 **Example**
 
@@ -3368,12 +3522,11 @@ end
 
 ---
 
-### `LList:unshift`
+#### `LList:unshift`
 
 Insert a value at the beginning of the list.
 
 ```lua
--- signature
 LList:unshift(value)
 ```
 
@@ -3381,7 +3534,7 @@ LList:unshift(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to prepend. |
+| `value` | any | The value to prepend. |
 
 **Example**
 
@@ -3398,14 +3551,19 @@ end
 
 ---
 
-## LMap
+## LMap Handle
 
-### `LMap:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMap:clear`
 
 Remove all entries from the map. This method is available to Lua scripts.
 
 ```lua
--- signature
 LMap:clear()
 ```
 
@@ -3424,12 +3582,11 @@ end
 
 ---
 
-### `LMap:entries`
+#### `LMap:entries`
 
 Return an array of {key, value} tables for all entries.
 
 ```lua
--- signature
 LMap:entries()
 ```
 
@@ -3437,7 +3594,7 @@ LMap:entries()
 
 | Type | Description |
 |------|-------------|
-| `LMapEntriesResult` | Array of entry tables. |
+| LMapEntriesResult | Array of entry tables. |
 
 **Example**
 
@@ -3454,12 +3611,11 @@ end
 
 ---
 
-### `LMap:get`
+#### `LMap:get`
 
 Retrieve the value for a key. Returns nil if the key does not exist.
 
 ```lua
--- signature
 LMap:get(key)
 ```
 
@@ -3467,14 +3623,14 @@ LMap:get(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key to look up. |
+| `key` | string | The key to look up. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The value. |
-| `nil` | b When not available. |
+| string | The value. |
+| nil | When not available. |
 
 **Example**
 
@@ -3490,12 +3646,11 @@ end
 
 ---
 
-### `LMap:has`
+#### `LMap:has`
 
 Check whether a key exists in the map.
 
 ```lua
--- signature
 LMap:has(key)
 ```
 
@@ -3503,13 +3658,13 @@ LMap:has(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key to check. |
+| `key` | string | The key to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if present. |
+| boolean | True if present. |
 
 **Example**
 
@@ -3525,12 +3680,11 @@ end
 
 ---
 
-### `LMap:isEmpty`
+#### `LMap:isEmpty`
 
 Check whether the map has no entries.
 
 ```lua
--- signature
 LMap:isEmpty()
 ```
 
@@ -3538,7 +3692,7 @@ LMap:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 **Example**
 
@@ -3553,12 +3707,11 @@ end
 
 ---
 
-### `LMap:keys`
+#### `LMap:keys`
 
 Return an array of all keys in the map.
 
 ```lua
--- signature
 LMap:keys()
 ```
 
@@ -3566,7 +3719,7 @@ LMap:keys()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Key strings. |
+| string[] | Key strings. |
 
 **Example**
 
@@ -3583,12 +3736,11 @@ end
 
 ---
 
-### `LMap:len`
+#### `LMap:len`
 
 Return the number of key-value pairs.
 
 ```lua
--- signature
 LMap:len()
 ```
 
@@ -3596,7 +3748,7 @@ LMap:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Entry count. |
+| number | Entry count. |
 
 **Example**
 
@@ -3612,12 +3764,11 @@ end
 
 ---
 
-### `LMap:merge`
+#### `LMap:merge`
 
-Copy all entries from another LMap into this map. Existing keys are overwritten.
+Copy all entries from another [LMap](#lmap-handle) into this map. Existing keys are overwritten.
 
 ```lua
--- signature
 LMap:merge(other)
 ```
 
@@ -3625,7 +3776,7 @@ LMap:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LMap` | The source map to merge from. |
+| `other` | [LMap](#lmap-handle) | The source map to merge from. |
 
 **Example**
 
@@ -3643,12 +3794,11 @@ end
 
 ---
 
-### `LMap:remove`
+#### `LMap:remove`
 
 Remove a key from the map. Returns true if it was present.
 
 ```lua
--- signature
 LMap:remove(key)
 ```
 
@@ -3656,13 +3806,13 @@ LMap:remove(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key to remove. |
+| `key` | string | The key to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if removed, false if not found. |
+| boolean | True if removed, false if not found. |
 
 **Example**
 
@@ -3679,12 +3829,11 @@ end
 
 ---
 
-### `LMap:set`
+#### `LMap:set`
 
 Set a key-value pair in the map. Replaces any existing value for the same key.
 
 ```lua
--- signature
 LMap:set(key, value)
 ```
 
@@ -3692,8 +3841,8 @@ LMap:set(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key. |
-| `value` | `any` | The value to store. |
+| `key` | string | The key. |
+| `value` | any | The value to store. |
 
 **Example**
 
@@ -3709,12 +3858,11 @@ end
 
 ---
 
-### `LMap:values`
+#### `LMap:values`
 
 Return an array of all values in the map.
 
 ```lua
--- signature
 LMap:values()
 ```
 
@@ -3722,7 +3870,7 @@ LMap:values()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of values. |
+| number[] | Array of values. |
 
 **Example**
 
@@ -3739,14 +3887,19 @@ end
 
 ---
 
-## LMediator
+## LMediator Handle
 
-### `LMediator:broadcast`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMediator:broadcast`
 
 Send a message to all handlers on all channels. Every registered handler receives the payload.
 
 ```lua
--- signature
 LMediator:broadcast(...)
 ```
 
@@ -3775,12 +3928,11 @@ end
 
 ---
 
-### `LMediator:channels`
+#### `LMediator:channels`
 
 Return an array of all channel names that have at least one handler.
 
 ```lua
--- signature
 LMediator:channels()
 ```
 
@@ -3788,7 +3940,7 @@ LMediator:channels()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Channel name strings. |
+| string[] | Channel name strings. |
 
 **Example**
 
@@ -3809,12 +3961,11 @@ end
 
 ---
 
-### `LMediator:clear`
+#### `LMediator:clear`
 
 Remove all channels and handlers, resetting the mediator.
 
 ```lua
--- signature
 LMediator:clear()
 ```
 
@@ -3837,12 +3988,11 @@ end
 
 ---
 
-### `LMediator:handlerCount`
+#### `LMediator:handlerCount`
 
 Return the number of handlers registered on a specific channel.
 
 ```lua
--- signature
 LMediator:handlerCount(channel)
 ```
 
@@ -3850,13 +4000,13 @@ LMediator:handlerCount(channel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | `string` | The channel name. |
+| `channel` | string | The channel name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Handler count. |
+| number | Handler count. |
 
 **Example**
 
@@ -3876,12 +4026,11 @@ end
 
 ---
 
-### `LMediator:off`
+#### `LMediator:off`
 
 Unregister a handler from a channel by its ID.
 
 ```lua
--- signature
 LMediator:off(channel, id)
 ```
 
@@ -3889,8 +4038,8 @@ LMediator:off(channel, id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | `string` | The channel name. |
-| `id` | `number` | The handler ID to remove. |
+| `channel` | string | The channel name. |
+| `id` | number | The handler ID to remove. |
 
 **Example**
 
@@ -3908,12 +4057,11 @@ end
 
 ---
 
-### `LMediator:on`
+#### `LMediator:on`
 
 Register a handler callback on a named channel. Returns an ID for unregistration.
 
 ```lua
--- signature
 LMediator:on(channel, callback)
 ```
 
@@ -3921,14 +4069,14 @@ LMediator:on(channel, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | `string` | The message channel name. |
-| `callback` | `function` | The handler to invoke when a message is sent to this channel. |
+| `channel` | string | The message channel name. |
+| `callback` | function | The handler to invoke when a message is sent to this channel. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Handler ID for later removal. |
+| number | Handler ID for later removal. |
 
 **Example**
 
@@ -3946,12 +4094,11 @@ end
 
 ---
 
-### `LMediator:removeChannel`
+#### `LMediator:removeChannel`
 
 Remove an entire channel and all its handlers.
 
 ```lua
--- signature
 LMediator:removeChannel(channel)
 ```
 
@@ -3959,7 +4106,7 @@ LMediator:removeChannel(channel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | `string` | The channel to remove. |
+| `channel` | string | The channel to remove. |
 
 **Example**
 
@@ -3977,12 +4124,11 @@ end
 
 ---
 
-### `LMediator:send`
+#### `LMediator:send`
 
 Send a message to all handlers on a specific channel with optional payload arguments.
 
 ```lua
--- signature
 LMediator:send(channel, ...)
 ```
 
@@ -3990,7 +4136,7 @@ LMediator:send(channel, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `channel` | `string` | The target channel name. |
+| `channel` | string | The target channel name. |
 | — | — | @param ... any Additional arguments passed to each handler. |
 
 **Example**
@@ -4009,14 +4155,19 @@ end
 
 ---
 
-## LObjectPool
+## LObjectPool Handle
 
-### `LObjectPool:acquire`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LObjectPool:acquire`
 
 Take an idle object from the pool and mark it active. Returns nil if the pool is empty.
 
 ```lua
--- signature
 LObjectPool:acquire()
 ```
 
@@ -4024,8 +4175,8 @@ LObjectPool:acquire()
 
 | Type | Description |
 |------|-------------|
-| `table` | a The acquired object table. |
-| `nil` | b If none available. |
+| table | The acquired object table. |
+| nil | If none available. |
 
 **Example**
 
@@ -4042,12 +4193,11 @@ end
 
 ---
 
-### `LObjectPool:add`
+#### `LObjectPool:add`
 
 Add an object to the pool's idle set, making it available for future acquisition.
 
 ```lua
--- signature
 LObjectPool:add(value)
 ```
 
@@ -4055,7 +4205,7 @@ LObjectPool:add(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The object value to store in the pool. |
+| `value` | any | The object value to store in the pool. |
 
 **Example**
 
@@ -4071,12 +4221,11 @@ end
 
 ---
 
-### `LObjectPool:clearAll`
+#### `LObjectPool:clearAll`
 
 Destroy all objects (active and idle) and reset the pool to empty.
 
 ```lua
--- signature
 LObjectPool:clearAll()
 ```
 
@@ -4095,12 +4244,11 @@ end
 
 ---
 
-### `LObjectPool:getActiveCount`
+#### `LObjectPool:getActiveCount`
 
 Return the number of objects currently checked out from the pool.
 
 ```lua
--- signature
 LObjectPool:getActiveCount()
 ```
 
@@ -4108,7 +4256,7 @@ LObjectPool:getActiveCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of active (in-use) objects. |
+| number | Count of active (in-use) objects. |
 
 **Example**
 
@@ -4125,12 +4273,11 @@ end
 
 ---
 
-### `LObjectPool:getAvailableCount`
+#### `LObjectPool:getAvailableCount`
 
 Return the number of idle objects ready for acquisition.
 
 ```lua
--- signature
 LObjectPool:getAvailableCount()
 ```
 
@@ -4138,7 +4285,7 @@ LObjectPool:getAvailableCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Count of available (idle) objects. |
+| number | Count of available (idle) objects. |
 
 **Example**
 
@@ -4155,12 +4302,11 @@ end
 
 ---
 
-### `LObjectPool:getTotalCount`
+#### `LObjectPool:getTotalCount`
 
 Return the total number of objects managed by this pool (active + idle).
 
 ```lua
--- signature
 LObjectPool:getTotalCount()
 ```
 
@@ -4168,7 +4314,7 @@ LObjectPool:getTotalCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total object count. |
+| number | Total object count. |
 
 **Example**
 
@@ -4184,12 +4330,11 @@ end
 
 ---
 
-### `LObjectPool:release`
+#### `LObjectPool:release`
 
 Return an active object back to the pool's idle set so it can be reused.
 
 ```lua
--- signature
 LObjectPool:release(value)
 ```
 
@@ -4197,7 +4342,7 @@ LObjectPool:release(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The object value to release back into the pool. |
+| `value` | any | The object value to release back into the pool. |
 
 **Example**
 
@@ -4215,14 +4360,19 @@ end
 
 ---
 
-## LObserver
+## LObserver Handle
 
-### `LObserver:get`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LObserver:get`
 
 Retrieve the current value for a key. Returns nil if not set.
 
 ```lua
--- signature
 LObserver:get(key)
 ```
 
@@ -4230,14 +4380,14 @@ LObserver:get(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The property name to look up. |
+| `key` | string | The property name to look up. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a The stored value. |
-| `nil` | b When not available. |
+| number | The stored value. |
+| nil | When not available. |
 
 **Example**
 
@@ -4252,12 +4402,11 @@ end
 
 ---
 
-### `LObserver:getCount`
+#### `LObserver:getCount`
 
 Return the total number of active subscriptions across all keys.
 
 ```lua
--- signature
 LObserver:getCount()
 ```
 
@@ -4265,7 +4414,7 @@ LObserver:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total subscription count. |
+| number | Total subscription count. |
 
 **Example**
 
@@ -4283,12 +4432,11 @@ end
 
 ---
 
-### `LObserver:set`
+#### `LObserver:set`
 
 Set a value by key and notify all subscribers watching that key.
 
 ```lua
--- signature
 LObserver:set(key, value)
 ```
 
@@ -4296,8 +4444,8 @@ LObserver:set(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The property name. |
-| `value` | `number` | The new value to store. |
+| `key` | string | The property name. |
+| `value` | number | The new value to store. |
 
 **Example**
 
@@ -4316,12 +4464,11 @@ end
 
 ---
 
-### `LObserver:subscribe`
+#### `LObserver:subscribe`
 
 Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
 
 ```lua
--- signature
 LObserver:subscribe(key, callback, once)
 ```
 
@@ -4329,15 +4476,15 @@ LObserver:subscribe(key, callback, once)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The property name to watch. |
-| `callback` | `function` | Called with (key, newValue) when the property changes. |
-| `once?` | `boolean` | If true, automatically unsubscribe after the first notification. |
+| `key` | string | The property name to watch. |
+| `callback` | function | Called with (key, newValue) when the property changes. |
+| `once?` | boolean | If true, automatically unsubscribe after the first notification. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | A subscription ID for later removal with `unsubscribe()`. |
+| number | A subscription ID for later removal with `unsubscribe()`. |
 
 **Example**
 
@@ -4355,12 +4502,11 @@ end
 
 ---
 
-### `LObserver:unsubscribe`
+#### `LObserver:unsubscribe`
 
 Remove a subscription by its ID. The callback will no longer fire.
 
 ```lua
--- signature
 LObserver:unsubscribe(id)
 ```
 
@@ -4368,7 +4514,7 @@ LObserver:unsubscribe(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The subscription ID returned by `subscribe()`. |
+| `id` | number | The subscription ID returned by `subscribe()`. |
 
 **Example**
 
@@ -4386,14 +4532,19 @@ end
 
 ---
 
-## LPatternGraph
+## LPatternGraph Handle
 
-### `LPatternGraph:addEdge`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPatternGraph:addEdge`
 
 Add a directed (or undirected) edge between two nodes with optional weight and label.
 
 ```lua
--- signature
 LPatternGraph:addEdge(from, to, weight, label)
 ```
 
@@ -4401,16 +4552,16 @@ LPatternGraph:addEdge(from, to, weight, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source node ID. |
-| `to` | `number` | Target node ID. |
-| `weight?` | `number` | Edge weight (default 1.0). |
-| `label?` | `string` | Optional edge label. |
+| `from` | number | Source node ID. |
+| `to` | number | Target node ID. |
+| `weight?` | number | Edge weight (default 1.0). |
+| `label?` | string | Optional edge label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The new edge's ID. |
+| number | The new edge's ID. |
 
 **Example**
 
@@ -4427,12 +4578,11 @@ end
 
 ---
 
-### `LPatternGraph:addNode`
+#### `LPatternGraph:addNode`
 
 Add a node to the graph with an optional label and payload value.
 
 ```lua
--- signature
 LPatternGraph:addNode(label, value)
 ```
 
@@ -4440,14 +4590,14 @@ LPatternGraph:addNode(label, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional node label. |
-| `value?` | `table` | Optional payload stored with the node. |
+| `label?` | string | Optional node label. |
+| `value?` | table | Optional payload stored with the node. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The new node's ID. |
+| number | The new node's ID. |
 
 **Example**
 
@@ -4464,12 +4614,11 @@ end
 
 ---
 
-### `LPatternGraph:bfs`
+#### `LPatternGraph:bfs`
 
 Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
 
 ```lua
--- signature
 LPatternGraph:bfs(start)
 ```
 
@@ -4477,13 +4626,13 @@ LPatternGraph:bfs(start)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | The starting node ID. |
+| `start` | number | The starting node ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of visited node IDs. |
+| number[] | Array of visited node IDs. |
 
 **Example**
 
@@ -4503,12 +4652,11 @@ end
 
 ---
 
-### `LPatternGraph:clearAll`
+#### `LPatternGraph:clearAll`
 
 Remove all nodes, edges, and payloads from the graph.
 
 ```lua
--- signature
 LPatternGraph:clearAll()
 ```
 
@@ -4528,12 +4676,11 @@ end
 
 ---
 
-### `LPatternGraph:dfs`
+#### `LPatternGraph:dfs`
 
 Perform a depth-first search from a node. Returns visited node IDs in DFS order.
 
 ```lua
--- signature
 LPatternGraph:dfs(start)
 ```
 
@@ -4541,13 +4688,13 @@ LPatternGraph:dfs(start)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `start` | `number` | The starting node ID. |
+| `start` | number | The starting node ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of visited node IDs. |
+| number[] | Array of visited node IDs. |
 
 **Example**
 
@@ -4567,12 +4714,11 @@ end
 
 ---
 
-### `LPatternGraph:edgeCount`
+#### `LPatternGraph:edgeCount`
 
 Return the total number of edges in the graph.
 
 ```lua
--- signature
 LPatternGraph:edgeCount()
 ```
 
@@ -4580,7 +4726,7 @@ LPatternGraph:edgeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Edge count. |
+| number | Edge count. |
 
 **Example**
 
@@ -4597,12 +4743,11 @@ end
 
 ---
 
-### `LPatternGraph:getNodeValue`
+#### `LPatternGraph:getNodeValue`
 
 Retrieve the payload value stored on a node. Returns nil if no payload.
 
 ```lua
--- signature
 LPatternGraph:getNodeValue(id)
 ```
 
@@ -4610,14 +4755,14 @@ LPatternGraph:getNodeValue(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The node ID. |
+| `id` | number | The node ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | a The payload. |
-| `nil` | b When not available. |
+| table | The payload. |
+| nil | When not available. |
 
 **Example**
 
@@ -4635,12 +4780,11 @@ end
 
 ---
 
-### `LPatternGraph:hasNode`
+#### `LPatternGraph:hasNode`
 
 Check whether a node with the given ID exists in the graph.
 
 ```lua
--- signature
 LPatternGraph:hasNode(id)
 ```
 
@@ -4648,13 +4792,13 @@ LPatternGraph:hasNode(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Node ID to check. |
+| `id` | number | Node ID to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the node exists. |
+| boolean | True if the node exists. |
 
 **Example**
 
@@ -4671,12 +4815,11 @@ end
 
 ---
 
-### `LPatternGraph:isConnected`
+#### `LPatternGraph:isConnected`
 
 Check whether there is any path from one node to another.
 
 ```lua
--- signature
 LPatternGraph:isConnected(from, to)
 ```
 
@@ -4684,14 +4827,14 @@ LPatternGraph:isConnected(from, to)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source node ID. |
-| `to` | `number` | Target node ID. |
+| `from` | number | Source node ID. |
+| `to` | number | Target node ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if a path exists. |
+| boolean | True if a path exists. |
 
 **Example**
 
@@ -4710,12 +4853,11 @@ end
 
 ---
 
-### `LPatternGraph:neighbors`
+#### `LPatternGraph:neighbors`
 
 Return an array of node IDs directly connected to the given node.
 
 ```lua
--- signature
 LPatternGraph:neighbors(id)
 ```
 
@@ -4723,13 +4865,13 @@ LPatternGraph:neighbors(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The node ID to query. |
+| `id` | number | The node ID to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of neighbor node IDs. |
+| number[] | Array of neighbor node IDs. |
 
 **Example**
 
@@ -4749,12 +4891,11 @@ end
 
 ---
 
-### `LPatternGraph:nodeCount`
+#### `LPatternGraph:nodeCount`
 
 Return the total number of nodes in the graph.
 
 ```lua
--- signature
 LPatternGraph:nodeCount()
 ```
 
@@ -4762,7 +4903,7 @@ LPatternGraph:nodeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Node count. |
+| number | Node count. |
 
 **Example**
 
@@ -4779,12 +4920,11 @@ end
 
 ---
 
-### `LPatternGraph:removeEdge`
+#### `LPatternGraph:removeEdge`
 
 Remove an edge by its ID. Returns true if it existed.
 
 ```lua
--- signature
 LPatternGraph:removeEdge(id)
 ```
 
@@ -4792,13 +4932,13 @@ LPatternGraph:removeEdge(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The edge ID to remove. |
+| `id` | number | The edge ID to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if removed. |
+| boolean | True if removed. |
 
 **Example**
 
@@ -4816,12 +4956,11 @@ end
 
 ---
 
-### `LPatternGraph:removeNode`
+#### `LPatternGraph:removeNode`
 
 Remove a node and all its connected edges. Returns true if the node existed.
 
 ```lua
--- signature
 LPatternGraph:removeNode(id)
 ```
 
@@ -4829,13 +4968,13 @@ LPatternGraph:removeNode(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The node ID to remove. |
+| `id` | number | The node ID to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if removed. |
+| boolean | True if removed. |
 
 **Example**
 
@@ -4853,14 +4992,19 @@ end
 
 ---
 
-## LPriorityQueue
+## LPriorityQueue Handle
 
-### `LPriorityQueue:clearAll`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPriorityQueue:clearAll`
 
 Remove all items from the queue. This method is available to Lua scripts.
 
 ```lua
--- signature
 LPriorityQueue:clearAll()
 ```
 
@@ -4879,12 +5023,11 @@ end
 
 ---
 
-### `LPriorityQueue:isEmpty`
+#### `LPriorityQueue:isEmpty`
 
 Check whether the queue contains no items.
 
 ```lua
--- signature
 LPriorityQueue:isEmpty()
 ```
 
@@ -4892,7 +5035,7 @@ LPriorityQueue:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the queue is empty. |
+| boolean | True if the queue is empty. |
 
 **Example**
 
@@ -4907,12 +5050,11 @@ end
 
 ---
 
-### `LPriorityQueue:len`
+#### `LPriorityQueue:len`
 
 Return the number of items currently in the queue.
 
 ```lua
--- signature
 LPriorityQueue:len()
 ```
 
@@ -4920,7 +5062,7 @@ LPriorityQueue:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -4936,12 +5078,11 @@ end
 
 ---
 
-### `LPriorityQueue:peek`
+#### `LPriorityQueue:peek`
 
 Return the highest-priority item without removing it. Returns nil if empty.
 
 ```lua
--- signature
 LPriorityQueue:peek()
 ```
 
@@ -4949,8 +5090,8 @@ LPriorityQueue:peek()
 
 | Type | Description |
 |------|-------------|
-| `table` | a The item table. |
-| `nil` | b When not available. |
+| table | The item table. |
+| nil | When not available. |
 
 **Example**
 
@@ -4966,12 +5107,11 @@ end
 
 ---
 
-### `LPriorityQueue:pop`
+#### `LPriorityQueue:pop`
 
 Remove and return the highest-priority item. Returns nil if the queue is empty.
 
 ```lua
--- signature
 LPriorityQueue:pop()
 ```
 
@@ -4979,8 +5119,8 @@ LPriorityQueue:pop()
 
 | Type | Description |
 |------|-------------|
-| `table` | a The item table. |
-| `nil` | b When not available. |
+| table | The item table. |
+| nil | When not available. |
 
 **Example**
 
@@ -4997,12 +5137,11 @@ end
 
 ---
 
-### `LPriorityQueue:push`
+#### `LPriorityQueue:push`
 
 Add an item with a numeric priority. Higher priority items are dequeued first.
 
 ```lua
--- signature
 LPriorityQueue:push(priority, value, label)
 ```
 
@@ -5010,15 +5149,15 @@ LPriorityQueue:push(priority, value, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `priority` | `number` | The priority value (higher = dequeued sooner). |
-| `value` | `any` | The payload value to store. |
-| `label?` | `string` | Optional human-readable label for debugging. |
+| `priority` | number | The priority value (higher = dequeued sooner). |
+| `value` | any | The payload value to store. |
+| `label?` | string | Optional human-readable label for debugging. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The internal ID of the enqueued item. |
+| number | The internal ID of the enqueued item. |
 
 **Example**
 
@@ -5034,14 +5173,19 @@ end
 
 ---
 
-## LQueue
+## LQueue Handle
 
-### `LQueue:back`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LQueue:back`
 
 Return the back value without removing it. Returns nil if empty.
 
 ```lua
--- signature
 LQueue:back()
 ```
 
@@ -5049,8 +5193,8 @@ LQueue:back()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The back value. |
-| `nil` | b When not available. |
+| string | The back value. |
+| nil | When not available. |
 
 **Example**
 
@@ -5066,12 +5210,11 @@ end
 
 ---
 
-### `LQueue:clear`
+#### `LQueue:clear`
 
 Remove all items from the queue. This method is available to Lua scripts.
 
 ```lua
--- signature
 LQueue:clear()
 ```
 
@@ -5090,12 +5233,11 @@ end
 
 ---
 
-### `LQueue:dequeue`
+#### `LQueue:dequeue`
 
 Remove and return the front value. Returns nil if empty.
 
 ```lua
--- signature
 LQueue:dequeue()
 ```
 
@@ -5103,8 +5245,8 @@ LQueue:dequeue()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The dequeued value. |
-| `nil` | b When not available. |
+| string | The dequeued value. |
+| nil | When not available. |
 
 **Example**
 
@@ -5121,12 +5263,11 @@ end
 
 ---
 
-### `LQueue:dequeueBack`
+#### `LQueue:dequeueBack`
 
 Remove and return the back value. Returns nil if empty.
 
 ```lua
--- signature
 LQueue:dequeueBack()
 ```
 
@@ -5134,8 +5275,8 @@ LQueue:dequeueBack()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The dequeued value. |
-| `nil` | b When not available. |
+| string | The dequeued value. |
+| nil | When not available. |
 
 **Example**
 
@@ -5153,12 +5294,11 @@ end
 
 ---
 
-### `LQueue:enqueue`
+#### `LQueue:enqueue`
 
 Add a value to the back of the queue. Returns false if at capacity.
 
 ```lua
--- signature
 LQueue:enqueue(value)
 ```
 
@@ -5166,13 +5306,13 @@ LQueue:enqueue(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to enqueue. |
+| `value` | any | The value to enqueue. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if enqueued, false if full. |
+| boolean | True if enqueued, false if full. |
 
 **Example**
 
@@ -5188,12 +5328,11 @@ end
 
 ---
 
-### `LQueue:enqueueFront`
+#### `LQueue:enqueueFront`
 
 Add a value to the front of the queue (priority insertion). Returns false if at capacity.
 
 ```lua
--- signature
 LQueue:enqueueFront(value)
 ```
 
@@ -5201,13 +5340,13 @@ LQueue:enqueueFront(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to insert at the front. |
+| `value` | any | The value to insert at the front. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if enqueued, false if full. |
+| boolean | True if enqueued, false if full. |
 
 **Example**
 
@@ -5224,12 +5363,11 @@ end
 
 ---
 
-### `LQueue:front`
+#### `LQueue:front`
 
 Return the front value without removing it. Returns nil if empty.
 
 ```lua
--- signature
 LQueue:front()
 ```
 
@@ -5237,8 +5375,8 @@ LQueue:front()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The front value. |
-| `nil` | b When not available. |
+| string | The front value. |
+| nil | When not available. |
 
 **Example**
 
@@ -5254,12 +5392,11 @@ end
 
 ---
 
-### `LQueue:insertAt`
+#### `LQueue:insertAt`
 
 Insert a value at a 1-based index in the queue. Returns false if at capacity.
 
 ```lua
--- signature
 LQueue:insertAt(index, value)
 ```
 
@@ -5267,14 +5404,14 @@ LQueue:insertAt(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based insertion position. |
-| `value` | `any` | The value to insert. |
+| `index` | number | 1-based insertion position. |
+| `value` | any | The value to insert. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if inserted, false if full. |
+| boolean | True if inserted, false if full. |
 
 **Example**
 
@@ -5291,12 +5428,11 @@ end
 
 ---
 
-### `LQueue:isEmpty`
+#### `LQueue:isEmpty`
 
 Check whether the queue is empty. This method is available to Lua scripts.
 
 ```lua
--- signature
 LQueue:isEmpty()
 ```
 
@@ -5304,7 +5440,7 @@ LQueue:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 **Example**
 
@@ -5319,12 +5455,11 @@ end
 
 ---
 
-### `LQueue:isFull`
+#### `LQueue:isFull`
 
 Check whether the queue has reached its capacity limit.
 
 ```lua
--- signature
 LQueue:isFull()
 ```
 
@@ -5332,7 +5467,7 @@ LQueue:isFull()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if full. |
+| boolean | True if full. |
 
 **Example**
 
@@ -5348,12 +5483,11 @@ end
 
 ---
 
-### `LQueue:len`
+#### `LQueue:len`
 
 Return the current number of items in the queue.
 
 ```lua
--- signature
 LQueue:len()
 ```
 
@@ -5361,7 +5495,7 @@ LQueue:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -5377,12 +5511,11 @@ end
 
 ---
 
-### `LQueue:peekAt`
+#### `LQueue:peekAt`
 
 Return the value at a 1-based index without removing it. Returns nil if out of range.
 
 ```lua
--- signature
 LQueue:peekAt(index)
 ```
 
@@ -5390,14 +5523,14 @@ LQueue:peekAt(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
+| `index` | number | 1-based position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The value. |
-| `nil` | b When not available. |
+| string | The value. |
+| nil | When not available. |
 
 **Example**
 
@@ -5414,12 +5547,11 @@ end
 
 ---
 
-### `LQueue:removeAt`
+#### `LQueue:removeAt`
 
 Remove and return the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LQueue:removeAt(index)
 ```
 
@@ -5427,14 +5559,14 @@ LQueue:removeAt(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position to remove. |
+| `index` | number | 1-based position to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The removed value. |
-| `nil` | b When not available. |
+| string | The removed value. |
+| nil | When not available. |
 
 **Example**
 
@@ -5452,12 +5584,11 @@ end
 
 ---
 
-### `LQueue:toArray`
+#### `LQueue:toArray`
 
 Return all queue items as an array table (front to back).
 
 ```lua
--- signature
 LQueue:toArray()
 ```
 
@@ -5465,7 +5596,7 @@ LQueue:toArray()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of all values. |
+| number[] | Array of all values. |
 
 **Example**
 
@@ -5483,14 +5614,19 @@ end
 
 ---
 
-## LRelationshipManager
+## LRelationshipManager Handle
 
-### `LRelationshipManager:adjustValue`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRelationshipManager:adjustValue`
 
 Add a delta to the relationship value between two entities.
 
 ```lua
--- signature
 LRelationshipManager:adjustValue(a, b, delta)
 ```
 
@@ -5498,9 +5634,9 @@ LRelationshipManager:adjustValue(a, b, delta)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First entity ID. |
-| `b` | `number` | Second entity ID. |
-| `delta` | `number` | Amount to add (can be negative). |
+| `a` | number | First entity ID. |
+| `b` | number | Second entity ID. |
+| `delta` | number | Amount to add (can be negative). |
 
 **Example**
 
@@ -5516,12 +5652,11 @@ end
 
 ---
 
-### `LRelationshipManager:defineType`
+#### `LRelationshipManager:defineType`
 
 Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
 
 ```lua
--- signature
 LRelationshipManager:defineType(name, levels, defaultLevel)
 ```
 
@@ -5529,9 +5664,9 @@ LRelationshipManager:defineType(name, levels, defaultLevel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The relationship type name. |
-| `levels` | `table` | Array of level name strings in order. |
-| `defaultLevel?` | `string` | The default level for new pairs. |
+| `name` | string | The relationship type name. |
+| `levels` | table | Array of level name strings in order. |
+| `defaultLevel?` | string | The default level for new pairs. |
 
 **Example**
 
@@ -5547,12 +5682,11 @@ end
 
 ---
 
-### `LRelationshipManager:getLevel`
+#### `LRelationshipManager:getLevel`
 
 Get the named level for a relationship type between two entities.
 
 ```lua
--- signature
 LRelationshipManager:getLevel(a, b, typeName)
 ```
 
@@ -5560,15 +5694,15 @@ LRelationshipManager:getLevel(a, b, typeName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First entity ID. |
-| `b` | `number` | Second entity ID. |
-| `typeName` | `string` | The relationship type. |
+| `a` | number | First entity ID. |
+| `b` | number | Second entity ID. |
+| `typeName` | string | The relationship type. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The current level name, or nil when no level is assigned. |
+| string | The current level name, or nil when no level is assigned. |
 
 **Example**
 
@@ -5584,12 +5718,11 @@ end
 
 ---
 
-### `LRelationshipManager:getValue`
+#### `LRelationshipManager:getValue`
 
 Get the numeric relationship value between two entity IDs.
 
 ```lua
--- signature
 LRelationshipManager:getValue(a, b)
 ```
 
@@ -5597,14 +5730,14 @@ LRelationshipManager:getValue(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First entity ID. |
-| `b` | `number` | Second entity ID. |
+| `a` | number | First entity ID. |
+| `b` | number | Second entity ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The stored value (0 if not set). |
+| number | The stored value (0 if not set). |
 
 **Example**
 
@@ -5620,12 +5753,11 @@ end
 
 ---
 
-### `LRelationshipManager:pairCount`
+#### `LRelationshipManager:pairCount`
 
 Return the total number of tracked entity pairs.
 
 ```lua
--- signature
 LRelationshipManager:pairCount()
 ```
 
@@ -5633,7 +5765,7 @@ LRelationshipManager:pairCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Pair count. |
+| number | Pair count. |
 
 **Example**
 
@@ -5650,12 +5782,11 @@ end
 
 ---
 
-### `LRelationshipManager:removePair`
+#### `LRelationshipManager:removePair`
 
 Remove all relationship data between two entities.
 
 ```lua
--- signature
 LRelationshipManager:removePair(a, b)
 ```
 
@@ -5663,8 +5794,8 @@ LRelationshipManager:removePair(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First entity ID. |
-| `b` | `number` | Second entity ID. |
+| `a` | number | First entity ID. |
+| `b` | number | Second entity ID. |
 
 **Example**
 
@@ -5682,12 +5813,11 @@ end
 
 ---
 
-### `LRelationshipManager:removeType`
+#### `LRelationshipManager:removeType`
 
 Remove a relationship type definition.
 
 ```lua
--- signature
 LRelationshipManager:removeType(name)
 ```
 
@@ -5695,7 +5825,7 @@ LRelationshipManager:removeType(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The type name to remove. |
+| `name` | string | The type name to remove. |
 
 **Example**
 
@@ -5712,12 +5842,11 @@ end
 
 ---
 
-### `LRelationshipManager:setLevel`
+#### `LRelationshipManager:setLevel`
 
 Set the named level for a relationship type between two entities.
 
 ```lua
--- signature
 LRelationshipManager:setLevel(a, b, typeName, level)
 ```
 
@@ -5725,16 +5854,16 @@ LRelationshipManager:setLevel(a, b, typeName, level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First entity ID. |
-| `b` | `number` | Second entity ID. |
-| `typeName` | `string` | The relationship type. |
-| `level` | `string` | The level name to assign. |
+| `a` | number | First entity ID. |
+| `b` | number | Second entity ID. |
+| `typeName` | string | The relationship type. |
+| `level` | string | The level name to assign. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the level was set successfully. |
+| boolean | True if the level was set successfully. |
 
 **Example**
 
@@ -5750,12 +5879,11 @@ end
 
 ---
 
-### `LRelationshipManager:setValue`
+#### `LRelationshipManager:setValue`
 
 Set the numeric relationship value between two entity IDs.
 
 ```lua
--- signature
 LRelationshipManager:setValue(a, b, value)
 ```
 
@@ -5763,9 +5891,9 @@ LRelationshipManager:setValue(a, b, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | `number` | First entity ID. |
-| `b` | `number` | Second entity ID. |
-| `value` | `number` | The numeric value to store. |
+| `a` | number | First entity ID. |
+| `b` | number | Second entity ID. |
+| `value` | number | The numeric value to store. |
 
 **Example**
 
@@ -5781,12 +5909,11 @@ end
 
 ---
 
-### `LRelationshipManager:typeNames`
+#### `LRelationshipManager:typeNames`
 
 Return all defined relationship type names.
 
 ```lua
--- signature
 LRelationshipManager:typeNames()
 ```
 
@@ -5794,7 +5921,7 @@ LRelationshipManager:typeNames()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Type name strings. |
+| string[] | Type name strings. |
 
 **Example**
 
@@ -5811,14 +5938,19 @@ end
 
 ---
 
-## LRing
+## LRing Handle
 
-### `LRing:average`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRing:average`
 
 Return the arithmetic mean of all numeric values in the ring.
 
 ```lua
--- signature
 LRing:average()
 ```
 
@@ -5826,7 +5958,7 @@ LRing:average()
 
 | Type | Description |
 |------|-------------|
-| `number` | Average value (0 if empty). |
+| number | Average value (0 if empty). |
 
 **Example**
 
@@ -5843,12 +5975,11 @@ end
 
 ---
 
-### `LRing:clear`
+#### `LRing:clear`
 
 Remove all entries from the ring. This method is available to Lua scripts.
 
 ```lua
--- signature
 LRing:clear()
 ```
 
@@ -5867,12 +5998,11 @@ end
 
 ---
 
-### `LRing:isFull`
+#### `LRing:isFull`
 
 Check whether the ring has reached its maximum capacity.
 
 ```lua
--- signature
 LRing:isFull()
 ```
 
@@ -5880,7 +6010,7 @@ LRing:isFull()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if full. |
+| boolean | True if full. |
 
 **Example**
 
@@ -5897,12 +6027,11 @@ end
 
 ---
 
-### `LRing:latest`
+#### `LRing:latest`
 
 Return the most recently pushed entry as a table with id, tag, value, and text fields. Returns nil if empty.
 
 ```lua
--- signature
 LRing:latest()
 ```
 
@@ -5910,7 +6039,7 @@ LRing:latest()
 
 | Type | Description |
 |------|-------------|
-| `LRingLatestResult` | nil | Entry table or nil. |
+| LRingLatestResult | nil | Entry table or nil. |
 
 **Example**
 
@@ -5928,12 +6057,11 @@ end
 
 ---
 
-### `LRing:len`
+#### `LRing:len`
 
 Return the number of entries currently in the ring.
 
 ```lua
--- signature
 LRing:len()
 ```
 
@@ -5941,7 +6069,7 @@ LRing:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Entry count. |
+| number | Entry count. |
 
 **Example**
 
@@ -5958,12 +6086,11 @@ end
 
 ---
 
-### `LRing:push`
+#### `LRing:push`
 
 Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
 
 ```lua
--- signature
 LRing:push(value, tag)
 ```
 
@@ -5971,14 +6098,14 @@ LRing:push(value, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `number|string` | The value to store. |
-| `tag?` | `string` | Optional label for categorizing entries. |
+| `value` | number|string | The value to store. |
+| `tag?` | string | Optional label for categorizing entries. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The internal ID of the new entry. |
+| number | The internal ID of the new entry. |
 
 **Example**
 
@@ -5995,12 +6122,11 @@ end
 
 ---
 
-### `LRing:sum`
+#### `LRing:sum`
 
 Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
 
 ```lua
--- signature
 LRing:sum()
 ```
 
@@ -6008,7 +6134,7 @@ LRing:sum()
 
 | Type | Description |
 |------|-------------|
-| `number` | Sum of values. |
+| number | Sum of values. |
 
 **Example**
 
@@ -6025,12 +6151,11 @@ end
 
 ---
 
-### `LRing:toArray`
+#### `LRing:toArray`
 
 Return all entries in the ring as an ordered array of tables (oldest to newest).
 
 ```lua
--- signature
 LRing:toArray()
 ```
 
@@ -6038,7 +6163,7 @@ LRing:toArray()
 
 | Type | Description |
 |------|-------------|
-| `LRingToArrayResult` | Array of entry tables with id, tag, value, and text fields. |
+| LRingToArrayResult | Array of entry tables with id, tag, value, and text fields. |
 
 **Example**
 
@@ -6056,14 +6181,19 @@ end
 
 ---
 
-## LServiceLocator
+## LServiceLocator Handle
 
-### `LServiceLocator:clearAll`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LServiceLocator:clearAll`
 
 Remove all registered services and reset the locator.
 
 ```lua
--- signature
 LServiceLocator:clearAll()
 ```
 
@@ -6082,12 +6212,11 @@ end
 
 ---
 
-### `LServiceLocator:getServices`
+#### `LServiceLocator:getServices`
 
 Return an array of all registered service names.
 
 ```lua
--- signature
 LServiceLocator:getServices()
 ```
 
@@ -6095,7 +6224,7 @@ LServiceLocator:getServices()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Service name strings. |
+| string[] | Service name strings. |
 
 **Example**
 
@@ -6112,12 +6241,11 @@ end
 
 ---
 
-### `LServiceLocator:has`
+#### `LServiceLocator:has`
 
 Check whether a service with the given name is currently registered.
 
 ```lua
--- signature
 LServiceLocator:has(name)
 ```
 
@@ -6125,13 +6253,13 @@ LServiceLocator:has(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The service name to check. |
+| `name` | string | The service name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the service exists. |
+| boolean | True if the service exists. |
 
 **Example**
 
@@ -6146,12 +6274,11 @@ end
 
 ---
 
-### `LServiceLocator:locate`
+#### `LServiceLocator:locate`
 
 Retrieve a registered service by name. Returns nil if not found.
 
 ```lua
--- signature
 LServiceLocator:locate(name)
 ```
 
@@ -6159,14 +6286,14 @@ LServiceLocator:locate(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The service name to look up. |
+| `name` | string | The service name to look up. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | a The service table. |
-| `nil` | b If not registered. |
+| table | The service table. |
+| nil | If not registered. |
 
 **Example**
 
@@ -6182,12 +6309,11 @@ end
 
 ---
 
-### `LServiceLocator:provide`
+#### `LServiceLocator:provide`
 
 Register a service instance under a given name. Replaces any previously registered service with the same name.
 
 ```lua
--- signature
 LServiceLocator:provide(name, value)
 ```
 
@@ -6195,8 +6321,8 @@ LServiceLocator:provide(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique identifier for the service. |
-| `value` | `any` | The service value to register. |
+| `name` | string | Unique identifier for the service. |
+| `value` | any | The service value to register. |
 
 **Example**
 
@@ -6211,12 +6337,11 @@ end
 
 ---
 
-### `LServiceLocator:remove`
+#### `LServiceLocator:remove`
 
 Unregister and discard a service by name.
 
 ```lua
--- signature
 LServiceLocator:remove(name)
 ```
 
@@ -6224,7 +6349,7 @@ LServiceLocator:remove(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The service name to remove. |
+| `name` | string | The service name to remove. |
 
 **Example**
 
@@ -6240,14 +6365,19 @@ end
 
 ---
 
-## LSet
+## LSet Handle
 
-### `LSet:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSet:add`
 
 Add a string to the set. Returns true if it was not already present.
 
 ```lua
--- signature
 LSet:add(key)
 ```
 
@@ -6255,13 +6385,13 @@ LSet:add(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The string to add. |
+| `key` | string | The string to add. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if newly added, false if already existed. |
+| boolean | True if newly added, false if already existed. |
 
 **Example**
 
@@ -6277,12 +6407,11 @@ end
 
 ---
 
-### `LSet:clear`
+#### `LSet:clear`
 
 Remove all items from the set. This method is available to Lua scripts.
 
 ```lua
--- signature
 LSet:clear()
 ```
 
@@ -6301,12 +6430,11 @@ end
 
 ---
 
-### `LSet:has`
+#### `LSet:has`
 
 Check whether a string is in the set.
 
 ```lua
--- signature
 LSet:has(key)
 ```
 
@@ -6314,13 +6442,13 @@ LSet:has(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The string to check. |
+| `key` | string | The string to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if present. |
+| boolean | True if present. |
 
 **Example**
 
@@ -6336,12 +6464,11 @@ end
 
 ---
 
-### `LSet:intersection`
+#### `LSet:intersection`
 
 Return a new set containing only items present in both this set and another.
 
 ```lua
--- signature
 LSet:intersection(other)
 ```
 
@@ -6349,13 +6476,13 @@ LSet:intersection(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LSet` | The other set to intersect with. |
+| `other` | [LSet](#lset-handle) | The other set to intersect with. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSet` | A new set with only shared items. |
+| [LSet](#lset-handle) | A new set with only shared items. |
 
 **Example**
 
@@ -6375,12 +6502,11 @@ end
 
 ---
 
-### `LSet:isEmpty`
+#### `LSet:isEmpty`
 
 Check whether the set is empty. This method is available to Lua scripts.
 
 ```lua
--- signature
 LSet:isEmpty()
 ```
 
@@ -6388,7 +6514,7 @@ LSet:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 **Example**
 
@@ -6403,12 +6529,11 @@ end
 
 ---
 
-### `LSet:len`
+#### `LSet:len`
 
 Return the number of items in the set.
 
 ```lua
--- signature
 LSet:len()
 ```
 
@@ -6416,7 +6541,7 @@ LSet:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -6433,12 +6558,11 @@ end
 
 ---
 
-### `LSet:remove`
+#### `LSet:remove`
 
 Remove a string from the set. Returns true if it was present.
 
 ```lua
--- signature
 LSet:remove(key)
 ```
 
@@ -6446,13 +6570,13 @@ LSet:remove(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The string to remove. |
+| `key` | string | The string to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if removed, false if not found. |
+| boolean | True if removed, false if not found. |
 
 **Example**
 
@@ -6469,12 +6593,11 @@ end
 
 ---
 
-### `LSet:toArray`
+#### `LSet:toArray`
 
 Return all set items as an array table.
 
 ```lua
--- signature
 LSet:toArray()
 ```
 
@@ -6482,7 +6605,7 @@ LSet:toArray()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | String values. |
+| string[] | String values. |
 
 **Example**
 
@@ -6499,12 +6622,11 @@ end
 
 ---
 
-### `LSet:union`
+#### `LSet:union`
 
 Return a new set containing all items from both this set and another.
 
 ```lua
--- signature
 LSet:union(other)
 ```
 
@@ -6512,13 +6634,13 @@ LSet:union(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | `LSet` | The other set to merge with. |
+| `other` | [LSet](#lset-handle) | The other set to merge with. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSet` | A new set with the union of both. |
+| [LSet](#lset-handle) | A new set with the union of both. |
 
 **Example**
 
@@ -6538,14 +6660,19 @@ end
 
 ---
 
-## LSimpleState
+## LSimpleState Handle
 
-### `LSimpleState:addState`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSimpleState:addState`
 
 Register a named state with optional enter, exit, and update callbacks.
 
 ```lua
--- signature
 LSimpleState:addState(name, callbacks)
 ```
 
@@ -6553,8 +6680,8 @@ LSimpleState:addState(name, callbacks)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique state identifier. |
-| `callbacks?` | `table` | Table with optional fields: `enter` (function), `exit` (function), `update` (function receiving dt). |
+| `name` | string | Unique state identifier. |
+| `callbacks?` | table | Table with optional fields: `enter` (function), `exit` (function), `update` (function receiving dt). |
 
 **Example**
 
@@ -6578,12 +6705,11 @@ end
 
 ---
 
-### `LSimpleState:clearAll`
+#### `LSimpleState:clearAll`
 
 Remove all states and their callbacks, resetting the state machine.
 
 ```lua
--- signature
 LSimpleState:clearAll()
 ```
 
@@ -6602,12 +6728,11 @@ end
 
 ---
 
-### `LSimpleState:getCurrent`
+#### `LSimpleState:getCurrent`
 
 Return the name of the currently active state, or nil if no state is set.
 
 ```lua
--- signature
 LSimpleState:getCurrent()
 ```
 
@@ -6615,7 +6740,7 @@ LSimpleState:getCurrent()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current state name, or nil if no state is set. |
+| string | Current state name, or nil if no state is set. |
 
 **Example**
 
@@ -6635,12 +6760,11 @@ end
 
 ---
 
-### `LSimpleState:getStates`
+#### `LSimpleState:getStates`
 
 Return an array of all registered state names.
 
 ```lua
--- signature
 LSimpleState:getStates()
 ```
 
@@ -6648,7 +6772,7 @@ LSimpleState:getStates()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | State name strings. |
+| string[] | State name strings. |
 
 **Example**
 
@@ -6665,12 +6789,11 @@ end
 
 ---
 
-### `LSimpleState:hasState`
+#### `LSimpleState:hasState`
 
 Check whether a state with the given name is registered.
 
 ```lua
--- signature
 LSimpleState:hasState(name)
 ```
 
@@ -6678,13 +6801,13 @@ LSimpleState:hasState(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | State name to check. |
+| `name` | string | State name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the state exists. |
+| boolean | True if the state exists. |
 
 **Example**
 
@@ -6700,12 +6823,11 @@ end
 
 ---
 
-### `LSimpleState:transitionTo`
+#### `LSimpleState:transitionTo`
 
 Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
 
 ```lua
--- signature
 LSimpleState:transitionTo(name)
 ```
 
@@ -6713,13 +6835,13 @@ LSimpleState:transitionTo(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The state to transition to. Must be previously added. |
+| `name` | string | The state to transition to. Must be previously added. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the transition happened, false if the target state does not exist. |
+| boolean | True if the transition happened, false if the target state does not exist. |
 
 **Example**
 
@@ -6744,12 +6866,11 @@ end
 
 ---
 
-### `LSimpleState:update`
+#### `LSimpleState:update`
 
 Call the current state's update callback with the frame delta time.
 
 ```lua
--- signature
 LSimpleState:update(dt)
 ```
 
@@ -6757,7 +6878,7 @@ LSimpleState:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds since last frame. |
+| `dt` | number | Delta time in seconds since last frame. |
 
 **Example**
 
@@ -6777,14 +6898,19 @@ end
 
 ---
 
-## LStack
+## LStack Handle
 
-### `LStack:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LStack:clear`
 
 Remove all items from the stack. This method is available to Lua scripts.
 
 ```lua
--- signature
 LStack:clear()
 ```
 
@@ -6803,12 +6929,11 @@ end
 
 ---
 
-### `LStack:insertAt`
+#### `LStack:insertAt`
 
 Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
 
 ```lua
--- signature
 LStack:insertAt(index, value)
 ```
 
@@ -6816,14 +6941,14 @@ LStack:insertAt(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based insertion position. |
-| `value` | `any` | The value to insert. |
+| `index` | number | 1-based insertion position. |
+| `value` | any | The value to insert. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if inserted, false if full. |
+| boolean | True if inserted, false if full. |
 
 **Example**
 
@@ -6840,12 +6965,11 @@ end
 
 ---
 
-### `LStack:isEmpty`
+#### `LStack:isEmpty`
 
 Check whether the stack is empty. This method is available to Lua scripts.
 
 ```lua
--- signature
 LStack:isEmpty()
 ```
 
@@ -6853,7 +6977,7 @@ LStack:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 **Example**
 
@@ -6868,12 +6992,11 @@ end
 
 ---
 
-### `LStack:isFull`
+#### `LStack:isFull`
 
 Check whether the stack has reached its capacity limit (if one was set).
 
 ```lua
--- signature
 LStack:isFull()
 ```
 
@@ -6881,7 +7004,7 @@ LStack:isFull()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if full. |
+| boolean | True if full. |
 
 **Example**
 
@@ -6897,12 +7020,11 @@ end
 
 ---
 
-### `LStack:len`
+#### `LStack:len`
 
 Return the current number of items in the stack.
 
 ```lua
--- signature
 LStack:len()
 ```
 
@@ -6910,7 +7032,7 @@ LStack:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -6926,12 +7048,11 @@ end
 
 ---
 
-### `LStack:moveWithin`
+#### `LStack:moveWithin`
 
 Move an item from one 1-based index to another within the stack.
 
 ```lua
--- signature
 LStack:moveWithin(from, to)
 ```
 
@@ -6939,14 +7060,14 @@ LStack:moveWithin(from, to)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source index. |
-| `to` | `number` | Destination index. |
+| `from` | number | Source index. |
+| `to` | number | Destination index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the move succeeded. |
+| boolean | True if the move succeeded. |
 
 **Example**
 
@@ -6965,12 +7086,11 @@ end
 
 ---
 
-### `LStack:peek`
+#### `LStack:peek`
 
 Return the top value without removing it. Returns nil if empty.
 
 ```lua
--- signature
 LStack:peek()
 ```
 
@@ -6978,8 +7098,8 @@ LStack:peek()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The top value. |
-| `nil` | b When not available. |
+| string | The top value. |
+| nil | When not available. |
 
 **Example**
 
@@ -6995,12 +7115,11 @@ end
 
 ---
 
-### `LStack:peekAt`
+#### `LStack:peekAt`
 
 Return the value at a 1-based index without removing it. Returns nil if out of range.
 
 ```lua
--- signature
 LStack:peekAt(index)
 ```
 
@@ -7008,14 +7127,14 @@ LStack:peekAt(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position in the stack. |
+| `index` | number | 1-based position in the stack. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The value at that position. |
-| `nil` | b When not available. |
+| string | The value at that position. |
+| nil | When not available. |
 
 **Example**
 
@@ -7032,12 +7151,11 @@ end
 
 ---
 
-### `LStack:peekBottom`
+#### `LStack:peekBottom`
 
 Return the bottom value without removing it. Returns nil if empty.
 
 ```lua
--- signature
 LStack:peekBottom()
 ```
 
@@ -7045,8 +7163,8 @@ LStack:peekBottom()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The bottom value. |
-| `nil` | b When not available. |
+| string | The bottom value. |
+| nil | When not available. |
 
 **Example**
 
@@ -7063,12 +7181,11 @@ end
 
 ---
 
-### `LStack:pop`
+#### `LStack:pop`
 
 Remove and return the top value. Returns nil if the stack is empty.
 
 ```lua
--- signature
 LStack:pop()
 ```
 
@@ -7076,8 +7193,8 @@ LStack:pop()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The popped value. |
-| `nil` | b When not available. |
+| string | The popped value. |
+| nil | When not available. |
 
 **Example**
 
@@ -7094,12 +7211,11 @@ end
 
 ---
 
-### `LStack:popBottom`
+#### `LStack:popBottom`
 
 Remove and return the bottom value. Returns nil if empty.
 
 ```lua
--- signature
 LStack:popBottom()
 ```
 
@@ -7107,8 +7223,8 @@ LStack:popBottom()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The popped value. |
-| `nil` | b When not available. |
+| string | The popped value. |
+| nil | When not available. |
 
 **Example**
 
@@ -7126,12 +7242,11 @@ end
 
 ---
 
-### `LStack:popMany`
+#### `LStack:popMany`
 
 Pop up to `count` values from the top and return them as an array table.
 
 ```lua
--- signature
 LStack:popMany(count)
 ```
 
@@ -7139,13 +7254,13 @@ LStack:popMany(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Maximum number of items to pop. |
+| `count` | number | Maximum number of items to pop. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Popped values (may be shorter than count). |
+| number[] | Popped values (may be shorter than count). |
 
 **Example**
 
@@ -7163,12 +7278,11 @@ end
 
 ---
 
-### `LStack:push`
+#### `LStack:push`
 
 Push a value onto the top of the stack. Returns false if the stack is at capacity.
 
 ```lua
--- signature
 LStack:push(value)
 ```
 
@@ -7176,13 +7290,13 @@ LStack:push(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to push. |
+| `value` | any | The value to push. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if pushed, false if full. |
+| boolean | True if pushed, false if full. |
 
 **Example**
 
@@ -7198,12 +7312,11 @@ end
 
 ---
 
-### `LStack:pushBottom`
+#### `LStack:pushBottom`
 
 Push a value onto the bottom of the stack. Returns false if at capacity.
 
 ```lua
--- signature
 LStack:pushBottom(value)
 ```
 
@@ -7211,13 +7324,13 @@ LStack:pushBottom(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to insert at the bottom. |
+| `value` | any | The value to insert at the bottom. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if pushed, false if full. |
+| boolean | True if pushed, false if full. |
 
 **Example**
 
@@ -7234,12 +7347,11 @@ end
 
 ---
 
-### `LStack:removeAt`
+#### `LStack:removeAt`
 
 Remove and return the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LStack:removeAt(index)
 ```
 
@@ -7247,14 +7359,14 @@ LStack:removeAt(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position to remove. |
+| `index` | number | 1-based position to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The removed value. |
-| `nil` | b When not available. |
+| string | The removed value. |
+| nil | When not available. |
 
 **Example**
 
@@ -7272,12 +7384,11 @@ end
 
 ---
 
-### `LStack:toArray`
+#### `LStack:toArray`
 
 Return all stack items as an array table (bottom to top).
 
 ```lua
--- signature
 LStack:toArray()
 ```
 
@@ -7285,7 +7396,7 @@ LStack:toArray()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of all values. |
+| number[] | Array of all values. |
 
 **Example**
 
@@ -7303,14 +7414,19 @@ end
 
 ---
 
-## LStrategy
+## LStrategy Handle
 
-### `LStrategy:clear`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LStrategy:clear`
 
 Remove all strategies and reset the selection.
 
 ```lua
--- signature
 LStrategy:clear()
 ```
 
@@ -7333,12 +7449,11 @@ end
 
 ---
 
-### `LStrategy:execute`
+#### `LStrategy:execute`
 
 Execute the currently active strategy, passing through all arguments and returning its results.
 
 ```lua
--- signature
 LStrategy:execute(...)
 ```
 
@@ -7352,8 +7467,8 @@ LStrategy:execute(...)
 
 | Type | Description |
 |------|-------------|
-| `table` | a Return value from the strategy function. |
-| `nil` | b When not available. |
+| table | Return value from the strategy function. |
+| nil | When not available. |
 
 **Example**
 
@@ -7374,12 +7489,11 @@ end
 
 ---
 
-### `LStrategy:getCurrent`
+#### `LStrategy:getCurrent`
 
 Return the name of the currently active strategy, or nil if none set.
 
 ```lua
--- signature
 LStrategy:getCurrent()
 ```
 
@@ -7387,7 +7501,7 @@ LStrategy:getCurrent()
 
 | Type | Description |
 |------|-------------|
-| `string` | Active strategy name, or nil if none is selected. |
+| string | Active strategy name, or nil if none is selected. |
 
 **Example**
 
@@ -7408,12 +7522,11 @@ end
 
 ---
 
-### `LStrategy:has`
+#### `LStrategy:has`
 
 Check whether a strategy with the given name is registered.
 
 ```lua
--- signature
 LStrategy:has(name)
 ```
 
@@ -7421,13 +7534,13 @@ LStrategy:has(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Strategy name to check. |
+| `name` | string | Strategy name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if registered. |
+| boolean | True if registered. |
 
 **Example**
 
@@ -7447,12 +7560,11 @@ end
 
 ---
 
-### `LStrategy:names`
+#### `LStrategy:names`
 
 Return an array of all registered strategy names.
 
 ```lua
--- signature
 LStrategy:names()
 ```
 
@@ -7460,7 +7572,7 @@ LStrategy:names()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Strategy name strings. |
+| string[] | Strategy name strings. |
 
 **Example**
 
@@ -7481,12 +7593,11 @@ end
 
 ---
 
-### `LStrategy:register`
+#### `LStrategy:register`
 
 Register a named strategy implementation function.
 
 ```lua
--- signature
 LStrategy:register(name, callback)
 ```
 
@@ -7494,8 +7605,8 @@ LStrategy:register(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Strategy identifier. |
-| `callback` | `function` | The implementation function to call when this strategy is active. |
+| `name` | string | Strategy identifier. |
+| `callback` | function | The implementation function to call when this strategy is active. |
 
 **Example**
 
@@ -7515,12 +7626,11 @@ end
 
 ---
 
-### `LStrategy:remove`
+#### `LStrategy:remove`
 
 Remove a named strategy. If it was the active strategy, no strategy will be selected.
 
 ```lua
--- signature
 LStrategy:remove(name)
 ```
 
@@ -7528,13 +7638,13 @@ LStrategy:remove(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Strategy name to remove. |
+| `name` | string | Strategy name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the strategy was found and removed. |
+| boolean | True if the strategy was found and removed. |
 
 **Example**
 
@@ -7555,12 +7665,11 @@ end
 
 ---
 
-### `LStrategy:set`
+#### `LStrategy:set`
 
 Switch to a named strategy. Future `execute()` calls will use this implementation.
 
 ```lua
--- signature
 LStrategy:set(name)
 ```
 
@@ -7568,13 +7677,13 @@ LStrategy:set(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The strategy name to activate. |
+| `name` | string | The strategy name to activate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the strategy exists and was set. |
+| boolean | True if the strategy exists and was set. |
 
 **Example**
 
@@ -7595,14 +7704,19 @@ end
 
 ---
 
-## LThrottle
+## LThrottle Handle
 
-### `LThrottle:getFireCount`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LThrottle:getFireCount`
 
 Return the total number of times this throttle has fired since creation.
 
 ```lua
--- signature
 LThrottle:getFireCount()
 ```
 
@@ -7610,7 +7724,7 @@ LThrottle:getFireCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total fire count. |
+| number | Total fire count. |
 
 **Example**
 
@@ -7629,12 +7743,11 @@ end
 
 ---
 
-### `LThrottle:getProgress`
+#### `LThrottle:getProgress`
 
 Return how far through the current interval the throttle is (0.0 to 1.0).
 
 ```lua
--- signature
 LThrottle:getProgress()
 ```
 
@@ -7642,7 +7755,7 @@ LThrottle:getProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | Progress fraction. |
+| number | Progress fraction. |
 
 **Example**
 
@@ -7661,12 +7774,11 @@ end
 
 ---
 
-### `LThrottle:onFire`
+#### `LThrottle:onFire`
 
 Set the callback function to invoke each time the throttle fires.
 
 ```lua
--- signature
 LThrottle:onFire(f)
 ```
 
@@ -7674,7 +7786,7 @@ LThrottle:onFire(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | `function` | The callback to execute on fire. |
+| `f` | function | The callback to execute on fire. |
 
 **Example**
 
@@ -7694,12 +7806,11 @@ end
 
 ---
 
-### `LThrottle:reset`
+#### `LThrottle:reset`
 
 Reset the throttle timer back to zero without firing.
 
 ```lua
--- signature
 LThrottle:reset()
 ```
 
@@ -7720,12 +7831,11 @@ end
 
 ---
 
-### `LThrottle:setEnabled`
+#### `LThrottle:setEnabled`
 
 Enable or disable the throttle. When disabled, update() will not accumulate time.
 
 ```lua
--- signature
 LThrottle:setEnabled(enabled)
 ```
 
@@ -7733,7 +7843,7 @@ LThrottle:setEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to enable, false to disable. |
+| `enabled` | boolean | True to enable, false to disable. |
 
 **Example**
 
@@ -7752,12 +7862,11 @@ end
 
 ---
 
-### `LThrottle:update`
+#### `LThrottle:update`
 
 Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
 
 ```lua
--- signature
 LThrottle:update(dt)
 ```
 
@@ -7765,13 +7874,13 @@ LThrottle:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Delta time in seconds since last update. |
+| `dt` | number | Delta time in seconds since last update. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the throttle fired this frame. |
+| boolean | True if the throttle fired this frame. |
 
 **Example**
 
@@ -7791,14 +7900,19 @@ end
 
 ---
 
-## LWeightedRandom
+## LWeightedRandom Handle
 
-### `LWeightedRandom:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LWeightedRandom:add`
 
 Add an item with a relative weight. Higher weight = higher selection probability.
 
 ```lua
--- signature
 LWeightedRandom:add(weight, value, label)
 ```
 
@@ -7806,15 +7920,15 @@ LWeightedRandom:add(weight, value, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `weight` | `number` | The selection weight (must be > 0). |
-| `value` | `any` | The payload value returned on pick. |
-| `label?` | `string` | Optional human-readable label. |
+| `weight` | number | The selection weight (must be > 0). |
+| `value` | any | The payload value returned on pick. |
+| `label?` | string | Optional human-readable label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The internal ID of the added entry. |
+| number | The internal ID of the added entry. |
 
 **Example**
 
@@ -7830,12 +7944,11 @@ end
 
 ---
 
-### `LWeightedRandom:clearAll`
+#### `LWeightedRandom:clearAll`
 
 Remove all entries from the pool. This method is available to Lua scripts.
 
 ```lua
--- signature
 LWeightedRandom:clearAll()
 ```
 
@@ -7854,12 +7967,11 @@ end
 
 ---
 
-### `LWeightedRandom:getRevision`
+#### `LWeightedRandom:getRevision`
 
 Return the revision counter. Increments on any add/remove/weight change.
 
 ```lua
--- signature
 LWeightedRandom:getRevision()
 ```
 
@@ -7867,7 +7979,7 @@ LWeightedRandom:getRevision()
 
 | Type | Description |
 |------|-------------|
-| `number` | Revision number. |
+| number | Revision number. |
 
 **Example**
 
@@ -7883,12 +7995,11 @@ end
 
 ---
 
-### `LWeightedRandom:isEmpty`
+#### `LWeightedRandom:isEmpty`
 
 Check whether the pool has no entries.
 
 ```lua
--- signature
 LWeightedRandom:isEmpty()
 ```
 
@@ -7896,7 +8007,7 @@ LWeightedRandom:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 **Example**
 
@@ -7911,12 +8022,11 @@ end
 
 ---
 
-### `LWeightedRandom:len`
+#### `LWeightedRandom:len`
 
 Return the number of entries in the pool.
 
 ```lua
--- signature
 LWeightedRandom:len()
 ```
 
@@ -7924,7 +8034,7 @@ LWeightedRandom:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Entry count. |
+| number | Entry count. |
 
 **Example**
 
@@ -7940,12 +8050,11 @@ end
 
 ---
 
-### `LWeightedRandom:pick`
+#### `LWeightedRandom:pick`
 
 Pick one item using a random sample value in [0, 1). Returns its value or nil.
 
 ```lua
--- signature
 LWeightedRandom:pick(sample)
 ```
 
@@ -7953,14 +8062,14 @@ LWeightedRandom:pick(sample)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sample` | `number` | A random number in [0, 1) range. |
+| `sample` | number | A random number in [0, 1) range. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The selected item's value. |
-| `nil` | b If pool is empty. |
+| string | The selected item's value. |
+| nil | If pool is empty. |
 
 **Example**
 
@@ -7976,12 +8085,11 @@ end
 
 ---
 
-### `LWeightedRandom:pickN`
+#### `LWeightedRandom:pickN`
 
 Pick multiple unique items. Requires an array of random samples.
 
 ```lua
--- signature
 LWeightedRandom:pickN(count, samples)
 ```
 
@@ -7989,14 +8097,14 @@ LWeightedRandom:pickN(count, samples)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of items to pick. |
-| `samples` | `table` | Array of random numbers in [0, 1). |
+| `count` | number | Number of items to pick. |
+| `samples` | table | Array of random numbers in [0, 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of picked values. |
+| number[] | Array of picked values. |
 
 **Example**
 
@@ -8014,12 +8122,11 @@ end
 
 ---
 
-### `LWeightedRandom:remove`
+#### `LWeightedRandom:remove`
 
 Remove an item by its ID. Returns true if it existed.
 
 ```lua
--- signature
 LWeightedRandom:remove(id)
 ```
 
@@ -8027,13 +8134,13 @@ LWeightedRandom:remove(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The entry ID to remove. |
+| `id` | number | The entry ID to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if removed. |
+| boolean | True if removed. |
 
 **Example**
 
@@ -8050,12 +8157,11 @@ end
 
 ---
 
-### `LWeightedRandom:setWeight`
+#### `LWeightedRandom:setWeight`
 
 Change the weight of an existing entry.
 
 ```lua
--- signature
 LWeightedRandom:setWeight(id, weight)
 ```
 
@@ -8063,14 +8169,14 @@ LWeightedRandom:setWeight(id, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | The entry ID. |
-| `weight` | `number` | The new weight value. |
+| `id` | number | The entry ID. |
+| `weight` | number | The new weight value. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the entry was found and updated. |
+| boolean | True if the entry was found and updated. |
 
 **Example**
 
@@ -8087,12 +8193,11 @@ end
 
 ---
 
-### `LWeightedRandom:totalWeight`
+#### `LWeightedRandom:totalWeight`
 
 Return the sum of all entry weights.
 
 ```lua
--- signature
 LWeightedRandom:totalWeight()
 ```
 
@@ -8100,7 +8205,7 @@ LWeightedRandom:totalWeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Total weight. |
+| number | Total weight. |
 
 **Example**
 

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["quad_to_draw_command"],"struct":["AnimRenderParams"]};

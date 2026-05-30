@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["export_provinces_to_obj","export_regions_to_obj"]};

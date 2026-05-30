@@ -82,18 +82,22 @@ nav:
   - Home: index.md
   - Architecture:
     - Philosophy: architecture/philosophy.md
+    - Architecture Overview: architecture/README.md
+    - Engine Core: architecture/engine-core.md
+    - Render Pipeline: architecture/render-pipeline.md
+    - Scripting Bridge: architecture/scripting-bridge.md
+    - Modularity & Plugins: architecture/modularity-plugins.md
+    - Quality Assurance: architecture/quality-assurance.md
+    - Developer Ecosystem: architecture/developer-ecosystem.md
     - Handbook: handbook.md
-    - Engine: architecture/engine-architecture.md
-    - Testing: architecture/test-framework.md
-    - CAG System: architecture/cag-system.md
-    - RAG System: architecture/rag-system.md
     - VS Code Extension: extension_plan.md
-    - Lua API Standards: architecture/lua-api-file-standard.md
     - Coding Standards: codding_standards.md
     - Use Cases: use_cases.md
     - Competition: positioning.md
     - Build: build_info.md
   - Lua:
+    - API Browser: lua-api.md
+    - Callback Hooks: callbacks.md
     - Agent: modules/agent.md
     - AI: modules/ai.md
     - Animation: modules/animation.md
@@ -161,4 +165,5 @@ nav:
     - Validator: modules/validator.md
     - Visibility: modules/visibility.md
     - Window: modules/window.md
-  - Changelog: CHANGELOG.md
+  - Rust:
+    - API Browser: rust-api.md

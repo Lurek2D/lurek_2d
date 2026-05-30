@@ -3,124 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LAutoTileSheet - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LAutoTileSheet Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/tilemap.html#lautotilesheet-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a class="active" href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LAutoTileSheet</h1>
-  <p>Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/tilemap.html">lurek.tilemap</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
-    local layout = sheet:getLayout()
-    print(&quot;layout:&quot;, layout)
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LAutoTileSheet userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-applytotileset"><div class="item-row-main"><h3>applyToTileSet</h3><pre class="inline-signature">LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, startGid: integer?)</pre><p>Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:971</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
-    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-
-    sheet:applyToTileSet(ts, &quot;terrain&quot;)
-    local id = ts:getAutoTileId(&quot;terrain&quot;, 5)
-    print(&quot;after apply, bitmask 5 -&gt; tile &quot; .. tostring(id))
-
-    sheet:applyToTileSet(ts, &quot;water&quot;, 17)
-    id = ts:getAutoTileId(&quot;water&quot;, 0)
-    print(&quot;water bitmask 0 -&gt; tile &quot; .. tostring(id))
-end</code></pre></details></article><article class="item-row api-row" id="method-getbitmaskfortile"><div class="item-row-main"><h3>getBitmaskForTile</h3><pre class="inline-signature">LAutoTileSheet:getBitmaskForTile(tileId: integer) -&gt; integer</pre><p>Returns the bitmask associated with a tile in this auto-tile sheet.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:987</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    ---@type LAutoTileSheet
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
-    local bitmask = sheet:getBitmaskForTile(3)
-    print(&quot;tile 3 has bitmask = &quot; .. bitmask)
-end</code></pre></details></article><article class="item-row api-row" id="method-getlayout"><div class="item-row-main"><h3>getLayout</h3><pre class="inline-signature">LAutoTileSheet:getLayout() -&gt; string</pre><p>Returns the auto-tile layout type as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:940</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
-    local layout = sheet:getLayout()
-    print(&quot;layout:&quot;, layout)
-end</code></pre></details></article><article class="item-row api-row" id="method-getquad"><div class="item-row-main"><h3>getQuad</h3><pre class="inline-signature">LAutoTileSheet:getQuad(tileId: integer) -&gt; integer</pre><p>Returns the source rectangle for a tile in the auto-tile sheet.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:1013</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    ---@type LAutoTileSheet
-    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;composite48&quot;)
-    print(&quot;composite48 count = &quot; .. sheet:getTileCount())
-    local x, y, w, h = sheet:getQuad(1)
-    print(&quot;quad 1: x=&quot; .. x .. &quot; y=&quot; .. y .. &quot; w=&quot; .. w .. &quot; h=&quot; .. h)
-end</code></pre></details></article><article class="item-row api-row" id="method-gettilecount"><div class="item-row-main"><h3>getTileCount</h3><pre class="inline-signature">LAutoTileSheet:getTileCount() -&gt; integer</pre><p>Returns the total number of tiles in this auto-tile sheet.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:951</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
-    local count = sheet:getTileCount()
-    print(&quot;tileCount:&quot;, count)
-end</code></pre></details></article><article class="item-row api-row" id="method-gettileforbitmask"><div class="item-row-main"><h3>getTileForBitmask</h3><pre class="inline-signature">LAutoTileSheet:getTileForBitmask(bitmask: integer) -&gt; integer</pre><p>Looks up which tile corresponds to a given bitmask value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:999</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    ---@type LAutoTileSheet
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
-    local tile = sheet:getTileForBitmask(7)
-    print(&quot;bitmask 7 -&gt; tile &quot; .. tile)
-end</code></pre></details></article><article class="item-row api-row" id="method-gettileheight"><div class="item-row-main"><h3>getTileHeight</h3><pre class="inline-signature">LAutoTileSheet:getTileHeight() -&gt; integer</pre><p>Returns the height of each tile in the auto-tile sheet, in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:963</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
-    local h = sheet:getTileHeight()
-    print(&quot;tileHeight:&quot;, h)
-end</code></pre></details></article><article class="item-row api-row" id="method-gettilewidth"><div class="item-row-main"><h3>getTileWidth</h3><pre class="inline-signature">LAutoTileSheet:getTileWidth() -&gt; integer</pre><p>Returns the width of each tile in the auto-tile sheet, in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:957</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;minimal16&quot;)
-    local w = sheet:getTileWidth()
-    print(&quot;tileWidth:&quot;, w)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAutoTileSheet:type() -&gt; string</pre><p>Returns the type name of this userdata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:1025</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;minimal16&quot;)
-    local t = sheet:type()
-    print(&quot;type:&quot;, t)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAutoTileSheet:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:1030</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
-    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;minimal16&quot;)
-    local ok = sheet:typeOf(&quot;LAutoTileSheet&quot;)
-    print(&quot;typeOf:&quot;, ok)
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/tilemap.html#lautotilesheet-handle">../../modules/tilemap.html#lautotilesheet-handle</a>…</p>
 </body>
 </html>

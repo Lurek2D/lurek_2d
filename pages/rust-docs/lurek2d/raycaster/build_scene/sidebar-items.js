@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["LoweredFloorCell","SceneBuildParams","WorldSprite"],"type":["CellTextureLookup","TextureLookup"]};

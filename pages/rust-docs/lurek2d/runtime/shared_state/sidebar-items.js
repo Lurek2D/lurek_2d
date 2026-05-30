@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["FullscreenType"],"struct":["ErrorInfo","FrameProfile","PhysicsRunConfig","RendererStats","ResourceMemoryStats","ScreenshotRequest","SharedState","WindowState"]};

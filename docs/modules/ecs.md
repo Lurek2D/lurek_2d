@@ -1,12 +1,85 @@
 # Ecs
 
-- The `ecs` module provides Lurek2D with a highly optimized, Lua-first Entity-Component-System (ECS) runtime.
+## Summary
 
-Central to this module is the `Universe` container, which orchestrates the entire lifecycle of entities, components, and systems within the Feature Systems tier. Entities are represented as lightweight, packed 32-bit generational IDs (comprising a 24-bit slot index and an 8-bit generation counter). This generational approach efficiently manages slot reuse and instantly invalidates stale entity handles without costly memory lookups. Unlike traditional Rust-centric ECS architectures, Lurek2D components are arbitrary Lua values stored directly within per-entity Lua registry tables; there is no hidden Rust-side component data storage. This design ensures seamless interplay with Lua scripts and maximizes flexibility for game developers.
+The `ecs` module provides entity/component storage and relationship primitives centered on generational entity identifiers and Lua-table component data. It is designed for lightweight runtime composition rather than rigid compile-time component schemas.
 
-The module provides robust data querying mechanisms, ranging from basic `set`, `get`, `has`, and `remove` operations to advanced batch lookups like `query`, `queryNot`, and `queryMulti`. To further accelerate queries, the module offers an archetype-style index. Beyond simple component attachments, the ECS supports sophisticated entity hierarchies with parent-child relationships, enabling recursive cascading operations like hierarchical deletions (`kill_recursive`). For rapid entity classification and filtering, the module implements string-based tagging and high-speed 63-bit bitmap tags. Additionally, numeric layer assignments are supported, natively sorting entities for deterministic rendering operations.
+`universe` owns the primary storage surface (entities, components, tags, blueprints, snapshots), `generational_id` and `types` provide ID contracts, `relationships` handles graph-style links between entities, and `lua_table` provides deep-copy support for snapshot and blueprint workflows. Together these modules support creation, mutation, cloning, and diff-like operations over live ECS state.
 
-To simplify entity instantiation, the ECS leverages a Blueprint system. Blueprints act as reusable component templates; developers can define base blueprints, extend them via inheritance, and rapidly instantiate entities (`spawn_blueprint`, `spawn_bulk`) with optional component overrides. Systems—representing game logic—are registered as named Lua callbacks. The `Universe` performs priority-based topological sorting to execute these systems in correct dependency order during defined `update` and `render` phases. Finally, the module fully supports state serialization. By computing incremental snapshot diffs and deep-copying Lua tables, the `Universe` enables robust save/load capabilities, network synchronization, and deterministic state resets. The entire suite of tools is securely exposed via the `lurek.ecs.*` API.
+The generational-ID approach prevents stale handle reuse while keeping IDs compact and lookup-friendly. Lua table component storage keeps scripting integration direct, with engine-side helpers managing lifecycle consistency.
+
+This module should keep its focus on storage semantics and relationship/state utilities. System scheduling and gameplay policy should remain outside ECS core and consume this state through explicit APIs.
+
+Implementation detail and boundary guarantees for ecs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: generational_id.rs: Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.; lua_table.rs: Deep-copy utility for Lua tables via mlua.; mod.rs: Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.; relationships.rs: Relationship type definitions with named level labels and validated defaults.; types.rs: Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.; universe.rs: Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.; universe_ext.rs: Extended Universe operations: advanced queries, bulk spawning, and state serialization.; universe_systems.rs: System registration, removal, and count queries on a Universe.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### generational_id.rs
+
+- Provides stateless generational id packing that combines slot and generation into one compact handle.
+- Enables cheap decoding of slot and generation fields for validity checks during entity access.
+- Delivers the identity encoding contract used by ECS storage and lifecycle reuse rules.
+
+### lua_table.rs
+
+- Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots.
+- Recursively clones nested table structures so template and runtime data can diverge safely.
+- Delivers a shared cloning primitive used by serialization, blueprints, and diff-friendly workflows.
+
+### mod.rs
+
+- Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management.
+- Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model.
+- Delivers a stable integration surface for systems that need structured world state and deterministic access.
+
+### relationships.rs
+
+- Provides typed relationship modeling for unordered pair links and directed named connections between entities.
+- Defines relationship categories with constrained level labels and validated default values.
+- Stores affinity metrics and per-type state in canonical pair records for stable lookups.
+- Supports directed link sets that capture one-way ownership or routing semantics.
+- Exposes query and mutation helpers that keep relationship operations centralized and consistent.
+- Delivers the graph substrate used by gameplay systems that reason about inter-entity ties.
+
+### types.rs
+
+- Provides core ECS identifier wrappers used to pass entity handles across module boundaries.
+- Defines lightweight typed ids that keep call sites explicit while preserving compact storage.
+- Delivers a shared identity contract for indexing, mapping, and query-level interoperability.
+
+### universe.rs
+
+- Provides the central ECS Universe storage that owns entity lifecycle, component rows, and indexing state.
+- Manages spawn and deletion flows with generational identity to prevent stale-handle reuse errors.
+- Stores component payloads in Lua-backed tables while exposing predictable set, get, and remove semantics.
+- Maintains tag, layer, and hierarchy structures for efficient grouping and ordered runtime traversal.
+- Tracks blueprint templates and mutation helpers so scripted spawning remains data-driven and reusable.
+- Coordinates system metadata needed for later scheduling and phase-aware execution ordering.
+- Captures snapshot-diff signals so external consumers can observe incremental state changes.
+- Supports query acceleration and deterministic iteration patterns for stable gameplay behavior.
+- Integrates relationship management to keep inter-entity link semantics adjacent to core storage.
+- Provides reset and cleanup behavior that drains stores safely between scenario lifecycles.
+- Keeps ECS responsibilities concentrated in one authoritative runtime world-state container.
+- Delivers the foundational state layer consumed by simulation, rendering, scripting, and tooling.
+
+### universe_ext.rs
+
+- Provides extended Universe operations for advanced queries, bulk spawning, and table-based state exchange.
+- Implements inclusion and exclusion query paths that support richer component-selection workflows.
+- Supports callback-oriented multi-component iteration for efficient script-side data access.
+- Enables batch entity creation from blueprints with optional per-instance override payloads.
+- Serializes and deserializes complete world snapshots including hierarchy and tag structures.
+- Delivers high-level utility behavior that augments core ECS storage with practical runtime workflows.
+
+### universe_systems.rs
+
+- Provides Universe system-management behavior for registration, removal, and inspection of runtime systems.
+- Computes deterministic execution order using priorities combined with dependency-aware topological sorting.
+- Applies phase filtering rules so system selection remains predictable across update and render passes.
+- Encapsulates scheduling metadata handling to keep orchestration logic separate from core ECS storage.
+- Delivers the execution-order facade used by callers to run systems consistently frame to frame.
 
 ## Functions
 
@@ -15,7 +88,6 @@ To simplify entity instantiation, the ECS leverages a Blueprint system. Blueprin
 Creates an empty ECS universe for entity, component, system, and relationship management.
 
 ```lua
--- signature
 lurek.ecs.newUniverse()
 ```
 
@@ -23,7 +95,7 @@ lurek.ecs.newUniverse()
 
 | Type | Description |
 |------|-------------|
-| `LUniverse` | New universe handle. |
+| [LUniverse](#luniverse-handle) | New universe handle. |
 
 **Example**
 
@@ -36,14 +108,35 @@ end
 
 ---
 
-## LUniverse
+## Module Fields
 
-### `LUniverse:addRelation`
+*No module-level fields documented.*
+
+## Types
+
+- [LUniverse Handle](#luniverse-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LUniverse Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LUniverse:addRelation`
 
 Adds a named directed relation from one entity to another.
 
 ```lua
--- signature
 LUniverse:addRelation(from, name, to)
 ```
 
@@ -51,9 +144,9 @@ LUniverse:addRelation(from, name, to)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source entity id. |
-| `name` | `string` | Relation name. |
-| `to` | `number` | Target entity id. |
+| `from` | number | Source entity id. |
+| `name` | string | Relation name. |
+| `to` | number | Target entity id. |
 
 **Example**
 
@@ -69,12 +162,11 @@ end
 
 ---
 
-### `LUniverse:addSystem`
+#### `LUniverse:addSystem`
 
 Registers a Lua system table with optional phase, priority, name, and dependency metadata.
 
 ```lua
--- signature
 LUniverse:addSystem(system, opts)
 ```
 
@@ -82,8 +174,8 @@ LUniverse:addSystem(system, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `system` | `table` | System table containing update, render, draw, or event methods. |
-| `opts?` | `table` | Optional table with priority, phase, name, and after fields. |
+| `system` | table | System table containing update, render, draw, or event methods. |
+| `opts?` | table | Optional table with priority, phase, name, and after fields. |
 
 **Example**
 
@@ -98,12 +190,11 @@ end
 
 ---
 
-### `LUniverse:addTag`
+#### `LUniverse:addTag`
 
 Assigns a string tag name to an entity in this universe.
 
 ```lua
--- signature
 LUniverse:addTag(id, tag)
 ```
 
@@ -111,8 +202,8 @@ LUniverse:addTag(id, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to tag. |
-| `tag` | `string` | Tag name to add. |
+| `id` | number | Entity id to tag. |
+| `tag` | string | Tag name to add. |
 
 **Example**
 
@@ -128,12 +219,11 @@ end
 
 ---
 
-### `LUniverse:applySnapshot`
+#### `LUniverse:applySnapshot`
 
 Replaces this universe state from a Lua table snapshot.
 
 ```lua
--- signature
 LUniverse:applySnapshot(snapshot)
 ```
 
@@ -141,7 +231,7 @@ LUniverse:applySnapshot(snapshot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `snapshot` | `table` | Snapshot table previously produced by `snapshot` or `serialize`. |
+| `snapshot` | table | Snapshot table previously produced by `snapshot` or `serialize`. |
 
 **Example**
 
@@ -159,12 +249,11 @@ end
 
 ---
 
-### `LUniverse:bitmapTag`
+#### `LUniverse:bitmapTag`
 
 Adds a bitmap tag to an entity, defining the tag if needed.
 
 ```lua
--- signature
 LUniverse:bitmapTag(id, name)
 ```
 
@@ -172,14 +261,14 @@ LUniverse:bitmapTag(id, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to tag. |
-| `name` | `string` | Bitmap tag name. |
+| `id` | number | Entity id to tag. |
+| `name` | string | Bitmap tag name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Bit index used by the bitmap tag. |
+| number | Bit index used by the bitmap tag. |
 
 **Example**
 
@@ -195,12 +284,11 @@ end
 
 ---
 
-### `LUniverse:bitmapUntag`
+#### `LUniverse:bitmapUntag`
 
 Removes a bitmap tag from an entity.
 
 ```lua
--- signature
 LUniverse:bitmapUntag(id, name)
 ```
 
@@ -208,8 +296,8 @@ LUniverse:bitmapUntag(id, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to update. |
-| `name` | `string` | Bitmap tag name to remove. |
+| `id` | number | Entity id to update. |
+| `name` | string | Bitmap tag name to remove. |
 
 **Example**
 
@@ -226,12 +314,11 @@ end
 
 ---
 
-### `LUniverse:clear`
+#### `LUniverse:clear`
 
 Clears all entities, components, systems, and ECS state from this universe.
 
 ```lua
--- signature
 LUniverse:clear()
 ```
 
@@ -248,12 +335,11 @@ end
 
 ---
 
-### `LUniverse:clearRelations`
+#### `LUniverse:clearRelations`
 
 Removes every target for one named relation from an entity.
 
 ```lua
--- signature
 LUniverse:clearRelations(from, name)
 ```
 
@@ -261,8 +347,8 @@ LUniverse:clearRelations(from, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source entity id. |
-| `name` | `string` | Relation name to clear. |
+| `from` | number | Source entity id. |
+| `name` | string | Relation name to clear. |
 
 **Example**
 
@@ -280,12 +366,11 @@ end
 
 ---
 
-### `LUniverse:defineBlueprint`
+#### `LUniverse:defineBlueprint`
 
 Defines a named entity blueprint from a component table.
 
 ```lua
--- signature
 LUniverse:defineBlueprint(name, components)
 ```
 
@@ -293,8 +378,8 @@ LUniverse:defineBlueprint(name, components)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Blueprint name. |
-| `components` | `table` | Component table copied when the blueprint is spawned. |
+| `name` | string | Blueprint name. |
+| `components` | table | Component table copied when the blueprint is spawned. |
 
 **Example**
 
@@ -308,12 +393,11 @@ end
 
 ---
 
-### `LUniverse:defineTag`
+#### `LUniverse:defineTag`
 
 Defines a bitmap tag name and assigns it a bit slot.
 
 ```lua
--- signature
 LUniverse:defineTag(name)
 ```
 
@@ -321,13 +405,13 @@ LUniverse:defineTag(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Bitmap tag name to define. |
+| `name` | string | Bitmap tag name to define. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Bit index assigned to the tag. |
+| number | Bit index assigned to the tag. |
 
 **Example**
 
@@ -343,12 +427,11 @@ end
 
 ---
 
-### `LUniverse:deserialize`
+#### `LUniverse:deserialize`
 
 Replaces this universe state from a serialized Lua snapshot.
 
 ```lua
--- signature
 LUniverse:deserialize(snapshot)
 ```
 
@@ -356,7 +439,7 @@ LUniverse:deserialize(snapshot)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `snapshot` | `table` | Snapshot table previously produced by `serialize` or `snapshot`. |
+| `snapshot` | table | Snapshot table previously produced by `serialize` or `snapshot`. |
 
 **Example**
 
@@ -372,12 +455,11 @@ end
 
 ---
 
-### `LUniverse:each`
+#### `LUniverse:each`
 
 Iterates entities with one component and calls a Lua callback for each match.
 
 ```lua
--- signature
 LUniverse:each(name, callback)
 ```
 
@@ -385,8 +467,8 @@ LUniverse:each(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Component name used to select entities. |
-| `callback` | `function` | Callback invoked by the ECS backend for each matching entity. |
+| `name` | string | Component name used to select entities. |
+| `callback` | function | Callback invoked by the ECS backend for each matching entity. |
 
 **Example**
 
@@ -407,12 +489,11 @@ end
 
 ---
 
-### `LUniverse:emit`
+#### `LUniverse:emit`
 
 Calls matching event-named functions on registered systems.
 
 ```lua
--- signature
 LUniverse:emit(event, ...)
 ```
 
@@ -420,7 +501,7 @@ LUniverse:emit(event, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `event` | `string` | Function name looked up on each system table. |
+| `event` | string | Function name looked up on each system table. |
 | — | — | @param ... any Extra values forwarded after the system and universe arguments. |
 
 **Example**
@@ -437,12 +518,11 @@ end
 
 ---
 
-### `LUniverse:extendBlueprint`
+#### `LUniverse:extendBlueprint`
 
 Defines a blueprint that inherits from a parent blueprint and applies overrides.
 
 ```lua
--- signature
 LUniverse:extendBlueprint(name, parent, overrides)
 ```
 
@@ -450,9 +530,9 @@ LUniverse:extendBlueprint(name, parent, overrides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Child blueprint name to define. |
-| `parent` | `string` | Existing parent blueprint name. |
-| `overrides` | `table` | Component overrides applied over the parent definition. |
+| `name` | string | Child blueprint name to define. |
+| `parent` | string | Existing parent blueprint name. |
+| `overrides` | table | Component overrides applied over the parent definition. |
 
 **Example**
 
@@ -467,12 +547,11 @@ end
 
 ---
 
-### `LUniverse:flushObservers`
+#### `LUniverse:flushObservers`
 
 Delivers queued component add and remove events to registered observer callbacks.
 
 ```lua
--- signature
 LUniverse:flushObservers()
 ```
 
@@ -488,12 +567,11 @@ end
 
 ---
 
-### `LUniverse:get`
+#### `LUniverse:get`
 
 Returns a component value from an entity.
 
 ```lua
--- signature
 LUniverse:get(id, name)
 ```
 
@@ -501,14 +579,14 @@ LUniverse:get(id, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to read. |
-| `name` | `string` | Component name to read. |
+| `id` | number | Entity id to read. |
+| `name` | string | Component name to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | number|string|boolean|nil | Stored component value, or nil when the entity does not have that component. |
+| table | number|string|boolean|nil | Stored component value, or nil when the entity does not have that component. |
 
 **Example**
 
@@ -524,12 +602,11 @@ end
 
 ---
 
-### `LUniverse:getBitmapTagBit`
+#### `LUniverse:getBitmapTagBit`
 
 Returns the bit index assigned to a bitmap tag name.
 
 ```lua
--- signature
 LUniverse:getBitmapTagBit(name)
 ```
 
@@ -537,13 +614,13 @@ LUniverse:getBitmapTagBit(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Bitmap tag name to inspect. |
+| `name` | string | Bitmap tag name to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Bit index when the tag exists, or nil when the tag is undefined. |
+| number | Bit index when the tag exists, or nil when the tag is undefined. |
 
 **Example**
 
@@ -557,12 +634,11 @@ end
 
 ---
 
-### `LUniverse:getBlueprintComponents`
+#### `LUniverse:getBlueprintComponents`
 
 Returns the component table stored for a blueprint.
 
 ```lua
--- signature
 LUniverse:getBlueprintComponents(name)
 ```
 
@@ -570,13 +646,13 @@ LUniverse:getBlueprintComponents(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Blueprint name to inspect. |
+| `name` | string | Blueprint name to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Blueprint component table. |
+| table | Blueprint component table. |
 
 **Example**
 
@@ -592,12 +668,11 @@ end
 
 ---
 
-### `LUniverse:getChildren`
+#### `LUniverse:getChildren`
 
 Returns child entity ids for a parent entity.
 
 ```lua
--- signature
 LUniverse:getChildren(parent_id)
 ```
 
@@ -605,13 +680,13 @@ LUniverse:getChildren(parent_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `parent_id` | `number` | Parent entity id to inspect. |
+| `parent_id` | number | Parent entity id to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of child entity ids. |
+| number[] | Array table of child entity ids. |
 
 **Example**
 
@@ -630,12 +705,11 @@ end
 
 ---
 
-### `LUniverse:getComponents`
+#### `LUniverse:getComponents`
 
 Returns component names currently stored on an entity.
 
 ```lua
--- signature
 LUniverse:getComponents(id)
 ```
 
@@ -643,13 +717,13 @@ LUniverse:getComponents(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to inspect. |
+| `id` | number | Entity id to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Component name strings. |
+| string[] | Component name strings. |
 
 **Example**
 
@@ -666,12 +740,11 @@ end
 
 ---
 
-### `LUniverse:getDirtyEntities`
+#### `LUniverse:getDirtyEntities`
 
 Returns entities marked dirty by recent ECS mutations.
 
 ```lua
--- signature
 LUniverse:getDirtyEntities()
 ```
 
@@ -679,7 +752,7 @@ LUniverse:getDirtyEntities()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of dirty entity ids. |
+| number[] | Array table of dirty entity ids. |
 
 **Example**
 
@@ -695,12 +768,11 @@ end
 
 ---
 
-### `LUniverse:getEntities`
+#### `LUniverse:getEntities`
 
 Returns all live entity ids in this universe.
 
 ```lua
--- signature
 LUniverse:getEntities()
 ```
 
@@ -708,7 +780,7 @@ LUniverse:getEntities()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of live entity ids. |
+| number[] | Array table of live entity ids. |
 
 **Example**
 
@@ -724,12 +796,11 @@ end
 
 ---
 
-### `LUniverse:getEntitiesByLayer`
+#### `LUniverse:getEntitiesByLayer`
 
 Returns entities assigned to a numeric layer.
 
 ```lua
--- signature
 LUniverse:getEntitiesByLayer(layer)
 ```
 
@@ -737,13 +808,13 @@ LUniverse:getEntitiesByLayer(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `number` | Layer value used for lookup. |
+| `layer` | number | Layer value used for lookup. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -758,12 +829,11 @@ end
 
 ---
 
-### `LUniverse:getEntitiesByTag`
+#### `LUniverse:getEntitiesByTag`
 
 Returns entities that have a string tag.
 
 ```lua
--- signature
 LUniverse:getEntitiesByTag(tag)
 ```
 
@@ -771,13 +841,13 @@ LUniverse:getEntitiesByTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | Tag name used for lookup. |
+| `tag` | string | Tag name used for lookup. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -793,12 +863,11 @@ end
 
 ---
 
-### `LUniverse:getEntitiesSorted`
+#### `LUniverse:getEntitiesSorted`
 
 Returns live entities sorted by ECS layer and stable entity ordering.
 
 ```lua
--- signature
 LUniverse:getEntitiesSorted()
 ```
 
@@ -806,7 +875,7 @@ LUniverse:getEntitiesSorted()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of sorted entity ids. |
+| number[] | Array table of sorted entity ids. |
 
 **Example**
 
@@ -821,12 +890,11 @@ end
 
 ---
 
-### `LUniverse:getEntityCount`
+#### `LUniverse:getEntityCount`
 
 Returns the number of live entities in this universe.
 
 ```lua
--- signature
 LUniverse:getEntityCount()
 ```
 
@@ -834,7 +902,7 @@ LUniverse:getEntityCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Live entity count. |
+| number | Live entity count. |
 
 **Example**
 
@@ -850,12 +918,11 @@ end
 
 ---
 
-### `LUniverse:getLayer`
+#### `LUniverse:getLayer`
 
 Returns the numeric layer assigned to an entity.
 
 ```lua
--- signature
 LUniverse:getLayer(id)
 ```
 
@@ -863,13 +930,13 @@ LUniverse:getLayer(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to inspect. |
+| `id` | number | Entity id to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Layer value, using the ECS default when no explicit layer exists. |
+| number | Layer value, using the ECS default when no explicit layer exists. |
 
 **Example**
 
@@ -884,12 +951,11 @@ end
 
 ---
 
-### `LUniverse:getParent`
+#### `LUniverse:getParent`
 
 Returns the parent entity id for a child entity.
 
 ```lua
--- signature
 LUniverse:getParent(child_id)
 ```
 
@@ -897,13 +963,13 @@ LUniverse:getParent(child_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_id` | `number` | Entity id whose parent is read. |
+| `child_id` | number | Entity id whose parent is read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Parent entity id, or nil when the entity has no parent. |
+| number | Parent entity id, or nil when the entity has no parent. |
 
 **Example**
 
@@ -920,12 +986,11 @@ end
 
 ---
 
-### `LUniverse:getRelated`
+#### `LUniverse:getRelated`
 
 Returns targets linked from an entity by a named relation.
 
 ```lua
--- signature
 LUniverse:getRelated(from, name)
 ```
 
@@ -933,14 +998,14 @@ LUniverse:getRelated(from, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source entity id. |
-| `name` | `string` | Relation name. |
+| `from` | number | Source entity id. |
+| `name` | string | Relation name. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of related target entity ids. |
+| number[] | Array table of related target entity ids. |
 
 **Example**
 
@@ -959,12 +1024,11 @@ end
 
 ---
 
-### `LUniverse:getSystemCount`
+#### `LUniverse:getSystemCount`
 
 Returns the number of registered systems.
 
 ```lua
--- signature
 LUniverse:getSystemCount()
 ```
 
@@ -972,7 +1036,7 @@ LUniverse:getSystemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Registered system count. |
+| number | Registered system count. |
 
 **Example**
 
@@ -987,12 +1051,11 @@ end
 
 ---
 
-### `LUniverse:getTags`
+#### `LUniverse:getTags`
 
 Returns string tags assigned to an entity.
 
 ```lua
--- signature
 LUniverse:getTags(id)
 ```
 
@@ -1000,13 +1063,13 @@ LUniverse:getTags(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to inspect. |
+| `id` | number | Entity id to inspect. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Tag names. |
+| string[] | Tag names. |
 
 **Example**
 
@@ -1022,12 +1085,11 @@ end
 
 ---
 
-### `LUniverse:has`
+#### `LUniverse:has`
 
 Returns whether an entity has a named component.
 
 ```lua
--- signature
 LUniverse:has(id, name)
 ```
 
@@ -1035,14 +1097,14 @@ LUniverse:has(id, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to inspect. |
-| `name` | `string` | Component name to check. |
+| `id` | number | Entity id to inspect. |
+| `name` | string | Component name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the component exists on the entity. |
+| boolean | True when the component exists on the entity. |
 
 **Example**
 
@@ -1057,12 +1119,11 @@ end
 
 ---
 
-### `LUniverse:hasBitmapTag`
+#### `LUniverse:hasBitmapTag`
 
 Returns whether an entity has a bitmap tag.
 
 ```lua
--- signature
 LUniverse:hasBitmapTag(id, name)
 ```
 
@@ -1070,14 +1131,14 @@ LUniverse:hasBitmapTag(id, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to inspect. |
-| `name` | `string` | Bitmap tag name to check. |
+| `id` | number | Entity id to inspect. |
+| `name` | string | Bitmap tag name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the entity has the bitmap tag. |
+| boolean | True when the entity has the bitmap tag. |
 
 **Example**
 
@@ -1093,12 +1154,11 @@ end
 
 ---
 
-### `LUniverse:hasBlueprint`
+#### `LUniverse:hasBlueprint`
 
 Returns whether a named blueprint exists.
 
 ```lua
--- signature
 LUniverse:hasBlueprint(name)
 ```
 
@@ -1106,13 +1166,13 @@ LUniverse:hasBlueprint(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Blueprint name to check. |
+| `name` | string | Blueprint name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the blueprint is registered. |
+| boolean | True when the blueprint is registered. |
 
 **Example**
 
@@ -1127,12 +1187,11 @@ end
 
 ---
 
-### `LUniverse:hasRelation`
+#### `LUniverse:hasRelation`
 
 Returns whether a named directed relation exists between two entities.
 
 ```lua
--- signature
 LUniverse:hasRelation(from, name, to)
 ```
 
@@ -1140,15 +1199,15 @@ LUniverse:hasRelation(from, name, to)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source entity id. |
-| `name` | `string` | Relation name. |
-| `to` | `number` | Target entity id. |
+| `from` | number | Source entity id. |
+| `name` | string | Relation name. |
+| `to` | number | Target entity id. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the relation exists. |
+| boolean | True when the relation exists. |
 
 **Example**
 
@@ -1164,12 +1223,11 @@ end
 
 ---
 
-### `LUniverse:hasTag`
+#### `LUniverse:hasTag`
 
 Returns whether an entity has a string tag.
 
 ```lua
--- signature
 LUniverse:hasTag(id, tag)
 ```
 
@@ -1177,14 +1235,14 @@ LUniverse:hasTag(id, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to inspect. |
-| `tag` | `string` | Tag name to check. |
+| `id` | number | Entity id to inspect. |
+| `tag` | string | Tag name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the entity has the tag. |
+| boolean | True when the entity has the tag. |
 
 **Example**
 
@@ -1200,12 +1258,11 @@ end
 
 ---
 
-### `LUniverse:isAlive`
+#### `LUniverse:isAlive`
 
 Returns whether an entity id currently exists in this universe.
 
 ```lua
--- signature
 LUniverse:isAlive(id)
 ```
 
@@ -1213,13 +1270,13 @@ LUniverse:isAlive(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to test. |
+| `id` | number | Entity id to test. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the entity is alive. |
+| boolean | True when the entity is alive. |
 
 **Example**
 
@@ -1233,12 +1290,11 @@ end
 
 ---
 
-### `LUniverse:kill`
+#### `LUniverse:kill`
 
 Deletes an entity and removes its components from this universe.
 
 ```lua
--- signature
 LUniverse:kill(id)
 ```
 
@@ -1246,7 +1302,7 @@ LUniverse:kill(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to delete. |
+| `id` | number | Entity id to delete. |
 
 **Example**
 
@@ -1261,12 +1317,11 @@ end
 
 ---
 
-### `LUniverse:killRecursive`
+#### `LUniverse:killRecursive`
 
 Deletes an entity and all descendant entities in its hierarchy.
 
 ```lua
--- signature
 LUniverse:killRecursive(id)
 ```
 
@@ -1274,7 +1329,7 @@ LUniverse:killRecursive(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Root entity id to delete. |
+| `id` | number | Root entity id to delete. |
 
 **Example**
 
@@ -1291,12 +1346,11 @@ end
 
 ---
 
-### `LUniverse:listBlueprints`
+#### `LUniverse:listBlueprints`
 
 Returns names of all registered blueprints.
 
 ```lua
--- signature
 LUniverse:listBlueprints()
 ```
 
@@ -1304,7 +1358,7 @@ LUniverse:listBlueprints()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Blueprint names. |
+| string[] | Blueprint names. |
 
 **Example**
 
@@ -1319,12 +1373,11 @@ end
 
 ---
 
-### `LUniverse:onComponentAdded`
+#### `LUniverse:onComponentAdded`
 
 Registers a callback for queued component-add events with a given component name.
 
 ```lua
--- signature
 LUniverse:onComponentAdded(name, cb)
 ```
 
@@ -1332,8 +1385,8 @@ LUniverse:onComponentAdded(name, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Component name whose add events are observed. |
-| `cb` | `function` | Callback receiving entity id and component name. |
+| `name` | string | Component name whose add events are observed. |
+| `cb` | function | Callback receiving entity id and component name. |
 
 **Example**
 
@@ -1351,12 +1404,11 @@ end
 
 ---
 
-### `LUniverse:onComponentRemoved`
+#### `LUniverse:onComponentRemoved`
 
 Registers a callback for queued component-remove events with a given component name.
 
 ```lua
--- signature
 LUniverse:onComponentRemoved(name, cb)
 ```
 
@@ -1364,8 +1416,8 @@ LUniverse:onComponentRemoved(name, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Component name whose remove events are observed. |
-| `cb` | `function` | Callback receiving entity id and component name. |
+| `name` | string | Component name whose remove events are observed. |
+| `cb` | function | Callback receiving entity id and component name. |
 
 **Example**
 
@@ -1384,12 +1436,11 @@ end
 
 ---
 
-### `LUniverse:query`
+#### `LUniverse:query`
 
 Returns entities that have all component names passed as varargs.
 
 ```lua
--- signature
 LUniverse:query(...)
 ```
 
@@ -1403,7 +1454,7 @@ LUniverse:query(...)
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -1421,12 +1472,11 @@ end
 
 ---
 
-### `LUniverse:queryBitmapAll`
+#### `LUniverse:queryBitmapAll`
 
 Returns entities that have every bitmap tag from a list.
 
 ```lua
--- signature
 LUniverse:queryBitmapAll(names)
 ```
 
@@ -1434,13 +1484,13 @@ LUniverse:queryBitmapAll(names)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `names` | `table` | Array table of bitmap tag names. |
+| `names` | table | Array table of bitmap tag names. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -1456,12 +1506,11 @@ end
 
 ---
 
-### `LUniverse:queryBitmapAny`
+#### `LUniverse:queryBitmapAny`
 
 Returns entities with at least one bitmap tag from a list.
 
 ```lua
--- signature
 LUniverse:queryBitmapAny(names)
 ```
 
@@ -1469,13 +1518,13 @@ LUniverse:queryBitmapAny(names)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `names` | `table` | Array table of bitmap tag names. |
+| `names` | table | Array table of bitmap tag names. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -1491,12 +1540,11 @@ end
 
 ---
 
-### `LUniverse:queryBitmapTag`
+#### `LUniverse:queryBitmapTag`
 
 Returns entities with one bitmap tag.
 
 ```lua
--- signature
 LUniverse:queryBitmapTag(name)
 ```
 
@@ -1504,13 +1552,13 @@ LUniverse:queryBitmapTag(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Bitmap tag name used for lookup. |
+| `name` | string | Bitmap tag name used for lookup. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -1526,12 +1574,11 @@ end
 
 ---
 
-### `LUniverse:queryMulti`
+#### `LUniverse:queryMulti`
 
 Iterates entities that have all component names from a table.
 
 ```lua
--- signature
 LUniverse:queryMulti(names_table, callback)
 ```
 
@@ -1539,8 +1586,8 @@ LUniverse:queryMulti(names_table, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `names_table` | `table` | Array table of component names. |
-| `callback` | `function` | Callback invoked by the ECS backend for each matching entity. |
+| `names_table` | table | Array table of component names. |
+| `callback` | function | Callback invoked by the ECS backend for each matching entity. |
 
 **Example**
 
@@ -1562,12 +1609,11 @@ end
 
 ---
 
-### `LUniverse:queryNot`
+#### `LUniverse:queryNot`
 
 Returns entities that include one component set and exclude another component set.
 
 ```lua
--- signature
 LUniverse:queryNot(with_tbl, without_tbl)
 ```
 
@@ -1575,14 +1621,14 @@ LUniverse:queryNot(with_tbl, without_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `with_tbl` | `table` | Array table of required component names. |
-| `without_tbl` | `table` | Array table of forbidden component names. |
+| `with_tbl` | table | Array table of required component names. |
+| `without_tbl` | table | Array table of forbidden component names. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of matching entity ids. |
+| number[] | Array table of matching entity ids. |
 
 **Example**
 
@@ -1600,12 +1646,11 @@ end
 
 ---
 
-### `LUniverse:release`
+#### `LUniverse:release`
 
 Releases universe contents by clearing all ECS state.
 
 ```lua
--- signature
 LUniverse:release()
 ```
 
@@ -1621,12 +1666,11 @@ end
 
 ---
 
-### `LUniverse:remove`
+#### `LUniverse:remove`
 
 Removes a named component from an entity.
 
 ```lua
--- signature
 LUniverse:remove(id, name)
 ```
 
@@ -1634,8 +1678,8 @@ LUniverse:remove(id, name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to mutate. |
-| `name` | `string` | Component name to remove. |
+| `id` | number | Entity id to mutate. |
+| `name` | string | Component name to remove. |
 
 **Example**
 
@@ -1651,12 +1695,11 @@ end
 
 ---
 
-### `LUniverse:removeBlueprint`
+#### `LUniverse:removeBlueprint`
 
 Removes a named blueprint from this universe.
 
 ```lua
--- signature
 LUniverse:removeBlueprint(name)
 ```
 
@@ -1664,13 +1707,13 @@ LUniverse:removeBlueprint(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Blueprint name to remove. |
+| `name` | string | Blueprint name to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a blueprint was removed. |
+| boolean | True when a blueprint was removed. |
 
 **Example**
 
@@ -1686,12 +1729,11 @@ end
 
 ---
 
-### `LUniverse:removeRelation`
+#### `LUniverse:removeRelation`
 
 Removes a named directed relation between two entities.
 
 ```lua
--- signature
 LUniverse:removeRelation(from, name, to)
 ```
 
@@ -1699,9 +1741,9 @@ LUniverse:removeRelation(from, name, to)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `number` | Source entity id. |
-| `name` | `string` | Relation name. |
-| `to` | `number` | Target entity id. |
+| `from` | number | Source entity id. |
+| `name` | string | Relation name. |
+| `to` | number | Target entity id. |
 
 **Example**
 
@@ -1717,12 +1759,11 @@ end
 
 ---
 
-### `LUniverse:removeSystem`
+#### `LUniverse:removeSystem`
 
 Removes a previously registered Lua system table.
 
 ```lua
--- signature
 LUniverse:removeSystem(system)
 ```
 
@@ -1730,7 +1771,7 @@ LUniverse:removeSystem(system)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `system` | `table` | System table to remove from this universe. |
+| `system` | table | System table to remove from this universe. |
 
 **Example**
 
@@ -1746,12 +1787,11 @@ end
 
 ---
 
-### `LUniverse:removeTag`
+#### `LUniverse:removeTag`
 
 Removes a string tag from an entity.
 
 ```lua
--- signature
 LUniverse:removeTag(id, tag)
 ```
 
@@ -1759,8 +1799,8 @@ LUniverse:removeTag(id, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to update. |
-| `tag` | `string` | Tag name to remove. |
+| `id` | number | Entity id to update. |
+| `tag` | string | Tag name to remove. |
 
 **Example**
 
@@ -1777,12 +1817,11 @@ end
 
 ---
 
-### `LUniverse:render`
+#### `LUniverse:render`
 
 Runs registered render-phase systems using their render or draw callbacks.
 
 ```lua
--- signature
 LUniverse:render()
 ```
 
@@ -1800,12 +1839,11 @@ end
 
 ---
 
-### `LUniverse:serialize`
+#### `LUniverse:serialize`
 
 Serializes this universe into a Lua table snapshot.
 
 ```lua
--- signature
 LUniverse:serialize()
 ```
 
@@ -1813,7 +1851,7 @@ LUniverse:serialize()
 
 | Type | Description |
 |------|-------------|
-| `LUniverseSerializeResult` | Snapshot table containing entities and component state. |
+| LUniverseSerializeResult | Snapshot table containing entities and component state. |
 
 **Example**
 
@@ -1829,12 +1867,11 @@ end
 
 ---
 
-### `LUniverse:set`
+#### `LUniverse:set`
 
 Stores or replaces a component value on an entity.
 
 ```lua
--- signature
 LUniverse:set(id, name, value)
 ```
 
@@ -1842,9 +1879,9 @@ LUniverse:set(id, name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id that receives the component. |
-| `name` | `string` | Component name. |
-| `value` | `any` | Lua value stored as the component payload. |
+| `id` | number | Entity id that receives the component. |
+| `name` | string | Component name. |
+| `value` | any | Lua value stored as the component payload. |
 
 **Example**
 
@@ -1859,12 +1896,11 @@ end
 
 ---
 
-### `LUniverse:setLayer`
+#### `LUniverse:setLayer`
 
 Assigns a numeric layer to an entity.
 
 ```lua
--- signature
 LUniverse:setLayer(id, layer)
 ```
 
@@ -1872,8 +1908,8 @@ LUniverse:setLayer(id, layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Entity id to update. |
-| `layer` | `number` | Layer value stored on the entity. |
+| `id` | number | Entity id to update. |
+| `layer` | number | Layer value stored on the entity. |
 
 **Example**
 
@@ -1888,12 +1924,11 @@ end
 
 ---
 
-### `LUniverse:setParent`
+#### `LUniverse:setParent`
 
 Sets or clears the parent entity for a child entity.
 
 ```lua
--- signature
 LUniverse:setParent(child_id, parent_id)
 ```
 
@@ -1901,8 +1936,8 @@ LUniverse:setParent(child_id, parent_id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_id` | `number` | Entity id whose parent changes. |
-| `parent_id?` | `number` | Parent entity id, or nil to clear the parent. |
+| `child_id` | number | Entity id whose parent changes. |
+| `parent_id?` | number | Parent entity id, or nil to clear the parent. |
 
 **Example**
 
@@ -1918,12 +1953,11 @@ end
 
 ---
 
-### `LUniverse:snapshot`
+#### `LUniverse:snapshot`
 
 Serializes this universe into a Lua table snapshot.
 
 ```lua
--- signature
 LUniverse:snapshot()
 ```
 
@@ -1931,7 +1965,7 @@ LUniverse:snapshot()
 
 | Type | Description |
 |------|-------------|
-| `LUniverseSnapshotResult` | Snapshot table containing entities and component state. |
+| LUniverseSnapshotResult | Snapshot table containing entities and component state. |
 
 **Example**
 
@@ -1948,12 +1982,11 @@ end
 
 ---
 
-### `LUniverse:spawn`
+#### `LUniverse:spawn`
 
 Creates a new entity in this universe.
 
 ```lua
--- signature
 LUniverse:spawn()
 ```
 
@@ -1961,7 +1994,7 @@ LUniverse:spawn()
 
 | Type | Description |
 |------|-------------|
-| `number` | Numeric entity id for the spawned entity. |
+| number | Numeric entity id for the spawned entity. |
 
 **Example**
 
@@ -1975,12 +2008,11 @@ end
 
 ---
 
-### `LUniverse:spawnBlueprint`
+#### `LUniverse:spawnBlueprint`
 
 Spawns an entity from a named blueprint with optional component overrides.
 
 ```lua
--- signature
 LUniverse:spawnBlueprint(name, overrides)
 ```
 
@@ -1988,14 +2020,14 @@ LUniverse:spawnBlueprint(name, overrides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Blueprint name to instantiate. |
-| `overrides?` | `table` | Optional component overrides applied to this spawn. |
+| `name` | string | Blueprint name to instantiate. |
+| `overrides?` | table | Optional component overrides applied to this spawn. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Entity id created from the blueprint. |
+| number | Entity id created from the blueprint. |
 
 **Example**
 
@@ -2010,12 +2042,11 @@ end
 
 ---
 
-### `LUniverse:spawnBulk`
+#### `LUniverse:spawnBulk`
 
 Spawns multiple entities from a blueprint using shared optional overrides.
 
 ```lua
--- signature
 LUniverse:spawnBulk(name, count, overrides)
 ```
 
@@ -2023,15 +2054,15 @@ LUniverse:spawnBulk(name, count, overrides)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Blueprint name to instantiate. |
-| `count` | `number` | Number of entities to spawn. |
-| `overrides?` | `table` | Optional component overrides applied to each spawned entity. |
+| `name` | string | Blueprint name to instantiate. |
+| `count` | number | Number of entities to spawn. |
+| `overrides?` | table | Optional component overrides applied to each spawned entity. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of spawned entity ids. |
+| number[] | Array table of spawned entity ids. |
 
 **Example**
 
@@ -2046,12 +2077,11 @@ end
 
 ---
 
-### `LUniverse:takeSnapshotDiff`
+#### `LUniverse:takeSnapshotDiff`
 
 Returns and clears accumulated ECS snapshot diff data.
 
 ```lua
--- signature
 LUniverse:takeSnapshotDiff()
 ```
 
@@ -2059,7 +2089,7 @@ LUniverse:takeSnapshotDiff()
 
 | Type | Description |
 |------|-------------|
-| `LUniverseTakeSnapshotDiffResult` | Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays. |
+| LUniverseTakeSnapshotDiffResult | Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays. |
 
 **Example**
 
@@ -2075,12 +2105,11 @@ end
 
 ---
 
-### `LUniverse:type`
+#### `LUniverse:type`
 
 Returns the Lua-visible type name for this universe handle.
 
 ```lua
--- signature
 LUniverse:type()
 ```
 
@@ -2088,7 +2117,7 @@ LUniverse:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LUniverse`. |
+| string | The string `[LUniverse](#luniverse-handle)`. |
 
 **Example**
 
@@ -2101,12 +2130,11 @@ end
 
 ---
 
-### `LUniverse:typeOf`
+#### `LUniverse:typeOf`
 
 Returns whether this universe handle matches a supported type name.
 
 ```lua
--- signature
 LUniverse:typeOf(name)
 ```
 
@@ -2114,13 +2142,13 @@ LUniverse:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LUniverse` and `Object`. |
+| `name` | string | Type name to compare against `[LUniverse](#luniverse-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2133,12 +2161,11 @@ end
 
 ---
 
-### `LUniverse:update`
+#### `LUniverse:update`
 
 Runs registered update-phase systems with a frame delta.
 
 ```lua
--- signature
 LUniverse:update(dt)
 ```
 
@@ -2146,7 +2173,7 @@ LUniverse:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Frame delta time in seconds. |
+| `dt` | number | Frame delta time in seconds. |
 
 **Example**
 
@@ -2162,12 +2189,11 @@ end
 
 ---
 
-### `LUniverse:updatePhase`
+#### `LUniverse:updatePhase`
 
 Runs registered systems assigned to a named phase.
 
 ```lua
--- signature
 LUniverse:updatePhase(phase, dt)
 ```
 
@@ -2175,8 +2201,8 @@ LUniverse:updatePhase(phase, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `phase` | `string` | System phase name to run. |
-| `dt` | `number` | Frame delta time in seconds. |
+| `phase` | string | System phase name to run. |
+| `dt` | number | Frame delta time in seconds. |
 
 **Example**
 

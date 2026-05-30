@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ChannelValue","OverflowPolicy"],"fn":["channel_value_to_lua","lua_to_channel_value"],"struct":["Channel","LuaChannel"]};

@@ -1,6 +1,6 @@
 # Ai
 
-- The `ai` module is a comprehensive and deeply integrated Game AI toolkit designed to provide robust, scalable, and highly configurable non-player character (NPC) behavior for Lurek2D.
+## Summary
 
 Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
 
@@ -10,7 +10,200 @@ Beyond decision logic, the toolkit encompasses extensive systems for perception,
 
 The module also integrates a suite of machine learning and adaptive systems via re-exports from the dedicated [`learning`](learning.md) module. It features multi-armed `Bandit` strategies (epsilon-greedy, UCB1, Thompson sampling), tabular `QLearner` reinforcement learning, and a lightweight `NeuralNet` supporting `Neuroevolution` via a population-based genetic algorithm. This allows for evolving behaviors over generations. Furthermore, agents can possess rich internal states using the `Emotion` and `NeedSystem` modules, alongside archetypal `TraitProfile`s that govern personality variables.
 
-Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store, while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
+Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store re-exported from [`patterns`](patterns.md), while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### agent.rs
+
+- Defines the full runtime shape of one AI actor as a single cohesive control unit.
+- Blends identity, movement, tactical priority, and decision style into one state heartbeat.
+- Keeps planner-facing memory, sensing, affect, motives, traits, and squad semantics aligned.
+- Preserves stable cross-system handoff so world updates read one consistent behavioral snapshot.
+- Serves as the anchor object that orchestration layers drive without leaking subsystem coupling.
+
+### behavior_tree.rs
+
+- Implements a behavior orchestration lattice that evaluates intent through composable control flow.
+- Carries running status across ticks so long actions keep temporal continuity instead of restarting.
+- Balances branching policies to prefer resilient progress under mixed success and failure outcomes.
+- Threads guard logic and decorator shaping into each decision pulse without breaking determinism.
+- Emits inspectable execution state that tools can render as readable runtime decision rhythm.
+- Provides a stable bridge for Lua-driven leaves while preserving engine-owned traversal guarantees.
+
+### command_queue.rs
+
+- Provides a staged action stream that turns chosen intent into executable command cadence.
+- Maintains ordering, urgency, and interruption semantics so control pressure stays predictable.
+- Couples command payloads with completion hooks to close the loop between plan and outcome.
+- Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation.
+- Serves as the pacing buffer between high-level deliberation and low-level execution dispatch.
+
+### context_steering.rs
+
+- Implements slot-based directional reasoning that scores where motion should be pulled or resisted.
+- Projects multiple influences into angular context so local movement stays responsive and legible.
+- Mixes attraction, avoidance, drift, and boundary pressure as one continuous heading composition.
+- Resolves conflict by weighing directional appetite against threat, then extracting the safest momentum lane.
+- Preserves smooth steering continuity by keeping representation compact and frame-friendly.
+- Outputs a movement-ready vector that downstream motion systems can apply with minimal translation.
+- Acts as a tactical micro-navigation layer beneath planners and above raw kinematic integration.
+
+### director.rs
+
+- Models encounter tempo as a cyclic pressure waveform that alternates escalation and release.
+- Converts accumulated tension into phase shifts that shape danger, reward, and ambient load.
+- Keeps pacing legible by using bounded transitions instead of abrupt binary difficulty jumps.
+- Exposes intensity signals that other systems can follow to stay synchronized with scenario mood.
+- Preserves long-session flow by balancing peaks against recovery windows in deterministic cadence.
+- Functions as the global dramaturgy spine for AI pressure management during runtime.
+
+### emotion.rs
+
+- Tracks affective channels as bounded signals that rise on events and relax toward personal baselines.
+- Translates short-term emotional pressure into a clean modulation stream for decision weighting.
+- Preserves stability with clamped values and predictable decay so mood changes remain interpretable.
+- Resolves dominant feeling state as a compact summary other AI layers can consume cheaply.
+- Supplies a lightweight emotional color layer without locking behavior to one planner architecture.
+
+### fsm.rs
+
+- Provides explicit mode-based control where behavior advances through named states over time.
+- Evaluates guarded transitions in deterministic priority order to keep switching reproducible.
+- Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries.
+- Tracks dwell time to support time-aware logic without external bookkeeping overhead.
+- Serves agents that need clear phase changes rather than fully continuous utility arbitration.
+
+### goap.rs
+
+- Delivers deliberative planning over symbolic world facts, actionable effects, and prioritized intentions.
+- Searches plan space with bounded best-first expansion to stay tractable under live-frame budgets.
+- Reconstructs coherent action chains from explored nodes into executable intent trajectories.
+- Balances optimality pressure against hard iteration ceilings so runtime cost remains predictable.
+- Integrates Lua-side execution hooks while preserving engine-owned planning invariants.
+- Acts as the intentional reasoning core for long-horizon task choice and sequencing.
+
+### htn.rs
+
+- Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow.
+- Expands authored methods through recursive branching while honoring world-state numeric constraints.
+- Preserves plan structure and intent traceability across each decomposition depth step.
+- Limits expansion depth to protect runtime from runaway combinatorial growth.
+- Supports domain-authored behavioral style where sequencing logic is explicit and inspectable.
+- Serves as a long-horizon planning backbone for structured narrative or tactical routines.
+
+### lod.rs
+
+- Defines distance-tiered AI update policy so compute effort follows player-relevant proximity.
+- Assigns cadence bands that throttle far entities while keeping near interactions immediate.
+- Stabilizes frame budget by converting spatial spread into predictable scheduling pressure.
+- Provides a compact scalability dial for large-population scenes with bounded responsiveness loss.
+
+### mcts.rs
+
+- Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces.
+- Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets.
+- Uses exploration pressure to balance known strong branches against uncertain alternatives.
+- Stores tree state in compact node arenas for iterative simulation throughput.
+- Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules.
+- Supports game-specific state, transition, and scoring logic through generic integration hooks.
+
+### mod.rs
+
+- Groups the full AI runtime surface into one coherent module boundary for decision and control.
+- Exposes complementary layers for actor state, sensing, planning, steering, coordination, and tooling.
+- Keeps integration predictable by publishing shared types through a single composition entry point.
+- Aligns tactical and strategic subsystems under consistent data flow and update expectations.
+- Defines the high-level contract of engine-side intelligence capabilities available to the rest of runtime.
+
+### needs.rs
+
+- Models internal drives as normalized pressures that decay, recover, and compete for attention.
+- Converts need intensity into urgency signals that higher decision layers can compare directly.
+- Scores available satisfiers against context so fulfillment choice remains situational and explainable.
+- Maintains cooldown-aware motivation flow to avoid oscillation between equivalent opportunities.
+- Supplies a behavioral hunger layer that gives planners a dynamic reason to act.
+
+### orca.rs
+
+- Implements local collision avoidance by projecting preferred motion into safe velocity space.
+- Builds pairwise movement constraints that encode short-horizon separation commitments between agents.
+- Resolves feasible velocity choices while preserving as much intent direction as safety allows.
+- Keeps radius and speed bounds explicit so output remains physically plausible for runtime integration.
+- Serves as the crowd-scale micro-avoidance layer under higher-level navigation goals.
+
+### perception.rs
+
+- Implements sensory intake as a multi-channel stream of world cues with persistent awareness state.
+- Captures visual, auditory, and custom signals in a unified format suitable for agent reasoning.
+- Applies range and confidence dynamics so perception strength evolves instead of flipping abruptly.
+- Maintains temporal awareness memory that can fade, refresh, or intensify based on new evidence.
+- Separates sensing configuration from stimulus flow to keep tuning independent from event production.
+- Bridges raw world events into decision-ready perceptual context consumed by planning layers.
+- Acts as the attentional gate that determines what information reaches behavior systems and when.
+
+### render.rs
+
+- Provides debug-visualization translation from live AI state into drawable diagnostic artifacts.
+- Turns control-graph structure into spatial layouts that remain readable during runtime inspection.
+- Encodes execution status into visual signals so behavior flow can be understood at a glance.
+- Supports both command-stream overlays and image snapshots for tooling and reporting paths.
+- Keeps rendering concerns decoupled from decision logic while preserving faithful state representation.
+- Acts as the observability lens for active finite-state and tree-based decision dynamics.
+
+### squad.rs
+
+- Defines group-level coordination state that binds members around shared intent and leadership.
+- Maintains formation semantics as geometric offsets that stay coherent during leader motion.
+- Carries shared tactical context so squad behavior can react as one unit instead of isolated actors.
+- Produces placement guidance for synchronized movement patterns across common formation styles.
+- Serves as the structural layer for multi-agent cohesion above individual steering behaviors.
+
+### steering.rs
+
+- Provides continuous movement intent synthesis for agents that steer instead of teleporting state.
+- Combines concurrent influences into one force signal while preserving controllable blending semantics.
+- Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures.
+- Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly.
+- Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration.
+- Treats path following as a first-class influence that can lead or defer to behavior priorities.
+- Preserves deterministic fallback when no active influence produces meaningful directional intent.
+- Exposes configurable weighting that lets designers tune expressive movement character per actor role.
+- Maintains lightweight state for runtime-safe updates under dense multi-agent simulation loads.
+- Serves as the tactical locomotion bridge between decision outputs and physics-facing motion updates.
+
+### strategy.rs
+
+- Implements high-level intent arbitration that ranks strategic goals against current world context.
+- Blends static priority and dynamic scoring pressure into a single comparable decision signal.
+- Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames.
+- Retains active intent continuity so tactical layers receive stable direction over time.
+- Serves as the top strategic filter above lower-level planners and executors.
+
+### traits.rs
+
+- Defines long-lived personality dimensions that shape how agents weight and express decisions.
+- Combines base profile values with temporary modifiers to model evolving behavioral flavor.
+- Updates modifier lifecycles over time so transient influences fade in a controlled manner.
+- Supports archetypal presets and deterministic variation for reproducible character differentiation.
+- Supplies stable temperament context consumed by planners, scorers, and tactical selectors.
+
+### utility_ai.rs
+
+- Implements continuous utility-based action choice through layered consideration scoring pipelines.
+- Shapes raw inputs with configurable response curves to express nonlinear decision preference.
+- Blends historical momentum with fresh evidence so action selection avoids abrupt instability.
+- Captures per-action score snapshots each tick for introspection and downstream decision context.
+- Serves agents that benefit from smooth preference arbitration instead of hard state jumps.
+
+### world.rs
+
+- Provides the global AI registry that owns agents, lookup indices, and shared world context.
+- Keeps identity-to-storage mapping synchronized so retrieval remains stable across lifecycle changes.
+- Centralizes broad update progression to advance many actors through one coherent world pulse.
+- Serves as the integration hub where individual agent logic becomes population-level simulation flow.
 
 ## Functions
 
@@ -19,7 +212,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 Creates an AI director for tension, phase, and pacing factor calculations.
 
 ```lua
--- signature
 lurek.ai.newAIDirector()
 ```
 
@@ -27,7 +219,7 @@ lurek.ai.newAIDirector()
 
 | Type | Description |
 |------|-------------|
-| `LAIDirector` | New AI director handle. |
+| [LAIDirector](#laidirector-handle) | New AI director handle. |
 
 **Example**
 
@@ -48,7 +240,6 @@ end
 Creates a default AI level-of-detail tier selector.
 
 ```lua
--- signature
 lurek.ai.newAILod()
 ```
 
@@ -56,7 +247,7 @@ lurek.ai.newAILod()
 
 | Type | Description |
 |------|-------------|
-| `LAILod` | New AI LOD handle. |
+| [LAILod](#lailod-handle) | New AI LOD handle. |
 
 **Example**
 
@@ -75,7 +266,6 @@ end
 Creates a behavior tree action leaf backed by a Lua callback.
 
 ```lua
--- signature
 lurek.ai.newAction(callback)
 ```
 
@@ -83,13 +273,13 @@ lurek.ai.newAction(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | `function` | Callback invoked when the action node ticks. |
+| `callback` | function | Callback invoked when the action node ticks. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New action node handle. |
+| [LBTNode](#lbtnode-handle) | New action node handle. |
 
 **Example**
 
@@ -109,7 +299,6 @@ end
 Creates a multi-armed bandit with a named selection strategy.
 
 ```lua
--- signature
 lurek.ai.newBandit(arm_count, strategy, epsilon, seed)
 ```
 
@@ -117,16 +306,16 @@ lurek.ai.newBandit(arm_count, strategy, epsilon, seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `arm_count` | `number` | Number of selectable arms. |
-| `strategy` | `string` | Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback. |
-| `epsilon` | `number` | Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`. |
-| `seed` | `number` | Random seed used by the bandit. |
+| `arm_count` | number | Number of selectable arms. |
+| `strategy` | string | Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback. |
+| `epsilon` | number | Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`. |
+| `seed` | number | Random seed used by the bandit. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBandit` | New bandit handle. |
+| [LBandit](#lbandit-handle) | New bandit handle. |
 
 **Example**
 
@@ -147,7 +336,6 @@ end
 Creates an empty behavior tree that can receive a root node.
 
 ```lua
--- signature
 lurek.ai.newBehaviorTree()
 ```
 
@@ -155,7 +343,7 @@ lurek.ai.newBehaviorTree()
 
 | Type | Description |
 |------|-------------|
-| `LBehaviorTree` | New behavior tree handle. |
+| [LBehaviorTree](#lbehaviortree-handle) | New behavior tree handle. |
 
 **Example**
 
@@ -176,7 +364,6 @@ end
 Creates an empty AI blackboard for typed local facts.
 
 ```lua
--- signature
 lurek.ai.newBlackboard()
 ```
 
@@ -184,7 +371,7 @@ lurek.ai.newBlackboard()
 
 | Type | Description |
 |------|-------------|
-| `LAIBlackboard` | New blackboard handle. |
+| [LAIBlackboard](#laiblackboard-handle) | New blackboard handle. |
 
 **Example**
 
@@ -203,7 +390,6 @@ end
 Creates an empty command queue for callback-backed AI commands.
 
 ```lua
--- signature
 lurek.ai.newCommandQueue()
 ```
 
@@ -211,7 +397,7 @@ lurek.ai.newCommandQueue()
 
 | Type | Description |
 |------|-------------|
-| `LCommandQueue` | New command queue handle. |
+| [LCommandQueue](#lcommandqueue-handle) | New command queue handle. |
 
 **Example**
 
@@ -231,7 +417,6 @@ end
 Creates a behavior tree condition leaf backed by a Lua callback.
 
 ```lua
--- signature
 lurek.ai.newCondition(callback)
 ```
 
@@ -239,13 +424,13 @@ lurek.ai.newCondition(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | `function` | Callback invoked when the condition node ticks. |
+| `callback` | function | Callback invoked when the condition node ticks. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New condition node handle. |
+| [LBTNode](#lbtnode-handle) | New condition node handle. |
 
 **Example**
 
@@ -265,7 +450,6 @@ end
 Creates a context steering model with the requested directional slot count.
 
 ```lua
--- signature
 lurek.ai.newContextSteering(slots)
 ```
 
@@ -273,13 +457,13 @@ lurek.ai.newContextSteering(slots)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `slots` | `number` | Directional slot count; zero selects the engine default of 16. |
+| `slots` | number | Directional slot count; zero selects the engine default of 16. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LContextSteering` | New context steering handle. |
+| [LContextSteering](#lcontextsteering-handle) | New context steering handle. |
 
 **Example**
 
@@ -300,7 +484,6 @@ end
 Creates an empty dialogue selector for weighted topics and branches.
 
 ```lua
--- signature
 lurek.ai.newDialogueAI()
 ```
 
@@ -308,7 +491,7 @@ lurek.ai.newDialogueAI()
 
 | Type | Description |
 |------|-------------|
-| `LDialogueAI` | New dialogue AI handle. |
+| [LDialogueAI](#ldialogueai-handle) | New dialogue AI handle. |
 
 **Example**
 
@@ -329,7 +512,6 @@ end
 Creates an empty emotion model for named decaying emotion values.
 
 ```lua
--- signature
 lurek.ai.newEmotionModel()
 ```
 
@@ -337,7 +519,7 @@ lurek.ai.newEmotionModel()
 
 | Type | Description |
 |------|-------------|
-| `LEmotionModel` | New emotion model handle. |
+| [LEmotionModel](#lemotionmodel-handle) | New emotion model handle. |
 
 **Example**
 
@@ -358,7 +540,6 @@ end
 Creates an empty GOAP planner for boolean world-state planning.
 
 ```lua
--- signature
 lurek.ai.newGOAPPlanner()
 ```
 
@@ -366,7 +547,7 @@ lurek.ai.newGOAPPlanner()
 
 | Type | Description |
 |------|-------------|
-| `LGOAPPlanner` | New GOAP planner handle. |
+| [LGOAPPlanner](#lgoapplanner-handle) | New GOAP planner handle. |
 
 **Example**
 
@@ -387,7 +568,6 @@ end
 Creates a genetic algorithm population with fixed chromosome length.
 
 ```lua
--- signature
 lurek.ai.newGeneticAlgorithm(pop_size, gene_count, seed)
 ```
 
@@ -395,15 +575,15 @@ lurek.ai.newGeneticAlgorithm(pop_size, gene_count, seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pop_size` | `number` | Number of chromosomes in the population. |
-| `gene_count` | `number` | Number of floating-point genes per chromosome. |
-| `seed` | `number` | Random seed used for population initialization and evolution. |
+| `pop_size` | number | Number of chromosomes in the population. |
+| `gene_count` | number | Number of floating-point genes per chromosome. |
+| `seed` | number | Random seed used for population initialization and evolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LGeneticAlgorithm` | New genetic algorithm handle. |
+| [LGeneticAlgorithm](#lgeneticalgorithm-handle) | New genetic algorithm handle. |
 
 **Example**
 
@@ -422,7 +602,6 @@ end
 Creates a guard decorator that runs a predicate before ticking its child.
 
 ```lua
--- signature
 lurek.ai.newGuard(predicate, child)
 ```
 
@@ -430,14 +609,14 @@ lurek.ai.newGuard(predicate, child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `predicate` | `function` | Callback that decides whether the child may run. |
-| `child` | `LBTNode` | Child node handle consumed by the guard. |
+| `predicate` | function | Callback that decides whether the child may run. |
+| `child` | [LBTNode](#lbtnode-handle) | Child node handle consumed by the guard. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New guard node handle. |
+| [LBTNode](#lbtnode-handle) | New guard node handle. |
 
 **Example**
 
@@ -456,7 +635,6 @@ end
 Creates an empty hierarchical task network domain.
 
 ```lua
--- signature
 lurek.ai.newHTNDomain()
 ```
 
@@ -464,7 +642,7 @@ lurek.ai.newHTNDomain()
 
 | Type | Description |
 |------|-------------|
-| `LHTNDomain` | New HTN domain handle. |
+| [LHTNDomain](#lhtndomain-handle) | New HTN domain handle. |
 
 **Example**
 
@@ -483,7 +661,6 @@ end
 Creates a grid influence map with the supplied cell dimensions and world cell size.
 
 ```lua
--- signature
 lurek.ai.newInfluenceMap(w, h, cs)
 ```
 
@@ -491,15 +668,15 @@ lurek.ai.newInfluenceMap(w, h, cs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Map width in cells. |
-| `h` | `number` | Map height in cells. |
-| `cs` | `number` | World size of one cell. |
+| `w` | number | Map width in cells. |
+| `h` | number | Map height in cells. |
+| `cs` | number | World size of one cell. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LInfluenceMap` | New influence map handle. |
+| [LInfluenceMap](#linfluencemap-handle) | New influence map handle. |
 
 **Example**
 
@@ -520,7 +697,6 @@ end
 Creates a behavior tree inverter decorator with an empty sequence child.
 
 ```lua
--- signature
 lurek.ai.newInverter()
 ```
 
@@ -528,7 +704,7 @@ lurek.ai.newInverter()
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New inverter node handle. |
+| [LBTNode](#lbtnode-handle) | New inverter node handle. |
 
 **Example**
 
@@ -548,7 +724,6 @@ end
 Creates a Monte Carlo tree search engine with deterministic configuration.
 
 ```lua
--- signature
 lurek.ai.newMCTSEngine(iters, uct_c, depth, seed)
 ```
 
@@ -556,16 +731,16 @@ lurek.ai.newMCTSEngine(iters, uct_c, depth, seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `iters` | `number` | Search iteration count. |
-| `uct_c` | `number` | UCT exploration constant. |
-| `depth` | `number` | Rollout depth limit. |
-| `seed` | `number` | Random seed used by the engine. |
+| `iters` | number | Search iteration count. |
+| `uct_c` | number | UCT exploration constant. |
+| `depth` | number | Rollout depth limit. |
+| `seed` | number | Random seed used by the engine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LMCTSEngine` | New MCTS engine handle. |
+| [LMCTSEngine](#lmctsengine-handle) | New MCTS engine handle. |
 
 **Example**
 
@@ -589,7 +764,6 @@ end
 Creates an empty need system for decaying named needs.
 
 ```lua
--- signature
 lurek.ai.newNeedSystem()
 ```
 
@@ -597,7 +771,7 @@ lurek.ai.newNeedSystem()
 
 | Type | Description |
 |------|-------------|
-| `LNeedSystem` | New need system handle. |
+| [LNeedSystem](#lneedsystem-handle) | New need system handle. |
 
 **Example**
 
@@ -618,7 +792,6 @@ end
 Creates an empty feed-forward neural network.
 
 ```lua
--- signature
 lurek.ai.newNeuralNet()
 ```
 
@@ -626,7 +799,7 @@ lurek.ai.newNeuralNet()
 
 | Type | Description |
 |------|-------------|
-| `LNeuralNet` | New neural network handle. |
+| [LNeuralNet](#lneuralnet-handle) | New neural network handle. |
 
 **Example**
 
@@ -647,7 +820,6 @@ end
 Creates a neuroevolution population from a layer specification table.
 
 ```lua
--- signature
 lurek.ai.newNeuroevolution(layer_spec, pop_size, seed)
 ```
 
@@ -655,15 +827,15 @@ lurek.ai.newNeuroevolution(layer_spec, pop_size, seed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer_spec` | `table` | Array of layer tables with `inputs`, `outputs`, and optional `activation` fields. |
-| `pop_size` | `number` | Number of chromosomes in the population. |
-| `seed` | `number` | Random seed used for population initialization and evolution. |
+| `layer_spec` | table | Array of layer tables with `inputs`, `outputs`, and optional `activation` fields. |
+| `pop_size` | number | Number of chromosomes in the population. |
+| `seed` | number | Random seed used for population initialization and evolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LNeuroevolution` | New neuroevolution handle. |
+| [LNeuroevolution](#lneuroevolution-handle) | New neuroevolution handle. |
 
 **Example**
 
@@ -686,7 +858,6 @@ end
 Creates an ORCA avoidance solver with the supplied prediction horizon.
 
 ```lua
--- signature
 lurek.ai.newORCASolver(time_horizon)
 ```
 
@@ -694,13 +865,13 @@ lurek.ai.newORCASolver(time_horizon)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `time_horizon` | `number` | Time horizon used when computing collision avoidance velocities. |
+| `time_horizon` | number | Time horizon used when computing collision avoidance velocities. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LORCASolver` | New ORCA solver handle. |
+| [LORCASolver](#lorcasolver-handle) | New ORCA solver handle. |
 
 **Example**
 
@@ -720,7 +891,6 @@ end
 Creates a behavior tree parallel node with optional success and failure policies.
 
 ```lua
--- signature
 lurek.ai.newParallel(sp, fp)
 ```
 
@@ -728,14 +898,14 @@ lurek.ai.newParallel(sp, fp)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sp?` | `string` | Success policy name; defaults to the engine's require-one policy. |
-| `fp?` | `string` | Failure policy name; defaults to the engine's require-one policy. |
+| `sp?` | string | Success policy name; defaults to the engine's require-one policy. |
+| `fp?` | string | Failure policy name; defaults to the engine's require-one policy. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New parallel node handle. |
+| [LBTNode](#lbtnode-handle) | New parallel node handle. |
 
 **Example**
 
@@ -756,7 +926,6 @@ end
 Creates a Q-learner with fixed state and action counts.
 
 ```lua
--- signature
 lurek.ai.newQLearner(sc, ac)
 ```
 
@@ -764,14 +933,14 @@ lurek.ai.newQLearner(sc, ac)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sc` | `number` | Number of discrete states. |
-| `ac` | `number` | Number of discrete actions. |
+| `sc` | number | Number of discrete states. |
+| `ac` | number | Number of discrete actions. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LQLearner` | New Q-learner handle. |
+| [LQLearner](#lqlearner-handle) | New Q-learner handle. |
 
 **Example**
 
@@ -791,7 +960,6 @@ end
 Creates a behavior tree repeater decorator with an optional repeat count.
 
 ```lua
--- signature
 lurek.ai.newRepeater(count)
 ```
 
@@ -799,13 +967,13 @@ lurek.ai.newRepeater(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count?` | `number` | Repeat count stored on the node; defaults to zero. |
+| `count?` | number | Repeat count stored on the node; defaults to zero. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New repeater node handle. |
+| [LBTNode](#lbtnode-handle) | New repeater node handle. |
 
 **Example**
 
@@ -825,7 +993,6 @@ end
 Creates a behavior tree selector node with no children.
 
 ```lua
--- signature
 lurek.ai.newSelector()
 ```
 
@@ -833,7 +1000,7 @@ lurek.ai.newSelector()
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New selector node handle. |
+| [LBTNode](#lbtnode-handle) | New selector node handle. |
 
 **Example**
 
@@ -854,7 +1021,6 @@ end
 Creates a behavior tree sequence node with no children.
 
 ```lua
--- signature
 lurek.ai.newSequence()
 ```
 
@@ -862,7 +1028,7 @@ lurek.ai.newSequence()
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New sequence node handle. |
+| [LBTNode](#lbtnode-handle) | New sequence node handle. |
 
 **Example**
 
@@ -883,7 +1049,6 @@ end
 Creates an empty named squad. This function is exposed to Lua scripts.
 
 ```lua
--- signature
 lurek.ai.newSquad(name)
 ```
 
@@ -891,13 +1056,13 @@ lurek.ai.newSquad(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Squad name stored on the handle. |
+| `name` | string | Squad name stored on the handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LSquad` | New squad handle. |
+| [LSquad](#lsquad-handle) | New squad handle. |
 
 **Example**
 
@@ -918,7 +1083,6 @@ end
 Creates an empty finite state machine with Lua-backed states and transitions.
 
 ```lua
--- signature
 lurek.ai.newStateMachine()
 ```
 
@@ -926,7 +1090,7 @@ lurek.ai.newStateMachine()
 
 | Type | Description |
 |------|-------------|
-| `LStateMachine` | New state machine handle. |
+| [LStateMachine](#lstatemachine-handle) | New state machine handle. |
 
 **Example**
 
@@ -947,7 +1111,6 @@ end
 Creates an empty steering manager with support for built-in and custom behaviors.
 
 ```lua
--- signature
 lurek.ai.newSteeringManager()
 ```
 
@@ -955,7 +1118,7 @@ lurek.ai.newSteeringManager()
 
 | Type | Description |
 |------|-------------|
-| `LSteeringManager` | New steering manager handle. |
+| [LSteeringManager](#lsteeringmanager-handle) | New steering manager handle. |
 
 **Example**
 
@@ -975,7 +1138,6 @@ end
 Creates an empty stimulus world for visual and auditory stimulus records.
 
 ```lua
--- signature
 lurek.ai.newStimulusWorld()
 ```
 
@@ -983,7 +1145,7 @@ lurek.ai.newStimulusWorld()
 
 | Type | Description |
 |------|-------------|
-| `LStimulusWorld` | New stimulus world handle. |
+| [LStimulusWorld](#lstimulusworld-handle) | New stimulus world handle. |
 
 **Example**
 
@@ -1003,7 +1165,6 @@ end
 Creates a strategy AI that reevaluates goals on a fixed interval.
 
 ```lua
--- signature
 lurek.ai.newStrategyAI(update_interval)
 ```
 
@@ -1011,13 +1172,13 @@ lurek.ai.newStrategyAI(update_interval)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `update_interval` | `number` | Seconds between automatic strategy evaluations. |
+| `update_interval` | number | Seconds between automatic strategy evaluations. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LStrategyAI` | New strategy AI handle. |
+| [LStrategyAI](#lstrategyai-handle) | New strategy AI handle. |
 
 **Example**
 
@@ -1038,7 +1199,6 @@ end
 Creates a behavior tree succeeder decorator with an empty sequence child.
 
 ```lua
--- signature
 lurek.ai.newSucceeder()
 ```
 
@@ -1046,7 +1206,7 @@ lurek.ai.newSucceeder()
 
 | Type | Description |
 |------|-------------|
-| `LBTNode` | New succeeder node handle. |
+| [LBTNode](#lbtnode-handle) | New succeeder node handle. |
 
 **Example**
 
@@ -1066,7 +1226,6 @@ end
 Creates an empty trait profile with modifier support.
 
 ```lua
--- signature
 lurek.ai.newTraitProfile()
 ```
 
@@ -1074,7 +1233,7 @@ lurek.ai.newTraitProfile()
 
 | Type | Description |
 |------|-------------|
-| `LTraitProfile` | New trait profile handle. |
+| [LTraitProfile](#ltraitprofile-handle) | New trait profile handle. |
 
 **Example**
 
@@ -1094,7 +1253,6 @@ end
 Creates an empty utility AI action scorer.
 
 ```lua
--- signature
 lurek.ai.newUtilityAI()
 ```
 
@@ -1102,7 +1260,7 @@ lurek.ai.newUtilityAI()
 
 | Type | Description |
 |------|-------------|
-| `LUtilityAI` | New utility AI handle. |
+| [LUtilityAI](#lutilityai-handle) | New utility AI handle. |
 
 **Example**
 
@@ -1123,7 +1281,6 @@ end
 Creates an isolated AI world for agents, blackboards, and custom decision callbacks.
 
 ```lua
--- signature
 lurek.ai.newWorld()
 ```
 
@@ -1131,7 +1288,7 @@ lurek.ai.newWorld()
 
 | Type | Description |
 |------|-------------|
-| `LAIWorld` | New AI world handle. |
+| [LAIWorld](#laiworld-handle) | New AI world handle. |
 
 **Example**
 
@@ -1147,14 +1304,65 @@ end
 
 ---
 
-## LAIBlackboard
+## Module Fields
 
-### `LAIBlackboard:clear`
+*No module-level fields documented.*
+
+## Types
+
+- [LAIBlackboard Handle](#laiblackboard-handle)
+- [LAIDirector Handle](#laidirector-handle)
+- [LAILod Handle](#lailod-handle)
+- [LAIWorld Handle](#laiworld-handle)
+- [LBTNode Handle](#lbtnode-handle)
+- [LBandit Handle](#lbandit-handle)
+- [LBehaviorTree Handle](#lbehaviortree-handle)
+- [LBot Handle](#lbot-handle)
+- [LCommandQueue Handle](#lcommandqueue-handle)
+- [LContextSteering Handle](#lcontextsteering-handle)
+- [LDialogueAI Handle](#ldialogueai-handle)
+- [LEmotionModel Handle](#lemotionmodel-handle)
+- [LGOAPPlanner Handle](#lgoapplanner-handle)
+- [LGeneticAlgorithm Handle](#lgeneticalgorithm-handle)
+- [LHTNDomain Handle](#lhtndomain-handle)
+- [LInfluenceMap Handle](#linfluencemap-handle)
+- [LMCTSEngine Handle](#lmctsengine-handle)
+- [LNeedSystem Handle](#lneedsystem-handle)
+- [LNeuralNet Handle](#lneuralnet-handle)
+- [LNeuroevolution Handle](#lneuroevolution-handle)
+- [LORCASolver Handle](#lorcasolver-handle)
+- [LQLearner Handle](#lqlearner-handle)
+- [LSquad Handle](#lsquad-handle)
+- [LStateMachine Handle](#lstatemachine-handle)
+- [LSteeringManager Handle](#lsteeringmanager-handle)
+- [LStimulusWorld Handle](#lstimulusworld-handle)
+- [LStrategyAI Handle](#lstrategyai-handle)
+- [LTraitProfile Handle](#ltraitprofile-handle)
+- [LUtilityAI Handle](#lutilityai-handle)
+
+## Callbacks
+
+- `lurek.ai.newAction` param `callback` (`function`): Callback invoked when the action node ticks.
+- `lurek.ai.newCondition` param `callback` (`function`): Callback invoked when the condition node ticks.
+- `lurek.ai.newGuard` param `predicate` (`function`): Callback that decides whether the child may run.
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LAIBlackboard Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAIBlackboard:clear`
 
 Removes every local entry from this blackboard.
 
 ```lua
--- signature
 LAIBlackboard:clear()
 ```
 
@@ -1174,12 +1382,11 @@ end
 
 ---
 
-### `LAIBlackboard:getBool`
+#### `LAIBlackboard:getBool`
 
 Returns a boolean blackboard fact or the provided fallback when the key is missing or not boolean.
 
 ```lua
--- signature
 LAIBlackboard:getBool(key, default)
 ```
 
@@ -1187,14 +1394,14 @@ LAIBlackboard:getBool(key, default)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to read. |
-| `default?` | `boolean` | Fallback value used when the key has no boolean entry; defaults to false. |
+| `key` | string | Blackboard key to read. |
+| `default?` | boolean | Fallback value used when the key has no boolean entry; defaults to false. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | Stored boolean value or fallback value. |
+| boolean | Stored boolean value or fallback value. |
 
 **Example**
 
@@ -1210,12 +1417,11 @@ end
 
 ---
 
-### `LAIBlackboard:getKeys`
+#### `LAIBlackboard:getKeys`
 
 Returns every local blackboard key in an array-style Lua table.
 
 ```lua
--- signature
 LAIBlackboard:getKeys()
 ```
 
@@ -1223,7 +1429,7 @@ LAIBlackboard:getKeys()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Array table containing all stored key names as strings. |
+| string[] | Array table containing all stored key names as strings. |
 
 **Example**
 
@@ -1239,12 +1445,11 @@ end
 
 ---
 
-### `LAIBlackboard:getNumber`
+#### `LAIBlackboard:getNumber`
 
 Returns a numeric blackboard fact or the provided fallback when the key is missing or not numeric.
 
 ```lua
--- signature
 LAIBlackboard:getNumber(key, default)
 ```
 
@@ -1252,14 +1457,14 @@ LAIBlackboard:getNumber(key, default)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to read. |
-| `default?` | `number` | Fallback value used when the key has no numeric entry; defaults to zero. |
+| `key` | string | Blackboard key to read. |
+| `default?` | number | Fallback value used when the key has no numeric entry; defaults to zero. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Stored numeric value or fallback value. |
+| number | Stored numeric value or fallback value. |
 
 **Example**
 
@@ -1275,12 +1480,11 @@ end
 
 ---
 
-### `LAIBlackboard:getSize`
+#### `LAIBlackboard:getSize`
 
 Returns the number of entries currently stored in this blackboard.
 
 ```lua
--- signature
 LAIBlackboard:getSize()
 ```
 
@@ -1288,7 +1492,7 @@ LAIBlackboard:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current blackboard entry count. |
+| number | Current blackboard entry count. |
 
 **Example**
 
@@ -1304,12 +1508,11 @@ end
 
 ---
 
-### `LAIBlackboard:getString`
+#### `LAIBlackboard:getString`
 
 Returns a string blackboard fact or the provided fallback when the key is missing or not a string.
 
 ```lua
--- signature
 LAIBlackboard:getString(key, default)
 ```
 
@@ -1317,14 +1520,14 @@ LAIBlackboard:getString(key, default)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to read. |
-| `default?` | `string` | Fallback value used when the key has no string entry; defaults to an empty string. |
+| `key` | string | Blackboard key to read. |
+| `default?` | string | Fallback value used when the key has no string entry; defaults to an empty string. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Stored string value or fallback value. |
+| string | Stored string value or fallback value. |
 
 **Example**
 
@@ -1340,12 +1543,11 @@ end
 
 ---
 
-### `LAIBlackboard:has`
+#### `LAIBlackboard:has`
 
 Returns whether the blackboard contains any entry for the given key.
 
 ```lua
--- signature
 LAIBlackboard:has(key)
 ```
 
@@ -1353,13 +1555,13 @@ LAIBlackboard:has(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to check. |
+| `key` | string | Blackboard key to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when any typed value is stored at the key. |
+| boolean | True when any typed value is stored at the key. |
 
 **Example**
 
@@ -1375,12 +1577,11 @@ end
 
 ---
 
-### `LAIBlackboard:remove`
+#### `LAIBlackboard:remove`
 
 Removes the given key from the blackboard if it exists.
 
 ```lua
--- signature
 LAIBlackboard:remove(key)
 ```
 
@@ -1388,7 +1589,7 @@ LAIBlackboard:remove(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to remove. |
+| `key` | string | Blackboard key to remove. |
 
 **Example**
 
@@ -1404,12 +1605,11 @@ end
 
 ---
 
-### `LAIBlackboard:setBool`
+#### `LAIBlackboard:setBool`
 
 Stores a boolean fact under the given blackboard key.
 
 ```lua
--- signature
 LAIBlackboard:setBool(key, value)
 ```
 
@@ -1417,8 +1617,8 @@ LAIBlackboard:setBool(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to write. |
-| `value` | `boolean` | Boolean value stored for later boolean reads. |
+| `key` | string | Blackboard key to write. |
+| `value` | boolean | Boolean value stored for later boolean reads. |
 
 **Example**
 
@@ -1434,12 +1634,11 @@ end
 
 ---
 
-### `LAIBlackboard:setNumber`
+#### `LAIBlackboard:setNumber`
 
 Stores a numeric fact under the given blackboard key.
 
 ```lua
--- signature
 LAIBlackboard:setNumber(key, value)
 ```
 
@@ -1447,8 +1646,8 @@ LAIBlackboard:setNumber(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to write. |
-| `value` | `number` | Numeric value stored for later numeric reads. |
+| `key` | string | Blackboard key to write. |
+| `value` | number | Numeric value stored for later numeric reads. |
 
 **Example**
 
@@ -1464,12 +1663,11 @@ end
 
 ---
 
-### `LAIBlackboard:setString`
+#### `LAIBlackboard:setString`
 
 Stores a string fact under the given blackboard key.
 
 ```lua
--- signature
 LAIBlackboard:setString(key, value)
 ```
 
@@ -1477,8 +1675,8 @@ LAIBlackboard:setString(key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | Blackboard key to write. |
-| `value` | `string` | String value stored for later string reads. |
+| `key` | string | Blackboard key to write. |
+| `value` | string | String value stored for later string reads. |
 
 **Example**
 
@@ -1494,12 +1692,11 @@ end
 
 ---
 
-### `LAIBlackboard:type`
+#### `LAIBlackboard:type`
 
 Returns the Lua-visible type name for this blackboard handle.
 
 ```lua
--- signature
 LAIBlackboard:type()
 ```
 
@@ -1507,7 +1704,7 @@ LAIBlackboard:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAIBlackboard`. |
+| string | The string `[LAIBlackboard](#laiblackboard-handle)`. |
 
 **Example**
 
@@ -1522,12 +1719,11 @@ end
 
 ---
 
-### `LAIBlackboard:typeOf`
+#### `LAIBlackboard:typeOf`
 
 Returns whether this blackboard handle matches a supported type name.
 
 ```lua
--- signature
 LAIBlackboard:typeOf(name)
 ```
 
@@ -1535,13 +1731,13 @@ LAIBlackboard:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `AIBlackboard`, `Blackboard`, and `Object`. |
+| `name` | string | Type name to compare against `AIBlackboard`, `Blackboard`, and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1549,21 +1745,26 @@ LAIBlackboard:typeOf(name)
 do
   local bb = lurek.ai.newBlackboard()
   local is_bb = bb:typeOf("LAIBlackboard")
-  local is_agent = bb:typeOf("LAgent")
-  print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LAgent=" .. tostring(is_agent))
+  local is_agent = bb:typeOf("LBot")
+  print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LBot=" .. tostring(is_agent))
 end
 ```
 
 ---
 
-## LAIDirector
+## LAIDirector Handle
 
-### `LAIDirector:ambientIntensity`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAIDirector:ambientIntensity`
 
 Returns the ambient intensity derived from current tension and phase.
 
 ```lua
--- signature
 LAIDirector:ambientIntensity()
 ```
 
@@ -1571,7 +1772,7 @@ LAIDirector:ambientIntensity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Ambient intensity factor. |
+| number | Ambient intensity factor. |
 
 **Example**
 
@@ -1586,12 +1787,11 @@ end
 
 ---
 
-### `LAIDirector:lootFactor`
+#### `LAIDirector:lootFactor`
 
 Returns the loot multiplier derived from current tension and phase.
 
 ```lua
--- signature
 LAIDirector:lootFactor()
 ```
 
@@ -1599,7 +1799,7 @@ LAIDirector:lootFactor()
 
 | Type | Description |
 |------|-------------|
-| `number` | Loot factor. |
+| number | Loot factor. |
 
 **Example**
 
@@ -1614,12 +1814,11 @@ end
 
 ---
 
-### `LAIDirector:phase`
+#### `LAIDirector:phase`
 
 Returns the current director phase name.
 
 ```lua
--- signature
 LAIDirector:phase()
 ```
 
@@ -1627,7 +1826,7 @@ LAIDirector:phase()
 
 | Type | Description |
 |------|-------------|
-| `string` | Current pacing phase. |
+| string | Current pacing phase. |
 
 **Example**
 
@@ -1641,12 +1840,11 @@ end
 
 ---
 
-### `LAIDirector:pushEvent`
+#### `LAIDirector:pushEvent`
 
 Adds an event intensity sample to the director tension model.
 
 ```lua
--- signature
 LAIDirector:pushEvent(intensity)
 ```
 
@@ -1654,7 +1852,7 @@ LAIDirector:pushEvent(intensity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `intensity` | `number` | Event intensity added to current tension. |
+| `intensity` | number | Event intensity added to current tension. |
 
 **Example**
 
@@ -1669,12 +1867,11 @@ end
 
 ---
 
-### `LAIDirector:reset`
+#### `LAIDirector:reset`
 
 Resets director tension and phase state to defaults.
 
 ```lua
--- signature
 LAIDirector:reset()
 ```
 
@@ -1691,12 +1888,11 @@ end
 
 ---
 
-### `LAIDirector:setTension`
+#### `LAIDirector:setTension`
 
 Directly sets the director tension value.
 
 ```lua
--- signature
 LAIDirector:setTension(value)
 ```
 
@@ -1704,7 +1900,7 @@ LAIDirector:setTension(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `number` | New tension value. |
+| `value` | number | New tension value. |
 
 **Example**
 
@@ -1718,12 +1914,11 @@ end
 
 ---
 
-### `LAIDirector:spawnRateFactor`
+#### `LAIDirector:spawnRateFactor`
 
 Returns the spawn-rate multiplier derived from current tension and phase.
 
 ```lua
--- signature
 LAIDirector:spawnRateFactor()
 ```
 
@@ -1731,7 +1926,7 @@ LAIDirector:spawnRateFactor()
 
 | Type | Description |
 |------|-------------|
-| `number` | Spawn rate factor. |
+| number | Spawn rate factor. |
 
 **Example**
 
@@ -1746,12 +1941,11 @@ end
 
 ---
 
-### `LAIDirector:tension`
+#### `LAIDirector:tension`
 
 Returns the current director tension value.
 
 ```lua
--- signature
 LAIDirector:tension()
 ```
 
@@ -1759,7 +1953,7 @@ LAIDirector:tension()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current tension. |
+| number | Current tension. |
 
 **Example**
 
@@ -1773,12 +1967,11 @@ end
 
 ---
 
-### `LAIDirector:type`
+#### `LAIDirector:type`
 
 Returns the Lua-visible type name for this AI director handle.
 
 ```lua
--- signature
 LAIDirector:type()
 ```
 
@@ -1786,7 +1979,7 @@ LAIDirector:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAIDirector`. |
+| string | The string `[LAIDirector](#laidirector-handle)`. |
 
 **Example**
 
@@ -1800,12 +1993,11 @@ end
 
 ---
 
-### `LAIDirector:typeOf`
+#### `LAIDirector:typeOf`
 
 Returns whether this AI director handle matches a supported type name.
 
 ```lua
--- signature
 LAIDirector:typeOf(name)
 ```
 
@@ -1813,13 +2005,13 @@ LAIDirector:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAIDirector` and `Object`. |
+| `name` | string | Type name to compare against `[LAIDirector](#laidirector-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1832,12 +2024,11 @@ end
 
 ---
 
-### `LAIDirector:update`
+#### `LAIDirector:update`
 
 Advances director tension decay and phase evaluation.
 
 ```lua
--- signature
 LAIDirector:update(dt)
 ```
 
@@ -1845,7 +2036,7 @@ LAIDirector:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -1860,14 +2051,19 @@ end
 
 ---
 
-## LAILod
+## LAILod Handle
 
-### `LAILod:shouldUpdate`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAILod:shouldUpdate`
 
 Returns whether a tier should update on a given frame counter.
 
 ```lua
--- signature
 LAILod:shouldUpdate(tier, frame)
 ```
 
@@ -1875,14 +2071,14 @@ LAILod:shouldUpdate(tier, frame)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tier` | `number` | Zero-based LOD tier index. |
-| `frame` | `number` | Current frame counter. |
+| `tier` | number | Zero-based LOD tier index. |
+| `frame` | number | Current frame counter. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when agents in the tier should update this frame. |
+| boolean | True when agents in the tier should update this frame. |
 
 **Example**
 
@@ -1896,12 +2092,11 @@ end
 
 ---
 
-### `LAILod:tierCount`
+#### `LAILod:tierCount`
 
 Returns the number of configured AI LOD tiers.
 
 ```lua
--- signature
 LAILod:tierCount()
 ```
 
@@ -1909,7 +2104,7 @@ LAILod:tierCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | LOD tier count. |
+| number | LOD tier count. |
 
 **Example**
 
@@ -1922,12 +2117,11 @@ end
 
 ---
 
-### `LAILod:tierFor`
+#### `LAILod:tierFor`
 
 Returns the LOD tier for an agent position relative to a reference position.
 
 ```lua
--- signature
 LAILod:tierFor(ax, ay, rx, ry)
 ```
 
@@ -1935,16 +2129,16 @@ LAILod:tierFor(ax, ay, rx, ry)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ax` | `number` | Agent X position. |
-| `ay` | `number` | Agent Y position. |
-| `rx` | `number` | Reference X position, usually camera or player position. |
-| `ry` | `number` | Reference Y position, usually camera or player position. |
+| `ax` | number | Agent X position. |
+| `ay` | number | Agent Y position. |
+| `rx` | number | Reference X position, usually camera or player position. |
+| `ry` | number | Reference Y position, usually camera or player position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based LOD tier index. |
+| number | Zero-based LOD tier index. |
 
 **Example**
 
@@ -1958,12 +2152,11 @@ end
 
 ---
 
-### `LAILod:tierName`
+#### `LAILod:tierName`
 
 Returns the name of an AI LOD tier when the index is valid.
 
 ```lua
--- signature
 LAILod:tierName(tier)
 ```
 
@@ -1971,13 +2164,13 @@ LAILod:tierName(tier)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tier` | `number` | Zero-based LOD tier index. |
+| `tier` | number | Zero-based LOD tier index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Tier name, or nil when the tier index is invalid. |
+| LuaValue | Tier name, or nil when the tier index is invalid. |
 
 **Example**
 
@@ -1991,12 +2184,11 @@ end
 
 ---
 
-### `LAILod:type`
+#### `LAILod:type`
 
 Returns the Lua-visible type name for this AI LOD handle.
 
 ```lua
--- signature
 LAILod:type()
 ```
 
@@ -2004,7 +2196,7 @@ LAILod:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAILod`. |
+| string | The string `[LAILod](#lailod-handle)`. |
 
 **Example**
 
@@ -2018,12 +2210,11 @@ end
 
 ---
 
-### `LAILod:typeOf`
+#### `LAILod:typeOf`
 
 Returns whether this AI LOD handle matches a supported type name.
 
 ```lua
--- signature
 LAILod:typeOf(name)
 ```
 
@@ -2031,13 +2222,13 @@ LAILod:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LAILod` and `Object`. |
+| `name` | string | Type name to compare against `[LAILod](#lailod-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2050,14 +2241,19 @@ end
 
 ---
 
-## LAIWorld
+## LAIWorld Handle
 
-### `LAIWorld:addAgent`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LAIWorld:addAgent`
 
 Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 
 ```lua
--- signature
 LAIWorld:addAgent(name)
 ```
 
@@ -2065,13 +2261,13 @@ LAIWorld:addAgent(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Unique agent name used by later lookup, tags, custom callbacks, and squad membership references. |
+| `name` | string | Unique agent name used by later lookup, tags, custom callbacks, and squad membership references. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LAgent` | Lua handle for the newly inserted agent. |
+| [LBot](#lbot-handle) | Lua handle for the newly inserted bot. |
 
 **Example**
 
@@ -2085,12 +2281,11 @@ end
 
 ---
 
-### `LAIWorld:getAgent`
+#### `LAIWorld:getAgent`
 
 Returns the named agent handle when it exists in this world.
 
 ```lua
--- signature
 LAIWorld:getAgent(name)
 ```
 
@@ -2098,13 +2293,13 @@ LAIWorld:getAgent(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Agent name previously passed to `addAgent`. |
+| `name` | string | Agent name previously passed to `addAgent`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Agent handle when found, or nil when the world has no agent with that name. |
+| LuaValue | Agent handle when found, or nil when the world has no agent with that name. |
 
 **Example**
 
@@ -2119,12 +2314,11 @@ end
 
 ---
 
-### `LAIWorld:getAgentCount`
+#### `LAIWorld:getAgentCount`
 
 Returns the number of agents currently stored in this world.
 
 ```lua
--- signature
 LAIWorld:getAgentCount()
 ```
 
@@ -2132,7 +2326,7 @@ LAIWorld:getAgentCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current agent count. |
+| number | Current agent count. |
 
 **Example**
 
@@ -2149,12 +2343,11 @@ end
 
 ---
 
-### `LAIWorld:getGlobalBlackboard`
+#### `LAIWorld:getGlobalBlackboard`
 
 Returns a blackboard snapshot containing the world's shared AI facts.
 
 ```lua
--- signature
 LAIWorld:getGlobalBlackboard()
 ```
 
@@ -2162,7 +2355,7 @@ LAIWorld:getGlobalBlackboard()
 
 | Type | Description |
 |------|-------------|
-| `LAIBlackboard` | Blackboard handle initialized from the world's global blackboard values at call time. |
+| [LAIBlackboard](#laiblackboard-handle) | Blackboard handle initialized from the world's global blackboard values at call time. |
 
 **Example**
 
@@ -2178,12 +2371,11 @@ end
 
 ---
 
-### `LAIWorld:removeAgent`
+#### `LAIWorld:removeAgent`
 
 Removes an agent from this world by using an existing agent handle.
 
 ```lua
--- signature
 LAIWorld:removeAgent(agent)
 ```
 
@@ -2191,7 +2383,7 @@ LAIWorld:removeAgent(agent)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `agent` | `LAgent` | Agent handle whose stored name identifies the world entry to remove. |
+| `agent` | [LBot](#lbot-handle) | Bot handle whose stored name identifies the world entry to remove. |
 
 **Example**
 
@@ -2206,12 +2398,11 @@ end
 
 ---
 
-### `LAIWorld:type`
+#### `LAIWorld:type`
 
 Returns the Lua-visible type name for this AI world handle.
 
 ```lua
--- signature
 LAIWorld:type()
 ```
 
@@ -2219,7 +2410,7 @@ LAIWorld:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LAIWorld`. |
+| string | The string `[LAIWorld](#laiworld-handle)`. |
 
 **Example**
 
@@ -2235,12 +2426,11 @@ end
 
 ---
 
-### `LAIWorld:typeOf`
+#### `LAIWorld:typeOf`
 
 Returns whether this AI world handle matches a supported type name.
 
 ```lua
--- signature
 LAIWorld:typeOf(name)
 ```
 
@@ -2248,13 +2438,13 @@ LAIWorld:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `AIWorld` and `Object`. |
+| `name` | string | Type name to compare against `AIWorld` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -2269,12 +2459,11 @@ end
 
 ---
 
-### `LAIWorld:update`
+#### `LAIWorld:update`
 
 Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
 
 ```lua
--- signature
 LAIWorld:update(dt)
 ```
 
@@ -2282,7 +2471,7 @@ LAIWorld:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed simulation time in seconds for this update step. |
+| `dt` | number | Elapsed simulation time in seconds for this update step. |
 
 **Example**
 
@@ -2300,1144 +2489,19 @@ end
 
 ---
 
-## LAgent
+## LBTNode Handle
 
-### `LAgent:addSkill`
+### Fields
 
-Appends a named skill prompt to the agent's context block.
+*No documented fields for this handle.*
 
-```lua
--- signature
-LAgent:addSkill(name, prompt)
-```
+### Methods
 
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | `string` | Unique skill identifier shown in the injected context. |
-| `prompt` | `string` | Instruction text appended to the system block. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:addTag`
-
-Adds a tag string to this agent when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:addTag(tag)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tag` | `string` | Tag name to insert into the agent tag set. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("guard")
-  npc:addTag("hostile")
-  local has_hostile = npc:hasTag("hostile")
-  print("LAgent:addTag: hostile=" .. tostring(has_hostile))
-end
-```
-
----
-
-### `LAgent:cancel`
-
-Cancels an in-flight or pending request by callback ID.
-
-```lua
--- signature
-LAgent:cancel(callback_id)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `callback_id` | `number` | ID returned by `prompt` or `promptBatch`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:clearSkills`
-
-Removes all registered skills from the agent's context.
-
-```lua
--- signature
-LAgent:clearSkills()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:evalCode`
-
-Evaluates a Lua code string inside the active VM.
-
-```lua
--- signature
-LAgent:evalCode(code)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `code` | `string` | The Lua code to execute. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | `true` on success, raises an error on failure. |
-
----
-
-### `LAgent:getBlackboard`
-
-Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
-
-```lua
--- signature
-LAgent:getBlackboard()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `LAIBlackboard` | Blackboard handle initialized from the agent's local blackboard values at call time. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("ranger")
-  local bb = npc:getBlackboard()
-  bb:setNumber("hp", 100)
-  local hp = bb:getNumber("hp", 0)
-  print("LAgent:getBlackboard: hp=" .. tostring(hp))
-end
-```
-
----
-
-### `LAgent:getDecisionModel`
-
-Returns this agent's decision model name or the default model name for a missing agent.
-
-```lua
--- signature
-LAgent:getDecisionModel()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Current decision model name. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("farmer")
-  npc:setDecisionModel("custom")
-  local model = npc:getDecisionModel()
-  print("LAgent:getDecisionModel: " .. model)
-end
-```
-
----
-
-### `LAgent:getDescription`
-
-Returns the agent's role description.
-
-```lua
--- signature
-LAgent:getDescription()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Role description, or `""` if not set. |
-
----
-
-### `LAgent:getFormat`
-
-Returns the current response format string.
-
-```lua
--- signature
-LAgent:getFormat()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | One of `"json"`, `"csv"`, or `"text"`. |
-
----
-
-### `LAgent:getMaxForce`
-
-Returns this agent's maximum steering force or the default force for a missing agent.
-
-```lua
--- signature
-LAgent:getMaxForce()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Maximum steering force value. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("scout")
-  npc:setMaxForce(200)
-  local force = npc:getMaxForce()
-  print("LAgent:getMaxForce: " .. tostring(force))
-  print("LAgent:getMaxForce: name=" .. npc:getName())
-end
-```
-
----
-
-### `LAgent:getMaxSpeed`
-
-Returns this agent's maximum movement speed or the default speed for a missing agent.
-
-```lua
--- signature
-LAgent:getMaxSpeed()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Maximum speed in world units per second. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("courier")
-  npc:setMaxSpeed(150)
-  local speed = npc:getMaxSpeed()
-  print("LAgent:getMaxSpeed: " .. tostring(speed))
-  print("LAgent:getMaxSpeed: name=" .. npc:getName())
-end
-```
-
----
-
-### `LAgent:getModel`
-
-Returns the current model identifier.
-
-```lua
--- signature
-LAgent:getModel()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Model name. |
-
----
-
-### `LAgent:getName`
-
-Returns the agent's name identifier.
-
-```lua
--- signature
-LAgent:getName()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Agent name, or `""` if not set. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("knight_03")
-  local name = npc:getName()
-  print("LAgent:getName: " .. name)
-end
-```
-
----
-
-### `LAgent:getPosition`
-
-Returns this agent's world position or the origin when the agent has been removed.
-
-```lua
--- signature
-LAgent:getPosition()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | a X and Y position in world units. |
-| `number` | b X and Y position in world units. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("static_guard")
-  npc:setPosition(400, 300)
-  local x, y = npc:getPosition()
-  print("LAgent:getPosition: " .. tostring(x) .. ", " .. tostring(y))
-end
-```
-
----
-
-### `LAgent:getPriority`
-
-Returns this agent's integer priority or zero when the agent has been removed.
-
-```lua
--- signature
-LAgent:getPriority()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Current priority value. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("grunt")
-  npc:setPriority(5)
-  local prio = npc:getPriority()
-  print("LAgent:getPriority: " .. tostring(prio))
-end
-```
-
----
-
-### `LAgent:getUrl`
-
-Returns the current LLM endpoint URL.
-
-```lua
--- signature
-LAgent:getUrl()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | Endpoint URL. |
-
----
-
-### `LAgent:getVelocity`
-
-Returns this agent's velocity vector or zero velocity when the agent has been removed.
-
-```lua
--- signature
-LAgent:getVelocity()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | a X and Y velocity in world units per second. |
-| `number` | b X and Y velocity in world units per second. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("idle_npc")
-  npc:setVelocity(0, 0)
-  local vx, vy = npc:getVelocity()
-  print("LAgent:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
-end
-```
-
----
-
-### `LAgent:hasSkill`
-
-Returns `true` if a skill with `name` is registered.
-
-```lua
--- signature
-LAgent:hasSkill(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | `string` | Skill name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | `true` if the skill exists. |
-
----
-
-### `LAgent:hasTag`
-
-Returns whether this agent currently has the given tag.
-
-```lua
--- signature
-LAgent:hasTag(tag)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tag` | `string` | Tag name to check in the agent tag set. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | True when the tag exists on the agent. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("merchant")
-  npc:addTag("friendly")
-  local friendly = npc:hasTag("friendly")
-  local hostile = npc:hasTag("hostile")
-  print("LAgent:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
-end
-```
-
----
-
-### `LAgent:listSkills`
-
-Returns a list of registered skill names in insertion order.
-
-```lua
--- signature
-LAgent:listSkills()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `table` | String array of skill names. |
-
----
-
-### `LAgent:pendingCount`
-
-Returns the number of in-flight requests that have not yet completed.
-
-```lua
--- signature
-LAgent:pendingCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Number of pending requests. |
-
----
-
-### `LAgent:prompt`
-
-Sends an instructional prompt to the LLM asynchronously.
-
-```lua
--- signature
-LAgent:prompt(instruction, callback)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `instruction` | `string` | The specific task instruction for the agent. |
-| `callback` | `function` | Function called with `(success, data, err_info)` when complete. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Callback ID used to cancel the request. |
-
----
-
-### `LAgent:promptBatch`
-
-Sends a batch of prompts to the LLM asynchronously.
-
-```lua
--- signature
-LAgent:promptBatch(instructions, callback)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `instructions` | `table` | Ordered list of instruction strings. |
-| `callback` | `function` | Function called with a results table when all complete. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Batch callback ID. |
-
----
-
-### `LAgent:removeTag`
-
-Removes a tag string from this agent when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:removeTag(tag)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tag` | `string` | Tag name to remove from the agent tag set. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("spy")
-  npc:addTag("visible")
-  npc:removeTag("visible")
-  local still_has = npc:hasTag("visible")
-  print("LAgent:removeTag: visible=" .. tostring(still_has))
-end
-```
-
----
-
-### `LAgent:setContextSize`
-
-Sets the token context window size forwarded to the LLM backend.
-
-```lua
--- signature
-LAgent:setContextSize(n)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `n` | `number` | Context size in tokens (e.g. 4096). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setCustomModel`
-
-Installs a Lua callback as this agent's decision model and stores it in the callback registry.
-
-```lua
--- signature
-LAgent:setCustomModel(callback)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `callback` | `function` | Function called during world updates with `(agent, blackboard, dt)` for this agent. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("thinker")
-  npc:setDecisionModel("custom")
-  local called_with_dt = 0
-  npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
-  world:update(0.016)
-  print("LAgent:setCustomModel: dt=" .. tostring(called_with_dt))
-end
-```
-
----
-
-### `LAgent:setDecisionModel`
-
-Sets this agent's built-in decision model from a string name when the name is recognized.
-
-```lua
--- signature
-LAgent:setDecisionModel(model)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `model` | `string` | Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("worker")
-  npc:setDecisionModel("custom")
-  local model = npc:getDecisionModel()
-  print("LAgent:setDecisionModel: " .. model)
-end
-```
-
----
-
-### `LAgent:setDescription`
-
-Sets the agent's role description injected after the system prompt when routed through an AISystem.
-
-```lua
--- signature
-LAgent:setDescription(description)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `description` | `string` | Role description text. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setFormat`
-
-Changes the response format for future prompts.
-
-```lua
--- signature
-LAgent:setFormat(format)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `format` | `string` | One of `"json"`, `"csv"`, or `"text"`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setMaxForce`
-
-Sets this agent's maximum steering force when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setMaxForce(v)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `v` | `number` | Maximum steering force applied during steering calculations. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("tank")
-  npc:setMaxForce(80)
-  print("LAgent:setMaxForce: done")
-  print("LAgent:setMaxForce: force=" .. tostring(npc:getMaxForce()))
-end
-```
-
----
-
-### `LAgent:setMaxRetries`
-
-Sets the maximum retry count on transient network or timeout errors.
-
-```lua
--- signature
-LAgent:setMaxRetries(n)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `n` | `number` | Number of retries (0 disables retry). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setMaxSpeed`
-
-Sets this agent's maximum movement speed when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setMaxSpeed(v)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `v` | `number` | Maximum speed in world units per second. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("sprinter")
-  npc:setMaxSpeed(200)
-  print("LAgent:setMaxSpeed: done")
-  print("LAgent:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
-end
-```
-
----
-
-### `LAgent:setModel`
-
-Changes the model identifier for future prompts.
-
-```lua
--- signature
-LAgent:setModel(model)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `model` | `string` | Model name (e.g. `"llama3"`, `"mistral"`). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setName`
-
-Sets the agent's name identifier used when added to an AISystem.
-
-```lua
--- signature
-LAgent:setName(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | `string` | Agent name. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setOption`
-
-Sets a single model option forwarded to the LLM backend.
-
-```lua
--- signature
-LAgent:setOption(key, value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `key` | `string` | Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`). |
-| `value` | `any` | Option value forwarded as JSON. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setPosition`
-
-Sets this agent's world position when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setPosition(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | `number` | New X position in world units. |
-| `y` | `number` | New Y position in world units. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("mover")
-  npc:setPosition(256, 128)
-  local x, y = npc:getPosition()
-  print("LAgent:setPosition: done")
-  print("LAgent:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
-end
-```
-
----
-
-### `LAgent:setPriority`
-
-Sets this agent's integer priority when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setPriority(p)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `p` | `number` | Priority value used by game-side AI scheduling or ordering logic. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("captain")
-  npc:setPriority(10)
-  print("LAgent:setPriority: " .. tostring(npc:getPriority()))
-end
-```
-
----
-
-### `LAgent:setTemperature`
-
-Sets the sampling temperature forwarded to the LLM backend.
-
-```lua
--- signature
-LAgent:setTemperature(t)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `t` | `number` | Temperature value (e.g. 0.7). Higher = more random. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setTimeout`
-
-Sets the per-request timeout in seconds (0 uses the default 60 s).
-
-```lua
--- signature
-LAgent:setTimeout(secs)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `secs` | `number` | Timeout in seconds. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setUrl`
-
-Changes the LLM endpoint URL for future prompts.
-
-```lua
--- signature
-LAgent:setUrl(url)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `url` | `string` | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-### `LAgent:setVelocity`
-
-Sets this agent's velocity vector when the agent still exists in its world.
-
-```lua
--- signature
-LAgent:setVelocity(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | `number` | New X velocity in world units per second. |
-| `y` | `number` | New Y velocity in world units per second. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("runner")
-  npc:setVelocity(60, -30)
-  local vx, vy = npc:getVelocity()
-  print("LAgent:setVelocity: done")
-  print("LAgent:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
-end
-```
-
----
-
-### `LAgent:skillCount`
-
-Returns the number of registered skills.
-
-```lua
--- signature
-LAgent:skillCount()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `number` | Skill count. |
-
----
-
-### `LAgent:type`
-
-Returns the Lua-visible type name for this agent handle.
-
-```lua
--- signature
-LAgent:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `string` | The string `LAgent`. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("villager")
-  local t = npc:type()
-  print("LAgent:type: " .. t)
-  print("LAgent:type: matches=" .. tostring(npc:typeOf("LAgent")))
-end
-```
-
----
-
-### `LAgent:typeOf`
-
-Returns whether this agent handle matches a supported type name.
-
-```lua
--- signature
-LAgent:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | `string` | Type name to compare against `Agent` and `Object`. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
-
-**Example**
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("knight")
-  local is_agent = npc:typeOf("LAgent")
-  local is_image = npc:typeOf("LImage")
-  print("LAgent:typeOf: LAgent=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
-end
-```
-
----
-
-### `LAgent:update`
-
-Polls the background client for completed LLM requests and dispatches callbacks.
-
-```lua
--- signature
-LAgent:update()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| `nil` | No value is returned. |
-
----
-
-## LBTNode
-
-### `LBTNode:addChild`
+#### `LBTNode:addChild`
 
 Adds a child node to a composite selector, sequence, or parallel node.
 
 ```lua
--- signature
 LBTNode:addChild(child)
 ```
 
@@ -3445,7 +2509,7 @@ LBTNode:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | `LBTNode` | Child node handle to move into this composite node. |
+| `child` | [LBTNode](#lbtnode-handle) | Child node handle to move into this composite node. |
 
 **Example**
 
@@ -3460,12 +2524,11 @@ end
 
 ---
 
-### `LBTNode:getChildCount`
+#### `LBTNode:getChildCount`
 
 Returns the number of children owned by this behavior tree node.
 
 ```lua
--- signature
 LBTNode:getChildCount()
 ```
 
@@ -3473,7 +2536,7 @@ LBTNode:getChildCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Child count for composite nodes, or zero for leaf and decorator nodes without child lists. |
+| number | Child count for composite nodes, or zero for leaf and decorator nodes without child lists. |
 
 **Example**
 
@@ -3488,12 +2551,11 @@ end
 
 ---
 
-### `LBTNode:getCount`
+#### `LBTNode:getCount`
 
 Returns the repeat count for repeater nodes or zero for other node kinds.
 
 ```lua
--- signature
 LBTNode:getCount()
 ```
 
@@ -3501,7 +2563,7 @@ LBTNode:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Repeater count value. |
+| number | Repeater count value. |
 
 **Example**
 
@@ -3515,12 +2577,11 @@ end
 
 ---
 
-### `LBTNode:getNodeType`
+#### `LBTNode:getNodeType`
 
 Returns the behavior tree node kind as a lowercase string.
 
 ```lua
--- signature
 LBTNode:getNodeType()
 ```
 
@@ -3528,7 +2589,7 @@ LBTNode:getNodeType()
 
 | Type | Description |
 |------|-------------|
-| `string` | Node kind such as `selector`, `sequence`, `parallel`, `action`, or `condition`. |
+| string | Node kind such as `selector`, `sequence`, `parallel`, `action`, or `condition`. |
 
 **Example**
 
@@ -3541,12 +2602,11 @@ end
 
 ---
 
-### `LBTNode:reset`
+#### `LBTNode:reset`
 
 Resets this behavior tree node's runtime state.
 
 ```lua
--- signature
 LBTNode:reset()
 ```
 
@@ -3563,12 +2623,11 @@ end
 
 ---
 
-### `LBTNode:setChild`
+#### `LBTNode:setChild`
 
 Sets the single child of a decorator node such as inverter, repeater, or succeeder.
 
 ```lua
--- signature
 LBTNode:setChild(child)
 ```
 
@@ -3576,7 +2635,7 @@ LBTNode:setChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | `LBTNode` | Child node handle to move into this decorator node. |
+| `child` | [LBTNode](#lbtnode-handle) | Child node handle to move into this decorator node. |
 
 **Example**
 
@@ -3591,12 +2650,11 @@ end
 
 ---
 
-### `LBTNode:setCount`
+#### `LBTNode:setCount`
 
 Sets the repeat count when this node is a repeater.
 
 ```lua
--- signature
 LBTNode:setCount(n)
 ```
 
@@ -3604,7 +2662,7 @@ LBTNode:setCount(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Number of successful child executions before the repeater stops; zero means engine-defined repeat behavior. |
+| `n` | number | Number of successful child executions before the repeater stops; zero means engine-defined repeat behavior. |
 
 **Example**
 
@@ -3619,12 +2677,11 @@ end
 
 ---
 
-### `LBTNode:setFailurePolicy`
+#### `LBTNode:setFailurePolicy`
 
 Sets the failure policy for a parallel node.
 
 ```lua
--- signature
 LBTNode:setFailurePolicy(policy)
 ```
 
@@ -3632,7 +2689,7 @@ LBTNode:setFailurePolicy(policy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `policy` | `string` | Parallel failure policy name parsed by the engine. |
+| `policy` | string | Parallel failure policy name parsed by the engine. |
 
 **Example**
 
@@ -3647,12 +2704,11 @@ end
 
 ---
 
-### `LBTNode:setSuccessPolicy`
+#### `LBTNode:setSuccessPolicy`
 
 Sets the success policy for a parallel node.
 
 ```lua
--- signature
 LBTNode:setSuccessPolicy(policy)
 ```
 
@@ -3660,7 +2716,7 @@ LBTNode:setSuccessPolicy(policy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `policy` | `string` | Parallel success policy name parsed by the engine. |
+| `policy` | string | Parallel success policy name parsed by the engine. |
 
 **Example**
 
@@ -3675,12 +2731,11 @@ end
 
 ---
 
-### `LBTNode:type`
+#### `LBTNode:type`
 
 Returns the Lua-visible type name for this behavior tree node handle.
 
 ```lua
--- signature
 LBTNode:type()
 ```
 
@@ -3688,7 +2743,7 @@ LBTNode:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LBTNode`. |
+| string | The string `[LBTNode](#lbtnode-handle)`. |
 
 **Example**
 
@@ -3703,12 +2758,11 @@ end
 
 ---
 
-### `LBTNode:typeOf`
+#### `LBTNode:typeOf`
 
 Returns whether this behavior tree node handle matches a supported type name.
 
 ```lua
--- signature
 LBTNode:typeOf(name)
 ```
 
@@ -3716,13 +2770,13 @@ LBTNode:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `BTNode` and `Object`. |
+| `name` | string | Type name to compare against `BTNode` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -3737,14 +2791,172 @@ end
 
 ---
 
-## LBehaviorTree
+## LBandit Handle
 
-### `LBehaviorTree:addChild`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBandit:armCount`
+
+Returns the number of arms in this bandit.
+
+```lua
+LBandit:armCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Arm count. |
+
+---
+
+#### `LBandit:bestArm`
+
+Returns the arm with the best current estimate.
+
+```lua
+LBandit:bestArm()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Zero-based best arm index. |
+
+---
+
+#### `LBandit:predict`
+
+Alias for `select`. Selects an arm using the configured bandit strategy.
+
+```lua
+LBandit:predict()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Zero-based selected arm index. |
+
+---
+
+#### `LBandit:reset`
+
+Resets all bandit arm statistics. This method is available to Lua scripts.
+
+```lua
+LBandit:reset()
+```
+
+---
+
+#### `LBandit:select`
+
+Selects an arm using the configured bandit strategy.
+
+```lua
+LBandit:select()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Zero-based selected arm index. |
+
+---
+
+#### `LBandit:totalPulls`
+
+Returns the total number of arm selections recorded by this bandit.
+
+```lua
+LBandit:totalPulls()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total pull count. |
+
+---
+
+#### `LBandit:type`
+
+Returns the Lua-visible type name for this bandit handle.
+
+```lua
+LBandit:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LBandit](#lbandit-handle)`. |
+
+---
+
+#### `LBandit:typeOf`
+
+Returns whether this bandit handle matches a supported type name.
+
+```lua
+LBandit:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LBandit](#lbandit-handle)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+#### `LBandit:update`
+
+Updates one arm with a received reward.
+
+```lua
+LBandit:update(idx, reward)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Zero-based arm index. |
+| `reward` | number | Reward value assigned to the arm pull. |
+
+---
+
+## LBehaviorTree Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBehaviorTree:addChild`
 
 Attach a child node to a parent composite or decorator node.
 
 ```lua
--- signature
 LBehaviorTree:addChild(parentId, childId)
 ```
 
@@ -3752,23 +2964,22 @@ LBehaviorTree:addChild(parentId, childId)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `parentId` | `number` | The parent node ID. |
-| `childId` | `number` | The child node ID to attach. |
+| `parentId` | number | The parent node ID. |
+| `childId` | number | The child node ID to attach. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if attached successfully. |
+| boolean | True if attached successfully. |
 
 ---
 
-### `LBehaviorTree:addInverter`
+#### `LBehaviorTree:addInverter`
 
-Create a decorator node that inverts its child's result (success ↔ failure).
+Create a decorator node that inverts its child's result (success â†” failure).
 
 ```lua
--- signature
 LBehaviorTree:addInverter(label)
 ```
 
@@ -3776,22 +2987,21 @@ LBehaviorTree:addInverter(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional debug label. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 ---
 
-### `LBehaviorTree:addLeaf`
+#### `LBehaviorTree:addLeaf`
 
 Create a leaf (action) node that will invoke a named callback function on tick.
 
 ```lua
--- signature
 LBehaviorTree:addLeaf(name, label)
 ```
 
@@ -3799,23 +3009,22 @@ LBehaviorTree:addLeaf(name, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The leaf name (must match a setLeaf registration). |
-| `label?` | `string` | Optional debug label. |
+| `name` | string | The leaf name (must match a setLeaf registration). |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 ---
 
-### `LBehaviorTree:addParallel`
+#### `LBehaviorTree:addParallel`
 
 Create a parallel composite node that runs all children simultaneously.
 
 ```lua
--- signature
 LBehaviorTree:addParallel(minSuccess, label)
 ```
 
@@ -3823,23 +3032,22 @@ LBehaviorTree:addParallel(minSuccess, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `minSuccess` | `number` | Minimum successful children required for this node to succeed. |
-| `label?` | `string` | Optional debug label. |
+| `minSuccess` | number | Minimum successful children required for this node to succeed. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 ---
 
-### `LBehaviorTree:addRepeat`
+#### `LBehaviorTree:addRepeat`
 
 Create a decorator node that repeats its child a fixed number of times.
 
 ```lua
--- signature
 LBehaviorTree:addRepeat(count, label)
 ```
 
@@ -3847,23 +3055,22 @@ LBehaviorTree:addRepeat(count, label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | `number` | Number of repetitions. |
-| `label?` | `string` | Optional debug label. |
+| `count` | number | Number of repetitions. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 ---
 
-### `LBehaviorTree:addSelector`
+#### `LBehaviorTree:addSelector`
 
 Create a selector (fallback) composite node. Succeeds if any child succeeds.
 
 ```lua
--- signature
 LBehaviorTree:addSelector(label)
 ```
 
@@ -3871,22 +3078,21 @@ LBehaviorTree:addSelector(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional debug label. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 ---
 
-### `LBehaviorTree:addSequence`
+#### `LBehaviorTree:addSequence`
 
 Create a sequence composite node. All children must succeed for this node to succeed.
 
 ```lua
--- signature
 LBehaviorTree:addSequence(label)
 ```
 
@@ -3894,33 +3100,31 @@ LBehaviorTree:addSequence(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label?` | `string` | Optional debug label. |
+| `label?` | string | Optional debug label. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The node ID. |
+| number | The node ID. |
 
 ---
 
-### `LBehaviorTree:clearAll`
+#### `LBehaviorTree:clearAll`
 
 Remove all nodes and leaf functions, resetting the tree to empty.
 
 ```lua
--- signature
 LBehaviorTree:clearAll()
 ```
 
 ---
 
-### `LBehaviorTree:getDebugState`
+#### `LBehaviorTree:getDebugState`
 
 Returns behavior tree debug counters and status in a Lua table.
 
 ```lua
--- signature
 LBehaviorTree:getDebugState()
 ```
 
@@ -3928,7 +3132,7 @@ LBehaviorTree:getDebugState()
 
 | Type | Description |
 |------|-------------|
-| `LBehaviorTreeGetDebugStateResult` | Table containing `node_count` and `last_status` fields. |
+| LBehaviorTreeGetDebugStateResult | Table containing `node_count` and `last_status` fields. |
 
 **Example**
 
@@ -3944,12 +3148,11 @@ end
 
 ---
 
-### `LBehaviorTree:getLastStatus`
+#### `LBehaviorTree:getLastStatus`
 
 Returns the last behavior tree status string recorded by the tree.
 
 ```lua
--- signature
 LBehaviorTree:getLastStatus()
 ```
 
@@ -3957,7 +3160,7 @@ LBehaviorTree:getLastStatus()
 
 | Type | Description |
 |------|-------------|
-| `string` | Last status such as `success`, `failure`, or `running`. |
+| string | Last status such as `success`, `failure`, or `running`. |
 
 **Example**
 
@@ -3972,12 +3175,11 @@ end
 
 ---
 
-### `LBehaviorTree:nodeCount`
+#### `LBehaviorTree:nodeCount`
 
 Return the total number of nodes in the tree.
 
 ```lua
--- signature
 LBehaviorTree:nodeCount()
 ```
 
@@ -3985,27 +3187,25 @@ LBehaviorTree:nodeCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Node count. |
+| number | Node count. |
 
 ---
 
-### `LBehaviorTree:resetState`
+#### `LBehaviorTree:resetState`
 
 Reset the tree's running state. Use between encounters or when restarting AI logic.
 
 ```lua
--- signature
 LBehaviorTree:resetState()
 ```
 
 ---
 
-### `LBehaviorTree:setLeaf`
+#### `LBehaviorTree:setLeaf`
 
 Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
 
 ```lua
--- signature
 LBehaviorTree:setLeaf(name, callback)
 ```
 
@@ -4013,17 +3213,16 @@ LBehaviorTree:setLeaf(name, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | The leaf name (matching addLeaf). |
-| `callback` | `function` | A function returning a status string. |
+| `name` | string | The leaf name (matching addLeaf). |
+| `callback` | function | A function returning a status string. |
 
 ---
 
-### `LBehaviorTree:setRoot`
+#### `LBehaviorTree:setRoot`
 
 Sets the behavior tree root by moving a node handle into the tree.
 
 ```lua
--- signature
 LBehaviorTree:setRoot(node)
 ```
 
@@ -4031,16 +3230,15 @@ LBehaviorTree:setRoot(node)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node` | `LBTNode` | Node handle to consume as the new tree root. |
+| `node` | [LBTNode](#lbtnode-handle) | Node handle to consume as the new tree root. |
 
 ---
 
-### `LBehaviorTree:tick`
+#### `LBehaviorTree:tick`
 
 Execute one tick of the behavior tree from the root. Returns the root node's status.
 
 ```lua
--- signature
 LBehaviorTree:tick()
 ```
 
@@ -4048,16 +3246,15 @@ LBehaviorTree:tick()
 
 | Type | Description |
 |------|-------------|
-| `string` | One of "success", "failure", or "running". |
+| string | One of "success", "failure", or "running". |
 
 ---
 
-### `LBehaviorTree:type`
+#### `LBehaviorTree:type`
 
 Returns the Lua-visible type name for this behavior tree handle.
 
 ```lua
--- signature
 LBehaviorTree:type()
 ```
 
@@ -4065,7 +3262,7 @@ LBehaviorTree:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LBehaviorTree`. |
+| string | The string `[LBehaviorTree](#lbehaviortree-handle)`. |
 
 **Example**
 
@@ -4080,12 +3277,11 @@ end
 
 ---
 
-### `LBehaviorTree:typeOf`
+#### `LBehaviorTree:typeOf`
 
 Returns whether this behavior tree handle matches a supported type name.
 
 ```lua
--- signature
 LBehaviorTree:typeOf(name)
 ```
 
@@ -4093,13 +3289,13 @@ LBehaviorTree:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `BehaviorTree` and `Object`. |
+| `name` | string | Type name to compare against `BehaviorTree` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4107,21 +3303,617 @@ LBehaviorTree:typeOf(name)
 do
   local bt = lurek.ai.newBehaviorTree()
   local is_bt = bt:typeOf("LBehaviorTree")
-  local is_other = bt:typeOf("LAgent")
-  print("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LAgent=" .. tostring(is_other))
+  local is_other = bt:typeOf("LBot")
+  print("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LBot=" .. tostring(is_other))
 end
 ```
 
 ---
 
-## LCommandQueue
+## LBot Handle
 
-### `LCommandQueue:cancelCurrent`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LBot:addTag`
+
+Adds a tag string to this agent when the agent still exists in its world.
+
+```lua
+LBot:addTag(tag)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tag` | string | Tag name to insert into the agent tag set. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("guard")
+  npc:addTag("hostile")
+  local has_hostile = npc:hasTag("hostile")
+  print("LBot:addTag: hostile=" .. tostring(has_hostile))
+end
+```
+
+---
+
+#### `LBot:getBlackboard`
+
+Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+
+```lua
+LBot:getBlackboard()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAIBlackboard](#laiblackboard-handle) | Blackboard handle initialized from the agent's local blackboard values at call time. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("ranger")
+  local bb = npc:getBlackboard()
+  bb:setNumber("hp", 100)
+  local hp = bb:getNumber("hp", 0)
+  print("LBot:getBlackboard: hp=" .. tostring(hp))
+end
+```
+
+---
+
+#### `LBot:getDecisionModel`
+
+Returns this agent's decision model name or the default model name for a missing agent.
+
+```lua
+LBot:getDecisionModel()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Current decision model name. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("farmer")
+  npc:setDecisionModel("custom")
+  local model = npc:getDecisionModel()
+  print("LBot:getDecisionModel: " .. model)
+end
+```
+
+---
+
+#### `LBot:getMaxForce`
+
+Returns this agent's maximum steering force or the default force for a missing agent.
+
+```lua
+LBot:getMaxForce()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Maximum steering force value. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("scout")
+  npc:setMaxForce(200)
+  local force = npc:getMaxForce()
+  print("LBot:getMaxForce: " .. tostring(force))
+  print("LBot:getMaxForce: name=" .. npc:getName())
+end
+```
+
+---
+
+#### `LBot:getMaxSpeed`
+
+Returns this agent's maximum movement speed or the default speed for a missing agent.
+
+```lua
+LBot:getMaxSpeed()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Maximum speed in world units per second. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("courier")
+  npc:setMaxSpeed(150)
+  local speed = npc:getMaxSpeed()
+  print("LBot:getMaxSpeed: " .. tostring(speed))
+  print("LBot:getMaxSpeed: name=" .. npc:getName())
+end
+```
+
+---
+
+#### `LBot:getName`
+
+Returns this agent's stable world name.
+
+```lua
+LBot:getName()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Agent name stored in the handle. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("knight_03")
+  local name = npc:getName()
+  print("LBot:getName: " .. name)
+end
+```
+
+---
+
+#### `LBot:getPosition`
+
+Returns this agent's world position or the origin when the agent has been removed.
+
+```lua
+LBot:getPosition()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | X and Y position in world units. (value 1). |
+| number | X and Y position in world units. (value 2). |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("static_guard")
+  npc:setPosition(400, 300)
+  local x, y = npc:getPosition()
+  print("LBot:getPosition: " .. tostring(x) .. ", " .. tostring(y))
+end
+```
+
+---
+
+#### `LBot:getPriority`
+
+Returns this agent's integer priority or zero when the agent has been removed.
+
+```lua
+LBot:getPriority()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current priority value. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("grunt")
+  npc:setPriority(5)
+  local prio = npc:getPriority()
+  print("LBot:getPriority: " .. tostring(prio))
+end
+```
+
+---
+
+#### `LBot:getVelocity`
+
+Returns this agent's velocity vector or zero velocity when the agent has been removed.
+
+```lua
+LBot:getVelocity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | X and Y velocity in world units per second. (value 1). |
+| number | X and Y velocity in world units per second. (value 2). |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("idle_npc")
+  npc:setVelocity(0, 0)
+  local vx, vy = npc:getVelocity()
+  print("LBot:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
+end
+```
+
+---
+
+#### `LBot:hasTag`
+
+Returns whether this agent currently has the given tag.
+
+```lua
+LBot:hasTag(tag)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tag` | string | Tag name to check in the agent tag set. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the tag exists on the agent. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("merchant")
+  npc:addTag("friendly")
+  local friendly = npc:hasTag("friendly")
+  local hostile = npc:hasTag("hostile")
+  print("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
+end
+```
+
+---
+
+#### `LBot:removeTag`
+
+Removes a tag string from this agent when the agent still exists in its world.
+
+```lua
+LBot:removeTag(tag)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tag` | string | Tag name to remove from the agent tag set. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("spy")
+  npc:addTag("visible")
+  npc:removeTag("visible")
+  local still_has = npc:hasTag("visible")
+  print("LBot:removeTag: visible=" .. tostring(still_has))
+end
+```
+
+---
+
+#### `LBot:setCustomModel`
+
+Installs a Lua callback as this agent's decision model and stores it in the callback registry.
+
+```lua
+LBot:setCustomModel(callback)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `callback` | function | Function called during world updates with `(agent, blackboard, dt)` for this agent. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("thinker")
+  npc:setDecisionModel("custom")
+  local called_with_dt = 0
+  npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
+  world:update(0.016)
+  print("LBot:setCustomModel: dt=" .. tostring(called_with_dt))
+end
+```
+
+---
+
+#### `LBot:setDecisionModel`
+
+Sets this agent's built-in decision model from a string name when the name is recognized.
+
+```lua
+LBot:setDecisionModel(model)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | string | Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("worker")
+  npc:setDecisionModel("custom")
+  local model = npc:getDecisionModel()
+  print("LBot:setDecisionModel: " .. model)
+end
+```
+
+---
+
+#### `LBot:setMaxForce`
+
+Sets this agent's maximum steering force when the agent still exists in its world.
+
+```lua
+LBot:setMaxForce(v)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `v` | number | Maximum steering force applied during steering calculations. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("tank")
+  npc:setMaxForce(80)
+  print("LBot:setMaxForce: done")
+  print("LBot:setMaxForce: force=" .. tostring(npc:getMaxForce()))
+end
+```
+
+---
+
+#### `LBot:setMaxSpeed`
+
+Sets this agent's maximum movement speed when the agent still exists in its world.
+
+```lua
+LBot:setMaxSpeed(v)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `v` | number | Maximum speed in world units per second. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("sprinter")
+  npc:setMaxSpeed(200)
+  print("LBot:setMaxSpeed: done")
+  print("LBot:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
+end
+```
+
+---
+
+#### `LBot:setPosition`
+
+Sets this agent's world position when the agent still exists in its world.
+
+```lua
+LBot:setPosition(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | New X position in world units. |
+| `y` | number | New Y position in world units. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("mover")
+  npc:setPosition(256, 128)
+  local x, y = npc:getPosition()
+  print("LBot:setPosition: done")
+  print("LBot:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
+end
+```
+
+---
+
+#### `LBot:setPriority`
+
+Sets this agent's integer priority when the agent still exists in its world.
+
+```lua
+LBot:setPriority(p)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `p` | number | Priority value used by game-side AI scheduling or ordering logic. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("captain")
+  npc:setPriority(10)
+  print("LBot:setPriority: " .. tostring(npc:getPriority()))
+end
+```
+
+---
+
+#### `LBot:setVelocity`
+
+Sets this agent's velocity vector when the agent still exists in its world.
+
+```lua
+LBot:setVelocity(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | New X velocity in world units per second. |
+| `y` | number | New Y velocity in world units per second. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("runner")
+  npc:setVelocity(60, -30)
+  local vx, vy = npc:getVelocity()
+  print("LBot:setVelocity: done")
+  print("LBot:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
+end
+```
+
+---
+
+#### `LBot:type`
+
+Returns the Lua-visible type name for this agent handle.
+
+```lua
+LBot:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LBot](#lbot-handle)`. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("villager")
+  local t = npc:type()
+  print("LBot:type: " .. t)
+  print("LBot:type: matches=" .. tostring(npc:typeOf("LBot")))
+end
+```
+
+---
+
+#### `LBot:typeOf`
+
+Returns whether this agent handle matches a supported type name.
+
+```lua
+LBot:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `Agent` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("knight")
+  local is_agent = npc:typeOf("LBot")
+  local is_image = npc:typeOf("LImage")
+  print("LBot:typeOf: LBot=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
+end
+```
+
+---
+
+## LCommandQueue Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LCommandQueue:cancelCurrent`
 
 Cancels the currently active command when one exists.
 
 ```lua
--- signature
 LCommandQueue:cancelCurrent()
 ```
 
@@ -4129,7 +3921,7 @@ LCommandQueue:cancelCurrent()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a current command was cancelled. |
+| boolean | True when a current command was cancelled. |
 
 **Example**
 
@@ -4145,12 +3937,11 @@ end
 
 ---
 
-### `LCommandQueue:clear`
+#### `LCommandQueue:clear`
 
 Removes every queued command. This method is available to Lua scripts.
 
 ```lua
--- signature
 LCommandQueue:clear()
 ```
 
@@ -4168,12 +3959,11 @@ end
 
 ---
 
-### `LCommandQueue:enqueue`
+#### `LCommandQueue:enqueue`
 
 Adds a command callback to the back of the queue.
 
 ```lua
--- signature
 LCommandQueue:enqueue(kind, callback, opts)
 ```
 
@@ -4181,9 +3971,9 @@ LCommandQueue:enqueue(kind, callback, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kind` | `string` | Command type label stored for inspection. |
-| `callback` | `function` | Callback invoked by command execution logic outside this wrapper. |
-| `opts?` | `table` | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
+| `kind` | string | Command type label stored for inspection. |
+| `callback` | function | Callback invoked by command execution logic outside this wrapper. |
+| `opts?` | table | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
 
 **Example**
 
@@ -4198,12 +3988,11 @@ end
 
 ---
 
-### `LCommandQueue:getCount`
+#### `LCommandQueue:getCount`
 
 Returns the number of commands currently queued.
 
 ```lua
--- signature
 LCommandQueue:getCount()
 ```
 
@@ -4211,7 +4000,7 @@ LCommandQueue:getCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current queue length. |
+| number | Current queue length. |
 
 **Example**
 
@@ -4227,12 +4016,11 @@ end
 
 ---
 
-### `LCommandQueue:getCurrentTarget`
+#### `LCommandQueue:getCurrentTarget`
 
 Returns the current command target coordinates.
 
 ```lua
--- signature
 LCommandQueue:getCurrentTarget()
 ```
 
@@ -4240,8 +4028,8 @@ LCommandQueue:getCurrentTarget()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Target X and Y coordinates for the current command, or queue defaults. |
-| `number` | b Target X and Y coordinates for the current command, or queue defaults. |
+| number | Target X and Y coordinates for the current command; or queue defaults. (value 1). |
+| number | Target X and Y coordinates for the current command; or queue defaults. (value 2). |
 
 **Example**
 
@@ -4256,12 +4044,11 @@ end
 
 ---
 
-### `LCommandQueue:getCurrentType`
+#### `LCommandQueue:getCurrentType`
 
 Returns the type label of the current command when one exists.
 
 ```lua
--- signature
 LCommandQueue:getCurrentType()
 ```
 
@@ -4269,7 +4056,7 @@ LCommandQueue:getCurrentType()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Current command type label, or nil when no command is active. |
+| LuaValue | Current command type label, or nil when no command is active. |
 
 **Example**
 
@@ -4283,12 +4070,11 @@ end
 
 ---
 
-### `LCommandQueue:isEmpty`
+#### `LCommandQueue:isEmpty`
 
 Returns whether the command queue has no commands.
 
 ```lua
--- signature
 LCommandQueue:isEmpty()
 ```
 
@@ -4296,7 +4082,7 @@ LCommandQueue:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the queue is empty. |
+| boolean | True when the queue is empty. |
 
 **Example**
 
@@ -4311,12 +4097,11 @@ end
 
 ---
 
-### `LCommandQueue:pushFront`
+#### `LCommandQueue:pushFront`
 
 Adds a command callback to the front of the queue.
 
 ```lua
--- signature
 LCommandQueue:pushFront(kind, callback, opts)
 ```
 
@@ -4324,9 +4109,9 @@ LCommandQueue:pushFront(kind, callback, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kind` | `string` | Command type label stored for inspection. |
-| `callback` | `function` | Callback invoked by command execution logic outside this wrapper. |
-| `opts?` | `table` | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
+| `kind` | string | Command type label stored for inspection. |
+| `callback` | function | Callback invoked by command execution logic outside this wrapper. |
+| `opts?` | table | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
 
 **Example**
 
@@ -4341,12 +4126,11 @@ end
 
 ---
 
-### `LCommandQueue:replace`
+#### `LCommandQueue:replace`
 
 Replaces the queue contents with one command callback.
 
 ```lua
--- signature
 LCommandQueue:replace(kind, callback, opts)
 ```
 
@@ -4354,9 +4138,9 @@ LCommandQueue:replace(kind, callback, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kind` | `string` | Command type label stored for inspection. |
-| `callback` | `function` | Callback invoked by command execution logic outside this wrapper. |
-| `opts?` | `table` | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
+| `kind` | string | Command type label stored for inspection. |
+| `callback` | function | Callback invoked by command execution logic outside this wrapper. |
+| `opts?` | table | Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields. |
 
 **Example**
 
@@ -4372,12 +4156,11 @@ end
 
 ---
 
-### `LCommandQueue:type`
+#### `LCommandQueue:type`
 
 Returns the Lua-visible type name for this command queue handle.
 
 ```lua
--- signature
 LCommandQueue:type()
 ```
 
@@ -4385,7 +4168,7 @@ LCommandQueue:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LCommandQueue`. |
+| string | The string `[LCommandQueue](#lcommandqueue-handle)`. |
 
 **Example**
 
@@ -4399,12 +4182,11 @@ end
 
 ---
 
-### `LCommandQueue:typeOf`
+#### `LCommandQueue:typeOf`
 
 Returns whether this command queue handle matches a supported type name.
 
 ```lua
--- signature
 LCommandQueue:typeOf(name)
 ```
 
@@ -4412,13 +4194,13 @@ LCommandQueue:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `CommandQueue` and `Object`. |
+| `name` | string | Type name to compare against `CommandQueue` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4431,14 +4213,19 @@ end
 
 ---
 
-## LContextSteering
+## LContextSteering Handle
 
-### `LContextSteering:addAvoidBounds`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LContextSteering:addAvoidBounds`
 
 Adds rectangular bounds avoidance to context steering.
 
 ```lua
--- signature
 LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight)
 ```
 
@@ -4446,12 +4233,12 @@ LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min_x` | `number` | Minimum X bound. |
-| `min_y` | `number` | Minimum Y bound. |
-| `max_x` | `number` | Maximum X bound. |
-| `max_y` | `number` | Maximum Y bound. |
-| `margin` | `number` | Distance from bounds where avoidance begins. |
-| `weight` | `number` | Avoidance behavior weight. |
+| `min_x` | number | Minimum X bound. |
+| `min_y` | number | Minimum Y bound. |
+| `max_x` | number | Maximum X bound. |
+| `max_y` | number | Maximum Y bound. |
+| `margin` | number | Distance from bounds where avoidance begins. |
+| `weight` | number | Avoidance behavior weight. |
 
 **Example**
 
@@ -4465,12 +4252,11 @@ end
 
 ---
 
-### `LContextSteering:addAvoidPoint`
+#### `LContextSteering:addAvoidPoint`
 
 Adds a point avoidance influence to context steering.
 
 ```lua
--- signature
 LContextSteering:addAvoidPoint(x, y, radius, weight)
 ```
 
@@ -4478,10 +4264,10 @@ LContextSteering:addAvoidPoint(x, y, radius, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Avoidance point X position. |
-| `y` | `number` | Avoidance point Y position. |
-| `radius` | `number` | Avoidance radius in world units. |
-| `weight` | `number` | Avoidance behavior weight. |
+| `x` | number | Avoidance point X position. |
+| `y` | number | Avoidance point Y position. |
+| `radius` | number | Avoidance radius in world units. |
+| `weight` | number | Avoidance behavior weight. |
 
 **Example**
 
@@ -4495,12 +4281,11 @@ end
 
 ---
 
-### `LContextSteering:addSeekTarget`
+#### `LContextSteering:addSeekTarget`
 
 Adds a context steering target attraction.
 
 ```lua
--- signature
 LContextSteering:addSeekTarget(tx, ty, weight)
 ```
 
@@ -4508,9 +4293,9 @@ LContextSteering:addSeekTarget(tx, ty, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Target X position in world units. |
-| `ty` | `number` | Target Y position in world units. |
-| `weight` | `number` | Attraction weight. |
+| `tx` | number | Target X position in world units. |
+| `ty` | number | Target Y position in world units. |
+| `weight` | number | Attraction weight. |
 
 **Example**
 
@@ -4524,12 +4309,11 @@ end
 
 ---
 
-### `LContextSteering:addWander`
+#### `LContextSteering:addWander`
 
 Adds wander noise to context steering.
 
 ```lua
--- signature
 LContextSteering:addWander(jitter, weight)
 ```
 
@@ -4537,8 +4321,8 @@ LContextSteering:addWander(jitter, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `jitter` | `number` | Random steering jitter strength. |
-| `weight` | `number` | Wander behavior weight. |
+| `jitter` | number | Random steering jitter strength. |
+| `weight` | number | Wander behavior weight. |
 
 **Example**
 
@@ -4552,12 +4336,11 @@ end
 
 ---
 
-### `LContextSteering:chosenMagnitude`
+#### `LContextSteering:chosenMagnitude`
 
 Returns the magnitude of the last selected context steering slot.
 
 ```lua
--- signature
 LContextSteering:chosenMagnitude()
 ```
 
@@ -4565,7 +4348,7 @@ LContextSteering:chosenMagnitude()
 
 | Type | Description |
 |------|-------------|
-| `number` | Last chosen magnitude. |
+| number | Last chosen magnitude. |
 
 **Example**
 
@@ -4581,12 +4364,11 @@ end
 
 ---
 
-### `LContextSteering:clearBehaviors`
+#### `LContextSteering:clearBehaviors`
 
 Removes all context steering behaviors.
 
 ```lua
--- signature
 LContextSteering:clearBehaviors()
 ```
 
@@ -4604,12 +4386,11 @@ end
 
 ---
 
-### `LContextSteering:evaluate`
+#### `LContextSteering:evaluate`
 
 Evaluates context steering and returns the selected movement direction.
 
 ```lua
--- signature
 LContextSteering:evaluate(ax, ay, vx, vy)
 ```
 
@@ -4617,17 +4398,17 @@ LContextSteering:evaluate(ax, ay, vx, vy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ax` | `number` | Agent X position. |
-| `ay` | `number` | Agent Y position. |
-| `vx` | `number` | Agent X velocity. |
-| `vy` | `number` | Agent Y velocity. |
+| `ax` | number | Agent X position. |
+| `ay` | number | Agent Y position. |
+| `vx` | number | Agent X velocity. |
+| `vy` | number | Agent Y velocity. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Selected X and Y direction. |
-| `number` | b Selected X and Y direction. |
+| number | Selected X and Y direction. (value 1). |
+| number | Selected X and Y direction. (value 2). |
 
 **Example**
 
@@ -4643,12 +4424,11 @@ end
 
 ---
 
-### `LContextSteering:slotCount`
+#### `LContextSteering:slotCount`
 
 Returns the number of directional slots used by this context steering model.
 
 ```lua
--- signature
 LContextSteering:slotCount()
 ```
 
@@ -4656,7 +4436,7 @@ LContextSteering:slotCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Direction slot count. |
+| number | Direction slot count. |
 
 **Example**
 
@@ -4669,12 +4449,11 @@ end
 
 ---
 
-### `LContextSteering:type`
+#### `LContextSteering:type`
 
 Returns the Lua-visible type name for this context steering handle.
 
 ```lua
--- signature
 LContextSteering:type()
 ```
 
@@ -4682,7 +4461,7 @@ LContextSteering:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LContextSteering`. |
+| string | The string `[LContextSteering](#lcontextsteering-handle)`. |
 
 **Example**
 
@@ -4696,12 +4475,11 @@ end
 
 ---
 
-### `LContextSteering:typeOf`
+#### `LContextSteering:typeOf`
 
 Returns whether this context steering handle matches a supported type name.
 
 ```lua
--- signature
 LContextSteering:typeOf(name)
 ```
 
@@ -4709,13 +4487,13 @@ LContextSteering:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LContextSteering` and `Object`. |
+| `name` | string | Type name to compare against `[LContextSteering](#lcontextsteering-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4728,14 +4506,225 @@ end
 
 ---
 
-## LEmotionModel
+## LDialogueAI Handle
 
-### `LEmotionModel:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDialogueAI:addBranch`
+
+Adds a selectable branch under an existing dialogue topic.
+
+```lua
+LDialogueAI:addBranch(topic_id, branch_id, weight, fsm_state, bt_status, utility_key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `topic_id` | string | Topic identifier that receives the branch. |
+| `branch_id` | string | Unique branch identifier within the topic. |
+| `weight?` | number | Base branch weight; defaults to 1.0. |
+| `fsm_state?` | string | Optional FSM state required for this branch. |
+| `bt_status?` | string | Optional behavior tree status required for this branch. |
+| `utility_key?` | string | Optional utility score key multiplied into selection. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the branch was added to an existing topic. |
+
+---
+
+#### `LDialogueAI:addTopic`
+
+Adds a selectable dialogue topic with optional context filters.
+
+```lua
+LDialogueAI:addTopic(id, weight, fsm_state, bt_status, utility_key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | string | Unique topic identifier. |
+| `weight?` | number | Base selection weight; defaults to 1.0. |
+| `fsm_state?` | string | Optional FSM state required for this topic. |
+| `bt_status?` | string | Optional behavior tree status required for this topic. |
+| `utility_key?` | string | Optional utility score key multiplied into selection. |
+
+---
+
+#### `LDialogueAI:clearUtilityScores`
+
+Removes every stored utility score from this dialogue selector.
+
+```lua
+LDialogueAI:clearUtilityScores()
+```
+
+---
+
+#### `LDialogueAI:getTopicCount`
+
+Returns the number of topics registered in this dialogue selector.
+
+```lua
+LDialogueAI:getTopicCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current topic count. |
+
+---
+
+#### `LDialogueAI:selectBranch`
+
+Selects the best currently valid branch for the given topic.
+
+```lua
+LDialogueAI:selectBranch(topic_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `topic_id` | string | Topic identifier whose branches should be considered. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Selected branch identifier, or nil when no branch is available. |
+
+---
+
+#### `LDialogueAI:selectTopic`
+
+Selects the best currently valid topic using weights and context filters.
+
+```lua
+LDialogueAI:selectTopic()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Selected topic identifier, or nil when no topic is available. |
+
+---
+
+#### `LDialogueAI:setBTStatus`
+
+Sets the behavior-tree status used as dialogue selection context.
+
+```lua
+LDialogueAI:setBTStatus(status)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `status?` | string | Current behavior tree status, or nil to clear the status context. |
+
+---
+
+#### `LDialogueAI:setFSMState`
+
+Sets the finite-state-machine state used as dialogue selection context.
+
+```lua
+LDialogueAI:setFSMState(state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state?` | string | Current FSM state name, or nil to clear the FSM context. |
+
+---
+
+#### `LDialogueAI:setUtilityScore`
+
+Stores a utility score used by topics and branches that reference the given key.
+
+```lua
+LDialogueAI:setUtilityScore(key, score)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `key` | string | Utility score key. |
+| `score` | number | Utility score value used during weighted selection. |
+
+---
+
+#### `LDialogueAI:type`
+
+Returns the Lua-visible type name for this dialogue AI handle.
+
+```lua
+LDialogueAI:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LDialogueAI](#ldialogueai-handle)`. |
+
+---
+
+#### `LDialogueAI:typeOf`
+
+Returns whether this dialogue AI handle matches a supported type name.
+
+```lua
+LDialogueAI:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `DialogueAI` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+## LEmotionModel Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LEmotionModel:add`
 
 Adds an emotion definition with resting value, decay, and visibility threshold.
 
 ```lua
--- signature
 LEmotionModel:add(name, rest, decay, min_vis)
 ```
 
@@ -4743,10 +4732,10 @@ LEmotionModel:add(name, rest, decay, min_vis)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Emotion name. |
-| `rest` | `number` | Resting emotion value. |
-| `decay` | `number` | Decay rate back toward rest. |
-| `min_vis` | `number` | Minimum value considered visible or active. |
+| `name` | string | Emotion name. |
+| `rest` | number | Resting emotion value. |
+| `decay` | number | Decay rate back toward rest. |
+| `min_vis` | number | Minimum value considered visible or active. |
 
 **Example**
 
@@ -4761,12 +4750,11 @@ end
 
 ---
 
-### `LEmotionModel:dominant`
+#### `LEmotionModel:dominant`
 
 Returns the strongest active emotion name when one is available.
 
 ```lua
--- signature
 LEmotionModel:dominant()
 ```
 
@@ -4774,7 +4762,7 @@ LEmotionModel:dominant()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Dominant emotion name, or nil when no emotion is active. |
+| LuaValue | Dominant emotion name, or nil when no emotion is active. |
 
 **Example**
 
@@ -4791,12 +4779,11 @@ end
 
 ---
 
-### `LEmotionModel:get`
+#### `LEmotionModel:get`
 
 Returns the current value of a named emotion.
 
 ```lua
--- signature
 LEmotionModel:get(name)
 ```
 
@@ -4804,13 +4791,13 @@ LEmotionModel:get(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Emotion name to read. |
+| `name` | string | Emotion name to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Current emotion value. |
+| number | Current emotion value. |
 
 **Example**
 
@@ -4826,12 +4813,11 @@ end
 
 ---
 
-### `LEmotionModel:isActive`
+#### `LEmotionModel:isActive`
 
 Returns whether a named emotion is currently active.
 
 ```lua
--- signature
 LEmotionModel:isActive(name)
 ```
 
@@ -4839,13 +4825,13 @@ LEmotionModel:isActive(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Emotion name to check. |
+| `name` | string | Emotion name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the emotion is above its active threshold. |
+| boolean | True when the emotion is above its active threshold. |
 
 **Example**
 
@@ -4862,12 +4848,11 @@ end
 
 ---
 
-### `LEmotionModel:reset`
+#### `LEmotionModel:reset`
 
 Resets all emotions toward their default state.
 
 ```lua
--- signature
 LEmotionModel:reset()
 ```
 
@@ -4885,12 +4870,11 @@ end
 
 ---
 
-### `LEmotionModel:trigger`
+#### `LEmotionModel:trigger`
 
 Adds an amount to a named emotion. This method is available to Lua scripts.
 
 ```lua
--- signature
 LEmotionModel:trigger(name, amount)
 ```
 
@@ -4898,8 +4882,8 @@ LEmotionModel:trigger(name, amount)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Emotion name to trigger. |
-| `amount` | `number` | Amount added to the current emotion value. |
+| `name` | string | Emotion name to trigger. |
+| `amount` | number | Amount added to the current emotion value. |
 
 **Example**
 
@@ -4914,12 +4898,11 @@ end
 
 ---
 
-### `LEmotionModel:type`
+#### `LEmotionModel:type`
 
 Returns the Lua-visible type name for this emotion model handle.
 
 ```lua
--- signature
 LEmotionModel:type()
 ```
 
@@ -4927,7 +4910,7 @@ LEmotionModel:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LEmotionModel`. |
+| string | The string `[LEmotionModel](#lemotionmodel-handle)`. |
 
 **Example**
 
@@ -4941,12 +4924,11 @@ end
 
 ---
 
-### `LEmotionModel:typeOf`
+#### `LEmotionModel:typeOf`
 
 Returns whether this emotion model handle matches a supported type name.
 
 ```lua
--- signature
 LEmotionModel:typeOf(name)
 ```
 
@@ -4954,13 +4936,13 @@ LEmotionModel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LEmotionModel` and `Object`. |
+| `name` | string | Type name to compare against `[LEmotionModel](#lemotionmodel-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -4973,12 +4955,11 @@ end
 
 ---
 
-### `LEmotionModel:update`
+#### `LEmotionModel:update`
 
 Advances emotion decay over elapsed time.
 
 ```lua
--- signature
 LEmotionModel:update(dt)
 ```
 
@@ -4986,7 +4967,7 @@ LEmotionModel:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -5002,14 +4983,19 @@ end
 
 ---
 
-## LGOAPPlanner
+## LGOAPPlanner Handle
 
-### `LGOAPPlanner:addAction`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGOAPPlanner:addAction`
 
 Adds a GOAP action with optional cost and completion callback.
 
 ```lua
--- signature
 LGOAPPlanner:addAction(name, cost, callback)
 ```
 
@@ -5017,9 +5003,9 @@ LGOAPPlanner:addAction(name, cost, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Action name emitted in generated plans. |
-| `cost?` | `number` | Planning cost for the action; defaults to 1.0. |
-| `callback?` | `function` | Optional callback stored with the action for game-side execution. |
+| `name` | string | Action name emitted in generated plans. |
+| `cost?` | number | Planning cost for the action; defaults to 1.0. |
+| `callback?` | function | Optional callback stored with the action for game-side execution. |
 
 **Example**
 
@@ -5034,12 +5020,11 @@ end
 
 ---
 
-### `LGOAPPlanner:addGoal`
+#### `LGOAPPlanner:addGoal`
 
 Adds a GOAP goal with an optional priority weight.
 
 ```lua
--- signature
 LGOAPPlanner:addGoal(name, priority)
 ```
 
@@ -5047,8 +5032,8 @@ LGOAPPlanner:addGoal(name, priority)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Goal name used for planning and debugging. |
-| `priority?` | `number` | Goal priority; defaults to 1.0. |
+| `name` | string | Goal name used for planning and debugging. |
+| `priority?` | number | Goal priority; defaults to 1.0. |
 
 **Example**
 
@@ -5063,12 +5048,11 @@ end
 
 ---
 
-### `LGOAPPlanner:getActionCount`
+#### `LGOAPPlanner:getActionCount`
 
 Returns the number of GOAP actions registered in this planner.
 
 ```lua
--- signature
 LGOAPPlanner:getActionCount()
 ```
 
@@ -5076,7 +5060,7 @@ LGOAPPlanner:getActionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current action count. |
+| number | Current action count. |
 
 **Example**
 
@@ -5091,12 +5075,11 @@ end
 
 ---
 
-### `LGOAPPlanner:getGoalCount`
+#### `LGOAPPlanner:getGoalCount`
 
 Returns the number of GOAP goals registered in this planner.
 
 ```lua
--- signature
 LGOAPPlanner:getGoalCount()
 ```
 
@@ -5104,7 +5087,7 @@ LGOAPPlanner:getGoalCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current goal count. |
+| number | Current goal count. |
 
 **Example**
 
@@ -5120,12 +5103,11 @@ end
 
 ---
 
-### `LGOAPPlanner:getMaxIterations`
+#### `LGOAPPlanner:getMaxIterations`
 
 Returns the maximum number of planner iterations allowed during search.
 
 ```lua
--- signature
 LGOAPPlanner:getMaxIterations()
 ```
 
@@ -5133,7 +5115,7 @@ LGOAPPlanner:getMaxIterations()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current maximum iteration count. |
+| number | Current maximum iteration count. |
 
 **Example**
 
@@ -5147,12 +5129,11 @@ end
 
 ---
 
-### `LGOAPPlanner:plan`
+#### `LGOAPPlanner:plan`
 
 Builds a plan from the supplied boolean world state and returns action names in execution order.
 
 ```lua
--- signature
 LGOAPPlanner:plan(world_state_tbl, max_depth)
 ```
 
@@ -5160,14 +5141,14 @@ LGOAPPlanner:plan(world_state_tbl, max_depth)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world_state_tbl` | `table` | Map table from string world-state keys to boolean values. |
-| `max_depth?` | `number` | Maximum search depth; defaults to 10. |
+| `world_state_tbl` | table | Map table from string world-state keys to boolean values. |
+| `max_depth?` | number | Maximum search depth; defaults to 10. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Action names selected by the planner. |
+| string[] | Action names selected by the planner. |
 
 **Example**
 
@@ -5188,12 +5169,11 @@ end
 
 ---
 
-### `LGOAPPlanner:setEffect`
+#### `LGOAPPlanner:setEffect`
 
 Sets one boolean effect produced by an existing GOAP action.
 
 ```lua
--- signature
 LGOAPPlanner:setEffect(action_name, key, value)
 ```
 
@@ -5201,9 +5181,9 @@ LGOAPPlanner:setEffect(action_name, key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action_name` | `string` | Name of the action to update. |
-| `key` | `string` | World-state key changed by the action. |
-| `value` | `boolean` | Boolean value written by the effect. |
+| `action_name` | string | Name of the action to update. |
+| `key` | string | World-state key changed by the action. |
+| `value` | boolean | Boolean value written by the effect. |
 
 **Example**
 
@@ -5218,12 +5198,11 @@ end
 
 ---
 
-### `LGOAPPlanner:setGoalState`
+#### `LGOAPPlanner:setGoalState`
 
 Sets one desired world-state key for an existing GOAP goal.
 
 ```lua
--- signature
 LGOAPPlanner:setGoalState(goal_name, key, value)
 ```
 
@@ -5231,9 +5210,9 @@ LGOAPPlanner:setGoalState(goal_name, key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `goal_name` | `string` | Name of the goal to update. |
-| `key` | `string` | World-state key required by the goal. |
-| `value` | `boolean` | Desired boolean value for the key. |
+| `goal_name` | string | Name of the goal to update. |
+| `key` | string | World-state key required by the goal. |
+| `value` | boolean | Desired boolean value for the key. |
 
 **Example**
 
@@ -5248,12 +5227,11 @@ end
 
 ---
 
-### `LGOAPPlanner:setMaxIterations`
+#### `LGOAPPlanner:setMaxIterations`
 
 Sets the maximum number of planner iterations allowed during search.
 
 ```lua
--- signature
 LGOAPPlanner:setMaxIterations(n)
 ```
 
@@ -5261,7 +5239,7 @@ LGOAPPlanner:setMaxIterations(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | `number` | Maximum iteration count. |
+| `n` | number | Maximum iteration count. |
 
 **Example**
 
@@ -5275,12 +5253,11 @@ end
 
 ---
 
-### `LGOAPPlanner:setPrecondition`
+#### `LGOAPPlanner:setPrecondition`
 
 Sets one boolean precondition for an existing GOAP action.
 
 ```lua
--- signature
 LGOAPPlanner:setPrecondition(action_name, key, value)
 ```
 
@@ -5288,9 +5265,9 @@ LGOAPPlanner:setPrecondition(action_name, key, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action_name` | `string` | Name of the action to update. |
-| `key` | `string` | World-state key required by the action. |
-| `value` | `boolean` | Required boolean value for the key. |
+| `action_name` | string | Name of the action to update. |
+| `key` | string | World-state key required by the action. |
+| `value` | boolean | Required boolean value for the key. |
 
 **Example**
 
@@ -5305,12 +5282,11 @@ end
 
 ---
 
-### `LGOAPPlanner:type`
+#### `LGOAPPlanner:type`
 
 Returns the Lua-visible type name for this GOAP planner handle.
 
 ```lua
--- signature
 LGOAPPlanner:type()
 ```
 
@@ -5318,7 +5294,7 @@ LGOAPPlanner:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LGOAPPlanner`. |
+| string | The string `[LGOAPPlanner](#lgoapplanner-handle)`. |
 
 **Example**
 
@@ -5332,12 +5308,11 @@ end
 
 ---
 
-### `LGOAPPlanner:typeOf`
+#### `LGOAPPlanner:typeOf`
 
 Returns whether this GOAP planner handle matches a supported type name.
 
 ```lua
--- signature
 LGOAPPlanner:typeOf(name)
 ```
 
@@ -5345,13 +5320,13 @@ LGOAPPlanner:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `GOAPPlanner` and `Object`. |
+| `name` | string | Type name to compare against `GOAPPlanner` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -5364,14 +5339,162 @@ end
 
 ---
 
-## LHTNDomain
+## LGeneticAlgorithm Handle
 
-### `LHTNDomain:addCompound`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LGeneticAlgorithm:bestGenes`
+
+Returns the genes for the best chromosome in the population.
+
+```lua
+LGeneticAlgorithm:bestGenes()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Array of best gene values, or an empty array when the population has no best chromosome. |
+
+---
+
+#### `LGeneticAlgorithm:evolve`
+
+Advances the genetic algorithm by one generation.
+
+```lua
+LGeneticAlgorithm:evolve()
+```
+
+---
+
+#### `LGeneticAlgorithm:generation`
+
+Returns the current generation index.
+
+```lua
+LGeneticAlgorithm:generation()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current generation count. |
+
+---
+
+#### `LGeneticAlgorithm:getGenes`
+
+Returns the genes for a chromosome by zero-based index.
+
+```lua
+LGeneticAlgorithm:getGenes(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Zero-based chromosome index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Gene values, or an empty table for an invalid index. |
+
+---
+
+#### `LGeneticAlgorithm:popSize`
+
+Returns the population size. This method is available to Lua scripts.
+
+```lua
+LGeneticAlgorithm:popSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current population size. |
+
+---
+
+#### `LGeneticAlgorithm:setFitness`
+
+Sets the fitness value for a chromosome by zero-based index.
+
+```lua
+LGeneticAlgorithm:setFitness(idx, fitness)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Zero-based chromosome index. |
+| `fitness` | number | Fitness value used by the next evolution step. |
+
+---
+
+#### `LGeneticAlgorithm:type`
+
+Returns the Lua-visible type name for this genetic algorithm handle.
+
+```lua
+LGeneticAlgorithm:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LGeneticAlgorithm](#lgeneticalgorithm-handle)`. |
+
+---
+
+#### `LGeneticAlgorithm:typeOf`
+
+Returns whether this genetic algorithm handle matches a supported type name.
+
+```lua
+LGeneticAlgorithm:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LGeneticAlgorithm](#lgeneticalgorithm-handle)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+## LHTNDomain Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LHTNDomain:addCompound`
 
 Adds a compound HTN task with one or more ordered method definitions.
 
 ```lua
--- signature
 LHTNDomain:addCompound(comp_name, methods_table)
 ```
 
@@ -5379,8 +5502,8 @@ LHTNDomain:addCompound(comp_name, methods_table)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `comp_name` | `string` | Compound task name. |
-| `methods_table` | `table` | Array of method tables with `name`, `preconditions`, and `sub_tasks` fields. |
+| `comp_name` | string | Compound task name. |
+| `methods_table` | table | Array of method tables with `name`, `preconditions`, and `sub_tasks` fields. |
 
 **Example**
 
@@ -5396,12 +5519,11 @@ end
 
 ---
 
-### `LHTNDomain:addPrimitive`
+#### `LHTNDomain:addPrimitive`
 
 Adds a primitive HTN task with preconditions, effects, and cleared facts.
 
 ```lua
--- signature
 LHTNDomain:addPrimitive(name, preconds, effects, clears)
 ```
 
@@ -5409,10 +5531,10 @@ LHTNDomain:addPrimitive(name, preconds, effects, clears)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Primitive task name. |
-| `preconds` | `table` | Array of fact names required before the task can run. |
-| `effects` | `table` | Array of fact names added by the task. |
-| `clears` | `table` | Array of fact names removed by the task. |
+| `name` | string | Primitive task name. |
+| `preconds` | table | Array of fact names required before the task can run. |
+| `effects` | table | Array of fact names added by the task. |
+| `clears` | table | Array of fact names removed by the task. |
 
 **Example**
 
@@ -5427,12 +5549,11 @@ end
 
 ---
 
-### `LHTNDomain:plan`
+#### `LHTNDomain:plan`
 
 Plans from a root HTN task and numeric world state facts.
 
 ```lua
--- signature
 LHTNDomain:plan(root_task, state_table)
 ```
 
@@ -5440,14 +5561,14 @@ LHTNDomain:plan(root_task, state_table)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `root_task` | `string` | Root task name to decompose. |
-| `state_table` | `table` | Map table from fact names to numeric values. |
+| `root_task` | string | Root task name to decompose. |
+| `state_table` | table | Map table from fact names to numeric values. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Array table of primitive task names, or nil when no plan is found. |
+| LuaValue | Array table of primitive task names, or nil when no plan is found. |
 
 **Example**
 
@@ -5467,12 +5588,11 @@ end
 
 ---
 
-### `LHTNDomain:taskCount`
+#### `LHTNDomain:taskCount`
 
 Returns the number of tasks defined in this HTN domain.
 
 ```lua
--- signature
 LHTNDomain:taskCount()
 ```
 
@@ -5480,7 +5600,7 @@ LHTNDomain:taskCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current task count. |
+| number | Current task count. |
 
 **Example**
 
@@ -5495,12 +5615,11 @@ end
 
 ---
 
-### `LHTNDomain:type`
+#### `LHTNDomain:type`
 
 Returns the Lua-visible type name for this HTN domain handle.
 
 ```lua
--- signature
 LHTNDomain:type()
 ```
 
@@ -5508,7 +5627,7 @@ LHTNDomain:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LHTNDomain`. |
+| string | The string `[LHTNDomain](#lhtndomain-handle)`. |
 
 **Example**
 
@@ -5522,12 +5641,11 @@ end
 
 ---
 
-### `LHTNDomain:typeOf`
+#### `LHTNDomain:typeOf`
 
 Returns whether this HTN domain handle matches a supported type name.
 
 ```lua
--- signature
 LHTNDomain:typeOf(name)
 ```
 
@@ -5535,13 +5653,13 @@ LHTNDomain:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LHTNDomain` and `Object`. |
+| `name` | string | Type name to compare against `[LHTNDomain](#lhtndomain-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -5554,14 +5672,19 @@ end
 
 ---
 
-## LInfluenceMap
+## LInfluenceMap Handle
 
-### `LInfluenceMap:addLayer`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LInfluenceMap:addLayer`
 
 Adds an influence layer with the given name if it does not already exist.
 
 ```lua
--- signature
 LInfluenceMap:addLayer(name)
 ```
 
@@ -5569,7 +5692,7 @@ LInfluenceMap:addLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name used by later influence operations. |
+| `name` | string | Layer name used by later influence operations. |
 
 **Example**
 
@@ -5584,12 +5707,11 @@ end
 
 ---
 
-### `LInfluenceMap:blend`
+#### `LInfluenceMap:blend`
 
 Blends two source layers into a destination layer using independent weights.
 
 ```lua
--- signature
 LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest)
 ```
 
@@ -5597,11 +5719,11 @@ LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer_a` | `string` | First source layer name. |
-| `weight_a` | `number` | Weight applied to the first source layer. |
-| `layer_b` | `string` | Second source layer name. |
-| `weight_b` | `number` | Weight applied to the second source layer. |
-| `dest` | `string` | Destination layer name that receives the blended values. |
+| `layer_a` | string | First source layer name. |
+| `weight_a` | number | Weight applied to the first source layer. |
+| `layer_b` | string | Second source layer name. |
+| `weight_b` | number | Weight applied to the second source layer. |
+| `dest` | string | Destination layer name that receives the blended values. |
 
 **Example**
 
@@ -5621,12 +5743,11 @@ end
 
 ---
 
-### `LInfluenceMap:clearAll`
+#### `LInfluenceMap:clearAll`
 
 Clears every influence value in every layer.
 
 ```lua
--- signature
 LInfluenceMap:clearAll()
 ```
 
@@ -5646,12 +5767,11 @@ end
 
 ---
 
-### `LInfluenceMap:clearLayer`
+#### `LInfluenceMap:clearLayer`
 
 Clears every value in a named influence layer.
 
 ```lua
--- signature
 LInfluenceMap:clearLayer(layer)
 ```
 
@@ -5659,7 +5779,7 @@ LInfluenceMap:clearLayer(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to clear. |
+| `layer` | string | Layer name to clear. |
 
 **Example**
 
@@ -5676,12 +5796,11 @@ end
 
 ---
 
-### `LInfluenceMap:decay`
+#### `LInfluenceMap:decay`
 
 Multiplies a named layer by a decay factor.
 
 ```lua
--- signature
 LInfluenceMap:decay(layer, factor)
 ```
 
@@ -5689,8 +5808,8 @@ LInfluenceMap:decay(layer, factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to decay. |
-| `factor` | `number` | Decay factor applied to every cell. |
+| `layer` | string | Layer name to decay. |
+| `factor` | number | Decay factor applied to every cell. |
 
 **Example**
 
@@ -5707,12 +5826,11 @@ end
 
 ---
 
-### `LInfluenceMap:getCellSize`
+#### `LInfluenceMap:getCellSize`
 
 Returns the world size represented by each influence map cell.
 
 ```lua
--- signature
 LInfluenceMap:getCellSize()
 ```
 
@@ -5720,7 +5838,7 @@ LInfluenceMap:getCellSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell size in world units. |
+| number | Cell size in world units. |
 
 **Example**
 
@@ -5733,12 +5851,11 @@ end
 
 ---
 
-### `LInfluenceMap:getHeight`
+#### `LInfluenceMap:getHeight`
 
 Returns the influence map height in cells.
 
 ```lua
--- signature
 LInfluenceMap:getHeight()
 ```
 
@@ -5746,7 +5863,7 @@ LInfluenceMap:getHeight()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell height of the map. |
+| number | Cell height of the map. |
 
 **Example**
 
@@ -5759,12 +5876,11 @@ end
 
 ---
 
-### `LInfluenceMap:getInfluence`
+#### `LInfluenceMap:getInfluence`
 
 Returns one cell value from a named influence layer using one-based cell coordinates.
 
 ```lua
--- signature
 LInfluenceMap:getInfluence(layer, x, y)
 ```
 
@@ -5772,15 +5888,15 @@ LInfluenceMap:getInfluence(layer, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to read. |
-| `x` | `number` | One-based cell X coordinate. |
-| `y` | `number` | One-based cell Y coordinate. |
+| `layer` | string | Layer name to read. |
+| `x` | number | One-based cell X coordinate. |
+| `y` | number | One-based cell Y coordinate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Influence value at the requested cell. |
+| number | Influence value at the requested cell. |
 
 **Example**
 
@@ -5796,12 +5912,11 @@ end
 
 ---
 
-### `LInfluenceMap:getMaxPosition`
+#### `LInfluenceMap:getMaxPosition`
 
 Returns the cell position with the highest value on a named layer.
 
 ```lua
--- signature
 LInfluenceMap:getMaxPosition(layer)
 ```
 
@@ -5809,14 +5924,14 @@ LInfluenceMap:getMaxPosition(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to scan. |
+| `layer` | string | Layer name to scan. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a One-based X and Y cell coordinates of the maximum value. |
-| `number` | b One-based X and Y cell coordinates of the maximum value. |
+| number | One-based X and Y cell coordinates of the maximum value. (value 1). |
+| number | One-based X and Y cell coordinates of the maximum value. (value 2). |
 
 **Example**
 
@@ -5833,12 +5948,11 @@ end
 
 ---
 
-### `LInfluenceMap:getMinPosition`
+#### `LInfluenceMap:getMinPosition`
 
 Returns the cell position with the lowest value on a named layer.
 
 ```lua
--- signature
 LInfluenceMap:getMinPosition(layer)
 ```
 
@@ -5846,14 +5960,14 @@ LInfluenceMap:getMinPosition(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to scan. |
+| `layer` | string | Layer name to scan. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a One-based X and Y cell coordinates of the minimum value. |
-| `number` | b One-based X and Y cell coordinates of the minimum value. |
+| number | One-based X and Y cell coordinates of the minimum value. (value 1). |
+| number | One-based X and Y cell coordinates of the minimum value. (value 2). |
 
 **Example**
 
@@ -5870,12 +5984,11 @@ end
 
 ---
 
-### `LInfluenceMap:getWidth`
+#### `LInfluenceMap:getWidth`
 
 Returns the influence map width in cells.
 
 ```lua
--- signature
 LInfluenceMap:getWidth()
 ```
 
@@ -5883,7 +5996,7 @@ LInfluenceMap:getWidth()
 
 | Type | Description |
 |------|-------------|
-| `number` | Cell width of the map. |
+| number | Cell width of the map. |
 
 **Example**
 
@@ -5896,12 +6009,11 @@ end
 
 ---
 
-### `LInfluenceMap:hasLayer`
+#### `LInfluenceMap:hasLayer`
 
 Returns whether an influence layer exists.
 
 ```lua
--- signature
 LInfluenceMap:hasLayer(name)
 ```
 
@@ -5909,13 +6021,13 @@ LInfluenceMap:hasLayer(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Layer name to check. |
+| `name` | string | Layer name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the layer exists. |
+| boolean | True when the layer exists. |
 
 **Example**
 
@@ -5930,12 +6042,11 @@ end
 
 ---
 
-### `LInfluenceMap:propagate`
+#### `LInfluenceMap:propagate`
 
 Propagates influence values across neighboring cells on a named layer.
 
 ```lua
--- signature
 LInfluenceMap:propagate(layer, momentum)
 ```
 
@@ -5943,8 +6054,8 @@ LInfluenceMap:propagate(layer, momentum)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to propagate. |
-| `momentum?` | `number` | Propagation momentum factor; defaults to 0.5. |
+| `layer` | string | Layer name to propagate. |
+| `momentum?` | number | Propagation momentum factor; defaults to 0.5. |
 
 **Example**
 
@@ -5961,12 +6072,11 @@ end
 
 ---
 
-### `LInfluenceMap:queryRect`
+#### `LInfluenceMap:queryRect`
 
 Returns influence values inside a world-space rectangle on a named layer.
 
 ```lua
--- signature
 LInfluenceMap:queryRect(layer, wx, wy, ww, wh)
 ```
 
@@ -5974,17 +6084,17 @@ LInfluenceMap:queryRect(layer, wx, wy, ww, wh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to query. |
-| `wx` | `number` | Rectangle X coordinate in world units. |
-| `wy` | `number` | Rectangle Y coordinate in world units. |
-| `ww` | `number` | Rectangle width in world units. |
-| `wh` | `number` | Rectangle height in world units. |
+| `layer` | string | Layer name to query. |
+| `wx` | number | Rectangle X coordinate in world units. |
+| `wy` | number | Rectangle Y coordinate in world units. |
+| `ww` | number | Rectangle width in world units. |
+| `wh` | number | Rectangle height in world units. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of influence samples from cells inside the rectangle. |
+| number[] | Array of influence samples from cells inside the rectangle. |
 
 **Example**
 
@@ -6001,12 +6111,11 @@ end
 
 ---
 
-### `LInfluenceMap:setInfluence`
+#### `LInfluenceMap:setInfluence`
 
 Sets one cell value in a named influence layer using one-based cell coordinates.
 
 ```lua
--- signature
 LInfluenceMap:setInfluence(layer, x, y, value)
 ```
 
@@ -6014,10 +6123,10 @@ LInfluenceMap:setInfluence(layer, x, y, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to modify. |
-| `x` | `number` | One-based cell X coordinate. |
-| `y` | `number` | One-based cell Y coordinate. |
-| `value` | `number` | Influence value to store in the cell. |
+| `layer` | string | Layer name to modify. |
+| `x` | number | One-based cell X coordinate. |
+| `y` | number | One-based cell Y coordinate. |
+| `value` | number | Influence value to store in the cell. |
 
 **Example**
 
@@ -6033,12 +6142,11 @@ end
 
 ---
 
-### `LInfluenceMap:stampInfluence`
+#### `LInfluenceMap:stampInfluence`
 
 Applies a radial influence stamp to a named layer in world coordinates.
 
 ```lua
--- signature
 LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff)
 ```
 
@@ -6046,12 +6154,12 @@ LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | `string` | Layer name to modify. |
-| `wx` | `number` | World X coordinate of the stamp center. |
-| `wy` | `number` | World Y coordinate of the stamp center. |
-| `radius` | `number` | Stamp radius in world units. |
-| `value` | `number` | Influence value applied at the center. |
-| `falloff?` | `number` | Falloff exponent or multiplier; defaults to 1.0. |
+| `layer` | string | Layer name to modify. |
+| `wx` | number | World X coordinate of the stamp center. |
+| `wy` | number | World Y coordinate of the stamp center. |
+| `radius` | number | Stamp radius in world units. |
+| `value` | number | Influence value applied at the center. |
+| `falloff?` | number | Falloff exponent or multiplier; defaults to 1.0. |
 
 **Example**
 
@@ -6067,12 +6175,11 @@ end
 
 ---
 
-### `LInfluenceMap:type`
+#### `LInfluenceMap:type`
 
 Returns the Lua-visible type name for this influence map handle.
 
 ```lua
--- signature
 LInfluenceMap:type()
 ```
 
@@ -6080,7 +6187,7 @@ LInfluenceMap:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LInfluenceMap`. |
+| string | The string `[LInfluenceMap](#linfluencemap-handle)`. |
 
 **Example**
 
@@ -6094,12 +6201,11 @@ end
 
 ---
 
-### `LInfluenceMap:typeOf`
+#### `LInfluenceMap:typeOf`
 
 Returns whether this influence map handle matches a supported type name.
 
 ```lua
--- signature
 LInfluenceMap:typeOf(name)
 ```
 
@@ -6107,13 +6213,13 @@ LInfluenceMap:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `InfluenceMap` and `Object`. |
+| `name` | string | Type name to compare against `InfluenceMap` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -6126,14 +6232,19 @@ end
 
 ---
 
-## LMCTSEngine
+## LMCTSEngine Handle
 
-### `LMCTSEngine:search`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LMCTSEngine:search`
 
 Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
 
 ```lua
--- signature
 LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn)
 ```
 
@@ -6141,16 +6252,16 @@ LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `root_state` | `number` | Opaque integer state identifier supplied by game code. |
-| `get_actions_fn` | `function` | Function called with a state and returning an array of integer actions. |
-| `apply_fn` | `function` | Function called with `(state, action)` and returning the next state integer. |
-| `eval_fn` | `function` | Function called with a state and returning a numeric score. |
+| `root_state` | number | Opaque integer state identifier supplied by game code. |
+| `get_actions_fn` | function | Function called with a state and returning an array of integer actions. |
+| `apply_fn` | function | Function called with `(state, action)` and returning the next state integer. |
+| `eval_fn` | function | Function called with a state and returning a numeric score. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Selected action integer, or nil when search cannot choose an action. |
+| LuaValue | Selected action integer, or nil when search cannot choose an action. |
 
 **Example**
 
@@ -6169,12 +6280,11 @@ end
 
 ---
 
-### `LMCTSEngine:type`
+#### `LMCTSEngine:type`
 
 Returns the Lua-visible type name for this MCTS engine handle.
 
 ```lua
--- signature
 LMCTSEngine:type()
 ```
 
@@ -6182,7 +6292,7 @@ LMCTSEngine:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LMCTSEngine`. |
+| string | The string `[LMCTSEngine](#lmctsengine-handle)`. |
 
 **Example**
 
@@ -6196,12 +6306,11 @@ end
 
 ---
 
-### `LMCTSEngine:typeOf`
+#### `LMCTSEngine:typeOf`
 
 Returns whether this MCTS engine handle matches a supported type name.
 
 ```lua
--- signature
 LMCTSEngine:typeOf(name)
 ```
 
@@ -6209,13 +6318,13 @@ LMCTSEngine:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LMCTSEngine` and `Object`. |
+| `name` | string | Type name to compare against `[LMCTSEngine](#lmctsengine-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -6228,14 +6337,19 @@ end
 
 ---
 
-## LNeedSystem
+## LNeedSystem Handle
 
-### `LNeedSystem:addNeed`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNeedSystem:addNeed`
 
 Adds a need with decay and urgency tuning values.
 
 ```lua
--- signature
 LNeedSystem:addNeed(name, decay_rate, urgency_threshold, urgency_factor)
 ```
 
@@ -6243,10 +6357,10 @@ LNeedSystem:addNeed(name, decay_rate, urgency_threshold, urgency_factor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Need name used by satisfaction and lookup calls. |
-| `decay_rate` | `number` | Value decay rate applied during updates. |
-| `urgency_threshold` | `number` | Value threshold where the need becomes urgent. |
-| `urgency_factor` | `number` | Weight applied to urgent needs. |
+| `name` | string | Need name used by satisfaction and lookup calls. |
+| `decay_rate` | number | Value decay rate applied during updates. |
+| `urgency_threshold` | number | Value threshold where the need becomes urgent. |
+| `urgency_factor` | number | Weight applied to urgent needs. |
 
 **Example**
 
@@ -6261,12 +6375,11 @@ end
 
 ---
 
-### `LNeedSystem:mostUrgent`
+#### `LNeedSystem:mostUrgent`
 
 Returns the name of the most urgent need when any need is active.
 
 ```lua
--- signature
 LNeedSystem:mostUrgent()
 ```
 
@@ -6274,7 +6387,7 @@ LNeedSystem:mostUrgent()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Need name, or nil when no urgent need is available. |
+| LuaValue | Need name, or nil when no urgent need is available. |
 
 **Example**
 
@@ -6290,12 +6403,11 @@ end
 
 ---
 
-### `LNeedSystem:satisfy`
+#### `LNeedSystem:satisfy`
 
 Reduces or satisfies a named need by the supplied amount.
 
 ```lua
--- signature
 LNeedSystem:satisfy(name, amount)
 ```
 
@@ -6303,8 +6415,8 @@ LNeedSystem:satisfy(name, amount)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Need name to satisfy. |
-| `amount` | `number` | Amount applied to the need value. |
+| `name` | string | Need name to satisfy. |
+| `amount` | number | Amount applied to the need value. |
 
 **Example**
 
@@ -6320,12 +6432,11 @@ end
 
 ---
 
-### `LNeedSystem:type`
+#### `LNeedSystem:type`
 
 Returns the Lua-visible type name for this need system handle.
 
 ```lua
--- signature
 LNeedSystem:type()
 ```
 
@@ -6333,7 +6444,7 @@ LNeedSystem:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LNeedSystem`. |
+| string | The string `[LNeedSystem](#lneedsystem-handle)`. |
 
 **Example**
 
@@ -6347,12 +6458,11 @@ end
 
 ---
 
-### `LNeedSystem:typeOf`
+#### `LNeedSystem:typeOf`
 
 Returns whether this need system handle matches a supported type name.
 
 ```lua
--- signature
 LNeedSystem:typeOf(name)
 ```
 
@@ -6360,13 +6470,13 @@ LNeedSystem:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LNeedSystem` and `Object`. |
+| `name` | string | Type name to compare against `[LNeedSystem](#lneedsystem-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -6379,12 +6489,11 @@ end
 
 ---
 
-### `LNeedSystem:update`
+#### `LNeedSystem:update`
 
 Advances need decay over elapsed time.
 
 ```lua
--- signature
 LNeedSystem:update(dt)
 ```
 
@@ -6392,7 +6501,7 @@ LNeedSystem:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -6408,12 +6517,11 @@ end
 
 ---
 
-### `LNeedSystem:valueOf`
+#### `LNeedSystem:valueOf`
 
 Returns the current value of a named need.
 
 ```lua
--- signature
 LNeedSystem:valueOf(name)
 ```
 
@@ -6421,13 +6529,13 @@ LNeedSystem:valueOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Need name to read. |
+| `name` | string | Need name to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Current need value. |
+| number | Current need value. |
 
 **Example**
 
@@ -6443,14 +6551,356 @@ end
 
 ---
 
-## LORCASolver
+## LNeuralNet Handle
 
-### `LORCASolver:addAgent`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNeuralNet:addLayer`
+
+Adds a neural network layer with an activation function.
+
+```lua
+LNeuralNet:addLayer(inputs, outputs, activation)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `inputs` | number | Input count for the layer. |
+| `outputs` | number | Output count for the layer. |
+| `activation` | string | Activation name such as `relu`, `sigmoid`, `tanh`, `linear`, or `softmax`. |
+
+---
+
+#### `LNeuralNet:forward`
+
+Runs a forward pass and returns output values.
+
+```lua
+LNeuralNet:forward(input)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `input` | table | Array of numeric input values. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Numeric output values. |
+
+---
+
+#### `LNeuralNet:getWeights`
+
+Returns the network weights as a flat numeric array.
+
+```lua
+LNeuralNet:getWeights()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Numeric weights in engine layer order. |
+
+---
+
+#### `LNeuralNet:layerCount`
+
+Returns the number of layers in the network.
+
+```lua
+LNeuralNet:layerCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer count. |
+
+---
+
+#### `LNeuralNet:paramCount`
+
+Returns the total number of trainable parameters.
+
+```lua
+LNeuralNet:paramCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Parameter count. |
+
+---
+
+#### `LNeuralNet:predict`
+
+Alias for `forward`. Runs a forward pass and returns output values.
+
+```lua
+LNeuralNet:predict(input)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `input` | table | Array of numeric input values. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Numeric output values. |
+
+---
+
+#### `LNeuralNet:setWeights`
+
+Replaces the network weights from a flat numeric array.
+
+```lua
+LNeuralNet:setWeights(weights)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `weights` | table | Flat array of numeric weights in engine layer order. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied weight slice matches the network shape. |
+
+---
+
+#### `LNeuralNet:type`
+
+Returns the Lua-visible type name for this neural network handle.
+
+```lua
+LNeuralNet:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LNeuralNet](#lneuralnet-handle)`. |
+
+---
+
+#### `LNeuralNet:typeOf`
+
+Returns whether this neural network handle matches a supported type name.
+
+```lua
+LNeuralNet:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LNeuralNet](#lneuralnet-handle)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+## LNeuroevolution Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LNeuroevolution:bestFitness`
+
+Returns the best fitness value in the population.
+
+```lua
+LNeuroevolution:bestFitness()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Best fitness value. |
+
+---
+
+#### `LNeuroevolution:bestNetwork`
+
+Converts the best chromosome into a neural network handle when one exists.
+
+```lua
+LNeuroevolution:bestNetwork()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LNeuralNet](#lneuralnet-handle) | Neural network handle. |
+
+---
+
+#### `LNeuroevolution:chromosomeToNet`
+
+Converts one chromosome into a neural network handle when the index is valid.
+
+```lua
+LNeuroevolution:chromosomeToNet(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Zero-based chromosome index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LNeuralNet](#lneuralnet-handle) | Neural network handle. |
+
+---
+
+#### `LNeuroevolution:evolve`
+
+Advances the neuroevolution population by one generation.
+
+```lua
+LNeuroevolution:evolve()
+```
+
+---
+
+#### `LNeuroevolution:generation`
+
+Returns the current generation index.
+
+```lua
+LNeuroevolution:generation()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current generation count. |
+
+---
+
+#### `LNeuroevolution:popSize`
+
+Returns the population size. This method is available to Lua scripts.
+
+```lua
+LNeuroevolution:popSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current population size. |
+
+---
+
+#### `LNeuroevolution:setFitness`
+
+Sets the fitness value for a chromosome by zero-based index.
+
+```lua
+LNeuroevolution:setFitness(idx, fitness)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Zero-based chromosome index. |
+| `fitness` | number | Fitness value used by the next evolution step. |
+
+---
+
+#### `LNeuroevolution:type`
+
+Returns the Lua-visible type name for this neuroevolution handle.
+
+```lua
+LNeuroevolution:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LNeuroevolution](#lneuroevolution-handle)`. |
+
+---
+
+#### `LNeuroevolution:typeOf`
+
+Returns whether this neuroevolution handle matches a supported type name.
+
+```lua
+LNeuroevolution:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LNeuroevolution](#lneuroevolution-handle)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+## LORCASolver Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LORCASolver:addAgent`
 
 Adds an ORCA avoidance agent and returns its zero-based solver index.
 
 ```lua
--- signature
 LORCASolver:addAgent(x, y, radius, max_speed)
 ```
 
@@ -6458,16 +6908,16 @@ LORCASolver:addAgent(x, y, radius, max_speed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Initial X position. |
-| `y` | `number` | Initial Y position. |
-| `radius` | `number` | Collision radius. |
-| `max_speed` | `number` | Maximum preferred speed. |
+| `x` | number | Initial X position. |
+| `y` | number | Initial Y position. |
+| `radius` | number | Collision radius. |
+| `max_speed` | number | Maximum preferred speed. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Zero-based ORCA agent index. |
+| number | Zero-based ORCA agent index. |
 
 **Example**
 
@@ -6481,12 +6931,11 @@ end
 
 ---
 
-### `LORCASolver:agentCount`
+#### `LORCASolver:agentCount`
 
 Returns the number of ORCA agents in this solver.
 
 ```lua
--- signature
 LORCASolver:agentCount()
 ```
 
@@ -6494,7 +6943,7 @@ LORCASolver:agentCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current ORCA agent count. |
+| number | Current ORCA agent count. |
 
 **Example**
 
@@ -6509,12 +6958,11 @@ end
 
 ---
 
-### `LORCASolver:compute`
+#### `LORCASolver:compute`
 
 Computes safe velocities for all ORCA agents.
 
 ```lua
--- signature
 LORCASolver:compute(dt)
 ```
 
@@ -6522,7 +6970,7 @@ LORCASolver:compute(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds for the avoidance step. |
+| `dt` | number | Elapsed time in seconds for the avoidance step. |
 
 **Example**
 
@@ -6540,12 +6988,11 @@ end
 
 ---
 
-### `LORCASolver:getSafeVelocity`
+#### `LORCASolver:getSafeVelocity`
 
 Returns the computed safe velocity for an ORCA agent.
 
 ```lua
--- signature
 LORCASolver:getSafeVelocity(idx)
 ```
 
@@ -6553,14 +7000,14 @@ LORCASolver:getSafeVelocity(idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Zero-based ORCA agent index. |
+| `idx` | number | Zero-based ORCA agent index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Safe X and Y velocity, or zero velocity for an invalid index. |
-| `number` | b Safe X and Y velocity, or zero velocity for an invalid index. |
+| number | Safe X and Y velocity; or zero velocity for an invalid index. (value 1). |
+| number | Safe X and Y velocity; or zero velocity for an invalid index. (value 2). |
 
 **Example**
 
@@ -6577,12 +7024,11 @@ end
 
 ---
 
-### `LORCASolver:setPosition`
+#### `LORCASolver:setPosition`
 
 Sets the position for an ORCA agent by zero-based index.
 
 ```lua
--- signature
 LORCASolver:setPosition(idx, x, y)
 ```
 
@@ -6590,9 +7036,9 @@ LORCASolver:setPosition(idx, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Zero-based ORCA agent index. |
-| `x` | `number` | New X position. |
-| `y` | `number` | New Y position. |
+| `idx` | number | Zero-based ORCA agent index. |
+| `x` | number | New X position. |
+| `y` | number | New Y position. |
 
 **Example**
 
@@ -6607,12 +7053,11 @@ end
 
 ---
 
-### `LORCASolver:setPreferredVelocity`
+#### `LORCASolver:setPreferredVelocity`
 
 Sets the preferred velocity for an ORCA agent by zero-based index.
 
 ```lua
--- signature
 LORCASolver:setPreferredVelocity(idx, pvx, pvy)
 ```
 
@@ -6620,9 +7065,9 @@ LORCASolver:setPreferredVelocity(idx, pvx, pvy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | `number` | Zero-based ORCA agent index. |
-| `pvx` | `number` | Preferred X velocity. |
-| `pvy` | `number` | Preferred Y velocity. |
+| `idx` | number | Zero-based ORCA agent index. |
+| `pvx` | number | Preferred X velocity. |
+| `pvy` | number | Preferred Y velocity. |
 
 **Example**
 
@@ -6637,12 +7082,11 @@ end
 
 ---
 
-### `LORCASolver:type`
+#### `LORCASolver:type`
 
 Returns the Lua-visible type name for this ORCA solver handle.
 
 ```lua
--- signature
 LORCASolver:type()
 ```
 
@@ -6650,7 +7094,7 @@ LORCASolver:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LORCASolver`. |
+| string | The string `[LORCASolver](#lorcasolver-handle)`. |
 
 **Example**
 
@@ -6664,12 +7108,11 @@ end
 
 ---
 
-### `LORCASolver:typeOf`
+#### `LORCASolver:typeOf`
 
 Returns whether this ORCA solver handle matches a supported type name.
 
 ```lua
--- signature
 LORCASolver:typeOf(name)
 ```
 
@@ -6677,13 +7120,13 @@ LORCASolver:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LORCASolver` and `Object`. |
+| `name` | string | Type name to compare against `[LORCASolver](#lorcasolver-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -6696,14 +7139,409 @@ end
 
 ---
 
-## LSquad
+## LQLearner Handle
 
-### `LSquad:addMember`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LQLearner:bestAction`
+
+Returns the highest-valued action for a one-based state index without exploration.
+
+```lua
+LQLearner:bestAction(state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | One-based state index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | One-based best action index. |
+
+---
+
+#### `LQLearner:chooseAction`
+
+Chooses an action for a one-based state index using the learner's exploration policy.
+
+```lua
+LQLearner:chooseAction(state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | One-based state index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | One-based chosen action index. |
+
+---
+
+#### `LQLearner:deserialize`
+
+Replaces the Q-learner state from a JSON string.
+
+```lua
+LQLearner:deserialize(json)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `json` | string | JSON data previously produced by `serialize`. |
+
+---
+
+#### `LQLearner:endEpisode`
+
+Decays epsilon and increments the episode count.
+
+```lua
+LQLearner:endEpisode()
+```
+
+---
+
+#### `LQLearner:getActionCount`
+
+Returns the number of actions represented by this learner.
+
+```lua
+LQLearner:getActionCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Action count. |
+
+---
+
+#### `LQLearner:getDiscountFactor`
+
+Returns the Q-learning gamma discount factor.
+
+```lua
+LQLearner:getDiscountFactor()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current discount factor. |
+
+---
+
+#### `LQLearner:getEpisodeCount`
+
+Returns the total number of episodes completed so far.
+
+```lua
+LQLearner:getEpisodeCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Episode count. |
+
+---
+
+#### `LQLearner:getExplorationDecay`
+
+Returns the exploration decay multiplier.
+
+```lua
+LQLearner:getExplorationDecay()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current exploration decay multiplier. |
+
+---
+
+#### `LQLearner:getExplorationRate`
+
+Returns the exploration rate used by action selection.
+
+```lua
+LQLearner:getExplorationRate()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current exploration rate. |
+
+---
+
+#### `LQLearner:getLearningRate`
+
+Returns the Q-learning alpha learning rate.
+
+```lua
+LQLearner:getLearningRate()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current learning rate. |
+
+---
+
+#### `LQLearner:getQValue`
+
+Returns the stored Q-value for a one-based state and action pair.
+
+```lua
+LQLearner:getQValue(state, action)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | One-based state index. |
+| `action` | number | One-based action index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current Q-value. |
+
+---
+
+#### `LQLearner:getStateCount`
+
+Returns the number of states represented by this learner.
+
+```lua
+LQLearner:getStateCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | State count. |
+
+---
+
+#### `LQLearner:learn`
+
+Applies one Q-learning update from a transition and reward.
+
+```lua
+LQLearner:learn(state, action, reward, next_state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | One-based previous state index. |
+| `action` | number | One-based action index taken in the previous state. |
+| `reward` | number | Reward received for the transition. |
+| `next_state` | number | One-based next state index. |
+
+---
+
+#### `LQLearner:predict`
+
+Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
+
+```lua
+LQLearner:predict(state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | One-based state index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | One-based chosen action index. |
+
+---
+
+#### `LQLearner:serialize`
+
+Serializes the Q-learner state to a JSON string.
+
+```lua
+LQLearner:serialize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | JSON representation of this learner. |
+
+---
+
+#### `LQLearner:setDiscountFactor`
+
+Sets the Q-learning gamma discount factor.
+
+```lua
+LQLearner:setDiscountFactor(v)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `v` | number | Discount factor used by future updates. |
+
+---
+
+#### `LQLearner:setExplorationDecay`
+
+Sets the exploration decay multiplier applied across episodes.
+
+```lua
+LQLearner:setExplorationDecay(v)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `v` | number | Exploration decay multiplier. |
+
+---
+
+#### `LQLearner:setExplorationRate`
+
+Sets the exploration rate used by action selection.
+
+```lua
+LQLearner:setExplorationRate(v)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `v` | number | Exploration probability for future `chooseAction` calls. |
+
+---
+
+#### `LQLearner:setLearningRate`
+
+Sets the Q-learning alpha learning rate.
+
+```lua
+LQLearner:setLearningRate(v)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `v` | number | Learning rate used by future updates. |
+
+---
+
+#### `LQLearner:setQValue`
+
+Sets the stored Q-value for a one-based state and action pair.
+
+```lua
+LQLearner:setQValue(state, action, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | One-based state index. |
+| `action` | number | One-based action index. |
+| `value` | number | Q-value to store. |
+
+---
+
+#### `LQLearner:type`
+
+Returns the Lua-visible type name for this Q-learner handle.
+
+```lua
+LQLearner:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LQLearner](#lqlearner-handle)`. |
+
+---
+
+#### `LQLearner:typeOf`
+
+Returns whether this Q-learner handle matches a supported type name.
+
+```lua
+LQLearner:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LQLearner](#lqlearner-handle)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+## LSquad Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSquad:addMember`
 
 Adds a member name to the squad member list.
 
 ```lua
--- signature
 LSquad:addMember(name)
 ```
 
@@ -6711,7 +7549,7 @@ LSquad:addMember(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Agent or game object name to append as a squad member. |
+| `name` | string | Agent or game object name to append as a squad member. |
 
 **Example**
 
@@ -6726,12 +7564,11 @@ end
 
 ---
 
-### `LSquad:getBlackboard`
+#### `LSquad:getBlackboard`
 
 Returns a blackboard snapshot for this squad.
 
 ```lua
--- signature
 LSquad:getBlackboard()
 ```
 
@@ -6739,7 +7576,7 @@ LSquad:getBlackboard()
 
 | Type | Description |
 |------|-------------|
-| `LAIBlackboard` | Blackboard handle initialized from the squad blackboard values at call time. |
+| [LAIBlackboard](#laiblackboard-handle) | Blackboard handle initialized from the squad blackboard values at call time. |
 
 **Example**
 
@@ -6754,12 +7591,11 @@ end
 
 ---
 
-### `LSquad:getFormation`
+#### `LSquad:getFormation`
 
 Returns the current squad formation type name.
 
 ```lua
--- signature
 LSquad:getFormation()
 ```
 
@@ -6767,7 +7603,7 @@ LSquad:getFormation()
 
 | Type | Description |
 |------|-------------|
-| `string` | Formation type name. |
+| string | Formation type name. |
 
 **Example**
 
@@ -6782,12 +7618,11 @@ end
 
 ---
 
-### `LSquad:getFormationPosition`
+#### `LSquad:getFormationPosition`
 
 Returns a member's target formation position relative to the leader position.
 
 ```lua
--- signature
 LSquad:getFormationPosition(member_idx, leader_x, leader_y)
 ```
 
@@ -6795,16 +7630,16 @@ LSquad:getFormationPosition(member_idx, leader_x, leader_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `member_idx` | `number` | One-based member index in the squad. |
-| `leader_x` | `number` | Leader X position in world units. |
-| `leader_y` | `number` | Leader Y position in world units. |
+| `member_idx` | number | One-based member index in the squad. |
+| `leader_x` | number | Leader X position in world units. |
+| `leader_y` | number | Leader Y position in world units. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X and Y formation target position. |
-| `number` | b X and Y formation target position. |
+| number | X and Y formation target position. (value 1). |
+| number | X and Y formation target position. (value 2). |
 
 **Example**
 
@@ -6822,12 +7657,11 @@ end
 
 ---
 
-### `LSquad:getFormationSpacing`
+#### `LSquad:getFormationSpacing`
 
 Returns the spacing used by squad formation positioning.
 
 ```lua
--- signature
 LSquad:getFormationSpacing()
 ```
 
@@ -6835,7 +7669,7 @@ LSquad:getFormationSpacing()
 
 | Type | Description |
 |------|-------------|
-| `number` | Formation spacing in world units. |
+| number | Formation spacing in world units. |
 
 **Example**
 
@@ -6850,12 +7684,11 @@ end
 
 ---
 
-### `LSquad:getLeader`
+#### `LSquad:getLeader`
 
 Returns the squad leader name when one is assigned.
 
 ```lua
--- signature
 LSquad:getLeader()
 ```
 
@@ -6863,7 +7696,7 @@ LSquad:getLeader()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Leader name, or nil when no leader is assigned. |
+| LuaValue | Leader name, or nil when no leader is assigned. |
 
 **Example**
 
@@ -6879,12 +7712,11 @@ end
 
 ---
 
-### `LSquad:getMemberCount`
+#### `LSquad:getMemberCount`
 
 Returns the number of members in this squad.
 
 ```lua
--- signature
 LSquad:getMemberCount()
 ```
 
@@ -6892,7 +7724,7 @@ LSquad:getMemberCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current member count. |
+| number | Current member count. |
 
 **Example**
 
@@ -6908,12 +7740,11 @@ end
 
 ---
 
-### `LSquad:getMembers`
+#### `LSquad:getMembers`
 
 Returns all squad members in an array-style Lua table.
 
 ```lua
--- signature
 LSquad:getMembers()
 ```
 
@@ -6921,7 +7752,7 @@ LSquad:getMembers()
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Member names. |
+| string[] | Member names. |
 
 **Example**
 
@@ -6937,12 +7768,11 @@ end
 
 ---
 
-### `LSquad:getName`
+#### `LSquad:getName`
 
 Returns the squad name. This method is available to Lua scripts.
 
 ```lua
--- signature
 LSquad:getName()
 ```
 
@@ -6950,7 +7780,7 @@ LSquad:getName()
 
 | Type | Description |
 |------|-------------|
-| `string` | Squad name supplied at construction. |
+| string | Squad name supplied at construction. |
 
 **Example**
 
@@ -6963,12 +7793,11 @@ end
 
 ---
 
-### `LSquad:removeMember`
+#### `LSquad:removeMember`
 
 Removes every member entry with the given name.
 
 ```lua
--- signature
 LSquad:removeMember(name)
 ```
 
@@ -6976,7 +7805,7 @@ LSquad:removeMember(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Member name to remove. |
+| `name` | string | Member name to remove. |
 
 **Example**
 
@@ -6992,12 +7821,11 @@ end
 
 ---
 
-### `LSquad:setFormation`
+#### `LSquad:setFormation`
 
 Sets the squad formation type and optionally updates spacing.
 
 ```lua
--- signature
 LSquad:setFormation(ftype, spacing)
 ```
 
@@ -7005,8 +7833,8 @@ LSquad:setFormation(ftype, spacing)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ftype` | `string` | Formation type name parsed by the engine. |
-| `spacing?` | `number` | Optional spacing between formation slots. |
+| `ftype` | string | Formation type name parsed by the engine. |
+| `spacing?` | number | Optional spacing between formation slots. |
 
 **Example**
 
@@ -7023,12 +7851,11 @@ end
 
 ---
 
-### `LSquad:setLeader`
+#### `LSquad:setLeader`
 
 Sets the squad leader name. This method is available to Lua scripts.
 
 ```lua
--- signature
 LSquad:setLeader(name)
 ```
 
@@ -7036,7 +7863,7 @@ LSquad:setLeader(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Member or agent name to store as leader. |
+| `name` | string | Member or agent name to store as leader. |
 
 **Example**
 
@@ -7052,12 +7879,11 @@ end
 
 ---
 
-### `LSquad:type`
+#### `LSquad:type`
 
 Returns the Lua-visible type name for this squad handle.
 
 ```lua
--- signature
 LSquad:type()
 ```
 
@@ -7065,7 +7891,7 @@ LSquad:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LSquad`. |
+| string | The string `[LSquad](#lsquad-handle)`. |
 
 **Example**
 
@@ -7079,12 +7905,11 @@ end
 
 ---
 
-### `LSquad:typeOf`
+#### `LSquad:typeOf`
 
 Returns whether this squad handle matches a supported type name.
 
 ```lua
--- signature
 LSquad:typeOf(name)
 ```
 
@@ -7092,13 +7917,13 @@ LSquad:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `Squad` and `Object`. |
+| `name` | string | Type name to compare against `Squad` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -7111,14 +7936,19 @@ end
 
 ---
 
-## LStateMachine
+## LStateMachine Handle
 
-### `LStateMachine:addState`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LStateMachine:addState`
 
 Adds a state with optional Lua lifecycle callbacks.
 
 ```lua
--- signature
 LStateMachine:addState(name, opts)
 ```
 
@@ -7126,8 +7956,8 @@ LStateMachine:addState(name, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | State name used by transitions and direct state changes. |
-| `opts` | `table` | Optional table with `onEnter`, `onUpdate`, and `onExit` callback functions. |
+| `name` | string | State name used by transitions and direct state changes. |
+| `opts` | table | Optional table with `onEnter`, `onUpdate`, and `onExit` callback functions. |
 
 **Example**
 
@@ -7143,12 +7973,11 @@ end
 
 ---
 
-### `LStateMachine:addTransition`
+#### `LStateMachine:addTransition`
 
 Adds a transition between two states with an optional guard callback and priority.
 
 ```lua
--- signature
 LStateMachine:addTransition(from, to, guard, priority)
 ```
 
@@ -7156,10 +7985,10 @@ LStateMachine:addTransition(from, to, guard, priority)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from` | `string` | Source state name. |
-| `to` | `string` | Destination state name. |
-| `guard?` | `function` | Optional function that must return true for the transition to run. |
-| `priority?` | `number` | Transition priority used when multiple transitions are available; defaults to zero. |
+| `from` | string | Source state name. |
+| `to` | string | Destination state name. |
+| `guard?` | function | Optional function that must return true for the transition to run. |
+| `priority?` | number | Transition priority used when multiple transitions are available; defaults to zero. |
 
 **Example**
 
@@ -7175,12 +8004,11 @@ end
 
 ---
 
-### `LStateMachine:forceState`
+#### `LStateMachine:forceState`
 
 Immediately switches the current state and resets the time spent in state.
 
 ```lua
--- signature
 LStateMachine:forceState(name)
 ```
 
@@ -7188,7 +8016,7 @@ LStateMachine:forceState(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | State name to set as current without transition checks. |
+| `name` | string | State name to set as current without transition checks. |
 
 **Example**
 
@@ -7206,12 +8034,11 @@ end
 
 ---
 
-### `LStateMachine:getCurrentState`
+#### `LStateMachine:getCurrentState`
 
 Returns the current state name when the state machine has entered a state.
 
 ```lua
--- signature
 LStateMachine:getCurrentState()
 ```
 
@@ -7219,7 +8046,7 @@ LStateMachine:getCurrentState()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Current state name, or nil before any state is active. |
+| LuaValue | Current state name, or nil before any state is active. |
 
 **Example**
 
@@ -7236,12 +8063,11 @@ end
 
 ---
 
-### `LStateMachine:getTimeInState`
+#### `LStateMachine:getTimeInState`
 
 Returns how long the machine has spent in the current state.
 
 ```lua
--- signature
 LStateMachine:getTimeInState()
 ```
 
@@ -7249,7 +8075,7 @@ LStateMachine:getTimeInState()
 
 | Type | Description |
 |------|-------------|
-| `number` | Elapsed time in seconds since the current state was entered. |
+| number | Elapsed time in seconds since the current state was entered. |
 
 **Example**
 
@@ -7265,12 +8091,11 @@ end
 
 ---
 
-### `LStateMachine:setInitialState`
+#### `LStateMachine:setInitialState`
 
 Sets the initial state and also enters it when the machine has no current state yet.
 
 ```lua
--- signature
 LStateMachine:setInitialState(name)
 ```
 
@@ -7278,7 +8103,7 @@ LStateMachine:setInitialState(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | State name to use as the initial state. |
+| `name` | string | State name to use as the initial state. |
 
 **Example**
 
@@ -7295,12 +8120,11 @@ end
 
 ---
 
-### `LStateMachine:type`
+#### `LStateMachine:type`
 
 Returns the Lua-visible type name for this state machine handle.
 
 ```lua
--- signature
 LStateMachine:type()
 ```
 
@@ -7308,7 +8132,7 @@ LStateMachine:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LStateMachine`. |
+| string | The string `[LStateMachine](#lstatemachine-handle)`. |
 
 **Example**
 
@@ -7323,12 +8147,11 @@ end
 
 ---
 
-### `LStateMachine:typeOf`
+#### `LStateMachine:typeOf`
 
 Returns whether this state machine handle matches a supported type name.
 
 ```lua
--- signature
 LStateMachine:typeOf(name)
 ```
 
@@ -7336,13 +8159,13 @@ LStateMachine:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `StateMachine` and `Object`. |
+| `name` | string | Type name to compare against `StateMachine` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -7357,14 +8180,19 @@ end
 
 ---
 
-## LSteeringManager
+## LSteeringManager Handle
 
-### `LSteeringManager:addArrive`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LSteeringManager:addArrive`
 
 Adds an arrive behavior that slows the agent as it approaches a target point.
 
 ```lua
--- signature
 LSteeringManager:addArrive(tx, ty, slowing, weight)
 ```
 
@@ -7372,10 +8200,10 @@ LSteeringManager:addArrive(tx, ty, slowing, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Target X position in world units. |
-| `ty` | `number` | Target Y position in world units. |
-| `slowing?` | `number` | Radius used to reduce speed near the target; defaults to 50.0. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `tx` | number | Target X position in world units. |
+| `ty` | number | Target Y position in world units. |
+| `slowing?` | number | Radius used to reduce speed near the target; defaults to 50.0. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7390,12 +8218,11 @@ end
 
 ---
 
-### `LSteeringManager:addCustomBehavior`
+#### `LSteeringManager:addCustomBehavior`
 
 Adds a custom steering behavior backed by a Lua callback.
 
 ```lua
--- signature
 LSteeringManager:addCustomBehavior(func, weight)
 ```
 
@@ -7403,8 +8230,8 @@ LSteeringManager:addCustomBehavior(func, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `func` | `function` | Function called as `(agent, dt)` that returns an X and Y steering force. |
-| `weight?` | `number` | Custom behavior weight applied to returned forces; defaults to 1.0. |
+| `func` | function | Function called as `(agent, dt)` that returns an X and Y steering force. |
+| `weight?` | number | Custom behavior weight applied to returned forces; defaults to 1.0. |
 
 **Example**
 
@@ -7419,12 +8246,11 @@ end
 
 ---
 
-### `LSteeringManager:addEvade`
+#### `LSteeringManager:addEvade`
 
 Adds an evade behavior that moves away from another named agent when a threat name is supplied.
 
 ```lua
--- signature
 LSteeringManager:addEvade(threat_name, weight)
 ```
 
@@ -7432,8 +8258,8 @@ LSteeringManager:addEvade(threat_name, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `threat_name?` | `string` | Optional name of the agent to evade. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `threat_name?` | string | Optional name of the agent to evade. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7448,12 +8274,11 @@ end
 
 ---
 
-### `LSteeringManager:addFlee`
+#### `LSteeringManager:addFlee`
 
 Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
 
 ```lua
--- signature
 LSteeringManager:addFlee(tx, ty, panic_dist, weight)
 ```
 
@@ -7461,10 +8286,10 @@ LSteeringManager:addFlee(tx, ty, panic_dist, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Threat X position in world units. |
-| `ty` | `number` | Threat Y position in world units. |
-| `panic_dist?` | `number` | Distance inside which fleeing is active; defaults to 200.0. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `tx` | number | Threat X position in world units. |
+| `ty` | number | Threat Y position in world units. |
+| `panic_dist?` | number | Distance inside which fleeing is active; defaults to 200.0. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7479,12 +8304,11 @@ end
 
 ---
 
-### `LSteeringManager:addFlock`
+#### `LSteeringManager:addFlock`
 
 Adds a flocking behavior with separation, alignment, and cohesion weights.
 
 ```lua
--- signature
 LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight)
 ```
 
@@ -7492,11 +8316,11 @@ LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `neighbor_radius?` | `number` | Radius used to find flock neighbors; defaults to 100.0. |
-| `sep_w?` | `number` | Separation force weight; defaults to 1.5. |
-| `align_w?` | `number` | Alignment force weight; defaults to 1.0. |
-| `coh_w?` | `number` | Cohesion force weight; defaults to 1.0. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `neighbor_radius?` | number | Radius used to find flock neighbors; defaults to 100.0. |
+| `sep_w?` | number | Separation force weight; defaults to 1.5. |
+| `align_w?` | number | Alignment force weight; defaults to 1.0. |
+| `coh_w?` | number | Cohesion force weight; defaults to 1.0. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7511,12 +8335,11 @@ end
 
 ---
 
-### `LSteeringManager:addPursue`
+#### `LSteeringManager:addPursue`
 
 Adds a pursue behavior that chases another named agent when a target name is supplied.
 
 ```lua
--- signature
 LSteeringManager:addPursue(target_name, weight)
 ```
 
@@ -7524,8 +8347,8 @@ LSteeringManager:addPursue(target_name, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target_name?` | `string` | Optional name of the agent to pursue. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `target_name?` | string | Optional name of the agent to pursue. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7540,12 +8363,11 @@ end
 
 ---
 
-### `LSteeringManager:addSeek`
+#### `LSteeringManager:addSeek`
 
 Adds a seek behavior that pulls the agent toward a target point.
 
 ```lua
--- signature
 LSteeringManager:addSeek(tx, ty, weight)
 ```
 
@@ -7553,9 +8375,9 @@ LSteeringManager:addSeek(tx, ty, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tx` | `number` | Target X position in world units. |
-| `ty` | `number` | Target Y position in world units. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `tx` | number | Target X position in world units. |
+| `ty` | number | Target Y position in world units. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7570,12 +8392,11 @@ end
 
 ---
 
-### `LSteeringManager:addWander`
+#### `LSteeringManager:addWander`
 
 Adds a wander behavior that produces jittered exploratory movement.
 
 ```lua
--- signature
 LSteeringManager:addWander(radius, dist, jitter, weight)
 ```
 
@@ -7583,10 +8404,10 @@ LSteeringManager:addWander(radius, dist, jitter, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `radius?` | `number` | Wander circle radius; defaults to 20.0. |
-| `dist?` | `number` | Wander circle distance in front of the agent; defaults to 40.0. |
-| `jitter?` | `number` | Random displacement applied per update; defaults to 5.0. |
-| `weight?` | `number` | Behavior weight applied during steering combination; defaults to 1.0. |
+| `radius?` | number | Wander circle radius; defaults to 20.0. |
+| `dist?` | number | Wander circle distance in front of the agent; defaults to 40.0. |
+| `jitter?` | number | Random displacement applied per update; defaults to 5.0. |
+| `weight?` | number | Behavior weight applied during steering combination; defaults to 1.0. |
 
 **Example**
 
@@ -7601,12 +8422,11 @@ end
 
 ---
 
-### `LSteeringManager:applyCustomSteering`
+#### `LSteeringManager:applyCustomSteering`
 
 Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
 
 ```lua
--- signature
 LSteeringManager:applyCustomSteering(agent, dt)
 ```
 
@@ -7614,15 +8434,15 @@ LSteeringManager:applyCustomSteering(agent, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `agent` | `LAgent` | Agent handle passed through to every custom steering callback. |
-| `dt` | `number` | Elapsed time in seconds passed to every custom steering callback. |
+| `agent` | [LBot](#lbot-handle) | Bot handle passed through to every custom steering callback. |
+| `dt` | number | Elapsed time in seconds passed to every custom steering callback. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Combined custom X and Y steering force. |
-| `number` | b Combined custom X and Y steering force. |
+| number | Combined custom X and Y steering force. (value 1). |
+| number | Combined custom X and Y steering force. (value 2). |
 
 **Example**
 
@@ -7640,12 +8460,11 @@ end
 
 ---
 
-### `LSteeringManager:calculate`
+#### `LSteeringManager:calculate`
 
 Calculates a steering force for the supplied agent movement state.
 
 ```lua
--- signature
 LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt)
 ```
 
@@ -7653,20 +8472,20 @@ LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Current agent X position. |
-| `py` | `number` | Current agent Y position. |
-| `vx` | `number` | Current agent X velocity. |
-| `vy` | `number` | Current agent Y velocity. |
-| `max_speed` | `number` | Maximum allowed speed used by steering constraints. |
-| `max_force` | `number` | Maximum allowed steering force. |
-| `dt` | `number` | Elapsed time in seconds for this steering step. |
+| `px` | number | Current agent X position. |
+| `py` | number | Current agent Y position. |
+| `vx` | number | Current agent X velocity. |
+| `vy` | number | Current agent Y velocity. |
+| `max_speed` | number | Maximum allowed speed used by steering constraints. |
+| `max_force` | number | Maximum allowed steering force. |
+| `dt` | number | Elapsed time in seconds for this steering step. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a X and Y steering force. |
-| `number` | b X and Y steering force. |
+| number | X and Y steering force. (value 1). |
+| number | X and Y steering force. (value 2). |
 
 **Example**
 
@@ -7682,12 +8501,11 @@ end
 
 ---
 
-### `LSteeringManager:clearPath`
+#### `LSteeringManager:clearPath`
 
 Clears the active waypoint path behavior.
 
 ```lua
--- signature
 LSteeringManager:clearPath()
 ```
 
@@ -7705,12 +8523,11 @@ end
 
 ---
 
-### `LSteeringManager:enableSpatialHash`
+#### `LSteeringManager:enableSpatialHash`
 
 Enables or disables spatial hash acceleration for neighbor queries.
 
 ```lua
--- signature
 LSteeringManager:enableSpatialHash(enabled)
 ```
 
@@ -7718,7 +8535,7 @@ LSteeringManager:enableSpatialHash(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to use spatial hashing, false to use direct scans. |
+| `enabled` | boolean | True to use spatial hashing, false to use direct scans. |
 
 **Example**
 
@@ -7733,12 +8550,11 @@ end
 
 ---
 
-### `LSteeringManager:getBehaviorCount`
+#### `LSteeringManager:getBehaviorCount`
 
 Returns the number of steering behaviors configured on this manager.
 
 ```lua
--- signature
 LSteeringManager:getBehaviorCount()
 ```
 
@@ -7746,7 +8562,7 @@ LSteeringManager:getBehaviorCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current steering behavior count. |
+| number | Current steering behavior count. |
 
 **Example**
 
@@ -7762,12 +8578,11 @@ end
 
 ---
 
-### `LSteeringManager:getCombineMode`
+#### `LSteeringManager:getCombineMode`
 
 Returns the current steering force combination mode.
 
 ```lua
--- signature
 LSteeringManager:getCombineMode()
 ```
 
@@ -7775,7 +8590,7 @@ LSteeringManager:getCombineMode()
 
 | Type | Description |
 |------|-------------|
-| `string` | Combine mode name. |
+| string | Combine mode name. |
 
 **Example**
 
@@ -7791,12 +8606,11 @@ end
 
 ---
 
-### `LSteeringManager:getLastSteering`
+#### `LSteeringManager:getLastSteering`
 
 Returns the last steering force calculated by this manager.
 
 ```lua
--- signature
 LSteeringManager:getLastSteering()
 ```
 
@@ -7804,8 +8618,8 @@ LSteeringManager:getLastSteering()
 
 | Type | Description |
 |------|-------------|
-| `number` | a X and Y force values from the previous calculation. |
-| `number` | b X and Y force values from the previous calculation. |
+| number | X and Y force values from the previous calculation. (value 1). |
+| number | X and Y force values from the previous calculation. (value 2). |
 
 **Example**
 
@@ -7821,12 +8635,11 @@ end
 
 ---
 
-### `LSteeringManager:getPathProgress`
+#### `LSteeringManager:getPathProgress`
 
 Returns the current one-based waypoint index and total waypoint count.
 
 ```lua
--- signature
 LSteeringManager:getPathProgress()
 ```
 
@@ -7834,8 +8647,8 @@ LSteeringManager:getPathProgress()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Current waypoint index and total waypoint count. |
-| `number` | b Current waypoint index and total waypoint count. |
+| number | Current waypoint index and total waypoint count. (value 1). |
+| number | Current waypoint index and total waypoint count. (value 2). |
 
 **Example**
 
@@ -7850,12 +8663,11 @@ end
 
 ---
 
-### `LSteeringManager:hasPath`
+#### `LSteeringManager:hasPath`
 
 Returns whether this manager currently has an active waypoint path.
 
 ```lua
--- signature
 LSteeringManager:hasPath()
 ```
 
@@ -7863,7 +8675,7 @@ LSteeringManager:hasPath()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a path is configured and not complete. |
+| boolean | True when a path is configured and not complete. |
 
 **Example**
 
@@ -7879,12 +8691,11 @@ end
 
 ---
 
-### `LSteeringManager:setCombineMode`
+#### `LSteeringManager:setCombineMode`
 
 Sets how steering behavior forces are combined.
 
 ```lua
--- signature
 LSteeringManager:setCombineMode(mode)
 ```
 
@@ -7892,7 +8703,7 @@ LSteeringManager:setCombineMode(mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mode` | `string` | Combine mode string parsed by the steering manager. |
+| `mode` | string | Combine mode string parsed by the steering manager. |
 
 **Example**
 
@@ -7907,12 +8718,11 @@ end
 
 ---
 
-### `LSteeringManager:setPath`
+#### `LSteeringManager:setPath`
 
 Sets a waypoint path behavior from an array of `{x, y}` tables.
 
 ```lua
--- signature
 LSteeringManager:setPath(waypoints, reach_radius, weight)
 ```
 
@@ -7920,9 +8730,9 @@ LSteeringManager:setPath(waypoints, reach_radius, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `waypoints` | `table` | Array of waypoint tables, each containing numeric `x` and `y` fields. |
-| `reach_radius?` | `number` | Distance at which a waypoint is considered reached; defaults to 12.0. |
-| `weight?` | `number` | Path following behavior weight; defaults to 1.0. |
+| `waypoints` | table | Array of waypoint tables, each containing numeric `x` and `y` fields. |
+| `reach_radius?` | number | Distance at which a waypoint is considered reached; defaults to 12.0. |
+| `weight?` | number | Path following behavior weight; defaults to 1.0. |
 
 **Example**
 
@@ -7943,12 +8753,11 @@ end
 
 ---
 
-### `LSteeringManager:setSpatialHashCellSize`
+#### `LSteeringManager:setSpatialHashCellSize`
 
 Sets the cell size used by the steering manager spatial hash.
 
 ```lua
--- signature
 LSteeringManager:setSpatialHashCellSize(size)
 ```
 
@@ -7956,7 +8765,7 @@ LSteeringManager:setSpatialHashCellSize(size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `size` | `number` | Spatial hash cell size in world units. |
+| `size` | number | Spatial hash cell size in world units. |
 
 **Example**
 
@@ -7970,12 +8779,11 @@ end
 
 ---
 
-### `LSteeringManager:type`
+#### `LSteeringManager:type`
 
 Returns the Lua-visible type name for this steering manager handle.
 
 ```lua
--- signature
 LSteeringManager:type()
 ```
 
@@ -7983,7 +8791,7 @@ LSteeringManager:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LSteeringManager`. |
+| string | The string `[LSteeringManager](#lsteeringmanager-handle)`. |
 
 **Example**
 
@@ -7998,12 +8806,11 @@ end
 
 ---
 
-### `LSteeringManager:typeOf`
+#### `LSteeringManager:typeOf`
 
 Returns whether this steering manager handle matches a supported type name.
 
 ```lua
--- signature
 LSteeringManager:typeOf(name)
 ```
 
@@ -8011,13 +8818,13 @@ LSteeringManager:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `SteeringManager` and `Object`. |
+| `name` | string | Type name to compare against `SteeringManager` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -8025,21 +8832,26 @@ LSteeringManager:typeOf(name)
 do
   local steer = lurek.ai.newSteeringManager()
   local is_steer = steer:typeOf("LSteeringManager")
-  local is_other = steer:typeOf("LAgent")
-  print("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LAgent=" .. tostring(is_other))
+  local is_other = steer:typeOf("LBot")
+  print("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
 end
 ```
 
 ---
 
-## LStimulusWorld
+## LStimulusWorld Handle
 
-### `LStimulusWorld:addAuditory`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LStimulusWorld:addAuditory`
 
 Adds an auditory stimulus with decay and returns its identifier.
 
 ```lua
--- signature
 LStimulusWorld:addAuditory(x, y, intensity, radius, decay_rate, tag)
 ```
 
@@ -8047,18 +8859,18 @@ LStimulusWorld:addAuditory(x, y, intensity, radius, decay_rate, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Stimulus X position in world units. |
-| `y` | `number` | Stimulus Y position in world units. |
-| `intensity` | `number` | Initial stimulus intensity. |
-| `radius` | `number` | Stimulus radius in world units. |
-| `decay_rate` | `number` | Intensity decay rate applied during updates. |
-| `tag?` | `string` | Optional category tag for game-side filtering. |
+| `x` | number | Stimulus X position in world units. |
+| `y` | number | Stimulus Y position in world units. |
+| `intensity` | number | Initial stimulus intensity. |
+| `radius` | number | Stimulus radius in world units. |
+| `decay_rate` | number | Intensity decay rate applied during updates. |
+| `tag?` | string | Optional category tag for game-side filtering. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | New stimulus identifier. |
+| number | New stimulus identifier. |
 
 **Example**
 
@@ -8072,12 +8884,11 @@ end
 
 ---
 
-### `LStimulusWorld:addVisual`
+#### `LStimulusWorld:addVisual`
 
 Adds a visual stimulus and returns its identifier.
 
 ```lua
--- signature
 LStimulusWorld:addVisual(x, y, intensity, radius, tag)
 ```
 
@@ -8085,17 +8896,17 @@ LStimulusWorld:addVisual(x, y, intensity, radius, tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | `number` | Stimulus X position in world units. |
-| `y` | `number` | Stimulus Y position in world units. |
-| `intensity` | `number` | Initial stimulus intensity. |
-| `radius` | `number` | Stimulus radius in world units. |
-| `tag?` | `string` | Optional category tag for game-side filtering. |
+| `x` | number | Stimulus X position in world units. |
+| `y` | number | Stimulus Y position in world units. |
+| `intensity` | number | Initial stimulus intensity. |
+| `radius` | number | Stimulus radius in world units. |
+| `tag?` | string | Optional category tag for game-side filtering. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | New stimulus identifier. |
+| number | New stimulus identifier. |
 
 **Example**
 
@@ -8109,12 +8920,11 @@ end
 
 ---
 
-### `LStimulusWorld:clear`
+#### `LStimulusWorld:clear`
 
 Removes every active stimulus. This method is available to Lua scripts.
 
 ```lua
--- signature
 LStimulusWorld:clear()
 ```
 
@@ -8132,12 +8942,11 @@ end
 
 ---
 
-### `LStimulusWorld:count`
+#### `LStimulusWorld:count`
 
 Returns the number of active stimuli.
 
 ```lua
--- signature
 LStimulusWorld:count()
 ```
 
@@ -8145,7 +8954,7 @@ LStimulusWorld:count()
 
 | Type | Description |
 |------|-------------|
-| `number` | Active stimulus count. |
+| number | Active stimulus count. |
 
 **Example**
 
@@ -8160,12 +8969,11 @@ end
 
 ---
 
-### `LStimulusWorld:remove`
+#### `LStimulusWorld:remove`
 
 Removes a stimulus by identifier. This method is available to Lua scripts.
 
 ```lua
--- signature
 LStimulusWorld:remove(id)
 ```
 
@@ -8173,13 +8981,13 @@ LStimulusWorld:remove(id)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `id` | `number` | Stimulus identifier returned by `addVisual` or `addAuditory`. |
+| `id` | number | Stimulus identifier returned by `addVisual` or `addAuditory`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when a stimulus was removed. |
+| boolean | True when a stimulus was removed. |
 
 **Example**
 
@@ -8194,12 +9002,11 @@ end
 
 ---
 
-### `LStimulusWorld:type`
+#### `LStimulusWorld:type`
 
 Returns the Lua-visible type name for this stimulus world handle.
 
 ```lua
--- signature
 LStimulusWorld:type()
 ```
 
@@ -8207,7 +9014,7 @@ LStimulusWorld:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LStimulusWorld`. |
+| string | The string `[LStimulusWorld](#lstimulusworld-handle)`. |
 
 **Example**
 
@@ -8221,12 +9028,11 @@ end
 
 ---
 
-### `LStimulusWorld:typeOf`
+#### `LStimulusWorld:typeOf`
 
 Returns whether this stimulus world handle matches a supported type name.
 
 ```lua
--- signature
 LStimulusWorld:typeOf(name)
 ```
 
@@ -8234,13 +9040,13 @@ LStimulusWorld:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LStimulusWorld` and `Object`. |
+| `name` | string | Type name to compare against `[LStimulusWorld](#lstimulusworld-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -8253,12 +9059,11 @@ end
 
 ---
 
-### `LStimulusWorld:update`
+#### `LStimulusWorld:update`
 
 Advances stimulus decay and lifetime state.
 
 ```lua
--- signature
 LStimulusWorld:update(dt)
 ```
 
@@ -8266,7 +9071,7 @@ LStimulusWorld:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -8281,14 +9086,19 @@ end
 
 ---
 
-## LStrategyAI
+## LStrategyAI Handle
 
-### `LStrategyAI:activeGoal`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LStrategyAI:activeGoal`
 
 Returns the currently active strategic goal when one is selected.
 
 ```lua
--- signature
 LStrategyAI:activeGoal()
 ```
 
@@ -8296,7 +9106,7 @@ LStrategyAI:activeGoal()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Active goal name, or nil before selection. |
+| LuaValue | Active goal name, or nil before selection. |
 
 **Example**
 
@@ -8311,12 +9121,11 @@ end
 
 ---
 
-### `LStrategyAI:addGoal`
+#### `LStrategyAI:addGoal`
 
 Adds a named strategic goal. This method is available to Lua scripts.
 
 ```lua
--- signature
 LStrategyAI:addGoal(name)
 ```
 
@@ -8324,7 +9133,7 @@ LStrategyAI:addGoal(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Goal name scored by update callbacks. |
+| `name` | string | Goal name scored by update callbacks. |
 
 **Example**
 
@@ -8340,12 +9149,11 @@ end
 
 ---
 
-### `LStrategyAI:addTag`
+#### `LStrategyAI:addTag`
 
 Adds a context tag to this strategy AI.
 
 ```lua
--- signature
 LStrategyAI:addTag(tag)
 ```
 
@@ -8353,7 +9161,7 @@ LStrategyAI:addTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | Tag name to add. |
+| `tag` | string | Tag name to add. |
 
 **Example**
 
@@ -8368,12 +9176,11 @@ end
 
 ---
 
-### `LStrategyAI:forceEvaluate`
+#### `LStrategyAI:forceEvaluate`
 
 Immediately scores all goals and updates the active goal.
 
 ```lua
--- signature
 LStrategyAI:forceEvaluate(scorer_fn)
 ```
 
@@ -8381,7 +9188,7 @@ LStrategyAI:forceEvaluate(scorer_fn)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scorer_fn` | `function` | Function called with a goal name and returning a numeric score. |
+| `scorer_fn` | function | Function called with a goal name and returning a numeric score. |
 
 **Example**
 
@@ -8397,12 +9204,11 @@ end
 
 ---
 
-### `LStrategyAI:removeTag`
+#### `LStrategyAI:removeTag`
 
 Removes a context tag from this strategy AI.
 
 ```lua
--- signature
 LStrategyAI:removeTag(tag)
 ```
 
@@ -8410,7 +9216,7 @@ LStrategyAI:removeTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | Tag name to remove. |
+| `tag` | string | Tag name to remove. |
 
 **Example**
 
@@ -8425,12 +9231,11 @@ end
 
 ---
 
-### `LStrategyAI:timeUntilNext`
+#### `LStrategyAI:timeUntilNext`
 
 Returns time remaining until the next scheduled strategy evaluation.
 
 ```lua
--- signature
 LStrategyAI:timeUntilNext()
 ```
 
@@ -8438,7 +9243,7 @@ LStrategyAI:timeUntilNext()
 
 | Type | Description |
 |------|-------------|
-| `number` | Seconds until the next interval evaluation. |
+| number | Seconds until the next interval evaluation. |
 
 **Example**
 
@@ -8453,12 +9258,11 @@ end
 
 ---
 
-### `LStrategyAI:type`
+#### `LStrategyAI:type`
 
 Returns the Lua-visible type name for this strategy AI handle.
 
 ```lua
--- signature
 LStrategyAI:type()
 ```
 
@@ -8466,7 +9270,7 @@ LStrategyAI:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LStrategyAI`. |
+| string | The string `[LStrategyAI](#lstrategyai-handle)`. |
 
 **Example**
 
@@ -8480,12 +9284,11 @@ end
 
 ---
 
-### `LStrategyAI:typeOf`
+#### `LStrategyAI:typeOf`
 
 Returns whether this strategy AI handle matches a supported type name.
 
 ```lua
--- signature
 LStrategyAI:typeOf(name)
 ```
 
@@ -8493,13 +9296,13 @@ LStrategyAI:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LStrategyAI` and `Object`. |
+| `name` | string | Type name to compare against `[LStrategyAI](#lstrategyai-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -8512,12 +9315,11 @@ end
 
 ---
 
-### `LStrategyAI:update`
+#### `LStrategyAI:update`
 
 Advances strategy timing and scores goals when the update interval has elapsed.
 
 ```lua
--- signature
 LStrategyAI:update(dt, scorer_fn)
 ```
 
@@ -8525,8 +9327,8 @@ LStrategyAI:update(dt, scorer_fn)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
-| `scorer_fn` | `function` | Function called with a goal name and returning a numeric score. |
+| `dt` | number | Elapsed time in seconds. |
+| `scorer_fn` | function | Function called with a goal name and returning a numeric score. |
 
 **Example**
 
@@ -8542,14 +9344,19 @@ end
 
 ---
 
-## LTraitProfile
+## LTraitProfile Handle
 
-### `LTraitProfile:addModifier`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTraitProfile:addModifier`
 
 Adds a temporary or permanent modifier to a named trait.
 
 ```lua
--- signature
 LTraitProfile:addModifier(trait_name, delta, duration, source)
 ```
 
@@ -8557,10 +9364,10 @@ LTraitProfile:addModifier(trait_name, delta, duration, source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `trait_name` | `string` | Trait name affected by the modifier. |
-| `delta` | `number` | Value added to the trait while the modifier is active. |
-| `duration?` | `number` | Modifier lifetime in seconds, or nil for engine-defined permanent duration. |
-| `source` | `string` | Source label used to remove related modifiers later. |
+| `trait_name` | string | Trait name affected by the modifier. |
+| `delta` | number | Value added to the trait while the modifier is active. |
+| `duration?` | number | Modifier lifetime in seconds, or nil for engine-defined permanent duration. |
+| `source` | string | Source label used to remove related modifiers later. |
 
 **Example**
 
@@ -8575,12 +9382,11 @@ end
 
 ---
 
-### `LTraitProfile:archetype`
+#### `LTraitProfile:archetype`
 
 Returns the best matching archetype name when the profile can classify one.
 
 ```lua
--- signature
 LTraitProfile:archetype()
 ```
 
@@ -8588,7 +9394,7 @@ LTraitProfile:archetype()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Archetype name, or nil when no archetype matches. |
+| LuaValue | Archetype name, or nil when no archetype matches. |
 
 **Example**
 
@@ -8605,12 +9411,11 @@ end
 
 ---
 
-### `LTraitProfile:get`
+#### `LTraitProfile:get`
 
 Returns the current value of a named trait including active modifiers.
 
 ```lua
--- signature
 LTraitProfile:get(name)
 ```
 
@@ -8618,13 +9423,13 @@ LTraitProfile:get(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Trait name to read. |
+| `name` | string | Trait name to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Effective trait value. |
+| number | Effective trait value. |
 
 **Example**
 
@@ -8640,12 +9445,11 @@ end
 
 ---
 
-### `LTraitProfile:getBase`
+#### `LTraitProfile:getBase`
 
 Returns the base value of a named trait without temporary modifiers.
 
 ```lua
--- signature
 LTraitProfile:getBase(name)
 ```
 
@@ -8653,13 +9457,13 @@ LTraitProfile:getBase(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Trait name to read. |
+| `name` | string | Trait name to read. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Base trait value. |
+| number | Base trait value. |
 
 **Example**
 
@@ -8674,12 +9478,11 @@ end
 
 ---
 
-### `LTraitProfile:has`
+#### `LTraitProfile:has`
 
 Returns whether the profile has a named trait.
 
 ```lua
--- signature
 LTraitProfile:has(name)
 ```
 
@@ -8687,13 +9490,13 @@ LTraitProfile:has(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Trait name to check. |
+| `name` | string | Trait name to check. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the trait exists. |
+| boolean | True when the trait exists. |
 
 **Example**
 
@@ -8708,12 +9511,11 @@ end
 
 ---
 
-### `LTraitProfile:removeModifiers`
+#### `LTraitProfile:removeModifiers`
 
 Removes all trait modifiers that match a source label.
 
 ```lua
--- signature
 LTraitProfile:removeModifiers(source)
 ```
 
@@ -8721,7 +9523,7 @@ LTraitProfile:removeModifiers(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | `string` | Source label to remove. |
+| `source` | string | Source label to remove. |
 
 **Example**
 
@@ -8738,12 +9540,11 @@ end
 
 ---
 
-### `LTraitProfile:set`
+#### `LTraitProfile:set`
 
 Sets the base value for a named trait.
 
 ```lua
--- signature
 LTraitProfile:set(name, value)
 ```
 
@@ -8751,8 +9552,8 @@ LTraitProfile:set(name, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Trait name to create or update. |
-| `value` | `number` | Base trait value. |
+| `name` | string | Trait name to create or update. |
+| `value` | number | Base trait value. |
 
 **Example**
 
@@ -8767,12 +9568,11 @@ end
 
 ---
 
-### `LTraitProfile:traitCount`
+#### `LTraitProfile:traitCount`
 
 Returns the number of traits stored in the profile.
 
 ```lua
--- signature
 LTraitProfile:traitCount()
 ```
 
@@ -8780,7 +9580,7 @@ LTraitProfile:traitCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current trait count. |
+| number | Current trait count. |
 
 **Example**
 
@@ -8796,12 +9596,11 @@ end
 
 ---
 
-### `LTraitProfile:type`
+#### `LTraitProfile:type`
 
 Returns the Lua-visible type name for this trait profile handle.
 
 ```lua
--- signature
 LTraitProfile:type()
 ```
 
@@ -8809,7 +9608,7 @@ LTraitProfile:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LTraitProfile`. |
+| string | The string `[LTraitProfile](#ltraitprofile-handle)`. |
 
 **Example**
 
@@ -8823,12 +9622,11 @@ end
 
 ---
 
-### `LTraitProfile:typeOf`
+#### `LTraitProfile:typeOf`
 
 Returns whether this trait profile handle matches a supported type name.
 
 ```lua
--- signature
 LTraitProfile:typeOf(name)
 ```
 
@@ -8836,13 +9634,13 @@ LTraitProfile:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LTraitProfile` and `Object`. |
+| `name` | string | Type name to compare against `[LTraitProfile](#ltraitprofile-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -8855,12 +9653,11 @@ end
 
 ---
 
-### `LTraitProfile:update`
+#### `LTraitProfile:update`
 
 Advances modifier timers and removes expired modifiers.
 
 ```lua
--- signature
 LTraitProfile:update(dt)
 ```
 
@@ -8868,7 +9665,7 @@ LTraitProfile:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | `number` | Elapsed time in seconds. |
+| `dt` | number | Elapsed time in seconds. |
 
 **Example**
 
@@ -8884,14 +9681,19 @@ end
 
 ---
 
-## LUtilityAI
+## LUtilityAI Handle
 
-### `LUtilityAI:addAction`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LUtilityAI:addAction`
 
 Adds an action scored by a Lua callback and optional momentum weight.
 
 ```lua
--- signature
 LUtilityAI:addAction(name, scorer_fn, weight)
 ```
 
@@ -8899,9 +9701,9 @@ LUtilityAI:addAction(name, scorer_fn, weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Action name returned when this action wins evaluation. |
-| `scorer_fn` | `function` | Function called by evaluation to score this action. |
-| `weight?` | `number` | Momentum bonus or base weighting value; defaults to 1.0. |
+| `name` | string | Action name returned when this action wins evaluation. |
+| `scorer_fn` | function | Function called by evaluation to score this action. |
+| `weight?` | number | Momentum bonus or base weighting value; defaults to 1.0. |
 
 **Example**
 
@@ -8916,12 +9718,11 @@ end
 
 ---
 
-### `LUtilityAI:addConsideration`
+#### `LUtilityAI:addConsideration`
 
 Adds a consideration scorer and response curve to an existing utility action.
 
 ```lua
--- signature
 LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1, p2, p3, weight)
 ```
 
@@ -8929,14 +9730,14 @@ LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1, p2, p3,
 
 | Name | Type | Description |
 |------|------|-------------|
-| `action_name` | `string` | Name of the action that receives the consideration. |
-| `name` | `string` | Consideration name used for debugging and documentation. |
-| `scorer_fn` | `function` | Function that returns the raw consideration score. |
-| `curve_arg` | `LuaValue` | Curve name string, custom curve function, or another value to use the linear fallback. |
-| `p1?` | `number` | First curve parameter; defaults to 1.0. |
-| `p2?` | `number` | Second curve parameter; defaults to 0.0. |
-| `p3?` | `number` | Third curve parameter; defaults to 0.0. |
-| `weight?` | `number` | Consideration weight; defaults to 1.0. |
+| `action_name` | string | Name of the action that receives the consideration. |
+| `name` | string | Consideration name used for debugging and documentation. |
+| `scorer_fn` | function | Function that returns the raw consideration score. |
+| `curve_arg` | LuaValue | Curve name string, custom curve function, or another value to use the linear fallback. |
+| `p1?` | number | First curve parameter; defaults to 1.0. |
+| `p2?` | number | Second curve parameter; defaults to 0.0. |
+| `p3?` | number | Third curve parameter; defaults to 0.0. |
+| `weight?` | number | Consideration weight; defaults to 1.0. |
 
 **Example**
 
@@ -8952,12 +9753,11 @@ end
 
 ---
 
-### `LUtilityAI:evaluate`
+#### `LUtilityAI:evaluate`
 
 Evaluates all actions and returns the winning action name when one is available.
 
 ```lua
--- signature
 LUtilityAI:evaluate()
 ```
 
@@ -8965,7 +9765,7 @@ LUtilityAI:evaluate()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Winning action name, or nil when no action can be selected. |
+| LuaValue | Winning action name, or nil when no action can be selected. |
 
 **Example**
 
@@ -8981,12 +9781,11 @@ end
 
 ---
 
-### `LUtilityAI:getActionCount`
+#### `LUtilityAI:getActionCount`
 
 Returns the number of actions registered in this utility AI.
 
 ```lua
--- signature
 LUtilityAI:getActionCount()
 ```
 
@@ -8994,7 +9793,7 @@ LUtilityAI:getActionCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current action count. |
+| number | Current action count. |
 
 **Example**
 
@@ -9010,12 +9809,11 @@ end
 
 ---
 
-### `LUtilityAI:getLastAction`
+#### `LUtilityAI:getLastAction`
 
 Returns the last winning action name when evaluation has selected one.
 
 ```lua
--- signature
 LUtilityAI:getLastAction()
 ```
 
@@ -9023,7 +9821,7 @@ LUtilityAI:getLastAction()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Last action name, or nil before an action has won. |
+| LuaValue | Last action name, or nil before an action has won. |
 
 **Example**
 
@@ -9040,12 +9838,11 @@ end
 
 ---
 
-### `LUtilityAI:type`
+#### `LUtilityAI:type`
 
 Returns the Lua-visible type name for this utility AI handle.
 
 ```lua
--- signature
 LUtilityAI:type()
 ```
 
@@ -9053,7 +9850,7 @@ LUtilityAI:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LUtilityAI`. |
+| string | The string `[LUtilityAI](#lutilityai-handle)`. |
 
 **Example**
 
@@ -9067,12 +9864,11 @@ end
 
 ---
 
-### `LUtilityAI:typeOf`
+#### `LUtilityAI:typeOf`
 
 Returns whether this utility AI handle matches a supported type name.
 
 ```lua
--- signature
 LUtilityAI:typeOf(name)
 ```
 
@@ -9080,13 +9876,13 @@ LUtilityAI:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `UtilityAI` and `Object`. |
+| `name` | string | Type name to compare against `UtilityAI` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

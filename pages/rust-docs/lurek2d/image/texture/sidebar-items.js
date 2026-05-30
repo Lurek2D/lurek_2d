@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["TextureColorSpace"],"fn":["premultiply_alpha_rgba8_in_place"],"struct":["Texture"]};

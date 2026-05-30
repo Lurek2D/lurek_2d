@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["apply_snapshot","build_snapshot"],"struct":["GlobeSyncChannel","GlobeSyncSnapshot"]};

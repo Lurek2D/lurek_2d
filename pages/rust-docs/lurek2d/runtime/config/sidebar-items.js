@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["CliConfig","Config","HeadlessConfig","ModulesConfig","PerformanceConfig","RenderConfig","RuntimeConfig","TuiConfig","WindowConfig"]};

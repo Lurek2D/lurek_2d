@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["ChainEvent","ChainStep","TweenChain"]};

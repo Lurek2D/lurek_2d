@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["register","register_font_api"],"struct":["LuaFont"]};

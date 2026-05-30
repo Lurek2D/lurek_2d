@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["far_background","foreground_fog","mid_background"]};

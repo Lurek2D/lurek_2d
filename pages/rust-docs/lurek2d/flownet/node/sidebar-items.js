@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["FlowMode","OverflowPolicy"],"struct":["ConversionRule","Demand","Node","Supply"]};

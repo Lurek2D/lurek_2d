@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["build_view_matrix","normalize_v3","project_point","project_point_with_z","project_province","project_region","screen_delta_to_pan"],"struct":["OrbitCamera"]};

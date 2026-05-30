@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["emit_globe_frame","project_arc"]};

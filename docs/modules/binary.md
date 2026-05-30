@@ -1,14 +1,103 @@
 # Binary
 
-- The `binary` module is a comprehensive binary data toolkit situated in the Foundations tier of the engine.
+## Summary
 
-It provides high-performance data manipulation utilities entirely decoupled from engine-specific state, making it highly portable and resilient. It offers a robust suite of tools for byte buffering, compression, cryptographic hashing, string encoding, and structured binary packing and unpacking operations, all of which are critical for tasks ranging from network protocols to save-game serialization.
+The `binary` module provides byte-level data utilities for serialization, packing, compression, encoding, hashing, and bounded buffering. It is a foundational data layer intended for protocol payloads, save blobs, and binary interchange, independent from renderer or gameplay concerns.
 
-At the center of the module is `ByteData`, an owned, resizable byte vector equipped with indexed read and write access for all primitive types (including integers and floating-point numbers) in both little-endian and big-endian formats. For zero-copy inspection of binary payloads, the `DataView` struct provides read-only typed access over shared byte slices, minimizing overhead when decoding large network packets or streaming assets. Complementing this is `DataWriter`, a sequential builder that accumulates serialized binary output using a movable cursor.
+The module is split by responsibility: `byte_data` and `dataview` handle owned/shared byte access, `data_writer` handles sequential writes, `pack` and `bin_pack` handle structured format-string style serialization, `compress` and `encode` provide transport helpers, and `hash` provides checksum/digest utilities. `ring` adds fixed-capacity FIFO behavior with overwrite semantics for streaming scenarios.
 
-The module supports an extensive array of compression codecs—LZ4, Zstd, Deflate, and Gzip—accessible via the `CompressFormat` enum. These codecs are exposed through full-buffer, streaming, and chunked APIs. For integrity checks and cryptography, the `HashAlgorithm` enum gives access to industry-standard hashes such as MD5, SHA-1, SHA-256, SHA-512, CRC32, xxHash, and BLAKE3. The `EncodeFormat` helpers seamlessly handle conversion of binary payloads to and from Base64, Hex, and URL-safe text formats.
+Design emphasis is predictable low-level behavior and reusable primitives rather than one monolithic serializer. Callers can compose the specific pieces they need, from quick encode/decode helpers to full packed-structure workflows.
 
-A major feature of the module is its `pack` and `unpack` functions, which utilize Python `struct`-style format strings. These utilities translate between dynamically typed inputs (or Lua tables) and strongly typed binary layouts, natively handling endian switching, padding, and both length-prefixed and null-terminated strings. Additionally, the `RingBuffer` type provides a fixed-capacity circular buffer with oldest-overwrite FIFO semantics, ideal for streaming data pipelines or rolling logs. The entire toolset is deeply integrated with the Lua runtime through the `lurek.binary.*` namespace, allowing script developers to efficiently process arbitrary binary data.
+Because this module sits in foundations, its contracts must remain stable and explicit: byte order, bounds behavior, and transformation semantics should be documented and deterministic so higher layers can rely on it for cross-module interoperability.
+
+Implementation detail and boundary guarantees for binary: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: bin_pack.rs: Token-based binary packing and unpacking using whitespace-separated format strings - Endian-aware serialization of integers, floats, booleans, strings, and raw bytes - Coercion helpers that convert between BinValue variants at write time - Length-prefixed and null-terminated stri; byte_data.rs: Owned mutable byte buffer with indexed read and write access - UTF-8 string encoding and lossy decoding from raw bytes - Immutable and mutable slice views for zero-copy downstream use; compress.rs: Multi-codec compression and decompression (deflate, gzip, zlib, lz4) - Full-buffer and streaming APIs for both single slices and chunk lists - Configurable compression level clamped to valid range (0-9) - ChunkReader adapter that flattens multiple borrowed slices into one Read st; data_writer.rs: Sequential binary writer with a movable cursor over a growable byte buffer - Little-endian and big-endian integer, float, and string write methods - Seek support with automatic zero-fill when moving past buffer end; dataview.rs: Read-only typed accessor over a shared Arc byte buffer - Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64 - Sub-slice views with validated offset and size - LuaDataView wrapper for Lua-facing ownership patterns; encode.rs: Base64 and hexadecimal encoding and decoding for opaque byte payloads - Format selection via enum variant parsed from user-facing labels - Consistent error wrapping for malformed input; hash.rs: Cryptographic hash digest computation (MD5, SHA-1, SHA-256, SHA-512) - CRC32 checksum for fast integrity checks - Hex-encoded string output for all digest algorithms; mod.rs: Binary packing, unpacking, and struct-style format-string serialization - Owned byte buffers, shared data views, and sequential writers - Compression codecs (deflate, gzip, zlib, lz4) with stream and chunk APIs - Encoding helpers (base64, hex) and hash digests (MD5, SHA, CRC32) -; pack.rs: Python struct-style format-string packing and unpacking - Single-character format tokens for integers, floats, strings, and padding - Endian switching via '<' (little) and '>' (big) prefix characters - Length-prefixed ('s') and null-terminated ('z') string support - Coercion help; ring_buffer.rs: Fixed-capacity circular buffer with oldest-overwrite FIFO semantics - Push, pop, peek, and index-based access with O(1) operations - Iteration and collection helpers from oldest to newest element - Copy-optimized collection for Clone + Copy element types. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### bin_pack.rs
+
+- Implements token-driven binary pack and unpack flows over whitespace-delimited format descriptions.
+- Supports endian-aware serialization of scalar values, strings, booleans, and raw byte payloads.
+- Applies value coercion rules so heterogeneous input variants can be normalized at write time.
+- Handles fixed-width and variable-width token semantics including prefixed and null-terminated strings.
+- Provides padding support for alignment-sensitive binary structure construction.
+- Performs bounds-checked reads and returns structured failures on truncated source buffers.
+- Computes format size where possible to aid buffer planning and validation.
+- Returns owned byte containers suitable for downstream binary pipeline integration.
+- Keeps format parsing and conversion behavior deterministic for script-driven packing contracts.
+- Serves as a high-level schema layer above low-level byte buffer primitives.
+
+### byte_data.rs
+
+- Implements an owned mutable byte buffer with indexed access and conversion helpers.
+- Supports UTF-8 encoding and tolerant text decoding from arbitrary byte content.
+- Exposes immutable and mutable slice views for efficient downstream processing.
+- Serves as the foundational byte container shared across binary utility modules.
+
+### compress.rs
+
+- Implements multi-codec compression and decompression for buffer and stream style workflows.
+- Supports deflate, gzip, zlib, and lz4 variants through one unified format selection surface.
+- Provides full-buffer and chunked processing paths for different memory and throughput constraints.
+- Applies bounded compression-level normalization to keep codec settings within valid operating ranges.
+- Adapts chunk lists into stream readers for incremental processing integration.
+- Returns codec-contextual error results that preserve failure source clarity.
+
+### data_writer.rs
+
+- Implements sequential binary writing over a growable buffer with explicit cursor control.
+- Supports little-endian and big-endian emission for integers, floats, and string payloads.
+- Allows seeking within the buffer to overwrite or append structured binary segments.
+- Zero-fills gaps when seeking past current length to keep layout deterministic.
+- Serves as the mutable write surface for format-driven serialization workflows.
+
+### dataview.rs
+
+- Implements a read-only typed view over shared byte storage with offset and length windows.
+- Provides bounds-checked scalar decoding for integer and floating-point primitive types.
+- Supports validated sub-view creation for structured parsing of nested binary regions.
+- Keeps shared ownership cheap through Arc-backed buffer references in multi-consumer paths.
+- Serves as the safe read surface for binary inspection and Lua-facing bridge wrappers.
+
+### encode.rs
+
+- Implements textual encoding and decoding of opaque bytes via base64 and hexadecimal formats.
+- Selects algorithms through stable enum variants parsed from user-facing format labels.
+- Returns normalized failures for malformed textual payloads during decode operations.
+
+### hash.rs
+
+- Implements digest and checksum computation over byte payloads for integrity and fingerprint workflows.
+- Supports MD5, SHA-1, SHA-256, and SHA-512 cryptographic hash algorithm variants.
+- Provides CRC32 checksum generation for fast non-cryptographic validation scenarios.
+- Returns all computed digests as stable hexadecimal text for interoperable output handling.
+
+### mod.rs
+
+- Defines the binary utility module boundary for byte serialization, transformation, and integrity workflows.
+- Groups packing, encoding, compression, hashing, and buffer primitives under one coherent toolbox.
+- Serves as the composition root for engine-side binary data manipulation operations.
+
+### pack.rs
+
+- Implements struct-style format packing and unpacking for compact binary schema workflows.
+- Parses tokenized format strings covering numeric types, strings, and explicit padding markers.
+- Supports endian switching through prefix directives for cross-platform wire compatibility.
+- Handles both fixed and variable-width string representations during serialization and decode.
+- Applies numeric widening and coercion rules so value variants map safely onto target tokens.
+- Performs strict bounds checks on reads with token-aware failure context for truncated input.
+- Computes static or dynamic packed size to aid allocation and validation steps.
+- Produces owned byte outputs integrated with shared binary data container contracts.
+
+### ring_buffer.rs
+
+- Implements a fixed-capacity circular queue with overwrite-on-full FIFO behavior.
+- Supports push, pop, peek, and indexed access over the current logical element window.
+- Preserves deterministic oldest-to-newest traversal for iteration and collection flows.
+- Provides copy-optimized extraction helpers for compatible element type constraints.
+- Serves as a compact buffering primitive for streaming and rolling-window scenarios.
 
 ## Functions
 
@@ -17,7 +106,6 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 Compresses a binary string using a named compression format.
 
 ```lua
--- signature
 lurek.binary.compress(format_str, raw_data, level)
 ```
 
@@ -25,15 +113,15 @@ lurek.binary.compress(format_str, raw_data, level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format_str` | `string` | Compression format name. |
-| `raw_data` | `string` | Raw binary data to compress. |
-| `level?` | `number` | Optional compression level; defaults to 6. |
+| `format_str` | string | Compression format name. |
+| `raw_data` | string | Raw binary data to compress. |
+| `level?` | number | Optional compression level; defaults to 6. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Compressed binary byte string. |
+| string | Compressed binary byte string. |
 
 **Example**
 
@@ -53,7 +141,6 @@ end
 Compresses a string or table of strings as a chunked byte stream.
 
 ```lua
--- signature
 lurek.binary.compressChunks(format_str, chunks, level)
 ```
 
@@ -61,15 +148,15 @@ lurek.binary.compressChunks(format_str, chunks, level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format_str` | `string` | Compression format name. |
-| `chunks` | `any` | Binary string or array table of binary strings. |
-| `level?` | `number` | Optional compression level; defaults to 6. |
+| `format_str` | string | Compression format name. |
+| `chunks` | any | Binary string or array table of binary strings. |
+| `level?` | number | Optional compression level; defaults to 6. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Compressed binary byte string. |
+| string | Compressed binary byte string. |
 
 **Example**
 
@@ -89,7 +176,6 @@ end
 Computes CRC32 for a binary string.
 
 ```lua
--- signature
 lurek.binary.crc32(raw_data)
 ```
 
@@ -97,13 +183,13 @@ lurek.binary.crc32(raw_data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `raw_data` | `string` | Raw binary data to checksum. |
+| `raw_data` | string | Raw binary data to checksum. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | CRC32 checksum value. |
+| number | CRC32 checksum value. |
 
 **Example**
 
@@ -122,7 +208,6 @@ end
 Decodes a string using a named text encoding format.
 
 ```lua
--- signature
 lurek.binary.decode(format_str, encoded)
 ```
 
@@ -130,14 +215,14 @@ lurek.binary.decode(format_str, encoded)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format_str` | `string` | Encoding format name. |
-| `encoded` | `string` | Encoded string to decode. |
+| `format_str` | string | Encoding format name. |
+| `encoded` | string | Encoded string to decode. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Decoded binary byte string. |
+| string | Decoded binary byte string. |
 
 **Example**
 
@@ -156,7 +241,6 @@ end
 Decompresses a binary string using a named compression format.
 
 ```lua
--- signature
 lurek.binary.decompress(format_str, compressed)
 ```
 
@@ -164,14 +248,14 @@ lurek.binary.decompress(format_str, compressed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format_str` | `string` | Compression format name. |
-| `compressed` | `string` | Compressed binary data. |
+| `format_str` | string | Compression format name. |
+| `compressed` | string | Compressed binary data. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Decompressed binary byte string. |
+| string | Decompressed binary byte string. |
 
 **Example**
 
@@ -192,7 +276,6 @@ end
 Decompresses a string or table of strings as a chunked byte stream.
 
 ```lua
--- signature
 lurek.binary.decompressChunks(format_str, chunks)
 ```
 
@@ -200,14 +283,14 @@ lurek.binary.decompressChunks(format_str, chunks)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format_str` | `string` | Compression format name. |
-| `chunks` | `any` | Binary string or array table of binary strings. |
+| `format_str` | string | Compression format name. |
+| `chunks` | any | Binary string or array table of binary strings. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Decompressed binary byte string. |
+| string | Decompressed binary byte string. |
 
 **Example**
 
@@ -228,7 +311,6 @@ end
 Encodes a binary string using a named text encoding format.
 
 ```lua
--- signature
 lurek.binary.encode(format_str, raw_data)
 ```
 
@@ -236,14 +318,14 @@ lurek.binary.encode(format_str, raw_data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `format_str` | `string` | Encoding format name. |
-| `raw_data` | `string` | Raw binary data to encode. |
+| `format_str` | string | Encoding format name. |
+| `raw_data` | string | Raw binary data to encode. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Encoded string. |
+| string | Encoded string. |
 
 **Example**
 
@@ -261,7 +343,6 @@ end
 Encodes a Lua table into a TOML document string.
 
 ```lua
--- signature
 lurek.binary.encodeToml(tbl)
 ```
 
@@ -269,13 +350,13 @@ lurek.binary.encodeToml(tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tbl` | `table` | Lua table to encode as TOML. |
+| `tbl` | table | Lua table to encode as TOML. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | TOML document text. |
+| string | TOML document text. |
 
 **Example**
 
@@ -295,7 +376,6 @@ end
 Decodes a structured binary interchange payload back into Lua values.
 
 ```lua
--- signature
 lurek.binary.fromMsgPack(bytes)
 ```
 
@@ -303,13 +383,13 @@ lurek.binary.fromMsgPack(bytes)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bytes` | `string` | Encoded binary payload. |
+| `bytes` | string | Encoded binary payload. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Decoded Lua value. |
+| LuaValue | Decoded Lua value. |
 
 **Example**
 
@@ -330,7 +410,6 @@ end
 Computes the packed byte size for values and a format string.
 
 ```lua
--- signature
 lurek.binary.getPackedSize(fmt, ...)
 ```
 
@@ -338,14 +417,14 @@ lurek.binary.getPackedSize(fmt, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fmt` | `string` | Binary pack format string. |
+| `fmt` | string | Binary pack format string. |
 | — | — | @param ... any Values measured according to the format. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Packed byte size. |
+| number | Packed byte size. |
 
 **Example**
 
@@ -365,7 +444,6 @@ end
 Hashes a binary string with a named algorithm.
 
 ```lua
--- signature
 lurek.binary.hash(algo_str, raw_data)
 ```
 
@@ -373,14 +451,14 @@ lurek.binary.hash(algo_str, raw_data)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `algo_str` | `string` | Hash algorithm name. |
-| `raw_data` | `string` | Raw binary data to hash. |
+| `algo_str` | string | Hash algorithm name. |
+| `raw_data` | string | Raw binary data to hash. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Hash digest string. |
+| string | Hash digest string. |
 
 **Example**
 
@@ -399,7 +477,6 @@ end
 Creates ByteData from a size or string.
 
 ```lua
--- signature
 lurek.binary.newByteData(value)
 ```
 
@@ -407,13 +484,13 @@ lurek.binary.newByteData(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Integer size for zeroed bytes, or string used as initial bytes. |
+| `value` | any | Integer size for zeroed bytes, or string used as initial bytes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LByteData` | New LByteData userdata. |
+| [LByteData](#lbytedata-handle) | New [LByteData](#lbytedata-handle) userdata. |
 
 **Example**
 
@@ -432,7 +509,6 @@ end
 Creates a DataView over a binary string slice.
 
 ```lua
--- signature
 lurek.binary.newDataView(raw, offset, size)
 ```
 
@@ -440,15 +516,15 @@ lurek.binary.newDataView(raw, offset, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `raw` | `string` | Binary byte string backing the view. |
-| `offset?` | `number` | Optional zero-based start offset; defaults to zero. |
-| `size?` | `number` | Optional view size in bytes; defaults to the remaining bytes. |
+| `raw` | string | Binary byte string backing the view. |
+| `offset?` | number | Optional zero-based start offset; defaults to zero. |
+| `size?` | number | Optional view size in bytes; defaults to the remaining bytes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LDataView` | New data view handle. |
+| [LDataView](#ldataview-handle) | New data view handle. |
 
 **Example**
 
@@ -468,7 +544,6 @@ end
 Creates a fixed-capacity ring buffer for Lua values.
 
 ```lua
--- signature
 lurek.binary.newRingBuffer(capacity)
 ```
 
@@ -476,13 +551,13 @@ lurek.binary.newRingBuffer(capacity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `capacity` | `number` | Maximum value count; must be greater than zero. |
+| `capacity` | number | Maximum value count; must be greater than zero. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LRingBuffer` | New ring buffer handle. |
+| [LRingBuffer](#lringbuffer-handle) | New ring buffer handle. |
 
 **Example**
 
@@ -501,7 +576,6 @@ end
 Creates an empty binary data writer.
 
 ```lua
--- signature
 lurek.binary.newWriter()
 ```
 
@@ -509,7 +583,7 @@ lurek.binary.newWriter()
 
 | Type | Description |
 |------|-------------|
-| `LDataWriter` | New data writer handle. |
+| [LDataWriter](#ldatawriter-handle) | New data writer handle. |
 
 **Example**
 
@@ -528,7 +602,6 @@ end
 Packs Lua values into a binary string using a format string.
 
 ```lua
--- signature
 lurek.binary.pack(fmt, ...)
 ```
 
@@ -536,14 +609,14 @@ lurek.binary.pack(fmt, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fmt` | `string` | Binary pack format string. |
+| `fmt` | string | Binary pack format string. |
 | — | — | @param ... any Values to pack according to the format. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Packed binary byte string. |
+| string | Packed binary byte string. |
 
 **Example**
 
@@ -562,7 +635,6 @@ end
 Parses TOML text into Lua tables and scalar values.
 
 ```lua
--- signature
 lurek.binary.parseToml(text)
 ```
 
@@ -570,13 +642,13 @@ lurek.binary.parseToml(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | TOML document text. |
+| `text` | string | TOML document text. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `table` | Lua representation of the TOML document. |
+| table | Lua representation of the TOML document. |
 
 **Example**
 
@@ -596,7 +668,6 @@ end
 Reads binary values from a byte string using a format string.
 
 ```lua
--- signature
 lurek.binary.read(fmt, raw, offset)
 ```
 
@@ -604,15 +675,15 @@ lurek.binary.read(fmt, raw, offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fmt` | `string` | Binary reader format string. |
-| `raw` | `string` | Binary byte string to read. |
-| `offset?` | `number` | Optional zero-based byte offset; defaults to zero. |
+| `fmt` | string | Binary reader format string. |
+| `raw` | string | Binary byte string to read. |
+| `offset?` | number | Optional zero-based byte offset; defaults to zero. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Values read from the byte string. |
+| LuaValue | Values read from the byte string. |
 
 **Example**
 
@@ -631,7 +702,6 @@ end
 Measures fixed byte size for a binary format string.
 
 ```lua
--- signature
 lurek.binary.size(fmt)
 ```
 
@@ -639,13 +709,13 @@ lurek.binary.size(fmt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fmt` | `string` | Binary format string to measure. |
+| `fmt` | string | Binary format string to measure. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Fixed byte size for the format. |
+| number | Fixed byte size for the format. |
 
 **Example**
 
@@ -665,7 +735,6 @@ end
 Encodes a Lua value into the current structured binary interchange payload.
 
 ```lua
--- signature
 lurek.binary.toMsgPack(value)
 ```
 
@@ -673,13 +742,13 @@ lurek.binary.toMsgPack(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Lua value to encode through the serial table converter. |
+| `value` | any | Lua value to encode through the serial table converter. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Encoded binary payload. |
+| string | Encoded binary payload. |
 
 **Example**
 
@@ -699,7 +768,6 @@ end
 Unpacks values from a binary string using a format string.
 
 ```lua
--- signature
 lurek.binary.unpack(fmt, raw, offset)
 ```
 
@@ -707,15 +775,15 @@ lurek.binary.unpack(fmt, raw, offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fmt` | `string` | Binary unpack format string. |
-| `raw` | `string` | Binary byte string to unpack. |
-| `offset?` | `number` | Optional zero-based byte offset; defaults to zero. |
+| `fmt` | string | Binary unpack format string. |
+| `raw` | string | Binary byte string to unpack. |
+| `offset?` | number | Optional zero-based byte offset; defaults to zero. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Unpacked values followed by the next byte offset. |
+| LuaValue | Unpacked values followed by the next byte offset. |
 
 **Example**
 
@@ -734,7 +802,6 @@ end
 Writes binary values into a byte string using a format string.
 
 ```lua
--- signature
 lurek.binary.write(fmt, ...)
 ```
 
@@ -742,14 +809,14 @@ lurek.binary.write(fmt, ...)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `fmt` | `string` | Binary writer format string. |
+| `fmt` | string | Binary writer format string. |
 | — | — | @param ... any Values to write according to the format. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Binary byte string containing written values. |
+| string | Binary byte string containing written values. |
 
 **Example**
 
@@ -763,14 +830,38 @@ end
 
 ---
 
-## LByteData
+## Module Fields
 
-### `LByteData:clone`
+*No module-level fields documented.*
+
+## Types
+
+- [LByteData Handle](#lbytedata-handle)
+- [LDataView Handle](#ldataview-handle)
+- [LDataWriter Handle](#ldatawriter-handle)
+- [LRingBuffer Handle](#lringbuffer-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LByteData Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LByteData:clone`
 
 Returns a deep copy of the entire byte buffer.
 
 ```lua
--- signature
 LByteData:clone()
 ```
 
@@ -778,7 +869,7 @@ LByteData:clone()
 
 | Type | Description |
 |------|-------------|
-| `LByteData` | New LByteData userdata containing copied bytes. |
+| [LByteData](#lbytedata-handle) | New [LByteData](#lbytedata-handle) userdata containing copied bytes. |
 
 **Example**
 
@@ -793,12 +884,11 @@ end
 
 ---
 
-### `LByteData:getBit`
+#### `LByteData:getBit`
 
 Reads one bit inside a byte at the given offsets.
 
 ```lua
--- signature
 LByteData:getBit(byte_offset, bit_offset)
 ```
 
@@ -806,14 +896,14 @@ LByteData:getBit(byte_offset, bit_offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `byte_offset` | `number` | Zero-based byte offset. |
-| `bit_offset` | `number` | Bit offset from 0 to 7 inside the byte. |
+| `byte_offset` | number | Zero-based byte offset. |
+| `bit_offset` | number | Bit offset from 0 to 7 inside the byte. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the bit is set. |
+| boolean | True when the bit is set. |
 
 **Example**
 
@@ -828,12 +918,11 @@ end
 
 ---
 
-### `LByteData:getByte`
+#### `LByteData:getByte`
 
 Reads one byte at a zero-based offset.
 
 ```lua
--- signature
 LByteData:getByte(offset)
 ```
 
@@ -841,13 +930,13 @@ LByteData:getByte(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset. |
+| `offset` | number | Zero-based byte offset. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Byte value from 0 to 255. |
+| number | Byte value from 0 to 255. |
 
 **Example**
 
@@ -860,12 +949,11 @@ end
 
 ---
 
-### `LByteData:getSize`
+#### `LByteData:getSize`
 
 Returns the byte buffer length in bytes.
 
 ```lua
--- signature
 LByteData:getSize()
 ```
 
@@ -873,7 +961,7 @@ LByteData:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | Buffer length in bytes. |
+| number | Buffer length in bytes. |
 
 **Example**
 
@@ -886,12 +974,11 @@ end
 
 ---
 
-### `LByteData:getString`
+#### `LByteData:getString`
 
 Returns the byte buffer as a string.
 
 ```lua
--- signature
 LByteData:getString()
 ```
 
@@ -899,7 +986,7 @@ LByteData:getString()
 
 | Type | Description |
 |------|-------------|
-| `string` | Byte buffer contents as a Lua string. |
+| string | Byte buffer contents as a Lua string. |
 
 **Example**
 
@@ -913,12 +1000,11 @@ end
 
 ---
 
-### `LByteData:readBits`
+#### `LByteData:readBits`
 
 Reads up to 32 bits starting at a byte and bit offset.
 
 ```lua
--- signature
 LByteData:readBits(byte_offset, bit_offset, count)
 ```
 
@@ -926,15 +1012,15 @@ LByteData:readBits(byte_offset, bit_offset, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `byte_offset` | `number` | Zero-based byte offset. |
-| `bit_offset` | `number` | Bit offset from 0 to 7 inside the starting byte. |
-| `count` | `number` | Number of bits to read, from 1 to 32. |
+| `byte_offset` | number | Zero-based byte offset. |
+| `bit_offset` | number | Bit offset from 0 to 7 inside the starting byte. |
+| `count` | number | Number of bits to read, from 1 to 32. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unsigned integer containing the requested bits. |
+| number | Unsigned integer containing the requested bits. |
 
 **Example**
 
@@ -950,12 +1036,11 @@ end
 
 ---
 
-### `LByteData:setBit`
+#### `LByteData:setBit`
 
 Sets or clears one bit inside a byte at the given offset.
 
 ```lua
--- signature
 LByteData:setBit(byte_offset, bit_offset, value)
 ```
 
@@ -963,9 +1048,9 @@ LByteData:setBit(byte_offset, bit_offset, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `byte_offset` | `number` | Zero-based byte offset. |
-| `bit_offset` | `number` | Bit offset from 0 to 7 inside the byte. |
-| `value` | `boolean` | True to set the bit, false to clear it. |
+| `byte_offset` | number | Zero-based byte offset. |
+| `bit_offset` | number | Bit offset from 0 to 7 inside the byte. |
+| `value` | boolean | True to set the bit, false to clear it. |
 
 **Example**
 
@@ -981,12 +1066,11 @@ end
 
 ---
 
-### `LByteData:setByte`
+#### `LByteData:setByte`
 
 Writes one byte at a zero-based offset inside the buffer.
 
 ```lua
--- signature
 LByteData:setByte(offset, value)
 ```
 
@@ -994,8 +1078,8 @@ LByteData:setByte(offset, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset. |
-| `value` | `number` | Byte value from 0 to 255. |
+| `offset` | number | Zero-based byte offset. |
+| `value` | number | Byte value from 0 to 255. |
 
 **Example**
 
@@ -1009,12 +1093,11 @@ end
 
 ---
 
-### `LByteData:type`
+#### `LByteData:type`
 
 Returns the type name of this object for runtime type-checking.
 
 ```lua
--- signature
 LByteData:type()
 ```
 
@@ -1022,7 +1105,7 @@ LByteData:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always returns "LByteData". |
+| string | Always returns "[LByteData](#lbytedata-handle)". |
 
 **Example**
 
@@ -1035,12 +1118,11 @@ end
 
 ---
 
-### `LByteData:typeOf`
+#### `LByteData:typeOf`
 
 Checks whether this object matches the given type name.
 
 ```lua
--- signature
 LByteData:typeOf(name)
 ```
 
@@ -1048,13 +1130,13 @@ LByteData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to check (e.g. "LByteData" or "LObject"). |
+| `name` | string | Type name to check (e.g. "[LByteData](#lbytedata-handle)" or "LObject"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if this object matches the given type. |
+| boolean | True if this object matches the given type. |
 
 **Example**
 
@@ -1067,14 +1149,19 @@ end
 
 ---
 
-## LDataView
+## LDataView Handle
 
-### `LDataView:getDouble`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDataView:getDouble`
 
 Reads a 64-bit float at a byte offset.
 
 ```lua
--- signature
 LDataView:getDouble(offset)
 ```
 
@@ -1082,13 +1169,13 @@ LDataView:getDouble(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | 64-bit float value. |
+| number | 64-bit float value. |
 
 **Example**
 
@@ -1102,12 +1189,11 @@ end
 
 ---
 
-### `LDataView:getFloat`
+#### `LDataView:getFloat`
 
 Reads a 32-bit float at a byte offset.
 
 ```lua
--- signature
 LDataView:getFloat(offset)
 ```
 
@@ -1115,13 +1201,13 @@ LDataView:getFloat(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | 32-bit float value converted to Lua number. |
+| number | 32-bit float value converted to Lua number. |
 
 **Example**
 
@@ -1136,12 +1222,11 @@ end
 
 ---
 
-### `LDataView:getInt16`
+#### `LDataView:getInt16`
 
 Reads a signed 16-bit integer at a byte offset.
 
 ```lua
--- signature
 LDataView:getInt16(offset)
 ```
 
@@ -1149,13 +1234,13 @@ LDataView:getInt16(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Signed 16-bit value. |
+| number | Signed 16-bit value. |
 
 **Example**
 
@@ -1169,12 +1254,11 @@ end
 
 ---
 
-### `LDataView:getInt32`
+#### `LDataView:getInt32`
 
 Reads a signed 32-bit integer at a byte offset.
 
 ```lua
--- signature
 LDataView:getInt32(offset)
 ```
 
@@ -1182,13 +1266,13 @@ LDataView:getInt32(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Signed 32-bit value. |
+| number | Signed 32-bit value. |
 
 **Example**
 
@@ -1202,12 +1286,11 @@ end
 
 ---
 
-### `LDataView:getInt8`
+#### `LDataView:getInt8`
 
 Reads a signed 8-bit integer at a byte offset.
 
 ```lua
--- signature
 LDataView:getInt8(offset)
 ```
 
@@ -1215,13 +1298,13 @@ LDataView:getInt8(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Signed 8-bit value. |
+| number | Signed 8-bit value. |
 
 **Example**
 
@@ -1235,12 +1318,11 @@ end
 
 ---
 
-### `LDataView:getSize`
+#### `LDataView:getSize`
 
 Returns this data view size in bytes.
 
 ```lua
--- signature
 LDataView:getSize()
 ```
 
@@ -1248,7 +1330,7 @@ LDataView:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | View size in bytes. |
+| number | View size in bytes. |
 
 **Example**
 
@@ -1263,12 +1345,11 @@ end
 
 ---
 
-### `LDataView:getUInt16`
+#### `LDataView:getUInt16`
 
 Reads an unsigned 16-bit integer at a byte offset.
 
 ```lua
--- signature
 LDataView:getUInt16(offset)
 ```
 
@@ -1276,13 +1357,13 @@ LDataView:getUInt16(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unsigned 16-bit value. |
+| number | Unsigned 16-bit value. |
 
 **Example**
 
@@ -1296,12 +1377,11 @@ end
 
 ---
 
-### `LDataView:getUInt32`
+#### `LDataView:getUInt32`
 
 Reads an unsigned 32-bit integer at a byte offset.
 
 ```lua
--- signature
 LDataView:getUInt32(offset)
 ```
 
@@ -1309,13 +1389,13 @@ LDataView:getUInt32(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unsigned 32-bit value. |
+| number | Unsigned 32-bit value. |
 
 **Example**
 
@@ -1329,12 +1409,11 @@ end
 
 ---
 
-### `LDataView:getUInt8`
+#### `LDataView:getUInt8`
 
 Reads an unsigned 8-bit integer at a byte offset.
 
 ```lua
--- signature
 LDataView:getUInt8(offset)
 ```
 
@@ -1342,13 +1421,13 @@ LDataView:getUInt8(offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `offset` | `number` | Zero-based byte offset inside the view. |
+| `offset` | number | Zero-based byte offset inside the view. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Unsigned 8-bit value. |
+| number | Unsigned 8-bit value. |
 
 **Example**
 
@@ -1363,12 +1442,11 @@ end
 
 ---
 
-### `LDataView:type`
+#### `LDataView:type`
 
 Returns the Lua-visible type name for this data view handle.
 
 ```lua
--- signature
 LDataView:type()
 ```
 
@@ -1376,7 +1454,7 @@ LDataView:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LDataView`. |
+| string | The string `[LDataView](#ldataview-handle)`. |
 
 **Example**
 
@@ -1389,12 +1467,11 @@ end
 
 ---
 
-### `LDataView:typeOf`
+#### `LDataView:typeOf`
 
 Returns whether this data view handle matches a supported type name.
 
 ```lua
--- signature
 LDataView:typeOf(name)
 ```
 
@@ -1402,13 +1479,13 @@ LDataView:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LDataView` and `Object`. |
+| `name` | string | Type name to compare against `[LDataView](#ldataview-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1421,14 +1498,19 @@ end
 
 ---
 
-## LDataWriter
+## LDataWriter Handle
 
-### `LDataWriter:len`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LDataWriter:len`
 
 Returns the current length of the writer buffer.
 
 ```lua
--- signature
 LDataWriter:len()
 ```
 
@@ -1436,7 +1518,7 @@ LDataWriter:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Buffer length in bytes. |
+| number | Buffer length in bytes. |
 
 **Example**
 
@@ -1451,12 +1533,11 @@ end
 
 ---
 
-### `LDataWriter:seek`
+#### `LDataWriter:seek`
 
 Moves the writer cursor to a specific byte position.
 
 ```lua
--- signature
 LDataWriter:seek(pos)
 ```
 
@@ -1464,7 +1545,7 @@ LDataWriter:seek(pos)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pos` | `number` | New cursor position in bytes. |
+| `pos` | number | New cursor position in bytes. |
 
 **Example**
 
@@ -1481,12 +1562,11 @@ end
 
 ---
 
-### `LDataWriter:tell`
+#### `LDataWriter:tell`
 
 Returns the writer cursor position.
 
 ```lua
--- signature
 LDataWriter:tell()
 ```
 
@@ -1494,7 +1574,7 @@ LDataWriter:tell()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current cursor position in bytes. |
+| number | Current cursor position in bytes. |
 
 **Example**
 
@@ -1509,12 +1589,11 @@ end
 
 ---
 
-### `LDataWriter:toBytes`
+#### `LDataWriter:toBytes`
 
 Returns the writer buffer as a binary string.
 
 ```lua
--- signature
 LDataWriter:toBytes()
 ```
 
@@ -1522,7 +1601,7 @@ LDataWriter:toBytes()
 
 | Type | Description |
 |------|-------------|
-| `string` | Binary byte string containing writer contents. |
+| string | Binary byte string containing writer contents. |
 
 **Example**
 
@@ -1539,12 +1618,11 @@ end
 
 ---
 
-### `LDataWriter:type`
+#### `LDataWriter:type`
 
 Returns the Lua-visible type name for this data writer handle.
 
 ```lua
--- signature
 LDataWriter:type()
 ```
 
@@ -1552,7 +1630,7 @@ LDataWriter:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LDataWriter`. |
+| string | The string `[LDataWriter](#ldatawriter-handle)`. |
 
 **Example**
 
@@ -1565,12 +1643,11 @@ end
 
 ---
 
-### `LDataWriter:typeOf`
+#### `LDataWriter:typeOf`
 
 Returns whether this data writer handle matches a supported type name.
 
 ```lua
--- signature
 LDataWriter:typeOf(name)
 ```
 
@@ -1578,13 +1655,13 @@ LDataWriter:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LDataWriter` and `Object`. |
+| `name` | string | Type name to compare against `[LDataWriter](#ldatawriter-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 
@@ -1597,12 +1674,11 @@ end
 
 ---
 
-### `LDataWriter:writeBytes`
+#### `LDataWriter:writeBytes`
 
 Appends raw bytes from a Lua string to the writer buffer.
 
 ```lua
--- signature
 LDataWriter:writeBytes(s)
 ```
 
@@ -1610,7 +1686,7 @@ LDataWriter:writeBytes(s)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `s` | `string` | Raw byte string to write. |
+| `s` | string | Raw byte string to write. |
 
 **Example**
 
@@ -1624,12 +1700,11 @@ end
 
 ---
 
-### `LDataWriter:writeF32LE`
+#### `LDataWriter:writeF32LE`
 
 Appends a 32-bit float value in little-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeF32LE(v)
 ```
 
@@ -1637,7 +1712,7 @@ LDataWriter:writeF32LE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1651,12 +1726,11 @@ end
 
 ---
 
-### `LDataWriter:writeF64LE`
+#### `LDataWriter:writeF64LE`
 
 Appends a 64-bit float value in little-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeF64LE(v)
 ```
 
@@ -1664,7 +1738,7 @@ LDataWriter:writeF64LE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1678,12 +1752,11 @@ end
 
 ---
 
-### `LDataWriter:writeI16LE`
+#### `LDataWriter:writeI16LE`
 
 Appends a signed 16-bit integer in little-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeI16LE(v)
 ```
 
@@ -1691,7 +1764,7 @@ LDataWriter:writeI16LE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1705,12 +1778,11 @@ end
 
 ---
 
-### `LDataWriter:writeI32LE`
+#### `LDataWriter:writeI32LE`
 
 Appends a signed 32-bit integer in little-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeI32LE(v)
 ```
 
@@ -1718,7 +1790,7 @@ LDataWriter:writeI32LE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1732,12 +1804,11 @@ end
 
 ---
 
-### `LDataWriter:writeI8`
+#### `LDataWriter:writeI8`
 
 Appends a signed 8-bit integer to the writer buffer.
 
 ```lua
--- signature
 LDataWriter:writeI8(v)
 ```
 
@@ -1745,7 +1816,7 @@ LDataWriter:writeI8(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1759,12 +1830,11 @@ end
 
 ---
 
-### `LDataWriter:writeString`
+#### `LDataWriter:writeString`
 
 Appends a UTF-8 encoded string to the writer buffer.
 
 ```lua
--- signature
 LDataWriter:writeString(s)
 ```
 
@@ -1772,7 +1842,7 @@ LDataWriter:writeString(s)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `s` | `string` | String contents to write. |
+| `s` | string | String contents to write. |
 
 **Example**
 
@@ -1786,12 +1856,11 @@ end
 
 ---
 
-### `LDataWriter:writeU16BE`
+#### `LDataWriter:writeU16BE`
 
 Appends an unsigned 16-bit integer in big-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeU16BE(v)
 ```
 
@@ -1799,7 +1868,7 @@ LDataWriter:writeU16BE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1813,12 +1882,11 @@ end
 
 ---
 
-### `LDataWriter:writeU16LE`
+#### `LDataWriter:writeU16LE`
 
 Appends an unsigned 16-bit integer in little-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeU16LE(v)
 ```
 
@@ -1826,7 +1894,7 @@ LDataWriter:writeU16LE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1840,12 +1908,11 @@ end
 
 ---
 
-### `LDataWriter:writeU32LE`
+#### `LDataWriter:writeU32LE`
 
 Appends an unsigned 32-bit integer in little-endian byte order.
 
 ```lua
--- signature
 LDataWriter:writeU32LE(v)
 ```
 
@@ -1853,7 +1920,7 @@ LDataWriter:writeU32LE(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1867,12 +1934,11 @@ end
 
 ---
 
-### `LDataWriter:writeU8`
+#### `LDataWriter:writeU8`
 
 Appends an unsigned 8-bit integer to the writer buffer.
 
 ```lua
--- signature
 LDataWriter:writeU8(v)
 ```
 
@@ -1880,7 +1946,7 @@ LDataWriter:writeU8(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | `number` | Value to write. |
+| `v` | number | Value to write. |
 
 **Example**
 
@@ -1895,14 +1961,19 @@ end
 
 ---
 
-## LRingBuffer
+## LRingBuffer Handle
 
-### `LRingBuffer:capacity`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LRingBuffer:capacity`
 
 Returns the maximum capacity of the ring buffer.
 
 ```lua
--- signature
 LRingBuffer:capacity()
 ```
 
@@ -1910,7 +1981,7 @@ LRingBuffer:capacity()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum number of stored values. |
+| number | Maximum number of stored values. |
 
 **Example**
 
@@ -1923,12 +1994,11 @@ end
 
 ---
 
-### `LRingBuffer:clear`
+#### `LRingBuffer:clear`
 
 Removes every stored value and releases their registry keys.
 
 ```lua
--- signature
 LRingBuffer:clear()
 ```
 
@@ -1946,12 +2016,11 @@ end
 
 ---
 
-### `LRingBuffer:isEmpty`
+#### `LRingBuffer:isEmpty`
 
 Returns whether the ring buffer has no values.
 
 ```lua
--- signature
 LRingBuffer:isEmpty()
 ```
 
@@ -1959,7 +2028,7 @@ LRingBuffer:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the buffer is empty. |
+| boolean | True when the buffer is empty. |
 
 **Example**
 
@@ -1974,12 +2043,11 @@ end
 
 ---
 
-### `LRingBuffer:isFull`
+#### `LRingBuffer:isFull`
 
 Returns whether the ring buffer is at capacity.
 
 ```lua
--- signature
 LRingBuffer:isFull()
 ```
 
@@ -1987,7 +2055,7 @@ LRingBuffer:isFull()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the buffer length is at least its capacity. |
+| boolean | True when the buffer length is at least its capacity. |
 
 **Example**
 
@@ -2003,12 +2071,11 @@ end
 
 ---
 
-### `LRingBuffer:len`
+#### `LRingBuffer:len`
 
 Returns the number of values currently stored.
 
 ```lua
--- signature
 LRingBuffer:len()
 ```
 
@@ -2016,7 +2083,7 @@ LRingBuffer:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Current buffer length. |
+| number | Current buffer length. |
 
 **Example**
 
@@ -2032,12 +2099,11 @@ end
 
 ---
 
-### `LRingBuffer:peek`
+#### `LRingBuffer:peek`
 
 Returns the oldest stored value without removing it from the ring buffer.
 
 ```lua
--- signature
 LRingBuffer:peek()
 ```
 
@@ -2045,7 +2111,7 @@ LRingBuffer:peek()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Oldest stored value, or nil when the buffer is empty. |
+| LuaValue | Oldest stored value, or nil when the buffer is empty. |
 
 **Example**
 
@@ -2060,12 +2126,11 @@ end
 
 ---
 
-### `LRingBuffer:peekNewest`
+#### `LRingBuffer:peekNewest`
 
 Returns the newest stored value without removing it from the ring buffer.
 
 ```lua
--- signature
 LRingBuffer:peekNewest()
 ```
 
@@ -2073,7 +2138,7 @@ LRingBuffer:peekNewest()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Newest stored value, or nil when the buffer is empty. |
+| LuaValue | Newest stored value, or nil when the buffer is empty. |
 
 **Example**
 
@@ -2088,12 +2153,11 @@ end
 
 ---
 
-### `LRingBuffer:pop`
+#### `LRingBuffer:pop`
 
 Removes and returns the oldest stored value from the ring buffer.
 
 ```lua
--- signature
 LRingBuffer:pop()
 ```
 
@@ -2101,7 +2165,7 @@ LRingBuffer:pop()
 
 | Type | Description |
 |------|-------------|
-| `LuaValue` | Oldest stored value, or nil when the buffer is empty. |
+| LuaValue | Oldest stored value, or nil when the buffer is empty. |
 
 **Example**
 
@@ -2117,12 +2181,11 @@ end
 
 ---
 
-### `LRingBuffer:push`
+#### `LRingBuffer:push`
 
 Pushes a value into the ring buffer and evicts the oldest value when full.
 
 ```lua
--- signature
 LRingBuffer:push(value)
 ```
 
@@ -2130,13 +2193,13 @@ LRingBuffer:push(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | Lua value to store in the buffer. |
+| `value` | any | Lua value to store in the buffer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the push evicted an older value. |
+| boolean | True when the push evicted an older value. |
 
 **Example**
 
@@ -2153,12 +2216,11 @@ end
 
 ---
 
-### `LRingBuffer:toTable`
+#### `LRingBuffer:toTable`
 
 Returns stored values in oldest-to-newest order.
 
 ```lua
--- signature
 LRingBuffer:toTable()
 ```
 
@@ -2166,7 +2228,7 @@ LRingBuffer:toTable()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array table of stored values. |
+| number[] | Array table of stored values. |
 
 **Example**
 
@@ -2183,12 +2245,11 @@ end
 
 ---
 
-### `LRingBuffer:type`
+#### `LRingBuffer:type`
 
 Returns the Lua-visible type name for this ring buffer handle.
 
 ```lua
--- signature
 LRingBuffer:type()
 ```
 
@@ -2196,7 +2257,7 @@ LRingBuffer:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | The string `LRingBuffer`. |
+| string | The string `[LRingBuffer](#lringbuffer-handle)`. |
 
 **Example**
 
@@ -2209,12 +2270,11 @@ end
 
 ---
 
-### `LRingBuffer:typeOf`
+#### `LRingBuffer:typeOf`
 
 Returns whether this ring buffer handle matches a supported type name.
 
 ```lua
--- signature
 LRingBuffer:typeOf(name)
 ```
 
@@ -2222,13 +2282,13 @@ LRingBuffer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to compare against `LRingBuffer` and `Object`. |
+| `name` | string | Type name to compare against `[LRingBuffer](#lringbuffer-handle)` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True when the supplied type name matches this handle. |
+| boolean | True when the supplied type name matches this handle. |
 
 **Example**
 

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["compute_distance_field","compute_distance_field_from_registry"],"struct":["ProvinceDistanceField"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["DialogueAI","DialogueBranch","DialogueNode","DialogueTopic"]};

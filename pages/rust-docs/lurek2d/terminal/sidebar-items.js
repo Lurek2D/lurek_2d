@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["BorderStyle","WidgetKind"],"mod":["ansi","completion","highlighter","render"],"struct":["TCell","Terminal","Widget","WidgetBase"]};

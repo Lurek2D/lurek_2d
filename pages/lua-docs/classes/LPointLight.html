@@ -3,109 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LPointLight - Lurek2D Lua API Browser</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>Class LPointLight Redirect</title>
+  <meta http-equiv="refresh" content="0; url=../../modules/raycaster.html#lpointlight-handle">
+  <style>
+  body { font-family: Inter, Segoe UI, sans-serif; margin: 2rem; }
+  a { color: #1b6ca8; }
+  </style>
 </head>
 <body>
-  <header class="topnav">
-    <div class="topnav-left">
-      <a class="topnav-home" href="../index.html" title="Back to portal">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Home
-      </a>
-      <span class="topnav-sep" aria-hidden="true">/</span>
-      <a class="topnav-brand" href="../index.html">
-        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
-        <span>Lua API</span>
-      </a>
-    </div>
-    <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
-    </div>
-  </header>
-  <div class="shell">
-    <aside class="sidebar">
-      <label class="search-box">
-        <span class="sr-only">Search API</span>
-        <input id="search" type="search" placeholder="Search module, class, function…">
-      </label>
-      <div class="search-filters">
-        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
-        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
-      </div>
-      <div id="search-results" class="search-results" hidden></div>
-      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
-<a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a class="active" href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
-    </aside>
-    <main class="content">
-      
-<header class="page-header">
-  <p class="eyebrow">Class</p>
-  <h1>LPointLight</h1>
-  <p>Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.</p>
-  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/raycaster.html">lurek.raycaster</a></div>
-  <details class="example-block"><summary>Class Example · Exact example · raycaster.lua</summary><pre><code>do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-
-    print(&quot;x = &quot; .. pl:x())
-end</code></pre></details>
-</header>
-
-<section class="section-block">
-  <div class="section-head">
-    <h2>Methods</h2>
-    <p>Instance methods exported from the LPointLight userdata.</p>
-  </div>
-    <div class="item-list">
-    <article class="item-row api-row" id="method-color"><div class="item-row-main"><h3>color</h3><pre class="inline-signature">LPointLight:color() -&gt; number</pre><p>Returns the RGB color components of this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:310</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-
-    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b)
-end</code></pre></details></article><article class="item-row api-row" id="method-intensity"><div class="item-row-main"><h3>intensity</h3><pre class="inline-signature">LPointLight:intensity() -&gt; number</pre><p>Returns the brightness multiplier of this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:304</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-
-    print(&quot;intensity = &quot; .. pl:intensity())
-end</code></pre></details></article><article class="item-row api-row" id="method-radius"><div class="item-row-main"><h3>radius</h3><pre class="inline-signature">LPointLight:radius() -&gt; number</pre><p>Returns the light&#x27;s falloff radius in world units.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:300</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-
-    print(&quot;radius = &quot; .. pl:radius())
-end</code></pre></details></article><article class="item-row api-row" id="method-set"><div class="item-row-main"><h3>set</h3><pre class="inline-signature">LPointLight:set(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number)</pre><p>Overwrites all properties of this point light in a single call.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:326</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local light = lurek.raycaster.newPointLight(2, 2, 1, 1, 1, 3, 1.0)
-    light:set(8, 8, 0, 0, 1, 6, 2.0)
-    local r, g, b = light:color()
-
-    print(&quot;pos = &quot; .. light:x() .. &quot;,&quot; .. light:y())
-    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b)
-    print(&quot;radius = &quot; .. light:radius() .. &quot; intensity = &quot; .. light:intensity())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LPointLight:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LPointLight&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:340</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-    print(&quot;type = &quot; .. light:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LPointLight:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:345</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-    print(&quot;LPointLight = &quot; .. tostring(light:typeOf(&quot;LPointLight&quot;)))
-    print(&quot;LObject = &quot; .. tostring(light:typeOf(&quot;LObject&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="method-x"><div class="item-row-main"><h3>x</h3><pre class="inline-signature">LPointLight:x() -&gt; number</pre><p>Returns the X world position of this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:292</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-
-    print(&quot;x = &quot; .. pl:x())
-end</code></pre></details></article><article class="item-row api-row" id="method-y"><div class="item-row-main"><h3>y</h3><pre class="inline-signature">LPointLight:y() -&gt; number</pre><p>Returns the Y world position of this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:296</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-
-    print(&quot;y = &quot; .. pl:y())
-end</code></pre></details></article>
-  </div>
-</section>
-
-    </main>
-  </div>
-  <script>
-    window.LUREK_SITE_BASE = "..";
-  </script>
-  <script src="../assets/search-index.js"></script>
-  <script src="../assets/app.js"></script>
+  <p>Redirecting to <a href="../../modules/raycaster.html#lpointlight-handle">../../modules/raycaster.html#lpointlight-handle</a>…</p>
 </body>
 </html>

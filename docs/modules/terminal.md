@@ -1,12 +1,89 @@
 # Terminal
 
-- The `terminal` module is a sophisticated Feature Systems tier component that provides a full-featured character-grid terminal emulator within the engine.
+## Summary
 
 Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
 
 Beyond raw text rendering, the terminal provides a surprisingly capable immediate-mode widget framework (`widget.rs`). Developers can compose interactive interfaces directly on the character grid using pre-built elements like Buttons, Labels, TextBoxes, Lists, and Panels. These widgets handle their own bounds checking, input routing, and rendering (complete with ASCII border drawing and shaded backgrounds). To support command-line workflows, the module includes a `CompletionEngine` for context-aware tab completion, a persistent command history buffer for quick recall, and a scrollback buffer that gracefully evicts the oldest lines when capacity is reached. For specialized display needs—such as the interactive Lua REPL (`lurek.repl`)—the module integrates a regex-driven `highlighter.rs` that applies token-based syntax coloring to code inputs in real-time.
 
 The rendering pipeline bridges the gap between the character grid and the engine's graphical backend. The terminal state is efficiently composited and flattened into batched `RenderCommand` sequences, mapped directly to loaded bitmap fonts for pixel-perfect display. The terminal can also software-rasterize its grid directly into an `ImageData` buffer, useful for generating preview thumbnails or headless output. Fully accessible via the `lurek.terminal.*` API, this module is an invaluable tool for building in-game developer tools, specialized text-based mini-games, and deeply interactive console environments.
+
+## Spec File Descriptions
+
+_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+
+### ansi.rs
+
+- This file interprets ANSI terminal escape sequences so colored or styled text streams can be understood by the in-engine terminal.
+- It strips control bytes when plain text is needed and decodes styling spans when visual fidelity matters.
+- Classic palette colors, extended xterm indexes, and full RGB forms are all resolved here into engine-friendly color data.
+- Span extraction is part of the same logic so one input string can become ordered runs with shared style state.
+- Low-level parsing helpers stay close to the decoder because escape handling is sensitive to byte structure and malformed fragments.
+- The file is therefore the compatibility layer between external terminal-style output and the engine's own grid renderer.
+
+### cell.rs
+
+- This file defines the atomic cell unit that the terminal grid stores for every visible character position.
+- It packages glyph and color state into one compact record so the rest of the terminal can treat the screen as a regular matrix.
+- The type is the smallest visible building block of the terminal subsystem.
+
+### completion.rs
+
+- This file provides the terminal's lightweight completion engine for command-like text entry.
+- It manages a candidate set that can be queried by prefix or cycled interactively as the user repeats completion input.
+- Dynamic updates are supported because terminal commands and symbols may change while the application is running.
+- The file is the discoverability helper for typed terminal interaction.
+
+### highlighter.rs
+
+- This file applies simple highlighting rules to terminal text so input or output can be visually segmented by meaning.
+- Matching produces ordered colored spans instead of immediate cell writes, which keeps highlighting reusable across render paths.
+- Rule priority is resolved consistently here so overlapping matches do not create unstable coloring behavior.
+- The file is the terminal's lightweight text-coloring layer.
+
+### mod.rs
+
+- This module provides the in-engine terminal stack, combining a character grid, ANSI-aware text handling, interactive widgets, and renderer handoff.
+- It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model.
+- At the highest level this is the subsystem that lets the engine host terminal behavior as a first-class UI surface.
+
+### render.rs
+
+- This file converts the composed terminal surface into visual output for both renderer command streams and software image snapshots.
+- Grid cells and overlaid widgets are flattened together here so the rest of the engine sees one finished terminal presentation.
+- Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
+- The file is therefore the terminal subsystem's final visual export layer.
+
+### terminal_state.rs
+
+- This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
+- The core grid behaves like a persistent text surface rather than a transient print stream, allowing callers to treat terminal space as editable UI.
+- Resize behavior preserves as much existing content as possible so the terminal remains usable across font or window changes.
+- Scrollback and command history live here because they are part of the terminal's long-lived interactive memory rather than renderer output.
+- Widget composition is layered on top of the cell grid in this file so buttons, lists, panels, and text boxes share one event and focus model.
+- Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
+- Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
+- Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
+- Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
+- The file is intentionally large because it is not one helper.
+- It is the living behavior model of the entire terminal subsystem.
+- Most user-visible terminal semantics, from typing to focus to scrollback, are defined here.
+- Without this file the module would have isolated utilities but no unified terminal behavior.
+- In practice this is the runtime home of text-mode interaction inside the engine.
+- It is where a passive grid becomes a usable terminal environment.
+
+### widget.rs
+
+- This file defines the widget vocabulary used by the terminal so character-grid interfaces can be composed from reusable interactive parts.
+- Shared widget state is centralized here because labels, buttons, lists, text boxes, borders, and panels all need common positioning and visibility rules.
+- Each widget kind extends that shared base with behavior suited to text-mode UI rather than pixel-perfect retained graphics widgets.
+- Border and panel concepts live here because framed layout is a fundamental part of terminal-style interface composition.
+- Text-bearing widgets are shaped around cell coordinates and constrained widths, which keeps them honest to the grid they inhabit.
+- List widgets manage items and selection semantics here so terminal state can treat them as one coherent interactive object.
+- Text boxes enforce cursor and content limits here, giving the terminal a predictable editing model for user input.
+- Type discrimination helpers also belong here because higher layers often need to branch on widget behavior without unpacking every variant manually.
+- The file is therefore the structural UI type system of the terminal module.
+- It gives the terminal more expressive interface primitives than raw cells alone could provide.
 
 ## Functions
 
@@ -15,7 +92,6 @@ The rendering pipeline bridges the gap between the character grid and the engine
 Registers a candidate string for tab-completion in the shared completion engine.
 
 ```lua
--- signature
 lurek.terminal.addCompletion(candidate)
 ```
 
@@ -23,7 +99,7 @@ lurek.terminal.addCompletion(candidate)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `candidate` | `string` | The completion candidate to add. |
+| `candidate` | string | The completion candidate to add. |
 
 **Example**
 
@@ -49,7 +125,6 @@ end
 Applies a named color theme to the terminal, setting default foreground and background colors.
 
 ```lua
--- signature
 lurek.terminal.applyTheme(terminal, theme)
 ```
 
@@ -57,8 +132,8 @@ lurek.terminal.applyTheme(terminal, theme)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to theme. |
-| `theme` | `string` | Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord". |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to theme. |
+| `theme` | string | Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord". |
 
 **Example**
 
@@ -85,7 +160,6 @@ end
 Removes all entries from the terminal command history.
 
 ```lua
--- signature
 lurek.terminal.clearCmdHistory(terminal)
 ```
 
@@ -93,7 +167,7 @@ lurek.terminal.clearCmdHistory(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to clear. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to clear. |
 
 **Example**
 
@@ -115,7 +189,6 @@ end
 Removes all registered completion candidates from the shared completion engine.
 
 ```lua
--- signature
 lurek.terminal.clearCompletions()
 ```
 
@@ -138,7 +211,6 @@ end
 Returns the number of commands currently stored in the terminal command history.
 
 ```lua
--- signature
 lurek.terminal.cmdHistoryLen(terminal)
 ```
 
@@ -146,13 +218,13 @@ lurek.terminal.cmdHistoryLen(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to query. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | History entry count. |
+| number | History entry count. |
 
 **Example**
 
@@ -175,7 +247,6 @@ end
 Returns all completion candidates matching the given prefix string.
 
 ```lua
--- signature
 lurek.terminal.getCompletions(prefix)
 ```
 
@@ -183,13 +254,13 @@ lurek.terminal.getCompletions(prefix)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prefix` | `string` | The prefix to match against. |
+| `prefix` | string | The prefix to match against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Matching candidate strings. |
+| string[] | Matching candidate strings. |
 
 **Example**
 
@@ -212,7 +283,6 @@ end
 Returns the engine-defined maximum number of columns a terminal grid can have.
 
 ```lua
--- signature
 lurek.terminal.getMaxCols()
 ```
 
@@ -220,7 +290,7 @@ lurek.terminal.getMaxCols()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum column count. |
+| number | Maximum column count. |
 
 **Example**
 
@@ -238,7 +308,6 @@ end
 Returns the engine-defined maximum number of rows a terminal grid can have.
 
 ```lua
--- signature
 lurek.terminal.getMaxRows()
 ```
 
@@ -246,7 +315,7 @@ lurek.terminal.getMaxRows()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum row count. |
+| number | Maximum row count. |
 
 **Example**
 
@@ -266,7 +335,6 @@ end
 Retrieves a range of lines from the terminal scrollback buffer.
 
 ```lua
--- signature
 lurek.terminal.getScrollback(terminal, offset, count)
 ```
 
@@ -274,15 +342,15 @@ lurek.terminal.getScrollback(terminal, offset, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to read from. |
-| `offset` | `number` | 0-based offset from the newest line. |
-| `count` | `number` | Number of lines to retrieve. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to read from. |
+| `offset` | number | 0-based offset from the newest line. |
+| `count` | number | Number of lines to retrieve. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string[]` | Scrollback line strings. |
+| string[] | Scrollback line strings. |
 
 **Example**
 
@@ -305,7 +373,6 @@ end
 Creates a new decorative border widget drawn using box-drawing characters.
 
 ```lua
--- signature
 lurek.terminal.newBorder(col, row, width, height)
 ```
 
@@ -313,16 +380,16 @@ lurek.terminal.newBorder(col, row, width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column position (1-based). |
-| `row` | `number` | Row position (1-based). |
-| `width` | `number` | Border width in cells. |
-| `height` | `number` | Border height in cells. |
+| `col` | number | Column position (1-based). |
+| `row` | number | Row position (1-based). |
+| `width` | number | Border width in cells. |
+| `height` | number | Border height in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The new border widget. |
+| [LWidget](#lwidget-handle) | The new border widget. |
 
 **Example**
 
@@ -344,7 +411,6 @@ end
 Creates a new clickable button widget with the given position, size, and label text.
 
 ```lua
--- signature
 lurek.terminal.newButton(col, row, width, height, text)
 ```
 
@@ -352,17 +418,17 @@ lurek.terminal.newButton(col, row, width, height, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column position (1-based). |
-| `row` | `number` | Row position (1-based). |
-| `width` | `number` | Button width in cells. |
-| `height?` | `number` | Button height in cells (default 1). |
-| `text?` | `string` | Button label text (default empty). |
+| `col` | number | Column position (1-based). |
+| `row` | number | Row position (1-based). |
+| `width` | number | Button width in cells. |
+| `height?` | number | Button height in cells (default 1). |
+| `text?` | string | Button label text (default empty). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The new button widget. |
+| [LWidget](#lwidget-handle) | The new button widget. |
 
 **Example**
 
@@ -388,7 +454,6 @@ end
 Creates a new label widget that displays static text at the given cell position.
 
 ```lua
--- signature
 lurek.terminal.newLabel(col, row, text)
 ```
 
@@ -396,15 +461,15 @@ lurek.terminal.newLabel(col, row, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column position (1-based). |
-| `row` | `number` | Row position (1-based). |
-| `text?` | `string` | Initial text (default empty). |
+| `col` | number | Column position (1-based). |
+| `row` | number | Row position (1-based). |
+| `text?` | string | Initial text (default empty). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The new label widget. |
+| [LWidget](#lwidget-handle) | The new label widget. |
 
 **Example**
 
@@ -426,7 +491,6 @@ end
 Creates a new scrollable list widget for displaying and selecting items.
 
 ```lua
--- signature
 lurek.terminal.newList(col, row, width, height)
 ```
 
@@ -434,16 +498,16 @@ lurek.terminal.newList(col, row, width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column position (1-based). |
-| `row` | `number` | Row position (1-based). |
-| `width` | `number` | List width in cells. |
-| `height` | `number` | List height in cells (visible rows). |
+| `col` | number | Column position (1-based). |
+| `row` | number | Row position (1-based). |
+| `width` | number | List width in cells. |
+| `height` | number | List height in cells (visible rows). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The new list widget. |
+| [LWidget](#lwidget-handle) | The new list widget. |
 
 **Example**
 
@@ -469,7 +533,6 @@ end
 Creates a new panel widget that can contain child widgets for grouped layout.
 
 ```lua
--- signature
 lurek.terminal.newPanel(col, row, width, height)
 ```
 
@@ -477,16 +540,16 @@ lurek.terminal.newPanel(col, row, width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column position (1-based). |
-| `row` | `number` | Row position (1-based). |
-| `width?` | `number` | Panel width in cells (default 1). |
-| `height?` | `number` | Panel height in cells (default 1). |
+| `col` | number | Column position (1-based). |
+| `row` | number | Row position (1-based). |
+| `width?` | number | Panel width in cells (default 1). |
+| `height?` | number | Panel height in cells (default 1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The new panel widget. |
+| [LWidget](#lwidget-handle) | The new panel widget. |
 
 **Example**
 
@@ -508,7 +571,6 @@ end
 Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
 
 ```lua
--- signature
 lurek.terminal.newTerminal(cols, rows)
 ```
 
@@ -516,14 +578,14 @@ lurek.terminal.newTerminal(cols, rows)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cols?` | `number` | Number of columns (default 80). |
-| `rows?` | `number` | Number of rows (default 40). |
+| `cols?` | number | Number of columns (default 80). |
+| `rows?` | number | Number of rows (default 40). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LTerminal` | The new terminal object. |
+| [LTerminal](#lterminal-handle) | The new terminal object. |
 
 **Example**
 
@@ -544,7 +606,6 @@ end
 Creates a new single-line text input widget at the given position with a fixed width.
 
 ```lua
--- signature
 lurek.terminal.newTextBox(col, row, width)
 ```
 
@@ -552,15 +613,15 @@ lurek.terminal.newTextBox(col, row, width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column position (1-based). |
-| `row` | `number` | Row position (1-based). |
-| `width` | `number` | Input field width in cells. |
+| `col` | number | Column position (1-based). |
+| `row` | number | Row position (1-based). |
+| `width` | number | Input field width in cells. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The new text box widget. |
+| [LWidget](#lwidget-handle) | The new text box widget. |
 
 **Example**
 
@@ -583,7 +644,6 @@ end
 Navigates forward in the terminal command history, returning the next command or nil if at the end.
 
 ```lua
--- signature
 lurek.terminal.nextCmd(terminal)
 ```
 
@@ -591,13 +651,13 @@ lurek.terminal.nextCmd(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to navigate. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to navigate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The next command, or nil. |
+| string | The next command, or nil. |
 
 **Example**
 
@@ -619,7 +679,6 @@ end
 Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
 
 ```lua
--- signature
 lurek.terminal.nextCompletion(prefix)
 ```
 
@@ -627,13 +686,13 @@ lurek.terminal.nextCompletion(prefix)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `prefix` | `string` | The prefix to match against. |
+| `prefix` | string | The prefix to match against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The next matching candidate, or nil if none match. |
+| string | The next matching candidate, or nil if none match. |
 
 **Example**
 
@@ -660,7 +719,6 @@ end
 Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.
 
 ```lua
--- signature
 lurek.terminal.parseAnsi(text)
 ```
 
@@ -668,13 +726,13 @@ lurek.terminal.parseAnsi(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Input string with ANSI codes. |
+| `text` | string | Input string with ANSI codes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `TerminalParseAnsiResult` | Array of span tables: { text=string, bold=boolean, fg?={r,g,b}, bg?={r,g,b} }. |
+| LTerminalParseAnsiResult | Array of span tables: { text=string, bold=boolean, fg?={r,g,b}, bg?={r,g,b} }. |
 
 **Example**
 
@@ -694,7 +752,6 @@ end
 Navigates backward in the terminal command history, returning the previous command or nil if at the start.
 
 ```lua
--- signature
 lurek.terminal.prevCmd(terminal)
 ```
 
@@ -702,13 +759,13 @@ lurek.terminal.prevCmd(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to navigate. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to navigate. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The previous command, or nil. |
+| string | The previous command, or nil. |
 
 **Example**
 
@@ -730,7 +787,6 @@ end
 Renders ANSI-colored text directly onto the terminal grid at the given cell position.
 
 ```lua
--- signature
 lurek.terminal.printAnsi(terminal, col, row, text)
 ```
 
@@ -738,10 +794,10 @@ lurek.terminal.printAnsi(terminal, col, row, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to print to. |
-| `col` | `number` | Starting column (1-based). |
-| `row` | `number` | Row to print on (1-based). |
-| `text` | `string` | Text containing ANSI escape sequences. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to print to. |
+| `col` | number | Starting column (1-based). |
+| `row` | number | Row to print on (1-based). |
+| `text` | string | Text containing ANSI escape sequences. |
 
 **Example**
 
@@ -762,7 +818,6 @@ end
 Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.
 
 ```lua
--- signature
 lurek.terminal.printHighlighted(terminal, col, row, text, rules)
 ```
 
@@ -770,11 +825,11 @@ lurek.terminal.printHighlighted(terminal, col, row, text, rules)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to print to. |
-| `col` | `number` | Starting column (1-based). |
-| `row` | `number` | Row to print on (1-based). |
-| `text` | `string` | The text to highlight. |
-| `rules` | `table` | Array of rule tables, each with `pattern` (string), `fg` (table {r,g,b} 0-255), and optional `bg` (table {r,g,b} 0-255). |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to print to. |
+| `col` | number | Starting column (1-based). |
+| `row` | number | Row to print on (1-based). |
+| `text` | string | The text to highlight. |
+| `rules` | table | Array of rule tables, each with `pattern` (string), `fg` (table {r,g,b} 0-255), and optional `bg` (table {r,g,b} 0-255). |
 
 **Example**
 
@@ -795,7 +850,6 @@ end
 Appends a command string to the terminal command history for up/down arrow recall.
 
 ```lua
--- signature
 lurek.terminal.pushCmdHistory(terminal, cmd)
 ```
 
@@ -803,8 +857,8 @@ lurek.terminal.pushCmdHistory(terminal, cmd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to push to. |
-| `cmd` | `string` | The command string to store. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to push to. |
+| `cmd` | string | The command string to store. |
 
 **Example**
 
@@ -829,7 +883,6 @@ end
 Appends a line of text to the terminal scrollback buffer for later retrieval.
 
 ```lua
--- signature
 lurek.terminal.pushScrollback(terminal, line)
 ```
 
@@ -837,8 +890,8 @@ lurek.terminal.pushScrollback(terminal, line)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to push to. |
-| `line` | `string` | The text line to append. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to push to. |
+| `line` | string | The text line to append. |
 
 **Example**
 
@@ -862,7 +915,6 @@ end
 Removes a previously registered completion candidate from the shared completion engine.
 
 ```lua
--- signature
 lurek.terminal.removeCompletion(candidate)
 ```
 
@@ -870,7 +922,7 @@ lurek.terminal.removeCompletion(candidate)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `candidate` | `string` | The completion candidate to remove. |
+| `candidate` | string | The completion candidate to remove. |
 
 **Example**
 
@@ -893,7 +945,6 @@ end
 Resets the completion cycling state so the next call to nextCompletion starts from the first match.
 
 ```lua
--- signature
 lurek.terminal.resetCompletion()
 ```
 
@@ -917,7 +968,6 @@ end
 Returns the number of lines currently stored in the terminal scrollback buffer.
 
 ```lua
--- signature
 lurek.terminal.scrollbackLen(terminal)
 ```
 
@@ -925,13 +975,13 @@ lurek.terminal.scrollbackLen(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to query. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | Line count. |
+| number | Line count. |
 
 **Example**
 
@@ -952,7 +1002,6 @@ end
 Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
 
 ```lua
--- signature
 lurek.terminal.setScrollbackCap(terminal, cap)
 ```
 
@@ -960,8 +1009,8 @@ lurek.terminal.setScrollbackCap(terminal, cap)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | `LTerminal` | The terminal to configure. |
-| `cap` | `number` | Maximum number of scrollback lines. |
+| `terminal` | [LTerminal](#lterminal-handle) | The terminal to configure. |
+| `cap` | number | Maximum number of scrollback lines. |
 
 **Example**
 
@@ -983,7 +1032,6 @@ end
 Removes all ANSI escape sequences from a string, returning plain text.
 
 ```lua
--- signature
 lurek.terminal.stripAnsi(text)
 ```
 
@@ -991,13 +1039,13 @@ lurek.terminal.stripAnsi(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | Input string with ANSI codes. |
+| `text` | string | Input string with ANSI codes. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | Clean text without escape sequences. |
+| string | Clean text without escape sequences. |
 
 **Example**
 
@@ -1013,14 +1061,40 @@ end
 
 ---
 
-## LButton
+## Module Fields
 
-### `LButton:getText`
+*No module-level fields documented.*
+
+## Types
+
+- [LButton Handle](#lbutton-handle)
+- [LLabel Handle](#llabel-handle)
+- [LList Handle](#llist-handle)
+- [LPanel Handle](#lpanel-handle)
+- [LTerminal Handle](#lterminal-handle)
+- [LWidget Handle](#lwidget-handle)
+
+## Callbacks
+
+*No callback parameters documented in this module.*
+
+## Enums
+
+*No module-specific enums documented.*
+
+## LButton Handle
+
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LButton:getText`
 
 Returns the current display text of this button.
 
 ```lua
--- signature
 LButton:getText()
 ```
 
@@ -1028,16 +1102,15 @@ LButton:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The button label. |
+| string | The button label. |
 
 ---
 
-### `LButton:setText`
+#### `LButton:setText`
 
 Sets the display text on this button.
 
 ```lua
--- signature
 LButton:setText(text)
 ```
 
@@ -1045,18 +1118,23 @@ LButton:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The button label text. |
+| `text` | string | The button label text. |
 
 ---
 
-## LLabel
+## LLabel Handle
 
-### `LLabel:getText`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LLabel:getText`
 
 Returns the current display text of this label.
 
 ```lua
--- signature
 LLabel:getText()
 ```
 
@@ -1064,16 +1142,15 @@ LLabel:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The label text. |
+| string | The label text. |
 
 ---
 
-### `LLabel:setText`
+#### `LLabel:setText`
 
 Sets the display text on this label.
 
 ```lua
--- signature
 LLabel:setText(text)
 ```
 
@@ -1081,18 +1158,23 @@ LLabel:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The label text. |
+| `text` | string | The label text. |
 
 ---
 
-## LList
+## LList Handle
 
-### `LList:add`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LList:add`
 
 Append a value to the end of the list.
 
 ```lua
--- signature
 LList:add(value)
 ```
 
@@ -1100,27 +1182,25 @@ LList:add(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to append. |
+| `value` | any | The value to append. |
 
 ---
 
-### `LList:clear`
+#### `LList:clear`
 
 Remove all items from the list. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:clear()
 ```
 
 ---
 
-### `LList:contains`
+#### `LList:contains`
 
 Check whether the list contains a specific value.
 
 ```lua
--- signature
 LList:contains(value)
 ```
 
@@ -1128,22 +1208,21 @@ LList:contains(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `string` | The value to search for. |
+| `value` | string | The value to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if found. |
+| boolean | True if found. |
 
 ---
 
-### `LList:get`
+#### `LList:get`
 
 Get the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LList:get(index)
 ```
 
@@ -1151,23 +1230,22 @@ LList:get(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
+| `index` | number | 1-based position. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The value. |
-| `nil` | b When not available. |
+| string | The value. |
+| nil | When not available. |
 
 ---
 
-### `LList:indexOf`
+#### `LList:indexOf`
 
 Find the 1-based index of the first occurrence of a value. Returns nil if not found.
 
 ```lua
--- signature
 LList:indexOf(value)
 ```
 
@@ -1175,22 +1253,21 @@ LList:indexOf(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `string` | The value to search for. |
+| `value` | string | The value to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | The 1-based index, or nil when the value is not found. |
+| number | The 1-based index, or nil when the value is not found. |
 
 ---
 
-### `LList:insert`
+#### `LList:insert`
 
 Insert a value at a 1-based index, shifting subsequent items right.
 
 ```lua
--- signature
 LList:insert(index, value)
 ```
 
@@ -1198,17 +1275,16 @@ LList:insert(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based insertion position. |
-| `value` | `any` | The value to insert. |
+| `index` | number | 1-based insertion position. |
+| `value` | any | The value to insert. |
 
 ---
 
-### `LList:isEmpty`
+#### `LList:isEmpty`
 
 Check whether the list is empty. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:isEmpty()
 ```
 
@@ -1216,16 +1292,15 @@ LList:isEmpty()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if empty. |
+| boolean | True if empty. |
 
 ---
 
-### `LList:len`
+#### `LList:len`
 
 Return the number of items in the list.
 
 ```lua
--- signature
 LList:len()
 ```
 
@@ -1233,16 +1308,15 @@ LList:len()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 ---
 
-### `LList:pop`
+#### `LList:pop`
 
 Remove and return the last value. Returns nil if empty.
 
 ```lua
--- signature
 LList:pop()
 ```
 
@@ -1250,17 +1324,16 @@ LList:pop()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The popped value. |
-| `nil` | b When not available. |
+| string | The popped value. |
+| nil | When not available. |
 
 ---
 
-### `LList:push`
+#### `LList:push`
 
 Append a value to the end of the list (alias for add).
 
 ```lua
--- signature
 LList:push(value)
 ```
 
@@ -1268,16 +1341,15 @@ LList:push(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to append. |
+| `value` | any | The value to append. |
 
 ---
 
-### `LList:remove`
+#### `LList:remove`
 
 Remove and return the value at a 1-based index. Returns nil if out of range.
 
 ```lua
--- signature
 LList:remove(index)
 ```
 
@@ -1285,34 +1357,32 @@ LList:remove(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position to remove. |
+| `index` | number | 1-based position to remove. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | a The removed value. |
-| `nil` | b When not available. |
+| string | The removed value. |
+| nil | When not available. |
 
 ---
 
-### `LList:reverse`
+#### `LList:reverse`
 
 Reverse the order of all items in the list in-place.
 
 ```lua
--- signature
 LList:reverse()
 ```
 
 ---
 
-### `LList:set`
+#### `LList:set`
 
 Replace the value at a 1-based index. Errors if index is 0 or out of range.
 
 ```lua
--- signature
 LList:set(index, value)
 ```
 
@@ -1320,17 +1390,16 @@ LList:set(index, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based position. |
-| `value` | `any` | The new value. |
+| `index` | number | 1-based position. |
+| `value` | any | The new value. |
 
 ---
 
-### `LList:shift`
+#### `LList:shift`
 
 Remove and return the first value. Returns nil if empty.
 
 ```lua
--- signature
 LList:shift()
 ```
 
@@ -1338,17 +1407,16 @@ LList:shift()
 
 | Type | Description |
 |------|-------------|
-| `string` | a The shifted value. |
-| `nil` | b When not available. |
+| string | The shifted value. |
+| nil | When not available. |
 
 ---
 
-### `LList:toArray`
+#### `LList:toArray`
 
 Return all items as an array table. This method is available to Lua scripts.
 
 ```lua
--- signature
 LList:toArray()
 ```
 
@@ -1356,16 +1424,15 @@ LList:toArray()
 
 | Type | Description |
 |------|-------------|
-| `number[]` | Array of all values. |
+| number[] | Array of all values. |
 
 ---
 
-### `LList:unshift`
+#### `LList:unshift`
 
 Insert a value at the beginning of the list.
 
 ```lua
--- signature
 LList:unshift(value)
 ```
 
@@ -1373,18 +1440,23 @@ LList:unshift(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | `any` | The value to prepend. |
+| `value` | any | The value to prepend. |
 
 ---
 
-## LPanel
+## LPanel Handle
 
-### `LPanel:getTitle`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LPanel:getTitle`
 
 Returns the title text of this panel.
 
 ```lua
--- signature
 LPanel:getTitle()
 ```
 
@@ -1392,16 +1464,15 @@ LPanel:getTitle()
 
 | Type | Description |
 |------|-------------|
-| `string` | The panel title. |
+| string | The panel title. |
 
 ---
 
-### `LPanel:setScrollable`
+#### `LPanel:setScrollable`
 
 Enables or disables scrolling within this panel.
 
 ```lua
--- signature
 LPanel:setScrollable(scrollable)
 ```
 
@@ -1409,16 +1480,15 @@ LPanel:setScrollable(scrollable)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `scrollable` | `boolean` | True to enable scrolling. |
+| `scrollable` | boolean | True to enable scrolling. |
 
 ---
 
-### `LPanel:setTitle`
+#### `LPanel:setTitle`
 
 Sets the title text displayed on this panel's header.
 
 ```lua
--- signature
 LPanel:setTitle(title)
 ```
 
@@ -1426,18 +1496,23 @@ LPanel:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | The panel title. |
+| `title` | string | The panel title. |
 
 ---
 
-## LTerminal
+## LTerminal Handle
 
-### `LTerminal:addWidget`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LTerminal:addWidget`
 
 Attaches a widget to this terminal so it is rendered and receives input events.
 
 ```lua
--- signature
 LTerminal:addWidget(widget)
 ```
 
@@ -1445,7 +1520,7 @@ LTerminal:addWidget(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | `LWidget` | The widget to attach. |
+| `widget` | [LWidget](#lwidget-handle) | The widget to attach. |
 
 **Example**
 
@@ -1460,12 +1535,11 @@ end
 
 ---
 
-### `LTerminal:autoResize`
+#### `LTerminal:autoResize`
 
 Requests the window to resize so it exactly fits the terminal grid at the current cell size.
 
 ```lua
--- signature
 LTerminal:autoResize()
 ```
 
@@ -1482,12 +1556,11 @@ end
 
 ---
 
-### `LTerminal:clear`
+#### `LTerminal:clear`
 
 Clears all cells in the terminal grid, resetting characters and colors to defaults.
 
 ```lua
--- signature
 LTerminal:clear()
 ```
 
@@ -1506,12 +1579,11 @@ end
 
 ---
 
-### `LTerminal:clearWidgets`
+#### `LTerminal:clearWidgets`
 
 Removes all attached widgets from this terminal at once.
 
 ```lua
--- signature
 LTerminal:clearWidgets()
 ```
 
@@ -1530,12 +1602,11 @@ end
 
 ---
 
-### `LTerminal:get`
+#### `LTerminal:get`
 
 Reads the character and colors at a specific cell in the terminal grid.
 
 ```lua
--- signature
 LTerminal:get(col, row)
 ```
 
@@ -1543,22 +1614,22 @@ LTerminal:get(col, row)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column index (1-based). |
-| `row` | `number` | Row index (1-based). |
+| `col` | number | Column index (1-based). |
+| `row` | number | Row index (1-based). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `number` | a Character codepoint, fg RGBA, bg RGBA. |
-| `number` | b Character codepoint, fg RGBA, bg RGBA. |
-| `number` | c Character codepoint, fg RGBA, bg RGBA. |
-| `number` | d Character codepoint, fg RGBA, bg RGBA. |
-| `number` | e Character codepoint, fg RGBA, bg RGBA. |
-| `number` | f Character codepoint, fg RGBA, bg RGBA. |
-| `number` | g Character codepoint, fg RGBA, bg RGBA. |
-| `number` | h Character codepoint, fg RGBA, bg RGBA. |
-| `number` | i Character codepoint, fg RGBA, bg RGBA. |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 1). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 2). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 3). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 4). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 5). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 6). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 7). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 8). |
+| number | Character codepoint; fg RGBA; bg RGBA. (value 9). |
 
 **Example**
 
@@ -1574,12 +1645,11 @@ end
 
 ---
 
-### `LTerminal:getCellSize`
+#### `LTerminal:getCellSize`
 
 Returns the active terminal cell width and height in pixels, using custom override or font metrics.
 
 ```lua
--- signature
 LTerminal:getCellSize()
 ```
 
@@ -1587,8 +1657,8 @@ LTerminal:getCellSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Cell width and height in pixels. |
-| `number` | b Cell width and height in pixels. |
+| number | Cell width and height in pixels. (value 1). |
+| number | Cell width and height in pixels. (value 2). |
 
 **Example**
 
@@ -1604,12 +1674,11 @@ end
 
 ---
 
-### `LTerminal:getDimensions`
+#### `LTerminal:getDimensions`
 
 Returns the number of columns and rows in the terminal grid.
 
 ```lua
--- signature
 LTerminal:getDimensions()
 ```
 
@@ -1617,8 +1686,8 @@ LTerminal:getDimensions()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Column count, row count. |
-| `number` | b Column count, row count. |
+| number | Column count; row count. (value 1). |
+| number | Column count; row count. (value 2). |
 
 **Example**
 
@@ -1632,12 +1701,11 @@ end
 
 ---
 
-### `LTerminal:getFocused`
+#### `LTerminal:getFocused`
 
 Returns the widget that currently has keyboard focus, or nil if no widget is focused.
 
 ```lua
--- signature
 LTerminal:getFocused()
 ```
 
@@ -1645,7 +1713,7 @@ LTerminal:getFocused()
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The focused widget, or nil. |
+| [LWidget](#lwidget-handle) | The focused widget, or nil. |
 
 **Example**
 
@@ -1666,12 +1734,11 @@ end
 
 ---
 
-### `LTerminal:getWidgetCount`
+#### `LTerminal:getWidgetCount`
 
 Returns the number of widgets currently attached to this terminal.
 
 ```lua
--- signature
 LTerminal:getWidgetCount()
 ```
 
@@ -1679,7 +1746,7 @@ LTerminal:getWidgetCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Widget count. |
+| number | Widget count. |
 
 **Example**
 
@@ -1694,12 +1761,11 @@ end
 
 ---
 
-### `LTerminal:keypressed`
+#### `LTerminal:keypressed`
 
 Forwards a key press event to the terminal for widget input processing.
 
 ```lua
--- signature
 LTerminal:keypressed(key)
 ```
 
@@ -1707,13 +1773,13 @@ LTerminal:keypressed(key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `key` | `string` | The key name (e.g. "return", "backspace", "left"). |
+| `key` | string | The key name (e.g. "return", "backspace", "left"). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the terminal consumed the key event. |
+| boolean | True if the terminal consumed the key event. |
 
 **Example**
 
@@ -1734,12 +1800,11 @@ end
 
 ---
 
-### `LTerminal:mousepressed`
+#### `LTerminal:mousepressed`
 
 Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
 
 ```lua
--- signature
 LTerminal:mousepressed(px, py, button)
 ```
 
@@ -1747,9 +1812,9 @@ LTerminal:mousepressed(px, py, button)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `px` | `number` | Pixel X position of the mouse click. |
-| `py` | `number` | Pixel Y position of the mouse click. |
-| `button?` | `number` | Mouse button index (default 1 for left). |
+| `px` | number | Pixel X position of the mouse click. |
+| `py` | number | Pixel Y position of the mouse click. |
+| `button?` | number | Mouse button index (default 1 for left). |
 
 **Example**
 
@@ -1766,12 +1831,11 @@ end
 
 ---
 
-### `LTerminal:print`
+#### `LTerminal:print`
 
 Writes text to the terminal grid starting at a specific cell.
 
 ```lua
--- signature
 LTerminal:print(col, row, text)
 ```
 
@@ -1779,9 +1843,9 @@ LTerminal:print(col, row, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column index (1-based) where writing starts. |
-| `row` | `number` | Row index (1-based) where writing starts. |
-| `text` | `string` | Text to write into consecutive cells. |
+| `col` | number | Column index (1-based) where writing starts. |
+| `row` | number | Row index (1-based) where writing starts. |
+| `text` | string | Text to write into consecutive cells. |
 
 **Example**
 
@@ -1799,12 +1863,11 @@ end
 
 ---
 
-### `LTerminal:removeWidget`
+#### `LTerminal:removeWidget`
 
 Detaches a widget from this terminal, removing it from rendering and input handling.
 
 ```lua
--- signature
 LTerminal:removeWidget(widget)
 ```
 
@@ -1812,7 +1875,7 @@ LTerminal:removeWidget(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | `LWidget` | The widget to detach. |
+| `widget` | [LWidget](#lwidget-handle) | The widget to detach. |
 
 **Example**
 
@@ -1830,12 +1893,11 @@ end
 
 ---
 
-### `LTerminal:render`
+#### `LTerminal:render`
 
 Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
 
 ```lua
--- signature
 LTerminal:render(x, y)
 ```
 
@@ -1843,8 +1905,8 @@ LTerminal:render(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x?` | `number` | Screen X offset in pixels (default 0). |
-| `y?` | `number` | Screen Y offset in pixels (default 0). |
+| `x?` | number | Screen X offset in pixels (default 0). |
+| `y?` | number | Screen Y offset in pixels (default 0). |
 
 **Example**
 
@@ -1860,12 +1922,11 @@ end
 
 ---
 
-### `LTerminal:resetCellSize`
+#### `LTerminal:resetCellSize`
 
 Removes any custom cell size override, reverting to the active font metrics and refitting the window.
 
 ```lua
--- signature
 LTerminal:resetCellSize()
 ```
 
@@ -1883,12 +1944,11 @@ end
 
 ---
 
-### `LTerminal:set`
+#### `LTerminal:set`
 
 Writes a character with foreground and background color to a specific cell in the terminal grid.
 
 ```lua
--- signature
 LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
 ```
 
@@ -1896,17 +1956,17 @@ LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column index (1-based). |
-| `row` | `number` | Row index (1-based). |
-| `ch` | `string|number` | Character as a string or Unicode codepoint. |
-| `fr?` | `number` | Foreground red (0-1, default 1). |
-| `fg?` | `number` | Foreground green (0-1, default 1). |
-| `fb?` | `number` | Foreground blue (0-1, default 1). |
-| `fa?` | `number` | Foreground alpha (0-1, default 1). |
-| `br?` | `number` | Background red (0-1, default 0). |
-| `bg?` | `number` | Background green (0-1, default 0). |
-| `bb?` | `number` | Background blue (0-1, default 0). |
-| `ba?` | `number` | Background alpha (0-1, default 0). |
+| `col` | number | Column index (1-based). |
+| `row` | number | Row index (1-based). |
+| `ch` | string|number | Character as a string or Unicode codepoint. |
+| `fr?` | number | Foreground red (0-1, default 1). |
+| `fg?` | number | Foreground green (0-1, default 1). |
+| `fb?` | number | Foreground blue (0-1, default 1). |
+| `fa?` | number | Foreground alpha (0-1, default 1). |
+| `br?` | number | Background red (0-1, default 0). |
+| `bg?` | number | Background green (0-1, default 0). |
+| `bb?` | number | Background blue (0-1, default 0). |
+| `ba?` | number | Background alpha (0-1, default 0). |
 
 **Example**
 
@@ -1922,12 +1982,11 @@ end
 
 ---
 
-### `LTerminal:setCellSize`
+#### `LTerminal:setCellSize`
 
 Overrides the cell width and height used for rendering this terminal grid and refits the window.
 
 ```lua
--- signature
 LTerminal:setCellSize(w, h)
 ```
 
@@ -1935,8 +1994,8 @@ LTerminal:setCellSize(w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `w` | `number` | Cell width in pixels. |
-| `h` | `number` | Cell height in pixels. |
+| `w` | number | Cell width in pixels. |
+| `h` | number | Cell height in pixels. |
 
 **Example**
 
@@ -1951,12 +2010,11 @@ end
 
 ---
 
-### `LTerminal:setFocus`
+#### `LTerminal:setFocus`
 
 Sets which widget currently has keyboard focus, or clears focus when nil is passed.
 
 ```lua
--- signature
 LTerminal:setFocus(widget)
 ```
 
@@ -1964,7 +2022,7 @@ LTerminal:setFocus(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget?` | `LWidget` | The widget to focus, or nil to clear focus. |
+| `widget?` | [LWidget](#lwidget-handle) | The widget to focus, or nil to clear focus. |
 
 **Example**
 
@@ -1985,12 +2043,11 @@ end
 
 ---
 
-### `LTerminal:setFont`
+#### `LTerminal:setFont`
 
 Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 
 ```lua
--- signature
 LTerminal:setFont(height)
 ```
 
@@ -1998,7 +2055,7 @@ LTerminal:setFont(height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `height` | `number` | Desired font height in pixels. |
+| `height` | number | Desired font height in pixels. |
 
 **Example**
 
@@ -2016,12 +2073,11 @@ end
 
 ---
 
-### `LTerminal:textinput`
+#### `LTerminal:textinput`
 
 Forwards a text input event to the terminal for character entry into focused widgets.
 
 ```lua
--- signature
 LTerminal:textinput(text)
 ```
 
@@ -2029,13 +2085,13 @@ LTerminal:textinput(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The text characters entered. |
+| `text` | string | The text characters entered. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the terminal consumed the text input. |
+| boolean | True if the terminal consumed the text input. |
 
 **Example**
 
@@ -2052,12 +2108,11 @@ end
 
 ---
 
-### `LTerminal:type`
+#### `LTerminal:type`
 
-Returns the type name string "LTerminal".
+Returns the type name string "[LTerminal](#lterminal-handle)".
 
 ```lua
--- signature
 LTerminal:type()
 ```
 
@@ -2065,7 +2120,7 @@ LTerminal:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LTerminal". |
+| string | Always "[LTerminal](#lterminal-handle)". |
 
 **Example**
 
@@ -2078,12 +2133,11 @@ end
 
 ---
 
-### `LTerminal:typeOf`
+#### `LTerminal:typeOf`
 
-Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+Checks whether this object matches a given type name. Accepts "[LTerminal](#lterminal-handle)" or "Object".
 
 ```lua
--- signature
 LTerminal:typeOf(name)
 ```
 
@@ -2091,13 +2145,13 @@ LTerminal:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to test against. |
+| `name` | string | Type name to test against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 
@@ -2110,14 +2164,19 @@ end
 
 ---
 
-## LWidget
+## LWidget Handle
 
-### `LWidget:addChild`
+### Fields
+
+*No documented fields for this handle.*
+
+### Methods
+
+#### `LWidget:addChild`
 
 Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
 
 ```lua
--- signature
 LWidget:addChild(child)
 ```
 
@@ -2125,7 +2184,7 @@ LWidget:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | `LWidget` | The child widget to add. |
+| `child` | [LWidget](#lwidget-handle) | The child widget to add. |
 
 **Example**
 
@@ -2142,12 +2201,11 @@ end
 
 ---
 
-### `LWidget:addItem`
+#### `LWidget:addItem`
 
 Appends a text item to a list widget.
 
 ```lua
--- signature
 LWidget:addItem(item)
 ```
 
@@ -2155,7 +2213,7 @@ LWidget:addItem(item)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `item` | `string` | The item text to add. |
+| `item` | string | The item text to add. |
 
 **Example**
 
@@ -2170,12 +2228,11 @@ end
 
 ---
 
-### `LWidget:clearChildren`
+#### `LWidget:clearChildren`
 
 Removes all child widgets from a panel widget.
 
 ```lua
--- signature
 LWidget:clearChildren()
 ```
 
@@ -2194,12 +2251,11 @@ end
 
 ---
 
-### `LWidget:clearItems`
+#### `LWidget:clearItems`
 
 Removes all items from a list widget.
 
 ```lua
--- signature
 LWidget:clearItems()
 ```
 
@@ -2217,12 +2273,11 @@ end
 
 ---
 
-### `LWidget:getChild`
+#### `LWidget:getChild`
 
 Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
 
 ```lua
--- signature
 LWidget:getChild(index)
 ```
 
@@ -2230,13 +2285,13 @@ LWidget:getChild(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based child index. |
+| `index` | number | 1-based child index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `LWidget` | The child widget, or nil. |
+| [LWidget](#lwidget-handle) | The child widget, or nil. |
 
 **Example**
 
@@ -2253,12 +2308,11 @@ end
 
 ---
 
-### `LWidget:getChildCount`
+#### `LWidget:getChildCount`
 
 Returns the number of child widgets in a panel widget.
 
 ```lua
--- signature
 LWidget:getChildCount()
 ```
 
@@ -2266,7 +2320,7 @@ LWidget:getChildCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Child count. |
+| number | Child count. |
 
 **Example**
 
@@ -2283,12 +2337,11 @@ end
 
 ---
 
-### `LWidget:getColor`
+#### `LWidget:getColor`
 
 Returns the foreground color of the widget as RGBA components.
 
 ```lua
--- signature
 LWidget:getColor()
 ```
 
@@ -2296,10 +2349,10 @@ LWidget:getColor()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Red, green, blue, and alpha channels. |
-| `number` | b Red, green, blue, and alpha channels. |
-| `number` | c Red, green, blue, and alpha channels. |
-| `number` | d Red, green, blue, and alpha channels. |
+| number | Red; green; blue; and alpha channels. (value 1). |
+| number | Red; green; blue; and alpha channels. (value 2). |
+| number | Red; green; blue; and alpha channels. (value 3). |
+| number | Red; green; blue; and alpha channels. (value 4). |
 
 **Example**
 
@@ -2314,12 +2367,11 @@ end
 
 ---
 
-### `LWidget:getItem`
+#### `LWidget:getItem`
 
 Returns the text of a list item by its 1-based index.
 
 ```lua
--- signature
 LWidget:getItem(index)
 ```
 
@@ -2327,13 +2379,13 @@ LWidget:getItem(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based item index. |
+| `index` | number | 1-based item index. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `string` | The item text. |
+| string | The item text. |
 
 **Example**
 
@@ -2349,12 +2401,11 @@ end
 
 ---
 
-### `LWidget:getItemCount`
+#### `LWidget:getItemCount`
 
 Returns the number of items in a list widget.
 
 ```lua
--- signature
 LWidget:getItemCount()
 ```
 
@@ -2362,7 +2413,7 @@ LWidget:getItemCount()
 
 | Type | Description |
 |------|-------------|
-| `number` | Item count. |
+| number | Item count. |
 
 **Example**
 
@@ -2378,12 +2429,11 @@ end
 
 ---
 
-### `LWidget:getMaxLength`
+#### `LWidget:getMaxLength`
 
 Returns the maximum character limit of a text box widget.
 
 ```lua
--- signature
 LWidget:getMaxLength()
 ```
 
@@ -2391,7 +2441,7 @@ LWidget:getMaxLength()
 
 | Type | Description |
 |------|-------------|
-| `number` | Maximum character count. |
+| number | Maximum character count. |
 
 **Example**
 
@@ -2406,12 +2456,11 @@ end
 
 ---
 
-### `LWidget:getPosition`
+#### `LWidget:getPosition`
 
 Returns the widget position as 1-based column and row.
 
 ```lua
--- signature
 LWidget:getPosition()
 ```
 
@@ -2419,8 +2468,8 @@ LWidget:getPosition()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Column, row. |
-| `number` | b Column, row. |
+| number | Column; row. (value 1). |
+| number | Column; row. (value 2). |
 
 **Example**
 
@@ -2434,12 +2483,11 @@ end
 
 ---
 
-### `LWidget:getSelected`
+#### `LWidget:getSelected`
 
 Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
 
 ```lua
--- signature
 LWidget:getSelected()
 ```
 
@@ -2447,7 +2495,7 @@ LWidget:getSelected()
 
 | Type | Description |
 |------|-------------|
-| `number` | Selected item index, or nil. |
+| number | Selected item index, or nil. |
 
 **Example**
 
@@ -2464,12 +2512,11 @@ end
 
 ---
 
-### `LWidget:getSize`
+#### `LWidget:getSize`
 
 Returns the widget dimensions as width and height in cell units.
 
 ```lua
--- signature
 LWidget:getSize()
 ```
 
@@ -2477,8 +2524,8 @@ LWidget:getSize()
 
 | Type | Description |
 |------|-------------|
-| `number` | a Width, height. |
-| `number` | b Width, height. |
+| number | Width; height. (value 1). |
+| number | Width; height. (value 2). |
 
 **Example**
 
@@ -2492,12 +2539,11 @@ end
 
 ---
 
-### `LWidget:getStyle`
+#### `LWidget:getStyle`
 
 Returns the current border style name of a border or panel widget.
 
 ```lua
--- signature
 LWidget:getStyle()
 ```
 
@@ -2505,7 +2551,7 @@ LWidget:getStyle()
 
 | Type | Description |
 |------|-------------|
-| `string` | The border style name. |
+| string | The border style name. |
 
 **Example**
 
@@ -2520,12 +2566,11 @@ end
 
 ---
 
-### `LWidget:getTag`
+#### `LWidget:getTag`
 
 Returns the current tag string assigned to the widget.
 
 ```lua
--- signature
 LWidget:getTag()
 ```
 
@@ -2533,7 +2578,7 @@ LWidget:getTag()
 
 | Type | Description |
 |------|-------------|
-| `string` | The tag value. |
+| string | The tag value. |
 
 **Example**
 
@@ -2548,12 +2593,11 @@ end
 
 ---
 
-### `LWidget:getText`
+#### `LWidget:getText`
 
 Returns the current text content of a label, button, or text box widget.
 
 ```lua
--- signature
 LWidget:getText()
 ```
 
@@ -2561,7 +2605,7 @@ LWidget:getText()
 
 | Type | Description |
 |------|-------------|
-| `string` | The widget text. |
+| string | The widget text. |
 
 **Example**
 
@@ -2576,12 +2620,11 @@ end
 
 ---
 
-### `LWidget:getTitle`
+#### `LWidget:getTitle`
 
 Returns the current title text of a border or panel widget.
 
 ```lua
--- signature
 LWidget:getTitle()
 ```
 
@@ -2589,7 +2632,7 @@ LWidget:getTitle()
 
 | Type | Description |
 |------|-------------|
-| `string` | The title text. |
+| string | The title text. |
 
 **Example**
 
@@ -2604,12 +2647,11 @@ end
 
 ---
 
-### `LWidget:isEnabled`
+#### `LWidget:isEnabled`
 
 Returns whether the widget is currently enabled for user interaction.
 
 ```lua
--- signature
 LWidget:isEnabled()
 ```
 
@@ -2617,7 +2659,7 @@ LWidget:isEnabled()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if enabled. |
+| boolean | True if enabled. |
 
 **Example**
 
@@ -2632,12 +2674,11 @@ end
 
 ---
 
-### `LWidget:isVisible`
+#### `LWidget:isVisible`
 
 Returns whether the widget is currently visible.
 
 ```lua
--- signature
 LWidget:isVisible()
 ```
 
@@ -2645,7 +2686,7 @@ LWidget:isVisible()
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if visible. |
+| boolean | True if visible. |
 
 **Example**
 
@@ -2660,12 +2701,11 @@ end
 
 ---
 
-### `LWidget:removeChild`
+#### `LWidget:removeChild`
 
 Removes a child widget from a panel, detaching it from the panel layout.
 
 ```lua
--- signature
 LWidget:removeChild(child)
 ```
 
@@ -2673,7 +2713,7 @@ LWidget:removeChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | `LWidget` | The child widget to remove. |
+| `child` | [LWidget](#lwidget-handle) | The child widget to remove. |
 
 **Example**
 
@@ -2689,12 +2729,11 @@ end
 
 ---
 
-### `LWidget:removeItem`
+#### `LWidget:removeItem`
 
 Removes a list item by its 1-based index.
 
 ```lua
--- signature
 LWidget:removeItem(index)
 ```
 
@@ -2702,7 +2741,7 @@ LWidget:removeItem(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | `number` | 1-based item index to remove. |
+| `index` | number | 1-based item index to remove. |
 
 **Example**
 
@@ -2719,12 +2758,11 @@ end
 
 ---
 
-### `LWidget:setColor`
+#### `LWidget:setColor`
 
 Sets the foreground color of the widget as RGBA components (0-1 range).
 
 ```lua
--- signature
 LWidget:setColor(r, g, b, a)
 ```
 
@@ -2732,10 +2770,10 @@ LWidget:setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | `number` | Red channel. |
-| `g` | `number` | Green channel. |
-| `b` | `number` | Blue channel. |
-| `a?` | `number` | Alpha channel (default 1). |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel (default 1). |
 
 **Example**
 
@@ -2750,12 +2788,11 @@ end
 
 ---
 
-### `LWidget:setEnabled`
+#### `LWidget:setEnabled`
 
 Controls whether the widget accepts user interaction (clicks, typing).
 
 ```lua
--- signature
 LWidget:setEnabled(enabled)
 ```
 
@@ -2763,7 +2800,7 @@ LWidget:setEnabled(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | `boolean` | True to enable, false to disable. |
+| `enabled` | boolean | True to enable, false to disable. |
 
 **Example**
 
@@ -2777,12 +2814,11 @@ end
 
 ---
 
-### `LWidget:setMaxLength`
+#### `LWidget:setMaxLength`
 
 Sets the maximum number of characters allowed in a text box widget.
 
 ```lua
--- signature
 LWidget:setMaxLength(maxLength)
 ```
 
@@ -2790,7 +2826,7 @@ LWidget:setMaxLength(maxLength)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `maxLength` | `number` | Maximum character count. |
+| `maxLength` | number | Maximum character count. |
 
 **Example**
 
@@ -2805,12 +2841,11 @@ end
 
 ---
 
-### `LWidget:setOnChange`
+#### `LWidget:setOnChange`
 
 Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
 
 ```lua
--- signature
 LWidget:setOnChange(callback)
 ```
 
@@ -2818,7 +2853,7 @@ LWidget:setOnChange(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback?` | `function` | The change handler, or nil to clear. |
+| `callback?` | function | The change handler, or nil to clear. |
 
 **Example**
 
@@ -2835,12 +2870,11 @@ end
 
 ---
 
-### `LWidget:setOnClick`
+#### `LWidget:setOnClick`
 
 Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
 
 ```lua
--- signature
 LWidget:setOnClick(callback)
 ```
 
@@ -2848,7 +2882,7 @@ LWidget:setOnClick(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback?` | `function` | The click handler, or nil to clear. |
+| `callback?` | function | The click handler, or nil to clear. |
 
 **Example**
 
@@ -2862,12 +2896,11 @@ end
 
 ---
 
-### `LWidget:setOnSelect`
+#### `LWidget:setOnSelect`
 
 Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
 
 ```lua
--- signature
 LWidget:setOnSelect(callback)
 ```
 
@@ -2875,7 +2908,7 @@ LWidget:setOnSelect(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback?` | `function` | The selection handler, or nil to clear. |
+| `callback?` | function | The selection handler, or nil to clear. |
 
 **Example**
 
@@ -2894,12 +2927,11 @@ end
 
 ---
 
-### `LWidget:setPosition`
+#### `LWidget:setPosition`
 
 Sets the widget position in 1-based cell coordinates within the terminal grid.
 
 ```lua
--- signature
 LWidget:setPosition(col, row)
 ```
 
@@ -2907,8 +2939,8 @@ LWidget:setPosition(col, row)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `col` | `number` | Column index (1-based). |
-| `row` | `number` | Row index (1-based). |
+| `col` | number | Column index (1-based). |
+| `row` | number | Row index (1-based). |
 
 **Example**
 
@@ -2923,12 +2955,11 @@ end
 
 ---
 
-### `LWidget:setSelected`
+#### `LWidget:setSelected`
 
 Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
 
 ```lua
--- signature
 LWidget:setSelected(index)
 ```
 
@@ -2936,7 +2967,7 @@ LWidget:setSelected(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index?` | `number` | 1-based item index, or nil to clear selection. |
+| `index?` | number | 1-based item index, or nil to clear selection. |
 
 **Example**
 
@@ -2953,12 +2984,11 @@ end
 
 ---
 
-### `LWidget:setSize`
+#### `LWidget:setSize`
 
 Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
 
 ```lua
--- signature
 LWidget:setSize(width, height)
 ```
 
@@ -2966,8 +2996,8 @@ LWidget:setSize(width, height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | `number` | Width in cells. |
-| `height` | `number` | Height in cells. |
+| `width` | number | Width in cells. |
+| `height` | number | Height in cells. |
 
 **Example**
 
@@ -2982,12 +3012,11 @@ end
 
 ---
 
-### `LWidget:setStyle`
+#### `LWidget:setStyle`
 
 Sets the border drawing style for a border or panel widget.
 
 ```lua
--- signature
 LWidget:setStyle(styleName)
 ```
 
@@ -2995,7 +3024,7 @@ LWidget:setStyle(styleName)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `styleName` | `string` | Border style name (e.g. "single", "double", "rounded", "heavy", "none"). |
+| `styleName` | string | Border style name (e.g. "single", "double", "rounded", "heavy", "none"). |
 
 **Example**
 
@@ -3010,12 +3039,11 @@ end
 
 ---
 
-### `LWidget:setTag`
+#### `LWidget:setTag`
 
 Assigns an arbitrary string tag to the widget for identification or grouping.
 
 ```lua
--- signature
 LWidget:setTag(tag)
 ```
 
@@ -3023,7 +3051,7 @@ LWidget:setTag(tag)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tag` | `string` | The tag value. |
+| `tag` | string | The tag value. |
 
 **Example**
 
@@ -3037,12 +3065,11 @@ end
 
 ---
 
-### `LWidget:setText`
+#### `LWidget:setText`
 
 Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
 
 ```lua
--- signature
 LWidget:setText(text)
 ```
 
@@ -3050,7 +3077,7 @@ LWidget:setText(text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | `string` | The new text content. |
+| `text` | string | The new text content. |
 
 **Example**
 
@@ -3064,12 +3091,11 @@ end
 
 ---
 
-### `LWidget:setTitle`
+#### `LWidget:setTitle`
 
 Sets the title text displayed in the border of a border or panel widget.
 
 ```lua
--- signature
 LWidget:setTitle(title)
 ```
 
@@ -3077,7 +3103,7 @@ LWidget:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | `string` | The title text. |
+| `title` | string | The title text. |
 
 **Example**
 
@@ -3091,12 +3117,11 @@ end
 
 ---
 
-### `LWidget:setVisible`
+#### `LWidget:setVisible`
 
 Controls whether the widget is drawn and receives input events.
 
 ```lua
--- signature
 LWidget:setVisible(visible)
 ```
 
@@ -3104,7 +3129,7 @@ LWidget:setVisible(visible)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `visible` | `boolean` | True to show, false to hide. |
+| `visible` | boolean | True to show, false to hide. |
 
 **Example**
 
@@ -3118,12 +3143,11 @@ end
 
 ---
 
-### `LWidget:type`
+#### `LWidget:type`
 
-Returns the type name string "LWidget".
+Returns the type name string "[LWidget](#lwidget-handle)".
 
 ```lua
--- signature
 LWidget:type()
 ```
 
@@ -3131,7 +3155,7 @@ LWidget:type()
 
 | Type | Description |
 |------|-------------|
-| `string` | Always "LWidget". |
+| string | Always "[LWidget](#lwidget-handle)". |
 
 **Example**
 
@@ -3144,12 +3168,11 @@ end
 
 ---
 
-### `LWidget:typeOf`
+#### `LWidget:typeOf`
 
-Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
+Checks whether this object matches a given type name. Accepts "[LWidget](#lwidget-handle)" or "Object".
 
 ```lua
--- signature
 LWidget:typeOf(name)
 ```
 
@@ -3157,13 +3180,13 @@ LWidget:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | `string` | Type name to test against. |
+| `name` | string | Type name to test against. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| `boolean` | True if the name matches. |
+| boolean | True if the name matches. |
 
 **Example**
 

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["file_io","frame","lazy","query","rng","serial","sql","task","vectorized"]};

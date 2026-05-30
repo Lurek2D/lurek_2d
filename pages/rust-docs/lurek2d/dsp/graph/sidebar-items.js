@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["DspNodeType"],"struct":["DspGraph","DspNode"],"type":["NodeId"]};

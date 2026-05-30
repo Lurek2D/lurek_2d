@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["FieldType"],"mod":["catalog","entry","export","report","schema"],"struct":["FieldRule","Schema"],"type":["SchemaError","SchemaResult"]};
