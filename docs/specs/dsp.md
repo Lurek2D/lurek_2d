@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `dsp` module provides digital signal processing: real-time audio effects chains, offline batch processing, and audio visualization (waveform/spectrogram rendering).
+- The `dsp` module is the signal-processing layer for audio: real-time effects, offline transforms, synthesis, analysis, and visualization helpers in one CPU-first toolkit.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `dsp` module owns signal-processing logic independent from the playback scheduler. It provides real-time graph/effect components, offline processing helpers, waveform/synthesis tools, and analysis/visualization utilities, while audio transport and source lifecycle stay in the `audio` module.
+The `dsp` module is the engine's audio signal workbench. It focuses on transforming and analyzing sound data, while playback ownership and device scheduling stay in neighboring modules.
 
-Submodule boundaries are functional: `effects` defines effect types and parameter/state wrappers, `graph` coordinates shared processing graph abstractions, `analysis` provides level/spectrum helpers, `offline` applies effect chains to file workflows, `synthesis` provides waveform/envelope generation helpers, and `visualizer` renders waveform/spectrogram outputs.
+For live runtime use, it provides effect chains, graph-style processing, and safe parameter updates that can be changed during playback. This supports responsive sound design without forcing fragile ad-hoc processing code.
 
-A key design requirement is thread-safe processing behavior for audio-thread usage, including non-blocking control paths for graph/effect updates. This enables dynamic effect changes without coupling control traffic to render/audio critical paths.
+For offline workflows, the same module can process stored audio deterministically. Teams can run batch transforms, normalization, and export-oriented effect passes for content preparation and repeatable pipelines.
 
-In architecture terms, `dsp` should remain the transformation layer: it mutates and analyzes signal data. Playback orchestration and source routing should continue to be handled by neighboring audio runtime modules.
+Synthesis and inspection are included in the same surface. You can generate tones and noise, shape them with envelopes, measure RMS and peak behavior, inspect spectrum bins, and produce visual outputs such as waveform or spectrogram images.
 
-Implementation detail and boundary guarantees for dsp: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analysis.rs: Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.; effects.rs: Lock-free AtomicParam for sharing f32 parameters between the audio thread and Lua API.; graph.rs: DSP processing graph: nodes connected by typed audio-rate and control-rate edges.; mod.rs: Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.; offline.rs: Offline audio processing: apply DSP effect chains to files without real-time playback.; synthesis.rs: Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.; visualizer.rs: Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+In practice, `lurek.dsp` provides one consistent signal core for runtime, tools, and QA: build effects, process buffers, inspect results, and visualize behavior with predictable outputs.
 
 ## Imports
 
@@ -240,3 +240,4 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 
 - `LWaveform:render`: Renders this waveform to a new SoundData buffer.
 - `LWaveform:type`: Returns the waveform identifier string.
+

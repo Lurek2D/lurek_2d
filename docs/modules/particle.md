@@ -8,104 +8,6 @@ The visual representation of particles is extremely flexible. The system support
 
 Beyond standalone particles, the module implements a sophisticated `Trail` system. This generates connected ribbon segments behind moving particles or standalone points, featuring width tapering, age-based point retirement, and head-to-tail color interpolation. Additional advanced features include point attractors (gravity wells) that dynamically pull or repel live particles, and texture animation that can cycle through sprite atlas frames over a particle's lifetime. For ease of use, the module provides a suite of ready-made `presets` for common effects like fire, smoke, rain, snow, and sparks. The entire module is heavily optimized for deterministic simulation (given the same initial seed) and provides extensive debug visualization tools. It is fully exposed to the Lua scripting environment via the `lurek.particle.*` API, making it an essential tool for bringing dynamic, visually rich effects to Lurek2D games.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### config.rs
-
-- Runtime configuration for particle emitters and their tunable behavior.
-- Carries spawn distribution, insertion order, state, and coordinate mode settings.
-- Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks.
-- Includes attractor and bounce helper types for motion control.
-- Covers world-space versus emitter-attached spawning rules.
-- Packs every serializable knob into one config object for scripts and data files.
-- Serves as the authored contract for building particle systems.
-
-### emission.rs
-
-- Spawn-offset sampling for particle emission shapes and area distributions.
-- Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
-- Handles area-angle rotation so emitted particles respect the configured shape.
-- Keeps emission math separate from the particle runtime.
-- Supplies the offset generator used by emitters and presets.
-
-### emitter.rs
-
-- Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
-- Integrates gravity, drag, orbit, turbulence, and other per-frame forces.
-- Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes.
-- Applies attractors and axis-aligned bounce boundaries to active particles.
-- Runs child emitters on particle death when sub-systems are configured.
-- Tracks active, paused, and stopped states with lifetime-based auto-stop.
-- Builds render commands from current particle state, shape mapping, and interpolation curves.
-- Supports warm-up simulation so systems can start in a settled state.
-- Exposes custom emission-shape callbacks through the Lua bridge without coupling spawn math to rendering.
-- Provides the runtime core for all particle effects.
-
-### math.rs
-
-- Keyframe interpolation for particle size, colour, and alpha over normalized lifetime.
-- Offers uniform and normal random helpers for emission variance.
-- Clamps interpolation inputs and falls back cleanly on empty keyframe sets.
-- Supports the numeric shaping layer used by emitter animation.
-
-### mod.rs
-
-- Particle emitter lifecycle for spawn, simulation, and pooled recycling.
-- Collects emission, physics, trail, rendering, and preset helpers under one namespace.
-- Keeps particle effects modular while exposing a single runtime surface.
-
-### particle.rs
-
-- Per-particle runtime state for position, velocity, lifetime, rotation, and acceleration.
-- Stores spawn origin and shape seed for force calculations and deterministic geometry.
-- Keeps the minimum state needed by the emitter loop.
-
-### physics_collision.rs
-
-- Bounce particles off rapier colliders using AABB overlap probes.
-- Reflects velocity with configurable restitution per collision pass.
-- Operates on all live particles in a system each frame.
-
-### presets.rs
-
-- Ready-made ParticleConfig constructors for common visual effects.
-- Covers fire, smoke, rain, snow, sparks, and other standard patterns.
-- Returns self-contained configs with tuned lifetime, speed, color ramp, and shape.
-- Lets callers start from a stable preset and override fields afterward.
-- Makes quick particle authoring simple without hiding the underlying config.
-
-### render.rs
-
-- Render-command generation for particle systems and trails.
-- Expands textured particle batches into individual draw calls when needed.
-- Keeps untextured particles batched for efficiency.
-- Bridges live particle state to renderer submission.
-
-### shapes.rs
-
-- Geometric shape primitives that control how individual particles are rendered.
-- Covers fills, directional shapes, and composite outlines with inline parameters.
-- Gives emitters a compact vocabulary for particle silhouette design.
-
-### trail.rs
-
-- Ribbon trail built from a deque of aged world-space points.
-- Retires points automatically when they exceed the configured lifetime.
-- Tapers width and interpolates color from head to tail.
-- Can render as triangle-strip commands or as a CPU-rasterized image.
-- Provides a lightweight motion trail for fast effects and debug views.
-
-### visualization.rs
-
-- Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps.
-- Includes a generic renderer plus themed presets for explosions, rain, and spark trails.
-- Supports compositing particles over an existing background or painting in place.
-- Adds a chart-style lifetime view for inspecting particle counts over time.
-- Keeps render inspection separate from the particle simulation core.
-- Helps debug effect tuning without touching the live emitter loop.
-
 ## Functions
 
 ### `lurek.particle.drawLifecycleToImage`
@@ -129,7 +31,7 @@ lurek.particle.drawLifecycleToImage(snapshots, max_particles, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the lifecycle chart. |
+| [LImageData](#limagedata) | Image data containing the lifecycle chart. |
 
 **Example**
 
@@ -166,7 +68,7 @@ lurek.particle.fromTOML(path)
 
 | Type | Description |
 |------|-------------|
-| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
+| [LParticleSystem](#lparticlesystem) | New particle system handle. |
 
 **Example**
 
@@ -201,7 +103,7 @@ lurek.particle.newPreset(name)
 
 | Type | Description |
 |------|-------------|
-| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
+| [LParticleSystem](#lparticlesystem) | New particle system handle. |
 
 **Example**
 
@@ -235,7 +137,7 @@ lurek.particle.newSystem(config)
 
 | Type | Description |
 |------|-------------|
-| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
+| [LParticleSystem](#lparticlesystem) | New particle system handle. |
 
 **Example**
 
@@ -274,7 +176,7 @@ lurek.particle.newTrail(lifetime, start_width)
 
 | Type | Description |
 |------|-------------|
-| [LTrail](#ltrail-handle) | New trail handle. |
+| [LTrail](#ltrail) | New trail handle. |
 
 **Example**
 
@@ -293,12 +195,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LImageData Handle](#limagedata-handle)
-- [LParticleSystem Handle](#lparticlesystem-handle)
-- [LTrail Handle](#ltrail-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -307,13 +203,19 @@ end
 
 *No module-specific enums documented.*
 
-## LImageData Handle
+## Types
 
-### Fields
+- [LImageData](#limagedata)
+- [LParticleSystem](#lparticlesystem)
+- [LTrail](#ltrail)
+
+## LImageData
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImageData:alphaMask`
 
@@ -343,7 +245,7 @@ LImageData:applyPaletteLut(lut_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
 
 ---
 
@@ -359,7 +261,7 @@ LImageData:blit(src_ud, dst_x, dst_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dst_x` | number | Destination x coordinate. |
 | `dst_y` | number | Destination y coordinate. |
 
@@ -383,7 +285,7 @@ LImageData:blur(radius)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Blurred image data handle. |
+| [LImageData](#limagedata) | Blurred image data handle. |
 
 ---
 
@@ -438,7 +340,7 @@ LImageData:convolve(kernel_t, ksize)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Convolved image data handle. |
+| [LImageData](#limagedata) | Convolved image data handle. |
 
 ---
 
@@ -463,7 +365,7 @@ LImageData:crop(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Cropped image data handle. |
+| [LImageData](#limagedata) | Cropped image data handle. |
 
 ---
 
@@ -479,7 +381,7 @@ LImageData:diff(other_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
 
 **Returns**
 
@@ -546,7 +448,7 @@ LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `src_x` | number | Source region x coordinate. |
 | `src_y` | number | Source region y coordinate. |
 | `src_w` | number | Source region width. |
@@ -758,7 +660,7 @@ LImageData:getRegion(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
 
 ---
 
@@ -874,7 +776,7 @@ LImageData:paste(src_ud, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dx` | number | Destination x coordinate. |
 | `dy` | number | Destination y coordinate. |
 
@@ -916,7 +818,7 @@ LImageData:resize(width, height, filter)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
 
 ---
 
@@ -939,7 +841,7 @@ LImageData:resizeNearest(new_w, new_h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Resized image data handle. |
+| [LImageData](#limagedata) | Resized image data handle. |
 
 ---
 
@@ -955,7 +857,7 @@ LImageData:rotate90cw()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Rotated image data handle. |
+| [LImageData](#limagedata) | Rotated image data handle. |
 
 ---
 
@@ -1034,7 +936,7 @@ LImageData:sharpen()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+| [LImageData](#limagedata) | Sharpened image data handle. |
 
 ---
 
@@ -1085,13 +987,13 @@ LImageData:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LImageData](#limagedata-handle)`. |
+| string | The string `[LImageData](#limagedata)`. |
 
 ---
 
 #### `LImageData:typeOf`
 
-Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
 
 ```lua
 LImageData:typeOf(name)
@@ -1101,7 +1003,7 @@ LImageData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
 
 **Returns**
 
@@ -1111,13 +1013,13 @@ LImageData:typeOf(name)
 
 ---
 
-## LParticleSystem Handle
+## LParticleSystem
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LParticleSystem:addAttractor`
 
@@ -1323,7 +1225,7 @@ LParticleSystem:clone()
 
 | Type | Description |
 |------|-------------|
-| [LParticleSystem](#lparticlesystem-handle) | New particle system handle. |
+| [LParticleSystem](#lparticlesystem) | New particle system handle. |
 
 **Example**
 
@@ -1392,7 +1294,7 @@ LParticleSystem:drawExplosionToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the explosion preview. |
+| [LImageData](#limagedata) | Image data containing the explosion preview. |
 
 **Example**
 
@@ -1423,13 +1325,13 @@ LParticleSystem:drawOverImage(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | [LImageData](#limagedata-handle) | Background image data handle. |
+| `image` | [LImageData](#limagedata) | Background image data handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the composited result. |
+| [LImageData](#limagedata) | Image data containing the composited result. |
 
 **Example**
 
@@ -1469,7 +1371,7 @@ LParticleSystem:drawRainToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the rain preview. |
+| [LImageData](#limagedata) | Image data containing the rain preview. |
 
 **Example**
 
@@ -1507,7 +1409,7 @@ LParticleSystem:drawSparkTrailToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the spark preview. |
+| [LImageData](#limagedata) | Image data containing the spark preview. |
 
 **Example**
 
@@ -1545,7 +1447,7 @@ LParticleSystem:drawToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the rendered particles. |
+| [LImageData](#limagedata) | Image data containing the rendered particles. |
 
 **Example**
 
@@ -2581,7 +2483,7 @@ LParticleSystem:paintOnto(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | [LImageData](#limagedata-handle) | Target image data handle. |
+| `image` | [LImageData](#limagedata) | Target image data handle. |
 
 **Example**
 
@@ -2816,7 +2718,7 @@ LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius, restitution)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world_ud` | LWorld | Physics world handle. |
+| `world_ud` | [LWorld](physics.md#lworld) | Physics world handle. |
 | `probe_radius?` | number | Collision probe radius. |
 | `restitution?` | number | Bounce restitution. |
 
@@ -3709,7 +3611,7 @@ LParticleSystem:toImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the rendered particles. |
+| [LImageData](#limagedata) | Image data containing the rendered particles. |
 
 **Example**
 
@@ -3739,7 +3641,7 @@ LParticleSystem:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LParticleSystem](#lparticlesystem-handle)`. |
+| string | The string `[LParticleSystem](#lparticlesystem)`. |
 
 **Example**
 
@@ -3767,7 +3669,7 @@ LParticleSystem:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LParticleSystem](#lparticlesystem-handle)`, `ParticleSystem`, `Drawable`, and `Object`. |
+| `name` | string | Type name to compare against `[LParticleSystem](#lparticlesystem)`, `ParticleSystem`, `Drawable`, and `Object`. |
 
 **Returns**
 
@@ -3856,13 +3758,13 @@ end
 
 ---
 
-## LTrail Handle
+## LTrail
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTrail:clear`
 
@@ -3908,7 +3810,7 @@ LTrail:drawToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Image data containing the rendered trail. |
+| [LImageData](#limagedata) | Image data containing the rendered trail. |
 
 **Example**
 
@@ -4204,7 +4106,7 @@ LTrail:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTrail](#ltrail-handle)`. |
+| string | The string `[LTrail](#ltrail)`. |
 
 **Example**
 
@@ -4230,7 +4132,7 @@ LTrail:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LTrail](#ltrail-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LTrail](#ltrail)` and `Object`. |
 
 **Returns**
 

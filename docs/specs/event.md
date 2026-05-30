@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `event` module resides in the Core Runtime tier and provides the centralized event queue and signal dispatch backbone necessary for decoupled inter-system communication.
+- The `event` module provides the central runtime queue and signal system for decoupled communication between engine subsystems and Lua scripts.
 
 ## General Info
 
@@ -16,15 +16,13 @@
 
 ## Summary
 
-The `event` module provides priority-aware runtime event queuing and signal subscription primitives. Its core role is decoupled communication: producers push typed payloads, consumers poll or subscribe by name/wildcard, and delivery semantics preserve ordering guarantees within priority lanes.
+The `event` module is the central messaging layer for runtime coordination. Producers publish named events, and consumers poll, wait, or subscribe without tight coupling.
 
-`event_queue` owns queue storage, event structures, priority behavior, and Lua payload conversion helpers. `signal` owns subscriber registration and matching semantics. The module then re-exports these types so runtime and scripting layers can integrate without binding to submodule internals.
+Queue behavior is explicit and deterministic. Events can be pushed with priority and consumed in stable order inside priority lanes, which helps timing-sensitive systems coordinate without hidden channels.
 
-Design emphasis is predictable dispatch behavior and safe payload bridging to Lua. Conversion helpers ensure event arguments can cross the Rust-Lua boundary without ad-hoc per-system glue.
+Signal subscriptions support exact and wildcard matching, so teams can build specific callbacks and broad observers through one model.
 
-As a core runtime messaging surface, this module should remain deterministic, minimal, and explicit about queue/priority semantics. Domain-specific event meanings belong to caller modules, not to the queue itself.
-
-Implementation detail and boundary guarantees for event: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: event_queue.rs: Dual-priority FIFO event queue (high and normal) with priority-based polling.; mod.rs: Priority queue with ordered dispatch and Lua payload conversion for runtime events.; signal.rs: Named signal subscription registry with exact-name and wildcard pattern matching.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Payload conversion is built into the boundary, allowing safe Rust-Lua exchange without per-feature glue code. In practice, `lurek.event` provides one predictable communication contract for gameplay, runtime services, and tooling.
 
 ## Imports
 

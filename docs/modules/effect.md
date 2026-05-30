@@ -12,69 +12,6 @@ The module should continue to own effect lifecycle and stack policy (including e
 
 Implementation detail and boundary guarantees for effect: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: draw.rs: Render a preview image summarizing the current post-FX stack state.; effect.rs: Post-processing effect instance holding type, parameters, and enabled state.; effect_type.rs: Post-processing effect type enumeration and name registry.; image_effect.rs: Image-scoped post-processing effect pipeline that groups and orders shader passes.; mod.rs: Visual effect sub-system: particle effects, screen-space post-processing, and shakes.; presets.rs: Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).; render.rs: Render-command integration for the post-effects stack.; stack.rs: Ordered post-processing effect stack with per-entry enable flags.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### draw.rs
-
-- Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image.
-- Distinguishes active and inactive stack states through deterministic color selection.
-- Delivers a minimal visual probe for tooling and debug-side effect inspection.
-
-### effect.rs
-
-- Provides runtime post-effect instances that couple effect kind with mutable parameter state.
-- Supports built-in and custom shader-backed variants under one unified runtime shape.
-- Exposes parameter and enable controls for live effect tuning without pipeline rebuilds.
-- Delivers the per-effect state object consumed by stack management and rendering stages.
-
-### effect_type.rs
-
-- Provides the canonical post-effect type catalog that defines all built-in processing identities.
-- Maps stable Lua-facing names to typed variants for predictable script and engine interoperability.
-- Supplies debug labels and parsing helpers that normalize user input into supported effect forms.
-- Defines default parameter sets so each effect starts from consistent baseline behavior.
-- Separates built-in variants from custom-shader paths while preserving one shared lookup model.
-- Delivers the naming and typing backbone used by effect instances, stacks, and presets.
-
-### image_effect.rs
-
-- Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains.
-- Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally.
-- Converts active effects into renderer-facing pass descriptors for downstream execution.
-- Delivers the per-target composition layer for reusable shader effect application.
-
-### mod.rs
-
-- Provides the high-level visual effects module boundary for post-processing composition and runtime control.
-- Connects effect instances, stacks, presets, and renderer integration into one coherent pipeline surface.
-- Delivers a data-driven effect orchestration layer that scripts and systems can configure predictably.
-
-### presets.rs
-
-- Provides built-in post-effect presets that package curated visual moods into ready-to-use chains.
-- Builds effect sets with viewport-aware stack initialization for immediate runtime application.
-- Exposes canonical preset names so scripts can select consistent looks with stable identifiers.
-- Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable.
-- Delivers one-call factories that return enabled stacks configured for direct deployment.
-
-### render.rs
-
-- Provides render-command generation for post-effect capture and application flows.
-- Emits deterministic begin, end, and apply command sequences consumed by the renderer.
-- Delivers no-op behavior when stacks have no active effects to process.
-
-### stack.rs
-
-- Provides ordered post-effect stack management with per-entry enable state and target dimensions.
-- Stores effect references in application order while preserving synchronized activation flags.
-- Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition.
-- Exposes query helpers that report active subsets and positional stack metadata.
-- Includes stack-introspection render helpers for debugging and visual tooling overlays.
-- Applies defensive index handling so invalid operations fail safely at runtime boundaries.
-- Delivers the sequencing core that determines how effect chains are executed frame to frame.
-
 ## Functions
 
 ### `lurek.effect.getEffectTypes`
@@ -171,7 +108,7 @@ lurek.effect.newCustomEffect(shader_id)
 
 | Type | Description |
 |------|-------------|
-| [LPostFxEffect](#lpostfxeffect-handle) | New custom post-processing effect handle. |
+| [LPostFxEffect](#lpostfxeffect) | New custom post-processing effect handle. |
 
 **Example**
 
@@ -202,7 +139,7 @@ lurek.effect.newEffect(type_name)
 
 | Type | Description |
 |------|-------------|
-| [LPostFxEffect](#lpostfxeffect-handle) | New post-processing effect handle. |
+| [LPostFxEffect](#lpostfxeffect) | New post-processing effect handle. |
 
 **Example**
 
@@ -235,7 +172,7 @@ lurek.effect.newImageEffect(spec, params)
 
 | Type | Description |
 |------|-------------|
-| [LImageEffect](#limageeffect-handle) | New image effect chain handle. |
+| [LImageEffect](#limageeffect) | New image effect chain handle. |
 
 **Example**
 
@@ -266,7 +203,7 @@ lurek.effect.newPass(shader_id)
 
 | Type | Description |
 |------|-------------|
-| [LPostFxEffect](#lpostfxeffect-handle) | New custom post-processing effect handle. |
+| [LPostFxEffect](#lpostfxeffect) | New custom post-processing effect handle. |
 
 **Example**
 
@@ -299,7 +236,7 @@ lurek.effect.newPresetStack(name, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LPostFxStack](#lpostfxstack-handle) | New preset post-processing stack handle. |
+| [LPostFxStack](#lpostfxstack) | New preset post-processing stack handle. |
 
 **Example**
 
@@ -331,7 +268,7 @@ lurek.effect.newStack(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LPostFxStack](#lpostfxstack-handle) | New post-processing stack handle. |
+| [LPostFxStack](#lpostfxstack) | New post-processing stack handle. |
 
 **Example**
 
@@ -373,12 +310,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LImageEffect Handle](#limageeffect-handle)
-- [LPostFxEffect Handle](#lpostfxeffect-handle)
-- [LPostFxStack Handle](#lpostfxstack-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -387,13 +318,19 @@ end
 
 *No module-specific enums documented.*
 
-## LImageEffect Handle
+## Types
 
-### Fields
+- [LImageEffect](#limageeffect)
+- [LPostFxEffect](#lpostfxeffect)
+- [LPostFxStack](#lpostfxstack)
+
+## LImageEffect
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImageEffect:addEffect`
 
@@ -413,7 +350,7 @@ LImageEffect:addEffect(name)
 
 | Type | Description |
 |------|-------------|
-| [LPostFxEffect](#lpostfxeffect-handle) | Handle for the effect added to the chain. |
+| [LPostFxEffect](#lpostfxeffect) | Handle for the effect added to the chain. |
 
 **Example**
 
@@ -481,7 +418,7 @@ LImageEffect:clone()
 
 | Type | Description |
 |------|-------------|
-| [LImageEffect](#limageeffect-handle) | New image effect handle with the same effect chain. |
+| [LImageEffect](#limageeffect) | New image effect handle with the same effect chain. |
 
 **Example**
 
@@ -540,7 +477,7 @@ LImageEffect:getEffect(key)
 
 | Type | Description |
 |------|-------------|
-| LuaValue | `[LPostFxEffect](#lpostfxeffect-handle)` handle, or nil when no matching effect exists. |
+| LuaValue | `[LPostFxEffect](#lpostfxeffect)` handle, or nil when no matching effect exists. |
 
 **Example**
 
@@ -719,7 +656,7 @@ LImageEffect:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LImageEffect](#limageeffect-handle)`. |
+| string | The string `[LImageEffect](#limageeffect)`. |
 
 **Example**
 
@@ -763,13 +700,13 @@ end
 
 ---
 
-## LPostFxEffect Handle
+## LPostFxEffect
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPostFxEffect:disableAutoUniforms`
 
@@ -1353,7 +1290,7 @@ LPostFxEffect:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LPostFxEffect](#lpostfxeffect-handle)`. |
+| string | The string `[LPostFxEffect](#lpostfxeffect)`. |
 
 **Example**
 
@@ -1397,13 +1334,13 @@ end
 
 ---
 
-## LPostFxStack Handle
+## LPostFxStack
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPostFxStack:add`
 
@@ -1417,7 +1354,7 @@ LPostFxStack:add(effect_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `effect_ud` | [LPostFxEffect](#lpostfxeffect-handle) | Effect handle to append. |
+| `effect_ud` | [LPostFxEffect](#lpostfxeffect) | Effect handle to append. |
 
 **Example**
 
@@ -1614,7 +1551,7 @@ LPostFxStack:getEffect(index)
 
 | Type | Description |
 |------|-------------|
-| LuaValue | `[LPostFxEffect](#lpostfxeffect-handle)` handle, or nil when the index is out of range. |
+| LuaValue | `[LPostFxEffect](#lpostfxeffect)` handle, or nil when the index is out of range. |
 
 **Example**
 
@@ -1668,7 +1605,7 @@ LPostFxStack:getEnabledEffects()
 
 | Type | Description |
 |------|-------------|
-| [LPostFxEffect](#lpostfxeffect-handle)[] | Enabled `[LPostFxEffect](#lpostfxeffect-handle)` handles. |
+| [LPostFxEffect](#lpostfxeffect)[] | Enabled `[LPostFxEffect](#lpostfxeffect)` handles. |
 
 **Example**
 
@@ -1773,7 +1710,7 @@ LPostFxStack:insert(position, effect_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `position` | number | One-based insertion position, clamped to the stack length. |
-| `effect_ud` | [LPostFxEffect](#lpostfxeffect-handle) | Effect handle to insert. |
+| `effect_ud` | [LPostFxEffect](#lpostfxeffect) | Effect handle to insert. |
 
 **Example**
 
@@ -1909,7 +1846,7 @@ LPostFxStack:remove(effect_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `effect_ud` | [LPostFxEffect](#lpostfxeffect-handle) | Effect handle to remove. |
+| `effect_ud` | [LPostFxEffect](#lpostfxeffect) | Effect handle to remove. |
 
 **Returns**
 
@@ -2025,7 +1962,7 @@ LPostFxStack:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LPostFxStack](#lpostfxstack-handle)`. |
+| string | The string `[LPostFxStack](#lpostfxstack)`. |
 
 **Example**
 

@@ -8,87 +8,6 @@ The central orchestration of these lighting primitives is handled by the `LightW
 
 Beyond static illumination, the module excels in dynamic effects. It features a robust `FlickerConfig` system that drives procedural, noise-based intensity variation over time—ideal for simulating torches, candles, or unstable neon signs. To ensure optimal performance, the flicker system utilizes a lazy-indexed advance loop that only evaluates lights with active flicker states. The module also supports time-based linear transitions for smoothly animating light color, intensity, and radius. Additionally, it offers advanced shadow filtering presets (from hard shadows to various PCF soft-shadow kernels) and normal-map integration for surface shading. The entire feature set is extensively exposed to the scripting environment via the `lurek.light.*` API.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### attenuation.rs
-
-- Defines quadratic attenuation math controlling how light intensity decays with distance.
-- Encapsulates constant, linear, and quadratic coefficients in a compact reusable configuration.
-- Computes attenuation factors used by runtime light contribution evaluation.
-- Includes simple visualization support for tuning falloff curve behavior.
-
-### blend_mode.rs
-
-- Defines compositing modes that control how each light contribution merges into accumulated lighting.
-- Encodes additive, subtractive, and mixed behaviors for different artistic lighting goals.
-- Provides compact blend-mode discriminants shared across lighting evaluation and rendering paths.
-
-### falloff.rs
-
-- Defines radial falloff profiles that shape brightness between light center and radius boundary.
-- Provides linear, smooth, and constant decay modes for distinct lighting aesthetics.
-- Supplies simple mode flags combined with distance attenuation during light evaluation.
-
-### flicker.rs
-
-- Defines sine-based flicker state that modulates light intensity across time.
-- Tracks oscillation phase, speed, and strength for controllable temporal variation.
-- Supports deterministic per-frame advancement with wrapped phase continuity.
-- Enables torch, candle, and neon style animation without custom update code.
-
-### light2d.rs
-
-- Defines the full per-light data model covering transform, color, energy, and shading behavior.
-- Encapsulates light geometry, blend mode, falloff, attenuation, and layer-mask participation.
-- Stores spot-cone, shadow, normal-map, and volumetric options in one configurable runtime object.
-- Provides constructor defaults tuned for immediate point-light usage without extra setup.
-- Exposes field access patterns used by world management and Lua-facing controls.
-- Supports optional flicker and grouping metadata for batched animation and edits.
-- Includes debug-oriented helpers that visualize key lighting parameter effects.
-
-### light_type.rs
-
-- Defines geometric light models used by the 2D lighting pipeline.
-- Distinguishes point, directional, and spot semantics for illumination behavior.
-- Supplies compact type discriminants used during shading and shadow evaluation.
-
-### light_world.rs
-
-- Implements scene-level light management for `Light2D` and occluder collections keyed by stable handles.
-- Supports creation, removal, lookup, and bulk mutation of lighting entities across runtime updates.
-- Applies group-based operations for coordinated enable, color, and intensity adjustments.
-- Advances active flicker states efficiently to animate selected lights over time.
-- Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates.
-- Provides debug preview rasterization to inspect approximate light-map outcomes.
-
-### mod.rs
-
-- High-level lighting module that groups light types, occluders, world state, and transition utilities.
-- Re-exports core enums and structs used to configure 2D illumination behavior across the engine.
-- Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration.
-
-### occluder.rs
-
-- Defines convex polygon occluders that block light and contribute to shadow casting.
-- Stores local vertices with world offset and opacity controls for flexible scene placement.
-- Supports runtime vertex replacement from typed points or flat coordinate inputs.
-- Applies layer-mask and enable flags to scope occluder influence across light groups.
-
-### shadow.rs
-
-- Defines shadow filtering quality presets used by soft-shadow evaluation paths.
-- Encodes hard-shadow and PCF-based options with different sampling costs.
-- Provides a compact quality enum consumed by light shadow configuration.
-
-### transition.rs
-
-- Implements time-based linear transitions for light color, intensity, and radius values.
-- Tracks elapsed progress against duration to produce deterministic interpolated states.
-- Clamps timing parameters to safe bounds for stable update behavior.
-- Supports per-frame stepping until transitions reach their configured targets.
-
 ## Functions
 
 ### `lurek.light.advanceFlickers`
@@ -158,7 +77,7 @@ lurek.light.drawToImage(width, height)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Rendered light map. |
+| [LImageData](#limagedata) | Rendered light map. |
 
 **Example**
 
@@ -422,7 +341,7 @@ lurek.light.newLight(x, y, radius, opts)
 
 | Type | Description |
 |------|-------------|
-| [LLight](#llight-handle) | New light handle. |
+| [LLight](#llight) | New light handle. |
 
 **Example**
 
@@ -454,7 +373,7 @@ lurek.light.newOccluder(vtbl, opts)
 
 | Type | Description |
 |------|-------------|
-| [LOccluder](#loccluder-handle) | New occluder handle. |
+| [LOccluder](#loccluder) | New occluder handle. |
 
 **Example**
 
@@ -680,12 +599,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LImageData Handle](#limagedata-handle)
-- [LLight Handle](#llight-handle)
-- [LOccluder Handle](#loccluder-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -694,13 +607,19 @@ end
 
 *No module-specific enums documented.*
 
-## LImageData Handle
+## Types
 
-### Fields
+- [LImageData](#limagedata)
+- [LLight](#llight)
+- [LOccluder](#loccluder)
+
+## LImageData
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImageData:alphaMask`
 
@@ -730,7 +649,7 @@ LImageData:applyPaletteLut(lut_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
 
 ---
 
@@ -746,7 +665,7 @@ LImageData:blit(src_ud, dst_x, dst_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dst_x` | number | Destination x coordinate. |
 | `dst_y` | number | Destination y coordinate. |
 
@@ -770,7 +689,7 @@ LImageData:blur(radius)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Blurred image data handle. |
+| [LImageData](#limagedata) | Blurred image data handle. |
 
 ---
 
@@ -825,7 +744,7 @@ LImageData:convolve(kernel_t, ksize)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Convolved image data handle. |
+| [LImageData](#limagedata) | Convolved image data handle. |
 
 ---
 
@@ -850,7 +769,7 @@ LImageData:crop(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Cropped image data handle. |
+| [LImageData](#limagedata) | Cropped image data handle. |
 
 ---
 
@@ -866,7 +785,7 @@ LImageData:diff(other_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
 
 **Returns**
 
@@ -933,7 +852,7 @@ LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `src_x` | number | Source region x coordinate. |
 | `src_y` | number | Source region y coordinate. |
 | `src_w` | number | Source region width. |
@@ -1145,7 +1064,7 @@ LImageData:getRegion(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
 
 ---
 
@@ -1261,7 +1180,7 @@ LImageData:paste(src_ud, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dx` | number | Destination x coordinate. |
 | `dy` | number | Destination y coordinate. |
 
@@ -1303,7 +1222,7 @@ LImageData:resize(width, height, filter)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
 
 ---
 
@@ -1326,7 +1245,7 @@ LImageData:resizeNearest(new_w, new_h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Resized image data handle. |
+| [LImageData](#limagedata) | Resized image data handle. |
 
 ---
 
@@ -1342,7 +1261,7 @@ LImageData:rotate90cw()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Rotated image data handle. |
+| [LImageData](#limagedata) | Rotated image data handle. |
 
 ---
 
@@ -1421,7 +1340,7 @@ LImageData:sharpen()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+| [LImageData](#limagedata) | Sharpened image data handle. |
 
 ---
 
@@ -1472,13 +1391,13 @@ LImageData:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LImageData](#limagedata-handle)`. |
+| string | The string `[LImageData](#limagedata)`. |
 
 ---
 
 #### `LImageData:typeOf`
 
-Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
 
 ```lua
 LImageData:typeOf(name)
@@ -1488,7 +1407,7 @@ LImageData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
 
 **Returns**
 
@@ -1498,13 +1417,13 @@ LImageData:typeOf(name)
 
 ---
 
-## LLight Handle
+## LLight
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLight:addFlicker`
 
@@ -3169,7 +3088,7 @@ LLight:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LLight](#llight-handle)`. |
+| string | The string `[LLight](#llight)`. |
 
 **Example**
 
@@ -3195,7 +3114,7 @@ LLight:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LLight](#llight-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LLight](#llight)` and `Object`. |
 
 **Returns**
 
@@ -3249,13 +3168,13 @@ end
 
 ---
 
-## LOccluder Handle
+## LOccluder
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LOccluder:getLightMask`
 
@@ -3584,7 +3503,7 @@ LOccluder:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LOccluder](#loccluder-handle)`. |
+| string | The string `[LOccluder](#loccluder)`. |
 
 **Example**
 
@@ -3610,7 +3529,7 @@ LOccluder:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LOccluder](#loccluder-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LOccluder](#loccluder)` and `Object`. |
 
 **Returns**
 

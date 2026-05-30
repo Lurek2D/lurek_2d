@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `app` module serves as the primary application lifecycle controller and integration point for Lurek2D, positioned at the top of the Edge/Integration tier.
+- The `app` module is the runtime conductor: it starts the engine, runs the frame loop, routes platform events, and coordinates script, update, and render phases in one stable order.
 
 ## General Info
 
@@ -16,15 +16,17 @@
 
 ## Summary
 
-The `app` module is the composition root and execution orchestrator for the runtime binary. It owns startup order, `winit` event-loop integration, frame lifecycle sequencing, and the bridge points where platform events are translated into Lua callbacks and render submission steps. Instead of holding domain logic for gameplay systems, it coordinates those systems through explicit frame phases and shared runtime services.
+The `app` module is where the whole runtime is assembled and driven from launch to shutdown. It does not own gameplay rules. Instead, it owns execution order: start services, process events, run frame stages, and present output in a predictable cycle.
 
-At runtime, the module drives a deterministic loop around timing (`Clock`), input/device polling, script callbacks, simulation ticks, and renderer presentation. It also centralizes operational surfaces that must remain globally consistent: fatal error screen fallback, debug overlay rendering, splash screen flow, and frame-profile instrumentation text. This gives one authoritative place for "what happens each frame" and avoids lifecycle drift across feature modules.
+Its main job is keeping one stable frame pipeline. Input, script callbacks, simulation updates, and rendering are coordinated in a fixed order so modules do not drift into inconsistent timing. Functionally, this gives the engine one trusted place that defines what happens each frame and when.
 
-The boundary is intentionally integration-focused. Submodules like `lua_callbacks`, `frame_profile`, and `debug_overlay` serve orchestration concerns and are consumed by the main app runner, while heavy business logic stays in specialized modules (`render`, `input`, `audio`, `physics`, etc.). The app layer therefore acts as an execution scheduler and policy host, not as a domain owner.
+The module is also the bridge between platform events and engine behavior. Window, keyboard, mouse, touch, and gamepad signals are routed into runtime callbacks in a consistent form. This keeps script-side logic simpler, because gameplay code receives normalized events instead of platform-specific differences.
 
-From a maintenance perspective, this module is where reliability controls belong: callback timeout wrappers, safe recovery paths for user-facing failures, and event-to-callback routing guarantees. In practice, changes here should preserve strict ordering guarantees and keep side effects observable, because almost every runtime subsystem is activated through this module's frame pipeline.
+Operational UX is managed here too. Startup splash flow, debug overlay output, frame profile text, and fatal error presentation are coordinated at the app layer. In practical terms, this means both normal and failure paths stay readable for users and maintainers during real sessions.
 
-Implementation detail and boundary guarantees for app: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: app.rs: Implements the central LurekApp runtime driven by winit's ApplicationHandler.; debug_overlay.rs: Owns the lightweight debug HUD toggled by F12 or Lua.; error_screen.rs: Formats fatal Lua and engine errors into a user-facing screen.; frame_profile.rs: Formats per-frame timing data into compact single-line strings for logging.; lua_callbacks.rs: Invokes named lurek.* Lua callbacks with error logging and optional timeout.; mod.rs: Orchestrates the Lurek2D application lifecycle from window creation through frame rendering.; splash_screen.rs: Decodes embedded splash icon and banner PNGs into temporary texture storage.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Reliability policy lives at this boundary. Guarded callback calls, timeout-aware execution, and explicit recovery paths help prevent one failing script call from collapsing the whole loop silently. This makes runtime behavior easier to debug and safer to evolve as more subsystems are added.
+
+Overall, the `app` module is the integration backbone of Lurek2D. It keeps subsystem boundaries clear, controls execution rhythm, and provides a single lifecycle contract that other modules can rely on for deterministic behavior.
 
 ## Imports
 

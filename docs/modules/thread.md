@@ -8,47 +8,6 @@ To facilitate concurrent workloads, the module provides a `ThreadPool`. This fix
 
 For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern. A `Promise` spawns a single worker thread to execute a piece of Lua code and safely collects the solitary result via an internal channel, allowing the main thread to poll for completion using `isDone` and `result` methods. Recently enhanced with composable promise chaining, bounded channel backpressure, and deadline-based blocking (`demand`), the `thread` module provides a comprehensive suite of concurrency primitives. Fully exposed via the `lurek.thread.*` API, it empowers developers to build responsive, multi-threaded Lua games without the pitfalls of shared mutable state.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### channel.rs
-
-- This file provides the thread-safe message bus that moves typed payloads between isolated Lua VMs.
-- It defines a stable transport value model that preserves scalar values, nested tables, and binary blobs.
-- It supports bounded and unbounded queues so gameplay code can choose backpressure or open throughput.
-- It offers blocking and non-blocking push and pull flows for deterministic runtime synchronization.
-- It bridges Rust and Lua value domains with explicit conversion rules that avoid hidden sharing.
-- It keeps channel identity and message sequencing visible so concurrent data flow stays debuggable.
-
-### mod.rs
-
-- This module delivers the high-level concurrency layer for isolated Lua workers in the runtime.
-- It combines channels, worker execution, pools, and one-shot promises into one coherent flow model.
-- It keeps cross-thread scripting safe by enforcing message passing instead of shared VM state.
-
-### pool.rs
-
-- This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput.
-- It binds shared input and output channels so tasks and results travel on a predictable pipeline.
-- It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration.
-- It keeps named channel wiring consistent across engine and script boundaries during pooled execution.
-
-### promise.rs
-
-- This file provides a one-shot async result container for Lua work running off the main thread.
-- It models pending, success, and error states so callers can poll progress without blocking frames.
-- It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics.
-- It makes deferred gameplay logic simple by letting results be consumed cleanly in later updates.
-
-### worker.rs
-
-- This file provides the worker lifecycle that boots an isolated Lua VM on its own OS thread.
-- It tracks execution transitions from pending to running to completed or failed outcomes.
-- It injects a restricted capability surface so background scripts run inside controlled boundaries.
-- It connects workers to shared named channels so inter-VM communication remains explicit and typed.
-- It offers blocking and timeout joins to synchronize background completion with frame progression.
-
 ## Functions
 
 ### `lurek.thread.async`
@@ -70,7 +29,7 @@ lurek.thread.async(codeOrFunc, ...)
 
 | Type | Description |
 |------|-------------|
-| [LPromise](#lpromise-handle) | A promise that resolves to the worker's return value. |
+| [LPromise](#lpromise) | A promise that resolves to the worker's return value. |
 
 **Example**
 
@@ -102,7 +61,7 @@ lurek.thread.getChannel(name)
 
 | Type | Description |
 |------|-------------|
-| [LChannel](#lchannel-handle) | The named channel instance. |
+| [LChannel](#lchannel) | The named channel instance. |
 
 **Example**
 
@@ -161,7 +120,7 @@ lurek.thread.newBoundedChannel(capacity)
 
 | Type | Description |
 |------|-------------|
-| [LChannel](#lchannel-handle) | A new bounded channel. |
+| [LChannel](#lchannel) | A new bounded channel. |
 
 **Example**
 
@@ -189,7 +148,7 @@ lurek.thread.newChannel()
 
 | Type | Description |
 |------|-------------|
-| [LChannel](#lchannel-handle) | A new unbounded channel. |
+| [LChannel](#lchannel) | A new unbounded channel. |
 
 **Example**
 
@@ -223,7 +182,7 @@ lurek.thread.newPool(size, code)
 
 | Type | Description |
 |------|-------------|
-| [LThreadPool](#lthreadpool-handle) | A pool handle for submitting work and collecting results. |
+| [LThreadPool](#lthreadpool) | A pool handle for submitting work and collecting results. |
 
 **Example**
 
@@ -262,7 +221,7 @@ lurek.thread.newThread(code)
 
 | Type | Description |
 |------|-------------|
-| [LThread](#lthread-handle) | A thread handle that can be started, waited on, and inspected. |
+| LThread | A thread handle that can be started, waited on, and inspected. |
 
 **Example**
 
@@ -286,14 +245,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LChannel Handle](#lchannel-handle)
-- [LPromise Handle](#lpromise-handle)
-- [LThread Handle](#lthread-handle)
-- [LThreadHandle Handle](#lthreadhandle-handle)
-- [LThreadPool Handle](#lthreadpool-handle)
-
 ## Callbacks
 
 - `lurek.thread.async` param `codeOrFunc` (`string|function`): Lua source code or a dumpable Lua function to execute.
@@ -302,13 +253,20 @@ end
 
 *No module-specific enums documented.*
 
-## LChannel Handle
+## Types
 
-### Fields
+- [LChannel](#lchannel)
+- [LPromise](#lpromise)
+- [LThreadHandle](#lthreadhandle)
+- [LThreadPool](#lthreadpool)
+
+## LChannel
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LChannel:clear`
 
@@ -732,7 +690,7 @@ LChannel:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns `"[LChannel](#lchannel-handle)"`. |
+| string | Always returns `"[LChannel](#lchannel)"`. |
 
 **Example**
 
@@ -757,7 +715,7 @@ LChannel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to test against (`"[LChannel](#lchannel-handle)"`, `"Channel"`, or `"Object"`). |
+| `name` | string | Type name to test against (`"[LChannel](#lchannel)"`, `"Channel"`, or `"Object"`). |
 
 **Returns**
 
@@ -776,13 +734,13 @@ end
 
 ---
 
-## LPromise Handle
+## LPromise
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPromise:chain`
 
@@ -803,7 +761,7 @@ LPromise:chain(code, ...)
 
 | Type | Description |
 |------|-------------|
-| [LPromise](#lpromise-handle) | A new promise representing the chained computation. |
+| [LPromise](#lpromise) | A new promise representing the chained computation. |
 
 **Example**
 
@@ -922,7 +880,7 @@ LPromise:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns `"[LPromise](#lpromise-handle)"`. |
+| string | Always returns `"[LPromise](#lpromise)"`. |
 
 **Example**
 
@@ -968,23 +926,13 @@ end
 
 ---
 
-## LThread Handle
+## LThreadHandle
 
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LThreadHandle Handle
-
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LThreadHandle:getError`
 
@@ -1086,13 +1034,13 @@ end
 
 ---
 
-## LThreadPool Handle
+## LThreadPool
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LThreadPool:collect`
 
@@ -1141,7 +1089,7 @@ LThreadPool:getInputChannel()
 
 | Type | Description |
 |------|-------------|
-| [LChannel](#lchannel-handle) | The input channel. |
+| [LChannel](#lchannel) | The input channel. |
 
 **Example**
 
@@ -1175,7 +1123,7 @@ LThreadPool:getOutputChannel()
 
 | Type | Description |
 |------|-------------|
-| [LChannel](#lchannel-handle) | The output channel. |
+| [LChannel](#lchannel) | The output channel. |
 
 **Example**
 
@@ -1307,7 +1255,7 @@ LThreadPool:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns `"[LThreadPool](#lthreadpool-handle)"`. |
+| string | Always returns `"[LThreadPool](#lthreadpool)"`. |
 
 **Example**
 

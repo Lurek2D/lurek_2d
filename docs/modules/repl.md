@@ -8,44 +8,6 @@ The REPL supports a rich set of interactive features. It manages a bounded comma
 
 Furthermore, the module includes a sophisticated `completer` that offers tab completion against a static pool of Lua keywords, built-ins, standard libraries, and all `lurek.*` namespaces, while also dynamically resolving dot-separated paths against the live Lua global table. Value formatting is handled by a robust `value_to_string` recursive formatter, which converts all Lua value types (including opaque types like functions and userdata) into stable, human-readable display text with configurable depth limits and table truncation. Entirely free of wgpu or winit dependencies, the `lurek.repl.*` API ensures that interactive scripting is safe, stable, and available across all Lurek2D environments.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### commands.rs
-
-- This file defines the small command language for colon-prefixed REPL control actions.
-- It keeps command intent separate from evaluation logic so parsing and execution stay cleanly divided.
-- The result is a lightweight vocabulary for session management layered on top of ordinary Lua input.
-
-### completer.rs
-
-- This file implements completion for interactive REPL input so partially typed commands can expand into useful candidates.
-- Suggestions come from both a static knowledge base of Lua and engine names and the live global environment of the current VM.
-- Dot-path completion is resolved step by step, which makes nested tables and engine namespaces feel navigable from the prompt.
-- Candidate output is normalized and deduplicated so the REPL can present stable suggestions instead of noisy raw table keys.
-- The file therefore acts as the discoverability layer of the REPL, helping users explore available runtime symbols while typing.
-
-### mod.rs
-
-- This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input.
-- It keeps the feature independent from rendering concerns so terminals, tests, and tools can all reuse the same session core.
-- At the top level this is the engine's embeddable interactive console backend rather than a UI implementation.
-
-### session.rs
-
-- This file implements the stateful heart of the REPL, where input is recorded, classified, and evaluated against a caller-supplied Lua VM.
-- It distinguishes between command-style control input and ordinary Lua text so one prompt can manage both session behavior and code execution.
-- Expression-first evaluation keeps interactive probing ergonomic while still falling back to statement execution for longer snippets.
-- Command history is bounded and owned by the session, which keeps repeated use predictable without leaking VM references across calls.
-- The file is therefore the operational core that makes the REPL feel persistent and interactive while remaining headless and embeddable.
-
-### value.rs
-
-- This file turns raw Lua values into stable human-readable text for REPL output and other headless inspection paths.
-- It gives every major Lua value kind a display strategy, including opaque runtime objects that cannot sensibly print their full internals.
-- The formatter is tuned for readable interactive feedback rather than lossless serialization of Lua state.
-
 ## Functions
 
 ### `lurek.repl.new`
@@ -66,7 +28,7 @@ lurek.repl.new(max_history)
 
 | Type | Description |
 |------|-------------|
-| [LReplSession](#lreplsession-handle) | REPL session handle for eval, history, and completion. |
+| [LReplSession](#lreplsession) | REPL session handle for eval, history, and completion. |
 
 **Example**
 
@@ -85,10 +47,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LReplSession Handle](#lreplsession-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -97,13 +55,17 @@ end
 
 *No module-specific enums documented.*
 
-## LReplSession Handle
+## Types
 
-### Fields
+- [LReplSession](#lreplsession)
+
+## LReplSession
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LReplSession:clear`
 
@@ -266,7 +228,7 @@ LReplSession:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LReplSession](#lreplsession-handle)`. |
+| string | The string `[LReplSession](#lreplsession)`. |
 
 **Example**
 
@@ -292,7 +254,7 @@ LReplSession:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LReplSession](#lreplsession-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LReplSession](#lreplsession)` and `Object`. |
 
 **Returns**
 

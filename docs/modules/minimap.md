@@ -8,64 +8,6 @@ Beyond basic terrain visualization, the minimap acts as a comprehensive strategi
 
 The module also features a robust rendering pipeline that composites these layers—terrain, fog, overlays, objects, markers, and pings—into an optimized `ImageData` buffer or directly generates an ordered list of `RenderCommand`s. It fully supports configurable display resolutions, zoom levels, panning, and automatic camera-tracking viewports that overlay the player's active screen bounds. To support diverse game genres, it offers multiple color modes, such as switching between standard terrain-colored views and political owner-colored strategic modes. Bridging seamlessly with other systems like the `province` registry, this entire feature set is exposed to Lua scripts via the `lurek.minimap.*` API, enabling developers to build complex, interactive UI maps with minimal engine overhead.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### minimap.rs
-
-- Grid-based minimap model with configurable terrain colors and fog-of-war.
-- Tracks world cells, visible state, and overlay layers in one structure.
-- Stores object markers, pings, and path shapes for live HUD feedback.
-- Supports terrain and political color modes for strategic presentation.
-- Manages zoom, pan, camera tracking, and viewport framing.
-- Projects screen and grid coordinates in both directions for interaction.
-- Renders CPU-side image buffers for export and preview use cases.
-- Includes timed animation behaviors for pings and persistent markers.
-- Separates layer data so the minimap can stack multiple map representations.
-- Keeps hover and hit information available for UI and debug tools.
-- Balances compact runtime state with flexible overlay composition.
-- Provides the main data source for both generic and raycaster-style minimaps.
-
-### mod.rs
-
-- Minimap subsystem for terrain layers, fog, markers, overlays, and export rendering.
-- Connects the grid model with renderer output, province data, and raycaster-specific views.
-- Keeps all minimap-facing state under one runtime namespace.
-
-### province_adapter.rs
-
-- Bridge between province world data and the minimap grid.
-- Copies terrain, fog, and palette state into a minimap representation.
-- Clips to the smaller grid so size mismatches stay safe.
-- Lets world-region data feed the minimap without custom glue code.
-
-### raycaster_overlay.rs
-
-- Raycaster-specific minimap overlay renderer for tile-based visibility views.
-- Builds a pixel-grid minimap from wall, floor, and lighting information.
-- Uses line-of-sight and Bresenham traversal to reveal reachable cells.
-- Fills raw RGBA buffers for fast image output and preview rendering.
-- Draws the player indicator as a compact orientation cue on top of the map.
-- Serves as the specialised bridge between raycasting state and minimap output.
-
-### render.rs
-
-- Converts minimap state into an ordered render command stream.
-- Draws terrain, fog, overlays, objects, pings, markers, and viewport guides.
-- Projects grid coordinates through the minimap transform into screen space.
-- Keeps the drawing order stable so HUD elements stack predictably.
-- Supports zoom-dependent and animated presentation without mutating the world model.
-- Acts as the generic renderer path for the minimap subsystem.
-
-### types.rs
-
-- Shared minimap data types for colors, fog, overlays, and live markers.
-- Defines the small enums and structs that other minimap files reuse.
-- Carries per-object and per-path state for animated overlays.
-- Separates raw layer bytes from higher-level minimap behavior.
-- Provides the data vocabulary for the whole minimap subsystem.
-
 ## Functions
 
 ### `lurek.minimap.newMinimap`
@@ -89,7 +31,7 @@ lurek.minimap.newMinimap(grid_w, grid_h, display_w, display_h)
 
 | Type | Description |
 |------|-------------|
-| [LMinimap](#lminimap-handle) | New minimap handle. |
+| [LMinimap](#lminimap) | New minimap handle. |
 
 **Example**
 
@@ -108,10 +50,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LMinimap Handle](#lminimap-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -120,13 +58,17 @@ end
 
 *No module-specific enums documented.*
 
-## LMinimap Handle
+## Types
 
-### Fields
+- [LMinimap](#lminimap)
+
+## LMinimap
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMinimap:addMarker`
 
@@ -515,7 +457,7 @@ LMinimap:drawToImage(pixel_size)
 
 | Type | Description |
 |------|-------------|
-| LImageData | Image data containing the rendered minimap. |
+| [LImageData](render.md#limagedata) | Image data containing the rendered minimap. |
 
 **Example**
 
@@ -2188,7 +2130,7 @@ LMinimap:setMarkerTexture(id, image_ud, width, height)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Marker id. |
-| `image_ud` | LImage | Image handle from `lurek.render.newImage`. |
+| `image_ud` | [LImage](render.md#limage) | Image handle from `lurek.render.newImage`. |
 | `width?` | number | Display width override. |
 | `height?` | number | Display height override. |
 
@@ -2252,7 +2194,7 @@ LMinimap:setObjectTypeTexture(type_idx, image_ud, width, height)
 | Name | Type | Description |
 |------|------|-------------|
 | `type_idx` | number | One-based object type index. |
-| `image_ud` | LImage | Image handle from `lurek.render.newImage`. |
+| `image_ud` | [LImage](render.md#limage) | Image handle from `lurek.render.newImage`. |
 | `width?` | number | Display width override. |
 | `height?` | number | Display height override. |
 
@@ -2617,7 +2559,7 @@ LMinimap:trackCamera(camera_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `camera_ud` | LCamera | Camera handle from `lurek.camera.newCamera`. |
+| `camera_ud` | [LCamera](camera.md#lcamera) | Camera handle from `lurek.camera.newCamera`. |
 
 **Example**
 
@@ -2650,7 +2592,7 @@ LMinimap:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LMinimap](#lminimap-handle)`. |
+| string | The string `[LMinimap](#lminimap)`. |
 
 **Example**
 
@@ -2675,7 +2617,7 @@ LMinimap:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LMinimap](#lminimap-handle)`, `Minimap`, and `Object`. |
+| `name` | string | Type name to compare against `[LMinimap](#lminimap)`, `Minimap`, and `Object`. |
 
 **Returns**
 

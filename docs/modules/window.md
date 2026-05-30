@@ -8,40 +8,6 @@ Handling modern display environments is a primary focus of this module. It provi
 
 The module also handles critical rendering integration points. VSync configuration can be toggled between immediate (uncapped), FIFO (standard vsync), and mailbox modes, giving developers tight control over frame presentation and latency. Fullscreen operations support both exclusive mode for maximum performance and borderless desktop mode for seamless multitasking. Additionally, the module exposes native platform features—such as asynchronous file dialogs via `rfd` and OS-level message boxes—allowing for standard file picking and alert interactions without blocking the primary game loop. Fully accessible through the `lurek.window.*` API, this module provides the dependable foundation required to host the engine on any supported desktop OS.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### event_loop.rs
-
-- This file provides event-loop side monitor and display helpers for window placement flow.
-- It enumerates displays and captures snapshot metadata used by window-facing APIs.
-- It selects startup and fallback monitors with deterministic preference ordering.
-- It supports centering and cross-display movement operations for runtime window control.
-- It anchors monitor-aware behavior required by multi-display desktop setups.
-
-### management.rs
-
-- This file provides deferred window management operations staged for safe event-loop apply.
-- It controls title, size, position, display target, and icon updates through queued state.
-- It manages fullscreen and vsync mode changes across desktop and exclusive variants.
-- It exposes minimize, maximize, restore, close, and attention requests for app lifecycle flow.
-- It provides focus, visibility, and pointer-presence queries for runtime interaction logic.
-- It includes DPI conversion and mode snapshot helpers used by Lua and engine integration.
-
-### mod.rs
-
-- This module delivers the high-level desktop window subsystem for lifecycle and display control.
-- It unifies monitor handling, mode changes, viewport scaling, and state query surfaces.
-- It provides the runtime boundary between OS window behavior and script-facing APIs.
-
-### viewport.rs
-
-- This file provides viewport scaling helpers between logical game space and physical pixels.
-- It exposes logical dimensions and scale mode state used by rendering and input mapping.
-- It computes conversion factors and offsets so coordinate translation remains consistent.
-- It supports runtime staging of scale behavior without direct renderer coupling.
-
 ## Functions
 
 ### `lurek.window.close`
@@ -1525,10 +1491,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LWindow Handle](#lwindow-handle)
-
 ## Callbacks
 
 - `lurek.window.onDpiChange` param `func` (`function`): Callback receiving the new DPI scale as a number.
@@ -1537,12 +1499,6 @@ end
 
 *No module-specific enums documented.*
 
-## LWindow Handle
+## Types
 
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
+*No Lua userdata types detected for this module.*

@@ -8,70 +8,6 @@ Layout computation is driven by a flexible vertical block layout engine with rob
 
 The module also handles complex text rendering, ensuring accurate wrapping, alignment, and multi-line overflow management. Furthermore, the `html` module is deeply interactive. It routes user input—such as mouse clicks, hover events, keyboard focus, and text input—directly to the appropriate DOM elements, executing bound Lua callbacks (`mousepressed`, `mousemoved`, `keypressed`). The entire document lifecycle, from DOM queries (`getElementById`, `querySelector`) to dynamic structural mutations, is fully scriptable via the `lurek.html.*` API.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### color.rs
-
-- Turns raw CSS color text into normalized RGBA values ready for render-side blending.
-- Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles.
-- Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape.
-- Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable.
-- Returns compact `[f32; 4]` color vectors in 0..1 space for direct engine consumption.
-
-### document.rs
-
-- Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state.
-- Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs.
-- Resolves selector-driven style cascades into computed per-element visual properties for later layout.
-- Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry.
-- Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing.
-- Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries.
-- Applies DOM mutations like attribute edits, class toggles, text replacement, and inner fragment insertion.
-- Serializes inner and outer HTML snapshots so runtime edits can be observed or persisted deterministically.
-- Generates draw command streams carrying rectangles, text, and color intent for render-side execution.
-- Collects parse and style warnings so caller code can surface authoring issues without aborting runtime flow.
-
-### element.rs
-
-- Defines the core DOM node shape used to store structure, attributes, text, and layout geometry.
-- Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state.
-- Provides class token mutation paths that preserve deterministic ordering and membership checks.
-- Tracks parent-child linkage and removal flags to support stable traversal without index churn.
-- Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow.
-- Supplies normalization and void-element classification rules that guide parsing and tree mutations.
-
-### mod.rs
-
-- High-level HTML module surface that composes parsing, styling, selection, and document orchestration.
-- Re-exports stable document and element types used by runtime code interacting with HTML-driven UI.
-- Binds color, parser, selector, and style helpers into one cohesive entry point for the subsystem.
-
-### parser.rs
-
-- Converts raw HTML text into document nodes with stable parent-child links and normalized attributes.
-- Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state.
-- Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization.
-- Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical.
-- Collapses insignificant whitespace in text nodes to keep rendered output predictable across content styles.
-
-### selector.rs
-
-- Implements selector matching logic that maps CSS-like queries onto the live HTML element tree.
-- Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering.
-- Supports descendant and direct-child relationships for ancestry-aware filtering semantics.
-- Walks parent links to evaluate multi-part selector chains against runtime element topology.
-- Provides the core predicate shared by style cascade resolution and document query operations.
-
-### style.rs
-
-- Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout.
-- Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs.
-- Normalizes declaration keys and values so later cascade merges operate on stable property naming.
-- Resolves pixel, percent, and unitless length text into float values against caller-provided bases.
-- Supplies compact parse outputs consumed by document rebuild, style recompute, and layout phases.
-
 ## Functions
 
 ### `lurek.html.isDefaultPrevented`
@@ -121,7 +57,7 @@ lurek.html.loadDocument(path, opts)
 
 | Type | Description |
 |------|-------------|
-| [LHtmlDocument](#lhtmldocument-handle) | Loaded HTML document handle. |
+| [LHtmlDocument](#lhtmldocument) | Loaded HTML document handle. |
 
 **Example**
 
@@ -156,7 +92,7 @@ lurek.html.newDocument(source, opts)
 
 | Type | Description |
 |------|-------------|
-| [LHtmlDocument](#lhtmldocument-handle) | New HTML document handle. |
+| [LHtmlDocument](#lhtmldocument) | New HTML document handle. |
 
 **Example**
 
@@ -248,11 +184,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LHtmlDocument Handle](#lhtmldocument-handle)
-- [LHtmlElement Handle](#lhtmlelement-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -261,13 +192,18 @@ end
 
 *No module-specific enums documented.*
 
-## LHtmlDocument Handle
+## Types
 
-### Fields
+- [LHtmlDocument](#lhtmldocument)
+- [LHtmlElement](#lhtmlelement)
+
+## LHtmlDocument
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LHtmlDocument:addCss`
 
@@ -362,7 +298,7 @@ LHtmlDocument:getElementById(id)
 
 | Type | Description |
 |------|-------------|
-| LuaValue | `[LHtmlElement](#lhtmlelement-handle)` handle, or nil when no element matches. |
+| LuaValue | `[LHtmlElement](#lhtmlelement)` handle, or nil when no element matches. |
 
 **Example**
 
@@ -416,7 +352,7 @@ LHtmlDocument:getRoot()
 
 | Type | Description |
 |------|-------------|
-| [LHtmlElement](#lhtmlelement-handle) | Root element handle. |
+| [LHtmlElement](#lhtmlelement) | Root element handle. |
 
 **Example**
 
@@ -697,7 +633,7 @@ LHtmlDocument:query(selector)
 
 | Type | Description |
 |------|-------------|
-| LuaValue | `[LHtmlElement](#lhtmlelement-handle)` handle, or nil when no element matches. |
+| LuaValue | `[LHtmlElement](#lhtmlelement)` handle, or nil when no element matches. |
 
 **Example**
 
@@ -731,7 +667,7 @@ LHtmlDocument:queryAll(selector)
 
 | Type | Description |
 |------|-------------|
-| [LHtmlElement](#lhtmlelement-handle)[] | `[LHtmlElement](#lhtmlelement-handle)` handles. |
+| [LHtmlElement](#lhtmlelement)[] | `[LHtmlElement](#lhtmlelement)` handles. |
 
 **Example**
 
@@ -915,7 +851,7 @@ LHtmlDocument:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LHtmlDocument](#lhtmldocument-handle)`. |
+| string | The string `[LHtmlDocument](#lhtmldocument)`. |
 
 **Example**
 
@@ -940,7 +876,7 @@ LHtmlDocument:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LHtmlDocument](#lhtmldocument-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LHtmlDocument](#lhtmldocument)` and `Object`. |
 
 **Returns**
 
@@ -1018,13 +954,13 @@ end
 
 ---
 
-## LHtmlElement Handle
+## LHtmlElement
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LHtmlElement:addClass`
 
@@ -1169,7 +1105,7 @@ LHtmlElement:getDocument()
 
 | Type | Description |
 |------|-------------|
-| [LHtmlDocument](#lhtmldocument-handle) | Owning document handle. |
+| [LHtmlDocument](#lhtmldocument) | Owning document handle. |
 
 **Example**
 
@@ -1482,7 +1418,7 @@ LHtmlElement:query(selector)
 
 | Type | Description |
 |------|-------------|
-| LuaValue | `[LHtmlElement](#lhtmlelement-handle)` handle, or nil when no descendant matches. |
+| LuaValue | `[LHtmlElement](#lhtmlelement)` handle, or nil when no descendant matches. |
 
 **Example**
 
@@ -1515,7 +1451,7 @@ LHtmlElement:queryAll(selector)
 
 | Type | Description |
 |------|-------------|
-| [LHtmlElement](#lhtmlelement-handle)[] | `[LHtmlElement](#lhtmlelement-handle)` handles. |
+| [LHtmlElement](#lhtmlelement)[] | `[LHtmlElement](#lhtmlelement)` handles. |
 
 **Example**
 
@@ -1786,7 +1722,7 @@ LHtmlElement:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LHtmlElement](#lhtmlelement-handle)`. |
+| string | The string `[LHtmlElement](#lhtmlelement)`. |
 
 **Example**
 
@@ -1812,7 +1748,7 @@ LHtmlElement:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LHtmlElement](#lhtmlelement-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LHtmlElement](#lhtmlelement)` and `Object`. |
 
 **Returns**
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `light` module is a comprehensive Platform Services tier component that provides a robust 2D lighting data model for Lurek2D.
+- The `light` module manages 2D light, occluder, and lighting-world state for dynamic illumination, while rendering remains in the render module.
 
 ## General Info
 
@@ -16,11 +16,17 @@
 
 ## Summary
 
-It is responsible for managing point, spot, and area lights, alongside shadow-casting occluders, to create dynamic and atmospheric scene illumination. At its core, the `Light2D` struct encapsulates the properties of an individual light source, including its position, color, radius, intensity, cone angles for spot behavior, falloff curves, and procedural flicker configurations. The module is intentionally designed as a pure data management layer—it handles the logical state, grouping, and animation of lights, while the actual GPU rasterization and shader execution are deferred entirely to the `render` module.
+The `light` module is the runtime state system for 2D illumination. It stores and updates light data, occluder data, and ambient terms so scenes can control visual mood and readability through one coherent lighting surface.
 
-The central orchestration of these lighting primitives is handled by the `LightWorld`. This scene-level container holds pools of active lights and `Occluder` shapes (convex polygons that block light propagation to generate shadows). It provides an efficient slotmap-backed architecture for adding, removing, and querying these entities, as well as applying batch operations like intensity or color changes across named light groups. The lighting model supports sophisticated attenuation, allowing for quadratic, linear, and inverse-square falloff models, alongside custom coefficient tuples to precisely control how light decays over distance. Blend modes (additive, subtractive, alpha-mix) dictate how each light composited into the final accumulation buffer.
+Its core model supports multiple light behaviors with configurable color, radius, intensity, direction, falloff, attenuation, and blending. This gives teams flexible control over how local and global lighting should behave during gameplay.
 
-Beyond static illumination, the module excels in dynamic effects. It features a robust `FlickerConfig` system that drives procedural, noise-based intensity variation over time—ideal for simulating torches, candles, or unstable neon signs. To ensure optimal performance, the flicker system utilizes a lazy-indexed advance loop that only evaluates lights with active flicker states. The module also supports time-based linear transitions for smoothly animating light color, intensity, and radius. Additionally, it offers advanced shadow filtering presets (from hard shadows to various PCF soft-shadow kernels) and normal-map integration for surface shading. The entire feature set is extensively exposed to the scripting environment via the `lurek.light.*` API.
+Scene-level coordination is handled by a light world container that owns active lights and occluders. It supports stable add, remove, lookup, and group operations, so large scenes can be managed predictably.
+
+Dynamic effects are part of the same runtime contract. Flicker states, time-based transitions, and shadow-quality options allow lights to evolve over time without ad-hoc per-scene animation code.
+
+Group-level controls and world-level queries help teams coordinate many lights at once, which is important for larger scenes and for scripted global changes during events, weather, or time-of-day shifts.
+
+The boundary is explicit: this module owns lighting data and update policy, while actual GPU draw and shader execution stay in rendering modules. In practice, `lurek.light` provides one reliable control plane for scripted 2D lighting behavior.
 
 ## Imports
 

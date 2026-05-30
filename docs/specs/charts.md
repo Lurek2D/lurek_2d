@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Software-rasterized chart renderers (line, bar, scatter, pie, area) that output RGBA8 pixel buffers.
+- The `charts` module rasterizes line, bar, scatter, pie, and area charts on CPU and returns RGBA pixel output for runtime UI and tooling use.
 
 ## General Info
 
@@ -16,13 +16,15 @@
 
 ## Summary
 
-The `charts` module is a CPU-side chart rendering system for data visualization, designed to work without a dedicated GPU chart pipeline. It supports line, bar, scatter, pie, and area charts, with shared configuration and raster helpers that produce pixel buffers suitable for reuse as textures in normal render flows.
+The `charts` module turns numeric data into ready-to-display chart images using CPU rasterization. It supports common chart families in one place, so scripts can generate visual summaries without relying on a dedicated GPU chart pipeline.
 
-Each chart type is implemented in its own module (`line`, `bar`, `scatter`, `pie`, `area`) while shared appearance/data contracts live in `config` and drawing primitives live in `render_utils`. This keeps chart-specific behavior isolated while preserving consistent styling and axis/legend behavior across chart families.
+Its main value is predictable image output from structured data. Callers provide series or slice values plus options, and the module produces RGBA buffers that can be shown in UI, overlays, reports, or saved artifacts. This keeps chart generation practical in both runtime and offline workflows.
 
-The module is intentionally data-driven: callers provide series/slice data and chart options, and the renderer emits deterministic software raster output. This makes charts reproducible in tests and usable in headless or tooling contexts where GPU access is not assumed.
+Each chart type keeps its own rendering behavior, while shared configuration and drawing helpers enforce consistent defaults and visual rules. That split allows chart-specific flexibility without losing cross-chart consistency in dimensions, styling, and value mapping.
 
-Because chart rendering can be consumed by UI and reporting paths, the boundary should stay focused on conversion from numeric data to image output. Layout orchestration and interaction policy belong to higher layers.
+Because output is software-rasterized and deterministic, charts are easy to test and reproduce across environments. This makes the module useful for headless validation, automated evidence generation, and tooling scenarios where graphical backend assumptions should stay minimal.
+
+Overall, the module provides a clean conversion boundary: data in, chart pixels out. Higher layers can handle layout and interaction, while `charts` focuses on reliable visual generation from tabular or series-based inputs.
 
 ## Imports
 

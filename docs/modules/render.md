@@ -8,165 +8,6 @@ The module supports an extensive array of rendering primitives and techniques. I
 
 A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using cached ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### canvas.rs
-
-- This file defines the lightweight canvas handle that describes an off-screen render target by size and identity.
-- It is metadata for the renderer rather than a GPU allocation, so higher layers can reason about canvas ownership cheaply.
-- The type exists to keep canvas-facing APIs stable while the renderer manages the actual backing resources elsewhere.
-
-### decal_surface.rs
-
-- This file defines the persistent decal surface descriptor used when the engine needs a paintable texture space for marks and splats.
-- It keeps only the durable dimensions and identity needed for later GPU allocation and reuse across frames.
-- The descriptor stays intentionally small because the renderer owns the heavy texture lifecycle and attachment details.
-
-### draw_layer.rs
-
-- This file stores deferred draw-layer callbacks that should execute in a chosen depth order later in the frame.
-- Entries carry ordering intent without forcing immediate GPU work, which lets gameplay and UI enqueue layered drawing cheaply.
-- Sorting is centralized here so every queued callback follows the same layering rule before the renderer flushes it.
-- The result is a narrow scheduling buffer between scripting-time draw requests and render-time command emission.
-
-### font.rs
-
-- This file handles the text asset side of rendering, from bundled bitmap atlases to dynamically rasterized font faces.
-- It keeps glyph metrics, atlas placement, and lookup behavior close together so layout and draw code share one text model.
-- Built-in faces give the engine predictable default text coverage even before user fonts are loaded from content.
-- Runtime rasterization feeds custom font files into the same practical atlas-oriented representation used by bundled resources.
-- Measurement helpers live here as well, which keeps wrapping, alignment, and cursor math consistent with the actual glyph data.
-- Character lookup includes compatibility behavior for terminal-style symbols and legacy code ranges that show up in retro UI work.
-- The file therefore sits between raw font assets and renderer-facing text quads, preserving both readability and runtime flexibility.
-- In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
-
-### gpu_renderer.rs
-
-- This file is the concrete wgpu renderer that turns the engine command vocabulary into encoded GPU work and presented frames.
-- It owns device-facing state such as pipelines, bind groups, buffers, samplers, and the transient attachments needed during a frame.
-- Incoming draw commands are interpreted here into flat-color, textured, mesh, font, light, and post-effect passes that share one frame lifecycle.
-- Geometry for common 2D shapes is tessellated on demand so higher layers can speak in circles, lines, rounded boxes, and polygons instead of vertices.
-- Vertex and index buffers are resized as frame demand grows, which keeps command recording simple while still adapting to heavy scenes.
-- Textured drawing and flat drawing travel through separate but coordinated paths so color-only work does not inherit texture overhead by accident.
-- Off-screen canvas targets are managed beside the swapchain path, allowing the same renderer core to feed composition layers and final output.
-- Depth and stencil attachments are created only where needed, which keeps specialty passes available without forcing that cost onto every target.
-- User shaders can be compiled, cached, and driven with typed uniform values so scripted visual experiments fit into the same backend.
-- Post-processing hooks are integrated at the frame level instead of bolted on after presentation, enabling chained full-screen effects over rendered scenes.
-- Lighting support includes additive point contributions and shadow-related data preparation that enrich 2D scenes without leaving the renderer.
-- Screenshot readback and statistics gathering also happen here because this file has the authoritative picture of what the GPU just processed.
-- Font atlas uploads, texture writes, and canvas surface reuse are coordinated in one place so resource churn stays observable and bounded.
-- Visibility pruning happens before expensive draw expansion where possible, which helps large scenes skip obviously off-camera work.
-- Blend, stencil, and depth modes are translated here into the exact pipeline variants the backend needs for compositing correctness.
-- The file also contains the glue that keeps meshes, particles, Spine output, and generic primitives flowing through one renderer abstraction.
-- Low-level vertex formats live here because they are backend contracts rather than reusable engine-domain types.
-- A large part of the file is practical translation work between ergonomic engine commands and the stricter shapes demanded by wgpu.
-- Frame setup and teardown logic are colocated with pass encoding so lifetime ordering for temporary GPU objects remains explicit.
-- Canvas rendering, main-surface rendering, and readback all depend on the same shared resource maps keyed by engine handles.
-- When a command sequence mixes text, textures, shapes, and custom shaders, this file is what turns that mixture into a coherent render graph.
-- It therefore serves as the mechanical heart of visual output rather than a thin wrapper around API calls.
-- Most engine rendering features eventually pass through this file, even when their public APIs live elsewhere.
-- The design favors one rich backend with many translation helpers over scattering GPU details across the rest of the codebase.
-- That centralization keeps GPU policy, caching, and pass ordering inspectable when rendering bugs appear.
-- It also makes new draw features cheaper to add because they can target an existing command pipeline instead of inventing a second renderer.
-- From the outside this file seems like a renderer implementation.
-- From the inside it is the point where command semantics, resource ownership, and frame orchestration are kept in sync.
-- It is the place where the engine decides how abstract 2D drawing intent becomes actual pixels on hardware.
-- Everything else in the render module exists largely to feed or shape the work that this backend executes.
-
-### image_effect.rs
-
-- This file defines the compact descriptor for one post-processing step in a larger image-effect chain.
-- Each record carries effect identity, parameter values, and enable state so pipelines can be configured without custom structs per effect.
-- The type is the small control surface between high-level effect selection and the GPU post-processing backend.
-
-### mesh.rs
-
-- This file defines reusable 2D mesh data for renderable geometry that is richer than the engine's immediate-mode shape commands.
-- It keeps positions, UVs, colors, and topology choices together so imported content and generated geometry share one draw-ready format.
-- Indexed and non-indexed paths are both represented, which gives callers flexibility without forcing a single authoring style.
-- Triangulation helpers bridge higher-level topology choices into the triangles the backend ultimately needs.
-- The file is therefore the geometry interchange layer between content generation, importers, and the renderer.
-
-### mod.rs
-
-- This module provides the engine render stack, from command definitions and asset-side helpers to the concrete GPU backend.
-- It covers shapes, text, textures, meshes, decals, canvas targets, shaders, and full-screen image effects under one rendering vocabulary.
-- At the highest level it is the subsystem that turns frame-local draw intent into ordered, composited visual output.
-
-### obj_loader.rs
-
-- This file imports Wavefront OBJ content and converts it into forms that make sense inside a 2D engine rather than a full 3D renderer.
-- Parsed models can be projected into engine mesh data for GPU drawing or rasterized in software for previews and tooling images.
-- Material parsing keeps basic diffuse color and texture references close to the mesh data so projected results still carry authored surface intent.
-- Local vector and camera utilities are included here because the conversion work needs lightweight 3D math without spreading that concern across the engine.
-- Face handling normalizes OBJ indexing quirks such as relative references and mixed attribute indices into stable internal structures.
-- CPU rasterization gives the module a no-GPU path for thumbnails, validation, and other inspection-oriented workflows.
-- Projection support is tuned for systems like the raycaster and globe views that want 3D-authored silhouettes in a 2D presentation model.
-- The file is feature-gated because model import is useful but not fundamental to every game built on the runtime.
-- In design terms this is an adapter from common 3D content formats to the engine's 2D rendering language.
-- It preserves enough material and geometric structure to stay expressive without promising a general-purpose 3D pipeline.
-- That boundary is the point: authored 3D assets may inform a scene, but final display still obeys the engine's 2D rendering architecture.
-- This file is where that translation is made concrete and reusable.
-
-### postfx_pipeline.rs
-
-- This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
-- Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
-- Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
-- Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.
-- Shared fullscreen geometry and ping-pong render targets keep multi-pass execution practical without rebuilding the whole frame graph each time.
-- Disabled chains degrade gracefully to a plain copy, which keeps the backend simple when no visual treatment is active.
-- Time, frame count, and resolution are injected centrally so effect authors can rely on common runtime signals.
-- Pass order follows the configured chain order, making visual stacking explicit rather than implicit.
-- The file therefore acts as the image-finishing stage of the renderer, where an already rendered frame can be polished or stylized.
-- It is not about drawing scene geometry.
-- It is about transforming one finished image into another with controlled GPU shader passes.
-- In practice this is the renderer's color-grading room, distortion rack, and screen-material toolbox.
-
-### province_map_pipeline.rs
-
-- This file provides the specialized GPU pipeline used to render province-map views that need more than generic sprite or mesh drawing.
-- It binds province identity, borders, and distance-related data together so the shader can reason about map regions instead of plain pixels.
-- Viewport mapping and mode-dependent behavior are configured here because that logic belongs to this strategic map presentation path.
-- The pipeline is intentionally dedicated, reflecting that province rendering has distinct data needs from ordinary scene rendering.
-- It turns map-analysis textures and buffers into a coherent fullscreen visual layer.
-- This is the render-side home for province-specific screen synthesis.
-
-### renderer.rs
-
-- This file defines the renderer command language that the rest of the engine speaks when it wants something visual to happen this frame.
-- It gathers draw operations, state changes, auxiliary descriptors, and shared render-side enums into one canonical vocabulary.
-- Shapes, text, textures, particles, Spine output, layered sorting, stencil control, and depth behavior all meet here as data instead of immediate API calls.
-- The command set is broad because many subsystems submit visual intent before the GPU backend ever becomes involved.
-- Shared enums for alignment, blend, compare, and draw styles live beside the commands so callers agree on meaning without backend coupling.
-- Higher-level rendering helpers can build rich features simply by emitting combinations of these records.
-- Post-processing descriptors and upload payloads also sit here because they are part of the same frame command stream.
-- In practice this file is the renderer's grammar, not its execution engine.
-- It explains what can be said to the backend, in what shapes, and with what supporting metadata.
-- Keeping that grammar centralized is what lets Lua, gameplay systems, and specialized modules target one render pipeline.
-- The file therefore stabilizes render intent across the codebase even as the backend implementation grows more complex.
-- Almost every visible feature eventually passes through the types defined here.
-
-### shader.rs
-
-- This file handles user-facing shader ingestion so custom WGSL fragments can plug into the renderer without exposing raw backend setup everywhere.
-- Source code is parsed, constrained, and rewritten into the wrapper shape the engine expects for controlled pipeline generation.
-- Fragment inputs are inspected so only supported coordinate and color channels enter the custom shader path.
-- Uniform values are represented in typed form here, which keeps script-driven shader parameters explicit and serializable enough for per-frame upload.
-- Ordered uniform iteration matters because GPU buffer layout must stay stable once a shader is accepted.
-- Attribute markers are also normalized here so author-facing shader syntax can remain a little friendlier than raw internal conventions.
-- The file is therefore the contract layer between flexible user shader text and a renderer that still needs predictable pipeline inputs.
-
-### shape.rs
-
-- This file stores reusable vector shape definitions as replayable command sequences instead of immediate one-off draw calls.
-- A shape can therefore package many primitive strokes and fills into one named asset-like unit for later reuse.
-- Drawing state such as color and line width travels with the sequence so replays preserve intended appearance.
-- The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
-- It acts as a small retained-mode layer inside the otherwise command-driven renderer.
-
 ## Functions
 
 ### `lurek.render.applyTransform`
@@ -278,7 +119,7 @@ lurek.render.captureScreenshot(callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `callback` | function | Called with an [LImageData](#limagedata-handle) argument. |
+| `callback` | function | Called with an [LImageData](#limagedata) argument. |
 
 **Example**
 
@@ -417,7 +258,7 @@ lurek.render.draw(drawable, x, y, r, sx, sy, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `drawable` | [LImage](#limage-handle)|[LCanvas](#lcanvas-handle)|[LSpriteBatch](#lspritebatch-handle)|[LMesh](#lmesh-handle) | The drawable object to render. |
+| `drawable` | [LImage](#limage)|[LCanvas](#lcanvas)|[LSpriteBatch](#lspritebatch)|[LMesh](#lmesh) | The drawable object to render. |
 | `x?` | number | X position (default 0). |
 | `y?` | number | Y position (default 0). |
 | `r?` | number | Rotation in radians (default 0). |
@@ -460,7 +301,7 @@ lurek.render.drawBatch(batch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `batch` | [LSpriteBatch](#lspritebatch-handle) | Sprite batch handle to draw. |
+| `batch` | [LSpriteBatch](#lspritebatch) | Sprite batch handle to draw. |
 
 **Returns**
 
@@ -737,7 +578,7 @@ lurek.render.drawNineSlice(slice, x, y, w, h)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `slice` | [LNineSlice](#lnineslice-handle) | The 9-slice handle to draw. |
+| `slice` | [LNineSlice](#lnineslice) | The 9-slice handle to draw. |
 | `x` | number | Left edge X. |
 | `y` | number | Top edge Y. |
 | `w` | number | Target width. |
@@ -839,8 +680,8 @@ lurek.render.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | [LImage](#limage-handle) | Source image to draw from. |
-| `quad` | [LQuad](#lquad-handle) | Quad defining the source rectangle within the image. |
+| `image` | [LImage](#limage) | Source image to draw from. |
+| `quad` | [LQuad](#lquad) | Quad defining the source rectangle within the image. |
 | `x?` | number | X position (default 0). |
 | `y?` | number | Y position (default 0). |
 | `r?` | number | Rotation in radians (default 0). |
@@ -1018,7 +859,7 @@ lurek.render.getCanvas()
 
 | Type | Description |
 |------|-------------|
-| [LCanvas](#lcanvas-handle) | The active canvas handle. |
+| [LCanvas](#lcanvas) | The active canvas handle. |
 
 **Example**
 
@@ -1049,7 +890,7 @@ lurek.render.getCanvasSize(canvas)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `canvas` | [LCanvas](#lcanvas-handle) | Canvas handle to query. |
+| `canvas` | [LCanvas](#lcanvas) | Canvas handle to query. |
 
 **Returns**
 
@@ -1178,7 +1019,7 @@ lurek.render.getDefaultFont(pointSize, bold)
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The built-in font handle. |
+| [LFont](#lfont) | The built-in font handle. |
 
 **Example**
 
@@ -1260,7 +1101,7 @@ lurek.render.getFont()
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The active font handle. |
+| [LFont](#lfont) | The active font handle. |
 
 **Example**
 
@@ -1288,7 +1129,7 @@ lurek.render.getFontAscent(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to query. |
+| `font` | [LFont](#lfont) | Font handle to query. |
 
 **Returns**
 
@@ -1320,7 +1161,7 @@ lurek.render.getFontCellWidth(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to query. |
+| `font` | [LFont](#lfont) | Font handle to query. |
 
 **Returns**
 
@@ -1352,7 +1193,7 @@ lurek.render.getFontDescent(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to query. |
+| `font` | [LFont](#lfont) | Font handle to query. |
 
 **Returns**
 
@@ -1384,7 +1225,7 @@ lurek.render.getFontHeight(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to query. |
+| `font` | [LFont](#lfont) | Font handle to query. |
 
 **Returns**
 
@@ -1416,7 +1257,7 @@ lurek.render.getFontLineHeight(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to query. |
+| `font` | [LFont](#lfont) | Font handle to query. |
 
 **Returns**
 
@@ -1474,7 +1315,7 @@ lurek.render.getFontWidth(font, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to measure with. |
+| `font` | [LFont](#lfont) | Font handle to measure with. |
 | `text` | string | Text to measure. |
 
 **Returns**
@@ -1688,7 +1529,7 @@ lurek.render.getShader()
 
 | Type | Description |
 |------|-------------|
-| [LShader](#lshader-handle) | The active shader handle. |
+| [LShader](#lshader) | The active shader handle. |
 
 **Example**
 
@@ -1952,7 +1793,7 @@ lurek.render.loadModel(path)
 
 | Type | Description |
 |------|-------------|
-| [LObjModel](#lobjmodel-handle) | The loaded model handle. |
+| [LObjModel](#lobjmodel) | The loaded model handle. |
 
 **Example**
 
@@ -1984,7 +1825,7 @@ lurek.render.loadObj(path)
 
 | Type | Description |
 |------|-------------|
-| [LObjModel](#lobjmodel-handle) | The loaded OBJ model handle. |
+| [LObjModel](#lobjmodel) | The loaded OBJ model handle. |
 
 **Example**
 
@@ -2017,7 +1858,7 @@ lurek.render.newCanvas(width, height)
 
 | Type | Description |
 |------|-------------|
-| [LCanvas](#lcanvas-handle) | The created canvas handle. |
+| [LCanvas](#lcanvas) | The created canvas handle. |
 
 **Example**
 
@@ -2049,7 +1890,7 @@ lurek.render.newDepthSorter()
 
 | Type | Description |
 |------|-------------|
-| [LDepthSorter](#ldepthsorter-handle) | A fresh depth sorter with no queued entries. |
+| [LDepthSorter](#ldepthsorter) | A fresh depth sorter with no queued entries. |
 
 **Example**
 
@@ -2077,7 +1918,7 @@ lurek.render.newDrawLayer()
 
 | Type | Description |
 |------|-------------|
-| [LDrawLayer](#ldrawlayer-handle) | The created draw layer. |
+| [LDrawLayer](#ldrawlayer) | The created draw layer. |
 
 **Example**
 
@@ -2117,7 +1958,7 @@ lurek.render.newFont(pathOrSize, size)
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The created font handle. |
+| [LFont](#lfont) | The created font handle. |
 
 **Example**
 
@@ -2145,14 +1986,14 @@ lurek.render.newImage(pathOrData, colorSpace)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pathOrData` | string|[LImageData](#limagedata-handle) | File path to an image, or an ImageData object. |
+| `pathOrData` | string|[LImageData](#limagedata) | File path to an image, or an ImageData object. |
 | `colorSpace?` | string | Color space: "srgb" (default) or "linear". |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LImage](#limage-handle) | The loaded image handle. |
+| [LImage](#limage) | The loaded image handle. |
 
 **Example**
 
@@ -2217,7 +2058,7 @@ lurek.render.newMesh(verts, mode)
 
 | Type | Description |
 |------|-------------|
-| [LMesh](#lmesh-handle) | The created mesh handle. |
+| [LMesh](#lmesh) | The created mesh handle. |
 
 **Example**
 
@@ -2249,7 +2090,7 @@ lurek.render.newNineSlice(image, top, right, bottom, left)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | [LImage](#limage-handle) | Source texture. |
+| `image` | [LImage](#limage) | Source texture. |
 | `top` | number | Top border inset in pixels. |
 | `right` | number | Right border inset. |
 | `bottom` | number | Bottom border inset. |
@@ -2259,7 +2100,7 @@ lurek.render.newNineSlice(image, top, right, bottom, left)
 
 | Type | Description |
 |------|-------------|
-| [LNineSlice](#lnineslice-handle) | The 9-slice handle. |
+| [LNineSlice](#lnineslice) | The 9-slice handle. |
 
 **Example**
 
@@ -2299,7 +2140,7 @@ lurek.render.newQuad(x, y, w, h, sw, sh)
 
 | Type | Description |
 |------|-------------|
-| [LQuad](#lquad-handle) | The created quad. |
+| [LQuad](#lquad) | The created quad. |
 
 **Example**
 
@@ -2335,7 +2176,7 @@ lurek.render.newShader(code)
 
 | Type | Description |
 |------|-------------|
-| [LShader](#lshader-handle) | The compiled shader handle. |
+| [LShader](#lshader) | The compiled shader handle. |
 
 **Example**
 
@@ -2362,7 +2203,7 @@ lurek.render.newShape()
 
 | Type | Description |
 |------|-------------|
-| [LShape](#lshape-handle) | The created shape handle. |
+| [LShape](#lshape) | The created shape handle. |
 
 **Example**
 
@@ -2393,14 +2234,14 @@ lurek.render.newSpriteBatch(image, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | [LImage](#limage-handle) | Source texture for all sprites in the batch. |
+| `image` | [LImage](#limage) | Source texture for all sprites in the batch. |
 | `max?` | number | Maximum number of entries (default 1000). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LSpriteBatch](#lspritebatch-handle) | The created sprite batch handle. |
+| [LSpriteBatch](#lspritebatch) | The created sprite batch handle. |
 
 **Example**
 
@@ -2635,7 +2476,7 @@ lurek.render.printRichWithFont(font, spans, x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `font` | [LFont](#lfont) | Font handle to use for this draw. |
 | `spans` | table | Array of span tables, each with fields: text, r, g, b, a, scale. |
 | `x` | number | X position. |
 | `y` | number | Y position. |
@@ -2702,7 +2543,7 @@ lurek.render.printRotatedWithFont(font, text, x, y, angle, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `font` | [LFont](#lfont) | Font handle to use for this draw. |
 | `text` | string | Text to render. |
 | `x` | number | Center X position. |
 | `y` | number | Center Y position. |
@@ -2733,7 +2574,7 @@ lurek.render.printWithFont(font, text, x, y, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `font` | [LFont](#lfont) | Font handle to use for this draw. |
 | `text` | string | Text to render. |
 | `x?` | number | X position (default 0). |
 | `y?` | number | Y position (default 0). |
@@ -2795,7 +2636,7 @@ lurek.render.printfWithFont(font, text, x, y, limit, align)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to use for this draw. |
+| `font` | [LFont](#lfont) | Font handle to use for this draw. |
 | `text` | string | Text to render. |
 | `x` | number | X position. |
 | `y` | number | Y position. |
@@ -2945,7 +2786,7 @@ lurek.render.resetCanvas(canvas)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `canvas` | [LCanvas](#lcanvas-handle) | Canvas to reset. |
+| `canvas` | [LCanvas](#lcanvas) | Canvas to reset. |
 
 **Returns**
 
@@ -3154,7 +2995,7 @@ lurek.render.setCanvas(canvas)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `canvas?` | [LCanvas](#lcanvas-handle) | Canvas to draw to, or nil for the main screen. |
+| `canvas?` | [LCanvas](#lcanvas) | Canvas to draw to, or nil for the main screen. |
 
 **Example**
 
@@ -3285,7 +3126,7 @@ lurek.render.setDefaultFont(pointSize, bold)
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The selected built-in font handle. |
+| [LFont](#lfont) | The selected built-in font handle. |
 
 **Example**
 
@@ -3343,7 +3184,7 @@ lurek.render.setFont(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to make active. |
+| `font` | [LFont](#lfont) | Font handle to make active. |
 
 **Example**
 
@@ -3371,7 +3212,7 @@ lurek.render.setFontLineHeight(font, lh)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle. |
+| `font` | [LFont](#lfont) | Font handle. |
 | `lh` | number | Line height value. |
 
 **Example**
@@ -3571,7 +3412,7 @@ lurek.render.setShader(shader)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `shader?` | [LShader](#lshader-handle) | Shader handle to activate, or nil for default. |
+| `shader?` | [LShader](#lshader) | Shader handle to activate, or nil for default. |
 
 **Example**
 
@@ -3807,22 +3648,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LCanvas Handle](#lcanvas-handle)
-- [LDepthSorter Handle](#ldepthsorter-handle)
-- [LDrawLayer Handle](#ldrawlayer-handle)
-- [LFont Handle](#lfont-handle)
-- [LImage Handle](#limage-handle)
-- [LImageData Handle](#limagedata-handle)
-- [LMesh Handle](#lmesh-handle)
-- [LNineSlice Handle](#lnineslice-handle)
-- [LObjModel Handle](#lobjmodel-handle)
-- [LQuad Handle](#lquad-handle)
-- [LShader Handle](#lshader-handle)
-- [LShape Handle](#lshape-handle)
-- [LSpriteBatch Handle](#lspritebatch-handle)
-
 ## Callbacks
 
 - `lurek.render.captureScreenshot` param `callback` (`function`): Called with an LImageData argument.
@@ -3831,13 +3656,29 @@ end
 
 *No module-specific enums documented.*
 
-## LCanvas Handle
+## Types
 
-### Fields
+- [LCanvas](#lcanvas)
+- [LDepthSorter](#ldepthsorter)
+- [LDrawLayer](#ldrawlayer)
+- [LFont](#lfont)
+- [LImage](#limage)
+- [LImageData](#limagedata)
+- [LMesh](#lmesh)
+- [LNineSlice](#lnineslice)
+- [LObjModel](#lobjmodel)
+- [LQuad](#lquad)
+- [LShader](#lshader)
+- [LShape](#lshape)
+- [LSpriteBatch](#lspritebatch)
+
+## LCanvas
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCanvas:getDimensions`
 
@@ -3961,7 +3802,7 @@ LCanvas:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LCanvas](#lcanvas-handle)". |
+| string | Always "[LCanvas](#lcanvas)". |
 
 **Example**
 
@@ -4009,13 +3850,13 @@ end
 
 ---
 
-## LDepthSorter Handle
+## LDepthSorter
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDepthSorter:add`
 
@@ -4130,7 +3971,7 @@ LDepthSorter:sort()
 
 #### `LDepthSorter:type`
 
-Returns the type name string `"[LDepthSorter](#ldepthsorter-handle)"`.
+Returns the type name string `"[LDepthSorter](#ldepthsorter)"`.
 
 ```lua
 LDepthSorter:type()
@@ -4140,13 +3981,13 @@ LDepthSorter:type()
 
 | Type | Description |
 |------|-------------|
-| string | The literal `"[LDepthSorter](#ldepthsorter-handle)"`. |
+| string | The literal `"[LDepthSorter](#ldepthsorter)"`. |
 
 ---
 
 #### `LDepthSorter:typeOf`
 
-Check whether this object matches a given type name. Accepts `"[LDepthSorter](#ldepthsorter-handle)"` or `"Object"`.
+Check whether this object matches a given type name. Accepts `"[LDepthSorter](#ldepthsorter)"` or `"Object"`.
 
 ```lua
 LDepthSorter:typeOf(name)
@@ -4166,13 +4007,13 @@ LDepthSorter:typeOf(name)
 
 ---
 
-## LDrawLayer Handle
+## LDrawLayer
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDrawLayer:clear`
 
@@ -4293,7 +4134,7 @@ LDrawLayer:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LDrawLayer](#ldrawlayer-handle)". |
+| string | Always "[LDrawLayer](#ldrawlayer)". |
 
 **Example**
 
@@ -4319,7 +4160,7 @@ LDrawLayer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check ("[LDrawLayer](#ldrawlayer-handle)", "DrawLayer", or "Object"). |
+| `name` | string | Type name to check ("[LDrawLayer](#ldrawlayer)", "DrawLayer", or "Object"). |
 
 **Returns**
 
@@ -4339,13 +4180,13 @@ end
 
 ---
 
-## LFont Handle
+## LFont
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFont:containsGlyph`
 
@@ -4709,7 +4550,7 @@ LFont:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LFont](#lfont-handle)". |
+| string | Always "[LFont](#lfont)". |
 
 **Example**
 
@@ -4781,13 +4622,13 @@ LFont:wrapText(text, maxWidth, scale)
 
 ---
 
-## LImage Handle
+## LImage
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImage:getDimensions`
 
@@ -4938,7 +4779,7 @@ LImage:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LImage](#limage-handle)". |
+| string | Always "[LImage](#limage)". |
 
 **Example**
 
@@ -4986,13 +4827,13 @@ end
 
 ---
 
-## LImageData Handle
+## LImageData
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImageData:alphaMask`
 
@@ -5022,7 +4863,7 @@ LImageData:applyPaletteLut(lut_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
 
 ---
 
@@ -5038,7 +4879,7 @@ LImageData:blit(src_ud, dst_x, dst_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dst_x` | number | Destination x coordinate. |
 | `dst_y` | number | Destination y coordinate. |
 
@@ -5062,7 +4903,7 @@ LImageData:blur(radius)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Blurred image data handle. |
+| [LImageData](#limagedata) | Blurred image data handle. |
 
 ---
 
@@ -5117,7 +4958,7 @@ LImageData:convolve(kernel_t, ksize)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Convolved image data handle. |
+| [LImageData](#limagedata) | Convolved image data handle. |
 
 ---
 
@@ -5142,7 +4983,7 @@ LImageData:crop(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Cropped image data handle. |
+| [LImageData](#limagedata) | Cropped image data handle. |
 
 ---
 
@@ -5158,7 +4999,7 @@ LImageData:diff(other_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
 
 **Returns**
 
@@ -5225,7 +5066,7 @@ LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `src_x` | number | Source region x coordinate. |
 | `src_y` | number | Source region y coordinate. |
 | `src_w` | number | Source region width. |
@@ -5437,7 +5278,7 @@ LImageData:getRegion(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
 
 ---
 
@@ -5553,7 +5394,7 @@ LImageData:paste(src_ud, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dx` | number | Destination x coordinate. |
 | `dy` | number | Destination y coordinate. |
 
@@ -5595,7 +5436,7 @@ LImageData:resize(width, height, filter)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
 
 ---
 
@@ -5618,7 +5459,7 @@ LImageData:resizeNearest(new_w, new_h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Resized image data handle. |
+| [LImageData](#limagedata) | Resized image data handle. |
 
 ---
 
@@ -5634,7 +5475,7 @@ LImageData:rotate90cw()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Rotated image data handle. |
+| [LImageData](#limagedata) | Rotated image data handle. |
 
 ---
 
@@ -5713,7 +5554,7 @@ LImageData:sharpen()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+| [LImageData](#limagedata) | Sharpened image data handle. |
 
 ---
 
@@ -5764,13 +5605,13 @@ LImageData:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LImageData](#limagedata-handle)`. |
+| string | The string `[LImageData](#limagedata)`. |
 
 ---
 
 #### `LImageData:typeOf`
 
-Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
 
 ```lua
 LImageData:typeOf(name)
@@ -5780,7 +5621,7 @@ LImageData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
 
 **Returns**
 
@@ -5790,13 +5631,13 @@ LImageData:typeOf(name)
 
 ---
 
-## LMesh Handle
+## LMesh
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMesh:getVertex`
 
@@ -5919,7 +5760,7 @@ LMesh:setTexture(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image?` | [LImage](#limage-handle) | Image to use as the mesh texture, or nil to remove. |
+| `image?` | [LImage](#limage) | Image to use as the mesh texture, or nil to remove. |
 
 **Example**
 
@@ -5985,7 +5826,7 @@ LMesh:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LMesh](#lmesh-handle)". |
+| string | Always "[LMesh](#lmesh)". |
 
 **Example**
 
@@ -6041,13 +5882,13 @@ end
 
 ---
 
-## LNineSlice Handle
+## LNineSlice
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNineSlice:getInsets`
 
@@ -6123,7 +5964,7 @@ LNineSlice:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LNineSlice](#lnineslice-handle)". |
+| string | Always "[LNineSlice](#lnineslice)". |
 
 **Example**
 
@@ -6173,13 +6014,13 @@ end
 
 ---
 
-## LObjModel Handle
+## LObjModel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LObjModel:getFaceCount`
 
@@ -6341,7 +6182,7 @@ LObjModel:renderToImage(width, height, rotation)
 
 | Type | Description |
 |------|-------------|
-| [LImage](#limage-handle) | The rendered image handle. |
+| [LImage](#limage) | The rendered image handle. |
 
 **Example**
 
@@ -6357,13 +6198,13 @@ end
 
 ---
 
-## LQuad Handle
+## LQuad
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LQuad:getTextureDimensions`
 
@@ -6465,7 +6306,7 @@ LQuad:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LQuad](#lquad-handle)". |
+| string | Always "[LQuad](#lquad)". |
 
 **Example**
 
@@ -6511,13 +6352,13 @@ end
 
 ---
 
-## LShader Handle
+## LShader
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LShader:hasUniform`
 
@@ -6623,7 +6464,7 @@ LShader:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LShader](#lshader-handle)". |
+| string | Always "[LShader](#lshader)". |
 
 **Example**
 
@@ -6675,13 +6516,13 @@ end
 
 ---
 
-## LShape Handle
+## LShape
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LShape:arc`
 
@@ -7128,7 +6969,7 @@ LShape:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LShape](#lshape-handle)". |
+| string | Always "[LShape](#lshape)". |
 
 **Example**
 
@@ -7174,13 +7015,13 @@ end
 
 ---
 
-## LSpriteBatch Handle
+## LSpriteBatch
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSpriteBatch:add`
 
@@ -7348,7 +7189,7 @@ LSpriteBatch:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LSpriteBatch](#lspritebatch-handle)". |
+| string | Always "[LSpriteBatch](#lspritebatch)". |
 
 **Example**
 

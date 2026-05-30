@@ -18,33 +18,6 @@ The `MidiState` struct manages global SoundFont state:
 
 Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `SharedState` holds a `midi_state: MidiState` field accessible to both the audio and midi API modules.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### mod.rs
-
-- MIDI subsystem for device discovery, event routing, and sequenced playback.
-- Bridges live MIDI input, software rendering, and hardware output from one module.
-- Keeps device refresh and callback delivery aligned with the engine tick.
-
-### player.rs
-
-- Stateful MIDI transport for file playback through rendered PCM.
-- Holds parsed song metadata and playback position in one controller object.
-- Handles play, pause, resume, seek, stop, and duration queries.
-- Tracks per-channel mix state such as volume, mute, solo, and instrument selection.
-- Supports per-track muting plus tempo, looping, and output format control.
-- Routes output through the mixer bus so playback fits the engine audio graph.
-- Gives Lua a stable player surface for song-driven sequencing and testing.
-
-### state.rs
-
-- Storage for loaded MIDI SoundFont data and its source path.
-- Validates SoundFont files before they enter the playback pipeline.
-- Exposes query and clear helpers for runtime availability checks.
-- Keeps the shared sample resource separate from transport state.
-
 ## Functions
 
 ### `lurek.midi.clearSoundFont`
@@ -152,7 +125,7 @@ lurek.midi.newPlayer(path)
 
 | Type | Description |
 |------|-------------|
-| [LMidiPlayer](#lmidiplayer-handle) | A new MIDI player ready for playback. |
+| [LMidiPlayer](#lmidiplayer) | A new MIDI player ready for playback. |
 
 **Example**
 
@@ -172,10 +145,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LMidiPlayer Handle](#lmidiplayer-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -184,13 +153,17 @@ end
 
 *No module-specific enums documented.*
 
-## LMidiPlayer Handle
+## Types
 
-### Fields
+- [LMidiPlayer](#lmidiplayer)
+
+## LMidiPlayer
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMidiPlayer:getBus`
 
@@ -204,7 +177,7 @@ LMidiPlayer:getBus()
 
 | Type | Description |
 |------|-------------|
-| LBus | The assigned bus, or nil if using direct output. |
+| [LBus](audio.md#lbus) | The assigned bus, or nil if using direct output. |
 
 ---
 
@@ -682,7 +655,7 @@ LMidiPlayer:setBus(bus)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bus?` | LBus | Bus to route through, or nil for direct output. |
+| `bus?` | [LBus](audio.md#lbus) | Bus to route through, or nil for direct output. |
 
 ---
 
@@ -968,7 +941,7 @@ LMidiPlayer:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LMidiPlayer](#lmidiplayer-handle)". |
+| string | Always returns "[LMidiPlayer](#lmidiplayer)". |
 
 ---
 
@@ -984,7 +957,7 @@ LMidiPlayer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LMidiPlayer](#lmidiplayer-handle)", "MidiPlayer", or "Object"). |
+| `name` | string | Type name to check (e.g. "[LMidiPlayer](#lmidiplayer)", "MidiPlayer", or "Object"). |
 
 **Returns**
 

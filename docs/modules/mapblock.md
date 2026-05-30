@@ -8,120 +8,6 @@ Blocks are organized into named `BlockGroup` sets using alias-method weighted sa
 
 Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelMap`) that maintains independent `MapBlockGrid` instances per Z-level. Both top-down and isometric projection orientations are supported via `MapOrientation`, applied by the tilemap renderer. The final assembly step calls `grid_to_tilemap`, converting the block grid into a standard `TileMap` owned by the caller and decoupled from the generator. The `lurek.mapblock.*` Lua API exposes block definition, group registration, script construction, and generation entry points.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### block.rs
-
-- Fundamental mapblock unit combining tile payloads, edge sockets, and metadata.
-- Carries the data needed to match blocks during procedural placement.
-- Stores selection weighting, naming, and tileset references for later output.
-- Encodes the local shape and slot content that downstream stages consume.
-- Keeps neighbor semantics alongside the block so validation stays data-driven.
-- Acts as the atomic building piece for the entire mapblock pipeline.
-
-### config.rs
-
-- Runtime configuration for mapblock generation shape, slots, and randomness.
-- Holds grid dimensions, layer limits, and placement behavior flags.
-- Stores seed and retry controls for deterministic or exploratory runs.
-- Defines the slot schema that orders per-tile payload interpretation.
-- Serves as the canonical loaded settings object for assembly routines.
-
-### constraints.rs
-
-- Edge compatibility rules that decide whether neighboring blocks can connect.
-- Describes socket-style match data per edge for fine-grained placement checks.
-- Provides opposite-edge helpers for two-sided adjacency validation.
-- Keeps connection semantics data-driven instead of hard-coded.
-- Powers fast local legality checks during generator execution.
-
-### generator.rs
-
-- Operational core for scripted mapblock assembly over a block grid.
-- Owns block registries, multi-level placement state, and RNG progression.
-- Executes fill, targeted placement, random placement, and repeat steps.
-- Applies neighbor constraints to keep layouts structurally coherent.
-- Threads orientation and config context through the build process.
-- Converts intermediate placements into renderer-ready output structures.
-- Supports deterministic runs through seeded randomness and explicit step ordering.
-- Serves as the main execution engine behind mapblock authoring tools.
-
-### group.rs
-
-- Named block group for themed procedural generation passes.
-- Carries weighted selection metadata for controlled randomness.
-- Lets scripts reference semantic groups instead of numeric ids.
-- Supports biome-style or region-style content curation.
-
-### layer.rs
-
-- Per-level tile storage for multi-storey mapblock outputs.
-- Manages independent 2D block layers indexed by non-negative vertical levels.
-- Provides bounds-aware tile access and mutation for placement operations.
-- Keeps slot counts and layer dimensions aligned with global config.
-- Supplies the layered container used by multilevel map assembly.
-
-### maptile.rs
-
-- Atomic tile payload composed from configurable slot values and metadata.
-- Encodes tile-slot identifiers that point at tileset entries for rendering and logic.
-- Distinguishes slot roles so ordered drawing stays consistent.
-- Serves as the smallest content unit stored inside mapblock grids.
-
-### mod.rs
-
-- High-level mapblock module that wires blocks, scripts, constraints, and output conversion together.
-- Exposes the procedural assembly surface used to build tilemaps from authored content.
-- Keeps layered generation, orientation handling, and placement validation under one namespace.
-
-### multilevel.rs
-
-- Multilevel container for placed blocks across vertical storeys.
-- Tracks level metadata and block placements with bounds-safe access patterns.
-- Supports mutation and query by level and grid coordinate during generation.
-- Preserves structure needed for serialization and output transformation.
-- Bridges layered placement logic with final map export.
-
-### orientation.rs
-
-- Orientation modes for interpreting generated mapblock layouts.
-- Provides top-down and isometric variants for different presentation styles.
-- Supplies parsing and helpers used by config-driven renderer integration.
-
-### output.rs
-
-- Final mapblock conversion layer that turns placements into tile data outputs.
-- Translates layered slot payloads into ordered tile layers and resolved tileset ids.
-- Applies orientation and level handling so exports match runtime presentation.
-- Produces owned result structures detached from mutable generator state.
-- Serves as the last step in the mapblock build pipeline.
-
-### placement.rs
-
-- Placement-grid state and legality checks for mapblock assembly operations.
-- Tracks occupied cells and placed-block metadata used by scripted steps.
-- Evaluates candidates against edge constraints and neighborhood compatibility rules.
-- Enumerates valid placements for deterministic or random selection passes.
-- Records coordinates and orientation details for downstream processing.
-- Acts as the spatial validation core inside the generator loop.
-
-### script.rs
-
-- Scripted step language that drives procedural mapblock generation flow.
-- Encodes fill, targeted placement, random placement, and repeat operations.
-- Stores ordered step sequences consumed directly by the execution engine.
-- Supports data-driven authoring and runtime construction of generation programs.
-- Provides the control plane for deterministic and expressive map assembly.
-
-### tileset_ref.rs
-
-- Tileset reference metadata used to resolve slot values into concrete tile resources.
-- Stores tileset identity, sizing, and index-offset data shared across blocks.
-- Supports reuse of one tileset with different offset conventions per content group.
-- Serves as lookup glue between authored blocks and runtime tilemap output.
-
 ## Functions
 
 ### `lurek.mapblock.newBlock`
@@ -139,13 +25,13 @@ lurek.mapblock.newBlock(width, height, layers, config)
 | `width` | number | Block width in tiles. |
 | `height` | number | Block height in tiles. |
 | `layers` | number | Number of layers. |
-| `config` | [LMapBlockConfig](#lmapblockconfig-handle) | Configuration to use. |
+| `config` | [LMapBlockConfig](#lmapblockconfig) | Configuration to use. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LMapBlock](#lmapblock-handle) | New block. |
+| [LMapBlock](#lmapblock) | New block. |
 
 **Example**
 
@@ -171,7 +57,7 @@ lurek.mapblock.newConfig()
 
 | Type | Description |
 |------|-------------|
-| [LMapBlockConfig](#lmapblockconfig-handle) | New configuration. |
+| [LMapBlockConfig](#lmapblockconfig) | New configuration. |
 
 **Example**
 
@@ -196,7 +82,7 @@ lurek.mapblock.newEmptyConfig()
 
 | Type | Description |
 |------|-------------|
-| [LMapBlockConfig](#lmapblockconfig-handle) | Empty configuration. |
+| [LMapBlockConfig](#lmapblockconfig) | Empty configuration. |
 
 **Example**
 
@@ -222,7 +108,7 @@ lurek.mapblock.newEmptyGrid()
 
 | Type | Description |
 |------|-------------|
-| [LPlacementGrid](#lplacementgrid-handle) | Empty grid. |
+| [LPlacementGrid](#lplacementgrid) | Empty grid. |
 
 **Example**
 
@@ -248,13 +134,13 @@ lurek.mapblock.newGenerator(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | [LMapBlockConfig](#lmapblockconfig-handle) | Configuration. |
+| `config` | [LMapBlockConfig](#lmapblockconfig) | Configuration. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LMapBlockGenerator](#lmapblockgenerator-handle) | New generator. |
+| [LMapBlockGenerator](#lmapblockgenerator) | New generator. |
 
 **Example**
 
@@ -288,7 +174,7 @@ lurek.mapblock.newGrid(width, height)
 
 | Type | Description |
 |------|-------------|
-| [LPlacementGrid](#lplacementgrid-handle) | New grid. |
+| [LPlacementGrid](#lplacementgrid) | New grid. |
 
 **Example**
 
@@ -320,7 +206,7 @@ lurek.mapblock.newGroup(name)
 
 | Type | Description |
 |------|-------------|
-| [LMapGroup](#lmapgroup-handle) | New group. |
+| [LMapGroup](#lmapgroup) | New group. |
 
 **Example**
 
@@ -345,7 +231,7 @@ lurek.mapblock.newRules()
 
 | Type | Description |
 |------|-------------|
-| [LNeighborRules](#lneighborrules-handle) | New rules. |
+| [LNeighborRules](#lneighborrules) | New rules. |
 
 **Example**
 
@@ -377,7 +263,7 @@ lurek.mapblock.newScript(name)
 
 | Type | Description |
 |------|-------------|
-| [LMapScript](#lmapscript-handle) | New script. |
+| [LMapScript](#lmapscript) | New script. |
 
 **Example**
 
@@ -415,7 +301,7 @@ lurek.mapblock.newTilesetRef(id, name, tile_count, columns, tile_width, tile_hei
 
 | Type | Description |
 |------|-------------|
-| [LTilesetRef](#ltilesetref-handle) | New tileset reference. |
+| [LTilesetRef](#ltilesetref) | New tileset reference. |
 
 **Example**
 
@@ -433,18 +319,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LMapBlock Handle](#lmapblock-handle)
-- [LMapBlockConfig Handle](#lmapblockconfig-handle)
-- [LMapBlockGenerator Handle](#lmapblockgenerator-handle)
-- [LMapBlockResult Handle](#lmapblockresult-handle)
-- [LMapGroup Handle](#lmapgroup-handle)
-- [LMapScript Handle](#lmapscript-handle)
-- [LNeighborRules Handle](#lneighborrules-handle)
-- [LPlacementGrid Handle](#lplacementgrid-handle)
-- [LTilesetRef Handle](#ltilesetref-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -453,13 +327,25 @@ end
 
 *No module-specific enums documented.*
 
-## LMapBlock Handle
+## Types
 
-### Fields
+- [LMapBlock](#lmapblock)
+- [LMapBlockConfig](#lmapblockconfig)
+- [LMapBlockGenerator](#lmapblockgenerator)
+- [LMapBlockResult](#lmapblockresult)
+- [LMapGroup](#lmapgroup)
+- [LMapScript](#lmapscript)
+- [LNeighborRules](#lneighborrules)
+- [LPlacementGrid](#lplacementgrid)
+- [LTilesetRef](#ltilesetref)
+
+## LMapBlock
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapBlock:getDimensions`
 
@@ -936,7 +822,7 @@ LMapBlock:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapBlock](#lmapblock-handle)"`. |
+| string | Always `"[LMapBlock](#lmapblock)"`. |
 
 ---
 
@@ -958,17 +844,17 @@ LMapBlock:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapBlock](#lmapblock-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapBlock](#lmapblock)"` or `"Object"`. |
 
 ---
 
-## LMapBlockConfig Handle
+## LMapBlockConfig
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapBlockConfig:addSlot`
 
@@ -1113,13 +999,13 @@ end
 
 ---
 
-## LMapBlockGenerator Handle
+## LMapBlockGenerator
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapBlockGenerator:addGroup`
 
@@ -1133,7 +1019,7 @@ LMapBlockGenerator:addGroup(group)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group` | [LMapGroup](#lmapgroup-handle) | Group of blocks. |
+| `group` | [LMapGroup](#lmapgroup) | Group of blocks. |
 
 **Example**
 
@@ -1161,13 +1047,13 @@ LMapBlockGenerator:generate(script)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `script` | [LMapScript](#lmapscript-handle) | Script to execute. |
+| `script` | [LMapScript](#lmapscript) | Script to execute. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LMapBlockResult](#lmapblockresult-handle) | Generation result. |
+| [LMapBlockResult](#lmapblockresult) | Generation result. |
 
 **Example**
 
@@ -1312,7 +1198,7 @@ LMapBlockGenerator:setRules(rules)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rules` | [LNeighborRules](#lneighborrules-handle) | Rules object. |
+| `rules` | [LNeighborRules](#lneighborrules) | Rules object. |
 
 **Example**
 
@@ -1411,13 +1297,13 @@ end
 
 ---
 
-## LMapBlockResult Handle
+## LMapBlockResult
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapBlockResult:getBlocksPlaced`
 
@@ -1641,13 +1527,13 @@ end
 
 ---
 
-## LMapGroup Handle
+## LMapGroup
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapGroup:addBlock`
 
@@ -1661,7 +1547,7 @@ LMapGroup:addBlock(block)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `block` | [LMapBlock](#lmapblock-handle) | Block to add. |
+| `block` | [LMapBlock](#lmapblock) | Block to add. |
 
 **Example**
 
@@ -1689,7 +1575,7 @@ LMapGroup:addScript(script)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `script` | [LMapScript](#lmapscript-handle) | Script to add. |
+| `script` | [LMapScript](#lmapscript) | Script to add. |
 
 **Example**
 
@@ -1802,7 +1688,7 @@ LMapGroup:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapGroup](#lmapgroup-handle)"`. |
+| string | Always `"[LMapGroup](#lmapgroup)"`. |
 
 ---
 
@@ -1824,17 +1710,17 @@ LMapGroup:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapGroup](#lmapgroup-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapGroup](#lmapgroup)"` or `"Object"`. |
 
 ---
 
-## LMapScript Handle
+## LMapScript
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapScript:addStep`
 
@@ -1949,7 +1835,7 @@ LMapScript:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapScript](#lmapscript-handle)"`. |
+| string | Always `"[LMapScript](#lmapscript)"`. |
 
 ---
 
@@ -1971,17 +1857,17 @@ LMapScript:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapScript](#lmapscript-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapScript](#lmapscript)"` or `"Object"`. |
 
 ---
 
-## LNeighborRules Handle
+## LNeighborRules
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNeighborRules:addCompatible`
 
@@ -2093,13 +1979,13 @@ end
 
 ---
 
-## LPlacementGrid Handle
+## LPlacementGrid
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPlacementGrid:addPosition`
 
@@ -2210,13 +2096,13 @@ end
 
 ---
 
-## LTilesetRef Handle
+## LTilesetRef
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTilesetRef:getId`
 

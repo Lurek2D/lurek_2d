@@ -2,61 +2,15 @@
 
 ## Summary
 
-The `docs` module is the structured documentation infrastructure layer used by generation and tooling pipelines. It defines normalized doc entry models, catalog/query behavior, export builders, validation reporting, and schema contracts, then re-exports these surfaces for higher-level tooling commands.
+The `docs` module is the internal documentation infrastructure used by generation and tooling flows. It gives one structured place for doc entries, catalog operations, export output, and quality checks.
 
-`catalog` manages storage and lookup of documentation records, `entry` defines item-level metadata (including params/returns), `export` produces completion/hover/signature payloads, `report` evaluates quality and validation status, and `schema` stabilizes shared type contracts. This separation keeps ingestion, storage, emission, and grading concerns independent.
+Its functional coverage spans the whole documentation path. Data can be collected into a catalog, validated against schema contracts, scored for quality, and exported into formats consumed by editor integrations.
 
-The module's value is consistency between source metadata and generated artifacts. By centralizing these models and exporters, the project avoids drift between docs outputs consumed by IDE tooling and validation/audit scripts.
+By centralizing these responsibilities, the project reduces drift between source metadata and generated artifacts. This keeps completion, hover, and signature outputs aligned with the same underlying record model.
 
-As an integration-facing subsystem, it should prioritize deterministic output formats and explicit quality criteria so downstream generators and validators can rely on stable contracts over time.
+The module is designed for stable integration. Deterministic output shapes and explicit validation criteria make downstream tools more reliable in local workflows and automated checks.
 
-Implementation detail and boundary guarantees for docs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: catalog.rs: Provide in-memory catalog storage for documentation entries collected from Rust source.; entry.rs: Define normalized documentation record types for lurek API symbols.; export.rs: Build JSON payloads for IDE completion, hover, and signature help from doc entries.; mod.rs: Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.; report.rs: Compute per-entry quality scores from completeness of description, params, and metadata.; schema.rs: Re-export schema validation types from the lurek_schema crate.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
-
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### catalog.rs
-
-- Provides the in-memory documentation catalog used to collect and organize normalized API entries.
-- Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries.
-- Enables merge and dedup workflows for combining multiple documentation sources into one view.
-- Delivers the central container that feeds both export generation and quality analysis stages.
-
-### entry.rs
-
-- Provides normalized documentation record types that represent public API symbols and their metadata.
-- Models parameter and return descriptors so downstream export and reporting stages share one data shape.
-- Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
-- Delivers the common in-memory contract used across collection, transformation, and reporting flows.
-
-### export.rs
-
-- Provides export builders that transform normalized doc entries into IDE-oriented JSON payloads.
-- Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers.
-- Supports compact or rich payload modes to match different integration and footprint constraints.
-- Writes single or bundled artifacts through stable serialization paths for predictable output handling.
-- Delivers the final packaging stage that turns in-memory documentation into distributable files.
-
-### mod.rs
-
-- Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages.
-- Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point.
-- Delivers a coherent module boundary for transforming source metadata into validated documentation artifacts.
-
-### report.rs
-
-- Provides documentation quality evaluation logic that scores completeness and classifies report grades.
-- Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
-- Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
-- Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
-- Delivers consistent quality signals that guide doc cleanup and release readiness checks.
-
-### schema.rs
-
-- Provides the schema bridge that exposes shared validation contracts used by the docs pipeline.
-- Connects documentation tooling with canonical field and type rules defined in the schema crate.
-- Delivers one access point that keeps schema usage consistent across docs modules.
+In practice, `lurek.docs` provides one dependable pipeline core for transforming API metadata into consistent, verifiable documentation artifacts.
 
 ## Functions
 
@@ -72,7 +26,7 @@ lurek.docs.checkStaleness(catalog_ud, source_dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog argument accepted for API symmetry with validation helpers. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog argument accepted for API symmetry with validation helpers. |
 | `source_dir` | string | Directory scanned for `.rs` and `.lua` source files. |
 
 **Returns**
@@ -105,7 +59,7 @@ lurek.docs.coverage(catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog used for documented entry count. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog) | Optional catalog used for documented entry count. |
 
 **Returns**
 
@@ -139,7 +93,7 @@ lurek.docs.coverageModule(module_name, catalog_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `module_name` | string | Module name under the `lurek` table. |
-| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog used for documented entry count. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog) | Optional catalog used for documented entry count. |
 
 **Returns**
 
@@ -198,7 +152,7 @@ lurek.docs.exportAll(catalog_ud, output_dir)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog whose entries are exported. |
 | `output_dir` | string | Directory that receives all generated artifacts. |
 
 **Example**
@@ -225,7 +179,7 @@ lurek.docs.exportCheatsheet(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are written. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog whose entries are written. |
 | `path` | string | Output cheatsheet file path. |
 
 **Example**
@@ -252,7 +206,7 @@ lurek.docs.exportCompletions(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog whose entries are exported. |
 | `path` | string | Output file path for completion data. |
 
 **Example**
@@ -279,7 +233,7 @@ lurek.docs.exportHover(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog whose entries are exported. |
 | `path` | string | Output file path for hover data. |
 
 **Example**
@@ -306,7 +260,7 @@ lurek.docs.exportMarkdown(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are written. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog whose entries are written. |
 | `path` | string | Output Markdown file path. |
 
 **Example**
@@ -333,7 +287,7 @@ lurek.docs.exportSignatures(catalog_ud, path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries are exported. |
+| `catalog_ud` | [LApiCatalog](#lapicatalog) | Catalog whose entries are exported. |
 | `path` | string | Output file path for signature data. |
 
 **Example**
@@ -360,7 +314,7 @@ lurek.docs.getCatalog()
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | Catalog containing entries built by the editing functions. |
+| [LApiCatalog](#lapicatalog) | Catalog containing entries built by the editing functions. |
 
 **Example**
 
@@ -391,7 +345,7 @@ lurek.docs.loadAll(directory)
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | Catalog containing entries parsed from every readable TOML file. |
+| [LApiCatalog](#lapicatalog) | Catalog containing entries parsed from every readable TOML file. |
 
 **Example**
 
@@ -424,7 +378,7 @@ lurek.docs.loadToml(path)
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | Catalog loaded from the TOML file. |
+| [LApiCatalog](#lapicatalog) | Catalog loaded from the TOML file. |
 
 **Example**
 
@@ -451,13 +405,13 @@ lurek.docs.quality(catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog to score; omitted scores the editable catalog. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog) | Optional catalog to score; omitted scores the editable catalog. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LQualityReport](#lqualityreport-handle) | Quality report with overall and module-level scores. |
+| [LQualityReport](#lqualityreport) | Quality report with overall and module-level scores. |
 
 **Example**
 
@@ -484,13 +438,13 @@ lurek.docs.qualityModule(module_name, catalog_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `module_name` | string | Module name used to filter entries before scoring. |
-| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog to score; omitted scores the editable catalog. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog) | Optional catalog to score; omitted scores the editable catalog. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LQualityReport](#lqualityreport-handle) | Quality report for the filtered module entries. |
+| [LQualityReport](#lqualityreport) | Quality report for the filtered module entries. |
 
 **Example**
 
@@ -607,7 +561,7 @@ lurek.docs.scan(opts)
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | Catalog populated from the currently registered `lurek` table. |
+| [LApiCatalog](#lapicatalog) | Catalog populated from the currently registered `lurek` table. |
 
 **Example**
 
@@ -638,7 +592,7 @@ lurek.docs.scanModule(module_name)
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | Catalog populated from the live module table. |
+| [LApiCatalog](#lapicatalog) | Catalog populated from the live module table. |
 
 **Example**
 
@@ -670,7 +624,7 @@ lurek.docs.schema(rules, name)
 
 | Type | Description |
 |------|-------------|
-| [LSchema](#lschema-handle) | Schema handle that can validate Lua tables. |
+| [LSchema](#lschema) | Schema handle that can validate Lua tables. |
 
 **Example**
 
@@ -701,7 +655,7 @@ lurek.docs.schemaFromToml(toml_text)
 
 | Type | Description |
 |------|-------------|
-| [LSchema](#lschema-handle) | Schema handle parsed from the TOML text. |
+| [LSchema](#lschema) | Schema handle parsed from the TOML text. |
 
 **Example**
 
@@ -796,13 +750,13 @@ lurek.docs.validate(catalog_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog to validate against live reflection; omitted validates an empty catalog. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog) | Optional catalog to validate against live reflection; omitted validates an empty catalog. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LValidationReport](#lvalidationreport-handle) | Report containing missing, phantom, and incomplete API names. |
+| [LValidationReport](#lvalidationreport) | Report containing missing, phantom, and incomplete API names. |
 
 **Example**
 
@@ -829,13 +783,13 @@ lurek.docs.validateModule(module_name, catalog_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `module_name` | string | Module name under the `lurek` table. |
-| `catalog_ud?` | [LApiCatalog](#lapicatalog-handle) | Optional catalog whose entries are filtered to the module. |
+| `catalog_ud?` | [LApiCatalog](#lapicatalog) | Optional catalog whose entries are filtered to the module. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LValidationReport](#lvalidationreport-handle) | Report containing missing, phantom, and incomplete API names for the module. |
+| [LValidationReport](#lvalidationreport) | Report containing missing, phantom, and incomplete API names for the module. |
 
 **Example**
 
@@ -853,14 +807,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LApiCatalog Handle](#lapicatalog-handle)
-- [LDocEntry Handle](#ldocentry-handle)
-- [LQualityReport Handle](#lqualityreport-handle)
-- [LSchema Handle](#lschema-handle)
-- [LValidationReport Handle](#lvalidationreport-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -869,13 +815,21 @@ end
 
 *No module-specific enums documented.*
 
-## LApiCatalog Handle
+## Types
 
-### Fields
+- [LApiCatalog](#lapicatalog)
+- [LDocEntry](#ldocentry)
+- [LQualityReport](#lqualityreport)
+- [LSchema](#lschema)
+- [LValidationReport](#lvalidationreport)
+
+## LApiCatalog
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LApiCatalog:entryCount`
 
@@ -922,13 +876,13 @@ LApiCatalog:filter(predicate)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `predicate` | function | Callback called with each `[LDocEntry](#ldocentry-handle)`; truthy return keeps the entry. |
+| `predicate` | function | Callback called with each `[LDocEntry](#ldocentry)`; truthy return keeps the entry. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | New catalog containing only entries accepted by the predicate. |
+| [LApiCatalog](#lapicatalog) | New catalog containing only entries accepted by the predicate. |
 
 **Example**
 
@@ -960,7 +914,7 @@ LApiCatalog:getEntries(module)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle)[] | `[LDocEntry](#ldocentry-handle)` handles. |
+| [LDocEntry](#ldocentry)[] | `[LDocEntry](#ldocentry)` handles. |
 
 **Example**
 
@@ -993,7 +947,7 @@ LApiCatalog:getEntry(qualified_name)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle) | The matching catalog entry. |
+| [LDocEntry](#ldocentry) | The matching catalog entry. |
 
 **Example**
 
@@ -1050,7 +1004,7 @@ LApiCatalog:getTypeMethods(qualified_name)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle)[] | `[LDocEntry](#ldocentry-handle)` method entries. |
+| [LDocEntry](#ldocentry)[] | `[LDocEntry](#ldocentry)` method entries. |
 
 **Example**
 
@@ -1108,13 +1062,13 @@ LApiCatalog:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LApiCatalog](#lapicatalog-handle) | Catalog whose entries replace matching qualified names or append new entries. |
+| `other` | [LApiCatalog](#lapicatalog) | Catalog whose entries replace matching qualified names or append new entries. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LApiCatalog](#lapicatalog-handle) | New catalog containing merged entries. |
+| [LApiCatalog](#lapicatalog) | New catalog containing merged entries. |
 
 **Example**
 
@@ -1147,7 +1101,7 @@ LApiCatalog:search(query)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle)[] | Matching `[LDocEntry](#ldocentry-handle)` handles. |
+| [LDocEntry](#ldocentry)[] | Matching `[LDocEntry](#ldocentry)` handles. |
 
 **Example**
 
@@ -1225,7 +1179,7 @@ LApiCatalog:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LApiCatalog](#lapicatalog-handle)`. |
+| string | The string `[LApiCatalog](#lapicatalog)`. |
 
 **Example**
 
@@ -1250,7 +1204,7 @@ LApiCatalog:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LApiCatalog](#lapicatalog-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LApiCatalog](#lapicatalog)` and `Object`. |
 
 **Returns**
 
@@ -1269,13 +1223,13 @@ end
 
 ---
 
-## LDocEntry Handle
+## LDocEntry
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDocEntry:getDeprecated`
 
@@ -1664,7 +1618,7 @@ LDocEntry:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDocEntry](#ldocentry-handle)`. |
+| string | The string `[LDocEntry](#ldocentry)`. |
 
 **Example**
 
@@ -1689,7 +1643,7 @@ LDocEntry:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LDocEntry](#ldocentry-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LDocEntry](#ldocentry)` and `Object`. |
 
 **Returns**
 
@@ -1708,13 +1662,13 @@ end
 
 ---
 
-## LQualityReport Handle
+## LQualityReport
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LQualityReport:getBest`
 
@@ -1734,7 +1688,7 @@ LQualityReport:getBest(count)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle)[] | Best-scoring `[LDocEntry](#ldocentry-handle)` handles. |
+| [LDocEntry](#ldocentry)[] | Best-scoring `[LDocEntry](#ldocentry)` handles. |
 
 **Example**
 
@@ -1767,7 +1721,7 @@ LQualityReport:getByGrade(grade)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle)[] | Matching `[LDocEntry](#ldocentry-handle)` handles. |
+| [LDocEntry](#ldocentry)[] | Matching `[LDocEntry](#ldocentry)` handles. |
 
 **Example**
 
@@ -1905,7 +1859,7 @@ LQualityReport:getWorst(count)
 
 | Type | Description |
 |------|-------------|
-| [LDocEntry](#ldocentry-handle)[] | Worst-scoring `[LDocEntry](#ldocentry-handle)` handles. |
+| [LDocEntry](#ldocentry)[] | Worst-scoring `[LDocEntry](#ldocentry)` handles. |
 
 **Example**
 
@@ -1986,7 +1940,7 @@ LQualityReport:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LQualityReport](#lqualityreport-handle)`. |
+| string | The string `[LQualityReport](#lqualityreport)`. |
 
 **Example**
 
@@ -2012,7 +1966,7 @@ LQualityReport:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LQualityReport](#lqualityreport-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LQualityReport](#lqualityreport)` and `Object`. |
 
 **Returns**
 
@@ -2032,13 +1986,13 @@ end
 
 ---
 
-## LSchema Handle
+## LSchema
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSchema:assert`
 
@@ -2160,7 +2114,7 @@ LSchema:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LSchema](#lschema-handle)`. |
+| string | The string `[LSchema](#lschema)`. |
 
 **Example**
 
@@ -2185,7 +2139,7 @@ LSchema:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LSchema](#lschema-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LSchema](#lschema)` and `Object`. |
 
 **Returns**
 
@@ -2237,13 +2191,13 @@ end
 
 ---
 
-## LValidationReport Handle
+## LValidationReport
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LValidationReport:getIncomplete`
 
@@ -2522,7 +2476,7 @@ LValidationReport:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LValidationReport](#lvalidationreport-handle)`. |
+| string | The string `[LValidationReport](#lvalidationreport)`. |
 
 **Example**
 
@@ -2548,7 +2502,7 @@ LValidationReport:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LValidationReport](#lvalidationreport-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LValidationReport](#lvalidationreport)` and `Object`. |
 
 **Returns**
 

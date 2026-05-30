@@ -8,147 +8,6 @@ To support massive, open-world environments, the module implements a sophisticat
 
 The module also goes far beyond simple rendering. It features a robust procedural generation engine (`MapGen`) that constructs maps deterministically from reusable `MapBlock` prefabs and scripted operations (fill, scatter, path). For physics and gameplay logic, the map supports continuous AABB sweep-cast collision detection directly against solid tiles. `PolygonMap` enables the definition and spatial querying of named convex/concave regions (useful for zones or provinces), while `TileWalker` provides utilities for grid-based discrete movement and facing logic. Supported by the extensive `lurek.tilemap.*` Lua API, this module is a foundational pillar for building complex, optimized, and interactive 2D worlds.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### autotile_sheet.rs
-
-- This file provides the autotile sheet model that turns neighborhood context into final tile picks.
-- It keeps multiple atlas layouts coherent so different terrain styles share one usage contract.
-- It centralizes bitmask interpretation and rule matching in a single graphics selection layer.
-- It resolves corner relationships carefully so terrain seams stay clean across transitions.
-- It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends.
-- It connects sheet logic to tileset data so runtime autotiling remains deterministic.
-- It forms a stable foundation for roads, biomes, and organic borders in grid-based worlds.
-
-### chunk.rs
-
-- This file provides sparse chunk storage for very large tile worlds that load data on demand.
-- It decouples tile access from raw memory layout so map scale can grow without full allocation.
-- It keeps world-to-chunk and local cell transforms precise for predictable addressing.
-- It exposes range operations and visible-chunk selection to drive rendering and streaming paths.
-- It stabilizes spatial boundaries so culling and update logic stay consistent under scale.
-
-### coords.rs
-
-- This file provides coordinate transforms for isometric and hex grids used across map systems.
-- It keeps one geometric language between screen space, tile space, and movement direction logic.
-- It offers orientation, rotation, and side classification helpers for grid navigation flows.
-- It supports hex metrics and neighborhoods so pathing and range tools share a stable base.
-- It delivers line, ring, and spiral traversals for tactical gameplay and map UI overlays.
-
-### isomap.rs
-
-- This file provides a multi-level isometric map model with separate parts per tile cell.
-- It maps tile coordinates to diamond-projected screen space for coherent scene placement.
-- It iterates draw order by diagonal progression so elevation layering reads correctly.
-- It lets each elevation level be shown or hidden to support staged world presentation.
-- It keeps part ordering configurable so floor, wall, and object composition remains flexible.
-- It supports both bulk writes and precise per-slot updates for runtime editing workflows.
-- It anchors isometric world structure in a form that is predictable for rendering and tools.
-
-### large_map_renderer.rs
-
-- This file provides chunk-oriented rendering support for tilemaps that exceed single-pass scale.
-- It partitions the full grid into fixed blocks with dirty tracking for incremental refresh.
-- It uses camera and viewport state to cull work at chunk granularity before draw emission.
-- It supports per-tile mutation with automatic invalidation so updates stay localized.
-- It applies optional zoom-aware detail reduction to keep large-world rendering responsive.
-- It preserves tileset atlas geometry inputs needed by backend UV mapping logic.
-
-### ldtk.rs
-
-- This file provides LDtk JSON import into the engine-native tilemap representation.
-- It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps.
-- It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation.
-- It keeps external level content aligned with the engine's layered tile data model.
-- It enables deterministic content ingestion from LDtk authoring workflows.
-
-### mapgen.rs
-
-- This file provides scripted procedural generation for tile worlds built from reusable block pieces.
-- It models block edges and matching rules so assembled regions connect with coherent boundaries.
-- It groups reusable content and scripts into named generation palettes for targeted world styles.
-- It defines step-driven operations for fill, placement, scatter, flood spread, and path carving.
-- It orchestrates generation with seeded randomness so outputs are repeatable and testable.
-- It supports both single-map and multi-region production with independent deterministic seeds.
-- It applies zone and orientation metadata so generated content matches downstream render expectations.
-- It controls how layers receive writes, enabling unified or split composition strategies.
-- It gives runtime and tools one procedural contract that scales from prototypes to full maps.
-- It keeps generation intent explicit so scripts remain readable and maintainable over time.
-- It enables data-driven map variety without requiring hand-authored full layouts for every scene.
-- It anchors procedural authoring in predictable structures that can be debugged and replayed.
-
-### mod.rs
-
-- This module delivers the high-level tile world stack for storage, generation, import, and rendering.
-- It unifies layered map data for orthogonal and isometric play spaces under one runtime contract.
-- It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline.
-- It provides the structural backbone for large interactive 2D worlds in Lurek2D.
-
-### polygon_map.rs
-
-- This file provides named polygon regions for zone semantics layered over tile-based worlds.
-- It supports convex and concave shapes with fill styling and optional in-region text labels.
-- It answers point-in-region queries for selection, triggers, and gameplay ownership checks.
-- It maintains shared outline and highlight styling to keep region feedback visually consistent.
-- It includes region lifecycle operations so zones can be created, updated, and removed at runtime.
-- It computes bounds and centroids to support layout decisions, framing, and camera behaviors.
-
-### render.rs
-
-- This file provides tilemap render-command emission with camera-aware culling across map layers.
-- It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling.
-- It applies per-layer visibility and tint state when composing command output for the renderer.
-- It keeps draw generation predictable so map visualization remains stable during updates.
-- It provides a stable debug visualization path when textured rendering is unavailable.
-
-### tile_walker.rs
-
-- This file provides a discrete grid walker model with stable cardinal facing semantics.
-- It supports forward, backward, and strafe movement as first-class motion primitives.
-- It tracks previous state snapshots so interpolation can smooth visual motion between ticks.
-- It classifies neighboring cells relative to facing for directional interaction logic.
-- It separates passability queries from concrete collision backends for flexible integration.
-- It keeps movement intent readable for gameplay, AI steering, and tactical controls.
-
-### tilemap.rs
-
-- This file provides the core layered tilemap data model used by simulation and rendering paths.
-- It stores per-cell tile IDs, per-layer state, tint metadata, and parallax movement factors.
-- It resolves global IDs through attached tilesets so tile ownership stays deterministic.
-- It computes autotile neighborhood masks and substitution outputs for terrain continuity.
-- It performs swept collision checks against solid tiles for top-down and platform movement.
-- It advances tile animation timelines from tileset frame data during runtime updates.
-- It converts world and tile coordinates in both directions using map geometry settings.
-- It emits culled draw commands for viewport-scoped visualization and debug rendering.
-- It exports walkability structures so pathfinding systems can consume map topology directly.
-- It maintains reverse lookup caches from tile IDs to positions for fast spatial queries.
-- It supports image-based debug outputs for inspection, tooling, and regression validation.
-- It anchors gameplay-critical map behavior in one consistent and testable runtime surface.
-
-### tileset.rs
-
-- This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels.
-- It computes source rectangles from local IDs so render code can sample the correct sprite area.
-- It stores solidity metadata per tile to support collision and gameplay filtering decisions.
-- It tracks frame-based tile animations so animated map cells advance with deterministic timing.
-- It holds autotile rule tables that translate neighborhood masks into terrain transition IDs.
-
-### tmx.rs
-
-- This file provides TMX import that converts Tiled XML maps into engine-native map structures.
-- It supports major TMX orientation modes so authored content can target varied 2D projections.
-- It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams.
-- It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation.
-- It parses object layers to retain placement, sizing, and semantic type annotations.
-- It strips flip flags from raw gids so stored tile identity stays clean and comparable.
-- It infers solid tiles from embedded markers and custom properties used by authoring tools.
-- It reports parse failures with contextual messages to speed debugging of malformed assets.
-- It reads TMX color encodings so visual defaults are preserved during map import.
-- It delivers a predictable bridge between external level authoring and runtime world assembly.
-
 ## Functions
 
 ### `lurek.tilemap.fromLDtk`
@@ -170,7 +29,7 @@ lurek.tilemap.fromLDtk(jsonStr, levelName)
 
 | Type | Description |
 |------|-------------|
-| [LTileMap](#ltilemap-handle) | Loaded tilemap. |
+| [LTileMap](#ltilemap) | Loaded tilemap. |
 
 **Example**
 
@@ -731,7 +590,7 @@ lurek.tilemap.newAutoTileSheet(tileW, tileH, layout)
 
 | Type | Description |
 |------|-------------|
-| [LAutoTileSheet](#lautotilesheet-handle) | New auto-tile sheet. |
+| [LAutoTileSheet](#lautotilesheet) | New auto-tile sheet. |
 
 **Example**
 
@@ -766,7 +625,7 @@ lurek.tilemap.newChunkMap(chunkSize)
 
 | Type | Description |
 |------|-------------|
-| [LChunkMap](#lchunkmap-handle) | New chunk map. |
+| [LChunkMap](#lchunkmap) | New chunk map. |
 
 **Example**
 
@@ -804,7 +663,7 @@ lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount)
 
 | Type | Description |
 |------|-------------|
-| [LIsoMap](#lisomap-handle) | New isometric map. |
+| [LIsoMap](#lisomap) | New isometric map. |
 
 **Example**
 
@@ -839,7 +698,7 @@ lurek.tilemap.newLargeMapRenderer(tileW, tileH)
 
 | Type | Description |
 |------|-------------|
-| [LLargeMapRenderer](#llargemaprenderer-handle) | New large-map renderer. |
+| [LLargeMapRenderer](#llargemaprenderer) | New large-map renderer. |
 
 **Example**
 
@@ -875,7 +734,7 @@ lurek.tilemap.newMapBlock(width, height, layers, segmentSize)
 
 | Type | Description |
 |------|-------------|
-| [LMapBlock](#lmapblock-handle) | New map block. |
+| [LMapBlock](#lmapblock) | New map block. |
 
 **Example**
 
@@ -903,7 +762,7 @@ lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `group` | [LMapGroup](#lmapgroup-handle) | Block group to generate from. |
+| `group` | [LMapGroup](#lmapgroup) | Block group to generate from. |
 | `presetOrWidth` | string|number | Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles. |
 | `segmentSizeOrHeight` | number | Segment size (if preset) or height in tiles. |
 | `segmentSize?` | number | Segment size when using explicit dimensions. |
@@ -912,7 +771,7 @@ lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize)
 
 | Type | Description |
 |------|-------------|
-| [LMapGen](#lmapgen-handle) | New map generator. |
+| [LMapGen](#lmapgen) | New map generator. |
 
 **Example**
 
@@ -946,7 +805,7 @@ lurek.tilemap.newMapGroup(name)
 
 | Type | Description |
 |------|-------------|
-| [LMapGroup](#lmapgroup-handle) | New map group. |
+| [LMapGroup](#lmapgroup) | New map group. |
 
 **Example**
 
@@ -974,7 +833,7 @@ lurek.tilemap.newMapScript()
 
 | Type | Description |
 |------|-------------|
-| [LMapScript](#lmapscript-handle) | New script. |
+| [LMapScript](#lmapscript) | New script. |
 
 **Example**
 
@@ -1010,7 +869,7 @@ lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize)
 
 | Type | Description |
 |------|-------------|
-| [LTileMap](#ltilemap-handle) | New tilemap. |
+| [LTileMap](#ltilemap) | New tilemap. |
 
 **Example**
 
@@ -1050,7 +909,7 @@ lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, sp
 
 | Type | Description |
 |------|-------------|
-| [LTileSet](#ltileset-handle) | New tileset. |
+| [LTileSet](#ltileset) | New tileset. |
 
 **Example**
 
@@ -1139,19 +998,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAutoTileSheet Handle](#lautotilesheet-handle)
-- [LChunkMap Handle](#lchunkmap-handle)
-- [LIsoMap Handle](#lisomap-handle)
-- [LLargeMapRenderer Handle](#llargemaprenderer-handle)
-- [LMapBlock Handle](#lmapblock-handle)
-- [LMapGen Handle](#lmapgen-handle)
-- [LMapGroup Handle](#lmapgroup-handle)
-- [LMapScript Handle](#lmapscript-handle)
-- [LTileMap Handle](#ltilemap-handle)
-- [LTileSet Handle](#ltileset-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -1160,13 +1006,26 @@ end
 
 *No module-specific enums documented.*
 
-## LAutoTileSheet Handle
+## Types
 
-### Fields
+- [LAutoTileSheet](#lautotilesheet)
+- [LChunkMap](#lchunkmap)
+- [LIsoMap](#lisomap)
+- [LLargeMapRenderer](#llargemaprenderer)
+- [LMapBlock](#lmapblock)
+- [LMapGen](#lmapgen)
+- [LMapGroup](#lmapgroup)
+- [LMapScript](#lmapscript)
+- [LTileMap](#ltilemap)
+- [LTileSet](#ltileset)
+
+## LAutoTileSheet
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAutoTileSheet:applyToTileSet`
 
@@ -1180,7 +1039,7 @@ LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | [LTileSet](#ltileset-handle) | Target tileset to receive the rules. |
+| `tileSet` | [LTileSet](#ltileset) | Target tileset to receive the rules. |
 | `typeName` | string | Logical tile type name to register under. |
 | `startGid?` | number | Optional first GID offset. |
 
@@ -1422,7 +1281,7 @@ LAutoTileSheet:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LAutoTileSheet](#lautotilesheet-handle)"`. |
+| string | Always `"[LAutoTileSheet](#lautotilesheet)"`. |
 
 **Example**
 
@@ -1454,7 +1313,7 @@ LAutoTileSheet:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LAutoTileSheet](#lautotilesheet-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LAutoTileSheet](#lautotilesheet)"` or `"Object"`. |
 
 **Example**
 
@@ -1468,13 +1327,13 @@ end
 
 ---
 
-## LChunkMap Handle
+## LChunkMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LChunkMap:chunkTileRange`
 
@@ -1773,7 +1632,7 @@ LChunkMap:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LChunkMap](#lchunkmap-handle)"`. |
+| string | Always `"[LChunkMap](#lchunkmap)"`. |
 
 **Example**
 
@@ -1805,7 +1664,7 @@ LChunkMap:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LChunkMap](#lchunkmap-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LChunkMap](#lchunkmap)"` or `"Object"`. |
 
 **Example**
 
@@ -1848,13 +1707,13 @@ end
 
 ---
 
-## LIsoMap Handle
+## LIsoMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LIsoMap:addLevel`
 
@@ -2396,7 +2255,7 @@ LIsoMap:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LIsoMap](#lisomap-handle)"`. |
+| string | Always `"[LIsoMap](#lisomap)"`. |
 
 **Example**
 
@@ -2428,7 +2287,7 @@ LIsoMap:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LIsoMap](#lisomap-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LIsoMap](#lisomap)"` or `"Object"`. |
 
 **Example**
 
@@ -2442,13 +2301,13 @@ end
 
 ---
 
-## LLargeMapRenderer Handle
+## LLargeMapRenderer
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLargeMapRenderer:getChunkSize`
 
@@ -2944,7 +2803,7 @@ LLargeMapRenderer:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LLargeMapRenderer](#llargemaprenderer-handle)"`. |
+| string | Always `"[LLargeMapRenderer](#llargemaprenderer)"`. |
 
 **Example**
 
@@ -2976,7 +2835,7 @@ LLargeMapRenderer:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LLargeMapRenderer](#llargemaprenderer-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LLargeMapRenderer](#llargemaprenderer)"` or `"Object"`. |
 
 **Example**
 
@@ -2990,13 +2849,13 @@ end
 
 ---
 
-## LMapBlock Handle
+## LMapBlock
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapBlock:getDimensions`
 
@@ -3414,7 +3273,7 @@ LMapBlock:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapBlock](#lmapblock-handle)"`. |
+| string | Always `"[LMapBlock](#lmapblock)"`. |
 
 **Example**
 
@@ -3446,7 +3305,7 @@ LMapBlock:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapBlock](#lmapblock-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapBlock](#lmapblock)"` or `"Object"`. |
 
 **Example**
 
@@ -3461,13 +3320,13 @@ end
 
 ---
 
-## LMapGen Handle
+## LMapGen
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapGen:generate`
 
@@ -3489,7 +3348,7 @@ LMapGen:generate(scriptIdx, seed, layerName)
 
 | Type | Description |
 |------|-------------|
-| [LTileMap](#ltilemap-handle) | Generated tilemap. |
+| [LTileMap](#ltilemap) | Generated tilemap. |
 
 **Example**
 
@@ -3517,7 +3376,7 @@ LMapGen:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapGen](#lmapgen-handle)"`. |
+| string | Always `"[LMapGen](#lmapgen)"`. |
 
 **Example**
 
@@ -3551,7 +3410,7 @@ LMapGen:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapGen](#lmapgen-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapGen](#lmapgen)"` or `"Object"`. |
 
 **Example**
 
@@ -3567,13 +3426,13 @@ end
 
 ---
 
-## LMapGroup Handle
+## LMapGroup
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapGroup:addBlock`
 
@@ -3587,7 +3446,7 @@ LMapGroup:addBlock(block)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `block` | [LMapBlock](#lmapblock-handle) | Block to add. |
+| `block` | [LMapBlock](#lmapblock) | Block to add. |
 
 ---
 
@@ -3603,7 +3462,7 @@ LMapGroup:addScript(script)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `script` | [LMapScript](#lmapscript-handle) | Script to add. |
+| `script` | [LMapScript](#lmapscript) | Script to add. |
 
 ---
 
@@ -3707,7 +3566,7 @@ LMapGroup:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapGroup](#lmapgroup-handle)"`. |
+| string | Always `"[LMapGroup](#lmapgroup)"`. |
 
 **Example**
 
@@ -3741,7 +3600,7 @@ LMapGroup:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapGroup](#lmapgroup-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapGroup](#lmapgroup)"` or `"Object"`. |
 
 **Example**
 
@@ -3755,13 +3614,13 @@ end
 
 ---
 
-## LMapScript Handle
+## LMapScript
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMapScript:addStep`
 
@@ -3834,7 +3693,7 @@ LMapScript:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LMapScript](#lmapscript-handle)"`. |
+| string | Always `"[LMapScript](#lmapscript)"`. |
 
 **Example**
 
@@ -3866,7 +3725,7 @@ LMapScript:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LMapScript](#lmapscript-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LMapScript](#lmapscript)"` or `"Object"`. |
 
 **Example**
 
@@ -3880,13 +3739,13 @@ end
 
 ---
 
-## LTileMap Handle
+## LTileMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTileMap:addLayer`
 
@@ -3935,7 +3794,7 @@ LTileMap:addTileSet(tileSet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | [LTileSet](#ltileset-handle) | Tileset to add. |
+| `tileSet` | [LTileSet](#ltileset) | Tileset to add. |
 
 **Example**
 
@@ -4188,7 +4047,7 @@ LTileMap:drawToImage(tileSize)
 
 | Type | Description |
 |------|-------------|
-| LImage | Rasterized image of the map. |
+| [LImage](render.md#limage) | Rasterized image of the map. |
 
 **Example**
 
@@ -4711,7 +4570,7 @@ LTileMap:getTileSet(idx)
 
 | Type | Description |
 |------|-------------|
-| [LTileSet](#ltileset-handle) | The tileset, or nil if index is out of range. |
+| [LTileSet](#ltileset) | The tileset, or nil if index is out of range. |
 
 **Example**
 
@@ -5458,7 +5317,7 @@ LTileMap:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LTileMap](#ltilemap-handle)"`. |
+| string | Always `"[LTileMap](#ltilemap)"`. |
 
 **Example**
 
@@ -5489,7 +5348,7 @@ LTileMap:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LTileMap](#ltilemap-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LTileMap](#ltilemap)"` or `"Object"`. |
 
 **Example**
 
@@ -5569,13 +5428,13 @@ end
 
 ---
 
-## LTileSet Handle
+## LTileSet
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTileSet:getAnimation`
 
@@ -6100,7 +5959,7 @@ LTileSet:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LTileSet](#ltileset-handle)"`. |
+| string | Always `"[LTileSet](#ltileset)"`. |
 
 **Example**
 
@@ -6131,7 +5990,7 @@ LTileSet:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LTileSet](#ltileset-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LTileSet](#ltileset)"` or `"Object"`. |
 
 **Example**
 

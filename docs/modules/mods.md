@@ -8,61 +8,6 @@ At the heart of the system is the `ModInfo` struct, which encapsulates all vital
 
 Once loaded, the module bridges the gap between engine architecture and user content. Mods can seamlessly override existing game assets within the virtual filesystem, introduce entirely new content via the typed `ContentRegistry`, and inject Lua scripts that execute within the engine's sandboxed environment. The module provides sophisticated runtime tools, including enable/disable toggling for instantaneous mod switching and a robust hot-reload queue that can re-parse and re-apply modified mods on the fly without requiring a full game restart. Fully exposed to Lua via the `lurek.mods.*` API, this system empowers developers to treat first-party game content and community mods with identical architectural parity.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### api_registry.rs
-
-- Registry of which lurek namespaces and functions a mod may use.
-- Maps API names to permitted callable identifiers for sandbox checks.
-- Loads from the built-in API schema and any engine plugins at startup.
-- Lets mods declare required API surface in manifest data.
-- Rejects unknown API requests before they can reach mod scripts.
-
-### api_schema.rs
-
-- Serializable description of the engine API surface exposed to mods.
-- Stores parameter types, return types, and short summaries for each entry.
-- Loads from generated API metadata at startup.
-- Supports version checks so mods can declare a minimum engine release.
-- Gives the sandbox a typed contract to validate against.
-
-### mod.rs
-
-- Entry point for the mod system and its lifecycle management.
-- Groups discovery, enable/disable flow, sandboxing, and Lua integration.
-- Keeps the mod runtime surface compact and centralised.
-
-### mod_loader.rs
-
-- Discovers, validates, and loads mod packages from disk.
-- Scans manifests, builds instances, and applies deterministic load order.
-- Verifies API requirements before any Lua code starts running.
-- Supports priority-based override and atomic reload of changed packages.
-- Provides the bootstrap path from content folders into live mod instances.
-
-### mod_manager.rs
-
-- Registry and coordination layer for live mods and their dependencies.
-- Tracks enabled mods by id and capability for lookup and lifecycle control.
-- Parses manifests and validates the required fields before registration.
-- Resolves dependency order with topological sorting and priority ties.
-- Detects missing dependencies and circular relationships early.
-- Prevents asset path collisions across simultaneously loaded mods.
-- Manages hot reload by marking dirty mods and re-registering them atomically.
-- Scans folders on disk and batches valid entries into the registry.
-- Carries typed config schema data from manifests into runtime UI.
-- Serves as the central authority for mod registration and load sequencing.
-
-### mod_sandbox.rs
-
-- Sandbox wrapper that restricts mod Lua access to declared capabilities.
-- Applies per-mod permission filtering over the shared lurek namespace.
-- Converts undeclared API calls into Lua errors instead of crashes.
-- Limits file-system access to each mod's own content directory.
-- Reapplies the sandbox after reload so capabilities never expand at runtime.
-
 ## Functions
 
 ### `lurek.mods.checkApiVersion`
@@ -77,7 +22,7 @@ lurek.mods.checkApiVersion(mod_ud, host_version)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mod_ud` | [LMod](#lmod-handle) | Mod handle. |
+| `mod_ud` | [LMod](#lmod) | Mod handle. |
 | `host_version` | string | Host API version string. |
 
 **Returns**
@@ -119,7 +64,7 @@ lurek.mods.newMod(info)
 
 | Type | Description |
 |------|-------------|
-| [LMod](#lmod-handle) | New mod handle. |
+| [LMod](#lmod) | New mod handle. |
 
 **Example**
 
@@ -152,7 +97,7 @@ lurek.mods.newModManager()
 
 | Type | Description |
 |------|-------------|
-| [LModManager](#lmodmanager-handle) | New mod manager handle. |
+| [LModManager](#lmodmanager) | New mod manager handle. |
 
 **Example**
 
@@ -178,7 +123,7 @@ lurek.mods.newRegistry()
 
 | Type | Description |
 |------|-------------|
-| [LContentRegistry](#lcontentregistry-handle) | New content registry handle. |
+| [LContentRegistry](#lcontentregistry) | New content registry handle. |
 
 **Example**
 
@@ -196,12 +141,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LContentRegistry Handle](#lcontentregistry-handle)
-- [LMod Handle](#lmod-handle)
-- [LModManager Handle](#lmodmanager-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -210,13 +149,19 @@ end
 
 *No module-specific enums documented.*
 
-## LContentRegistry Handle
+## Types
 
-### Fields
+- [LContentRegistry](#lcontentregistry)
+- [LMod](#lmod)
+- [LModManager](#lmodmanager)
+
+## LContentRegistry
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LContentRegistry:get`
 
@@ -390,7 +335,7 @@ LContentRegistry:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LContentRegistry](#lcontentregistry-handle)`. |
+| string | The string `[LContentRegistry](#lcontentregistry)`. |
 
 **Example**
 
@@ -415,7 +360,7 @@ LContentRegistry:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LContentRegistry](#lcontentregistry-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LContentRegistry](#lcontentregistry)` and `Object`. |
 
 **Returns**
 
@@ -434,13 +379,13 @@ end
 
 ---
 
-## LMod Handle
+## LMod
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMod:getApiVersion`
 
@@ -1096,7 +1041,7 @@ LMod:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LMod](#lmod-handle)`. |
+| string | The string `[LMod](#lmod)`. |
 
 **Example**
 
@@ -1121,7 +1066,7 @@ LMod:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LMod](#lmod-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LMod](#lmod)` and `Object`. |
 
 **Returns**
 
@@ -1140,13 +1085,13 @@ end
 
 ---
 
-## LModManager Handle
+## LModManager
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LModManager:clearLoadOrder`
 
@@ -1529,7 +1474,7 @@ LModManager:registerMod(ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `ud` | [LMod](#lmod-handle) | Mod handle. |
+| `ud` | [LMod](#lmod) | Mod handle. |
 
 **Example**
 
@@ -1622,7 +1567,7 @@ LModManager:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LModManager](#lmodmanager-handle)`. |
+| string | The string `[LModManager](#lmodmanager)`. |
 
 **Example**
 
@@ -1647,7 +1592,7 @@ LModManager:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LModManager](#lmodmanager-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LModManager](#lmodmanager)` and `Object`. |
 
 **Returns**
 

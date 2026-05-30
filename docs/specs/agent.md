@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `agent` module provides async LLM prompt dispatch, per-agent prompt state, AISystem multi-agent orchestration, keyword-gated skill injection, output format control, automatic retry, thin Lua-facing handles for polling results back into the Lua VM, a direct synchronous LLM API (`configure`, `complete`, `completeJson`, `embed`, etc.), and memory primitives for LLM agents (working, episodic, semantic, and bundled agent memory).
+- The `agent` module gives one AI layer for games and tools: run prompts, coordinate agents, keep memory, and get results without blocking frame updates.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-The `agent` module owns the engine-side runtime for LLM-backed assistants. It keeps request state in `AgentState`, dispatches HTTP prompts in the background through `AgentClient`, and converts completed responses into callback payloads that Lua code can poll from the main loop. The module is intentionally split so the heavy request, batching, and response-processing logic lives in `src/agent/`, while `src/lua_api/agent_api.rs` stays a thin registration layer.
+The `agent` module turns model access into a stable service for gameplay and tools. Instead of many one-off scripts, it gives one consistent way to send prompts, receive answers, and handle callbacks. This makes AI features easier to build, easier to reason about, and safer to reuse across a project.
 
-The module boundary is narrow. `src/agent/` owns request construction, async callback routing, response parsing for `json` / `csv` / `text`, automatic transient-error retry with back-off, and the secure `evalCode` runtime entry point. The `AISystemState` type provides multi-agent orchestration: a shared system prompt, manually included instruction blocks, and keyword-gated skill blocks that Lurek auto-injects based on prompt keyword overlap. `src/lua_api/agent_api.rs` exposes `lurek.agent.new`, `lurek.agent.newManager`, `lurek.agent.newSystem`, and userdata methods that delegate into the module runtime. Network transport stays delegated to `crate::network::http::execute_request`, and the API remains polling-based so prompt execution never blocks the frame loop.
+Its main functional value is non-blocking work. Requests run in the background while the frame loop keeps moving, then scripts poll and consume completed results. This protects runtime responsiveness and gives practical control over timeout, retry, cancellation, and response format.
 
-`src/agent/chat.rs` provides a synchronous direct LLM path (`configure`, `complete`, `completeJson`, `embed`, `isAvailable`, `listModels`) backed by `GlobalLlmConfig`. `LlmChat` maintains a stateful message history for multi-turn conversations. `LlmTemplate` renders `{key}` placeholders. `src/agent/memory.rs` provides `WorkingMemory` (bounded FIFO), `EpisodicMemory` (tick-stamped event log), `SemanticMemory` (fact store), and `AgentMemory` (bundled, optionally persistent).
+The module also supports orchestration at different scales. You can run one agent, batch several tasks, or use a system that combines shared instructions with keyword-matched skills. This keeps prompt behavior more consistent between teams and features, because common context rules are managed in one place.
+
+For direct use, the module includes synchronous completions, JSON output, embeddings, model listing, and availability checks. It also provides stateful chat sessions and simple template rendering, so both quick utility calls and longer multi-turn interactions can use the same module surface.
+
+Memory is treated as a practical stack: short-term working context, episodic history, semantic facts, and a bundled memory that can persist across sessions. In real use, this helps agents keep continuity, retain useful facts, and restart with context, without every game script building custom memory plumbing.
 
 ## Imports
 

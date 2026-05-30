@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `html` module is a powerful Edge/Integration tier component that provides a complete HTML/CSS document engine for Lurek2D.
+- The `html` module lets games build and run interactive HTML/CSS UI documents, then render them through engine commands.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element.
+The `html` module is the engine runtime for HTML/CSS-driven interfaces. It lets teams define UI with familiar markup and style rules, then turns that content into a live document tree that scripts can query and update.
 
-Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
+Its main value is one consistent document pipeline: parse HTML, apply CSS selectors, resolve computed styles, calculate layout, and produce draw commands. This makes complex menus and tool panels easier to build without custom layout logic for each screen.
 
-The module also handles complex text rendering, ensuring accurate wrapping, alignment, and multi-line overflow management. Furthermore, the `html` module is deeply interactive. It routes user input—such as mouse clicks, hover events, keyboard focus, and text input—directly to the appropriate DOM elements, executing bound Lua callbacks (`mousepressed`, `mousemoved`, `keypressed`). The entire document lifecycle, from DOM queries (`getElementById`, `querySelector`) to dynamic structural mutations, is fully scriptable via the `lurek.html.*` API.
+The module separates document behavior from renderer details. It does not draw pixels directly. Instead, it outputs stable command lists that downstream render code can consume, which keeps UI logic portable across runtime contexts.
+
+Input is integrated with the same document state. Mouse, keyboard, focus, and text events are routed to matching elements, so interactive widgets can react through bound Lua callbacks and event listeners.
+
+In practice, `lurek.html` provides a complete web-style UI contract inside the engine: author structure and style, run layout, handle events, mutate DOM state, and render through one scriptable module surface.
 
 ## Imports
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `globe` module, situated in the Feature Systems tier, provides a comprehensive framework for rendering and interacting with an XCOM-style Geoscape.
+- The `globe` module provides an interactive geoscape system with spherical projection, region topology, fog-of-war, overlays, markers, and scriptable map interaction.
 
 ## General Info
 
@@ -16,13 +16,17 @@
 
 ## Summary
 
-At its core is the `Globe` structure, which oversees a highly optimized, region-based spherical map. It utilizes an orbit camera with latitude and longitude positioning, supporting smooth interpolation, variable zoom levels, and automatic Level-of-Detail (LOD) adjustments. A key architectural decision is that all rendering output consists of 2D draw commands (such as convex fans, polylines, and circles) projected from spherical coordinates, intentionally avoiding the complexity of a full 3D pipeline.
+The `globe` module is the runtime system for interactive spherical world maps. It combines region topology, projection, rendering helpers, and interaction tools so teams can build geoscape-style gameplay and strategy overlays inside one module.
 
-The module manages complex geographical topologies via the `RegionGraph` (aliased as `ProvinceGraph` for backward compatibility), which caches adjacency data and enables rapid pathfinding and reachability queries. Region geometry can be constructed in multiple ways: parsed from TOML descriptions, extracted from color-indexed PNG maps, or generated dynamically from Voronoi seed points. For visual presentation, the module implements advanced lighting models, including a day/night terminator band, per-region diffuse intensity, and atmospheric halos.
+Its visual approach maps latitude and longitude data into 2D render commands. Regions, borders, labels, arcs, and markers are projected from globe space into screen space, which keeps the pipeline practical while still preserving a clear planetary model.
 
-To support gameplay mechanics, the `globe` module features a robust `FogMask` system for fog-of-war. This system uses compact bit-packed representations to track hidden, explored, and visible states per region, per viewer, allowing for efficient serialization and multi-faction scenarios. Data visualization is handled through `MarkerStore` and `LabelStore`, which manage the placement of animated icons and text annotations directly onto the sphere's surface. Additionally, `LayerStore` allows for color-coded data overlays (heat maps), and arcs can be drawn to visualize great-circle routes. Screen-space region picking is implemented via ray-polygon intersection, ensuring precise user interaction. The entire suite of features, including multi-globe support via the `GlobeRegistry`, is fully scriptable via the `lurek.globe.*` Lua API.
+State-rich map features are built in. Region connectivity, path and reachability queries, fog-of-war visibility, layered overlays, and heat-style signals help represent exploration, ownership, and strategic pressure in a form players can read quickly.
 
-> **Note on naming:** Globe internally uses "Region" as the primary type name (e.g., `Region`, `RegionId`, `RegionGraph`) to avoid confusion with the separate `crate::province` 2D province-map module. Backward-compatible aliases (`Province`, `ProvinceId`, `ProvinceGraph`) are provided. The Lua API exposes both `addProvince`/`addRegion` etc. for scripts.
+Content creation paths are flexible. Maps can be loaded from authored TOML data, image-derived sources, or generated seeds, so projects can mix handcrafted and procedural workflows without changing runtime integration patterns.
+
+Rendering support includes lighting cues, atmosphere effects, and level-of-detail behavior to keep readability stable across zoom levels and view contexts. These tools help large map surfaces remain legible without forcing heavy custom draw logic in scripts.
+
+Interaction is part of the same surface through picking and registry-driven access, including multi-globe scenarios when needed. In practice, `lurek.globe` provides a complete strategic-map contract: build regions, render views, query topology, and drive gameplay decisions from shared map state.
 
 ## Imports
 

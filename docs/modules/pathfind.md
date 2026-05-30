@@ -8,198 +8,6 @@ To address the challenges of large open worlds and massive agent counts, the mod
 
 Beyond standard square grids, the module offers extensive support for alternative spatial layouts. It includes a fully featured `HexGrid` with cube-coordinate math, supporting both pointy-top and flat-top layouts, alongside specific line-of-sight and field-of-view queries. An `IsoGrid` provides specialized routing for isometric map layouts. For non-grid environments, the `NavMesh` structure allows A* routing across connected arbitrary polygons, extracting smoothed centroid corridors. To ensure pathfinding never stalls the primary game loop, the module features a dedicated `PathThreadPool`, allowing asynchronous, off-thread path requests via non-blocking channels. Finally, the `UnitPathfinder` provides a high-level, stateful wrapper for individual agents, handling path caching, variable unit sizes (clearance checks), partial paths, and string-pull smoothing. The entire suite is accessible via the `lurek.pathfind.*` Lua API.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### ai_flow_field.rs
-
-- Precomputed flow field steering many agents toward a single goal cell.
-- Propagates breadth-first distance over 8-directional neighbours with diagonal cost.
-- Stores per-cell direction vectors for smooth unit movement.
-- Respects walkability masks when terrain blocks pathing.
-- Gives group movement code a cheap steering target instead of a full path.
-
-### astar.rs
-
-- A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes.
-- Chooses octile or Manhattan heuristics to match the movement model.
-- Stops early when a node budget is reached and falls back to a partial path.
-- Uses Bresenham line-of-sight checks for path smoothing and validation.
-- Removes redundant waypoints through string-pull smoothing.
-- Serves as the standard single-unit shortest-path search for grid movement.
-
-### async_pool.rs
-
-- Fixed-size thread pool that runs A* pathfinding off the game thread.
-- Submits jobs through channels and polls results without blocking.
-- Shares one work queue across workers while skipping cancelled requests early.
-- Gives pathfinding heavy workloads a parallel execution path.
-- Keeps thread management isolated from callers.
-
-### bidir.rs
-
-- Bidirectional A* search that expands from both start and goal at once.
-- Meets in the middle when the closed sets overlap to cut explored nodes.
-- Falls back to a partial forward path when the node budget runs out.
-- Respects NavGrid diagonal mode and per-cell movement cost.
-- Supports variable unit sizes for multi-tile pathfinding.
-- Helps large open grids return useful routes with less search work.
-
-### flow_field.rs
-
-- Dijkstra-based flow field seeded from one or more goal cells over a NavGrid.
-- Stores normalized direction vectors toward the nearest goal beside accumulated cost.
-- Supports variable unit sizes for clearance-aware pathfinding.
-- Converts world-space positions into tile lookups and steering velocities.
-- Includes debug visualisation for directions and obstacles.
-- Provides the group-movement layer above raw path search.
-
-### goal_map.rs
-
-- Multi-source Dijkstra distance field for goal-oriented AI movement.
-- Builds a cost-to-reach map from many weighted source cells.
-- Returns downhill gradient, uphill flee direction, and flood-fill reachability.
-- Supports custom blocker predicates during baking from Lua bindings.
-- Serializes and restores the field as a compact binary blob.
-- Gives AI code a reusable distance surface for steering and influence.
-
-### graph_nav.rs
-
-- A* shortest-path search over weighted directed or bidirectional graphs.
-- Supports cost-bounded range queries for reachable nodes.
-- Falls back to Dijkstra when no heuristic is provided.
-- Reconstructs paths from predecessor maps for caller consumption.
-- Serves graph-based navigation where grid adjacency is not enough.
-
-### graph_path.rs
-
-- Province-level A* pathfinding across adjacency graphs with configurable move costs.
-- Adds Dijkstra-based reachability flooding for budget-limited travel.
-- Models blocked provinces and edge-tag costs in the search cost.
-- Uses a min-heap priority queue node for standard BinaryHeap ordering.
-- Applies a Euclidean centroid heuristic for admissible A* search.
-- Fits strategic map travel where regions, not cells, are the navigation unit.
-
-### grid.rs
-
-- Flat 2-D grid with per-cell walkability and movement-cost storage.
-- Provides A* with optional diagonal movement and selectable heuristics.
-- Includes Dijkstra and BFS variants for weighted and uniform-cost search.
-- Builds flow fields from a single goal cell for steering behavior.
-- Keeps internal heap and path reconstruction helpers close to the grid model.
-- Supports movement-cost lookups suitable for tile-based gameplay maps.
-- Acts as the basic navigation surface for cell-level routing.
-
-### hex_grid.rs
-
-- Hex grid with configurable flat-top or pointy-top offset layout.
-- Stores blocked flags and movement costs for weighted pathfinding.
-- Runs A* search for shortest paths between hex cells.
-- Exposes line-of-sight, field-of-view, and movement-range queries.
-- Uses cube-coordinate math for distance, interpolation, and rounding.
-- Fits tactics and map systems that need hex adjacency instead of squares.
-- Keeps hex navigation self-contained and script-friendly.
-
-### hpa.rs
-
-- Hierarchical Pathfinding A* over a chunked NavGrid abstraction.
-- Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries.
-- Builds an abstract graph of chunk-to-chunk edges with computed costs.
-- Runs abstract A* search with an octile heuristic.
-- Refines abstract waypoints back into full grid-level paths per segment.
-- Supports BFS reachability checks over chunk connectivity.
-- Temporarily inserts start and goal nodes for single-query routing.
-- Handles both horizontal and vertical chunk boundaries.
-- Accepts variable unit sizes through to the refinement stage.
-- Cuts large map searches down to a smaller navigation graph first.
-
-### influence_map.rs
-
-- Grid-based influence map with named floating-point layers over a uniform cell grid.
-- Stamps radial influence with falloff, smooths through neighbours, and decays over time.
-- Queries aggregated influence in rectangles or locates extrema positions.
-- Blends multiple layers into a destination layer with weighted combination.
-- Exposes debug visualisation into an RGBA image for inspection.
-- Serves tactical scoring and spatial pressure systems.
-
-### iso_grid.rs
-
-- Grid-based A* pathfinding over a rectangular isometric cell map.
-- Stores blocked flags and movement costs for weighted searches.
-- Uses Bresenham line-of-sight checks for visibility and smoothing support.
-- Expands four-direction neighbours with bounds and passability filtering.
-- Gives isometric tile worlds a direct path and visibility helper.
-
-### jps.rs
-
-- Jump Point Search optimized A* on uniform-cost 8-directional grids.
-- Prunes symmetric neighbours to skip large open areas.
-- Identifies forced neighbours and jump points along cardinal and diagonal directions.
-- Reconstructs a full tile-by-tile path from the jump points.
-- Uses an octile heuristic and a min-heap open list.
-- Works best when long straight corridors dominate the map.
-- Keeps uniform-grid search fast without changing the grid model.
-
-### mod.rs
-
-- Grid-based and graph-based pathfinding algorithms for cells, graphs, and flow fields.
-- Collects A*, bidirectional search, JPS, HPA*, goal maps, and influence maps under one namespace.
-- Includes grid, hex, isometric, and navmesh navigation surfaces.
-- Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
-
-### nav_grid.rs
-
-- Integer-cost walkability grid for tile-based pathfinding.
-- Stores per-cell movement weight where zero means blocked and higher values cost more.
-- Exposes cardinal and diagonal neighbour queries with corner-cut policies.
-- Tracks dirty rectangles for deferred HPA hierarchy invalidation.
-- Supports bulk fill, rect fill, byte import/export, and snapshot cloning.
-- Renders the grid and path overlay into ImageData for debug use.
-- Forms the base grid model used by higher-level navigation layers.
-
-### navmesh.rs
-
-- Polygon-based navigation mesh for 2D pathfinding.
-- Runs A* over a polygon adjacency graph with a centroid heuristic.
-- Checks point containment with ray-cast tests and extracts centroid waypoints.
-- Supports directed and bidirectional polygon connectivity.
-- Serves large open areas where cell grids are too coarse.
-
-### pathgrid.rs
-
-- Grid-based A* pathfinding with 8-directional movement and variable cell costs.
-- Uses Bresenham line-of-sight for path smoothing after search.
-- Converts cell indices to world-space centres with configurable cell size.
-- Prevents diagonal corner cutting through blocked corners.
-- Uses an octile heuristic for consistent cost estimation.
-- Gives tile maps a direct shortest-path implementation.
-
-### range_map.rs
-
-- Dijkstra-based budget-limited range expansion over a 2-D grid.
-- Produces a cost map for cells reachable within a travel budget.
-- Supports cardinal and diagonal movement with per-cell cost weights.
-- Useful for movement preview, threat radius, and action-range queries.
-- Keeps reachability and distance budgeting in one helper.
-
-### render.rs
-
-- Debug visualization for pathfinding structures as colored RenderCommand lists.
-- Draws NavGrid cells, FlowField arrows, and InfluenceMap heat overlays.
-- Returns batches ready for overlay drawing in the renderer.
-- Gives developers a direct view into navigation data.
-- Keeps visual inspection separate from path search logic.
-
-### unit_pathfinder.rs
-
-- Stateful per-unit pathfinder wrapping a shared NavGrid reference.
-- Runs full A* searches with optional string-pull smoothing.
-- Supports partial paths, BFS reachability, and nearest-walkable searches.
-- Caches recent routes with an LRU strategy and manual invalidation.
-- Exposes octile heuristic and Bresenham LOS helpers for local decisions.
-- Gives each unit its own path search facade without duplicating grid data.
-
 ## Functions
 
 ### `lurek.pathfind.getThreadCount`
@@ -240,13 +48,13 @@ lurek.pathfind.newFlowField(grid_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grid_ud` | [LNavGrid](#lnavgrid-handle) | Navigation grid to compute flow field from. |
+| `grid_ud` | [LNavGrid](#lnavgrid) | Navigation grid to compute flow field from. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LFlowField](#lflowfield-handle) | New flow field handle. |
+| [LFlowField](#lflowfield) | New flow field handle. |
 
 **Example**
 
@@ -288,7 +96,7 @@ lurek.pathfind.newGoalMap(width, height)
 
 | Type | Description |
 |------|-------------|
-| [LGoalMap](#lgoalmap-handle) | New goal map ready for source registration and baking. |
+| [LGoalMap](#lgoalmap) | New goal map ready for source registration and baking. |
 
 **Example**
 
@@ -321,7 +129,7 @@ lurek.pathfind.newHexGrid(width, height, layout_str)
 
 | Type | Description |
 |------|-------------|
-| [LHexGrid](#lhexgrid-handle) | New hex grid handle. |
+| [LHexGrid](#lhexgrid) | New hex grid handle. |
 
 **Example**
 
@@ -358,7 +166,7 @@ lurek.pathfind.newJpsGrid(width, height)
 
 | Type | Description |
 |------|-------------|
-| [LJpsGrid](#ljpsgrid-handle) | New JPS grid handle. |
+| [LJpsGrid](#ljpsgrid) | New JPS grid handle. |
 
 **Example**
 
@@ -396,7 +204,7 @@ lurek.pathfind.newNavGrid(width, height)
 
 | Type | Description |
 |------|-------------|
-| [LNavGrid](#lnavgrid-handle) | New navigation grid handle. |
+| [LNavGrid](#lnavgrid) | New navigation grid handle. |
 
 **Example**
 
@@ -424,7 +232,7 @@ lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tm_ud` | [LTileMap](#ltilemap-handle) | Tilemap to derive navigation grid from. |
+| `tm_ud` | [LTileMap](#ltilemap) | Tilemap to derive navigation grid from. |
 | `layer_index` | number | One-based tilemap layer index. |
 | `blocked_table` | table | Array of tile GIDs that should be blocked. |
 
@@ -432,7 +240,7 @@ lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table)
 
 | Type | Description |
 |------|-------------|
-| [LNavGrid](#lnavgrid-handle) | New navigation grid handle. |
+| [LNavGrid](#lnavgrid) | New navigation grid handle. |
 
 **Example**
 
@@ -466,7 +274,7 @@ lurek.pathfind.newNavMesh()
 
 | Type | Description |
 |------|-------------|
-| [LNavMesh](#lnavmesh-handle) | New navmesh handle. |
+| [LNavMesh](#lnavmesh) | New navmesh handle. |
 
 **Example**
 
@@ -503,13 +311,13 @@ lurek.pathfind.newPathFlowField(grid_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grid_ud` | [LPathGrid](#lpathgrid-handle) | Path grid to compute AI flow field from. |
+| `grid_ud` | [LPathGrid](#lpathgrid) | Path grid to compute AI flow field from. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LAIFlowField](#laiflowfield-handle) | New AI flow field handle. |
+| [LAIFlowField](#laiflowfield) | New AI flow field handle. |
 
 **Example**
 
@@ -549,7 +357,7 @@ lurek.pathfind.newPathGrid(w, h, cell_size)
 
 | Type | Description |
 |------|-------------|
-| [LPathGrid](#lpathgrid-handle) | New path grid handle. |
+| [LPathGrid](#lpathgrid) | New path grid handle. |
 
 **Example**
 
@@ -576,13 +384,13 @@ lurek.pathfind.newPathfinder(grid_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `grid_ud` | [LNavGrid](#lnavgrid-handle) | Navigation grid to pathfind on. |
+| `grid_ud` | [LNavGrid](#lnavgrid) | Navigation grid to pathfind on. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LUnitPathfinder](#lunitpathfinder-handle) | New pathfinder handle. |
+| [LUnitPathfinder](#lunitpathfinder) | New pathfinder handle. |
 
 **Example**
 
@@ -683,19 +491,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAIFlowField Handle](#laiflowfield-handle)
-- [LFlowField Handle](#lflowfield-handle)
-- [LGoalMap Handle](#lgoalmap-handle)
-- [LHexGrid Handle](#lhexgrid-handle)
-- [LJpsGrid Handle](#ljpsgrid-handle)
-- [LNavGrid Handle](#lnavgrid-handle)
-- [LNavMesh Handle](#lnavmesh-handle)
-- [LPathGrid Handle](#lpathgrid-handle)
-- [LTileMap Handle](#ltilemap-handle)
-- [LUnitPathfinder Handle](#lunitpathfinder-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -704,13 +499,26 @@ end
 
 *No module-specific enums documented.*
 
-## LAIFlowField Handle
+## Types
 
-### Fields
+- [LAIFlowField](#laiflowfield)
+- [LFlowField](#lflowfield)
+- [LGoalMap](#lgoalmap)
+- [LHexGrid](#lhexgrid)
+- [LJpsGrid](#ljpsgrid)
+- [LNavGrid](#lnavgrid)
+- [LNavMesh](#lnavmesh)
+- [LPathGrid](#lpathgrid)
+- [LTileMap](#ltilemap)
+- [LUnitPathfinder](#lunitpathfinder)
+
+## LAIFlowField
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAIFlowField:getDirection`
 
@@ -954,7 +762,7 @@ LAIFlowField:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAIFlowField](#laiflowfield-handle)`. |
+| string | The string `[LAIFlowField](#laiflowfield)`. |
 
 **Example**
 
@@ -1003,13 +811,13 @@ end
 
 ---
 
-## LFlowField Handle
+## LFlowField
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFlowField:calculate`
 
@@ -1324,7 +1132,7 @@ LFlowField:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LFlowField](#lflowfield-handle)`. |
+| string | The string `[LFlowField](#lflowfield)`. |
 
 **Example**
 
@@ -1373,13 +1181,13 @@ end
 
 ---
 
-## LGoalMap Handle
+## LGoalMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGoalMap:addSource`
 
@@ -1756,7 +1564,7 @@ LGoalMap:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LGoalMap](#lgoalmap-handle)`. |
+| string | The string `[LGoalMap](#lgoalmap)`. |
 
 **Example**
 
@@ -1801,13 +1609,13 @@ end
 
 ---
 
-## LHexGrid Handle
+## LHexGrid
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LHexGrid:distance`
 
@@ -2126,7 +1934,7 @@ LHexGrid:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LHexGrid](#lhexgrid-handle)`. |
+| string | The string `[LHexGrid](#lhexgrid)`. |
 
 **Example**
 
@@ -2173,13 +1981,13 @@ end
 
 ---
 
-## LJpsGrid Handle
+## LJpsGrid
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LJpsGrid:findPath`
 
@@ -2309,7 +2117,7 @@ LJpsGrid:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LJpsGrid](#ljpsgrid-handle)`. |
+| string | The string `[LJpsGrid](#ljpsgrid)`. |
 
 **Example**
 
@@ -2356,13 +2164,13 @@ end
 
 ---
 
-## LNavGrid Handle
+## LNavGrid
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNavGrid:clearDirty`
 
@@ -3000,7 +2808,7 @@ LNavGrid:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNavGrid](#lnavgrid-handle)`. |
+| string | The string `[LNavGrid](#lnavgrid)`. |
 
 **Example**
 
@@ -3047,13 +2855,13 @@ end
 
 ---
 
-## LNavMesh Handle
+## LNavMesh
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNavMesh:addPolygon`
 
@@ -3253,7 +3061,7 @@ LNavMesh:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNavMesh](#lnavmesh-handle)`. |
+| string | The string `[LNavMesh](#lnavmesh)`. |
 
 **Example**
 
@@ -3300,13 +3108,13 @@ end
 
 ---
 
-## LPathGrid Handle
+## LPathGrid
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPathGrid:findPath`
 
@@ -3628,7 +3436,7 @@ LPathGrid:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LPathGrid](#lpathgrid-handle)`. |
+| string | The string `[LPathGrid](#lpathgrid)`. |
 
 **Example**
 
@@ -3675,13 +3483,13 @@ end
 
 ---
 
-## LTileMap Handle
+## LTileMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTileMap:addLayer`
 
@@ -3719,7 +3527,7 @@ LTileMap:addTileSet(tileSet)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tileSet` | LTileSet | Tileset to add. |
+| `tileSet` | [LTileSet](tilemap.md#ltileset) | Tileset to add. |
 
 ---
 
@@ -3848,7 +3656,7 @@ LTileMap:drawToImage(tileSize)
 
 | Type | Description |
 |------|-------------|
-| LImage | Rasterized image of the map. |
+| [LImage](render.md#limage) | Rasterized image of the map. |
 
 ---
 
@@ -4168,7 +3976,7 @@ LTileMap:getTileSet(idx)
 
 | Type | Description |
 |------|-------------|
-| LTileSet | The tileset, or nil if index is out of range. |
+| [LTileSet](tilemap.md#ltileset) | The tileset, or nil if index is out of range. |
 
 ---
 
@@ -4604,7 +4412,7 @@ LTileMap:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LTileMap](#ltilemap-handle)"`. |
+| string | Always `"[LTileMap](#ltilemap)"`. |
 
 ---
 
@@ -4626,7 +4434,7 @@ LTileMap:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if `name` is `"[LTileMap](#ltilemap-handle)"` or `"Object"`. |
+| boolean | True if `name` is `"[LTileMap](#ltilemap)"` or `"Object"`. |
 
 ---
 
@@ -4670,13 +4478,13 @@ LTileMap:worldToTile(wx, wy)
 
 ---
 
-## LUnitPathfinder Handle
+## LUnitPathfinder
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LUnitPathfinder:clearCache`
 
@@ -5299,7 +5107,7 @@ LUnitPathfinder:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LUnitPathfinder](#lunitpathfinder-handle)`. |
+| string | The string `[LUnitPathfinder](#lunitpathfinder)`. |
 
 **Example**
 

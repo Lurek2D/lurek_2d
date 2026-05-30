@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `mapblock` module provides a scripted, constraint-based procedural map assembly system that composes reusable tile-block prefabs into fully rendered TileMaps.
+- The `mapblock` module builds tilemaps from reusable block prefabs using scripted steps and edge-compatibility constraints.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-The `mapblock` module implements a Carcassonne-inspired map assembly pipeline where discrete `MapBlock` prefabs — each a grid of `MapTile` slots with typed edges — are placed on a `PlacementGrid` according to `EdgeConstraint` rules that ensure neighboring blocks share compatible socket types (e.g., `"road"`, `"river"`). Block placement is driven by a `MapScript`: an ordered sequence of typed `ScriptStep` operations including `Fill` (flood-fill a region with a block group), `PlaceGroup` (weighted random selection from a named `BlockGroup`), `PlaceBlock` (explicit placement), `ApplyLayer` (copy a layer from another block), and `Repeat` (nested sub-sequence with its own RNG advance). The `MapBlockGenerator` executes these steps in order with backtrack support, capped by a configurable `retry_limit`.
+The `mapblock` module is a procedural map assembly system based on reusable block prefabs. Each block carries tile payload and edge semantics, so larger maps can be constructed from authored pieces instead of drawing every tile manually.
 
-Blocks are organized into named `BlockGroup` sets using alias-method weighted sampling, enabling biome-zone filling where a single script step populates an entire region with contextually appropriate tiles. Each block references a `TilesetRef` that maps its tile slot IDs to world tile IDs via a `base_id` offset, allowing multiple blocks to share the same tileset texture. Tile slots are typed (`floor`, `roof`, `object`, `wall`, or custom), which maps directly to `TileMap` layer indices in the output.
+Generation is script-driven. Ordered steps define where to fill, what groups to sample, when to place explicit blocks, and when to repeat nested operations. This gives teams deterministic control with optional weighted randomness.
 
-Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelMap`) that maintains independent `MapBlockGrid` instances per Z-level. Both top-down and isometric projection orientations are supported via `MapOrientation`, applied by the tilemap renderer. The final assembly step calls `grid_to_tilemap`, converting the block grid into a standard `TileMap` owned by the caller and decoupled from the generator. The `lurek.mapblock.*` Lua API exposes block definition, group registration, script construction, and generation entry points.
+Constraint checks are built into placement logic. Neighbor edges must be compatible, which helps keep roads, rivers, and other structural connections coherent during automatic generation.
+
+Blocks can be grouped by theme and mapped through shared tileset references, so one generation script can produce varied biome-like regions while still using a manageable asset workflow.
+
+The module also supports multi-level maps and orientation-aware output. In practice, `lurek.mapblock` provides one complete contract to author blocks, run constrained assembly scripts, and export stable tilemap results for runtime use.
 
 ## Imports
 

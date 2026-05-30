@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `overlay` module manages all screen-space visual effects drawn between the game world and the player: weather particles, atmospheric effects, screen flashes, camera shake, scene transitions, ambient tinting, and water distortion.
+- The `overlay` module manages screen-space presentation effects such as weather, atmosphere, flash, shake, fade, transitions, and water distortion.
 
 ## General Info
 
@@ -16,19 +16,17 @@
 
 ## Summary
 
-The `overlay` module provides a self-contained screen-space effects layer that sits above world rendering and below the HUD. The central `Overlay` struct owns every subsystem and drives their per-frame update via a single `update(dt)` call. It handles five distinct effect categories.
+The `overlay` module is the screen-space effects layer between world rendering and HUD presentation. It centralizes effect state and updates so scenes can combine visual atmosphere and feedback without spreading logic across many systems.
 
-**Weather and atmosphere**: A particle-based `WeatherState` simulates seven weather modes — rain, snow, hail, dust, leaves, ash, and pollen — each with configurable wind parameters and an internal PRNG pool. Atmospheric overlays add full-screen fog, animated cloud layers, heat haze distortion, vignette darkening, film grain, and short-lived lightning flashes, all driven by opt-in state structs that default to disabled.
+Its runtime covers several effect families in one controller: weather particles, fog and cloud-like atmosphere, flash and shake reactions, fade behavior, transition styles, and water distortion overlays.
 
-**Ambient lighting**: `AmbientState` applies a global RGBA tint driven by a time-of-day curve that interpolates through dawn, day, dusk, and night segments. This tint is synchronized with the `light` module via `pull_ambient_from_light` and `push_ambient_to_light` helpers to keep both systems consistent.
+Ambient tint and time-of-day style control are integrated as part of the same surface, with helpers to keep overlay ambience aligned with lighting state when needed.
 
-**Screen effects**: Three time-limited state machines handle `FlashState` (full-screen color burst with alpha decay), `ShakeState` (camera offset jitter using a deterministic internal PRNG), and `FadeState` (timed interpolation toward a target alpha). All three are triggered from Lua via `trigger_flash`, `trigger_shake`, and `trigger_fade`.
+Effects are time-driven and script-triggerable, so teams can fire short reactions or run long-lived environmental layers through one API. This supports both gameplay feedback and cinematic presentation flow.
 
-**Scene transitions**: `ScreenTransition` supports fade, wipe, iris wipe, and dissolve styles with forward and reverse playback modes. Normalized progress is exposed for renderer consumption.
+Output is provided as render commands and image-oriented debug previews, which keeps integration flexible across compositor and tooling paths. In practice, `lurek.overlay` provides one consistent contract for dynamic full-screen presentation effects.
 
-**Water distortion**: `WaterOverlayState` applies an animated sine-wave distortion overlay with configurable amplitude, frequency, and speed, plus shallow-water tint and depth-based color shift.
-
-All active layers emit `RenderCommand` entries built by `build_render_commands` for compositor integration. Debug visualization helpers render state panels and trigger previews into `ImageData` buffers. The full suite is accessible via `lurek.overlay.*`.
+This makes presentation behavior easier to maintain as projects grow, because effect logic stays centralized instead of being duplicated across scene-specific scripts.
 
 ## Imports
 

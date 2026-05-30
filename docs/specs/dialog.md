@@ -2,6 +2,7 @@
 
 ## TL;DR
 
+- The `dialog` module provides branching conversation runtime primitives with topic selection, branch gating, speaker metadata, and state progression.
 
 
 ## General Info
@@ -16,13 +17,13 @@
 
 ## Summary
 
-The `dialog` module provides branching conversation runtime primitives built around dialog trees, guarded branching conditions, speaker metadata, and emitted dialog events. It supports both simple linear flows and richer weighted branch/topic selection based on runtime gate context.
+The `dialog` module is the runtime backbone for conversation flow. It lets projects define topics, branches, and progression state in a structured form, so dialogue behavior stays predictable during gameplay.
 
-Module responsibilities are explicit: `tree` models nodes and branch selection, `condition` evaluates gating predicates against supplied context, `state` tracks active conversation progression, `speaker` stores participant metadata, and `events` emits structured signals for external scripting or UI reactions.
+Its main value is controlled branching. Options can be gated by context rules, weighted for selection, and advanced through explicit transitions. This avoids fragile ad-hoc branching spread across many scripts.
 
-The architecture keeps dialogue logic data-driven and testable. Selection policy and gate checks are represented as explicit model types rather than hardcoded branching paths scattered in scripts.
+Speaker metadata and dialogue events are part of the same runtime surface. That makes UI and tools easier to integrate, because they can react to conversation changes through stable module contracts.
 
-In feature-system terms, `dialog` should remain focused on conversation evaluation and progression contracts. Presentation, animation timing, and game-specific narrative policy should consume this runtime surface rather than live inside it.
+The module stays focused on dialogue logic, not presentation policy. Games can layer custom pacing and visual style on top, while `lurek.dialog` provides consistent choice, gate, and progression behavior underneath.
 
 ## Imports
 

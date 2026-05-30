@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `compute` module is a dense N-dimensional numerical array library forming a core component of the Foundations tier.
+- The `compute` module provides a CPU-first N-dimensional array toolkit for numeric transforms, statistics, linear algebra, FFT, and spatial processing through one consistent API.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `compute` module is the CPU numerical workspace for typed n-dimensional array operations and analytics-style transforms. `NdArray` plus `DataType` form the primary data container, while specialized submodules provide FFT, linear algebra, element-wise ops, spatial processing, and aggregate analytics.
+The `compute` module is the engine's general-purpose numeric workspace. It gives scripts and systems one place to create typed arrays and run deterministic math over them, from simple element-wise operations to heavier analytical and transform workflows.
 
-Its architecture is capability-based: `array` handles shape and storage, `ops` handles vectorized/reduction primitives and parallel thresholds, `linalg` handles matrix/transform operations, `fft` handles frequency transforms, and `spatial` handles neighborhood-based processing. `analytics` adds higher-level statistics over these same typed buffers.
+Its functional coverage is broad but coherent. The same array model supports arithmetic, reductions, reshaping, comparisons, and in-place updates, then extends into matrix math, FFT-based spectral analysis, neighborhood filtering, and statistical post-processing.
 
-This module is intentionally GPU-agnostic and gameplay-agnostic. It exists to provide deterministic numerical kernels that other systems can call, from simulation features to offline tooling.
+Because these capabilities share one data contract, teams can build end-to-end numeric pipelines without jumping between incompatible formats. This helps with simulation logic, data preparation, tool-side analysis, and runtime feature code that depends on reliable numerical behavior.
 
-Quality for this module means strong shape/type guarantees, predictable numeric behavior, and transparent performance controls (such as configurable parallel dispatch thresholds) so callers can balance determinism and throughput.
+The module is designed to stay CPU-first and predictable. It exposes shape and type constraints clearly, reports mismatch errors early, and keeps parallelism controls explicit so callers can choose between throughput and strict repeatability.
 
-Implementation detail and boundary guarantees for compute: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analytics.rs: Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d) - Histogram binning with configurable range and bin count - Percentile extraction with linear interpolation - Pairwise statistical measures (covariance, Pearson correlation) - Value normalization helpe; array.rs: Dense n-dimensional array container with typed storage (float32, float64, int32) - Shape validation, stride computation, and flat-index addressing - Constructors for zeros, ones, range, and from-slice initialization - Element access by flat index or multidimensional coordinates -; fft.rs: Radix-2 in-place FFT and inverse FFT for power-of-two length buffers - Real-to-complex forward transform with automatic zero-padding - Complex-to-real inverse transform for spectrum reconstruction - Magnitude spectrum extraction from complex bin pairs; linalg.rs: Vector operations (normalize, cross2d, outer product, dot via spatial) - 2D transformation matrices (rotation, affine, point transform) - Convolution kernels (Gaussian) and edge detection (Sobel) - Linear system solving via Gaussian elimination with partial pivoting - LU decompos; mod.rs: N-dimensional array container, element-wise and reduction operations - FFT, linear algebra, spatial filtering, and statistical analytics - Configurable parallel dispatch threshold for large arrays; ops.rs: Element-wise arithmetic, comparison, and bitwise operations on NdArray - Scalar and array binary operations with row-broadcast support - Reduction operations (sum, mean, min, max) globally and along axes - In-place mutation variants for add, sub, mul, div - Reshape, transpose, cl; spatial.rs: 2D convolution with zero-padded boundary handling - Binary morphology operators (dilate, erode) using Manhattan radius - Flood fill with 4-connected BFS propagation - Sub-region extraction and insertion for 2D arrays - Matrix multiplication and 1D dot product. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+From a workflow perspective, the module helps unify experimentation and production code. The same primitives used for quick script exploration can be reused in stable runtime paths, so teams can prototype calculations, validate them, and keep the exact logic in shipped features without rewriting data handling around a different math stack.
 
 ## Imports
 
@@ -287,3 +287,4 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 ##### Methods
 
 - No documented methods.
+

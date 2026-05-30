@@ -8,50 +8,6 @@ In addition to camera-driven motion, the module features an independent auto-scr
 
 The visual fidelity of parallax layers can be further customized per-layer. It supports dynamic opacity adjustments, RGBA tinting, and various accumulation blend modes (such as additive or screen). Advanced visual features include a motion-stretch blur effect, which procedurally stretches layer tiles based on their auto-scroll velocity to simulate high-speed motion. For ease of use, the module includes a `presets` system offering ready-made configurations for common depth planes (e.g., far backgrounds, mid-grounds, and foreground fog). Grouped management is provided via `ParallaxSet`s, and the entire feature suite is fully exposed to the Lua environment through the `lurek.parallax.*` API.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### draw.rs
-
-- Rasterises a single parallax layer into an ImageData bitmap.
-- Applies tint, opacity, and visibility when drawing.
-- Produces a solid-colour image sized to the requested dimensions.
-
-### layer.rs
-
-- Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint.
-- Carries draw-batch state so render submission stays separated from configuration.
-- Computes camera-relative pixel offsets with optional scroll clamping.
-- Delegates tile repetition to tile_iter for viewport coverage.
-- Supports motion-stretch blur injection based on autoscroll velocity.
-- Manages a small shader effect chain per layer for extra visual variation.
-
-### mod.rs
-
-- Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation.
-- Provides preset constructors for common depth planes and tile iteration helpers for rendering.
-- Keeps parallax drawing separate from the world and camera systems.
-
-### presets.rs
-
-- Ready-made parallax layer constructors for common depth planes.
-- Covers far background, mid background, and foreground fog presets.
-- Bakes scroll factor, repeat, z-order, opacity, and blend mode into each preset.
-
-### render.rs
-
-- Converts parallax layer state into flat RenderCommand lists for the renderer.
-- Batches tile positions into draw-image sequences with color and blend pre-applied.
-- Bridges parallax camera math to the GPU submission pipeline.
-
-### tile_iter.rs
-
-- Computes visible tile positions for repeating parallax layers inside a screen rect and cull margin.
-- Walks one axis at a time and combines X and Y into a full grid with bounded growth.
-- Emits only the single origin position for non-repeating layers.
-- Supplies the viewport coverage iterator used by parallax rendering.
-
 ## Functions
 
 ### `lurek.parallax.newLayer`
@@ -72,7 +28,7 @@ lurek.parallax.newLayer(opts)
 
 | Type | Description |
 |------|-------------|
-| [LParallaxLayer](#lparallaxlayer-handle) | New parallax layer handle. |
+| [LParallaxLayer](#lparallaxlayer) | New parallax layer handle. |
 
 **Example**
 
@@ -109,13 +65,13 @@ lurek.parallax.newPresetLayer(preset_name, img_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `preset_name` | string | Preset name: `far`, `mid`, or `fog`. |
-| `img_ud` | [LImage](#limage-handle) | Image handle from `lurek.render.newImage`. |
+| `img_ud` | [LImage](#limage) | Image handle from `lurek.render.newImage`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LParallaxLayer](#lparallaxlayer-handle) | New parallax layer handle. |
+| [LParallaxLayer](#lparallaxlayer) | New parallax layer handle. |
 
 **Example**
 
@@ -149,7 +105,7 @@ lurek.parallax.newSet(name)
 
 | Type | Description |
 |------|-------------|
-| [LParallaxSet](#lparallaxset-handle) | New parallax set handle. |
+| [LParallaxSet](#lparallaxset) | New parallax set handle. |
 
 **Example**
 
@@ -167,12 +123,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LImage Handle](#limage-handle)
-- [LParallaxLayer Handle](#lparallaxlayer-handle)
-- [LParallaxSet Handle](#lparallaxset-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -181,13 +131,19 @@ end
 
 *No module-specific enums documented.*
 
-## LImage Handle
+## Types
 
-### Fields
+- [LImage](#limage)
+- [LParallaxLayer](#lparallaxlayer)
+- [LParallaxSet](#lparallaxset)
+
+## LImage
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImage:getDimensions`
 
@@ -282,7 +238,7 @@ LImage:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LImage](#limage-handle)". |
+| string | Always "[LImage](#limage)". |
 
 ---
 
@@ -308,13 +264,13 @@ LImage:typeOf(name)
 
 ---
 
-## LParallaxLayer Handle
+## LParallaxLayer
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LParallaxLayer:addEffectPass`
 
@@ -1298,7 +1254,7 @@ LParallaxLayer:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LParallaxLayer](#lparallaxlayer-handle)`. |
+| string | The string `[LParallaxLayer](#lparallaxlayer)`. |
 
 **Example**
 
@@ -1347,13 +1303,13 @@ end
 
 ---
 
-## LParallaxSet Handle
+## LParallaxSet
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LParallaxSet:addLayer`
 
@@ -1367,7 +1323,7 @@ LParallaxSet:addLayer(layer)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | [LParallaxLayer](#lparallaxlayer-handle) | Layer handle. |
+| `layer` | [LParallaxLayer](#lparallaxlayer) | Layer handle. |
 
 **Example**
 
@@ -1734,7 +1690,7 @@ LParallaxSet:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LParallaxSet](#lparallaxset-handle)`. |
+| string | The string `[LParallaxSet](#lparallaxset)`. |
 
 **Example**
 

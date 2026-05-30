@@ -8,169 +8,6 @@ Beyond basic vectors, the module implements a robust set of geometric primitives
 
 The module also excels in procedural generation and animation. It features a sophisticated `NoiseGenerator` offering Perlin, Simplex, and Worley (cellular) noise, layered with Fractional Brownian Motion (fBm) or turbulence for organic terrain synthesis. For animation, it provides an extensive library of over 50 named easing functions and multi-channel numeric interpolators via the `Tween` system. Pathing and curves are supported through `BezierCurve` (quadratic/cubic) and `CatmullRomSpline` implementations. Additionally, it handles deterministic, seedable random number generation (`RandomGenerator`) and texture atlas rectangle packing. This immense mathematical toolkit is entirely exposed to the scripting environment via the `lurek.math.*` API.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### aabb_tree.rs
-
-- Dynamic broad-phase spatial index for 2D world queries and overlap culling.
-- Stores moving bounds in a hierarchy that stays tight as entries shift each frame.
-- Serves fast insert, remove, move, and query flows for dynamic actors.
-- Reuses nodes through an internal pool to reduce allocation churn.
-- Chooses sibling branches with a cost heuristic that keeps the tree balanced.
-- Answers rectangle, point, circle, and segment tests from one entry map.
-- Exposes helper bound math so callers can combine and compare leaves efficiently.
-- Fits game-style workloads where many objects move but only a subset interact.
-- Gives predictable query latency for proximity, visibility, and broad-phase passes.
-- Keeps the data model leaf-centric so Lua-side handles stay simple and stable.
-
-### bezier.rs
-
-- Flexible Bézier curve utility for smooth motion paths and procedural shaping.
-- Supports dynamic control points, clamped evaluation, and partial-segment sampling.
-- Provides tangent and derivative queries for orientation and velocity-aware effects.
-- Can be transformed in place with translate, rotate, and scale operations.
-- Designed for path authoring, easing-like shaping, and motion interpolation use cases.
-
-### circle.rs
-
-- Circle primitive for radius-based collision and containment checks.
-- Keeps radius non-negative and treats the center as the shape anchor.
-- Answers point, circle, and AABB overlap queries for gameplay geometry.
-- Includes area and perimeter helpers for higher-level math routines.
-
-### easing.rs
-
-- Curated easing family for animation curves and tween response shaping.
-- Covers the standard in, out, and in-out variants across common motion families.
-- Handles edge clamping for curves that need explicit start and end behavior.
-- Exposes name-based resolution for data-driven animation systems.
-- Includes linear passthrough for identity interpolation.
-- Keeps the API focused on normalized t in [0,1] inputs and outputs.
-- Lets higher-level systems drive motion with consistent curve semantics.
-
-### facade.rs
-
-- Small scalar helper layer for interpolation and numeric remapping.
-- Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior.
-- Operates on f32 values only and stays side-effect free.
-- Acts as the lightweight math front door for common numeric tasks.
-
-### geometry.rs
-
-- Standalone geometry toolbox for flat coordinate math and polygon routines.
-- Covers circle, segment, line, and point queries used by gameplay systems.
-- Computes polygon area, centroid, convex hull, and point inclusion tests.
-- Provides line rasterization for grid traversal and tile-based effects.
-- Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep.
-- Uses f32 for engine-facing work and f64 where triangulation precision matters.
-- Exposes plain free functions with no shape ownership or scene coupling.
-- Serves as the shared low-level layer for collision, map, and generation code.
-
-### loot_table.rs
-
-- Weighted loot sampling and pity tracking for deterministic drop systems.
-- Uses the alias method for O(1) draws after an O(n) build step.
-- Keeps the raw weight table and RNG state serializable for save files.
-- Supports guaranteed outcomes once a pity threshold is reached.
-- Lets callers combine normal sampling with tracked fail counters.
-- Preserves fast runtime lookups without hiding the probability model.
-- Fits reward tables, gacha-style drops, and event-driven item rolls.
-- Restores exactly to the previous random state when deserialized.
-- Keeps the core data structure simple enough for Lua-driven gameplay flows.
-- Exposes predictable sampling behavior under both normal and pity paths.
-
-### mat3.rs
-
-- Row-major 3x3 matrix for 2D affine transforms and coordinate mapping.
-- Builds identity, translation, rotation, scale, and shear matrices.
-- Supports inversion and multiplication for transform composition.
-- Maps points through a compact linear algebra core.
-- Serves as the numeric backbone for higher-level 2D transform code.
-
-### mod.rs
-
-- Core math module wiring the vector, matrix, shape, curve, and utility submodules.
-- Collects the primitives that other engine systems build on for motion, collision, and mapping.
-- Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace.
-- Keeps the public math surface compact while exposing the full foundation layer.
-
-### polygon.rs
-
-- Polygon toolkit for clipping, hull building, triangulation, and winding cleanup.
-- Handles simple and concave shapes with routines aimed at gameplay geometry.
-- Provides intersection and boolean-style operations for shape processing.
-- Computes signed area and point-in-triangle tests for structural checks.
-- Normalizes vertex order so downstream consumers can rely on consistent winding.
-- Supplies the low-level machinery behind map, collision, and editor-style geometry flows.
-
-### random.rs
-
-- Seedable pseudo-random generator wrapper for deterministic gameplay and replay.
-- Produces uniform integer, float, and Gaussian samples from one stateful source.
-- Serializes and restores seed state so saves can resume the same sequence.
-- Gives higher-level systems a simple random facade without exposing backend details.
-- Fits any flow that needs reproducible chance, noise, or procedural variation.
-
-### rect.rs
-
-- Axis-aligned rectangle helper for layout, bounds, and collision checks.
-- Stores top-left position plus size under the engine's y-down convention.
-- Supports containment, overlap, union, and bounding-box construction.
-- Offers both corner-based and center-based creation paths.
-- Acts as the basic 2D box type used across spatial code.
-
-### spatial_hash.rs
-
-- Uniform-grid spatial hash for broad-phase collision and proximity search.
-- Buckets moving bounds into cells so query cost follows local density, not world size.
-- Supports insert, remove, update, and deduplicated multi-shape queries.
-- Handles rectangle, circle, and segment probes with shared cell traversal logic.
-- Uses slab-style segment tests for fast box intersection checks.
-- Works best when many objects stay sparse across a large playfield.
-
-### spline.rs
-
-- Multi-segment spline helper for smooth interpolation across control points.
-- Bridges Catmull-Rom and Hermite style curve handling under one shape.
-- Supports normalized sampling across full paths or individual segments.
-- Tracks control points dynamically so paths can be edited at runtime.
-- Useful for motion trails, camera rails, and other smooth route logic.
-
-### transform.rs
-
-- Mutable 2D affine transform that accumulates position, rotation, scale, and shear.
-- Wraps a 3x3 matrix so chained edits stay compact and composable.
-- Exposes forward and inverse point mapping for world and local space conversion.
-- Includes SRT decomposition for systems that need readable transform components.
-- Bridges low-level matrix math with runtime spatial manipulation.
-
-### vec2.rs
-
-- Fundamental 2D float vector for position, velocity, direction, and offsets.
-- Covers arithmetic, normalization, projection, and distance-style helpers.
-- Adds rotation, reflection, and angle conversion support for gameplay math.
-- Offers interpolation and unit-direction construction from radians.
-- Serves as the common scalar pair used throughout the engine.
-
-### vec3.rs
-
-- 3D float vector for cross products, directions, and other compact spatial math.
-- Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work.
-- Supports projection, interpolation, distance, and length queries.
-- Acts as the small 3D companion to the 2D math core.
-- Useful for normals, ray direction math, and procedural inputs.
-
-### voronoi.rs
-
-- Voronoi cell builder from 2D point sets using incremental Delaunay construction.
-- Produces closed polygonal cells with stable point deduplication and cleanup.
-- Relies on circumcircle predicates to drive triangulation updates.
-- Extracts boundary edges and orders vertices counter-clockwise for each region.
-- Handles coincident sites gracefully instead of failing the whole diagram.
-- Gives procedural generation and spatial partitioning code a ready-made diagram source.
-
 ## Functions
 
 ### `lurek.math.Vec2`
@@ -192,7 +29,7 @@ lurek.math.Vec2(x, y)
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | New vector handle. |
+| [LVec2](#lvec2) | New vector handle. |
 
 **Example**
 
@@ -225,7 +62,7 @@ lurek.math.Vec3(x, y, z)
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | New vector handle. |
+| [LVec3](#lvec3) | New vector handle. |
 
 **Example**
 
@@ -250,7 +87,7 @@ lurek.math.aabbTree()
 
 | Type | Description |
 |------|-------------|
-| [LAabbTree](#laabbtree-handle) | New AABB tree handle. |
+| [LAabbTree](#laabbtree) | New AABB tree handle. |
 
 **Example**
 
@@ -548,7 +385,7 @@ lurek.math.catmullRom(points)
 
 | Type | Description |
 |------|-------------|
-| [LCatmullRom](#lcatmullrom-handle) | New spline handle. |
+| [LCatmullRom](#lcatmullrom) | New spline handle. |
 
 **Example**
 
@@ -1196,7 +1033,7 @@ lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y)
 
 | Type | Description |
 |------|-------------|
-| [LHermite](#lhermite-handle) | New Hermite spline handle. |
+| [LHermite](#lhermite) | New Hermite spline handle. |
 
 **Example**
 
@@ -1929,7 +1766,7 @@ lurek.math.lootFromList(entries)
 
 | Type | Description |
 |------|-------------|
-| [LLootTable](#lloottable-handle) | New loot table handle. |
+| [LLootTable](#lloottable) | New loot table handle. |
 
 **Example**
 
@@ -1963,7 +1800,7 @@ lurek.math.lootFromToml(path)
 
 | Type | Description |
 |------|-------------|
-| [LLootTable](#lloottable-handle) | New loot table handle. |
+| [LLootTable](#lloottable) | New loot table handle. |
 
 **Example**
 
@@ -2056,7 +1893,7 @@ lurek.math.newBezierCurve(points)
 
 | Type | Description |
 |------|-------------|
-| [LBezierCurve](#lbeziercurve-handle) | New Bezier curve handle. |
+| [LBezierCurve](#lbeziercurve) | New Bezier curve handle. |
 
 **Example**
 
@@ -2091,7 +1928,7 @@ lurek.math.newCircle(x, y, radius)
 
 | Type | Description |
 |------|-------------|
-| [LCircle](#lcircle-handle) | New circle handle. |
+| [LCircle](#lcircle) | New circle handle. |
 
 **Example**
 
@@ -2122,7 +1959,7 @@ lurek.math.newLootTable(opts)
 
 | Type | Description |
 |------|-------------|
-| [LLootTable](#lloottable-handle) | New loot table handle. |
+| [LLootTable](#lloottable) | New loot table handle. |
 
 **Example**
 
@@ -2158,7 +1995,7 @@ lurek.math.newPityTracker(target_id, threshold)
 
 | Type | Description |
 |------|-------------|
-| [LPityTracker](#lpitytracker-handle) | New pity tracker handle. |
+| [LPityTracker](#lpitytracker) | New pity tracker handle. |
 
 **Example**
 
@@ -2197,7 +2034,7 @@ lurek.math.newRandomGenerator(seed)
 
 | Type | Description |
 |------|-------------|
-| [LRandomGenerator](#lrandomgenerator-handle) | New random generator handle. |
+| [LRandomGenerator](#lrandomgenerator) | New random generator handle. |
 
 **Example**
 
@@ -2230,7 +2067,7 @@ lurek.math.newRectPacker(width, height, padding)
 
 | Type | Description |
 |------|-------------|
-| [LRectPacker](#lrectpacker-handle) | New rectangle packer handle. |
+| [LRectPacker](#lrectpacker) | New rectangle packer handle. |
 
 **Example**
 
@@ -2263,7 +2100,7 @@ lurek.math.newSpatialHash(cell_size)
 
 | Type | Description |
 |------|-------------|
-| [LSpatialHash](#lspatialhash-handle) | New spatial hash handle. |
+| [LSpatialHash](#lspatialhash) | New spatial hash handle. |
 
 **Example**
 
@@ -2304,7 +2141,7 @@ lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky)
 
 | Type | Description |
 |------|-------------|
-| [LTransform](#ltransform-handle) | New transform handle. |
+| [LTransform](#ltransform) | New transform handle. |
 
 **Example**
 
@@ -2337,7 +2174,7 @@ lurek.math.newTween(duration, easing_name)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | New tween handle. |
+| [LTween](#ltween) | New tween handle. |
 
 **Example**
 
@@ -3121,8 +2958,8 @@ lurek.math.sampleWithPity(loot_table, pity)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `loot_table` | [LLootTable](#lloottable-handle) | Loot table handle. |
-| `pity` | [LPityTracker](#lpitytracker-handle) | Pity tracker handle. |
+| `loot_table` | [LLootTable](#lloottable) | Loot table handle. |
+| `pity` | [LPityTracker](#lpitytracker) | Pity tracker handle. |
 
 **Returns**
 
@@ -3396,7 +3233,7 @@ lurek.math.vec2(x, y)
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | New vector handle. |
+| [LVec2](#lvec2) | New vector handle. |
 
 **Example**
 
@@ -3429,7 +3266,7 @@ lurek.math.vec3(x, y, z)
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | New vector handle. |
+| [LVec3](#lvec3) | New vector handle. |
 
 **Example**
 
@@ -3446,23 +3283,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAabbTree Handle](#laabbtree-handle)
-- [LBezierCurve Handle](#lbeziercurve-handle)
-- [LCatmullRom Handle](#lcatmullrom-handle)
-- [LCircle Handle](#lcircle-handle)
-- [LHermite Handle](#lhermite-handle)
-- [LLootTable Handle](#lloottable-handle)
-- [LPityTracker Handle](#lpitytracker-handle)
-- [LRandomGenerator Handle](#lrandomgenerator-handle)
-- [LRectPacker Handle](#lrectpacker-handle)
-- [LSpatialHash Handle](#lspatialhash-handle)
-- [LTransform Handle](#ltransform-handle)
-- [LTween Handle](#ltween-handle)
-- [LVec2 Handle](#lvec2-handle)
-- [LVec3 Handle](#lvec3-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -3471,13 +3291,30 @@ end
 
 *No module-specific enums documented.*
 
-## LAabbTree Handle
+## Types
 
-### Fields
+- [LAabbTree](#laabbtree)
+- [LBezierCurve](#lbeziercurve)
+- [LCatmullRom](#lcatmullrom)
+- [LCircle](#lcircle)
+- [LHermite](#lhermite)
+- [LLootTable](#lloottable)
+- [LPityTracker](#lpitytracker)
+- [LRandomGenerator](#lrandomgenerator)
+- [LRectPacker](#lrectpacker)
+- [LSpatialHash](#lspatialhash)
+- [LTransform](#ltransform)
+- [LTween](#ltween)
+- [LVec2](#lvec2)
+- [LVec3](#lvec3)
+
+## LAabbTree
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAabbTree:clear`
 
@@ -3732,7 +3569,7 @@ LAabbTree:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAabbTree](#laabbtree-handle)`. |
+| string | The string `[LAabbTree](#laabbtree)`. |
 
 **Example**
 
@@ -3757,7 +3594,7 @@ LAabbTree:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAabbTree](#laabbtree-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAabbTree](#laabbtree)` and `Object`. |
 
 **Returns**
 
@@ -3814,13 +3651,13 @@ end
 
 ---
 
-## LBezierCurve Handle
+## LBezierCurve
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBezierCurve:evaluate`
 
@@ -3961,7 +3798,7 @@ LBezierCurve:getDerivative()
 
 | Type | Description |
 |------|-------------|
-| [LBezierCurve](#lbeziercurve-handle) | Derivative curve handle. |
+| [LBezierCurve](#lbeziercurve) | Derivative curve handle. |
 
 **Example**
 
@@ -4237,7 +4074,7 @@ LBezierCurve:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBezierCurve](#lbeziercurve-handle)`. |
+| string | The string `[LBezierCurve](#lbeziercurve)`. |
 
 **Example**
 
@@ -4262,7 +4099,7 @@ LBezierCurve:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LBezierCurve](#lbeziercurve-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LBezierCurve](#lbeziercurve)` and `Object`. |
 
 **Returns**
 
@@ -4281,13 +4118,13 @@ end
 
 ---
 
-## LCatmullRom Handle
+## LCatmullRom
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCatmullRom:addPoint`
 
@@ -4455,7 +4292,7 @@ LCatmullRom:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LCatmullRom](#lcatmullrom-handle)`. |
+| string | The string `[LCatmullRom](#lcatmullrom)`. |
 
 **Example**
 
@@ -4480,7 +4317,7 @@ LCatmullRom:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LCatmullRom](#lcatmullrom-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LCatmullRom](#lcatmullrom)` and `Object`. |
 
 **Returns**
 
@@ -4499,13 +4336,13 @@ end
 
 ---
 
-## LCircle Handle
+## LCircle
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCircle:aabb`
 
@@ -4605,7 +4442,7 @@ LCircle:intersects(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LCircle](#lcircle-handle) | Other circle handle. |
+| `other` | [LCircle](#lcircle) | Other circle handle. |
 
 **Returns**
 
@@ -4687,7 +4524,7 @@ LCircle:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LCircle](#lcircle-handle)`. |
+| string | The string `[LCircle](#lcircle)`. |
 
 **Example**
 
@@ -4712,7 +4549,7 @@ LCircle:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LCircle](#lcircle-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LCircle](#lcircle)` and `Object`. |
 
 **Returns**
 
@@ -4781,13 +4618,13 @@ end
 
 ---
 
-## LHermite Handle
+## LHermite
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LHermite:sample`
 
@@ -4834,7 +4671,7 @@ LHermite:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LHermite](#lhermite-handle)`. |
+| string | The string `[LHermite](#lhermite)`. |
 
 **Example**
 
@@ -4859,7 +4696,7 @@ LHermite:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LHermite](#lhermite-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LHermite](#lhermite)` and `Object`. |
 
 **Returns**
 
@@ -4878,13 +4715,13 @@ end
 
 ---
 
-## LLootTable Handle
+## LLootTable
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLootTable:add`
 
@@ -4973,7 +4810,7 @@ LLootTable:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LLootTable](#lloottable-handle) | Source loot table. |
+| `other` | [LLootTable](#lloottable) | Source loot table. |
 
 **Example**
 
@@ -5251,7 +5088,7 @@ LLootTable:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LLootTable](#lloottable-handle)`. |
+| string | The string `[LLootTable](#lloottable)`. |
 
 **Example**
 
@@ -5295,13 +5132,13 @@ end
 
 ---
 
-## LPityTracker Handle
+## LPityTracker
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPityTracker:counter`
 
@@ -5525,7 +5362,7 @@ LPityTracker:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LPityTracker](#lpitytracker-handle)`. |
+| string | The string `[LPityTracker](#lpitytracker)`. |
 
 **Example**
 
@@ -5569,13 +5406,13 @@ end
 
 ---
 
-## LRandomGenerator Handle
+## LRandomGenerator
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LRandomGenerator:chance`
 
@@ -6146,7 +5983,7 @@ LRandomGenerator:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LRandomGenerator](#lrandomgenerator-handle)`. |
+| string | The string `[LRandomGenerator](#lrandomgenerator)`. |
 
 **Example**
 
@@ -6171,7 +6008,7 @@ LRandomGenerator:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LRandomGenerator](#lrandomgenerator-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LRandomGenerator](#lrandomgenerator)` and `Object`. |
 
 **Returns**
 
@@ -6190,13 +6027,13 @@ end
 
 ---
 
-## LRectPacker Handle
+## LRectPacker
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LRectPacker:clear`
 
@@ -6307,13 +6144,13 @@ end
 
 ---
 
-## LSpatialHash Handle
+## LSpatialHash
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSpatialHash:clear`
 
@@ -6567,7 +6404,7 @@ LSpatialHash:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LSpatialHash](#lspatialhash-handle)`. |
+| string | The string `[LSpatialHash](#lspatialhash)`. |
 
 **Example**
 
@@ -6592,7 +6429,7 @@ LSpatialHash:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LSpatialHash](#lspatialhash-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LSpatialHash](#lspatialhash)` and `Object`. |
 
 **Returns**
 
@@ -6643,13 +6480,13 @@ end
 
 ---
 
-## LTransform Handle
+## LTransform
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTransform:clone`
 
@@ -6663,7 +6500,7 @@ LTransform:clone()
 
 | Type | Description |
 |------|-------------|
-| [LTransform](#ltransform-handle) | Cloned transform handle. |
+| [LTransform](#ltransform) | Cloned transform handle. |
 
 **Example**
 
@@ -6747,7 +6584,7 @@ LTransform:inverse()
 
 | Type | Description |
 |------|-------------|
-| [LTransform](#ltransform-handle) | Inverse transform handle. |
+| [LTransform](#ltransform) | Inverse transform handle. |
 
 **Example**
 
@@ -7014,7 +6851,7 @@ LTransform:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTransform](#ltransform-handle)`. |
+| string | The string `[LTransform](#ltransform)`. |
 
 **Example**
 
@@ -7039,7 +6876,7 @@ LTransform:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LTransform](#ltransform-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LTransform](#ltransform)` and `Object`. |
 
 **Returns**
 
@@ -7058,13 +6895,13 @@ end
 
 ---
 
-## LTween Handle
+## LTween
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTween:addValue`
 
@@ -7421,7 +7258,7 @@ LTween:onCancel(f)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 ---
 
@@ -7443,7 +7280,7 @@ LTween:onComplete(f)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 ---
 
@@ -7465,7 +7302,7 @@ LTween:onUpdate(f)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 ---
 
@@ -7497,7 +7334,7 @@ LTween:relative(enabled)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 ---
 
@@ -7647,7 +7484,7 @@ LTween:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTween](#ltween-handle)`. |
+| string | The string `[LTween](#ltween)`. |
 
 ---
 
@@ -7663,7 +7500,7 @@ LTween:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LTween](#ltween-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LTween](#ltween)` and `Object`. |
 
 **Returns**
 
@@ -7707,16 +7544,16 @@ end
 
 ---
 
-## LVec2 Handle
+## LVec2
 
-### Fields
+### Type Fields
 
 | Name | Type | Description |
 |------|------|-------------|
 | `x` | any |  |
 | `y` | any |  |
 
-### Methods
+### Type Methods
 
 #### `LVec2:angle`
 
@@ -7755,7 +7592,7 @@ LVec2:cross(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec2](#lvec2-handle) | Other vector handle. |
+| `other` | [LVec2](#lvec2) | Other vector handle. |
 
 **Returns**
 
@@ -7787,7 +7624,7 @@ LVec2:distance(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec2](#lvec2-handle) | Other vector handle. |
+| `other` | [LVec2](#lvec2) | Other vector handle. |
 
 **Returns**
 
@@ -7819,7 +7656,7 @@ LVec2:dot(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec2](#lvec2-handle) | Other vector handle. |
+| `other` | [LVec2](#lvec2) | Other vector handle. |
 
 **Returns**
 
@@ -7857,7 +7694,7 @@ LVec2:fromAngle(radians)
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | New vector handle. |
+| [LVec2](#lvec2) | New vector handle. |
 
 **Example**
 
@@ -7933,14 +7770,14 @@ LVec2:lerp(other, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec2](#lvec2-handle) | Target vector handle. |
+| `other` | [LVec2](#lvec2) | Target vector handle. |
 | `t` | number | Interpolation factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | Interpolated vector handle. |
+| [LVec2](#lvec2) | Interpolated vector handle. |
 
 **Example**
 
@@ -7967,7 +7804,7 @@ LVec2:normalize()
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | Normalized vector handle. |
+| [LVec2](#lvec2) | Normalized vector handle. |
 
 **Example**
 
@@ -7993,7 +7830,7 @@ LVec2:normalized()
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | Normalized vector handle. |
+| [LVec2](#lvec2) | Normalized vector handle. |
 
 **Example**
 
@@ -8019,7 +7856,7 @@ LVec2:perpendicular()
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | Perpendicular vector handle. |
+| [LVec2](#lvec2) | Perpendicular vector handle. |
 
 **Example**
 
@@ -8045,13 +7882,13 @@ LVec2:reflect(normal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `normal` | [LVec2](#lvec2-handle) | Normal vector handle. |
+| `normal` | [LVec2](#lvec2) | Normal vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | Reflected vector handle. |
+| [LVec2](#lvec2) | Reflected vector handle. |
 
 **Example**
 
@@ -8084,7 +7921,7 @@ LVec2:rotate(angle)
 
 | Type | Description |
 |------|-------------|
-| [LVec2](#lvec2-handle) | Rotated vector handle. |
+| [LVec2](#lvec2) | Rotated vector handle. |
 
 **Example**
 
@@ -8110,7 +7947,7 @@ LVec2:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LVec2](#lvec2-handle)`. |
+| string | The string `[LVec2](#lvec2)`. |
 
 **Example**
 
@@ -8135,7 +7972,7 @@ LVec2:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LVec2](#lvec2-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LVec2](#lvec2)` and `Object`. |
 
 **Returns**
 
@@ -8204,9 +8041,9 @@ end
 
 ---
 
-## LVec3 Handle
+## LVec3
 
-### Fields
+### Type Fields
 
 | Name | Type | Description |
 |------|------|-------------|
@@ -8214,7 +8051,7 @@ end
 | `y` | any |  |
 | `z` | any |  |
 
-### Methods
+### Type Methods
 
 #### `LVec3:add`
 
@@ -8228,13 +8065,13 @@ LVec3:add(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
+| `other` | [LVec3](#lvec3) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | Sum vector handle. |
+| [LVec3](#lvec3) | Sum vector handle. |
 
 **Example**
 
@@ -8261,13 +8098,13 @@ LVec3:cross(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
+| `other` | [LVec3](#lvec3) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | Cross product vector handle. |
+| [LVec3](#lvec3) | Cross product vector handle. |
 
 **Example**
 
@@ -8294,7 +8131,7 @@ LVec3:distance(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
+| `other` | [LVec3](#lvec3) | Other vector handle. |
 
 **Returns**
 
@@ -8326,7 +8163,7 @@ LVec3:dot(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
+| `other` | [LVec3](#lvec3) | Other vector handle. |
 
 **Returns**
 
@@ -8408,14 +8245,14 @@ LVec3:lerp(other, t)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec3](#lvec3-handle) | Target vector handle. |
+| `other` | [LVec3](#lvec3) | Target vector handle. |
 | `t` | number | Interpolation factor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | Interpolated vector handle. |
+| [LVec3](#lvec3) | Interpolated vector handle. |
 
 **Example**
 
@@ -8442,7 +8279,7 @@ LVec3:normalize()
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | Normalized vector handle. |
+| [LVec3](#lvec3) | Normalized vector handle. |
 
 **Example**
 
@@ -8474,7 +8311,7 @@ LVec3:scale(s)
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | Scaled vector handle. |
+| [LVec3](#lvec3) | Scaled vector handle. |
 
 **Example**
 
@@ -8506,7 +8343,7 @@ LVec3:splat(v)
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | New vector handle. |
+| [LVec3](#lvec3) | New vector handle. |
 
 **Example**
 
@@ -8532,13 +8369,13 @@ LVec3:sub(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LVec3](#lvec3-handle) | Other vector handle. |
+| `other` | [LVec3](#lvec3) | Other vector handle. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVec3](#lvec3-handle) | Difference vector handle. |
+| [LVec3](#lvec3) | Difference vector handle. |
 
 **Example**
 
@@ -8565,7 +8402,7 @@ LVec3:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LVec3](#lvec3-handle)`. |
+| string | The string `[LVec3](#lvec3)`. |
 
 **Example**
 
@@ -8590,7 +8427,7 @@ LVec3:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LVec3](#lvec3-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LVec3](#lvec3)` and `Object`. |
 
 **Returns**
 

@@ -2,78 +2,15 @@
 
 ## Summary
 
-The `agent` module owns the engine-side runtime for LLM-backed assistants. It keeps request state in `AgentState`, dispatches HTTP prompts in the background through `AgentClient`, and converts completed responses into callback payloads that Lua code can poll from the main loop. The module is intentionally split so the heavy request, batching, and response-processing logic lives in `src/agent/`, while `src/lua_api/agent_api.rs` stays a thin registration layer.
+The `agent` module turns model access into a stable service for gameplay and tools. Instead of many one-off scripts, it gives one consistent way to send prompts, receive answers, and handle callbacks. This makes AI features easier to build, easier to reason about, and safer to reuse across a project.
 
-The module boundary is narrow. `src/agent/` owns request construction, async callback routing, response parsing for `json` / `csv` / `text`, automatic transient-error retry with back-off, and the secure `evalCode` runtime entry point. The `AISystemState` type provides multi-agent orchestration: a shared system prompt, manually included instruction blocks, and keyword-gated skill blocks that Lurek auto-injects based on prompt keyword overlap. `src/lua_api/agent_api.rs` exposes `lurek.agent.new`, `lurek.agent.newManager`, `lurek.agent.newSystem`, and userdata methods that delegate into the module runtime. Network transport stays delegated to `crate::network::http::execute_request`, and the API remains polling-based so prompt execution never blocks the frame loop.
+Its main functional value is non-blocking work. Requests run in the background while the frame loop keeps moving, then scripts poll and consume completed results. This protects runtime responsiveness and gives practical control over timeout, retry, cancellation, and response format.
 
-`src/agent/chat.rs` provides a synchronous direct LLM path (`configure`, `complete`, `completeJson`, `embed`, `isAvailable`, `listModels`) backed by `GlobalLlmConfig`. `LlmChat` maintains a stateful message history for multi-turn conversations. `LlmTemplate` renders `{key}` placeholders. `src/agent/memory.rs` provides `WorkingMemory` (bounded FIFO), `EpisodicMemory` (tick-stamped event log), `SemanticMemory` (fact store), and `AgentMemory` (bundled, optionally persistent).
+The module also supports orchestration at different scales. You can run one agent, batch several tasks, or use a system that combines shared instructions with keyword-matched skills. This keeps prompt behavior more consistent between teams and features, because common context rules are managed in one place.
 
-## Spec File Descriptions
+For direct use, the module includes synchronous completions, JSON output, embeddings, model listing, and availability checks. It also provides stateful chat sessions and simple template rendering, so both quick utility calls and longer multi-turn interactions can use the same module surface.
 
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### chat.rs
-
-- Implements the direct synchronous conversation surface for immediate model-backed agent interactions.
-- Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls.
-- Preserves reusable global provider configuration so repeated invocations share one operational baseline.
-- Maintains multi-turn message history for session continuity and contextual follow-up reasoning.
-- Applies lightweight prompt templating to inject runtime variables without changing call contracts.
-- Normalizes backend responses into stable Lua-facing shapes with predictable field semantics.
-
-### client.rs
-
-- Provides asynchronous prompt transport that moves network latency off the main update path.
-- Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe.
-- Supports callback-scoped cancellation to discard stale results after gameplay state has changed.
-- Retries transient transport failures with bounded backoff to improve completion reliability.
-- Bridges worker-thread execution and runtime polling with consistent response delivery semantics.
-
-### memory.rs
-
-- Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge.
-- Applies distinct retention strategies so each memory tier fits a different reasoning horizon.
-- Supports bounded working slots for prompt context while preserving ordered recency behavior.
-- Records timestamped episodes for searchable event history and narrative continuity.
-- Stores semantic facts as named durable entries that survive immediate conversational churn.
-- Provides aggregate save and load flows for cross-session continuity of memory state.
-
-### mod.rs
-
-- Defines the `agent` domain module boundary for LLM-backed behavior.
-- Contains transport, state, memory, orchestration logic, and Ollama lifecycle components.
-- Keeps Lua binding/runtime details out of this layer so `src/lua_api/` stays the integration boundary.
-
-### ollama.rs
-
-- Provides backend infrastructure control for local Ollama service lifecycle and operational health checks.
-- Handles start, stop, restart, and version discovery to keep runtime integration state observable.
-- Exposes model inventory queries and availability checks for capability-aware script decisions.
-- Supports model deletion and asynchronous pull workflows with pollable completion tracking.
-- Isolates backend process management from prompt orchestration to keep runtime layering clean.
-- Normalizes infrastructure outcomes into stable results consumed by higher agent control surfaces.
-
-### orchestration.rs
-
-- Agent orchestration logic extracted from Lua runtime glue.
-- Owns batch-task data contracts, callback ID packing, and system-context assembly.
-- This module is runtime-agnostic and intentionally free of `mlua` types.
-
-### state.rs
-
-- Defines runtime state contracts that shape outbound agent requests from script-facing configuration.
-- Aggregates endpoint, model, prompt policy, timeout, and retry controls into deterministic payload inputs.
-- Builds direct and system-routed request variants with consistent field and option mapping.
-- Composes AI-system context from instructions and skill fragments matched to prompt intent signals.
-- Keeps mutable control state separate from transport execution to preserve predictable behavior boundaries.
-- Bridges Lua runtime controls to transport-ready request structures without duplicating orchestration logic.
-
-### types.rs
-
-- Defines shared data contracts for agent requests, responses, and cross-layer failure representation.
-- Aligns state construction, async transport, and callback dispatch on one stable payload vocabulary.
-- Encodes retry semantics and error categories so runtime behavior is consistent across entry points.
-- Serves as the canonical contract layer that keeps agent submodules interoperable and predictable.
+Memory is treated as a practical stack: short-term working context, episodic history, semantic facts, and a bundled memory that can persist across sessions. In real use, this helps agents keep continuity, retain useful facts, and restart with context, without every game script building custom memory plumbing.
 
 ## Functions
 
@@ -311,7 +248,7 @@ lurek.agent.new(config)
 
 | Type | Description |
 |------|-------------|
-| [LAgent](#lagent-handle) | A new agent object. |
+| [LAgent](#lagent) | A new agent object. |
 
 **Example**
 
@@ -356,7 +293,7 @@ lurek.agent.newAgentMemory(config)
 
 | Type | Description |
 |------|-------------|
-| [LAgentMemory](#lagentmemory-handle) | A new agent memory object. |
+| [LAgentMemory](#lagentmemory) | A new agent memory object. |
 
 **Example**
 
@@ -382,7 +319,7 @@ lurek.agent.newChat()
 
 | Type | Description |
 |------|-------------|
-| [LAgentChat](#lagentchat-handle) | A new chat session object. |
+| [LAgentChat](#lagentchat) | A new chat session object. |
 
 **Example**
 
@@ -408,7 +345,7 @@ lurek.agent.newEpisodicMemory()
 
 | Type | Description |
 |------|-------------|
-| [LEpisodicMemory](#lepisodicmemory-handle) | A new episodic memory object. |
+| [LEpisodicMemory](#lepisodicmemory) | A new episodic memory object. |
 
 **Example**
 
@@ -434,7 +371,7 @@ lurek.agent.newManager()
 
 | Type | Description |
 |------|-------------|
-| [LAgentManager](#lagentmanager-handle) | A new agent manager object. |
+| [LAgentManager](#lagentmanager) | A new agent manager object. |
 
 **Example**
 
@@ -465,7 +402,7 @@ lurek.agent.newOllama(config)
 
 | Type | Description |
 |------|-------------|
-| [LOllamaManager](#lollamamanager-handle) | A new Ollama manager object. |
+| [LOllamaManager](#lollamamanager) | A new Ollama manager object. |
 
 **Example**
 
@@ -490,7 +427,7 @@ lurek.agent.newSemanticMemory()
 
 | Type | Description |
 |------|-------------|
-| [LSemanticMemory](#lsemanticmemory-handle) | A new semantic memory object. |
+| [LSemanticMemory](#lsemanticmemory) | A new semantic memory object. |
 
 **Example**
 
@@ -522,7 +459,7 @@ lurek.agent.newSystem(config)
 
 | Type | Description |
 |------|-------------|
-| [LAISystem](#laisystem-handle) | A new AI system object. |
+| [LAISystem](#laisystem) | A new AI system object. |
 
 **Example**
 
@@ -555,7 +492,7 @@ lurek.agent.newTemplate(pattern)
 
 | Type | Description |
 |------|-------------|
-| [LAgentTemplate](#lagenttemplate-handle) | A new template object. |
+| [LAgentTemplate](#lagenttemplate) | A new template object. |
 
 **Example**
 
@@ -587,7 +524,7 @@ lurek.agent.newWorkingMemory(capacity)
 
 | Type | Description |
 |------|-------------|
-| [LWorkingMemory](#lworkingmemory-handle) | A new working memory object. |
+| [LWorkingMemory](#lworkingmemory) | A new working memory object. |
 
 **Example**
 
@@ -605,19 +542,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAISystem Handle](#laisystem-handle)
-- [LAgent Handle](#lagent-handle)
-- [LAgentChat Handle](#lagentchat-handle)
-- [LAgentManager Handle](#lagentmanager-handle)
-- [LAgentMemory Handle](#lagentmemory-handle)
-- [LAgentTemplate Handle](#lagenttemplate-handle)
-- [LEpisodicMemory Handle](#lepisodicmemory-handle)
-- [LOllamaManager Handle](#lollamamanager-handle)
-- [LSemanticMemory Handle](#lsemanticmemory-handle)
-- [LWorkingMemory Handle](#lworkingmemory-handle)
-
 ## Callbacks
 
 - `lurek.agent.completeAsync` param `callback` (`function`): Called with `(text, err)` on completion (`err` is `nil` on success).
@@ -626,13 +550,26 @@ end
 
 *No module-specific enums documented.*
 
-## LAISystem Handle
+## Types
 
-### Fields
+- [LAISystem](#laisystem)
+- [LAgent](#lagent)
+- [LAgentChat](#lagentchat)
+- [LAgentManager](#lagentmanager)
+- [LAgentMemory](#lagentmemory)
+- [LAgentTemplate](#lagenttemplate)
+- [LEpisodicMemory](#lepisodicmemory)
+- [LOllamaManager](#lollamamanager)
+- [LSemanticMemory](#lsemanticmemory)
+- [LWorkingMemory](#lworkingmemory)
+
+## LAISystem
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAISystem:addAgent`
 
@@ -647,7 +584,7 @@ LAISystem:addAgent(name, agent)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Unique agent name used for routing. |
-| `agent` | [LAgent](#lagent-handle) | The agent instance to register. |
+| `agent` | [LAgent](#lagent) | The agent instance to register. |
 
 **Returns**
 
@@ -1273,13 +1210,13 @@ end
 
 ---
 
-## LAgent Handle
+## LAgent
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAgent:addSkill`
 
@@ -2102,13 +2039,13 @@ end
 
 ---
 
-## LAgentChat Handle
+## LAgentChat
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAgentChat:addMessage`
 
@@ -2252,13 +2189,13 @@ end
 
 ---
 
-## LAgentManager Handle
+## LAgentManager
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAgentManager:runAll`
 
@@ -2272,7 +2209,7 @@ LAgentManager:runAll(tasks, callback)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tasks` | table | List of `{ agent = [LAgent](#lagent-handle), instruction = string }` tables. |
+| `tasks` | table | List of `{ agent = [LAgent](#lagent), instruction = string }` tables. |
 | `callback` | function | Function called with a results table when all tasks complete. |
 
 **Returns**
@@ -2331,13 +2268,13 @@ end
 
 ---
 
-## LAgentMemory Handle
+## LAgentMemory
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAgentMemory:episodic`
 
@@ -2351,7 +2288,7 @@ LAgentMemory:episodic()
 
 | Type | Description |
 |------|-------------|
-| [LEpisodicMemory](#lepisodicmemory-handle) | Episodic memory handle. |
+| [LEpisodicMemory](#lepisodicmemory) | Episodic memory handle. |
 
 **Example**
 
@@ -2429,7 +2366,7 @@ LAgentMemory:semantic()
 
 | Type | Description |
 |------|-------------|
-| [LSemanticMemory](#lsemanticmemory-handle) | Semantic memory handle. |
+| [LSemanticMemory](#lsemanticmemory) | Semantic memory handle. |
 
 **Example**
 
@@ -2455,7 +2392,7 @@ LAgentMemory:working()
 
 | Type | Description |
 |------|-------------|
-| [LWorkingMemory](#lworkingmemory-handle) | Working memory handle. |
+| [LWorkingMemory](#lworkingmemory) | Working memory handle. |
 
 **Example**
 
@@ -2469,13 +2406,13 @@ end
 
 ---
 
-## LAgentTemplate Handle
+## LAgentTemplate
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAgentTemplate:render`
 
@@ -2509,13 +2446,13 @@ end
 
 ---
 
-## LEpisodicMemory Handle
+## LEpisodicMemory
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LEpisodicMemory:forgetBefore`
 
@@ -2642,13 +2579,13 @@ end
 
 ---
 
-## LOllamaManager Handle
+## LOllamaManager
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LOllamaManager:baseUrl`
 
@@ -3017,13 +2954,13 @@ end
 
 ---
 
-## LSemanticMemory Handle
+## LSemanticMemory
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSemanticMemory:forget`
 
@@ -3183,13 +3120,13 @@ end
 
 ---
 
-## LWorkingMemory Handle
+## LWorkingMemory
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LWorkingMemory:capacity`
 

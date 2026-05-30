@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `math` module is the most pervasive Foundations tier component in Lurek2D, providing an expansive suite of 2D mathematics, geometry, procedural generation, and spatial utility types.
+- The `math` module is the foundational numeric toolkit for vectors, geometry, transforms, interpolation, spatial indexing, and procedural helpers across the engine.
 
 ## General Info
 
@@ -16,11 +16,29 @@
 
 ## Summary
 
-As the foundational leaf of the engine's dependency graph, it is imported and utilized by nearly every other subsystem. The core vector mathematics are handled by highly optimized `Vec2` and `Vec3` types, which offer a complete set of arithmetic operations, geometric helpers (dot, cross, normalize, distance), and angle conversions. Complex transformations are managed by the `Transform` struct, backed by a row-major 3x3 affine matrix (`Mat3`), facilitating chainable translation, rotation, scale, and shear operations.
+The `math` module is the core numeric foundation used by most engine systems. It provides the shared language for positions, directions, distances, transforms, and geometric relations, so gameplay and tooling code can rely on one consistent set of rules.
 
-Beyond basic vectors, the module implements a robust set of geometric primitives and intersection algorithms. `Rect` and `Circle` structs provide foundational AABB and radial collision checks. The `geometry` submodule extends this with advanced operations: signed polygon area (shoelace formula), centroid calculation, point-in-polygon ray casting, line and segment intersection, Ear-clipping triangulation, Sutherland-Hodgman polygon clipping, and Andrew's monotone chain convex hull generation. To accelerate geometric queries, the module provides dynamic spatial indexing structures: an `AabbTree` for broad-phase hierarchical queries and a `SpatialHash` for uniform grid lookups, scaling efficiently with entity density rather than raw count.
+At the base level, vector and matrix primitives cover the common operations needed every frame. 2D and 3D vectors handle arithmetic and directional logic, while affine transforms and matrices handle translation, rotation, scale, and coordinate mapping.
 
-The module also excels in procedural generation and animation. It features a sophisticated `NoiseGenerator` offering Perlin, Simplex, and Worley (cellular) noise, layered with Fractional Brownian Motion (fBm) or turbulence for organic terrain synthesis. For animation, it provides an extensive library of over 50 named easing functions and multi-channel numeric interpolators via the `Tween` system. Pathing and curves are supported through `BezierCurve` (quadratic/cubic) and `CatmullRomSpline` implementations. Additionally, it handles deterministic, seedable random number generation (`RandomGenerator`) and texture atlas rectangle packing. This immense mathematical toolkit is entirely exposed to the scripting environment via the `lurek.math.*` API.
+Geometry support extends this into practical world reasoning. Rectangles, circles, polygons, segments, and intersection helpers make collision checks and spatial queries deterministic and reusable across modules.
+
+The module also includes higher-level shape processing tools such as triangulation, clipping, convex hull generation, and centroid or area calculations. These utilities help map, editor, and simulation features operate on complex geometry without custom implementations.
+
+For performance-sensitive queries, it provides spatial indexing structures. Tree- and grid-based broad-phase helpers reduce search cost for overlap and proximity checks when many objects are active.
+
+Animation and interpolation needs are covered by easing, tweening, and curve systems. Bezier and spline paths support smooth movement control, while easing functions provide predictable timing behavior for UI and gameplay transitions.
+
+Procedural workflows are part of the same toolbox. Seeded random generation, noise functions, and related helpers support deterministic content generation, reproducible tests, and tunable variation.
+
+The module is intentionally broad because it acts as a shared base for many higher systems. By keeping these operations in one place, teams avoid duplicate implementations of common math behaviors that can drift over time.
+
+It also supports data-driven use. Named easing families, reusable shape helpers, and stable transform behavior let scripts describe motion and geometry intent at a higher level while relying on deterministic low-level calculations.
+
+For simulation and gameplay logic, consistency matters as much as feature count. This module provides the numerical primitives that help keep movement, collisions, queries, and procedural outputs aligned across different feature modules.
+
+In tooling contexts, the same math contract enables repeatable editor behavior and reproducible diagnostics. That reduces surprises when the same data is viewed, edited, or simulated through different runtime paths.
+
+In practice, `lurek.math` is the shared numerical contract for the whole project: compute motion, evaluate geometry, organize space, shape time-based transitions, and drive procedural systems through one stable API surface.
 
 ## Imports
 

@@ -8,35 +8,6 @@ When a message passes the global filter, it is dispatched via the `SinkRegistry`
 
 Logging is highly structured, allowing messages to carry not only severity levels and optional tags, but also complex key-value `LogFields`. This structured approach enables sophisticated log analysis and filtering downstream. Each individual sink maintains its own `SinkLevel` threshold and tag-based allow-list, meaning a single game instance can simultaneously write all `Trace` messages to a rotating file while only displaying `Warning` and `Error` messages in the on-screen console. The entire logging pipeline is fully configurable dynamically at runtime and exposed to scripts via the `lurek.log.*` namespace.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### facade.rs
-
-- Provides the structured logging facade used to emit level-tagged messages with fields.
-- Handles runtime level queries and updates while enforcing fast level gating before dispatch.
-- Exposes compact log-entry helpers consumed by Lua and Rust call sites.
-
-### mod.rs
-
-- High-level logging module that combines facade APIs with sink implementations.
-- Re-exports level control and sink types for centralized runtime log configuration.
-- Defines the boundary for structured log routing to memory and file backends.
-
-### sinks.rs
-
-- Implements logging sink backends, severity filters, and output formatting infrastructure.
-- Defines sink-level enums and parsing rules used to gate message delivery.
-- Provides in-memory capture sinks for runtime inspection and diagnostic tooling.
-- Supports plain, JSON, and NDJSON output styles for machine and human consumers.
-- Manages timestamp and optional color formatting for readable terminal and file logs.
-- Implements rotating file sinks with size limits and backup retention control.
-- Uses buffered writes and filtering hooks to keep output efficient and configurable.
-- Offers callback-style sink integration for forwarding logs to external handlers.
-- Unifies sink behavior under shared abstractions for consistent dispatch semantics.
-- Exposes registry orchestration for broadcasting structured and plain messages to many sinks.
-
 ## Functions
 
 ### `lurek.log.addSink`
@@ -542,10 +513,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-*No Lua userdata types detected for this module.*
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -553,3 +520,7 @@ end
 ## Enums
 
 *No module-specific enums documented.*
+
+## Types
+
+*No Lua userdata types detected for this module.*

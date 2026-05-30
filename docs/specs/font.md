@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts.
+- The `font` module provides CPU-side font data services: bitmap font loading, glyph metrics, text measurement, shaping, wrapping, and registry-based font lookup.
 
 ## General Info
 
@@ -16,9 +16,13 @@
 
 ## Summary
 
-The font module provides the CPU-side data layer for text rendering: bitmap font atlas loading with Latin-1 glyph coverage, per-glyph and per-text metrics, text alignment, word and character wrapping, and a central font registry for named handles. The module does not own GPU resources — texture management for font atlases remains in the render module. Fourteen bundled Courier New bitmap atlases are shipped in `assets/fonts/`.
+The `font` module is the text-preparation layer for rendering and UI layout. It handles loading, glyph lookup, measurement, and shaping so text can be positioned correctly before draw commands are built.
 
-This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+Its scope includes per-character metrics, line height, full-string measurement, alignment, and wrapping. This helps gameplay and UI systems place text consistently across HUDs, panels, and overlays.
+
+A central registry keeps named font handles and metadata in one place, which simplifies reuse.
+
+The module is CPU-side by design: it owns text data and layout behavior, while GPU upload and final rendering stay in rendering paths.
 
 ## Imports
 

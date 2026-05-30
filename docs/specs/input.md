@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `input` module is a core Platform Services tier component that aggregates and processes hardware inputs across keyboard, mouse, gamepad, and multi-touch devices.
+- The `input` module is the unified runtime layer for keyboard, mouse, gamepad, and touch state, plus combos, bindings, and record-playback workflows.
 
 ## General Info
 
@@ -16,11 +16,19 @@
 
 ## Summary
 
-Functioning as a translation layer between the winit OS event loop and the game logic, it provides frame-perfect state tracking and querying. The `KeyboardState` system accurately monitors key-down, key-up, just-pressed, and just-released events on a per-frame basis. It maintains a strict separation between physical scan-codes (ideal for layout-agnostic WASD movement) and logical key mappings, while also supporting OS key-repeat events, text-input buffering for typing, and modifier bitmasks.
+The `input` module is the engine's unified input state layer. It converts platform events into stable per-frame state for scripts and systems, so gameplay code can query controls consistently across devices.
 
-The `MouseState` system offers comprehensive tracking of cursor coordinates, scroll-wheel deltas, and multi-button states. It allows developers to customize the cursor by selecting from system icons, providing raw RGBA pixel data, or toggling visibility and window-grab confinement (relative mode) for first-person control schemes. Gamepad support is exceptionally robust via the `GamepadState` struct, which tracks up to four connected controllers simultaneously. It manages analog sticks, triggers, button presses, connection lifecycles, and OS force-feedback vibration requests, synthesizing virtual D-pads and providing SDL2 GameControllerDB GUID mapping for maximum compatibility. `TouchState` similarly handles multi-point contact tracking for mobile or touchscreen interfaces, capturing press, move, and release lifecycles.
+Keyboard, mouse, gamepad, and touch are handled in one module with shared timing semantics. Held, pressed, and released transitions are tracked explicitly, which keeps frame-accurate logic predictable for movement, UI, and action systems.
 
-To support complex game mechanics, the module includes a highly capable `ComboDetector` designed to recognize fighting-game-style multi-step input sequences, complete with configurable per-step and total-sequence timeout windows. Furthermore, the module implements an `InputRecorder` that can capture sparse frame-by-frame event streams into versioned JSON envelopes. These recordings can be loaded and played back deterministically, facilitating automated testing, replay systems, and automated demo loops. All of these features are seamlessly exposed to the scripting engine via the `lurek.input.*` Lua namespace.
+The keyboard path preserves both logical key and physical scancode behavior, which is useful for layout-aware text controls and layout-agnostic game bindings. Mouse handling includes position, wheel, button state, and cursor control modes.
+
+Gamepad support includes button and axis state, connection lifecycle tracking, mapping helpers, and vibration requests. Touch support tracks multi-point contacts through press, move, and release flow.
+
+Higher-level interaction tools are also included. Action bindings, axis helpers, combo detection, and event recording/playback allow teams to build reusable input systems, deterministic replays, and automated input-driven tests.
+
+This shared model also reduces integration drift between gameplay and tooling paths, because both consume the same transition semantics and the same device abstractions instead of parallel custom wrappers.
+
+In practice, `lurek.input` provides one reliable runtime contract: capture device signals, normalize state, query transitions, and drive control logic through a consistent API.
 
 ## Imports
 

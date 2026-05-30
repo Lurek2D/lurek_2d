@@ -8,65 +8,6 @@ To achieve sophisticated, procedural motion, the module features a dedicated Inv
 
 The module also supports extensive customization and event handling. The Skin system allows developers to group specific slot attachments into switchable visual sets, enabling character customization (e.g., changing armor or weapons) without duplicating the underlying animation rig. Furthermore, `EventKeyframe` markers can be embedded within timelines to trigger Lua callbacks at precise moments, perfect for syncing footstep audio or hit-box activation. Fully exposed through the `lurek.spine.*` API, this module provides the robust tooling necessary to bring complex, expressive, and interactive 2D characters to life.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### bone.rs
-
-- This file defines the skeletal bone unit that carries local pose data and resolved world transform state.
-- Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy.
-- The type exists as the core transform-bearing element for the rest of the spine animation system.
-- It is where local intent becomes world-space pose context for attached visuals and constraints.
-
-### ik.rs
-
-- This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
-- It computes joint angles from geometric constraints instead of relying only on keyed animation values.
-- Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally.
-- The file adds procedural responsiveness to otherwise keyframed skeletal motion.
-- It is the module's compact answer to target-seeking limb behavior.
-
-### mod.rs
-
-- This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
-- It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
-- At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
-
-### render.rs
-
-- This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization.
-- Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
-- The output emphasizes readable structure over full attachment rendering complexity.
-- It is the handoff layer from skeletal pose data to generic draw command streams.
-
-### skeleton.rs
-
-- This file implements the main skeleton container that holds the full moving rig, visual attachment points, animations, and runtime playback state.
-- Bones and slots are managed together here because final pose evaluation must understand both transform hierarchy and attachment ownership.
-- Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
-- Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
-- World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
-- Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
-- The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
-- It is where skeletal state becomes animated pose over time.
-
-### slot.rs
-
-- This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
-- Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
-- The type is the visual attachment bridge between pose evaluation and rendered character parts.
-
-### timeline.rs
-
-- This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
-- Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys.
-- Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
-- Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
-- Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
-- The file is therefore the temporal logic center of the spine subsystem.
-- It explains how authored motion unfolds, not just what a static pose looks like.
-
 ## Functions
 
 ### `lurek.spine.animationFromJson`
@@ -87,7 +28,7 @@ lurek.spine.animationFromJson(json)
 
 | Type | Description |
 |------|-------------|
-| [LSkeletonAnimation](#lskeletonanimation-handle) | Parsed animation userdata, or nil on failure. |
+| [LSkeletonAnimation](#lskeletonanimation) | Parsed animation userdata, or nil on failure. |
 
 **Example**
 
@@ -119,7 +60,7 @@ lurek.spine.newSkeleton(name)
 
 | Type | Description |
 |------|-------------|
-| [LSkeleton](#lskeleton-handle) | A new skeleton userdata. |
+| [LSkeleton](#lskeleton) | A new skeleton userdata. |
 
 **Example**
 
@@ -154,7 +95,7 @@ lurek.spine.newSkeletonAnimation(name, duration)
 
 | Type | Description |
 |------|-------------|
-| [LSkeletonAnimation](#lskeletonanimation-handle) | A new animation userdata. |
+| [LSkeletonAnimation](#lskeletonanimation) | A new animation userdata. |
 
 **Example**
 
@@ -173,11 +114,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LSkeleton Handle](#lskeleton-handle)
-- [LSkeletonAnimation Handle](#lskeletonanimation-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -186,13 +122,18 @@ end
 
 *No module-specific enums documented.*
 
-## LSkeleton Handle
+## Types
 
-### Fields
+- [LSkeleton](#lskeleton)
+- [LSkeletonAnimation](#lskeletonanimation)
+
+## LSkeleton
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSkeleton:addAnimation`
 
@@ -206,7 +147,7 @@ LSkeleton:addAnimation(anim)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim` | [LSkeletonAnimation](#lskeletonanimation-handle) | The animation userdata to register. Consumed by this call. |
+| `anim` | [LSkeletonAnimation](#lskeletonanimation) | The animation userdata to register. Consumed by this call. |
 
 **Example**
 
@@ -401,7 +342,7 @@ LSkeleton:blendAnimation(anim, time, blend_weight)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim` | [LSkeletonAnimation](#lskeletonanimation-handle) | The animation to sample and blend from. |
+| `anim` | [LSkeletonAnimation](#lskeletonanimation) | The animation to sample and blend from. |
 | `time` | number | The time position to sample within the animation. |
 | `blend_weight?` | number | Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0. |
 
@@ -453,7 +394,7 @@ end
 
 #### `LSkeleton:drawToImage`
 
-Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
+Renders the skeleton into an in-memory image of the given dimensions and returns it as [LImageData](render.md#limagedata) userdata.
 
 ```lua
 LSkeleton:drawToImage(w, h)
@@ -470,7 +411,7 @@ LSkeleton:drawToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| LImageData | A new image data object containing the rendered skeleton. |
+| [LImageData](render.md#limagedata) | A new image data object containing the rendered skeleton. |
 
 **Example**
 
@@ -871,7 +812,7 @@ LSkeleton:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LSkeleton](#lskeleton-handle)". |
+| string | Always "[LSkeleton](#lskeleton)". |
 
 **Example**
 
@@ -886,7 +827,7 @@ end
 
 #### `LSkeleton:typeOf`
 
-Checks whether this object is of the given type name. Supports "[LSkeleton](#lskeleton-handle)" and "Object".
+Checks whether this object is of the given type name. Supports "[LSkeleton](#lskeleton)" and "Object".
 
 ```lua
 LSkeleton:typeOf(name)
@@ -965,13 +906,13 @@ end
 
 ---
 
-## LSkeletonAnimation Handle
+## LSkeletonAnimation
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSkeletonAnimation:addEventKey`
 
@@ -1163,7 +1104,7 @@ LSkeletonAnimation:reverse()
 
 | Type | Description |
 |------|-------------|
-| [LSkeletonAnimation](#lskeletonanimation-handle) | A new reversed copy of this animation. |
+| [LSkeletonAnimation](#lskeletonanimation) | A new reversed copy of this animation. |
 
 **Example**
 
@@ -1191,7 +1132,7 @@ LSkeletonAnimation:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LSkeletonAnimation](#lskeletonanimation-handle)". |
+| string | Always "[LSkeletonAnimation](#lskeletonanimation)". |
 
 **Example**
 
@@ -1206,7 +1147,7 @@ end
 
 #### `LSkeletonAnimation:typeOf`
 
-Checks whether this object is of the given type name. Supports "[LSkeletonAnimation](#lskeletonanimation-handle)" and "Object".
+Checks whether this object is of the given type name. Supports "[LSkeletonAnimation](#lskeletonanimation)" and "Object".
 
 ```lua
 LSkeletonAnimation:typeOf(name)

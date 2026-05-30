@@ -2,111 +2,17 @@
 
 ## Summary
 
-At its core, the module uses `AnimClip` to hold ordered sequences of `AnimFrame` entries, each specifying a source texture rectangle, an optional per-frame duration, and event triggers. This allows for both uniform and variable-timing animations. Playback is managed by the `Animation` controller, which handles forward, reverse, and ping-pong playback modes, along with looping and playback speed scaling.
+The `animation` module is the place where visual motion is organized into a clear runtime flow. It lets teams define frames and clips, play them with stable timing, and keep updates predictable across gameplay and tooling. Functionally, it turns raw frame data into reusable animation behavior.
 
-To support complex character and entity animations, the module implements a robust `AnimStateMachine`. This finite-state machine (FSM) drives transitions between named animation clips based on configurable conditions. Transitions can evaluate float, integer, and boolean parameters using standard relational operators, enabling logic like switching from a 'running' state to a 'jumping' state when a velocity parameter exceeds a threshold. Furthermore, `BlendLayerSet` provides support for multi-layer additive and override mixing, allowing multiple animations to be combined—for instance, playing a 'shooting' animation on the upper body while a 'running' animation plays on the lower body.
+Its playback layer supports common needs out of the box: looping and non-looping clips, speed scaling, reverse and ping-pong motion, and event polling during progression. This makes it practical for both simple UI or effects and character motion that must stay synchronized with gameplay logic.
 
-For coordinated character movement and advanced timing, the `AnimSyncGroup` locks multiple animation keyframes to a shared normalized timeline. The module also includes `AnimCurve` and `AnimPropertyTimeline` to support easing-driven value interpolation along keyframes. These curves evaluate properties over time using step, linear, or custom easing functions, which are heavily utilized by higher-level animation systems to drive parameters smoothly.
+For richer behavior, the module includes a state-machine layer that changes clips based on parameters and transition conditions. It also includes blend layers so multiple animation sources can be mixed in a controlled way. In practice, this allows expressive combinations, like locomotion plus upper-body actions, without custom per-character pipelines.
 
-The module offers seamless integration with external tools and formats. An Aseprite JSON importer (`load_aseprite_json`) parses exported frame tags into named clip ranges, supporting both array and object layouts while extracting per-frame durations. Additionally, a `SpineAnimBridge` maps the module's FSM states to Spine skeleton animations, allowing 2D skeletal animations to be controlled through the same uniform interface.
+Timing tools extend beyond basic frame stepping. Sync groups keep multiple animations on the same normalized timeline, while curves and property timelines drive smooth value changes through easing modes. This helps avoid abrupt jumps and keeps motion quality consistent when animation influences other systems.
 
-Finally, the module generates textured draw commands from active frame quads via the `render` utilities, tightly integrating with the engine's graphics pipeline. Lua bindings expose `LAnimation:draw` and `LAnimStateMachine:draw` as ergonomic helpers over the same current-frame rectangle returned by `getQuad`; these helpers queue one draw command when a frame is active, return `false` without mutating playback when no frame is active, and leave broader `lurek.render.draw` polymorphism unchanged. Both `:draw` methods accept two call forms: `draw(image, x, y, opts)` for explicit atlas passing and `draw(x, y, opts)` when a spritesheet has been stored in advance with `:setImage(image)`. The API is thoroughly exposed to Lua via the `lurek.animation` namespace, providing script developers with constructors for state machines, curves, blend layers, and synchronization groups, along with methods to advance playback and poll animation events. By importing only the `math` module and avoiding cyclic dependencies, the animation runtime remains fully headless-testable and architecturally isolated within the Feature Systems group.
+The module is built for real production inputs. It can import Aseprite JSON data and map external clip tags, and it also bridges state changes to Spine playback. This gives teams a unified control surface even when assets come from different authoring workflows.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### aseprite.rs
-
-- Parses Aseprite export data into engine-ready frame geometry, timing, and clip-tag metadata.
-- Supports multiple JSON frame layout variants while enforcing deterministic playback ordering.
-- Validates structural assumptions early so malformed exports fail before runtime animation usage.
-- Extracts frame rectangles and durations into normalized data consumable by controller pipelines.
-- Serves as the import boundary between external authoring output and internal animation contracts.
-
-### blend.rs
-
-- Implements layered animation blending where multiple clip outputs combine into one final pose.
-- Applies per-layer influence weights to shape how strongly each source contributes over time.
-- Supports optional bone masks for partial-body mixing without disturbing unrelated motion regions.
-- Maintains ordered layer stacking so blend precedence stays explicit and predictable.
-- Serves as the composition core for expressive multi-source character animation behavior.
-
-### clip.rs
-
-- Defines reusable animation clip metadata over frame spans, playback direction, and loop policy.
-- Carries baseline timing settings that playback systems use when frame durations are unspecified.
-- Serves as a compact contract shared by controller, state-machine, and blend-layer orchestration.
-
-### controller.rs
-
-- Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow.
-- Advances playback through forward, reverse, ping-pong, looped, and paused progression modes.
-- Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable.
-- Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata.
-- Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization.
-- Exposes current frame sampling for render-facing systems that require stable quad lookup each tick.
-- Maintains deterministic update behavior so identical input timing yields identical playback state.
-- Supports preview and inspection flows used by tools and debugging overlays.
-- Keeps clip selection, event buffering, and cursor mutation within one cohesive control surface.
-- Serves as the primary animation execution engine for sprite and timeline-driven characters.
-
-### curve.rs
-
-- Implements keyframed property timelines that interpolate numeric animation parameters over time.
-- Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior.
-- Evaluates sparse named tracks into sampled property values at arbitrary timeline positions.
-- Provides both single-property reads and full snapshot sampling for synchronized consumers.
-- Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts.
-- Serves as the parameter animation layer beneath higher-level state and clip orchestration.
-
-### event.rs
-
-- Defines the event payload contract emitted by animation playback state transitions.
-- Captures completion, loop, and frame-change signals as stable timeline reaction points.
-- Serves gameplay and scripting systems that listen to animation progression milestones.
-
-### frame.rs
-
-- Defines the minimal frame payload of source rectangle and optional per-frame timing override.
-- Supports clip timing fallback by allowing zero-duration frames to inherit clip-level FPS behavior.
-- Serves as the shared frame unit across import, playback, preview, and rendering pathways.
-
-### mod.rs
-
-- Defines the animation module boundary that unifies playback, blending, transitions, and render bridging.
-- Groups import, curve, event, sync, and state-control subsystems into one coherent runtime surface.
-- Keeps frame-based and bridge-based animation features accessible through a consistent composition root.
-- Serves as the high-level integration entry for character animation behavior in engine runtime.
-
-### render.rs
-
-- Converts active animation frame state into renderer-ready textured draw command payloads.
-- Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution.
-- Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation.
-- Serves as the bridge between animation runtime output and command-stream based rendering.
-
-### spine_bridge.rs
-
-- Bridges animation state-machine transitions to Spine clip playback through explicit state mapping.
-- Owns skeleton progression and transform refresh so Spine output remains time-synchronized.
-- Keeps external state changes aligned with internal skeleton animation updates each frame.
-- Serves as the integration layer between engine animation logic and Spine runtime evaluation.
-
-### state_machine.rs
-
-- Implements animation finite-state control with typed parameters and condition-driven transitions.
-- Evaluates transition rules each frame to move between clip-bound states deterministically.
-- Parses authored condition expressions into executable checks used during state progression.
-- Activates destination clips immediately on state change to keep visual intent synchronized.
-- Provides parameterized graph control for expressive authored animation behavior.
-- Serves as the transition-governance layer above raw clip playback execution.
-
-### sync_group.rs
-
-- Defines synchronization groups for animation instances that must maintain shared playback phase.
-- Tracks unique membership so timing alignment stays stable across coordinated animated entities.
-- Serves as lightweight grouping state for systems that enforce multi-entity animation sync.
+Rendering integration stays straightforward. The runtime can expose the current frame quad for custom drawing, and it also offers direct draw helpers with optional stored image handles. Overall, the module provides a complete animation foundation for Lua scripts: create, configure, advance, sync, blend, and render animation through one consistent API.
 
 ## Functions
 
@@ -201,7 +107,7 @@ lurek.animation.new()
 
 | Type | Description |
 |------|-------------|
-| [LAnimation](#lanimation-handle) | New animation handle. |
+| [LAnimation](#lanimation) | New animation handle. |
 
 **Example**
 
@@ -227,7 +133,7 @@ lurek.animation.newBlendLayerSet()
 
 | Type | Description |
 |------|-------------|
-| [LBlendLayerSet](#lblendlayerset-handle) | New blend layer set handle. |
+| [LBlendLayerSet](#lblendlayerset) | New blend layer set handle. |
 
 **Example**
 
@@ -253,7 +159,7 @@ lurek.animation.newCurve()
 
 | Type | Description |
 |------|-------------|
-| [LAnimCurve](#lanimcurve-handle) | New animation curve handle. |
+| [LAnimCurve](#lanimcurve) | New animation curve handle. |
 
 **Example**
 
@@ -279,14 +185,14 @@ lurek.animation.newStateMachine(anim_ud, initial)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `anim_ud` | [LAnimation](#lanimation-handle) | Animation handle moved into the state machine. |
+| `anim_ud` | [LAnimation](#lanimation) | Animation handle moved into the state machine. |
 | `initial` | string | Initial state name stored in the state machine. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LAnimStateMachine](#lanimstatemachine-handle) | New animation state machine handle. |
+| [LAnimStateMachine](#lanimstatemachine) | New animation state machine handle. |
 
 **Example**
 
@@ -315,7 +221,7 @@ lurek.animation.newSyncGroup()
 
 | Type | Description |
 |------|-------------|
-| [LAnimSyncGroup](#lanimsyncgroup-handle) | New animation sync group handle. |
+| [LAnimSyncGroup](#lanimsyncgroup) | New animation sync group handle. |
 
 **Example**
 
@@ -333,14 +239,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAnimCurve Handle](#lanimcurve-handle)
-- [LAnimStateMachine Handle](#lanimstatemachine-handle)
-- [LAnimSyncGroup Handle](#lanimsyncgroup-handle)
-- [LAnimation Handle](#lanimation-handle)
-- [LBlendLayerSet Handle](#lblendlayerset-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -349,13 +247,21 @@ end
 
 *No module-specific enums documented.*
 
-## LAnimCurve Handle
+## Types
 
-### Fields
+- [LAnimCurve](#lanimcurve)
+- [LAnimStateMachine](#lanimstatemachine)
+- [LAnimSyncGroup](#lanimsyncgroup)
+- [LAnimation](#lanimation)
+- [LBlendLayerSet](#lblendlayerset)
+
+## LAnimCurve
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAnimCurve:addKeyframe`
 
@@ -537,7 +443,7 @@ LAnimCurve:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAnimCurve](#lanimcurve-handle)`. |
+| string | The string `[LAnimCurve](#lanimcurve)`. |
 
 **Example**
 
@@ -563,7 +469,7 @@ LAnimCurve:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAnimCurve](#lanimcurve-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimCurve](#lanimcurve)` and `Object`. |
 
 **Returns**
 
@@ -582,13 +488,13 @@ end
 
 ---
 
-## LAnimStateMachine Handle
+## LAnimStateMachine
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAnimStateMachine:addState`
 
@@ -668,7 +574,7 @@ LAnimStateMachine:draw(image, x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image?` | LImage | Texture atlas or spritesheet; omit when an image was stored with setImage. |
+| `image?` | [LImage](render.md#limage) | Texture atlas or spritesheet; omit when an image was stored with setImage. |
 | `x?` | number | Destination X position (default 0). |
 | `y?` | number | Destination Y position (default 0). |
 | `opts?` | table | Optional transform table with numeric `rotation`, `scale`, `scaleX`, `scaleY`, `originX`, and `originY` fields. |
@@ -809,7 +715,7 @@ LAnimStateMachine:setImage(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | LImage | Texture atlas or spritesheet containing the animation frames. |
+| `image` | [LImage](render.md#limage) | Texture atlas or spritesheet containing the animation frames. |
 
 **Example**
 
@@ -874,7 +780,7 @@ LAnimStateMachine:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAnimStateMachine](#lanimstatemachine-handle)`. |
+| string | The string `[LAnimStateMachine](#lanimstatemachine)`. |
 
 **Example**
 
@@ -903,7 +809,7 @@ LAnimStateMachine:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAnimStateMachine](#lanimstatemachine-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimStateMachine](#lanimstatemachine)` and `Object`. |
 
 **Returns**
 
@@ -955,13 +861,13 @@ end
 
 ---
 
-## LAnimSyncGroup Handle
+## LAnimSyncGroup
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAnimSyncGroup:add`
 
@@ -1076,7 +982,7 @@ LAnimSyncGroup:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAnimSyncGroup](#lanimsyncgroup-handle)`. |
+| string | The string `[LAnimSyncGroup](#lanimsyncgroup)`. |
 
 **Example**
 
@@ -1102,7 +1008,7 @@ LAnimSyncGroup:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAnimSyncGroup](#lanimsyncgroup-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimSyncGroup](#lanimsyncgroup)` and `Object`. |
 
 **Returns**
 
@@ -1121,13 +1027,13 @@ end
 
 ---
 
-## LAnimation Handle
+## LAnimation
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAnimation:addClip`
 
@@ -1353,7 +1259,7 @@ LAnimation:draw(image, x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image?` | LImage | Texture atlas or spritesheet; omit when an image was stored with setImage. |
+| `image?` | [LImage](render.md#limage) | Texture atlas or spritesheet; omit when an image was stored with setImage. |
 | `x?` | number | Destination X position (default 0). |
 | `y?` | number | Destination Y position (default 0). |
 | `opts?` | table | Optional transform table with numeric `rotation`, `scale`, `scaleX`, `scaleY`, `originX`, and `originY` fields. |
@@ -1402,7 +1308,7 @@ LAnimation:drawPreviewGrid(columns, cell_size)
 
 | Type | Description |
 |------|-------------|
-| LImageData | Image data containing the preview grid. |
+| [LImageData](render.md#limagedata) | Image data containing the preview grid. |
 
 **Example**
 
@@ -1436,7 +1342,7 @@ LAnimation:drawToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| LImageData | Image data containing the rendered frame. |
+| [LImageData](render.md#limagedata) | Image data containing the rendered frame. |
 
 **Example**
 
@@ -1929,7 +1835,7 @@ LAnimation:setImage(image)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `image` | LImage | Texture atlas or spritesheet containing the animation frames. |
+| `image` | [LImage](render.md#limage) | Texture atlas or spritesheet containing the animation frames. |
 
 **Example**
 
@@ -2010,7 +1916,7 @@ LAnimation:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAnimation](#lanimation-handle)`. |
+| string | The string `[LAnimation](#lanimation)`. |
 
 **Example**
 
@@ -2036,7 +1942,7 @@ LAnimation:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAnimation](#lanimation-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAnimation](#lanimation)` and `Object`. |
 
 **Returns**
 
@@ -2084,13 +1990,13 @@ end
 
 ---
 
-## LBlendLayerSet Handle
+## LBlendLayerSet
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBlendLayerSet:addLayer`
 
@@ -2332,7 +2238,7 @@ LBlendLayerSet:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBlendLayerSet](#lblendlayerset-handle)`. |
+| string | The string `[LBlendLayerSet](#lblendlayerset)`. |
 
 **Example**
 
@@ -2358,7 +2264,7 @@ LBlendLayerSet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LBlendLayerSet](#lblendlayerset-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LBlendLayerSet](#lblendlayerset)` and `Object`. |
 
 **Returns**
 

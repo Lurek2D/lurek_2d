@@ -8,25 +8,6 @@ To optimize performance and minimize disk wear, the system employs dirty trackin
 
 Crucially, the module provides robust tools for long-term game maintenance via schema versioning and data migrations. Each save file is stamped with a schema version number. If the game is updated and the schema advances, registered migration functions are automatically invoked in sequence to upgrade older save data to the current schema before it is handed back to the `restore` callbacks. Additionally, the system generates lightweight `SlotMeta` metadata for each save slot—including timestamps, play time, and human-readable summary strings (e.g., 'Level 5 – Forest')—enabling UI save-select screens to display save info instantly without needing to deserialize the entire game state. The comprehensive `lurek.save.*` API gives Lua scripts full control over this powerful persistence engine.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### mod.rs
-
-- This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later.
-- It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack.
-- At the highest level this is the engine subsystem that turns live Lua state into durable save slots.
-
-### save_manager.rs
-
-- This file implements the practical save manager that coordinates collection, serialization, persistence, and restoration of game state.
-- Registered sections let different gameplay systems contribute their own data while still producing one coherent slot payload.
-- Dirty tracking and auto-save timing live here so disk writes happen when needed instead of on every frame or every small state change.
-- Schema versioning and migration routing are also handled here, which lets older saves evolve forward as projects change over time.
-- Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
-- The file is therefore the operational core of persistence for games built on the engine.
-
 ## Functions
 
 ### `lurek.save.newSaveManager`
@@ -41,7 +22,7 @@ lurek.save.newSaveManager()
 
 | Type | Description |
 |------|-------------|
-| [LSaveManager](#lsavemanager-handle) | A fresh save manager with no registered sections. |
+| [LSaveManager](#lsavemanager) | A fresh save manager with no registered sections. |
 
 **Example**
 
@@ -60,10 +41,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LSaveManager Handle](#lsavemanager-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -72,13 +49,17 @@ end
 
 *No module-specific enums documented.*
 
-## LSaveManager Handle
+## Types
 
-### Fields
+- [LSaveManager](#lsavemanager)
+
+## LSaveManager
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSaveManager:addMigration`
 
@@ -793,7 +774,7 @@ LSaveManager:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LSaveManager](#lsavemanager-handle)". |
+| string | Always "[LSaveManager](#lsavemanager)". |
 
 **Example**
 
@@ -809,7 +790,7 @@ end
 
 #### `LSaveManager:typeOf`
 
-Check whether this object matches a given type name. Supports "[LSaveManager](#lsavemanager-handle)" and "Object".
+Check whether this object matches a given type name. Supports "[LSaveManager](#lsavemanager)" and "Object".
 
 ```lua
 LSaveManager:typeOf(name)

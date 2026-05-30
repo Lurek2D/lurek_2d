@@ -10,97 +10,6 @@ A comprehensive suite of joints enables complex mechanical linkages between bodi
 
 Additionally, the `cellular` submodule provides a cellular automaton grid for simulating falling sand, flowing water, and other particle-like materials. For spatial queries, the module offers extensive raycasting, shape-casting, and point intersection tests, alongside pure-geometry collision helpers for lightweight, physics-free checks. The entire system—from body lifecycle management to collision event callbacks and debug rendering—is comprehensively exposed to the Lua environment via the `lurek.physics.*` API, forming the backbone of physical interactions in Lurek2D games.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### body.rs
-
-- Physics body description layer that gathers the state a simulation object needs before or while it lives inside the world.
-- The file defines the playable vocabulary of rigid body roles such as dynamic movers, fixed solids, script-driven kinematics, and overlap-only sensors.
-- It also binds those roles to supported geometry forms, material defaults, collision filtering, and transform helpers so a body can be reasoned about as one coherent unit.
-- Constructors emphasize ready-to-use authoring by filling in sensible density, friction, restitution, and motion settings rather than forcing every caller to spell out raw fields.
-- Geometry utilities keep body space and world space connected, which matters for bounds queries, spawn setup, editor tooling, and shape-aware logic outside the solver.
-- Functionally this file delivers the authored physical identity of an object before the broader world machinery turns it into live simulated behavior.
-
-### collision.rs
-
-- Collision event buffering for the moments when physical contact needs to become stable gameplay information instead of transient solver state.
-- The file packages body pairs, normals, penetration data, and sensor transitions into an ordered queue that can be drained after stepping without disturbing the simulation loop.
-- Functionally this delivers the bridge from raw contact detection to script-consumable collision events with clean step-boundary timing.
-
-### collision_helpers.rs
-
-- Lightweight geometry overlap helpers for code that needs quick collision answers without standing up a full physics world.
-- The file keeps AABB, circle, and point tests allocation-free and side-effect free so they fit hot loops, culling, and cheap gameplay probes.
-- Functionally this delivers the smallest collision vocabulary for fast spatial checks in plain screen-space coordinates.
-
-### mod.rs
-
-- Platform-level 2D physics module that unifies authored bodies, geometric shapes, simulation stepping, spatial queries, terrain sync, and trigger-style environmental effects.
-- It exposes the major surfaces of the subsystem as one coherent toolbox, from lightweight helper tests through full world simulation and debug-oriented support structures.
-- Functionally this file is the high-level entry point for physical interaction, movement constraints, collision reporting, and physics-backed world state in Lurek2D.
-
-### render.rs
-
-- Physics debug rendering layer for turning invisible simulation state into visible lines, outlines, and motion cues that developers can inspect frame by frame.
-- The file translates bodies and shapes into render-friendly snapshots without changing the simulation, letting diagnostics live beside gameplay rather than inside it.
-- Type-based coloring keeps static, dynamic, kinematic, and sensor objects readable at a glance when scenes grow dense.
-- Velocity arrows and shape outlines expose both form and movement so developers can see why contacts, tunnels, or odd impulses are happening.
-- Functionally this delivers the visual instrumentation needed to understand, tune, and trust the physics subsystem during development.
-
-### shape.rs
-
-- Physics shape definition layer that gives the subsystem a compact language for circles, rectangles, polygons, edges, and chained outlines.
-- The file keeps geometry authoring, validation, and collider conversion close together so malformed inputs can be rejected before they become unstable runtime fixtures.
-- Parsing and regular-polygon construction make the surface practical for scripts, tools, and data-driven content that describe shape intent rather than raw engine objects.
-- Standalone shapes carry material and sensor settings alongside geometry, which lets authored collision pieces travel with the properties that affect how they behave in the world.
-- Local bounding logic keeps each shape queryable without needing a live body, which is useful for previews, authoring tools, and lightweight reasoning.
-- Functionally this file delivers the reusable geometry vocabulary that both bodies and higher-level physics workflows build upon.
-
-### terrain.rs
-
-- Destructible terrain map layer that turns editable solid cells into physics-ready world geometry without making callers manage collider lifecycles manually.
-- The file tracks terrain in chunks so local edits stay local, allowing flush operations to rebuild only the regions that actually changed.
-- Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
-- Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
-- Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
-- Debris spawning and collapse helpers push the system beyond passive walls into active destructible-environment behavior.
-- Functionally this file delivers the editable ground model that connects tile logic, destruction effects, and efficient static collision rebuilds.
-
-### types.rs
-
-- Small core type surface for the physics subsystem where stable identifiers need stronger meaning than a bare integer can provide.
-- The file wraps body identity in a dedicated type so physics handles remain cheap to pass around while still reading as deliberate domain values.
-- Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
-
-### world.rs
-
-- Central physics simulation world that owns the living state of rigid bodies, colliders, joints, queries, events, and solver progression for the engine.
-- The file wraps Rapier into an engine-shaped runtime surface where spawning, stepping, sleeping, destruction, and body mutation all speak one consistent game-facing vocabulary.
-- Fixed-timestep accumulation is part of that surface, which keeps motion and contact results deterministic enough for frame-rate-independent gameplay code.
-- Collision collection lives beside stepping so begin, end, and overlap information emerges as stable post-step data rather than scattered callbacks fired from deep inside the solver.
-- Spatial queries such as raycasts, point tests, and area checks share the same authoritative world state, which lets gameplay systems ask where things are without duplicating geometry.
-- Joint support turns the world from a loose body container into a mechanical playground where links, motors, ropes, sliders, and welded constraints become first-class scene behaviors.
-- Break thresholds and one-way platform handling add gameplay-oriented control over how contacts and constraints should behave under stress or directional motion.
-- Trigger zones extend the world beyond classic rigid-body simulation by letting areas override gravity, damping, and enter-exit signaling as bodies move through space.
-- Pixels-per-meter conversion keeps authored screen-scale intent aligned with simulation-scale correctness, reducing the friction between gameplay numbers and solver numbers.
-- Debug shape extraction and line drawing make the same world inspectable, so developers can see the geometry and contact surfaces that drive runtime outcomes.
-- Terrain-linked behavior integrates static environment rebuilding into the same physical authority instead of leaving destructible ground as an external special case.
-- Body lifecycle controls cover creation, disabling, wake-sleep flow, velocity mutation, material changes, and other everyday manipulations expected from a playable simulation backend.
-- Query, contact, and mutation responsibilities stay concentrated here so higher layers can treat the world as the one source of truth for physical state.
-- The result is a large but coherent orchestration surface where simulation, environment effects, and debug visibility reinforce each other instead of fragmenting across helper subsystems.
-- Functionally this file delivers the full physical stage on which movement, impact, constraints, triggers, terrain interaction, and spatial reasoning all take place.
-
-### zone.rs
-
-- Physics zone system for spatial rule overrides that should apply because a body is somewhere, not because it touched a solid object.
-- The file defines bounded areas that can replace normal gravity with directional pull, attraction, repulsion, or weightless behavior.
-- Priority and mask filtering let multiple zones coexist without turning area-based effects into ambiguous global state.
-- Damping overrides make zones useful for liquids, mud, low-friction fields, or other environmental modifiers that change motion feel.
-- Enter and leave tracking turns zones into event sources as well as force fields, which is important for scripting and gameplay transitions.
-- Functionally this file delivers area-driven physics behavior for environmental control, special spaces, and location-sensitive simulation rules.
-
 ## Functions
 
 ### `lurek.physics.attachShape`
@@ -115,8 +24,8 @@ lurek.physics.attachShape(body, shape)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `body` | [LBody](#lbody-handle) | The target body. |
-| `shape` | [LPhysicsShape](#lphysicsshape-handle) | The shape to attach. |
+| `body` | [LBody](#lbody) | The target body. |
+| `shape` | [LPhysicsShape](#lphysicsshape) | The shape to attach. |
 
 **Example**
 
@@ -174,7 +83,7 @@ lurek.physics.destroyWorld(world)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world to destroy. |
+| `world` | [LWorld](#lworld) | The world to destroy. |
 
 **Example**
 
@@ -202,7 +111,7 @@ lurek.physics.drawDebugGpu(world, config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world to visualize. |
+| `world` | [LWorld](#lworld) | The world to visualize. |
 | `config?` | table | Optional config: {bodyColor, staticColor, sleepColor, sensorColor, lineWidth}. |
 
 **Example**
@@ -229,8 +138,8 @@ lurek.physics.getBody(world, body)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world. |
-| `body` | [LBody](#lbody-handle) | The body to query. |
+| `world` | [LWorld](#lworld) | The world. |
+| `body` | [LBody](#lbody) | The body to query. |
 
 **Returns**
 
@@ -266,7 +175,7 @@ lurek.physics.getCollisions(world)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world to query. |
+| `world` | [LWorld](#lworld) | The world to query. |
 
 **Returns**
 
@@ -306,8 +215,8 @@ lurek.physics.isSleepingAllowed(world, body)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world. |
-| `body` | [LBody](#lbody-handle) | The body. |
+| `world` | [LWorld](#lworld) | The world. |
+| `body` | [LBody](#lbody) | The body. |
 
 **Returns**
 
@@ -342,7 +251,7 @@ lurek.physics.newBody(world, x, y, bodyType)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The target world. |
+| `world` | [LWorld](#lworld) | The target world. |
 | `x` | number | Initial X position. |
 | `y` | number | Initial Y position. |
 | `bodyType` | string | Body type: "static", "dynamic", "kinematic", or "sensor". |
@@ -351,7 +260,7 @@ lurek.physics.newBody(world, x, y, bodyType)
 
 | Type | Description |
 |------|-------------|
-| [LBody](#lbody-handle) | The newly created body. |
+| [LBody](#lbody) | The newly created body. |
 
 **Example**
 
@@ -385,7 +294,7 @@ lurek.physics.newChainShape(closed, ...)
 
 | Type | Description |
 |------|-------------|
-| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
+| [LPhysicsShape](#lphysicsshape) | The shape object. |
 
 **Example**
 
@@ -418,7 +327,7 @@ lurek.physics.newCircleShape(r)
 
 | Type | Description |
 |------|-------------|
-| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
+| [LPhysicsShape](#lphysicsshape) | The shape object. |
 
 **Example**
 
@@ -455,7 +364,7 @@ lurek.physics.newEdgeShape(x1, y1, x2, y2)
 
 | Type | Description |
 |------|-------------|
-| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
+| [LPhysicsShape](#lphysicsshape) | The shape object. |
 
 **Example**
 
@@ -488,7 +397,7 @@ lurek.physics.newPolygonShape(...)
 
 | Type | Description |
 |------|-------------|
-| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
+| [LPhysicsShape](#lphysicsshape) | The shape object. |
 
 **Example**
 
@@ -522,7 +431,7 @@ lurek.physics.newRectangleShape(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LPhysicsShape](#lphysicsshape-handle) | The shape object. |
+| [LPhysicsShape](#lphysicsshape) | The shape object. |
 
 **Example**
 
@@ -552,13 +461,13 @@ lurek.physics.newTerrain(width, height, cellSize, world)
 | `width` | number | Grid width in cells. |
 | `height` | number | Grid height in cells. |
 | `cellSize` | number | World-space size of each cell. |
-| `world` | [LWorld](#lworld-handle) | The physics world that will own the generated colliders. |
+| `world` | [LWorld](#lworld) | The physics world that will own the generated colliders. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTerrain](#lterrain-handle) | The terrain object. |
+| [LTerrain](#lterrain) | The terrain object. |
 
 **Example**
 
@@ -595,7 +504,7 @@ lurek.physics.newWorld(gx, gy)
 
 | Type | Description |
 |------|-------------|
-| [LWorld](#lworld-handle) | The new physics world. |
+| [LWorld](#lworld) | The new physics world. |
 
 **Example**
 
@@ -622,8 +531,8 @@ lurek.physics.setBodyVelocity(world, body, vx, vy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world. |
-| `body` | [LBody](#lbody-handle) | The body. |
+| `world` | [LWorld](#lworld) | The world. |
+| `body` | [LBody](#lbody) | The body. |
 | `vx` | number | Velocity X. |
 | `vy` | number | Velocity Y. |
 
@@ -652,8 +561,8 @@ lurek.physics.setSleepingAllowed(world, body, allowed)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world. |
-| `body` | [LBody](#lbody-handle) | The body. |
+| `world` | [LWorld](#lworld) | The world. |
+| `body` | [LBody](#lbody) | The body. |
 | `allowed` | boolean | True to allow sleeping. |
 
 **Example**
@@ -681,7 +590,7 @@ lurek.physics.step(world, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `world` | [LWorld](#lworld-handle) | The world to step. |
+| `world` | [LWorld](#lworld) | The world to step. |
 | `dt` | number | Time step in seconds. |
 
 **Example**
@@ -856,15 +765,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LBody Handle](#lbody-handle)
-- [LChainShape Handle](#lchainshape-handle)
-- [LPhysicsShape Handle](#lphysicsshape-handle)
-- [LTerrain Handle](#lterrain-handle)
-- [LWorld Handle](#lworld-handle)
-- [LZone Handle](#lzone-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -873,13 +773,21 @@ end
 
 *No module-specific enums documented.*
 
-## LBody Handle
+## Types
 
-### Fields
+- [LBody](#lbody)
+- [LPhysicsShape](#lphysicsshape)
+- [LTerrain](#lterrain)
+- [LWorld](#lworld)
+- [LZone](#lzone)
+
+## LBody
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBody:applyAngularImpulse`
 
@@ -2144,7 +2052,7 @@ end
 
 #### `LBody:type`
 
-Returns the type name of this object ("[LBody](#lbody-handle)").
+Returns the type name of this object ("[LBody](#lbody)").
 
 ```lua
 LBody:type()
@@ -2154,7 +2062,7 @@ LBody:type()
 
 | Type | Description |
 |------|-------------|
-| string | "[LBody](#lbody-handle)". |
+| string | "[LBody](#lbody)". |
 
 **Example**
 
@@ -2226,23 +2134,13 @@ end
 
 ---
 
-## LChainShape Handle
+## LPhysicsShape
 
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LPhysicsShape Handle
-
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPhysicsShape:destroy`
 
@@ -2455,7 +2353,7 @@ end
 
 #### `LPhysicsShape:type`
 
-Returns the type name of this object ("[LPhysicsShape](#lphysicsshape-handle)").
+Returns the type name of this object ("[LPhysicsShape](#lphysicsshape)").
 
 ```lua
 LPhysicsShape:type()
@@ -2465,7 +2363,7 @@ LPhysicsShape:type()
 
 | Type | Description |
 |------|-------------|
-| string | "[LPhysicsShape](#lphysicsshape-handle)". |
+| string | "[LPhysicsShape](#lphysicsshape)". |
 
 **Example**
 
@@ -2510,13 +2408,13 @@ end
 
 ---
 
-## LTerrain Handle
+## LTerrain
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTerrain:collapseColumns`
 
@@ -2935,7 +2833,7 @@ end
 
 #### `LTerrain:type`
 
-Returns the type name of this object ("[LTerrain](#lterrain-handle)").
+Returns the type name of this object ("[LTerrain](#lterrain)").
 
 ```lua
 LTerrain:type()
@@ -2945,7 +2843,7 @@ LTerrain:type()
 
 | Type | Description |
 |------|-------------|
-| string | "[LTerrain](#lterrain-handle)". |
+| string | "[LTerrain](#lterrain)". |
 
 **Example**
 
@@ -2993,13 +2891,13 @@ end
 
 ---
 
-## LWorld Handle
+## LWorld
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LWorld:addDistanceJoint`
 
@@ -3491,7 +3389,7 @@ LWorld:addZone(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LZone](#lzone-handle) | The zone handle. |
+| [LZone](#lzone) | The zone handle. |
 
 **Example**
 
@@ -3714,7 +3612,7 @@ LWorld:drawDebug(target, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | The image to draw debug shapes onto. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw debug shapes onto. |
 | `r?` | number | Red channel (0-255, default 0). |
 | `g?` | number | Green channel (0-255, default 255). |
 | `b?` | number | Blue channel (0-255, default 0). |
@@ -4617,7 +4515,7 @@ LWorld:newBody(x, y, bodyType)
 
 | Type | Description |
 |------|-------------|
-| [LBody](#lbody-handle) | The newly created body handle. |
+| [LBody](#lbody) | The newly created body handle. |
 
 **Example**
 
@@ -4656,7 +4554,7 @@ LWorld:newChainBody(x, y, vertices, closed, bodyType)
 
 | Type | Description |
 |------|-------------|
-| [LBody](#lbody-handle) | The newly created body handle. |
+| [LBody](#lbody) | The newly created body handle. |
 
 **Example**
 
@@ -4692,7 +4590,7 @@ LWorld:newCircleBody(x, y, radius, bodyType)
 
 | Type | Description |
 |------|-------------|
-| [LBody](#lbody-handle) | The newly created body handle. |
+| [LBody](#lbody) | The newly created body handle. |
 
 **Example**
 
@@ -4731,7 +4629,7 @@ LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 
 | Type | Description |
 |------|-------------|
-| [LBody](#lbody-handle) | The newly created body handle. |
+| [LBody](#lbody) | The newly created body handle. |
 
 **Example**
 
@@ -4767,7 +4665,7 @@ LWorld:newPolygonBody(x, y, vertices, bodyType)
 
 | Type | Description |
 |------|-------------|
-| [LBody](#lbody-handle) | The newly created body handle. |
+| [LBody](#lbody) | The newly created body handle. |
 
 **Example**
 
@@ -5621,7 +5519,7 @@ end
 
 #### `LWorld:type`
 
-Returns the type name of this object ("[LWorld](#lworld-handle)").
+Returns the type name of this object ("[LWorld](#lworld)").
 
 ```lua
 LWorld:type()
@@ -5631,7 +5529,7 @@ LWorld:type()
 
 | Type | Description |
 |------|-------------|
-| string | "[LWorld](#lworld-handle)". |
+| string | "[LWorld](#lworld)". |
 
 **Example**
 
@@ -5706,13 +5604,13 @@ end
 
 ---
 
-## LZone Handle
+## LZone
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LZone:destroy`
 
@@ -6073,7 +5971,7 @@ end
 
 #### `LZone:type`
 
-Returns the type name of this object ("[LZone](#lzone-handle)").
+Returns the type name of this object ("[LZone](#lzone)").
 
 ```lua
 LZone:type()
@@ -6083,7 +5981,7 @@ LZone:type()
 
 | Type | Description |
 |------|-------------|
-| string | "[LZone](#lzone-handle)". |
+| string | "[LZone](#lzone)". |
 
 **Example**
 

@@ -8,68 +8,6 @@ Beyond security, the module offers a robust suite of filesystem operations. It s
 
 To prevent blocking the main engine thread during expensive I/O operations, the module includes an `AsyncLoader`. This loader dispatches read and write requests to a dedicated background worker thread, returning opaque handles that scripts can poll for completion. For fine-grained file manipulation, `FileHandle` provides a buffered, cursor-based streaming API with discrete read, write, and append modes. Additionally, for hot-reload development workflows, a poll-based `FileWatcher` tracks modification-time (`mtime`) changes across registered paths, enabling real-time asset updates. The full functionality of the virtual filesystem, including JSON validation helpers and file metadata queries, is exposed to scripts via the `lurek.filesystem.*` API.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### async_loader.rs
-
-- Provides background file I/O through a dedicated worker thread and bounded request channel.
-- Supports non-blocking read and write scheduling with opaque handles for later status polling.
-- Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers.
-- Enforces queue capacity limits to keep memory and scheduling pressure under control.
-- Handles worker lifecycle shutdown cleanly when the loader is dropped.
-- Delivers asynchronous file transfer behavior for systems that must avoid main-thread stalls.
-
-### file_data.rs
-
-- Provides a lightweight file payload container pairing logical paths with loaded raw bytes.
-- Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption.
-- Delivers the shared data object returned by filesystem read operations.
-
-### file_handle.rs
-
-- Provides buffered file-handle behavior for mode-aware read, write, and append stream operations.
-- Resolves logical game paths through GameFS before touching host filesystem resources.
-- Exposes byte and line reading utilities with EOF-aware iteration semantics.
-- Supports seek, tell, flush, and explicit close workflows for predictable stream control.
-- Enforces access-mode checks so invalid operation mixes fail with clear runtime errors.
-- Delivers safe per-file I/O primitives used by script APIs and engine persistence code.
-
-### mod.rs
-
-- Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access.
-- Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface.
-- Delivers the core file-service layer used by runtime systems and script-facing persistence flows.
-
-### vfs.rs
-
-- Provides the core virtual filesystem implementation rooted at a game directory and save space.
-- Resolves read and write paths through mount overlays and base-root fallback rules.
-- Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior.
-- Exposes metadata, glob, list, copy, move, and removal operations under one coherent API.
-- Supports layered directory and archive mounts with deterministic conflict resolution order.
-- Builds file-handle and async-loader integration points over canonical resolved paths.
-- Includes JSON helpers and temporary file utilities for common content and tooling workflows.
-- Normalizes separators and path shapes to keep behavior stable across desktop platforms.
-- Keeps mount metadata explicit so runtime systems can inspect and reason about storage topology.
-- Delivers the authoritative storage-routing layer consumed by higher-level filesystem services.
-
-### watcher.rs
-
-- Provides poll-based file watch behavior that detects mtime changes for registered paths.
-- Maintains cached modification snapshots and reports deterministic change sets per poll cycle.
-- Supports watch, unwatch, and forced invalidation workflows for runtime refresh control.
-- Delivers a lightweight change-detection utility for assets and config reload pipelines.
-
-### zip_mount.rs
-
-- Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries.
-- Builds an index for fast repeated lookups while reading files on demand without full extraction.
-- Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
-- Supports listing and existence checks over mounted archive content through a unified interface.
-- Delivers archive overlay functionality used by the virtual filesystem mount stack.
-
 ## Functions
 
 ### `lurek.filesystem.append`
@@ -676,7 +614,7 @@ lurek.filesystem.mountZip(archive_path, prefix)
 
 | Type | Description |
 |------|-------------|
-| [LZipMount](#lzipmount-handle) | New ZIP mount handle. |
+| [LZipMount](#lzipmount) | New ZIP mount handle. |
 
 **Example**
 
@@ -734,7 +672,7 @@ lurek.filesystem.newFileData(path)
 
 | Type | Description |
 |------|-------------|
-| [LFileData](#lfiledata-handle) | New file data handle containing path and bytes. |
+| [LFileData](#lfiledata) | New file data handle containing path and bytes. |
 
 **Example**
 
@@ -767,7 +705,7 @@ lurek.filesystem.openFile(path, mode)
 
 | Type | Description |
 |------|-------------|
-| [LFileHandle](#lfilehandle-handle) | Open file handle. |
+| [LFileHandle](#lfilehandle) | Open file handle. |
 
 **Example**
 
@@ -1380,12 +1318,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LFileData Handle](#lfiledata-handle)
-- [LFileHandle Handle](#lfilehandle-handle)
-- [LZipMount Handle](#lzipmount-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -1394,13 +1326,19 @@ end
 
 *No module-specific enums documented.*
 
-## LFileData Handle
+## Types
 
-### Fields
+- [LFileData](#lfiledata)
+- [LFileHandle](#lfilehandle)
+- [LZipMount](#lzipmount)
+
+## LFileData
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFileData:getFilename`
 
@@ -1493,7 +1431,7 @@ LFileData:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LFileData](#lfiledata-handle)`. |
+| string | The string `[LFileData](#lfiledata)`. |
 
 **Example**
 
@@ -1519,7 +1457,7 @@ LFileData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LFileData](#lfiledata-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LFileData](#lfiledata)` and `Object`. |
 
 **Returns**
 
@@ -1539,13 +1477,13 @@ end
 
 ---
 
-## LFileHandle Handle
+## LFileHandle
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFileHandle:close`
 
@@ -1804,7 +1742,7 @@ LFileHandle:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LFileHandle](#lfilehandle-handle)`. |
+| string | The string `[LFileHandle](#lfilehandle)`. |
 
 **Example**
 
@@ -1831,7 +1769,7 @@ LFileHandle:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LFileHandle](#lfilehandle-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LFileHandle](#lfilehandle)` and `Object`. |
 
 **Returns**
 
@@ -1880,13 +1818,13 @@ end
 
 ---
 
-## LZipMount Handle
+## LZipMount
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LZipMount:contains`
 
@@ -2014,7 +1952,7 @@ LZipMount:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LZipMount](#lzipmount-handle)`. |
+| string | The string `[LZipMount](#lzipmount)`. |
 
 **Example**
 
@@ -2039,7 +1977,7 @@ LZipMount:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LZipMount](#lzipmount-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LZipMount](#lzipmount)` and `Object`. |
 
 **Returns**
 

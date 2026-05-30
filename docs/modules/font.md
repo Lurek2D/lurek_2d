@@ -6,47 +6,6 @@ The font module provides the CPU-side data layer for text rendering: bitmap font
 
 This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### bitmap_font.rs
-
-- Provides bitmap-font loading and atlas-backed glyph lookup for pre-rasterized text rendering workflows.
-- Parses descriptor data to build codepoint-to-glyph mappings with stable UV and metric records.
-- Preserves kerning and sizing information needed for accurate spacing during layout and shaping.
-- Delivers fixed-size sprite font support for pipelines that prefer atlas sampling over runtime rasterization.
-
-### metrics.rs
-
-- Provides glyph and line metric structures used to measure text blocks in logical pixel space.
-- Computes single-line and multiline dimensions with kerning-aware advance accumulation.
-- Tracks per-line width and source ranges so layout systems can map metrics back to input text.
-- Exposes aggregate text bounds including line count and total height for UI sizing flows.
-- Delivers measurement primitives required by shaping, wrapping, and render preparation paths.
-
-### mod.rs
-
-- Provides the high-level font module boundary for glyph data, layout shaping, and registry access.
-- Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface.
-- Delivers stable text-measurement and font-resolution capabilities for rendering and UI systems.
-
-### registry.rs
-
-- Provides the runtime font registry that stores, resolves, and returns loaded font handles by name.
-- Maps style and size metadata onto cached font assets for consistent lookup semantics.
-- Supports registration and replacement flows while maintaining stable handle-based access patterns.
-- Centralizes font ownership so rendering systems consume one authoritative source of text assets.
-- Delivers the font-management layer that coordinates typography resources across the engine.
-
-### shaping.rs
-
-- Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts.
-- Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs.
-- Computes aligned line placement using measured advances and target width constraints.
-- Emits shaped line collections with offsets and widths for downstream rendering stages.
-- Delivers the layout layer that bridges font metrics and final text draw preparation.
-
 ## Functions
 
 ### `lurek.font.availableSizes`
@@ -87,7 +46,7 @@ lurek.font.charAdvance(font, char, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle. |
+| `font` | [LFont](#lfont) | Font handle. |
 | `char` | string | A single-character string. |
 | `scale?` | number | Scale factor (default 1.0). |
 
@@ -111,7 +70,7 @@ end
 
 ### `lurek.font.getDefault`
 
-Returns the default engine font as an [LFont](#lfont-handle) userdata handle.
+Returns the default engine font as an [LFont](#lfont) userdata handle.
 
 ```lua
 lurek.font.getDefault()
@@ -121,7 +80,7 @@ lurek.font.getDefault()
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The default engine font handle. |
+| [LFont](#lfont) | The default engine font handle. |
 
 **Example**
 
@@ -146,7 +105,7 @@ lurek.font.lineHeight(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to query. |
+| `font` | [LFont](#lfont) | Font handle to query. |
 
 **Returns**
 
@@ -193,7 +152,7 @@ end
 
 ### `lurek.font.load`
 
-Loads a TTF/OTF/PNG font file at the given point size and returns an [LFont](#lfont-handle) handle.
+Loads a TTF/OTF/PNG font file at the given point size and returns an [LFont](#lfont) handle.
 
 ```lua
 lurek.font.load(path, size)
@@ -210,7 +169,7 @@ lurek.font.load(path, size)
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The loaded font handle. |
+| [LFont](#lfont) | The loaded font handle. |
 
 **Example**
 
@@ -229,7 +188,7 @@ end
 
 ### `lurek.font.loadBitmap`
 
-Loads a bitmap font atlas PNG with the given cell dimensions and returns an [LFont](#lfont-handle) handle.
+Loads a bitmap font atlas PNG with the given cell dimensions and returns an [LFont](#lfont) handle.
 
 ```lua
 lurek.font.loadBitmap(path, cellWidth, cellHeight)
@@ -247,7 +206,7 @@ lurek.font.loadBitmap(path, cellWidth, cellHeight)
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | The loaded bitmap font handle. |
+| [LFont](#lfont) | The loaded bitmap font handle. |
 
 **Example**
 
@@ -276,7 +235,7 @@ lurek.font.measure(font, text, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to measure with. |
+| `font` | [LFont](#lfont) | Font handle to measure with. |
 | `text` | string | Text string to measure. |
 | `scale?` | number | Scale factor (default 1.0). |
 
@@ -310,7 +269,7 @@ lurek.font.measureLine(font, text, scale)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to measure with. |
+| `font` | [LFont](#lfont) | Font handle to measure with. |
 | `text` | string | Single-line text string to measure. |
 | `scale?` | number | Scale factor (default 1.0). |
 
@@ -344,7 +303,7 @@ lurek.font.shapeText(font, text, maxWidth, scale, align, wrap)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle used for shaping. |
+| `font` | [LFont](#lfont) | Font handle used for shaping. |
 | `text` | string | Text to shape. |
 | `maxWidth` | number | Maximum line width in pixels. |
 | `scale` | number | Scale factor (default 1.0). |
@@ -391,7 +350,7 @@ lurek.font.wrapText(font, text, maxWidth, scale, mode)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle used for measurement. |
+| `font` | [LFont](#lfont) | Font handle used for measurement. |
 | `text` | string | Text to wrap. |
 | `maxWidth` | number | Maximum line width in pixels. |
 | `scale` | number | Scale factor (default 1.0). |
@@ -425,11 +384,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LFont Handle](#lfont-handle)
-- [LuaFont Handle](#luafont-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -438,13 +392,17 @@ end
 
 *No module-specific enums documented.*
 
-## LFont Handle
+## Types
 
-### Fields
+- [LFont](#lfont)
+
+## LFont
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFont:containsGlyph`
 
@@ -796,7 +754,7 @@ LFont:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LFont](#lfont-handle)". |
+| string | Always "[LFont](#lfont)". |
 
 ---
 
@@ -855,13 +813,3 @@ end
 ```
 
 ---
-
-## LuaFont Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*

@@ -2,6 +2,7 @@
 
 ## TL;DR
 
+- The `bin` module groups standalone executable entry points for headless tasks and normal app launch, with clear command behavior and process-level integration.
 
 
 ## General Info
@@ -16,13 +17,13 @@
 
 ## Summary
 
-The `bin` module namespace groups standalone executable entry points under `src/bin` that support diagnostics, maintenance, migration, and developer-side operational tasks. Unlike engine runtime modules, these binaries are process-level tools with narrow goals and explicit command semantics.
+The `bin` module is the executable entry layer for process-level tasks. It does not define gameplay features. Instead, it provides focused programs that start the engine in specific modes, such as normal interactive launch or headless automation workflows.
 
-Each binary should remain small, task-oriented, and decoupled from gameplay runtime state. Shared logic should be imported from stable library modules instead of duplicated in command code, so maintenance remains centralized and behavior stays consistent between tooling and runtime surfaces.
+Its functional goal is clear command behavior. Each binary maps user input to a concrete operation, runs that operation with predictable side effects, reports results, and exits with meaningful status codes. This makes the tooling usable both by humans and by CI scripts.
 
-This module is intentionally integration-oriented: it wires CLI inputs to engine/library APIs, formats outputs, and exits with clear status codes. It is not intended to host feature-domain business logic.
+The module is intentionally small and integration-focused. Heavy logic should stay in shared library modules, while binaries stay thin wrappers around those APIs. This keeps maintenance costs lower and avoids logic drift between tool paths and runtime paths.
 
-As the toolset grows, the quality bar is discoverability and reliability: clear command contracts, predictable side effects, and stable output formats that can be consumed by local scripts and CI workflows.
+In practice, this module helps operational work stay stable: validation runs, packaging, screenshot pipelines, and standard launch flow can all be invoked through explicit entry points. That reliability is the main value of this module boundary.
 
 ## Imports
 

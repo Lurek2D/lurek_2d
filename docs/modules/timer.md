@@ -8,47 +8,6 @@ Beyond basic timekeeping, the module provides a highly versatile `Scheduler` for
 
 The module also caters to diverse asynchronous scripting patterns. It provides real-time timers (`afterReal`) that bypass the global time-scale and game pauses, making them ideal for UI animations or system notifications. For coroutine-based scripting, the module offers `waitSeconds` and `waitFrames`, which yield the current coroutine and auto-resume it once the deadline passes, vastly simplifying complex sequence scripting. Supported by swap-remove compaction to maintain O(1) performance even with thousands of active timers, the `lurek.timer.*` API gives developers robust, high-performance control over the flow of time in their games.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### accumulator.rs
-
-- This file provides drift-safe microsecond accumulation for scaled runtime timekeeping.
-- It preserves fractional carry between ticks so long sessions avoid rounding erosion.
-- It clamps negative inputs to keep elapsed time monotonic and scheduler-safe.
-
-### clock.rs
-
-- This file provides the core frame clock that drives delta, elapsed time, and fps metrics.
-- It computes stable per-frame timing and rolling averages for smoother runtime decisions.
-- It maintains one-second fps windows so performance telemetry stays readable and comparable.
-- It exposes one tick-driven timeline that other subsystems can trust each frame.
-- It anchors deterministic game-loop timing for update, scheduling, and diagnostics paths.
-
-### mod.rs
-
-- This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling.
-- It keeps frame progression measurable and controllable across gameplay and engine services.
-- It unifies timing primitives so deferred logic behaves consistently under load.
-
-### scheduler.rs
-
-- This file provides a scheduler for time-based and frame-based deferred execution flows.
-- It supports one-shot and repeating events with stable identifiers for external control.
-- It handles named event replacement so restartable behaviors stay clean and predictable.
-- It applies global time scaling while preserving safe clamping boundaries for runtime stability.
-- It exposes pause, resume, interval mutation, and remaining-time inspection for live orchestration.
-- It removes expired events efficiently to keep update costs steady at larger event counts.
-- It serves as the central dispatch surface for timer callbacks used by Lua bindings.
-- It keeps callback timing coherent even when many scheduled entries mutate concurrently.
-
-### sleep.rs
-
-- This file provides the blocking sleep primitive used by timer-facing runtime code.
-- It treats non-positive durations as no-op calls to preserve predictable behavior.
-- It delegates to standard thread sleeping without busy waiting or spin loops.
-
 ## Functions
 
 ### `lurek.timer.afterReal`
@@ -96,7 +55,7 @@ lurek.timer.chain(steps)
 
 | Type | Description |
 |------|-------------|
-| [LScheduler](#lscheduler-handle) | A new scheduler pre-loaded with the chained events. |
+| [LScheduler](#lscheduler) | A new scheduler pre-loaded with the chained events. |
 
 **Example**
 
@@ -349,7 +308,7 @@ end
 
 ### `lurek.timer.newScheduler`
 
-Creates a new [LScheduler](#lscheduler-handle) instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.
+Creates a new [LScheduler](#lscheduler) instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.
 
 ```lua
 lurek.timer.newScheduler()
@@ -359,7 +318,7 @@ lurek.timer.newScheduler()
 
 | Type | Description |
 |------|-------------|
-| [LScheduler](#lscheduler-handle) | A new scheduler object. |
+| [LScheduler](#lscheduler) | A new scheduler object. |
 
 **Example**
 
@@ -619,10 +578,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LScheduler Handle](#lscheduler-handle)
-
 ## Callbacks
 
 - `lurek.timer.afterReal` param `func` (`function`): Callback to invoke when the real-time deadline is reached.
@@ -631,13 +586,17 @@ end
 
 *No module-specific enums documented.*
 
-## LScheduler Handle
+## Types
 
-### Fields
+- [LScheduler](#lscheduler)
+
+## LScheduler
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LScheduler:after`
 
@@ -1453,7 +1412,7 @@ LScheduler:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LScheduler](#lscheduler-handle)". |
+| string | Always "[LScheduler](#lscheduler)". |
 
 **Example**
 
@@ -1468,7 +1427,7 @@ end
 
 #### `LScheduler:typeOf`
 
-Checks whether this object matches the given type name. Accepts "[LScheduler](#lscheduler-handle)" or "Object".
+Checks whether this object matches the given type name. Accepts "[LScheduler](#lscheduler)" or "Object".
 
 ```lua
 LScheduler:typeOf(name)

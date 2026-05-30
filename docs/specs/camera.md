@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `camera` module is a versatile and fully-featured 2D camera and viewport management system positioned within the Platform Services tier.
+- The `camera` module provides full 2D camera control: follow behavior, viewport scaling, effects, scripted paths, and multi-camera rigs with consistent render integration.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `camera` module is the runtime camera stack for 2D view transforms, camera behavior, and viewport mapping. It is organized as cooperating submodules rather than one heavy type: core camera state (`types`), viewport scaling (`viewport` and `viewport_scale`), path/tween motion (`path`), effect primitives (`effects`), multi-camera coordination (`multi`), and render-command adapters (`render`).
+The `camera` module controls how the world is seen on screen in 2D runtime scenarios. It provides one consistent place to manage camera position, zoom, rotation, follow logic, and viewport mapping. Functionally, it separates view behavior from gameplay logic so systems can share the same camera rules.
 
-This module's role is transform policy, not scene ownership. It computes where and how to view the world, then exposes that state to render paths and scripts. Features like follow behavior, easing, path interpolation, and rig composition are kept in camera space so gameplay systems can consume them without duplicating math.
+Its camera state tools support both direct control and guided motion. Scripts can move or target the camera, apply smoothing and easing, run path-based travel, and use zoom transitions. This makes the module useful for gameplay tracking, cutscene movement, and tool-driven inspection flows.
 
-The separation between viewport and camera behavior is deliberate. Viewport code governs screen/game scaling strategy and coordinate conversion, while camera code governs position/zoom/rotation behavior. This avoids accidental coupling between display resolution concerns and gameplay camera logic.
+Visual motion quality is improved through effect primitives such as shake, sway, and pulse-like zoom. These effects layer on top of base camera behavior, so teams can add impact and feedback without rewriting core follow or transform code.
 
-In practice, camera changes should preserve stable transform semantics across single-camera and multi-camera flows. Render integration should remain adapter-style: camera produces view data, renderer consumes commands.
+Viewport handling is treated as its own concern. Scaling strategy and coordinate conversion are managed alongside camera transforms, which helps keep behavior stable across different window sizes and presentation modes. This reduces coupling between display policy and gameplay camera decisions.
 
-Implementation detail and boundary guarantees for camera: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: effects.rs: Camera effect primitives for transient motion overlays on top of base camera state.; mod.rs: Camera subsystem module root: effects, multi-view, path, render, types, and viewport.; multi.rs: Multi-camera rig that stores and manages named Camera2D instances.; path.rs: Waypoint-based camera path interpolation for scripted camera movement.; render.rs: Render command generation from camera transform state.; types.rs: Core camera state containers: Camera (minimal) and Camera2D (full runtime).; viewport.rs: Viewport scaling strategies for mapping a fixed game surface into variable window sizes.; viewport_scale.rs: Viewport scale state object used by the engine resize flow.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+The module also supports multi-camera orchestration through named rigs and layout helpers. Split-screen, minimap, and picture-in-picture flows can be managed through one control surface while keeping render integration predictable. Overall, the module provides a complete and reusable view-control foundation for 2D projects.
 
 ## Imports
 

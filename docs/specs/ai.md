@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `ai` module is a comprehensive and deeply integrated Game AI toolkit designed to provide robust, scalable, and highly configurable non-player character (NPC) behavior for Lurek2D.
+- The `ai` module gives a full toolbox for NPC behavior: decision making, perception, movement, group control, pacing, and learning, all exposed to Lua in one consistent runtime surface.
 
 ## General Info
 
@@ -16,15 +16,21 @@
 
 ## Summary
 
-Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
+The `ai` module is the behavior center for non-player actors. It gives one place to create agents, update them, and keep their decisions coherent over time. Functionally, it turns many AI techniques into one usable runtime surface, so game code can focus on design goals instead of wiring each method from scratch.
 
-At its core, the module offers a centralized `AIWorld` that manages registered agents and their execution. Individual `Agent` records maintain state, motion, and active decision models. To facilitate complex decision-making, the module includes over a dozen specialized subsystems. These include traditional reactive architectures like Finite State Machines (`FSM`) and Behavior Trees with a variety of composite, decorator, and leaf nodes, alongside advanced planning architectures such as Goal-Oriented Action Planning (`GOAP`) and Hierarchical Task Networks (`HTN`). For dynamic environments, Monte-Carlo Tree Search (`MCTS`) provides bounded lookahead, while `UtilityAI` allows agents to score candidate actions using response curves and considerations.
+At the strategic level, the module supports several decision styles. You can use explicit state flow, tree-based control, utility scoring, and planner-driven reasoning, then choose the style that fits each actor. This flexibility helps teams build simple enemies quickly, while still supporting complex behavior for advanced encounters.
 
-Beyond decision logic, the toolkit encompasses extensive systems for perception, steering, and learning. A robust `SensorWorld` handles visual, auditory, and custom stimuli, allowing agents to react to dynamic world events. Movement is managed through classic `Steering` behaviors (seek, flee, flock, pursue), `ContextSteering` for smooth obstacle avoidance using interest and danger maps, and `ORCA` for local crowd collision avoidance. For higher-level coordination, the `Squad` system groups agents into structured formations, while the `AIDirector` acts as an overarching pacing engine, adjusting difficulty, spawn rates, and ambient intensity dynamically based on player performance and tension metrics.
+For moment-to-moment reactions, the module includes perception and motion layers that work together. Agents can sense events, interpret nearby context, and choose safe or expressive movement. Steering, context steering, and local avoidance make behavior look responsive in crowded scenes instead of rigid or delayed.
 
-The module also integrates a suite of machine learning and adaptive systems via re-exports from the dedicated [`learning`](learning.md) module. It features multi-armed `Bandit` strategies (epsilon-greedy, UCB1, Thompson sampling), tabular `QLearner` reinforcement learning, and a lightweight `NeuralNet` supporting `Neuroevolution` via a population-based genetic algorithm. This allows for evolving behaviors over generations. Furthermore, agents can possess rich internal states using the `Emotion` and `NeedSystem` modules, alongside archetypal `TraitProfile`s that govern personality variables.
+The module also supports coordination beyond one actor. Squad tools let units move and act as a group, while director logic controls pacing and pressure across longer play windows. In practice, this means encounters can feel structured, with clear peaks and recovery, instead of random intensity spikes.
 
-Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store re-exported from [`patterns`](patterns.md), while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
+Internal state is treated as first-class data. Needs, emotions, traits, and memory-like context help agents keep continuity across ticks. This allows behavior to change for understandable reasons, so actions feel connected to prior events rather than purely scripted triggers.
+
+Adaptive systems expand what can be tuned over time. Bandit strategies, reinforcement learning, and neuroevolution tools allow experimentation with agents that improve or shift choices from feedback. The module keeps these capabilities near the rest of the AI stack, so learning features can be added without splitting architecture.
+
+Control flow between subsystems is practical and script-friendly. Blackboard-style shared facts and command queues help pass intent and results between planning and execution. This reduces glue code and lowers the chance of fragile state handoffs in larger projects.
+
+Overall, the module provides a scalable AI foundation for both gameplay and tooling. From single actors to large populations, it keeps decision, movement, coordination, and adaptation under one consistent API, making behavior systems easier to build, test, and maintain.
 
 ## Imports
 

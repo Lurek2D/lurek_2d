@@ -16,11 +16,15 @@
 
 ## Summary
 
-The `grep` module exposes a full-featured file search engine to Lua game scripts and developer tooling. At its core, the `GrepEngine` wires together a `FileFilter` (controlling which files to search by extension, path glob, and hidden-file rules), a compiled `Matcher` (selecting the search strategy), and a Rayon parallel thread pool sized from `GrepConfig`. Searches can be expressed as literal strings, regular expressions, shell globs, edit-distance fuzzy patterns, or Aho-Corasick multi-literal sets — all returning structured `GrepResult` values with per-file `FileMatch` arrays and `LineMatch` byte-span positions.
+The `grep` module is the engine-side search toolkit for scripts and developer tools. It scans project files and returns structured matches with path, line content, and match spans.
 
-Performance is addressed at multiple levels. Small files use buffered I/O; large files above a configurable threshold switch to `memmap2` zero-copy memory-mapped access, avoiding heap allocation for multi-megabyte assets. Parallel dispatch via Rayon distributes file slices across worker threads, with a `thread_count` of 0 forcing safe single-threaded mode.
+It supports literal, regex, glob, fuzzy, and multi-pattern search in one runtime surface, so teams can switch search style without switching modules.
 
-Beyond general text search, the module includes two specialized engines. The `json_search` path traverses JSON files using a `/`-separated key path syntax, extracting nested values without loading the entire document into a Lua table. The `log_search` path parses structured log lines in `[LEVEL TIMESTAMP] MESSAGE` format, filtering by severity level, time range, and text pattern — enabling game scripts to query the engine's runtime log for debugging or telemetry analysis. Streaming search with callbacks is supported for real-time result delivery in UI tools. All functionality is accessible via `lurek.grep.*`, making this the primary tool for in-engine asset auditing, content discovery, and developer productivity features.
+Search scope is controlled by extension and path filters, and execution is performance-aware through buffered reads, memory-mapped access for large files, and optional parallel dispatch.
+
+The module also includes JSON path search and structured log search, which makes nested data and runtime logs searchable without custom parsers.
+
+In practice, `lurek.grep` provides one reliable contract for content discovery, diagnostics, and project-wide text analysis.
 
 ## Imports
 

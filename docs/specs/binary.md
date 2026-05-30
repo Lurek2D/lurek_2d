@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `binary` module is a comprehensive binary data toolkit situated in the Foundations tier of the engine.
+- The `binary` module provides foundational byte tools for packing, unpacking, encoding, compression, hashing, and bounded buffering through one stable Lua API.
 
 ## General Info
 
@@ -16,15 +16,14 @@
 
 ## Summary
 
-The `binary` module provides byte-level data utilities for serialization, packing, compression, encoding, hashing, and bounded buffering. It is a foundational data layer intended for protocol payloads, save blobs, and binary interchange, independent from renderer or gameplay concerns.
+The `binary` module is the low-level data toolbox for byte-oriented workflows in the engine. It gives scripts and systems one consistent way to create buffers, read and write typed values, and transform payloads between raw bytes and transport-friendly formats.
 
-The module is split by responsibility: `byte_data` and `dataview` handle owned/shared byte access, `data_writer` handles sequential writes, `pack` and `bin_pack` handle structured format-string style serialization, `compress` and `encode` provide transport helpers, and `hash` provides checksum/digest utilities. `ring` adds fixed-capacity FIFO behavior with overwrite semantics for streaming scenarios.
+Its practical scope covers the full binary path: structured pack and unpack operations, sequential writing, read-only views, text encoding and decoding, compression and decompression, and integrity checks with checksums and hashes. This makes it useful for save data, protocol payloads, and tool interoperability.
 
-Design emphasis is predictable low-level behavior and reusable primitives rather than one monolithic serializer. Callers can compose the specific pieces they need, from quick encode/decode helpers to full packed-structure workflows.
+The module is intentionally composable. Instead of forcing one serializer style, it offers focused building blocks that can be combined as needed. Teams can use quick helpers for small tasks or build strict format-driven flows for larger binary contracts.
 
-Because this module sits in foundations, its contracts must remain stable and explicit: byte order, bounds behavior, and transformation semantics should be documented and deterministic so higher layers can rely on it for cross-module interoperability.
+Predictability is a key value here. Endianness, bounds checks, cursor behavior, and conversion semantics are explicit and deterministic, so higher modules can rely on stable behavior over time.
 
-Implementation detail and boundary guarantees for binary: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: bin_pack.rs: Token-based binary packing and unpacking using whitespace-separated format strings - Endian-aware serialization of integers, floats, booleans, strings, and raw bytes - Coercion helpers that convert between BinValue variants at write time - Length-prefixed and null-terminated stri; byte_data.rs: Owned mutable byte buffer with indexed read and write access - UTF-8 string encoding and lossy decoding from raw bytes - Immutable and mutable slice views for zero-copy downstream use; compress.rs: Multi-codec compression and decompression (deflate, gzip, zlib, lz4) - Full-buffer and streaming APIs for both single slices and chunk lists - Configurable compression level clamped to valid range (0-9) - ChunkReader adapter that flattens multiple borrowed slices into one Read st; data_writer.rs: Sequential binary writer with a movable cursor over a growable byte buffer - Little-endian and big-endian integer, float, and string write methods - Seek support with automatic zero-fill when moving past buffer end; dataview.rs: Read-only typed accessor over a shared Arc byte buffer - Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64 - Sub-slice views with validated offset and size - LuaDataView wrapper for Lua-facing ownership patterns; encode.rs: Base64 and hexadecimal encoding and decoding for opaque byte payloads - Format selection via enum variant parsed from user-facing labels - Consistent error wrapping for malformed input; hash.rs: Cryptographic hash digest computation (MD5, SHA-1, SHA-256, SHA-512) - CRC32 checksum for fast integrity checks - Hex-encoded string output for all digest algorithms; mod.rs: Binary packing, unpacking, and struct-style format-string serialization - Owned byte buffers, shared data views, and sequential writers - Compression codecs (deflate, gzip, zlib, lz4) with stream and chunk APIs - Encoding helpers (base64, hex) and hash digests (MD5, SHA, CRC32) -; pack.rs: Python struct-style format-string packing and unpacking - Single-character format tokens for integers, floats, strings, and padding - Endian switching via '<' (little) and '>' (big) prefix characters - Length-prefixed ('s') and null-terminated ('z') string support - Coercion help; ring_buffer.rs: Fixed-capacity circular buffer with oldest-overwrite FIFO semantics - Push, pop, peek, and index-based access with O(1) operations - Iteration and collection helpers from oldest to newest element - Copy-optimized collection for Clone + Copy element types. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
 
 ## Imports
 
@@ -245,3 +244,5 @@ Implementation detail and boundary guarantees for binary: this module keeps resp
 - `LRingBuffer:toTable`: Returns stored values in oldest-to-newest order.
 - `LRingBuffer:type`: Returns the Lua-visible type name for this ring buffer handle.
 - `LRingBuffer:typeOf`: Returns whether this ring buffer handle matches a supported type name.
+
+

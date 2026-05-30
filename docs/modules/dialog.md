@@ -2,59 +2,15 @@
 
 ## Summary
 
-The `dialog` module provides branching conversation runtime primitives built around dialog trees, guarded branching conditions, speaker metadata, and emitted dialog events. It supports both simple linear flows and richer weighted branch/topic selection based on runtime gate context.
+The `dialog` module is the runtime layer for conversation flow. It lets projects define topics, branches, and progression state in a structured way, so dialogue behavior is predictable during gameplay.
 
-Module responsibilities are explicit: `tree` models nodes and branch selection, `condition` evaluates gating predicates against supplied context, `state` tracks active conversation progression, `speaker` stores participant metadata, and `events` emits structured signals for external scripting or UI reactions.
+Its core value is controlled branching. Dialog options can be gated by context conditions, weighted for selection, and advanced through explicit state transitions instead of ad-hoc script branching.
 
-The architecture keeps dialogue logic data-driven and testable. Selection policy and gate checks are represented as explicit model types rather than hardcoded branching paths scattered in scripts.
+Speaker metadata and dialogue events are part of the same surface. This makes it easier for UI and tooling to react to conversation changes without reading internal conversation storage directly.
 
-In feature-system terms, `dialog` should remain focused on conversation evaluation and progression contracts. Presentation, animation timing, and game-specific narrative policy should consume this runtime surface rather than live inside it.
+The module is intentionally focused on dialogue logic, not presentation. Narrative UI timing, animations, and game-specific storytelling policy can consume this runtime contract while staying outside the module boundary.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### condition.rs
-
-- Provides reusable gate rules that decide whether dialog options are eligible under the current runtime context.
-- Encodes state and threshold checks as portable data so narrative gating stays configurable and data-first.
-- Supports composable all-or-any logic for layered progression constraints across branching conversations.
-- Delivers a deterministic condition engine that keeps availability checks consistent between systems and scripts.
-
-### events.rs
-
-- Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes.
-- Carries typed payloads so UI, scripting, and telemetry can react without digging into internal state.
-- Delivers a clean event contract that keeps conversation flow observable across integration points.
-
-### mod.rs
-
-- Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state.
-- Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer.
-- Delivers a stable module boundary that scripts and systems consume as the canonical dialogue orchestration entry point.
-
-### speaker.rs
-
-- Provides canonical speaker identity records used by dialogue flow to resolve who is talking at each step.
-- Centralizes speaker lookup in a stable registry keyed by durable identifiers shared across a session.
-- Keeps narrative content decoupled from presentation metadata like portraits, voices, and character tags.
-- Delivers a single reference layer that makes speaker data consistent for tree logic and runtime state.
-
-### state.rs
-
-- Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables.
-- Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling.
-- Preserves continuity data in a compact snapshot that dependent systems can query every frame.
-- Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time.
-
-### tree.rs
-
-- Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths.
-- Applies runtime gate filtering so only context-compatible narrative candidates remain available.
-- Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes.
-- Keeps decision flow transparent by storing gating and scoring inputs directly with authored records.
-- Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication.
-- Delivers data-first branching behavior that stays testable, tunable, and stable across gameplay sessions.
+In practice, `lurek.dialog` provides one stable conversation foundation: define choices, evaluate gates, track progress, and publish outcomes consistently.
 
 ## Functions
 
@@ -70,7 +26,7 @@ lurek.dialog.newAI()
 
 | Type | Description |
 |------|-------------|
-| [LDialogueAI](#ldialogueai-handle) | New dialogue AI handle. |
+| [LDialogueAI](#ldialogueai) | New dialogue AI handle. |
 
 **Example**
 
@@ -97,7 +53,7 @@ lurek.dialog.newSpeakerRegistry()
 
 | Type | Description |
 |------|-------------|
-| [LSpeakerRegistry](#lspeakerregistry-handle) | New speaker registry handle. |
+| [LSpeakerRegistry](#lspeakerregistry) | New speaker registry handle. |
 
 **Example**
 
@@ -124,7 +80,7 @@ lurek.dialog.newState()
 
 | Type | Description |
 |------|-------------|
-| [LDialogueState](#ldialoguestate-handle) | New dialogue state handle. |
+| [LDialogueState](#ldialoguestate) | New dialogue state handle. |
 
 **Example**
 
@@ -143,12 +99,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LDialogueAI Handle](#ldialogueai-handle)
-- [LDialogueState Handle](#ldialoguestate-handle)
-- [LSpeakerRegistry Handle](#lspeakerregistry-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -157,13 +107,19 @@ end
 
 *No module-specific enums documented.*
 
-## LDialogueAI Handle
+## Types
 
-### Fields
+- [LDialogueAI](#ldialogueai)
+- [LDialogueState](#ldialoguestate)
+- [LSpeakerRegistry](#lspeakerregistry)
+
+## LDialogueAI
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDialogueAI:addBranch`
 
@@ -445,7 +401,7 @@ LDialogueAI:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDialogueAI](#ldialogueai-handle)`. |
+| string | The string `[LDialogueAI](#ldialogueai)`. |
 
 **Example**
 
@@ -489,13 +445,13 @@ end
 
 ---
 
-## LDialogueState Handle
+## LDialogueState
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDialogueState:advance`
 
@@ -752,7 +708,7 @@ LDialogueState:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDialogueState](#ldialoguestate-handle)`. |
+| string | The string `[LDialogueState](#ldialoguestate)`. |
 
 **Example**
 
@@ -824,13 +780,13 @@ end
 
 ---
 
-## LSpeakerRegistry Handle
+## LSpeakerRegistry
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSpeakerRegistry:add`
 
@@ -998,7 +954,7 @@ LSpeakerRegistry:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LSpeakerRegistry](#lspeakerregistry-handle)`. |
+| string | The string `[LSpeakerRegistry](#lspeakerregistry)`. |
 
 **Example**
 

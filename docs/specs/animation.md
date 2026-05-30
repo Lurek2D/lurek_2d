@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `animation` module provides a comprehensive sprite and skeletal animation runtime for Lurek2D, managing frame sequences, blend layers, parameter-driven state machines, and synchronization groups.
+- The `animation` module provides one runtime for sprite and skeletal animation, with clips, state changes, blending, sync groups, and script-friendly playback control.
 
 ## General Info
 
@@ -16,15 +16,17 @@
 
 ## Summary
 
-At its core, the module uses `AnimClip` to hold ordered sequences of `AnimFrame` entries, each specifying a source texture rectangle, an optional per-frame duration, and event triggers. This allows for both uniform and variable-timing animations. Playback is managed by the `Animation` controller, which handles forward, reverse, and ping-pong playback modes, along with looping and playback speed scaling.
+The `animation` module is the place where visual motion is organized into a clear runtime flow. It lets teams define frames and clips, play them with stable timing, and keep updates predictable across gameplay and tooling. Functionally, it turns raw frame data into reusable animation behavior.
 
-To support complex character and entity animations, the module implements a robust `AnimStateMachine`. This finite-state machine (FSM) drives transitions between named animation clips based on configurable conditions. Transitions can evaluate float, integer, and boolean parameters using standard relational operators, enabling logic like switching from a 'running' state to a 'jumping' state when a velocity parameter exceeds a threshold. Furthermore, `BlendLayerSet` provides support for multi-layer additive and override mixing, allowing multiple animations to be combined—for instance, playing a 'shooting' animation on the upper body while a 'running' animation plays on the lower body.
+Its playback layer supports common needs out of the box: looping and non-looping clips, speed scaling, reverse and ping-pong motion, and event polling during progression. This makes it practical for both simple UI or effects and character motion that must stay synchronized with gameplay logic.
 
-For coordinated character movement and advanced timing, the `AnimSyncGroup` locks multiple animation keyframes to a shared normalized timeline. The module also includes `AnimCurve` and `AnimPropertyTimeline` to support easing-driven value interpolation along keyframes. These curves evaluate properties over time using step, linear, or custom easing functions, which are heavily utilized by higher-level animation systems to drive parameters smoothly.
+For richer behavior, the module includes a state-machine layer that changes clips based on parameters and transition conditions. It also includes blend layers so multiple animation sources can be mixed in a controlled way. In practice, this allows expressive combinations, like locomotion plus upper-body actions, without custom per-character pipelines.
 
-The module offers seamless integration with external tools and formats. An Aseprite JSON importer (`load_aseprite_json`) parses exported frame tags into named clip ranges, supporting both array and object layouts while extracting per-frame durations. Additionally, a `SpineAnimBridge` maps the module's FSM states to Spine skeleton animations, allowing 2D skeletal animations to be controlled through the same uniform interface.
+Timing tools extend beyond basic frame stepping. Sync groups keep multiple animations on the same normalized timeline, while curves and property timelines drive smooth value changes through easing modes. This helps avoid abrupt jumps and keeps motion quality consistent when animation influences other systems.
 
-Finally, the module generates textured draw commands from active frame quads via the `render` utilities, tightly integrating with the engine's graphics pipeline. Lua bindings expose `LAnimation:draw` and `LAnimStateMachine:draw` as ergonomic helpers over the same current-frame rectangle returned by `getQuad`; these helpers queue one draw command when a frame is active, return `false` without mutating playback when no frame is active, and leave broader `lurek.render.draw` polymorphism unchanged. Both `:draw` methods accept two call forms: `draw(image, x, y, opts)` for explicit atlas passing and `draw(x, y, opts)` when a spritesheet has been stored in advance with `:setImage(image)`. The API is thoroughly exposed to Lua via the `lurek.animation` namespace, providing script developers with constructors for state machines, curves, blend layers, and synchronization groups, along with methods to advance playback and poll animation events. By importing only the `math` module and avoiding cyclic dependencies, the animation runtime remains fully headless-testable and architecturally isolated within the Feature Systems group.
+The module is built for real production inputs. It can import Aseprite JSON data and map external clip tags, and it also bridges state changes to Spine playback. This gives teams a unified control surface even when assets come from different authoring workflows.
+
+Rendering integration stays straightforward. The runtime can expose the current frame quad for custom drawing, and it also offers direct draw helpers with optional stored image handles. Overall, the module provides a complete animation foundation for Lua scripts: create, configure, advance, sync, blend, and render animation through one consistent API.
 
 ## Imports
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `audio` module provides a comprehensive, high-performance sound engine for Lurek2D, built on top of `rodio` and positioned within the Platform Services tier.
+- The `audio` module is the main sound runtime for loading, routing, playing, and controlling audio, with buses, spatial controls, streaming, timing tools, and Lua-facing playback APIs.
 
 ## General Info
 
@@ -16,15 +16,17 @@
 
 ## Summary
 
-The `audio` module is the playback and routing runtime for sound in Lurek2D. Its center is the `Mixer`, which manages active sources, buses, queueable streams, and runtime state transitions while delegating specialized transforms to dedicated components. The module covers source lifecycle, bus-level controls, playback state, and integration hooks for spatial and effect-aware processing.
+The `audio` module is the central runtime for sound behavior in Lurek2D. It manages source lifecycle, playback state, routing, and control so game systems can treat sound as a predictable service. In practice, it gives one place to start, stop, inspect, and shape audio during live gameplay.
 
-`decoder.rs` and `sound_data.rs` provide format decode and in-memory PCM containers, while source metadata and movement context live in `source.rs`. Bus orchestration (`bus.rs`) handles named routing and per-bus controls, and mixer-side APIs expose operations scripts and systems need for starting, stopping, and inspecting playback safely.
+Its mixer and bus model make project-wide control easier. Sources can be grouped, routed, and adjusted through shared bus rules for volume, pitch, pause, and ducking. This allows teams to manage complex mixes with clear structure instead of scattered per-source overrides.
 
-The module intentionally does not absorb every signal-processing concern. DSP-heavy logic is split into `crate::dsp`, and MIDI-specific functionality is split into `crate::midi`, with `audio` acting as the operational transport and policy layer that composes these services into real playback flows. This keeps the boundary clear between "signal transformation" and "sound scheduling/output".
+The module also supports different playback patterns. It handles normal sources, queueable streaming, pool-based repeated playback, and cloned voices. This makes it suitable for music, effects, reactive one-shots, and high-frequency events without forcing one playback style for every case.
 
-In short, `audio` owns runtime sound orchestration and stable playback contracts, while neighboring modules provide decode, synthesis, and advanced processing capabilities that are plugged into this path.
+Spatial and timing features are built into the runtime surface. Listener and source transforms, distance and doppler controls, and beat-clock utilities support both positional sound and rhythm-aware gameplay. Functionally, this keeps audio decisions close to game state and player timing.
 
-Implementation detail and boundary guarantees for audio: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: beat_clock.rs: Musical beat clock â€” tempo and measure tracking for rhythm games and procedural audio.; bus.rs: Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.; decoder.rs: Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.; facade.rs: Stub device enumeration and selection for the audio output backend.; mixer.rs: Mixer central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.; mod.rs: Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.; pool.rs: SoundPool round-robin polyphonic voice pool for one-shot playback of a single sound asset.; sound_data.rs: SoundData in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.; source.rs: SpatialState 3D position, velocity, and orientation for positional audio.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Sound data workflows are practical for both authored and procedural content. Decode paths, in-memory sample containers, basic transforms, and WAV export support quick iteration and tooling scenarios. At the same time, advanced DSP and MIDI concerns remain in dedicated modules, keeping boundaries clear.
+
+Overall, the module provides a complete operational contract for audio: load or stream sound, route it, schedule it, control it, and monitor it through one Lua-facing API. This consistency improves maintainability as projects grow in content and runtime complexity.
 
 ## Imports
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `minimap` module is a robust Feature Systems tier component that implements a highly configurable, grid-based minimap and radar system for Lurek2D.
+- The `minimap` module provides a grid-based tactical map system with terrain layers, fog-of-war, markers, overlays, and render-ready output.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-It manages an independent grid of terrain cells, allowing games to display a scaled-down representation of the world entirely distinct from the main rendering pipeline. The core `Minimap` struct maintains multi-layered cellular data encompassing terrain types, associated colors, and a sophisticated three-state fog-of-war system (Hidden, Explored, Visible) that dynamically restricts player vision and modifies rendered cell colors based on discovery status.
+The `minimap` module is the runtime system for compact strategic map views. It maintains its own grid state and converts world information into a readable small-scale representation for HUD and tool interfaces.
 
-Beyond basic terrain visualization, the minimap acts as a comprehensive strategic display. It tracks active game entities via `MinimapObject`s, which project world positions onto the grid and render as typed, owner-colored dots or assigned texture icons. To support mission and location tracking, it provides a `MinimapMarker` system for persistent or timed points of interest, featuring built-in animation states like blinking, pulsing, or rotating crosshairs. For strategic feedback, the module supports dynamic `OverlayShape`s (lines, rectangles, named polyline paths) and temporary animated `MinimapPing` alerts to draw player attention to specific map coordinates.
+Its core model includes terrain layers, per-cell color data, and fog-of-war state with hidden, explored, and visible modes. This allows games to express exploration and knowledge clearly without coupling minimap logic to the main world renderer.
 
-The module also features a robust rendering pipeline that composites these layers—terrain, fog, overlays, objects, markers, and pings—into an optimized `ImageData` buffer or directly generates an ordered list of `RenderCommand`s. It fully supports configurable display resolutions, zoom levels, panning, and automatic camera-tracking viewports that overlay the player's active screen bounds. To support diverse game genres, it offers multiple color modes, such as switching between standard terrain-colored views and political owner-colored strategic modes. Bridging seamlessly with other systems like the `province` registry, this entire feature set is exposed to Lua scripts via the `lurek.minimap.*` API, enabling developers to build complex, interactive UI maps with minimal engine overhead.
+Entity and mission feedback are integrated through object points, markers, pings, and overlay shapes. Teams can show tracked units, targets, routes, and alerts using one consistent map surface.
+
+View behavior is configurable with zoom, panning, viewport framing, and color mode switching. This helps the same minimap system serve both tactical and strategic presentation styles.
+
+Output can be generated as image buffers or render commands, which keeps integration flexible across UI paths. In practice, `lurek.minimap` provides one complete contract for map-state display, interaction support, and runtime visual feedback.
 
 ## Imports
 

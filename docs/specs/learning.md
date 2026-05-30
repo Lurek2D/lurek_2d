@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `learning` module provides standalone machine learning and evolutionary computation algorithms that can be used independently or integrated with the AI decision-making systems.
+- The `learning` module provides CPU-first machine learning primitives, from bandits and Q-learning to neural, recurrent, and transformer blocks with evolutionary optimization support.
 
 ## General Info
 
@@ -16,30 +16,21 @@
 
 ## Summary
 
-The `learning` module extracts machine learning and evolutionary computation primitives into a focused, standalone subsystem. These algorithms have no dependency on the AI decision-making infrastructure (FSMs, behavior trees, GOAP, etc.) and can be used in any game context — from evolving creature behaviors to adaptive difficulty tuning to player modeling.
+The `learning` module is the engine's standalone machine-learning toolkit. It provides reusable CPU-side algorithms that can run independently from high-level AI planners, so teams can apply learning workflows in gameplay logic, balancing systems, and analytics tools.
 
-The module contains five core components:
+Its practical range includes lightweight online methods and deeper model building blocks. Bandits and tabular Q-learning support quick adaptive decisions, while feed-forward networks, convolution layers, recurrent layers, and transformer components support richer inference pipelines.
 
-- **NeuralNet** — A lightweight feed-forward neural network with configurable dense layers and activation functions (ReLU, Sigmoid, Tanh, Linear, Softmax). Supports forward inference, weight import/export, and parameter counting.
+Evolutionary optimization is built into the same surface. Genetic search, neuroevolution orchestration, and flat-parameter interfaces let models be trained or tuned through population-based workflows without custom glue around each layer type.
 
-- **GeneticAlgorithm** — A population-based optimizer with tournament selection, single-point crossover, Gaussian mutation, and elitism. Uses a deterministic xorshift64 RNG for reproducible evolution runs.
+A shared tensor foundation keeps data movement consistent across modules. Core tensor and matrix helpers, layer parameter packing, and import/export paths allow different model components to interoperate under one runtime contract.
 
-- **Neuroevolution** — An orchestrator that combines `GeneticAlgorithm` with `NeuralNet` to evolve neural network weights through population-based search. Chromosomes map directly to network parameters.
+The module is designed for deterministic, headless, CPU-first operation. This makes it practical for test pipelines, reproducible experiments, and runtime systems where predictable behavior matters more than external ML stack complexity.
 
-- **QLearner** — A tabular Q-learning agent with epsilon-greedy exploration, Bellman updates, episode decay, and JSON serialization for policy persistence.
+Integration flexibility is another key benefit. Different systems can start with simple methods like bandits or tabular learners, then scale up to recurrent or attention-based models without leaving the same module surface or rewriting surrounding data plumbing.
 
-- **Bandit** — A multi-armed bandit with three selection strategies: epsilon-greedy, UCB1, and Thompson sampling. Tracks per-arm statistics and supports full reset.
+Because parameter handling is standardized, experimentation and deployment use the same model lifecycle. Teams can iterate in controlled training loops, export stable state, and reuse those artifacts in live gameplay or tooling runs with minimal friction.
 
-The module now also includes advanced neural-building blocks for CPU-first sequence and spatial inference:
-
-- **LurekTensor + GEMM** — Row-major tensor container, flatten/index helpers, and a lightweight matrix multiply helper used by higher-level layers.
-- **Conv2D / MaxPool2D** — Deterministic 2D convolution and pooling layers over `[C,H,W]` tensors.
-- **LstmLayer / GruLayer** — Recurrent layers with deterministic flat-parameter layouts for neuroevolution roundtrip use.
-- **PositionalEncoding / MultiHeadAttention** — Transformer attention primitives over `[S,D]` tensors.
-- **TransformerEncoderBlock / TransformerDecoderBlock** — Composed attention + layernorm + FFN superblocks with flat-parameter export/import.
-- **LurekNeuralEngine** — Heterogeneous block container that packs/unpacks all trainable parameters into one flat genome buffer.
-
-All types are pure CPU, headless-testable, and have zero rendering dependencies. The module is exposed to Lua via `lurek.learning.*`.
+In practice, `lurek.learning` gives one complete learning workspace: define environments, build models, run inference, evolve parameters, and persist state through consistent Lua-facing APIs.
 
 ## Imports
 

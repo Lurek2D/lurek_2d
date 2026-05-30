@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `ecs` module provides Lurek2D with a highly optimized, Lua-first Entity-Component-System (ECS) runtime.
+- The `ecs` module provides a Lua-first Entity-Component-System runtime with safe entity IDs, component storage, relationships, and universe-level query and lifecycle tools.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `ecs` module provides entity/component storage and relationship primitives centered on generational entity identifiers and Lua-table component data. It is designed for lightweight runtime composition rather than rigid compile-time component schemas.
+The `ecs` module is the structured world-state layer for entity-driven gameplay. It keeps entities, components, tags, hierarchy, and relationship data in one runtime model so systems can read and update state consistently.
 
-`universe` owns the primary storage surface (entities, components, tags, blueprints, snapshots), `generational_id` and `types` provide ID contracts, `relationships` handles graph-style links between entities, and `lua_table` provides deep-copy support for snapshot and blueprint workflows. Together these modules support creation, mutation, cloning, and diff-like operations over live ECS state.
+Its identity model is built for safety and long sessions. Generational entity IDs reduce stale-handle errors, while component storage stays script-friendly through Lua-table payloads and predictable lookup behavior.
 
-The generational-ID approach prevents stale handle reuse while keeping IDs compact and lookup-friendly. Lua table component storage keeps scripting integration direct, with engine-side helpers managing lifecycle consistency.
+At universe level, the module supports full lifecycle operations: spawn, remove, set and get components, assign tags and layers, manage parent-child links, and run component-based queries. Blueprint and bulk-spawn utilities help scale content creation without duplicating setup code.
 
-This module should keep its focus on storage semantics and relationship/state utilities. System scheduling and gameplay policy should remain outside ECS core and consume this state through explicit APIs.
+It also provides relationship and system-ordering helpers so projects can represent links between entities and execute system phases in deterministic order. Snapshot and diff utilities make debugging and tooling integration easier.
 
-Implementation detail and boundary guarantees for ecs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: generational_id.rs: Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.; lua_table.rs: Deep-copy utility for Lua tables via mlua.; mod.rs: Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.; relationships.rs: Relationship type definitions with named level labels and validated defaults.; types.rs: Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.; universe.rs: Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.; universe_ext.rs: Extended Universe operations: advanced queries, bulk spawning, and state serialization.; universe_systems.rs: System registration, removal, and count queries on a Universe.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+In practice, `lurek.ecs` gives one dependable contract for simulation state: structured data ownership, deterministic queries, and controlled mutation over time.
 
 ## Imports
 
@@ -237,3 +237,4 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 ##### Methods
 
 - No documented methods.
+

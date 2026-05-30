@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `docs` module is an Edge/Integration tier component responsible for maintaining the engine's runtime documentation catalog.
+- The `docs` module is the documentation pipeline core: collect API entries, validate quality, and export editor-ready artifacts like completions, hover, and signatures.
 
 ## General Info
 
@@ -16,15 +16,17 @@
 
 ## Summary
 
-The `docs` module is the structured documentation infrastructure layer used by generation and tooling pipelines. It defines normalized doc entry models, catalog/query behavior, export builders, validation reporting, and schema contracts, then re-exports these surfaces for higher-level tooling commands.
+The `docs` module is the internal documentation pipeline for engine-facing metadata. It transforms raw API records into validated outputs that editor tooling and reporting workflows can consume directly.
 
-`catalog` manages storage and lookup of documentation records, `entry` defines item-level metadata (including params/returns), `export` produces completion/hover/signature payloads, `report` evaluates quality and validation status, and `schema` stabilizes shared type contracts. This separation keeps ingestion, storage, emission, and grading concerns independent.
+Its main value is one shared data model from start to finish. Catalog collection, schema checks, quality scoring, and export generation all operate on the same normalized entry shape. This keeps completions, hover content, signatures, and reports aligned instead of drifting between separate tools.
 
-The module's value is consistency between source metadata and generated artifacts. By centralizing these models and exporters, the project avoids drift between docs outputs consumed by IDE tooling and validation/audit scripts.
+Quality control is built into the workflow. The module can detect missing entries, thin descriptions, and catalog inconsistencies before artifacts are published. That gives maintainers a clear feedback loop and helps catch documentation debt early.
 
-As an integration-facing subsystem, it should prioritize deterministic output formats and explicit quality criteria so downstream generators and validators can rely on stable contracts over time.
+Export builders produce deterministic output structures for downstream consumers. Stable payload shapes improve reliability for extension integration, local development tasks, and CI validation because readers can depend on predictable contract formats.
 
-Implementation detail and boundary guarantees for docs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: catalog.rs: Provide in-memory catalog storage for documentation entries collected from Rust source.; entry.rs: Define normalized documentation record types for lurek API symbols.; export.rs: Build JSON payloads for IDE completion, hover, and signature help from doc entries.; mod.rs: Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.; report.rs: Compute per-entry quality scores from completeness of description, params, and metadata.; schema.rs: Re-export schema validation types from the lurek_schema crate.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+The module supports both full-catalog and scoped operations, so teams can process one module or the entire API surface as needed. This is useful for incremental updates, focused audits, and release preparation workflows.
+
+In practice, `lurek.docs` is the backbone that turns source metadata into consistent documentation assets: collect entries, validate quality, generate artifacts, and publish tooling-ready outputs through one coherent module boundary.
 
 ## Imports
 
@@ -344,3 +346,4 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 ##### Methods
 
 - No documented methods.
+

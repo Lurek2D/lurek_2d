@@ -27,129 +27,6 @@ The module now also includes advanced neural-building blocks for CPU-first seque
 
 All types are pure CPU, headless-testable, and have zero rendering dependencies. The module is exposed to Lua via `lurek.learning.*`.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### attention.rs
-
-- Implements attention primitives used by sequence-learning stacks in the learning subsystem.
-- Provides positional encodings and multi-head attention flows over row-major tensor buffers.
-- Computes query-key-value interactions and head projection paths for contextual token mixing.
-- Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored.
-- Targets CPU inference and training-style experiments without external deep-learning runtimes.
-- Supplies reusable building blocks consumed by transformer encoder and decoder compositions.
-
-### bandit.rs
-
-- Implements multi-armed bandit optimization with per-arm reward history and posterior statistics.
-- Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component.
-- Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs.
-- Uses deterministic random helpers for reproducible sampling during probabilistic strategies.
-- Exposes reward ingestion, arm selection, and reset operations for online learning loops.
-- Fits lightweight decision problems where full planning frameworks are unnecessary.
-
-### conv.rs
-
-- Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines.
-- Implements tensor-shape-aware forward passes over channel-first image-style inputs.
-- Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows.
-- Supports stride and padding behavior needed for practical stacked convolution blocks.
-- Supplies compact building blocks consumed by the higher-level neural engine.
-
-### engine.rs
-
-- Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph.
-- Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface.
-- Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers.
-- Executes staged forward passes through configured block sequences on shared tensor carriers.
-- Serves as the composition hub for mixed-architecture experimentation in the learning module.
-
-### env.rs
-
-- Provides reinforcement-learning environment wrappers modeled after common Gym-like conventions.
-- Describes action and observation spaces with bounded metadata suitable for generic agents.
-- Includes frame-stack helpers that accumulate temporal context for history-dependent policies.
-- Standardizes reset and step-style interaction shapes for training and evaluation loops.
-
-### evolutionary.rs
-
-- Defines the shared trait contract for layers exposing flat trainable parameter buffers.
-- Standardizes parameter counting, import, and export across heterogeneous learning layers.
-- Enables neuroevolution and genetic workflows to operate on model components uniformly.
-
-### genetic.rs
-
-- Implements population-based genetic optimization over flat genomes with explicit generation tracking.
-- Executes elite preservation, parent selection, crossover, and mutation during evolution steps.
-- Maintains stable chromosome identifiers to support lineage tracing across generations.
-- Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs.
-- Serves as a general optimizer backend for learning components and parameter-search tasks.
-
-### mod.rs
-
-- High-level learning module that aggregates neural, evolutionary, and reinforcement components.
-- Re-exports core model, optimizer, tensor, and environment types for unified caller access.
-- Connects lightweight CPU learning primitives with optional ONNX inference capabilities.
-- Defines the integration layer for experimentation-oriented training and decision systems.
-
-### neural_net.rs
-
-- Implements lightweight feed-forward neural networks with dense layers and selectable activations.
-- Stores weights and biases in flat vectors for compact memory usage and easy serialization.
-- Performs layer-by-layer forward propagation over vector inputs for inference and evaluation.
-- Supports parameter counting plus import and export for optimizer and evolution workflows.
-- Provides network-assembly helpers that append layers into ordered model pipelines.
-- Targets simple ML tasks where minimal dependencies and predictable behavior are preferred.
-
-### neuroevolution.rs
-
-- Bridges genetic optimization and neural models to run population-based weight search workflows.
-- Rebuilds networks from flat chromosomes using template layer specifications.
-- Evaluates and records fitness before advancing generations through the underlying GA backend.
-- Provides a focused orchestration layer for neuroevolution experiments and gameplay AI prototyping.
-
-### onnx.rs
-
-- Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes.
-- Builds optimized runnable plans from ONNX files for CPU execution paths.
-- Converts input and output tensors between engine-native and tract-native representations.
-- Exposes deterministic inference entry points used by learning APIs without game-loop coupling.
-
-### qlearner.rs
-
-- Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters.
-- Stores Q-values in a flat table for fast index-based update and query operations.
-- Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles.
-- Tracks episode and training metadata useful for monitoring learner progression.
-- Supports persistence helpers for saving and reloading learned policy tables.
-
-### recurrent.rs
-
-- Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks.
-- Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation.
-- Executes timestep iteration while carrying hidden-state context across sequence positions.
-- Integrates with evolutionary parameter interfaces for genome-based optimization workflows.
-- Offers compact recurrent primitives for temporal modeling without heavyweight dependencies.
-- Serves as a reusable foundation for sequence tasks in higher-level learning engines.
-
-### tensor.rs
-
-- Defines lightweight tensor containers and helpers used by learning components.
-- Stores shape metadata and flat row-major data for predictable indexing behavior.
-- Provides indexing, flattening, and conversion utilities needed by model layers.
-- Includes compact numeric operations that support CPU learning pipelines.
-
-### transformer.rs
-
-- Implements transformer-style blocks composed from attention, normalization, and feed-forward stages.
-- Defines encoder and decoder building units operating over engine-native tensor structures.
-- Applies residual pathways and normalization flows for stable sequence representation updates.
-- Stores trainable parameters in flat vectors to align with evolutionary optimization tooling.
-- Coordinates multi-stage forward execution across attention and projection subcomponents.
-- Provides reusable transformer primitives for sequence learning and inference experiments.
-- Integrates with the wider learning stack through common tensor and layer contracts.
-
 ## Functions
 
 ### `lurek.learning.defineEnv`
@@ -170,7 +47,7 @@ lurek.learning.defineEnv(config)
 
 | Type | Description |
 |------|-------------|
-| [LEnv](#lenv-handle) | New environment handle. |
+| [LEnv](#lenv) | New environment handle. |
 
 **Example**
 
@@ -208,7 +85,7 @@ lurek.learning.frameStack(n)
 
 | Type | Description |
 |------|-------------|
-| [LFrameStack](#lframestack-handle) | New frame stack handle. |
+| [LFrameStack](#lframestack) | New frame stack handle. |
 
 **Example**
 
@@ -243,7 +120,7 @@ lurek.learning.loadOnnx(path)
 
 | Type | Description |
 |------|-------------|
-| [LOnnxModel](#lonnxmodel-handle) | Loaded model handle ready for inference. |
+| [LOnnxModel](#lonnxmodel) | Loaded model handle ready for inference. |
 
 **Example**
 
@@ -279,7 +156,7 @@ lurek.learning.newBandit(arm_count, strategy, epsilon, seed)
 
 | Type | Description |
 |------|-------------|
-| [LBandit](#lbandit-handle) | New bandit handle. |
+| [LBandit](#lbandit) | New bandit handle. |
 
 **Example**
 
@@ -321,7 +198,7 @@ lurek.learning.newConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h
 
 | Type | Description |
 |------|-------------|
-| [LConv2D](#lconv2d-handle) | New Conv2D layer handle. |
+| [LConv2D](#lconv2d) | New Conv2D layer handle. |
 
 **Example**
 
@@ -354,7 +231,7 @@ lurek.learning.newGeneticAlgorithm(pop_size, gene_count, seed)
 
 | Type | Description |
 |------|-------------|
-| [LGeneticAlgorithm](#lgeneticalgorithm-handle) | New genetic algorithm handle. |
+| [LGeneticAlgorithm](#lgeneticalgorithm) | New genetic algorithm handle. |
 
 **Example**
 
@@ -393,7 +270,7 @@ lurek.learning.newGru(input_size, hidden_size)
 
 | Type | Description |
 |------|-------------|
-| [LGRU](#lgru-handle) | New GRU layer handle with internal recurrent state. |
+| [LGRU](#lgru) | New GRU layer handle with internal recurrent state. |
 
 **Example**
 
@@ -425,7 +302,7 @@ lurek.learning.newLstm(input_size, hidden_size)
 
 | Type | Description |
 |------|-------------|
-| [LLSTM](#llstm-handle) | New LSTM layer handle with internal recurrent state. |
+| [LLSTM](#llstm) | New LSTM layer handle with internal recurrent state. |
 
 **Example**
 
@@ -459,7 +336,7 @@ lurek.learning.newMaxPool2D(kernel_h, kernel_w, stride_h, stride_w)
 
 | Type | Description |
 |------|-------------|
-| [LMaxPool2D](#lmaxpool2d-handle) | New MaxPool2D layer handle. |
+| [LMaxPool2D](#lmaxpool2d) | New MaxPool2D layer handle. |
 
 **Example**
 
@@ -491,7 +368,7 @@ lurek.learning.newMultiHeadAttention(d_model, num_heads)
 
 | Type | Description |
 |------|-------------|
-| [LMultiHeadAttention](#lmultiheadattention-handle) | New MHA handle. |
+| [LMultiHeadAttention](#lmultiheadattention) | New MHA handle. |
 
 **Example**
 
@@ -516,7 +393,7 @@ lurek.learning.newNeuralNet()
 
 | Type | Description |
 |------|-------------|
-| [LNeuralNet](#lneuralnet-handle) | New neural network handle. |
+| [LNeuralNet](#lneuralnet) | New neural network handle. |
 
 **Example**
 
@@ -554,7 +431,7 @@ lurek.learning.newNeuroevolution(layer_spec, pop_size, seed)
 
 | Type | Description |
 |------|-------------|
-| [LNeuroevolution](#lneuroevolution-handle) | New neuroevolution handle. |
+| [LNeuroevolution](#lneuroevolution) | New neuroevolution handle. |
 
 **Example**
 
@@ -597,7 +474,7 @@ lurek.learning.newPositionalEncoding(d_model, max_len)
 
 | Type | Description |
 |------|-------------|
-| [LPositionalEncoding](#lpositionalencoding-handle) | New positional encoding handle. |
+| [LPositionalEncoding](#lpositionalencoding) | New positional encoding handle. |
 
 **Example**
 
@@ -629,7 +506,7 @@ lurek.learning.newQLearner(sc, ac)
 
 | Type | Description |
 |------|-------------|
-| [LQLearner](#lqlearner-handle) | New Q-learner handle. |
+| [LQLearner](#lqlearner) | New Q-learner handle. |
 
 **Example**
 
@@ -666,7 +543,7 @@ lurek.learning.newTensor(shape, data)
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | New tensor handle. |
+| [LTensor](#ltensor) | New tensor handle. |
 
 **Example**
 
@@ -700,7 +577,7 @@ lurek.learning.newTransformerDecoder(d_model, num_heads, d_ff)
 
 | Type | Description |
 |------|-------------|
-| [LTransformerDecoder](#ltransformerdecoder-handle) | New decoder block handle. |
+| [LTransformerDecoder](#ltransformerdecoder) | New decoder block handle. |
 
 **Example**
 
@@ -733,7 +610,7 @@ lurek.learning.newTransformerEncoder(d_model, num_heads, d_ff)
 
 | Type | Description |
 |------|-------------|
-| [LTransformerEncoder](#ltransformerencoder-handle) | New encoder block handle. |
+| [LTransformerEncoder](#ltransformerencoder) | New encoder block handle. |
 
 **Example**
 
@@ -748,7 +625,7 @@ end
 
 ### `lurek.learning.normalizeEnv`
 
-Wraps an [LEnv](#lenv-handle) so observations are normalised by subtracting mean and dividing by std.
+Wraps an [LEnv](#lenv) so observations are normalised by subtracting mean and dividing by std.
 
 ```lua
 lurek.learning.normalizeEnv(env, mean, std)
@@ -758,7 +635,7 @@ lurek.learning.normalizeEnv(env, mean, std)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `env` | [LEnv](#lenv-handle) | The environment to wrap. |
+| `env` | [LEnv](#lenv) | The environment to wrap. |
 | `mean` | number[] | Per-dimension mean values matching the obs_space shape. |
 | `std` | number[] | Per-dimension standard deviation values matching the obs_space shape. |
 
@@ -766,7 +643,7 @@ lurek.learning.normalizeEnv(env, mean, std)
 
 | Type | Description |
 |------|-------------|
-| [LEnv](#lenv-handle) | New wrapped environment handle. |
+| [LEnv](#lenv) | New wrapped environment handle. |
 
 **Example**
 
@@ -789,7 +666,7 @@ end
 
 ### `lurek.learning.timeLimit`
 
-Wraps an [LEnv](#lenv-handle) so episodes end automatically after max_steps steps.
+Wraps an [LEnv](#lenv) so episodes end automatically after max_steps steps.
 
 ```lua
 lurek.learning.timeLimit(env, max_steps)
@@ -799,14 +676,14 @@ lurek.learning.timeLimit(env, max_steps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `env` | [LEnv](#lenv-handle) | The environment to wrap. |
+| `env` | [LEnv](#lenv) | The environment to wrap. |
 | `max_steps` | number | Maximum number of steps before done is forced true. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LEnv](#lenv-handle) | New wrapped environment handle. |
+| [LEnv](#lenv) | New wrapped environment handle. |
 
 **Example**
 
@@ -828,7 +705,7 @@ end
 
 ### `lurek.learning.wrap`
 
-Wraps a supported model ([LQLearner](#lqlearner-handle), [LNeuralNet](#lneuralnet-handle), or [LBandit](#lbandit-handle)) in a uniform [LModel](#lmodel-handle) interface.
+Wraps a supported model ([LQLearner](#lqlearner), [LNeuralNet](#lneuralnet), or [LBandit](#lbandit)) in a uniform [LModel](#lmodel) interface.
 
 ```lua
 lurek.learning.wrap(model)
@@ -838,13 +715,13 @@ lurek.learning.wrap(model)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `model` | any | An [LQLearner](#lqlearner-handle), [LNeuralNet](#lneuralnet-handle), or [LBandit](#lbandit-handle) instance. |
+| `model` | any | An [LQLearner](#lqlearner), [LNeuralNet](#lneuralnet), or [LBandit](#lbandit) instance. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LModel](#lmodel-handle) | A uniform model wrapper exposing predict(). |
+| [LModel](#lmodel) | A uniform model wrapper exposing predict(). |
 
 **Example**
 
@@ -862,27 +739,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LBandit Handle](#lbandit-handle)
-- [LConv2D Handle](#lconv2d-handle)
-- [LEnv Handle](#lenv-handle)
-- [LFrameStack Handle](#lframestack-handle)
-- [LGRU Handle](#lgru-handle)
-- [LGeneticAlgorithm Handle](#lgeneticalgorithm-handle)
-- [LLSTM Handle](#llstm-handle)
-- [LMaxPool2D Handle](#lmaxpool2d-handle)
-- [LModel Handle](#lmodel-handle)
-- [LMultiHeadAttention Handle](#lmultiheadattention-handle)
-- [LNeuralNet Handle](#lneuralnet-handle)
-- [LNeuroevolution Handle](#lneuroevolution-handle)
-- [LOnnxModel Handle](#lonnxmodel-handle)
-- [LPositionalEncoding Handle](#lpositionalencoding-handle)
-- [LQLearner Handle](#lqlearner-handle)
-- [LTensor Handle](#ltensor-handle)
-- [LTransformerDecoder Handle](#ltransformerdecoder-handle)
-- [LTransformerEncoder Handle](#ltransformerencoder-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -891,13 +747,34 @@ end
 
 *No module-specific enums documented.*
 
-## LBandit Handle
+## Types
 
-### Fields
+- [LBandit](#lbandit)
+- [LConv2D](#lconv2d)
+- [LEnv](#lenv)
+- [LFrameStack](#lframestack)
+- [LGRU](#lgru)
+- [LGeneticAlgorithm](#lgeneticalgorithm)
+- [LLSTM](#llstm)
+- [LMaxPool2D](#lmaxpool2d)
+- [LModel](#lmodel)
+- [LMultiHeadAttention](#lmultiheadattention)
+- [LNeuralNet](#lneuralnet)
+- [LNeuroevolution](#lneuroevolution)
+- [LOnnxModel](#lonnxmodel)
+- [LPositionalEncoding](#lpositionalencoding)
+- [LQLearner](#lqlearner)
+- [LTensor](#ltensor)
+- [LTransformerDecoder](#ltransformerdecoder)
+- [LTransformerEncoder](#ltransformerencoder)
+
+## LBandit
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBandit:armCount`
 
@@ -1075,7 +952,7 @@ LBandit:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBandit](#lbandit-handle)`. |
+| string | The string `[LBandit](#lbandit)`. |
 
 **Example**
 
@@ -1102,7 +979,7 @@ LBandit:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LBandit](#lbandit-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LBandit](#lbandit)` and `Object`. |
 
 **Returns**
 
@@ -1155,13 +1032,13 @@ end
 
 ---
 
-## LConv2D Handle
+## LConv2D
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LConv2D:forward`
 
@@ -1175,13 +1052,13 @@ LConv2D:forward(input)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | [LTensor](#ltensor-handle) | Input tensor for spatial convolution. |
+| `input` | [LTensor](#ltensor) | Input tensor for spatial convolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | Output tensor produced by this convolution layer. |
+| [LTensor](#ltensor) | Output tensor produced by this convolution layer. |
 
 **Example**
 
@@ -1296,7 +1173,7 @@ LConv2D:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LConv2D](#lconv2d-handle)`. |
+| string | The string `[LConv2D](#lconv2d)`. |
 
 **Example**
 
@@ -1327,7 +1204,7 @@ LConv2D:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LConv2D](#lconv2d-handle)` or `LObject`. |
+| boolean | True when name is `[LConv2D](#lconv2d)` or `LObject`. |
 
 **Example**
 
@@ -1340,13 +1217,13 @@ end
 
 ---
 
-## LEnv Handle
+## LEnv
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LEnv:actionSpace`
 
@@ -1486,7 +1363,7 @@ end
 
 #### `LEnv:type`
 
-Returns this environment wrapper's type name `"[LEnv](#lenv-handle)"`.
+Returns this environment wrapper's type name `"[LEnv](#lenv)"`.
 
 ```lua
 LEnv:type()
@@ -1496,7 +1373,7 @@ LEnv:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LEnv](#lenv-handle)`. |
+| string | The string `[LEnv](#lenv)`. |
 
 **Example**
 
@@ -1526,7 +1403,7 @@ LEnv:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LEnv](#lenv-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LEnv](#lenv)` and `Object`. |
 
 **Returns**
 
@@ -1551,13 +1428,13 @@ end
 
 ---
 
-## LFrameStack Handle
+## LFrameStack
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFrameStack:capacity`
 
@@ -1664,7 +1541,7 @@ end
 
 #### `LFrameStack:type`
 
-Returns the type name `"[LFrameStack](#lframestack-handle)"`.
+Returns the type name `"[LFrameStack](#lframestack)"`.
 
 ```lua
 LFrameStack:type()
@@ -1674,7 +1551,7 @@ LFrameStack:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LFrameStack](#lframestack-handle)`. |
+| string | The string `[LFrameStack](#lframestack)`. |
 
 **Example**
 
@@ -1699,7 +1576,7 @@ LFrameStack:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LFrameStack](#lframestack-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LFrameStack](#lframestack)` and `Object`. |
 
 **Returns**
 
@@ -1719,13 +1596,13 @@ end
 
 ---
 
-## LGRU Handle
+## LGRU
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGRU:forward`
 
@@ -1885,7 +1762,7 @@ LGRU:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LGRU](#lgru-handle)`. |
+| string | The string `[LGRU](#lgru)`. |
 
 **Example**
 
@@ -1916,7 +1793,7 @@ LGRU:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LGRU](#lgru-handle)` or `LObject`. |
+| boolean | True when name is `[LGRU](#lgru)` or `LObject`. |
 
 **Example**
 
@@ -1929,13 +1806,13 @@ end
 
 ---
 
-## LGeneticAlgorithm Handle
+## LGeneticAlgorithm
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGeneticAlgorithm:bestGenes`
 
@@ -2126,7 +2003,7 @@ LGeneticAlgorithm:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LGeneticAlgorithm](#lgeneticalgorithm-handle)`. |
+| string | The string `[LGeneticAlgorithm](#lgeneticalgorithm)`. |
 
 **Example**
 
@@ -2153,7 +2030,7 @@ LGeneticAlgorithm:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LGeneticAlgorithm](#lgeneticalgorithm-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LGeneticAlgorithm](#lgeneticalgorithm)` and `Object`. |
 
 **Returns**
 
@@ -2176,13 +2053,13 @@ end
 
 ---
 
-## LLSTM Handle
+## LLSTM
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLSTM:forward`
 
@@ -2342,7 +2219,7 @@ LLSTM:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LLSTM](#llstm-handle)`. |
+| string | The string `[LLSTM](#llstm)`. |
 
 **Example**
 
@@ -2373,7 +2250,7 @@ LLSTM:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LLSTM](#llstm-handle)` or `LObject`. |
+| boolean | True when name is `[LLSTM](#llstm)` or `LObject`. |
 
 **Example**
 
@@ -2386,13 +2263,13 @@ end
 
 ---
 
-## LMaxPool2D Handle
+## LMaxPool2D
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMaxPool2D:forward`
 
@@ -2406,13 +2283,13 @@ LMaxPool2D:forward(input)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | [LTensor](#ltensor-handle) | Input tensor for max-pooling. |
+| `input` | [LTensor](#ltensor) | Input tensor for max-pooling. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | Output tensor after max-pooling reduction. |
+| [LTensor](#ltensor) | Output tensor after max-pooling reduction. |
 
 **Example**
 
@@ -2444,7 +2321,7 @@ LMaxPool2D:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LMaxPool2D](#lmaxpool2d-handle)`. |
+| string | The string `[LMaxPool2D](#lmaxpool2d)`. |
 
 **Example**
 
@@ -2475,7 +2352,7 @@ LMaxPool2D:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LMaxPool2D](#lmaxpool2d-handle)` or `LObject`. |
+| boolean | True when name is `[LMaxPool2D](#lmaxpool2d)` or `LObject`. |
 
 **Example**
 
@@ -2488,13 +2365,13 @@ end
 
 ---
 
-## LModel Handle
+## LModel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LModel:predict`
 
@@ -2532,7 +2409,7 @@ end
 
 #### `LModel:type`
 
-Returns this wrapper's stable type name `"[LModel](#lmodel-handle)"`.
+Returns this wrapper's stable type name `"[LModel](#lmodel)"`.
 
 ```lua
 LModel:type()
@@ -2542,7 +2419,7 @@ LModel:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LModel](#lmodel-handle)`. |
+| string | The string `[LModel](#lmodel)`. |
 
 **Example**
 
@@ -2568,7 +2445,7 @@ LModel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LModel](#lmodel-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LModel](#lmodel)` and `Object`. |
 
 **Returns**
 
@@ -2588,13 +2465,13 @@ end
 
 ---
 
-## LMultiHeadAttention Handle
+## LMultiHeadAttention
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMultiHeadAttention:forward`
 
@@ -2608,13 +2485,13 @@ LMultiHeadAttention:forward(input)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | [LTensor](#ltensor-handle) | Input sequence tensor for attention. |
+| `input` | [LTensor](#ltensor) | Input sequence tensor for attention. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | Output sequence tensor after attention projection. |
+| [LTensor](#ltensor) | Output sequence tensor after attention projection. |
 
 **Example**
 
@@ -2729,7 +2606,7 @@ LMultiHeadAttention:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LMultiHeadAttention](#lmultiheadattention-handle)`. |
+| string | The string `[LMultiHeadAttention](#lmultiheadattention)`. |
 
 **Example**
 
@@ -2760,7 +2637,7 @@ LMultiHeadAttention:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LMultiHeadAttention](#lmultiheadattention-handle)` or `LObject`. |
+| boolean | True when name is `[LMultiHeadAttention](#lmultiheadattention)` or `LObject`. |
 
 **Example**
 
@@ -2773,13 +2650,13 @@ end
 
 ---
 
-## LNeuralNet Handle
+## LNeuralNet
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNeuralNet:addLayer`
 
@@ -3013,7 +2890,7 @@ LNeuralNet:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNeuralNet](#lneuralnet-handle)`. |
+| string | The string `[LNeuralNet](#lneuralnet)`. |
 
 **Example**
 
@@ -3040,7 +2917,7 @@ LNeuralNet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LNeuralNet](#lneuralnet-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LNeuralNet](#lneuralnet)` and `Object`. |
 
 **Returns**
 
@@ -3063,13 +2940,13 @@ end
 
 ---
 
-## LNeuroevolution Handle
+## LNeuroevolution
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNeuroevolution:bestFitness`
 
@@ -3117,7 +2994,7 @@ LNeuroevolution:bestNetwork()
 
 | Type | Description |
 |------|-------------|
-| [LNeuralNet](#lneuralnet-handle) | Neural network handle. |
+| [LNeuralNet](#lneuralnet) | Neural network handle. |
 
 **Example**
 
@@ -3159,7 +3036,7 @@ LNeuroevolution:chromosomeToNet(idx)
 
 | Type | Description |
 |------|-------------|
-| [LNeuralNet](#lneuralnet-handle) | Neural network handle. |
+| [LNeuralNet](#lneuralnet) | Neural network handle. |
 
 **Example**
 
@@ -3318,7 +3195,7 @@ LNeuroevolution:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNeuroevolution](#lneuroevolution-handle)`. |
+| string | The string `[LNeuroevolution](#lneuroevolution)`. |
 
 **Example**
 
@@ -3349,7 +3226,7 @@ LNeuroevolution:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LNeuroevolution](#lneuroevolution-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LNeuroevolution](#lneuroevolution)` and `Object`. |
 
 **Returns**
 
@@ -3376,13 +3253,13 @@ end
 
 ---
 
-## LOnnxModel Handle
+## LOnnxModel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LOnnxModel:inputCount`
 
@@ -3438,7 +3315,7 @@ end
 
 #### `LOnnxModel:run`
 
-Runs inference on a table of [LTensor](#ltensor-handle) inputs and returns a table of [LTensor](#ltensor-handle) outputs.
+Runs inference on a table of [LTensor](#ltensor) inputs and returns a table of [LTensor](#ltensor) outputs.
 
 ```lua
 LOnnxModel:run(inputs)
@@ -3448,13 +3325,13 @@ LOnnxModel:run(inputs)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `inputs` | table | Array-indexed table of [LTensor](#ltensor-handle) input values. |
+| `inputs` | table | Array-indexed table of [LTensor](#ltensor) input values. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | Array-indexed table of [LTensor](#ltensor-handle) output values. |
+| table | Array-indexed table of [LTensor](#ltensor) output values. |
 
 **Example**
 
@@ -3472,7 +3349,7 @@ end
 
 #### `LOnnxModel:type`
 
-Returns the type name `"[LOnnxModel](#lonnxmodel-handle)"`.
+Returns the type name `"[LOnnxModel](#lonnxmodel)"`.
 
 ```lua
 LOnnxModel:type()
@@ -3482,7 +3359,7 @@ LOnnxModel:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LOnnxModel](#lonnxmodel-handle)`. |
+| string | The string `[LOnnxModel](#lonnxmodel)`. |
 
 **Example**
 
@@ -3508,7 +3385,7 @@ LOnnxModel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LOnnxModel](#lonnxmodel-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LOnnxModel](#lonnxmodel)` and `Object`. |
 
 **Returns**
 
@@ -3528,13 +3405,13 @@ end
 
 ---
 
-## LPositionalEncoding Handle
+## LPositionalEncoding
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPositionalEncoding:apply`
 
@@ -3548,13 +3425,13 @@ LPositionalEncoding:apply(input)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | [LTensor](#ltensor-handle) | Input sequence tensor to encode. |
+| `input` | [LTensor](#ltensor) | Input sequence tensor to encode. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | Encoded sequence tensor with added positional values. |
+| [LTensor](#ltensor) | Encoded sequence tensor with added positional values. |
 
 **Example**
 
@@ -3581,7 +3458,7 @@ LPositionalEncoding:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LPositionalEncoding](#lpositionalencoding-handle)`. |
+| string | The string `[LPositionalEncoding](#lpositionalencoding)`. |
 
 **Example**
 
@@ -3612,7 +3489,7 @@ LPositionalEncoding:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LPositionalEncoding](#lpositionalencoding-handle)` or `LObject`. |
+| boolean | True when name is `[LPositionalEncoding](#lpositionalencoding)` or `LObject`. |
 
 **Example**
 
@@ -3625,13 +3502,13 @@ end
 
 ---
 
-## LQLearner Handle
+## LQLearner
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LQLearner:bestAction`
 
@@ -4221,7 +4098,7 @@ LQLearner:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LQLearner](#lqlearner-handle)`. |
+| string | The string `[LQLearner](#lqlearner)`. |
 
 **Example**
 
@@ -4248,7 +4125,7 @@ LQLearner:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LQLearner](#lqlearner-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LQLearner](#lqlearner)` and `Object`. |
 
 **Returns**
 
@@ -4271,13 +4148,13 @@ end
 
 ---
 
-## LTensor Handle
+## LTensor
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTensor:data`
 
@@ -4392,7 +4269,7 @@ end
 
 #### `LTensor:type`
 
-Returns the type name `"[LTensor](#ltensor-handle)"`.
+Returns the type name `"[LTensor](#ltensor)"`.
 
 ```lua
 LTensor:type()
@@ -4402,7 +4279,7 @@ LTensor:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTensor](#ltensor-handle)`. |
+| string | The string `[LTensor](#ltensor)`. |
 
 **Example**
 
@@ -4427,7 +4304,7 @@ LTensor:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LTensor](#ltensor-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LTensor](#ltensor)` and `Object`. |
 
 **Returns**
 
@@ -4447,13 +4324,13 @@ end
 
 ---
 
-## LTransformerDecoder Handle
+## LTransformerDecoder
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTransformerDecoder:forward`
 
@@ -4467,14 +4344,14 @@ LTransformerDecoder:forward(input, encoder_out)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | [LTensor](#ltensor-handle) | Decoder input sequence tensor. |
-| `encoder_out` | [LTensor](#ltensor-handle) | Encoder output sequence tensor. |
+| `input` | [LTensor](#ltensor) | Decoder input sequence tensor. |
+| `encoder_out` | [LTensor](#ltensor) | Encoder output sequence tensor. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | Output sequence tensor after decoder block operations. |
+| [LTensor](#ltensor) | Output sequence tensor after decoder block operations. |
 
 **Example**
 
@@ -4590,7 +4467,7 @@ LTransformerDecoder:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTransformerDecoder](#ltransformerdecoder-handle)`. |
+| string | The string `[LTransformerDecoder](#ltransformerdecoder)`. |
 
 **Example**
 
@@ -4621,7 +4498,7 @@ LTransformerDecoder:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LTransformerDecoder](#ltransformerdecoder-handle)` or `LObject`. |
+| boolean | True when name is `[LTransformerDecoder](#ltransformerdecoder)` or `LObject`. |
 
 **Example**
 
@@ -4634,13 +4511,13 @@ end
 
 ---
 
-## LTransformerEncoder Handle
+## LTransformerEncoder
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTransformerEncoder:forward`
 
@@ -4654,13 +4531,13 @@ LTransformerEncoder:forward(input)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `input` | [LTensor](#ltensor-handle) | Input sequence tensor for encoder processing. |
+| `input` | [LTensor](#ltensor) | Input sequence tensor for encoder processing. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LTensor](#ltensor-handle) | Output sequence tensor after encoder block operations. |
+| [LTensor](#ltensor) | Output sequence tensor after encoder block operations. |
 
 **Example**
 
@@ -4775,7 +4652,7 @@ LTransformerEncoder:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTransformerEncoder](#ltransformerencoder-handle)`. |
+| string | The string `[LTransformerEncoder](#ltransformerencoder)`. |
 
 **Example**
 
@@ -4806,7 +4683,7 @@ LTransformerEncoder:typeOf(name)
 
 | Type | Description |
 |------|-------------|
-| boolean | True when name is `[LTransformerEncoder](#ltransformerencoder-handle)` or `LObject`. |
+| boolean | True when name is `[LTransformerEncoder](#ltransformerencoder)` or `LObject`. |
 
 **Example**
 

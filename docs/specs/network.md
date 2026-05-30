@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `network` module is a powerful Core Runtime tier component providing a comprehensive multiplayer networking stack for Lurek2D.
+- The `network` module provides the engine's multiplayer and remote-communication stack across host networking, TCP, HTTP, WebSocket, relay, and sync helpers.
 
 ## General Info
 
@@ -16,11 +16,19 @@
 
 ## Summary
 
-It is engineered to handle a diverse array of network topologies and transport protocols, including high-performance ENet UDP transport, raw non-blocking TCP sockets, asynchronous HTTP requests, and persistent bidirectional WebSocket connections. The module is built around a dedicated background `NetworkRuntime` thread (powered by Tokio) that handles all blocking I/O, ensuring that socket latency and network operations never stall the primary game loop. The game thread communicates with this runtime via highly efficient MPSC request/response channels.
+The `network` module is the runtime communication backbone for connected games and services. It combines multiplayer host logic with transport utilities, so scripts can use one module for game session traffic and external service integration.
 
-At the heart of real-time multiplayer functionality is the `NetworkHost` structure, which wraps an ENet instance and manages robust connections across Server, Client, or Peer-to-Peer roles. It supports sophisticated traffic shaping, including per-peer bandwidth limits and reliable/unreliable channel separation, and provides a continuous stream of `NetworkEvent`s (connect, disconnect, receive) for Lua to consume. To address the complexities of modern internet connectivity, the module features a sophisticated `relay` system that utilizes NAT-punching probes and encoded `RelayTicket`s to establish peer connections even across restrictive networks. It also provides built-in LAN lobby discovery via UDP broadcasting.
+Its design keeps blocking work off the main loop. Background runtime components process network I/O and return results through request-response channels, which helps maintain frame stability under real network latency.
 
-Beyond raw transport, the module implements high-level game synchronization features. The `net_sync` submodule provides tools for entity snapshot replication, utilizing linear dead-reckoning prediction and server-authoritative reconciliation to ensure smooth gameplay across varied latencies. Network messaging is powered by a custom `NetValue` wire-format, mirroring Lua's dynamic type system and utilizing compact MessagePack serialization. Auxiliary services, like the synchronous HTTP client (supporting all major verbs with headers and timeouts) and the WebSocket manager, provide vital hooks for integrating with REST APIs, authentication servers, and web-based services. This extensive networking suite is fully exposed to scripts via the `lurek.network.*` API, making it a cornerstone for connected Lurek2D games.
+Real-time session flows are centered on host-style networking with server, client, and peer-oriented behavior. Events for connection lifecycle and message receipt are exposed in a consistent form, making gameplay networking easier to integrate.
+
+The module also includes relay and discovery support for practical connectivity workflows. NAT-punch signals, relay tickets, and LAN lobby discovery reduce friction when peers need to find and reach each other.
+
+Beyond transport, synchronization helpers support replicated entity state with prediction and reconciliation patterns. This helps online gameplay stay responsive while still converging toward authoritative state.
+
+HTTP, WebSocket, and SSE tools are available in the same surface for account services, telemetry feeds, and remote control channels. In practice, `lurek.network` provides one complete script-facing contract for game networking and service communication.
+
+This unified approach reduces integration overhead: session transport, service requests, and sync behavior can be coordinated from one module instead of split across disconnected networking utilities.
 
 ## Imports
 

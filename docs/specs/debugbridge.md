@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `debugbridge` module provides a powerful TCP-based communication layer that enables external toolsâ€”such as the VS Code extension, remote inspectors, and diagnostic dashboardsâ€”to connect directly to a running Lurek2D instance.
+- The `debugbridge` module provides TCP-based runtime communication for external debug tools, with queued requests, responses, and bridge-safe state exchange.
 
 ## General Info
 
@@ -16,15 +16,11 @@
 
 ## Summary
 
-The `debugbridge` module provides runtime-to-tool communication primitives for debugging workflows, centered on shared bridge state and server-side JSON-RPC style message handling. Its purpose is integration: shuttle requests/responses and debug prints between engine runtime and external tooling while preserving thread-safe queue semantics.
+The `debugbridge` module is the live channel between the running engine and external debug clients.
 
-`bridge.rs` owns shared data structures (`BridgeShared`, pending request/response buffers, print entries), and `server.rs` owns client message handling plus server-thread lifecycle. The module then re-exports these integration types/functions for runtime layers that start and drive the bridge.
+It provides queue-based, thread-safe exchange for requests, responses, and bridge events, so network and runtime sides stay coordinated during tool sessions.
 
-This module should stay transport-focused. It is not a replacement for gameplay introspection logic; it is the conduit that carries those operations between processes.
-
-Operationally, quality depends on predictable queue behavior, clear message contracts, and failure-safe networking boundaries so debug tooling cannot silently corrupt runtime state.
-
-Implementation detail and boundary guarantees for debugbridge: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: bridge.rs: Define shared state and queue structures for the debug bridge protocol.; mod.rs: Expose the debug bridge subsystem for runtime-to-IDE communication.; server.rs: Run a non-blocking TCP server loop accepting debug bridge client connections.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Its boundary is transport stability: `debugbridge` owns connection lifecycle and protocol-safe message flow, while feature-specific inspection policy stays in other modules.
 
 ## Imports
 

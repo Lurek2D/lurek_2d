@@ -2,84 +2,15 @@
 
 ## Summary
 
-The `camera` module is the runtime camera stack for 2D view transforms, camera behavior, and viewport mapping. It is organized as cooperating submodules rather than one heavy type: core camera state (`types`), viewport scaling (`viewport` and `viewport_scale`), path/tween motion (`path`), effect primitives (`effects`), multi-camera coordination (`multi`), and render-command adapters (`render`).
+The `camera` module controls how the world is seen on screen in 2D runtime scenarios. It provides one consistent place to manage camera position, zoom, rotation, follow logic, and viewport mapping. Functionally, it separates view behavior from gameplay logic so systems can share the same camera rules.
 
-This module's role is transform policy, not scene ownership. It computes where and how to view the world, then exposes that state to render paths and scripts. Features like follow behavior, easing, path interpolation, and rig composition are kept in camera space so gameplay systems can consume them without duplicating math.
+Its camera state tools support both direct control and guided motion. Scripts can move or target the camera, apply smoothing and easing, run path-based travel, and use zoom transitions. This makes the module useful for gameplay tracking, cutscene movement, and tool-driven inspection flows.
 
-The separation between viewport and camera behavior is deliberate. Viewport code governs screen/game scaling strategy and coordinate conversion, while camera code governs position/zoom/rotation behavior. This avoids accidental coupling between display resolution concerns and gameplay camera logic.
+Visual motion quality is improved through effect primitives such as shake, sway, and pulse-like zoom. These effects layer on top of base camera behavior, so teams can add impact and feedback without rewriting core follow or transform code.
 
-In practice, camera changes should preserve stable transform semantics across single-camera and multi-camera flows. Render integration should remain adapter-style: camera produces view data, renderer consumes commands.
+Viewport handling is treated as its own concern. Scaling strategy and coordinate conversion are managed alongside camera transforms, which helps keep behavior stable across different window sizes and presentation modes. This reduces coupling between display policy and gameplay camera decisions.
 
-Implementation detail and boundary guarantees for camera: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: effects.rs: Camera effect primitives for transient motion overlays on top of base camera state.; mod.rs: Camera subsystem module root: effects, multi-view, path, render, types, and viewport.; multi.rs: Multi-camera rig that stores and manages named Camera2D instances.; path.rs: Waypoint-based camera path interpolation for scripted camera movement.; render.rs: Render command generation from camera transform state.; types.rs: Core camera state containers: Camera (minimal) and Camera2D (full runtime).; viewport.rs: Viewport scaling strategies for mapping a fixed game surface into variable window sizes.; viewport_scale.rs: Viewport scale state object used by the engine resize flow.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
-
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### effects.rs
-
-- Implements transient camera-motion effects layered on top of the base follow transform state.
-- Provides pulse-based zoom bursts for impact moments and short-lived cinematic emphasis.
-- Adds oscillatory sway offsets with tunable frequency and damping for dynamic camera motion feel.
-- Supplies breathing-style zoom modulation for subtle ambient life during low-action periods.
-- Keeps each effect independently updateable so compositions remain modular and controllable.
-- Serves as the reusable effect toolkit consumed by camera runtime state integration.
-
-### mod.rs
-
-- Defines the camera module boundary that groups transform state, effects, viewport, and rendering helpers.
-- Exposes a coherent camera surface while keeping pathing, rigs, and scaling concerns modularized.
-- Serves as the high-level composition root for runtime camera behavior across engine systems.
-
-### multi.rs
-
-- Implements multi-camera rig management over named camera instances for concurrent view setups.
-- Provides preset layout helpers for split-screen, minimap, and picture-in-picture arrangements.
-- Supports deterministic iteration and bulk mutation flows for multi-pass rendering integration.
-- Serves as the orchestration layer for scenarios requiring more than one active camera view.
-
-### path.rs
-
-- Implements waypoint-driven camera path interpolation for scripted movement and guided shots.
-- Provides zoom tweening with easing control for smooth focal transitions over fixed durations.
-- Tracks segment progress across multi-point paths to produce continuous positional interpolation.
-- Supports reusable easing selection so authored camera motion keeps consistent temporal character.
-- Serves as the timeline-friendly movement layer above direct camera transform manipulation.
-
-### render.rs
-
-- Converts camera transform state into renderer command sequences for scene-space projection.
-- Emits ordered push, translate, rotate, scale, and pop operations for deterministic visual mapping.
-- Splits begin and end phases so callers can bracket arbitrary scene draw commands safely.
-- Serves as the render-bridge layer between camera math state and command-stream execution.
-
-### types.rs
-
-- Defines core camera state models that represent both minimal and fully featured 2D camera behavior.
-- Implements follow logic with dead-zone handling, smoothing response, and look-ahead displacement control.
-- Integrates transient effects such as shake, pulse, sway, and breathing into effective camera transforms.
-- Maintains zoom and rotation state with damping and bounded constraint ranges for runtime stability.
-- Provides viewport-aware world-to-screen and screen-to-world mapping through explicit conversion utilities.
-- Builds view matrices by composing position, rotation, zoom, and active effect contributions coherently.
-- Exposes easing-driven interpolation options for authored motion character and follow response tuning.
-- Supports target-follow presets that package common control profiles for gameplay camera styles.
-- Keeps transform ownership centralized so dependent render and logic systems read consistent state.
-- Serves as the primary camera runtime contract consumed across movement, rendering, and tooling layers.
-
-### viewport.rs
-
-- Implements viewport scaling policies that map fixed game space into dynamic window dimensions.
-- Defines scale modes for aspect-preserving letterbox, free stretch, and pixel-perfect presentation.
-- Stores computed scale and offset transforms recalculated on resize without recreating viewport state.
-- Provides bidirectional coordinate conversion between screen pixels and logical game coordinates.
-- Serves as the canonical scaling contract consumed by camera and render integration paths.
-
-### viewport_scale.rs
-
-- Implements runtime viewport-scale state used by resize and projection update workflows.
-- Stores computed scale factors, offsets, and scaled dimensions after each window-size change.
-- Provides bidirectional conversion helpers between logical game space and screen pixel coordinates.
-- Serves as a compact scaling container for systems that need fast coordinate remapping.
+The module also supports multi-camera orchestration through named rigs and layout helpers. Split-screen, minimap, and picture-in-picture flows can be managed through one control surface while keeping render integration predictable. Overall, the module provides a complete and reusable view-control foundation for 2D projects.
 
 ## Functions
 
@@ -102,7 +33,7 @@ lurek.camera.new(vw, vh)
 
 | Type | Description |
 |------|-------------|
-| [LCamera](#lcamera-handle) | New camera handle. |
+| [LCamera](#lcamera) | New camera handle. |
 
 **Example**
 
@@ -135,7 +66,7 @@ lurek.camera.newCamera(vw, vh)
 
 | Type | Description |
 |------|-------------|
-| [LCamera](#lcamera-handle) | New camera handle. |
+| [LCamera](#lcamera) | New camera handle. |
 
 **Example**
 
@@ -161,7 +92,7 @@ lurek.camera.newRig()
 
 | Type | Description |
 |------|-------------|
-| [LCameraRig](#lcamerarig-handle) | New camera rig handle. |
+| [LCameraRig](#lcamerarig) | New camera rig handle. |
 
 **Example**
 
@@ -179,11 +110,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LCamera Handle](#lcamera-handle)
-- [LCameraRig Handle](#lcamerarig-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -192,13 +118,18 @@ end
 
 *No module-specific enums documented.*
 
-## LCamera Handle
+## Types
 
-### Fields
+- [LCamera](#lcamera)
+- [LCameraRig](#lcamerarig)
+
+## LCamera
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCamera:apply`
 
@@ -1924,7 +1855,7 @@ LCamera:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LCamera](#lcamera-handle)`. |
+| string | The string `[LCamera](#lcamera)`. |
 
 **Example**
 
@@ -1949,7 +1880,7 @@ LCamera:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LCamera](#lcamera-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LCamera](#lcamera)` and `Object`. |
 
 **Returns**
 
@@ -2123,13 +2054,13 @@ end
 
 ---
 
-## LCameraRig Handle
+## LCameraRig
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCameraRig:apply`
 
@@ -2484,7 +2415,7 @@ LCameraRig:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LCameraRig](#lcamerarig-handle)`. |
+| string | The string `[LCameraRig](#lcamerarig)`. |
 
 **Example**
 
@@ -2509,7 +2440,7 @@ LCameraRig:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LCameraRig](#lcamerarig-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LCameraRig](#lcamerarig)` and `Object`. |
 
 **Returns**
 

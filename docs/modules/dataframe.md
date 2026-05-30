@@ -2,168 +2,17 @@
 
 ## Summary
 
-The `dataframe` module provides columnar table storage and query tooling for structured data workflows. Its core table abstractions are backed by typed operations and serialization paths, then extended with lazy query building, SQL-like execution, and asynchronous task helpers.
+The `dataframe` module is the structured table workspace for runtime and tooling data. It gives one place to store rows and columns, keep typed values, and run predictable data operations.
 
-Core responsibilities are separated across modules: `frame` for base dataframe/database structures, `query` for transform and aggregation logic, `lazy` for deferred execution pipelines, `sql` for tokenizer/parser/executor behavior, `serial` for CSV/JSON/binary conversion, and `file_io` for persistence helpers. `rng` supports deterministic sampling and related operations.
+Its functional scope covers everyday table work and deeper analytics. You can filter, sort, group, aggregate, reshape, and profile data, then compose these steps into repeatable pipelines.
 
-This design allows callers to use only the depth they need, from simple table manipulation to SQL-style extraction and async loading workflows. It also keeps parse/IO concerns decoupled from in-memory table behavior.
+The module supports both immediate and deferred query styles. Teams can run direct operations for simple flows or build lazy pipelines and materialize results only when needed.
 
-As a foundations component, `dataframe` should keep deterministic semantics for query results and type handling. Higher-level domain policy should compose on top of these stable primitives rather than fork table logic.
+SQL-style access and table transforms live in the same surface. This helps developers move between scripted query logic and text-based query workflows without changing data contracts.
 
-Implementation detail and boundary guarantees for dataframe: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: file_io.rs: Provides storage-agnostic DataFrame and Database file persistence helpers.; frame.rs: Core dataframe cell type and typed value representation - Columnar storage with named columns and row-major access - Column resolution by name or one-based index - Row and column CRUD operations including add, remove, and rename - DataFrame cloning, slicing, and row iteration - D; lazy.rs: Deferred query step representation for filter, sort, select, head, tail, slice, and limit - Lazy query builder that chains steps without executing until collect - Materialization via sequential step application over a cloned source frame; mod.rs: Columnar DataFrame type and Database container - Lazy query builder and deferred execution pipeline - Query-time transforms: filtering, grouping, analytics, processing, and window functions - CSV, JSON, and binary serialization and parsing - Storage-agnostic file persistence help; query/analytics.rs: Percentile computation by linear interpolation over sorted values - Z-score standardization for numeric columns - Min-max normalization to arbitrary output range - Outlier detection via z-score threshold - Mode value computation across non-nil cells - Shannon entropy calculation; query/filter.rs: Row filtering by column predicate with comparison and contains operators - Column sorting in ascending or descending order - Head, tail, and inclusive slice row selection - Column projection and unique value extraction - Group-by partitioning and inner/left join merging - Frame m; query/grouping.rs: Grouped aggregation by key column with mean, sum, min, max, count, first, last - Pivot transformation from row/column/value keys into cross-tabulated frame - Pearson correlation between two numeric columns - Full numeric-column correlation matrix generation; query/mod.rs: Statistical and distribution-oriented analytics helpers - Row filtering, sorting, joins, and sampling operations - Grouped aggregation, pivoting, and correlation computations - Reusable processing helpers for counts, missingness, duplicates, and dates - Rolling and ranking window; query/processing.rs: Frequency tables with optional percentage output - Column-level missing-value reports - Duplicate row extraction by full-row or selected-column keys - ISO date part extraction into appended year, month, and day columns; query/window.rs: Rolling mean, sum, min, and max over configurable window size - Dense rank computation with average-rank tie-breaking - Row-to-row percent change calculation - Cumulative sum across ordered rows; rng.rs: Xorshift64 pseudo-random number generator for deterministic dataframe sampling - Float, integer, and index generation from 64-bit state - Zero-seed remap to avoid degenerate all-zero output; serial.rs: CSV parsing with quote escaping and type auto-detection - CSV serialization with field escaping rules - JSON array-of-objects parsing into DataFrame - JSON serialization with proper string escaping - Compact binary LVDF format encoding and decoding - Padded string-table rendering; sql.rs: SQL text tokenizer producing typed token stream - Recursive-descent parser for SELECT statements - WHERE clause expression tree with AND, OR, NOT, LIKE, and IN - Aggregate function support: COUNT, SUM, AVG, MIN, MAX - SELECT arithmetic expressions with explicit AS aliases - GRO; task.rs: One-shot threaded dataframe jobs for file loading and SQL queries.; vectorized.rs: Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks - Element-wise scalar operations: add, sub, mul, div, abs, sqrt, floor, ceil, neg - Element-wise binary operations between two numeric columns - Column reduction: sum, mean, min, max, std, var, count. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Serialization and file I/O support keep data portable. CSV, JSON, and binary paths make it practical to load, save, exchange, and test tabular payloads across tools and runtime sessions.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### file_io.rs
-
-- Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows.
-- Defines narrow read and write abstraction traits decoupled from concrete filesystem backends.
-- Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations.
-- Preserves distinct error domains for storage, parsing, and format conversion failure handling.
-- Serves as the persistence integration layer for runtime and binding-side dataframe file operations.
-
-### frame.rs
-
-- Implements the core DataFrame and Database runtime models with typed cell-value representation.
-- Stores table data in named column structures with stable row-wise access semantics.
-- Supports column resolution by name or index for flexible scripting and API integration paths.
-- Provides row and column lifecycle operations including add, remove, rename, and mutation workflows.
-- Exposes slicing, cloning, iteration, and structural transformation helpers for table processing.
-- Maintains multi-table database containers that group frames under stable logical identifiers.
-- Includes random-data generation and expression-evaluation helpers for synthetic and derived columns.
-- Supports pivot-style reshaping with configurable aggregation behavior across grouping dimensions.
-- Implements rolling and rank-oriented analytics over sequential data windows.
-- Defines aggregation enum contracts and parsing behavior for consistent operation selection.
-- Preserves deterministic data-shape handling and explicit error reporting on invalid operations.
-- Serves as the foundational dataframe domain layer consumed by SQL, lazy, and vectorized modules.
-
-### lazy.rs
-
-- Implements deferred dataframe query planning through composable step-chain descriptions.
-- Stores filter, sort, select, window, and limit operations without immediate execution.
-- Materializes lazy plans on collect by applying steps over cloned source-frame state.
-- Preserves deterministic step order and transformation semantics during pipeline realization.
-- Serves as the lazy-query orchestration layer for staged dataframe processing.
-
-### mod.rs
-
-- Defines the dataframe module boundary for typed tabular storage, query execution, and serialization flows.
-- Groups core frame models, lazy operations, SQL parsing, threaded tasks, and vectorized processing layers.
-- Serves as the composition entry for all engine-side dataframe capabilities and integrations.
-
-### query/analytics.rs
-
-- Implements statistical analytics helpers over dataframe columns and derived numeric distributions.
-- Provides percentile extraction through interpolation on ordered numeric sample sequences.
-- Supports z-score and min-max normalization for consistent feature scaling workflows.
-- Includes outlier detection, mode estimation, and entropy-style spread characterization helpers.
-- Serves as the compact statistics layer used by higher query and reporting operations.
-
-### query/filter.rs
-
-- Implements primary row and column query transforms for dataframe selection and restructuring.
-- Applies predicate-based filtering with comparison and text containment operator semantics.
-- Provides ordering, slicing, projection, and uniqueness extraction over tabular datasets.
-- Supports grouping and join composition for cross-frame and keyed relational-style operations.
-- Includes deterministic sampling, nil handling, and batch append utilities for data preparation.
-- Computes common aggregate statistics and descriptive summary frames across numeric columns.
-- Exposes import and export helpers for numeric column vectors and merged frame workflows.
-- Serves as the high-utility query manipulation layer for core dataframe use cases.
-
-### query/grouping.rs
-
-- Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping.
-- Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count.
-- Builds pivoted result frames from row, column, and value key combinations.
-- Computes pairwise Pearson correlation between selected numeric columns.
-- Generates full numeric correlation matrices for multivariate relationship inspection.
-- Preserves deterministic group output construction and explicit missing-value handling paths.
-- Serves as the grouping and correlation analytics layer for dataframe query pipelines.
-
-### query/mod.rs
-
-- Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic.
-- Groups query submodules under one cohesive extension surface over core frame structures.
-- Serves as the composition entry for staged dataframe query operations.
-
-### query/processing.rs
-
-- Implements dataframe processing helpers for frequency summaries and table-quality diagnostics.
-- Builds value-count tables with optional percentage columns for distribution inspection.
-- Produces missing-value reports and duplicate-row extraction over full-row or keyed comparisons.
-- Appends parsed ISO date parts into structured year, month, and day output columns.
-- Serves as a reusable cleanup and profiling layer for downstream dataframe query workflows.
-
-### query/window.rs
-
-- Implements window-style dataframe computations over ordered row sequences and bounded spans.
-- Provides rolling mean, sum, min, and max evaluation with configurable window lengths.
-- Computes dense-style ranking with stable tie handling across repeated numeric values.
-- Supports row-over-row percent-change derivation for trend and momentum analysis.
-- Builds cumulative running totals across ordered rows for progressive metric inspection.
-- Serves as the window-function layer for time-like and sequence-aware dataframe analytics.
-
-### rng.rs
-
-- Implements lightweight xorshift64 random generation used by dataframe-local sampling utilities.
-- Produces deterministic integer, float, and index outputs from a compact 64-bit state.
-- Remaps zero seed values to prevent degenerate all-zero generator behavior.
-
-### serial.rs
-
-- Implements serialization and parsing for dataframe and database payloads across multiple formats.
-- Supports CSV decode and encode with quoting, escaping, and type-inference behavior.
-- Provides JSON array-object conversion between textual payloads and dataframe structures.
-- Handles nested JSON values and arrays during parser traversal and value coercion.
-- Encodes and decodes compact LVDF binary format for efficient dataframe transport storage.
-- Supplies text-table rendering helpers for debugging and readable frame inspection outputs.
-- Serializes complete database table collections into JSON with stable named table mapping.
-- Parses database-level JSON payloads back into structured table collections.
-- Preserves explicit parse and conversion failure reporting across supported format paths.
-- Serves as the format-conversion backbone for dataframe persistence and interchange.
-
-### sql.rs
-
-- Implements SQL-like query execution over dataframe and database table structures.
-- Tokenizes input query text into typed lexical units for downstream parser consumption.
-- Parses SELECT statements through recursive-descent grammar with explicit clause ordering.
-- Builds expression trees for WHERE and HAVING filters including boolean and pattern operators.
-- Supports projection arithmetic with aliasing and function-call style aggregate expressions.
-- Executes grouping, aggregation, ordering, limits, and offsets over intermediate query results.
-- Parses and applies join clauses for multi-table query paths within database containers.
-- Implements LIKE-style wildcard matching semantics compatible with SQL-style pattern tokens.
-- Validates column and table references with structured error reporting on unresolved names.
-- Exposes query entry points for both single-frame and multi-table execution contexts.
-- Preserves deterministic clause semantics and result-shape construction behavior.
-- Balances expressiveness with bounded parser and evaluator complexity for runtime safety.
-- Serves as the declarative query layer on top of core dataframe manipulation primitives.
-- Integrates tightly with frame and value contracts for consistent type handling outcomes.
-- Anchors script-facing tabular querying with predictable parser and execution behavior.
-
-### task.rs
-
-- Implements one-shot threaded dataframe jobs for file loading and SQL query execution.
-- Captures worker-side data snapshots to avoid large payload transfer through script boundaries.
-- Provides poll, wait, progress, result, and error lifecycle helpers for async task management.
-- Executes dataframe and database operations on worker threads with bounded state handoff.
-- Serves as the asynchronous execution layer used by Lua-facing dataframe task APIs.
-
-### vectorized.rs
-
-- Implements typed vectorized column storage for high-throughput dataframe-style numeric processing.
-- Supports float, integer, boolean, and text columns with optional validity-mask semantics.
-- Provides scalar element-wise transforms across arithmetic and unary operation families.
-- Executes binary column operations with dtype-aware coercion and compatibility checks.
-- Computes reductions including sum, mean, min, max, variance, and related aggregate metrics.
-- Generates comparison masks for predicate-style filtering over typed column values.
-- Supports bidirectional conversion between vectorized frames and generic dataframe representations.
-- Applies parallelized multi-column operations and reductions via rayon-backed execution paths.
-- Handles explicit column casting between numeric and textual type domains.
-- Preserves boolean-mask filtering behavior consistently across all supported column types.
-- Balances performance-oriented storage layout with conversion interoperability requirements.
-- Serves as the vectorized acceleration layer above core dataframe contracts.
+In practice, `lurek.dataframe` provides a stable foundation: ingest data, shape it, analyze it, and export it through one consistent API.
 
 ## Functions
 
@@ -185,7 +34,7 @@ lurek.dataframe.fromBinary(s)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -219,7 +68,7 @@ lurek.dataframe.fromCSV(s)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -253,7 +102,7 @@ lurek.dataframe.fromCSVFile(path, opts)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -289,7 +138,7 @@ lurek.dataframe.fromCSVFileAsync(path, opts)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrameTask](#ldataframetask-handle) | Task that resolves to a dataframe loaded from the CSV file. |
+| [LDataFrameTask](#ldataframetask) | Task that resolves to a dataframe loaded from the CSV file. |
 
 **Example**
 
@@ -328,7 +177,7 @@ lurek.dataframe.fromJSON(s)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -362,7 +211,7 @@ lurek.dataframe.fromJSONFile(path, opts)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -399,7 +248,7 @@ lurek.dataframe.fromJSONFileAsync(path, opts)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrameTask](#ldataframetask-handle) | Task that resolves to a dataframe loaded from the JSON file. |
+| [LDataFrameTask](#ldataframetask) | Task that resolves to a dataframe loaded from the JSON file. |
 
 **Example**
 
@@ -439,7 +288,7 @@ lurek.dataframe.fromRows(columns_tbl, rows_tbl)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -472,7 +321,7 @@ lurek.dataframe.fromTable(rows)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -499,13 +348,13 @@ lurek.dataframe.fromVec(vf)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `vf` | [LVecFrame](#lvecframe-handle) | Vectorized frame handle to convert. |
+| `vf` | [LVecFrame](#lvecframe) | Vectorized frame handle to convert. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -541,7 +390,7 @@ lurek.dataframe.loadDatabase(path, opts)
 
 | Type | Description |
 |------|-------------|
-| [LDatabase](#ldatabase-handle) | New database handle. |
+| [LDatabase](#ldatabase) | New database handle. |
 
 **Example**
 
@@ -575,7 +424,7 @@ lurek.dataframe.newDataFrame()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New empty dataframe handle. |
+| [LDataFrame](#ldataframe) | New empty dataframe handle. |
 
 **Example**
 
@@ -602,7 +451,7 @@ lurek.dataframe.newDatabase()
 
 | Type | Description |
 |------|-------------|
-| [LDatabase](#ldatabase-handle) | New database handle. |
+| [LDatabase](#ldatabase) | New database handle. |
 
 **Example**
 
@@ -637,7 +486,7 @@ lurek.dataframe.random(defs_tbl, n, seed)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New random dataframe handle. |
+| [LDataFrame](#ldataframe) | New random dataframe handle. |
 
 **Example**
 
@@ -664,13 +513,13 @@ lurek.dataframe.toVec(df)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | [LDataFrame](#ldataframe-handle) | Dataframe handle to convert. |
+| `df` | [LDataFrame](#ldataframe) | Dataframe handle to convert. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LVecFrame](#lvecframe-handle) | New vectorized frame handle. |
+| [LVecFrame](#lvecframe) | New vectorized frame handle. |
 
 **Example**
 
@@ -690,22 +539,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LDataFrame Handle](#ldataframe-handle)
-- [LDataFrameTask Handle](#ldataframetask-handle)
-- [LDatabase Handle](#ldatabase-handle)
-- [LGroupedFrame Handle](#lgroupedframe-handle)
-- [LLazyQuery Handle](#llazyquery-handle)
-- [LVecFrame Handle](#lvecframe-handle)
-- [LfromCSV Handle](#lfromcsv-handle)
-- [LfromJSON Handle](#lfromjson-handle)
-- [LfromRows Handle](#lfromrows-handle)
-- [LfromTable Handle](#lfromtable-handle)
-- [LfromVec Handle](#lfromvec-handle)
-- [Lrandom Handle](#lrandom-handle)
-- [LtoVec Handle](#ltovec-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -714,13 +547,22 @@ end
 
 *No module-specific enums documented.*
 
-## LDataFrame Handle
+## Types
 
-### Fields
+- [LDataFrame](#ldataframe)
+- [LDataFrameTask](#ldataframetask)
+- [LDatabase](#ldatabase)
+- [LGroupedFrame](#lgroupedframe)
+- [LLazyQuery](#llazyquery)
+- [LVecFrame](#lvecframe)
+
+## LDataFrame
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDataFrame:addColumn`
 
@@ -868,7 +710,7 @@ LDataFrame:clone()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing copied data. |
+| [LDataFrame](#ldataframe) | New dataframe containing copied data. |
 
 **Example**
 
@@ -960,7 +802,7 @@ LDataFrame:correlationMatrix()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Correlation matrix dataframe. |
+| [LDataFrame](#ldataframe) | Correlation matrix dataframe. |
 
 **Example**
 
@@ -1020,7 +862,7 @@ LDataFrame:countBy(col)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing value counts. |
+| [LDataFrame](#ldataframe) | New dataframe containing value counts. |
 
 **Example**
 
@@ -1055,7 +897,7 @@ LDataFrame:dateParts(date_col, prefix)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe with extracted date-part columns; invalid or missing dates produce nil parts. |
+| [LDataFrame](#ldataframe) | New dataframe with extracted date-part columns; invalid or missing dates produce nil parts. |
 
 **Example**
 
@@ -1085,7 +927,7 @@ LDataFrame:describe()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing descriptive statistics. |
+| [LDataFrame](#ldataframe) | New dataframe containing descriptive statistics. |
 
 **Example**
 
@@ -1119,7 +961,7 @@ LDataFrame:dropNil(col)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe without nil rows for the column. |
+| [LDataFrame](#ldataframe) | New dataframe without nil rows for the column. |
 
 **Example**
 
@@ -1153,7 +995,7 @@ LDataFrame:duplicateRows(cols)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing duplicate rows in original order. |
+| [LDataFrame](#ldataframe) | New dataframe containing duplicate rows in original order. |
 
 **Example**
 
@@ -1256,7 +1098,7 @@ LDataFrame:filter(col, op, val)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New filtered dataframe. |
+| [LDataFrame](#ldataframe) | New filtered dataframe. |
 
 **Example**
 
@@ -1428,7 +1270,7 @@ LDataFrame:groupAgg(group_col, agg_col, fn_name)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New grouped aggregate dataframe. |
+| [LDataFrame](#ldataframe) | New grouped aggregate dataframe. |
 
 **Example**
 
@@ -1500,7 +1342,7 @@ LDataFrame:groupByObj(col)
 
 | Type | Description |
 |------|-------------|
-| [LGroupedFrame](#lgroupedframe-handle) | Grouped frame handle. |
+| [LGroupedFrame](#lgroupedframe) | Grouped frame handle. |
 
 **Example**
 
@@ -1535,7 +1377,7 @@ LDataFrame:head(n)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing the first rows. |
+| [LDataFrame](#ldataframe) | New dataframe containing the first rows. |
 
 **Example**
 
@@ -1563,7 +1405,7 @@ LDataFrame:join(other, this_col, other_col, jtype)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LDataFrame](#ldataframe-handle) | Other dataframe to join. |
+| `other` | [LDataFrame](#ldataframe) | Other dataframe to join. |
 | `this_col` | string | Column name string or one-based column index. |
 | `other_col` | string | Column name string or one-based column index. |
 | `jtype?` | string | Join type string; defaults to `inner`. |
@@ -1572,7 +1414,7 @@ LDataFrame:join(other, this_col, other_col, jtype)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New joined dataframe. |
+| [LDataFrame](#ldataframe) | New joined dataframe. |
 
 **Example**
 
@@ -1601,7 +1443,7 @@ LDataFrame:lazy()
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle. |
+| [LLazyQuery](#llazyquery) | New lazy query handle. |
 
 **Example**
 
@@ -1728,7 +1570,7 @@ LDataFrame:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LDataFrame](#ldataframe-handle) | Dataframe whose rows are merged into this dataframe. |
+| `other` | [LDataFrame](#ldataframe) | Dataframe whose rows are merged into this dataframe. |
 
 **Example**
 
@@ -1796,7 +1638,7 @@ LDataFrame:missingReport(opts)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing `column`, `missing`, `non_missing`, and `missing_percent` columns. |
+| [LDataFrame](#ldataframe) | New dataframe containing `column`, `missing`, `non_missing`, and `missing_percent` columns. |
 
 **Example**
 
@@ -1952,7 +1794,7 @@ LDataFrame:outliers(col, threshold)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing outlier rows. |
+| [LDataFrame](#ldataframe) | New dataframe containing outlier rows. |
 
 **Example**
 
@@ -1991,7 +1833,7 @@ LDataFrame:parFilter(col, op, val)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New filtered DataFrame. |
+| [LDataFrame](#ldataframe) | New filtered DataFrame. |
 
 **Example**
 
@@ -2026,7 +1868,7 @@ LDataFrame:parGroupAgg(group_col, agg_col, fn_name)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Grouped result. |
+| [LDataFrame](#ldataframe) | Grouped result. |
 
 **Example**
 
@@ -2066,7 +1908,7 @@ LDataFrame:pivot(row_col, col_col, val_col)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New pivoted dataframe. |
+| [LDataFrame](#ldataframe) | New pivoted dataframe. |
 
 **Example**
 
@@ -2106,7 +1948,7 @@ LDataFrame:pivotTable(row_key, col_key, value_key, agg)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New pivot table dataframe. |
+| [LDataFrame](#ldataframe) | New pivot table dataframe. |
 
 **Example**
 
@@ -2143,7 +1985,7 @@ LDataFrame:query(sql_str)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Query result dataframe. |
+| [LDataFrame](#ldataframe) | Query result dataframe. |
 
 **Example**
 
@@ -2177,7 +2019,7 @@ LDataFrame:queryAsync(sql_str)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrameTask](#ldataframetask-handle) | Task that resolves to the query result dataframe. |
+| [LDataFrameTask](#ldataframetask) | Task that resolves to the query result dataframe. |
 
 **Example**
 
@@ -2218,7 +2060,7 @@ LDataFrame:rank(col, order, result_col)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe with the rank column. |
+| [LDataFrame](#ldataframe) | New dataframe with the rank column. |
 
 **Example**
 
@@ -2339,7 +2181,7 @@ LDataFrame:rollingMean(col, window, result_col)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe with the rolling mean column. |
+| [LDataFrame](#ldataframe) | New dataframe with the rolling mean column. |
 
 **Example**
 
@@ -2377,7 +2219,7 @@ LDataFrame:rollingSum(col, window, result_col)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe with the rolling sum column. |
+| [LDataFrame](#ldataframe) | New dataframe with the rolling sum column. |
 
 **Example**
 
@@ -2443,7 +2285,7 @@ LDataFrame:sample(n, seed)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New sampled dataframe. |
+| [LDataFrame](#ldataframe) | New sampled dataframe. |
 
 **Example**
 
@@ -2477,7 +2319,7 @@ LDataFrame:select(...)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing selected columns. |
+| [LDataFrame](#ldataframe) | New dataframe containing selected columns. |
 
 **Example**
 
@@ -2571,7 +2413,7 @@ LDataFrame:slice(start, end_)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing the row slice. |
+| [LDataFrame](#ldataframe) | New dataframe containing the row slice. |
 
 **Example**
 
@@ -2606,7 +2448,7 @@ LDataFrame:sort(col, ascending)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New sorted dataframe. |
+| [LDataFrame](#ldataframe) | New sorted dataframe. |
 
 **Example**
 
@@ -2706,7 +2548,7 @@ LDataFrame:tail(n)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing the last rows. |
+| [LDataFrame](#ldataframe) | New dataframe containing the last rows. |
 
 **Example**
 
@@ -2984,7 +2826,7 @@ LDataFrame:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDataFrame](#ldataframe-handle)`. |
+| string | The string `[LDataFrame](#ldataframe)`. |
 
 **Example**
 
@@ -3011,7 +2853,7 @@ LDataFrame:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LDataFrame](#ldataframe-handle)`, `DataFrame`, and `Object`. |
+| `name` | string | Type name to compare against `[LDataFrame](#ldataframe)`, `DataFrame`, and `Object`. |
 
 **Returns**
 
@@ -3085,7 +2927,7 @@ LDataFrame:valueCounts(col, opts)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe containing `value`, `count`, and optional `percent` columns. |
+| [LDataFrame](#ldataframe) | New dataframe containing `value`, `count`, and optional `percent` columns. |
 
 **Example**
 
@@ -3187,7 +3029,7 @@ LDataFrame:withEval(col_name, expr)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe with the evaluated column. |
+| [LDataFrame](#ldataframe) | New dataframe with the evaluated column. |
 
 **Example**
 
@@ -3423,13 +3265,13 @@ end
 
 ---
 
-## LDataFrameTask Handle
+## LDataFrameTask
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDataFrameTask:getError`
 
@@ -3530,7 +3372,7 @@ LDataFrameTask:result()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Completed dataframe result. |
+| [LDataFrame](#ldataframe) | Completed dataframe result. |
 
 **Example**
 
@@ -3559,7 +3401,7 @@ LDataFrameTask:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDataFrameTask](#ldataframetask-handle)`. |
+| string | The string `[LDataFrameTask](#ldataframetask)`. |
 
 **Example**
 
@@ -3590,7 +3432,7 @@ LDataFrameTask:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LDataFrameTask](#ldataframetask-handle)`, `DataFrameTask`, and `Object`. |
+| `name` | string | Type name to compare against `[LDataFrameTask](#ldataframetask)`, `DataFrameTask`, and `Object`. |
 
 **Returns**
 
@@ -3645,13 +3487,13 @@ end
 
 ---
 
-## LDatabase Handle
+## LDatabase
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDatabase:addTable`
 
@@ -3666,7 +3508,7 @@ LDatabase:addTable(name, df_ud)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Table name. |
-| `df_ud` | [LDataFrame](#ldataframe-handle) | Dataframe handle copied into the database. |
+| `df_ud` | [LDataFrame](#ldataframe) | Dataframe handle copied into the database. |
 
 **Example**
 
@@ -3730,7 +3572,7 @@ LDatabase:getTable(name)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Dataframe handle, or nil when no table has that name. |
+| [LDataFrame](#ldataframe) | Dataframe handle, or nil when no table has that name. |
 
 **Example**
 
@@ -3822,7 +3664,7 @@ LDatabase:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LDatabase](#ldatabase-handle) | Database copied into this database. |
+| `other` | [LDatabase](#ldatabase) | Database copied into this database. |
 
 **Example**
 
@@ -3859,7 +3701,7 @@ LDatabase:query(sql_str)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Query result dataframe. |
+| [LDataFrame](#ldataframe) | Query result dataframe. |
 
 **Example**
 
@@ -3894,7 +3736,7 @@ LDatabase:queryAsync(sql_str)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrameTask](#ldataframetask-handle) | Task that resolves to the query result dataframe. |
+| [LDataFrameTask](#ldataframetask) | Task that resolves to the query result dataframe. |
 
 **Example**
 
@@ -3932,7 +3774,7 @@ LDatabase:queryParams(sql_str, params)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Query result dataframe. |
+| [LDataFrame](#ldataframe) | Query result dataframe. |
 
 **Example**
 
@@ -3968,7 +3810,7 @@ LDatabase:queryParamsAsync(sql_str, params)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrameTask](#ldataframetask-handle) | Task that resolves to the query result dataframe. |
+| [LDataFrameTask](#ldataframetask) | Task that resolves to the query result dataframe. |
 
 **Example**
 
@@ -4123,7 +3965,7 @@ LDatabase:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDatabase](#ldatabase-handle)`. |
+| string | The string `[LDatabase](#ldatabase)`. |
 
 **Example**
 
@@ -4149,7 +3991,7 @@ LDatabase:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LDatabase](#ldatabase-handle)`, `Database`, and `Object`. |
+| `name` | string | Type name to compare against `[LDatabase](#ldatabase)`, `Database`, and `Object`. |
 
 **Returns**
 
@@ -4170,13 +4012,13 @@ end
 
 ---
 
-## LGroupedFrame Handle
+## LGroupedFrame
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGroupedFrame:aggregate`
 
@@ -4197,7 +4039,7 @@ LGroupedFrame:aggregate(col_name, func)
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | DataFrame containing `group_key` and the aggregated column. |
+| [LDataFrame](#ldataframe) | DataFrame containing `group_key` and the aggregated column. |
 
 **Example**
 
@@ -4234,7 +4076,7 @@ LGroupedFrame:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LGroupedFrame](#lgroupedframe-handle)`. |
+| string | The string `[LGroupedFrame](#lgroupedframe)`. |
 
 **Example**
 
@@ -4261,7 +4103,7 @@ LGroupedFrame:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LGroupedFrame](#lgroupedframe-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LGroupedFrame](#lgroupedframe)` and `Object`. |
 
 **Returns**
 
@@ -4283,13 +4125,13 @@ end
 
 ---
 
-## LLazyQuery Handle
+## LLazyQuery
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLazyQuery:collect`
 
@@ -4303,7 +4145,7 @@ LLazyQuery:collect()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | Dataframe produced by the query plan. |
+| [LDataFrame](#ldataframe) | Dataframe produced by the query plan. |
 
 **Example**
 
@@ -4337,7 +4179,7 @@ LLazyQuery:dropNil(col)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the drop-nil step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the drop-nil step. |
 
 **Example**
 
@@ -4373,7 +4215,7 @@ LLazyQuery:filter(col, op, val)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the filter step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the filter step. |
 
 **Example**
 
@@ -4407,7 +4249,7 @@ LLazyQuery:head(n)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the head step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the head step. |
 
 **Example**
 
@@ -4441,7 +4283,7 @@ LLazyQuery:limit(n)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the limit step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the limit step. |
 
 **Example**
 
@@ -4476,7 +4318,7 @@ LLazyQuery:select(cols)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the select step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the select step. |
 
 **Example**
 
@@ -4511,7 +4353,7 @@ LLazyQuery:slice(start, end_)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the slice step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the slice step. |
 
 **Example**
 
@@ -4546,7 +4388,7 @@ LLazyQuery:sort(col, ascending)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the sort step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the sort step. |
 
 **Example**
 
@@ -4580,7 +4422,7 @@ LLazyQuery:tail(n)
 
 | Type | Description |
 |------|-------------|
-| [LLazyQuery](#llazyquery-handle) | New lazy query handle with the tail step. |
+| [LLazyQuery](#llazyquery) | New lazy query handle with the tail step. |
 
 **Example**
 
@@ -4608,7 +4450,7 @@ LLazyQuery:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LLazyQuery](#llazyquery-handle)`. |
+| string | The string `[LLazyQuery](#llazyquery)`. |
 
 **Example**
 
@@ -4635,7 +4477,7 @@ LLazyQuery:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LLazyQuery](#llazyquery-handle)`, `LazyQuery`, and `Object`. |
+| `name` | string | Type name to compare against `[LLazyQuery](#llazyquery)`, `LazyQuery`, and `Object`. |
 
 **Returns**
 
@@ -4657,13 +4499,13 @@ end
 
 ---
 
-## LVecFrame Handle
+## LVecFrame
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LVecFrame:applyMask`
 
@@ -4683,7 +4525,7 @@ LVecFrame:applyMask(mask_tbl)
 
 | Type | Description |
 |------|-------------|
-| [LVecFrame](#lvecframe-handle) | New vectorized frame containing masked rows. |
+| [LVecFrame](#lvecframe) | New vectorized frame containing masked rows. |
 
 **Example**
 
@@ -5321,7 +5163,7 @@ LVecFrame:toDataFrame()
 
 | Type | Description |
 |------|-------------|
-| [LDataFrame](#ldataframe-handle) | New dataframe handle. |
+| [LDataFrame](#ldataframe) | New dataframe handle. |
 
 **Example**
 
@@ -5350,7 +5192,7 @@ LVecFrame:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LVecFrame](#lvecframe-handle)`. |
+| string | The string `[LVecFrame](#lvecframe)`. |
 
 **Example**
 
@@ -5396,73 +5238,3 @@ end
 ```
 
 ---
-
-## LfromCSV Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LfromJSON Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LfromRows Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LfromTable Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LfromVec Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## Lrandom Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LtoVec Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*

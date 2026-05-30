@@ -19,6 +19,9 @@ STUB_FILE = ROOT / "docs" / "api" / "lurek.lua"
 LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 EXAMPLES_DIR = ROOT / "content" / "examples"
 OUT_DIR = ROOT / "docs" / "modules"
+RUST_API_MD = ROOT / "docs" / "rust-api.md"
+RUST_MODULES_DIR = ROOT / "docs" / "rust_modules"
+CALLBACKS_MD = ROOT / "docs" / "callbacks.md"
 
 # ---------------------------------------------------------------------------
 # Spec description extraction
@@ -27,11 +30,11 @@ OUT_DIR = ROOT / "docs" / "modules"
 def extract_spec_sections(spec_path: Path) -> dict[str, str]:
     """Return selected sections from docs/specs/<module>.md."""
     if not spec_path.exists():
-        return {"tldr": "", "summary": "", "files": ""}
+        return {"tldr": "", "general_info": "", "summary": "", "files": ""}
     text = spec_path.read_text(encoding="utf-8")
-    sections: dict[str, str] = {"tldr": "", "summary": "", "files": ""}
+    sections: dict[str, str] = {"tldr": "", "general_info": "", "summary": "", "files": ""}
 
-    for key, heading in (("tldr", "TL;DR"), ("summary", "Summary"), ("files", "Files")):
+    for key, heading in (("tldr", "TL;DR"), ("general_info", "General Info"), ("summary", "Summary"), ("files", "Files")):
         m = re.search(rf"## {re.escape(heading)}\s*\n(.*?)(?=\n## |\Z)", text, re.DOTALL)
         if m:
             sections[key] = m.group(1).strip()
@@ -190,30 +193,39 @@ def doc_to_parts(doc_lines: list[str]) -> tuple[str, list[str], list[str]]:
     return " ".join(desc_parts), params, returns
 
 
-def _link_lurek_types(text: str, link_targets: set[str]) -> str:
-    """Convert plain LType tokens into links to in-file handle anchors."""
+def _type_anchor(type_name: str) -> str:
+    return anchor_slug(type_name)
+
+
+def _type_link(type_name: str, current_module: str, class_owner: dict[str, str], local_types: set[str]) -> str:
+    if type_name in local_types:
+        return f"[{type_name}](#{_type_anchor(type_name)})"
+    owner = class_owner.get(type_name)
+    if owner:
+        return f"[{type_name}]({owner}.md#{_type_anchor(type_name)})"
+    return type_name
+
+
+def _link_lurek_types(text: str, *, current_module: str, class_owner: dict[str, str], local_types: set[str]) -> str:
+    """Convert LType tokens into links to local or owning module type headers."""
     if not text:
         return ""
 
     def repl_md_link(match: re.Match[str]) -> str:
         token = match.group(1)
-        if token in link_targets:
-            return f"[{token}](#{anchor_slug(token + ' Handle')})"
-        return token
+        return _type_link(token, current_module, class_owner, local_types)
 
     # Rewrite legacy absolute lua-docs class links first.
     text = re.sub(r"\[\s*(L[A-Z][A-Za-z0-9_]*)\s*\]\(\s*/lua-docs/classes/[A-Za-z0-9_]+\.html\s*\)", repl_md_link, text)
 
     def repl(match: re.Match[str]) -> str:
         token = match.group(0)
-        if token in link_targets:
-            return f"[{token}](#{anchor_slug(token + ' Handle')})"
-        return token
+        return _type_link(token, current_module, class_owner, local_types)
 
     return re.sub(r"\bL[A-Z][A-Za-z0-9_]*\b", repl, text)
 
 
-def format_params(params: list[str], link_targets: set[str]) -> list[str]:
+def format_params(params: list[str], *, current_module: str, class_owner: dict[str, str], local_types: set[str]) -> list[str]:
     """Format @param lines into a markdown table row."""
     rows = []
     for p in params:
@@ -221,24 +233,24 @@ def format_params(params: list[str], link_targets: set[str]) -> list[str]:
         m = re.match(r'@param\s+(\w+\??)\s+(\S+)\s*(.*)', p)
         if m:
             p_name = m.group(1)
-            p_type = _link_lurek_types(m.group(2), link_targets)
-            p_desc = _link_lurek_types(m.group(3).strip(), link_targets)
+            p_type = _link_lurek_types(m.group(2), current_module=current_module, class_owner=class_owner, local_types=local_types)
+            p_desc = _link_lurek_types(m.group(3).strip(), current_module=current_module, class_owner=class_owner, local_types=local_types)
             rows.append(f"| `{p_name}` | {p_type} | {p_desc} |")
         else:
-            rows.append(f"| — | — | {_link_lurek_types(p, link_targets)} |")
+            rows.append(f"| — | — | {_link_lurek_types(p, current_module=current_module, class_owner=class_owner, local_types=local_types)} |")
     return rows
 
 
-def format_returns(returns: list[str], link_targets: set[str]) -> list[str]:
+def format_returns(returns: list[str], *, current_module: str, class_owner: dict[str, str], local_types: set[str]) -> list[str]:
     rows = []
     for r in returns:
         m = re.match(r'@return\s+(\S+)\s*(.*)', r)
         if m:
-            r_type = _link_lurek_types(m.group(1), link_targets)
-            r_desc = _link_lurek_types(m.group(2).strip(), link_targets)
+            r_type = _link_lurek_types(m.group(1), current_module=current_module, class_owner=class_owner, local_types=local_types)
+            r_desc = _link_lurek_types(m.group(2).strip(), current_module=current_module, class_owner=class_owner, local_types=local_types)
             rows.append(f"| {r_type} | {r_desc} |")
         else:
-            rows.append(f"| — | {_link_lurek_types(r, link_targets)} |")
+            rows.append(f"| — | {_link_lurek_types(r, current_module=current_module, class_owner=class_owner, local_types=local_types)} |")
     return rows
 
 
@@ -283,7 +295,7 @@ def render_signature(entry: dict) -> str:
     return sig
 
 
-def render_entry(entry: dict, examples: dict, link_targets: set[str], heading_level: str = "###") -> list[str]:
+def render_entry(entry: dict, examples: dict, *, current_module: str, class_owner: dict[str, str], local_types: set[str], heading_level: str = "###") -> list[str]:
     lines = []
     desc, params, returns = doc_to_parts(entry["doc_lines"])
     sig = render_signature(entry)
@@ -291,7 +303,7 @@ def render_entry(entry: dict, examples: dict, link_targets: set[str], heading_le
     lines.append(f"{heading_level} `{entry['full_name']}`")
     lines.append("")
     if desc:
-        lines.append(_link_lurek_types(desc, link_targets))
+        lines.append(_link_lurek_types(desc, current_module=current_module, class_owner=class_owner, local_types=local_types))
         lines.append("")
 
     lines.append(f"```lua")
@@ -304,7 +316,7 @@ def render_entry(entry: dict, examples: dict, link_targets: set[str], heading_le
         lines.append("")
         lines.append("| Name | Type | Description |")
         lines.append("|------|------|-------------|")
-        lines.extend(format_params(params, link_targets))
+        lines.extend(format_params(params, current_module=current_module, class_owner=class_owner, local_types=local_types))
         lines.append("")
 
     if returns:
@@ -312,7 +324,7 @@ def render_entry(entry: dict, examples: dict, link_targets: set[str], heading_le
         lines.append("")
         lines.append("| Type | Description |")
         lines.append("|------|-------------|")
-        lines.extend(format_returns(returns, link_targets))
+        lines.extend(format_returns(returns, current_module=current_module, class_owner=class_owner, local_types=local_types))
         lines.append("")
 
     # Find example — try full_name, then short name variants
@@ -395,12 +407,12 @@ def build_page(
     class_fields: dict,
     module_enums: dict[str, list[dict]],
     module_classes: dict[str, list[str]],
-    known_classes: set[str],
+    class_owner: dict[str, str],
 ) -> str:
     spec_path = SPECS_DIR / f"{module}.md"
     spec = extract_spec_sections(spec_path)
     summary_text = spec.get("summary", "")
-    files_text = spec.get("files", "")
+    # Rust file descriptions are intentionally kept out of Lua module docs.
     examples = load_examples(module)
 
     # Which classes belong to this module? Prefer classes referenced by this
@@ -422,6 +434,12 @@ def build_page(
     for cls in module_classes.get(module, []):
         relevant_classes.add(cls)
 
+    # Keep only documented userdata types that actually expose fields or methods.
+    relevant_classes = {
+        cls for cls in relevant_classes
+        if class_methods.get(cls) or class_fields.get(cls)
+    }
+
     fns = module_fns.get(module, [])
     # Deduplicate by full_name (lurek.lua sometimes has duplicates)
     seen = set()
@@ -441,25 +459,17 @@ def build_page(
         out.append(summary_text)
         out.append("")
 
-    if files_text:
-        out.append("## Spec File Descriptions")
-        out.append("")
-        out.append("_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._")
-        out.append("")
-        out.append(files_text)
-        out.append("")
-
     if not unique_fns and not relevant_classes and not module_enums.get(module):
         out.append("*No public API documented yet.*")
         return "\n".join(out)
 
-    link_targets = set(relevant_classes)
+    local_types = set(relevant_classes)
 
     out.append("## Functions")
     out.append("")
     if unique_fns:
         for entry in sorted(unique_fns, key=lambda e: e["name"]):
-            out.extend(render_entry(entry, examples, link_targets))
+            out.extend(render_entry(entry, examples, current_module=module, class_owner=class_owner, local_types=local_types))
     else:
         out.append("*No standalone module functions documented.*")
         out.append("")
@@ -473,7 +483,7 @@ def build_page(
             out.append(f"### `{entry['full_name']}`")
             out.append("")
             if desc:
-                out.append(_link_lurek_types(desc, link_targets))
+                out.append(_link_lurek_types(desc, current_module=module, class_owner=class_owner, local_types=local_types))
                 out.append("")
             out.append("```lua")
             out.append(f"{entry['full_name']} = {entry.get('value', '')}")
@@ -484,15 +494,6 @@ def build_page(
     else:
         out.append("*No module-level fields documented.*")
         out.append("")
-
-    out.append("## Types")
-    out.append("")
-    if relevant_classes:
-        for cls in sorted(relevant_classes):
-            out.append(f"- [{cls} Handle](#{anchor_slug(cls + ' Handle')})")
-    else:
-        out.append("*No Lua userdata types detected for this module.*")
-    out.append("")
 
     out.append("## Callbacks")
     out.append("")
@@ -515,7 +516,7 @@ def build_page(
             out.append(f"### `{e_name}`")
             if e_desc:
                 out.append("")
-                out.append(_link_lurek_types(e_desc, link_targets))
+                out.append(_link_lurek_types(e_desc, current_module=module, class_owner=class_owner, local_types=local_types))
             values = enum.get("values") or []
             if values:
                 out.append("")
@@ -523,14 +524,23 @@ def build_page(
             out.append("")
     else:
         out.append("*No module-specific enums documented.*")
-        out.append("")
+    out.append("")
 
-    # Type-level blocks with dedicated level-2 headers and anchors.
+    out.append("## Types")
+    out.append("")
+    if relevant_classes:
+        for cls in sorted(relevant_classes):
+            out.append(f"- [{cls}](#{_type_anchor(cls)})")
+    else:
+        out.append("*No Lua userdata types detected for this module.*")
+    out.append("")
+
+    # Type-level blocks.
     for cls in sorted(relevant_classes):
-        out.append(f"## {cls} Handle")
+        out.append(f"## {cls}")
         out.append("")
 
-        out.append("### Fields")
+        out.append("### Type Fields")
         out.append("")
         fields = class_fields.get(cls, [])
         if fields:
@@ -538,15 +548,15 @@ def build_page(
             out.append("|------|------|-------------|")
             for field in fields:
                 f_name = field.get("name", "")
-                f_type = _link_lurek_types(field.get("type", "any"), link_targets)
-                f_desc = _link_lurek_types(field.get("description", ""), link_targets)
+                f_type = _link_lurek_types(field.get("type", "any"), current_module=module, class_owner=class_owner, local_types=local_types)
+                f_desc = _link_lurek_types(field.get("description", ""), current_module=module, class_owner=class_owner, local_types=local_types)
                 out.append(f"| `{f_name}` | {f_type} | {f_desc} |")
             out.append("")
         else:
             out.append("*No documented fields for this handle.*")
             out.append("")
 
-        out.append("### Methods")
+        out.append("### Type Methods")
         out.append("")
         methods = class_methods.get(cls, [])
         if methods:
@@ -555,10 +565,220 @@ def build_page(
                 if entry["full_name"] in seen_m:
                     continue
                 seen_m.add(entry["full_name"])
-                out.extend(render_entry(entry, examples, link_targets, heading_level="####"))
+                out.extend(render_entry(entry, examples, current_module=module, class_owner=class_owner, local_types=local_types, heading_level="####"))
         else:
             out.append("*No documented methods for this handle.*")
             out.append("")
+
+    return "\n".join(out)
+
+
+def build_rust_api_page(modules: list[str]) -> str:
+    out: list[str] = []
+    out.append("# Rust API Browser")
+    out.append("")
+    out.append("Krótki indeks modułów Rust generowany ze specek.")
+    out.append("")
+    out.append("- [Open Rust API Browser](/rust-docs/index.html)")
+    out.append("")
+
+    rows: list[tuple[str, str, int, str]] = []
+    for module in modules:
+        spec_path = SPECS_DIR / f"{module}.md"
+        if not spec_path.exists():
+            continue
+        spec = extract_spec_sections(spec_path)
+        summary = (spec.get("summary") or "").strip().split("\n\n")[0].strip()
+        general_info = (spec.get("general_info") or "")
+        source_path = _extract_source_path(general_info)
+        files = (spec.get("files") or "")
+        file_count = len(re.findall(r"^###\s+", files, flags=re.M))
+        rows.append((module, source_path, file_count, summary))
+
+    out.append("## Module table")
+    out.append("")
+    out.append("| Module | Source path | Files |")
+    out.append("|--------|-------------|-------|")
+    for module, source_path, file_count, _ in rows:
+        mod_link = f"[`{module}`](rust_modules/{module}.md)"
+        src = f"`{source_path}`" if source_path else "-"
+        out.append(f"| {mod_link} | {src} | {file_count} |")
+    out.append("")
+
+    out.append("## Modules")
+    out.append("")
+    out.append("Każdy moduł ma osobną stronę z `General Info`, `Summary` i `Files`.")
+    out.append("")
+
+    has_any = bool(rows)
+    for module, _, _, summary in rows:
+        out.append(f"- [`{module}`](rust_modules/{module}.md)")
+        if summary:
+            out.append(f"  - {summary}")
+        out.append("")
+
+    if not has_any:
+        out.append("*No module specs found.*")
+        out.append("")
+
+    out.append("## Powiązane")
+    out.append("")
+    out.append("- [Architecture](architecture/engine-core.md)")
+    out.append("- [Generated Rust API (Markdown)](api/rust.md)")
+    out.append("")
+
+    return "\n".join(out)
+
+
+def _repo_source_url(source_path: str, file_name: str) -> str:
+    source_path = source_path.strip().strip("`")
+    if not source_path:
+        return ""
+    if not source_path.endswith("/"):
+        source_path += "/"
+    rel = f"{source_path}{file_name}".replace("\\", "/")
+    return f"https://github.com/Lurek2D/lurek_2d/blob/main/{rel}"
+
+
+def _extract_source_path(general_info: str) -> str:
+    m = re.search(r"-\s*Source path:\s*`?([^`\n]+)`?", general_info or "")
+    return (m.group(1).strip() if m else "")
+
+
+def _link_file_headings(files_section: str, source_path: str) -> str:
+    if not files_section:
+        return ""
+
+    def repl(match: re.Match[str]) -> str:
+        fname = match.group(1).strip()
+        url = _repo_source_url(source_path, fname)
+        if url:
+            return f"### [{fname}]({url})"
+        return f"### {fname}"
+
+    return re.sub(r"^###\s+([^\n]+)$", repl, files_section, flags=re.M)
+
+
+def build_rust_module_page(module: str) -> str:
+    spec_path = SPECS_DIR / f"{module}.md"
+    spec = extract_spec_sections(spec_path)
+    general_info = (spec.get("general_info") or "").strip()
+    summary = (spec.get("summary") or "").strip()
+    files = (spec.get("files") or "").strip()
+    source_path = _extract_source_path(general_info)
+    files = _link_file_headings(files, source_path)
+
+    out: list[str] = []
+    out.append(f"# {module}")
+    out.append("")
+
+    out.append("## General Info")
+    out.append("")
+    out.append(general_info if general_info else "*No `General Info` section found in spec.*")
+    out.append("")
+
+    out.append("## Summary")
+    out.append("")
+    out.append(summary if summary else "*No `Summary` section found in spec.*")
+    out.append("")
+
+    out.append("## Files")
+    out.append("")
+    out.append(files if files else "*No `Files` section found in spec.*")
+    out.append("")
+
+    return "\n".join(out)
+
+
+def build_callbacks_page() -> str:
+    spec = extract_spec_sections(SPECS_DIR / "callbacks.md")
+    general_info = (spec.get("general_info") or "").strip()
+    summary = (spec.get("summary") or "").strip()
+
+    callbacks = []
+    if LUA_API_JSON.exists():
+        try:
+            data = json.loads(LUA_API_JSON.read_text(encoding="utf-8"))
+            callbacks = sorted(data.get("engine_callbacks", []) or [], key=lambda c: c.get("name", ""))
+        except Exception:
+            callbacks = []
+
+    out: list[str] = []
+    out.append("# Callback Hooks")
+    out.append("")
+
+    out.append("## General Info")
+    out.append("")
+    out.append(general_info if general_info else "*No `General Info` section found in callbacks spec.*")
+    out.append("")
+
+    out.append("## Summary")
+    out.append("")
+    out.append(summary if summary else "*No `Summary` section found in callbacks spec.*")
+    out.append("")
+
+    out.append("## Callback Inventory")
+    out.append("")
+    if callbacks:
+        for cb in callbacks:
+            name = cb.get("name", "")
+            sig = cb.get("signature", "")
+            desc = cb.get("description", "")
+            out.append(f"- `lurek.{name}` — `{sig}`")
+            if desc:
+                out.append(f"  - {desc}")
+    else:
+        out.append("*No callbacks found in `logs/data/lua_api_data.json`.*")
+    out.append("")
+
+    out.append("## Callback Details")
+    out.append("")
+    if callbacks:
+        for cb in callbacks:
+            name = cb.get("name", "")
+            sig = cb.get("signature", "")
+            desc = cb.get("description", "")
+            params = cb.get("parameters", []) or []
+
+            out.append(f"### `lurek.{name}`")
+            out.append("")
+            if desc:
+                out.append(desc)
+                out.append("")
+            if sig:
+                out.append("```lua")
+                out.append(sig)
+                out.append("```")
+                out.append("")
+
+            if params:
+                out.append("#### Parameters")
+                out.append("")
+                out.append("| Name | Type | Description |")
+                out.append("|------|------|-------------|")
+                for p in params:
+                    pname = p.get("name", "")
+                    ptype = p.get("type", "any")
+                    pdesc = p.get("description", "")
+                    optional = p.get("optional", False)
+                    if optional and not str(pname).endswith("?"):
+                        pname = f"{pname}?"
+                    out.append(f"| `{pname}` | {ptype} | {pdesc} |")
+                out.append("")
+            else:
+                out.append("#### Parameters")
+                out.append("")
+                out.append("*No parameters.*")
+                out.append("")
+    else:
+        out.append("*No callback details available.*")
+        out.append("")
+
+    out.append("## Sources")
+    out.append("")
+    out.append("- [Spec callbacks](specs/callbacks.md)")
+    out.append("- [Generated API (Markdown)](api/lurek.md)")
+    out.append("")
 
     return "\n".join(out)
 
@@ -588,7 +808,10 @@ def main():
     module_fns, module_fields, class_methods, class_fields = parse_stub(STUB_FILE)
     module_enums = load_module_enums()
     module_classes = load_module_classes()
-    known_classes = set(class_methods.keys())
+    class_owner: dict[str, str] = {}
+    for mod_name, classes in module_classes.items():
+        for cls in classes:
+            class_owner[cls] = mod_name
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -607,7 +830,7 @@ def main():
             class_fields,
             module_enums,
             module_classes,
-            known_classes,
+            class_owner,
         )
         out_file = OUT_DIR / f"{module}.md"
         out_file.write_text(page, encoding="utf-8")
@@ -616,6 +839,27 @@ def main():
         generated.append(module)
 
     print(f"\nDone — {len(generated)} module pages in docs/modules/")
+
+    # Keep Rust API landing synchronized with specs (module list + file descriptions).
+    rust_api_md = build_rust_api_page(KNOWN_MODULES)
+    RUST_API_MD.write_text(rust_api_md, encoding="utf-8")
+    print("Updated docs/rust-api.md from specs")
+
+    RUST_MODULES_DIR.mkdir(parents=True, exist_ok=True)
+    rust_written = 0
+    for module in KNOWN_MODULES:
+        spec_path = SPECS_DIR / f"{module}.md"
+        if not spec_path.exists():
+            continue
+        page = build_rust_module_page(module)
+        (RUST_MODULES_DIR / f"{module}.md").write_text(page, encoding="utf-8")
+        rust_written += 1
+    print(f"Updated docs/rust_modules/*.md from specs ({rust_written} files)")
+
+    callbacks_md = build_callbacks_page()
+    CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
+    print("Updated docs/callbacks.md from callbacks spec/json")
+
     return generated
 
 

@@ -2,8 +2,7 @@
 
 ## TL;DR
 
-- The `effect` module is a comprehensive Platform Services component responsible for the engine's post-processing and screen-space visual effects pipeline.
-- **Note:** Weather, atmosphere, and screen overlay effects have been extracted to `src/overlay/` â€” see [`docs/specs/overlay.md`](overlay.md).
+- The `effect` module manages post-processing effect state and ordered effect stacks for screen-space visuals; weather and atmosphere overlays are handled in the `overlay` module.
 
 ## General Info
 
@@ -17,15 +16,15 @@
 
 ## Summary
 
-The `effect` module manages visual post-effect composition data and lifecycle, including stack ordering, effect instances, presets, and conversion into render-command level apply/capture passes. It focuses on effect state orchestration rather than direct GPU execution.
+The `effect` module is the orchestration layer for post-processing visuals. It manages effect instances, parameter values, stack order, and lifecycle state so teams can build and tune visual pipelines without hardcoding each render path.
 
-Core responsibilities are partitioned across submodules: `effect` and `effect_type` define instance/state and built-in identifiers, `stack` manages ordered effect collections, `presets` supplies reusable configurations, `image_effect` groups image-scoped effect sets, and `render`/`draw` adapt effect state into command-level outputs consumed by the renderer.
+Its main job is composition policy. Effects can be enabled, disabled, reordered, inserted, removed, and grouped into reusable presets. This gives projects a practical way to keep visual style consistent across scenes while still allowing runtime adjustments.
 
-A key architectural property is data-driven configuration. Effects are represented as configurable descriptors and parameter maps, enabling Lua and tooling workflows to compose visual pipelines without hardcoding render paths per effect.
+The module is data-driven by design. Built-in and custom effects use parameter maps and typed identifiers, so Lua scripts and tooling can configure behavior dynamically. This reduces custom glue code and makes effect setups easier to save, clone, and inspect.
 
-The module should continue to own effect lifecycle and stack policy (including expiry/removal timing), while the renderer remains responsible for executing the generated commands on GPU resources.
+Render integration stays adapter-based: the module prepares capture and apply command sequences, while the renderer performs GPU execution. That boundary keeps responsibilities clean and improves maintainability.
 
-Implementation detail and boundary guarantees for effect: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: draw.rs: Render a preview image summarizing the current post-FX stack state.; effect.rs: Post-processing effect instance holding type, parameters, and enabled state.; effect_type.rs: Post-processing effect type enumeration and name registry.; image_effect.rs: Image-scoped post-processing effect pipeline that groups and orders shader passes.; mod.rs: Visual effect sub-system: particle effects, screen-space post-processing, and shakes.; presets.rs: Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).; render.rs: Render-command integration for the post-effects stack.; stack.rs: Ordered post-processing effect stack with per-entry enable flags.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+In practice, `lurek.effect` provides one stable control surface for post-FX state: define effects, organize stacks, apply presets, and emit predictable render-facing instructions.
 
 ## Imports
 

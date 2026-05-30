@@ -2,79 +2,15 @@
 
 ## Summary
 
-The `dsp` module owns signal-processing logic independent from the playback scheduler. It provides real-time graph/effect components, offline processing helpers, waveform/synthesis tools, and analysis/visualization utilities, while audio transport and source lifecycle stay in the `audio` module.
+The `dsp` module is the signal-processing layer for audio transformation and analysis. It handles how signals are shaped and measured, while playback scheduling and source lifecycle stay outside this boundary.
 
-Submodule boundaries are functional: `effects` defines effect types and parameter/state wrappers, `graph` coordinates shared processing graph abstractions, `analysis` provides level/spectrum helpers, `offline` applies effect chains to file workflows, `synthesis` provides waveform/envelope generation helpers, and `visualizer` renders waveform/spectrogram outputs.
+Its runtime capabilities include effect chains, graph-style processing, and thread-safe parameter control for live updates. This allows dynamic sound changes without blocking critical audio paths.
 
-A key design requirement is thread-safe processing behavior for audio-thread usage, including non-blocking control paths for graph/effect updates. This enables dynamic effect changes without coupling control traffic to render/audio critical paths.
+The module also supports offline workflows. Effect chains can be applied to stored data for batch processing, export preparation, and deterministic preprocessing tasks.
 
-In architecture terms, `dsp` should remain the transformation layer: it mutates and analyzes signal data. Playback orchestration and source routing should continue to be handled by neighboring audio runtime modules.
+Synthesis and analysis tools are included in the same surface. Teams can generate waveforms, apply envelope shaping, inspect levels and spectrum behavior, and create visual artifacts such as waveform or spectrogram outputs.
 
-Implementation detail and boundary guarantees for dsp: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analysis.rs: Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.; effects.rs: Lock-free AtomicParam for sharing f32 parameters between the audio thread and Lua API.; graph.rs: DSP processing graph: nodes connected by typed audio-rate and control-rate edges.; mod.rs: Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.; offline.rs: Offline audio processing: apply DSP effect chains to files without real-time playback.; synthesis.rs: Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.; visualizer.rs: Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
-
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### analysis.rs
-
-- Provides realtime signal analysis primitives for level tracking and spectral inspection of sample streams.
-- Maintains rolling RMS and peak state to expose stable loudness and clipping indicators during processing.
-- Computes bounded frequency summaries that keep analysis cost predictable for scripting and runtime tooling.
-- Supports both engine internals and Lua-facing diagnostics with consistent measurement semantics.
-- Delivers the inspection layer used to observe signal health before and during mix decisions.
-
-### effects.rs
-
-- Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior.
-- Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces.
-- Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable.
-- Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers.
-- Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges.
-- Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback.
-- Wraps rodio sources in a dynamic processor that applies full chain processing during streaming.
-- Handles effect-internal sizing from sample-rate context so algorithms remain portable across devices.
-- Keeps filter and modulation math localized to one layer for consistent sonic behavior across call sites.
-- Delivers the central effect-processing backbone for real-time and script-driven DSP workflows.
-
-### graph.rs
-
-- Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow.
-- Organizes processing units into deterministic traversal order for stable per-buffer execution.
-- Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure.
-- Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption.
-- Delivers the structural layer used to compose complex effect pipelines from reusable nodes.
-
-### mod.rs
-
-- Provides the high-level DSP module boundary that groups analysis, synthesis, effects, graphs, offline, and visualization flows.
-- Coordinates reusable signal-processing capabilities while keeping runtime execution and inspection concerns clearly separated.
-- Delivers one stable composition surface for audio-adjacent digital processing across engine integrations.
-
-### offline.rs
-
-- Provides offline DSP processing that applies effect chains to stored audio without live playback.
-- Runs decode, transform, and encode stages in one pipeline for reproducible file-based processing.
-- Supports peak normalization and deterministic parameterized effects for batch rendering scenarios.
-- Uses a serializable effect description so external tooling can request stable offline transforms.
-- Delivers the non-realtime processing path for exports, precompute steps, and content baking.
-
-### synthesis.rs
-
-- Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering.
-- Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output.
-- Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails.
-- Combines oscillator and envelope models into renderable buffers ready for playback and further processing.
-- Delivers the synthesis layer used for generated sound effects and lightweight musical content.
-- Keeps synthesis behavior modular so higher-level systems can extend sound generation workflows safely.
-
-### visualizer.rs
-
-- Provides DSP visualization utilities that convert audio buffers into readable waveform and spectrogram images.
-- Extracts amplitude and frequency structure into pixel-space summaries for quick offline inspection.
-- Handles multi-channel input normalization so visual output stays coherent across source formats.
-- Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time.
-- Delivers artifact generation used by tooling, debugging workflows, and content analysis pipelines.
+In practice, `lurek.dsp` provides one reusable transformation core: process, inspect, and render signal behavior consistently across runtime and tooling scenarios.
 
 ## Functions
 
@@ -124,7 +60,7 @@ lurek.dsp.analyzeFft(sd, size)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd` | [LSoundData](#lsounddata-handle) | The sound data to analyze. |
+| `sd` | [LSoundData](#lsounddata) | The sound data to analyze. |
 | `size` | number | Number of frequency bins to compute (capped at 512). |
 
 **Returns**
@@ -157,7 +93,7 @@ lurek.dsp.analyzePeak(sd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd` | [LSoundData](#lsounddata-handle) | The sound data to analyze. |
+| `sd` | [LSoundData](#lsounddata) | The sound data to analyze. |
 
 **Returns**
 
@@ -189,7 +125,7 @@ lurek.dsp.analyzeRms(sd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd` | [LSoundData](#lsounddata-handle) | The sound data to analyze. |
+| `sd` | [LSoundData](#lsounddata) | The sound data to analyze. |
 
 **Returns**
 
@@ -221,7 +157,7 @@ lurek.dsp.applyBandpass(sd_ud, low_hz, high_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata-handle) | The sound data to process. |
+| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
 | `low_hz` | number | Lower cutoff frequency in Hz. |
 | `high_hz` | number | Upper cutoff frequency in Hz. |
 
@@ -249,7 +185,7 @@ lurek.dsp.applyGain(sd_ud, gain)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata-handle) | The sound data to process. |
+| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
 | `gain` | number | Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter). |
 
 **Example**
@@ -276,7 +212,7 @@ lurek.dsp.applyHighpass(sd_ud, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata-handle) | The sound data to process. |
+| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
 | `cutoff_hz` | number | Highpass cutoff frequency in Hz. |
 
 **Example**
@@ -303,7 +239,7 @@ lurek.dsp.applyLowpass(sd_ud, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata-handle) | The sound data to process. |
+| `sd_ud` | [LSoundData](#lsounddata) | The sound data to process. |
 | `cutoff_hz` | number | Lowpass cutoff frequency in Hz. |
 
 **Example**
@@ -339,7 +275,7 @@ lurek.dsp.newAdsrEnvelope(attack, decay, sustain, release)
 
 | Type | Description |
 |------|-------------|
-| [LAdsrEnvelope](#ladsrenvelope-handle) | New ADSR envelope instance. |
+| [LAdsrEnvelope](#ladsrenvelope) | New ADSR envelope instance. |
 
 **Example**
 
@@ -406,7 +342,7 @@ lurek.dsp.newGraph()
 
 | Type | Description |
 |------|-------------|
-| [LDspGraph](#ldspgraph-handle) | New DSP graph instance. |
+| [LDspGraph](#ldspgraph) | New DSP graph instance. |
 
 **Example**
 
@@ -449,7 +385,7 @@ lurek.dsp.newLevelDetector(options)
 
 | Type | Description |
 |------|-------------|
-| [LLevelDetector](#lleveldetector-handle) | New level detector instance. |
+| [LLevelDetector](#lleveldetector) | New level detector instance. |
 
 **Example**
 
@@ -490,7 +426,7 @@ lurek.dsp.newNode(kind, options)
 
 | Type | Description |
 |------|-------------|
-| [LDspNode](#ldspnode-handle) | New graph node instance. |
+| [LDspNode](#ldspnode) | New graph node instance. |
 
 **Example**
 
@@ -527,7 +463,7 @@ lurek.dsp.newSawtoothWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated audio buffer. |
+| [LSoundData](#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -561,7 +497,7 @@ lurek.dsp.newSineWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated audio buffer. |
+| [LSoundData](#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -592,7 +528,7 @@ lurek.dsp.newSpectrumAnalyzer(options)
 
 | Type | Description |
 |------|-------------|
-| [LSpectrumAnalyzer](#lspectrumanalyzer-handle) | New spectrum analyzer instance. |
+| [LSpectrumAnalyzer](#lspectrumanalyzer) | New spectrum analyzer instance. |
 
 **Example**
 
@@ -629,7 +565,7 @@ lurek.dsp.newSquareWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated audio buffer. |
+| [LSoundData](#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -665,7 +601,7 @@ lurek.dsp.newSynthWave(waveform, freq, duration, sample_rate, amplitude, adsr)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated synthesized sound buffer. |
+| [LSoundData](#lsounddata) | Generated synthesized sound buffer. |
 
 **Example**
 
@@ -696,7 +632,7 @@ lurek.dsp.newSynthesizer(options)
 
 | Type | Description |
 |------|-------------|
-| [LSynthesizer](#lsynthesizer-handle) | New synthesizer instance. |
+| [LSynthesizer](#lsynthesizer) | New synthesizer instance. |
 
 **Example**
 
@@ -736,7 +672,7 @@ lurek.dsp.newTriangleWave(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated audio buffer. |
+| [LSoundData](#lsounddata) | Generated audio buffer. |
 
 **Example**
 
@@ -768,7 +704,7 @@ lurek.dsp.newWaveform(kind, options)
 
 | Type | Description |
 |------|-------------|
-| [LWaveform](#lwaveform-handle) | New waveform descriptor instance. |
+| [LWaveform](#lwaveform) | New waveform descriptor instance. |
 
 **Example**
 
@@ -804,7 +740,7 @@ lurek.dsp.newWhiteNoise(duration, sample_rate, amplitude, seed)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated noise buffer. |
+| [LSoundData](#lsounddata) | Generated noise buffer. |
 
 **Example**
 
@@ -1041,17 +977,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAdsrEnvelope Handle](#ladsrenvelope-handle)
-- [LDspGraph Handle](#ldspgraph-handle)
-- [LDspNode Handle](#ldspnode-handle)
-- [LLevelDetector Handle](#lleveldetector-handle)
-- [LSoundData Handle](#lsounddata-handle)
-- [LSpectrumAnalyzer Handle](#lspectrumanalyzer-handle)
-- [LSynthesizer Handle](#lsynthesizer-handle)
-- [LWaveform Handle](#lwaveform-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -1060,13 +985,24 @@ end
 
 *No module-specific enums documented.*
 
-## LAdsrEnvelope Handle
+## Types
 
-### Fields
+- [LAdsrEnvelope](#ladsrenvelope)
+- [LDspGraph](#ldspgraph)
+- [LDspNode](#ldspnode)
+- [LLevelDetector](#lleveldetector)
+- [LSoundData](#lsounddata)
+- [LSpectrumAnalyzer](#lspectrumanalyzer)
+- [LSynthesizer](#lsynthesizer)
+- [LWaveform](#lwaveform)
+
+## LAdsrEnvelope
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAdsrEnvelope:apply`
 
@@ -1080,7 +1016,7 @@ LAdsrEnvelope:apply(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata-handle) | Sound buffer to shape in-place. |
+| `sound_data_ud` | [LSoundData](#lsounddata) | Sound buffer to shape in-place. |
 
 **Example**
 
@@ -1193,13 +1129,13 @@ end
 
 ---
 
-## LDspGraph Handle
+## LDspGraph
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDspGraph:addNode`
 
@@ -1213,7 +1149,7 @@ LDspGraph:addNode(node_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node_ud` | [LDspNode](#ldspnode-handle) | Node object to add to this graph. |
+| `node_ud` | [LDspNode](#ldspnode) | Node object to add to this graph. |
 
 **Returns**
 
@@ -1347,13 +1283,13 @@ LDspGraph:process(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata-handle) | Input sound buffer. |
+| `sound_data_ud` | [LSoundData](#lsounddata) | Input sound buffer. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Processed sound buffer output. |
+| [LSoundData](#lsounddata) | Processed sound buffer output. |
 
 **Example**
 
@@ -1370,13 +1306,13 @@ end
 
 ---
 
-## LDspNode Handle
+## LDspNode
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDspNode:getParam`
 
@@ -1465,13 +1401,13 @@ end
 
 ---
 
-## LLevelDetector Handle
+## LLevelDetector
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLevelDetector:get_peak`
 
@@ -1539,7 +1475,7 @@ LLevelDetector:process(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata-handle) | Sound buffer to analyze. |
+| `sound_data_ud` | [LSoundData](#lsounddata) | Sound buffer to analyze. |
 
 **Returns**
 
@@ -1641,13 +1577,13 @@ end
 
 ---
 
-## LSoundData Handle
+## LSoundData
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSoundData:drawWaveform`
 
@@ -1661,7 +1597,7 @@ LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | Target image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | Target image to draw into. |
 | `x` | number | Left pixel coordinate. |
 | `y` | number | Top pixel coordinate. |
 | `w` | number | Waveform width in pixels. |
@@ -1804,7 +1740,7 @@ LSoundData:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LSoundData](#lsounddata-handle)". |
+| string | Always returns "[LSoundData](#lsounddata)". |
 
 ---
 
@@ -1820,7 +1756,7 @@ LSoundData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LSoundData](#lsounddata-handle)" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSoundData](#lsounddata)" or "Object"). |
 
 **Returns**
 
@@ -1830,13 +1766,13 @@ LSoundData:typeOf(name)
 
 ---
 
-## LSpectrumAnalyzer Handle
+## LSpectrumAnalyzer
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSpectrumAnalyzer:analyze`
 
@@ -1850,7 +1786,7 @@ LSpectrumAnalyzer:analyze(sound_data_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sound_data_ud` | [LSoundData](#lsounddata-handle) | Sound buffer to analyze. |
+| `sound_data_ud` | [LSoundData](#lsounddata) | Sound buffer to analyze. |
 
 **Returns**
 
@@ -1900,13 +1836,13 @@ end
 
 ---
 
-## LSynthesizer Handle
+## LSynthesizer
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSynthesizer:generate`
 
@@ -1929,7 +1865,7 @@ LSynthesizer:generate(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated sound buffer. |
+| [LSoundData](#lsounddata) | Generated sound buffer. |
 
 **Example**
 
@@ -1965,7 +1901,7 @@ LSynthesizer:render(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated sound buffer. |
+| [LSoundData](#lsounddata) | Generated sound buffer. |
 
 **Example**
 
@@ -1993,7 +1929,7 @@ LSynthesizer:setEnvelope(envelope_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `envelope_ud` | [LAdsrEnvelope](#ladsrenvelope-handle) | Envelope object copied into the synthesizer. |
+| `envelope_ud` | [LAdsrEnvelope](#ladsrenvelope) | Envelope object copied into the synthesizer. |
 
 **Example**
 
@@ -2021,7 +1957,7 @@ LSynthesizer:setWaveform(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any | Waveform kind string or [LWaveform](#lwaveform-handle) instance. |
+| `value` | any | Waveform kind string or [LWaveform](#lwaveform) instance. |
 
 **Example**
 
@@ -2036,13 +1972,13 @@ end
 
 ---
 
-## LWaveform Handle
+## LWaveform
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LWaveform:render`
 
@@ -2065,7 +2001,7 @@ LWaveform:render(freq, duration, sample_rate, amplitude)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Generated mono sound buffer. |
+| [LSoundData](#lsounddata) | Generated mono sound buffer. |
 
 **Example**
 

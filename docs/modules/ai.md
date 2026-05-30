@@ -2,208 +2,21 @@
 
 ## Summary
 
-Positioned within the Feature Systems tier, the module is entirely pure CPU, headless-testable, and imposes zero rendering dependencies, making it suitable for server-side logic and highly optimized simulation loops. It imports only the `math` and `runtime` modules, maintaining strict architectural isolation.
+The `ai` module is the behavior center for non-player actors. It gives one place to create agents, update them, and keep their decisions coherent over time. Functionally, it turns many AI techniques into one usable runtime surface, so game code can focus on design goals instead of wiring each method from scratch.
 
-At its core, the module offers a centralized `AIWorld` that manages registered agents and their execution. Individual `Agent` records maintain state, motion, and active decision models. To facilitate complex decision-making, the module includes over a dozen specialized subsystems. These include traditional reactive architectures like Finite State Machines (`FSM`) and Behavior Trees with a variety of composite, decorator, and leaf nodes, alongside advanced planning architectures such as Goal-Oriented Action Planning (`GOAP`) and Hierarchical Task Networks (`HTN`). For dynamic environments, Monte-Carlo Tree Search (`MCTS`) provides bounded lookahead, while `UtilityAI` allows agents to score candidate actions using response curves and considerations.
+At the strategic level, the module supports several decision styles. You can use explicit state flow, tree-based control, utility scoring, and planner-driven reasoning, then choose the style that fits each actor. This flexibility helps teams build simple enemies quickly, while still supporting complex behavior for advanced encounters.
 
-Beyond decision logic, the toolkit encompasses extensive systems for perception, steering, and learning. A robust `SensorWorld` handles visual, auditory, and custom stimuli, allowing agents to react to dynamic world events. Movement is managed through classic `Steering` behaviors (seek, flee, flock, pursue), `ContextSteering` for smooth obstacle avoidance using interest and danger maps, and `ORCA` for local crowd collision avoidance. For higher-level coordination, the `Squad` system groups agents into structured formations, while the `AIDirector` acts as an overarching pacing engine, adjusting difficulty, spawn rates, and ambient intensity dynamically based on player performance and tension metrics.
+For moment-to-moment reactions, the module includes perception and motion layers that work together. Agents can sense events, interpret nearby context, and choose safe or expressive movement. Steering, context steering, and local avoidance make behavior look responsive in crowded scenes instead of rigid or delayed.
 
-The module also integrates a suite of machine learning and adaptive systems via re-exports from the dedicated [`learning`](learning.md) module. It features multi-armed `Bandit` strategies (epsilon-greedy, UCB1, Thompson sampling), tabular `QLearner` reinforcement learning, and a lightweight `NeuralNet` supporting `Neuroevolution` via a population-based genetic algorithm. This allows for evolving behaviors over generations. Furthermore, agents can possess rich internal states using the `Emotion` and `NeedSystem` modules, alongside archetypal `TraitProfile`s that govern personality variables.
+The module also supports coordination beyond one actor. Squad tools let units move and act as a group, while director logic controls pacing and pressure across longer play windows. In practice, this means encounters can feel structured, with clear peaks and recovery, instead of random intensity spikes.
 
-Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store re-exported from [`patterns`](patterns.md), while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
+Internal state is treated as first-class data. Needs, emotions, traits, and memory-like context help agents keep continuity across ticks. This allows behavior to change for understandable reasons, so actions feel connected to prior events rather than purely scripted triggers.
 
-## Spec File Descriptions
+Adaptive systems expand what can be tuned over time. Bandit strategies, reinforcement learning, and neuroevolution tools allow experimentation with agents that improve or shift choices from feedback. The module keeps these capabilities near the rest of the AI stack, so learning features can be added without splitting architecture.
 
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
+Control flow between subsystems is practical and script-friendly. Blackboard-style shared facts and command queues help pass intent and results between planning and execution. This reduces glue code and lowers the chance of fragile state handoffs in larger projects.
 
-### agent.rs
-
-- Defines the full runtime shape of one AI actor as a single cohesive control unit.
-- Blends identity, movement, tactical priority, and decision style into one state heartbeat.
-- Keeps planner-facing memory, sensing, affect, motives, traits, and squad semantics aligned.
-- Preserves stable cross-system handoff so world updates read one consistent behavioral snapshot.
-- Serves as the anchor object that orchestration layers drive without leaking subsystem coupling.
-
-### behavior_tree.rs
-
-- Implements a behavior orchestration lattice that evaluates intent through composable control flow.
-- Carries running status across ticks so long actions keep temporal continuity instead of restarting.
-- Balances branching policies to prefer resilient progress under mixed success and failure outcomes.
-- Threads guard logic and decorator shaping into each decision pulse without breaking determinism.
-- Emits inspectable execution state that tools can render as readable runtime decision rhythm.
-- Provides a stable bridge for Lua-driven leaves while preserving engine-owned traversal guarantees.
-
-### command_queue.rs
-
-- Provides a staged action stream that turns chosen intent into executable command cadence.
-- Maintains ordering, urgency, and interruption semantics so control pressure stays predictable.
-- Couples command payloads with completion hooks to close the loop between plan and outcome.
-- Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation.
-- Serves as the pacing buffer between high-level deliberation and low-level execution dispatch.
-
-### context_steering.rs
-
-- Implements slot-based directional reasoning that scores where motion should be pulled or resisted.
-- Projects multiple influences into angular context so local movement stays responsive and legible.
-- Mixes attraction, avoidance, drift, and boundary pressure as one continuous heading composition.
-- Resolves conflict by weighing directional appetite against threat, then extracting the safest momentum lane.
-- Preserves smooth steering continuity by keeping representation compact and frame-friendly.
-- Outputs a movement-ready vector that downstream motion systems can apply with minimal translation.
-- Acts as a tactical micro-navigation layer beneath planners and above raw kinematic integration.
-
-### director.rs
-
-- Models encounter tempo as a cyclic pressure waveform that alternates escalation and release.
-- Converts accumulated tension into phase shifts that shape danger, reward, and ambient load.
-- Keeps pacing legible by using bounded transitions instead of abrupt binary difficulty jumps.
-- Exposes intensity signals that other systems can follow to stay synchronized with scenario mood.
-- Preserves long-session flow by balancing peaks against recovery windows in deterministic cadence.
-- Functions as the global dramaturgy spine for AI pressure management during runtime.
-
-### emotion.rs
-
-- Tracks affective channels as bounded signals that rise on events and relax toward personal baselines.
-- Translates short-term emotional pressure into a clean modulation stream for decision weighting.
-- Preserves stability with clamped values and predictable decay so mood changes remain interpretable.
-- Resolves dominant feeling state as a compact summary other AI layers can consume cheaply.
-- Supplies a lightweight emotional color layer without locking behavior to one planner architecture.
-
-### fsm.rs
-
-- Provides explicit mode-based control where behavior advances through named states over time.
-- Evaluates guarded transitions in deterministic priority order to keep switching reproducible.
-- Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries.
-- Tracks dwell time to support time-aware logic without external bookkeeping overhead.
-- Serves agents that need clear phase changes rather than fully continuous utility arbitration.
-
-### goap.rs
-
-- Delivers deliberative planning over symbolic world facts, actionable effects, and prioritized intentions.
-- Searches plan space with bounded best-first expansion to stay tractable under live-frame budgets.
-- Reconstructs coherent action chains from explored nodes into executable intent trajectories.
-- Balances optimality pressure against hard iteration ceilings so runtime cost remains predictable.
-- Integrates Lua-side execution hooks while preserving engine-owned planning invariants.
-- Acts as the intentional reasoning core for long-horizon task choice and sequencing.
-
-### htn.rs
-
-- Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow.
-- Expands authored methods through recursive branching while honoring world-state numeric constraints.
-- Preserves plan structure and intent traceability across each decomposition depth step.
-- Limits expansion depth to protect runtime from runaway combinatorial growth.
-- Supports domain-authored behavioral style where sequencing logic is explicit and inspectable.
-- Serves as a long-horizon planning backbone for structured narrative or tactical routines.
-
-### lod.rs
-
-- Defines distance-tiered AI update policy so compute effort follows player-relevant proximity.
-- Assigns cadence bands that throttle far entities while keeping near interactions immediate.
-- Stabilizes frame budget by converting spatial spread into predictable scheduling pressure.
-- Provides a compact scalability dial for large-population scenes with bounded responsiveness loss.
-
-### mcts.rs
-
-- Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces.
-- Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets.
-- Uses exploration pressure to balance known strong branches against uncertain alternatives.
-- Stores tree state in compact node arenas for iterative simulation throughput.
-- Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules.
-- Supports game-specific state, transition, and scoring logic through generic integration hooks.
-
-### mod.rs
-
-- Groups the full AI runtime surface into one coherent module boundary for decision and control.
-- Exposes complementary layers for actor state, sensing, planning, steering, coordination, and tooling.
-- Keeps integration predictable by publishing shared types through a single composition entry point.
-- Aligns tactical and strategic subsystems under consistent data flow and update expectations.
-- Defines the high-level contract of engine-side intelligence capabilities available to the rest of runtime.
-
-### needs.rs
-
-- Models internal drives as normalized pressures that decay, recover, and compete for attention.
-- Converts need intensity into urgency signals that higher decision layers can compare directly.
-- Scores available satisfiers against context so fulfillment choice remains situational and explainable.
-- Maintains cooldown-aware motivation flow to avoid oscillation between equivalent opportunities.
-- Supplies a behavioral hunger layer that gives planners a dynamic reason to act.
-
-### orca.rs
-
-- Implements local collision avoidance by projecting preferred motion into safe velocity space.
-- Builds pairwise movement constraints that encode short-horizon separation commitments between agents.
-- Resolves feasible velocity choices while preserving as much intent direction as safety allows.
-- Keeps radius and speed bounds explicit so output remains physically plausible for runtime integration.
-- Serves as the crowd-scale micro-avoidance layer under higher-level navigation goals.
-
-### perception.rs
-
-- Implements sensory intake as a multi-channel stream of world cues with persistent awareness state.
-- Captures visual, auditory, and custom signals in a unified format suitable for agent reasoning.
-- Applies range and confidence dynamics so perception strength evolves instead of flipping abruptly.
-- Maintains temporal awareness memory that can fade, refresh, or intensify based on new evidence.
-- Separates sensing configuration from stimulus flow to keep tuning independent from event production.
-- Bridges raw world events into decision-ready perceptual context consumed by planning layers.
-- Acts as the attentional gate that determines what information reaches behavior systems and when.
-
-### render.rs
-
-- Provides debug-visualization translation from live AI state into drawable diagnostic artifacts.
-- Turns control-graph structure into spatial layouts that remain readable during runtime inspection.
-- Encodes execution status into visual signals so behavior flow can be understood at a glance.
-- Supports both command-stream overlays and image snapshots for tooling and reporting paths.
-- Keeps rendering concerns decoupled from decision logic while preserving faithful state representation.
-- Acts as the observability lens for active finite-state and tree-based decision dynamics.
-
-### squad.rs
-
-- Defines group-level coordination state that binds members around shared intent and leadership.
-- Maintains formation semantics as geometric offsets that stay coherent during leader motion.
-- Carries shared tactical context so squad behavior can react as one unit instead of isolated actors.
-- Produces placement guidance for synchronized movement patterns across common formation styles.
-- Serves as the structural layer for multi-agent cohesion above individual steering behaviors.
-
-### steering.rs
-
-- Provides continuous movement intent synthesis for agents that steer instead of teleporting state.
-- Combines concurrent influences into one force signal while preserving controllable blending semantics.
-- Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures.
-- Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly.
-- Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration.
-- Treats path following as a first-class influence that can lead or defer to behavior priorities.
-- Preserves deterministic fallback when no active influence produces meaningful directional intent.
-- Exposes configurable weighting that lets designers tune expressive movement character per actor role.
-- Maintains lightweight state for runtime-safe updates under dense multi-agent simulation loads.
-- Serves as the tactical locomotion bridge between decision outputs and physics-facing motion updates.
-
-### strategy.rs
-
-- Implements high-level intent arbitration that ranks strategic goals against current world context.
-- Blends static priority and dynamic scoring pressure into a single comparable decision signal.
-- Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames.
-- Retains active intent continuity so tactical layers receive stable direction over time.
-- Serves as the top strategic filter above lower-level planners and executors.
-
-### traits.rs
-
-- Defines long-lived personality dimensions that shape how agents weight and express decisions.
-- Combines base profile values with temporary modifiers to model evolving behavioral flavor.
-- Updates modifier lifecycles over time so transient influences fade in a controlled manner.
-- Supports archetypal presets and deterministic variation for reproducible character differentiation.
-- Supplies stable temperament context consumed by planners, scorers, and tactical selectors.
-
-### utility_ai.rs
-
-- Implements continuous utility-based action choice through layered consideration scoring pipelines.
-- Shapes raw inputs with configurable response curves to express nonlinear decision preference.
-- Blends historical momentum with fresh evidence so action selection avoids abrupt instability.
-- Captures per-action score snapshots each tick for introspection and downstream decision context.
-- Serves agents that benefit from smooth preference arbitration instead of hard state jumps.
-
-### world.rs
-
-- Provides the global AI registry that owns agents, lookup indices, and shared world context.
-- Keeps identity-to-storage mapping synchronized so retrieval remains stable across lifecycle changes.
-- Centralizes broad update progression to advance many actors through one coherent world pulse.
-- Serves as the integration hub where individual agent logic becomes population-level simulation flow.
+Overall, the module provides a scalable AI foundation for both gameplay and tooling. From single actors to large populations, it keeps decision, movement, coordination, and adaptation under one consistent API, making behavior systems easier to build, test, and maintain.
 
 ## Functions
 
@@ -219,7 +32,7 @@ lurek.ai.newAIDirector()
 
 | Type | Description |
 |------|-------------|
-| [LAIDirector](#laidirector-handle) | New AI director handle. |
+| [LAIDirector](#laidirector) | New AI director handle. |
 
 **Example**
 
@@ -247,7 +60,7 @@ lurek.ai.newAILod()
 
 | Type | Description |
 |------|-------------|
-| [LAILod](#lailod-handle) | New AI LOD handle. |
+| [LAILod](#lailod) | New AI LOD handle. |
 
 **Example**
 
@@ -279,7 +92,7 @@ lurek.ai.newAction(callback)
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New action node handle. |
+| [LBTNode](#lbtnode) | New action node handle. |
 
 **Example**
 
@@ -315,7 +128,7 @@ lurek.ai.newBandit(arm_count, strategy, epsilon, seed)
 
 | Type | Description |
 |------|-------------|
-| [LBandit](#lbandit-handle) | New bandit handle. |
+| [LBandit](#lbandit) | New bandit handle. |
 
 **Example**
 
@@ -343,7 +156,7 @@ lurek.ai.newBehaviorTree()
 
 | Type | Description |
 |------|-------------|
-| [LBehaviorTree](#lbehaviortree-handle) | New behavior tree handle. |
+| [LBehaviorTree](#lbehaviortree) | New behavior tree handle. |
 
 **Example**
 
@@ -371,7 +184,7 @@ lurek.ai.newBlackboard()
 
 | Type | Description |
 |------|-------------|
-| [LAIBlackboard](#laiblackboard-handle) | New blackboard handle. |
+| [LAIBlackboard](#laiblackboard) | New blackboard handle. |
 
 **Example**
 
@@ -397,7 +210,7 @@ lurek.ai.newCommandQueue()
 
 | Type | Description |
 |------|-------------|
-| [LCommandQueue](#lcommandqueue-handle) | New command queue handle. |
+| [LCommandQueue](#lcommandqueue) | New command queue handle. |
 
 **Example**
 
@@ -430,7 +243,7 @@ lurek.ai.newCondition(callback)
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New condition node handle. |
+| [LBTNode](#lbtnode) | New condition node handle. |
 
 **Example**
 
@@ -463,7 +276,7 @@ lurek.ai.newContextSteering(slots)
 
 | Type | Description |
 |------|-------------|
-| [LContextSteering](#lcontextsteering-handle) | New context steering handle. |
+| [LContextSteering](#lcontextsteering) | New context steering handle. |
 
 **Example**
 
@@ -491,7 +304,7 @@ lurek.ai.newDialogueAI()
 
 | Type | Description |
 |------|-------------|
-| [LDialogueAI](#ldialogueai-handle) | New dialogue AI handle. |
+| [LDialogueAI](#ldialogueai) | New dialogue AI handle. |
 
 **Example**
 
@@ -519,7 +332,7 @@ lurek.ai.newEmotionModel()
 
 | Type | Description |
 |------|-------------|
-| [LEmotionModel](#lemotionmodel-handle) | New emotion model handle. |
+| [LEmotionModel](#lemotionmodel) | New emotion model handle. |
 
 **Example**
 
@@ -547,7 +360,7 @@ lurek.ai.newGOAPPlanner()
 
 | Type | Description |
 |------|-------------|
-| [LGOAPPlanner](#lgoapplanner-handle) | New GOAP planner handle. |
+| [LGOAPPlanner](#lgoapplanner) | New GOAP planner handle. |
 
 **Example**
 
@@ -583,7 +396,7 @@ lurek.ai.newGeneticAlgorithm(pop_size, gene_count, seed)
 
 | Type | Description |
 |------|-------------|
-| [LGeneticAlgorithm](#lgeneticalgorithm-handle) | New genetic algorithm handle. |
+| [LGeneticAlgorithm](#lgeneticalgorithm) | New genetic algorithm handle. |
 
 **Example**
 
@@ -610,13 +423,13 @@ lurek.ai.newGuard(predicate, child)
 | Name | Type | Description |
 |------|------|-------------|
 | `predicate` | function | Callback that decides whether the child may run. |
-| `child` | [LBTNode](#lbtnode-handle) | Child node handle consumed by the guard. |
+| `child` | [LBTNode](#lbtnode) | Child node handle consumed by the guard. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New guard node handle. |
+| [LBTNode](#lbtnode) | New guard node handle. |
 
 **Example**
 
@@ -642,7 +455,7 @@ lurek.ai.newHTNDomain()
 
 | Type | Description |
 |------|-------------|
-| [LHTNDomain](#lhtndomain-handle) | New HTN domain handle. |
+| [LHTNDomain](#lhtndomain) | New HTN domain handle. |
 
 **Example**
 
@@ -676,7 +489,7 @@ lurek.ai.newInfluenceMap(w, h, cs)
 
 | Type | Description |
 |------|-------------|
-| [LInfluenceMap](#linfluencemap-handle) | New influence map handle. |
+| [LInfluenceMap](#linfluencemap) | New influence map handle. |
 
 **Example**
 
@@ -704,7 +517,7 @@ lurek.ai.newInverter()
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New inverter node handle. |
+| [LBTNode](#lbtnode) | New inverter node handle. |
 
 **Example**
 
@@ -740,7 +553,7 @@ lurek.ai.newMCTSEngine(iters, uct_c, depth, seed)
 
 | Type | Description |
 |------|-------------|
-| [LMCTSEngine](#lmctsengine-handle) | New MCTS engine handle. |
+| [LMCTSEngine](#lmctsengine) | New MCTS engine handle. |
 
 **Example**
 
@@ -771,7 +584,7 @@ lurek.ai.newNeedSystem()
 
 | Type | Description |
 |------|-------------|
-| [LNeedSystem](#lneedsystem-handle) | New need system handle. |
+| [LNeedSystem](#lneedsystem) | New need system handle. |
 
 **Example**
 
@@ -799,7 +612,7 @@ lurek.ai.newNeuralNet()
 
 | Type | Description |
 |------|-------------|
-| [LNeuralNet](#lneuralnet-handle) | New neural network handle. |
+| [LNeuralNet](#lneuralnet) | New neural network handle. |
 
 **Example**
 
@@ -835,7 +648,7 @@ lurek.ai.newNeuroevolution(layer_spec, pop_size, seed)
 
 | Type | Description |
 |------|-------------|
-| [LNeuroevolution](#lneuroevolution-handle) | New neuroevolution handle. |
+| [LNeuroevolution](#lneuroevolution) | New neuroevolution handle. |
 
 **Example**
 
@@ -871,7 +684,7 @@ lurek.ai.newORCASolver(time_horizon)
 
 | Type | Description |
 |------|-------------|
-| [LORCASolver](#lorcasolver-handle) | New ORCA solver handle. |
+| [LORCASolver](#lorcasolver) | New ORCA solver handle. |
 
 **Example**
 
@@ -905,7 +718,7 @@ lurek.ai.newParallel(sp, fp)
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New parallel node handle. |
+| [LBTNode](#lbtnode) | New parallel node handle. |
 
 **Example**
 
@@ -940,7 +753,7 @@ lurek.ai.newQLearner(sc, ac)
 
 | Type | Description |
 |------|-------------|
-| [LQLearner](#lqlearner-handle) | New Q-learner handle. |
+| [LQLearner](#lqlearner) | New Q-learner handle. |
 
 **Example**
 
@@ -973,7 +786,7 @@ lurek.ai.newRepeater(count)
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New repeater node handle. |
+| [LBTNode](#lbtnode) | New repeater node handle. |
 
 **Example**
 
@@ -1000,7 +813,7 @@ lurek.ai.newSelector()
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New selector node handle. |
+| [LBTNode](#lbtnode) | New selector node handle. |
 
 **Example**
 
@@ -1028,7 +841,7 @@ lurek.ai.newSequence()
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New sequence node handle. |
+| [LBTNode](#lbtnode) | New sequence node handle. |
 
 **Example**
 
@@ -1062,7 +875,7 @@ lurek.ai.newSquad(name)
 
 | Type | Description |
 |------|-------------|
-| [LSquad](#lsquad-handle) | New squad handle. |
+| [LSquad](#lsquad) | New squad handle. |
 
 **Example**
 
@@ -1090,7 +903,7 @@ lurek.ai.newStateMachine()
 
 | Type | Description |
 |------|-------------|
-| [LStateMachine](#lstatemachine-handle) | New state machine handle. |
+| [LStateMachine](#lstatemachine) | New state machine handle. |
 
 **Example**
 
@@ -1118,7 +931,7 @@ lurek.ai.newSteeringManager()
 
 | Type | Description |
 |------|-------------|
-| [LSteeringManager](#lsteeringmanager-handle) | New steering manager handle. |
+| [LSteeringManager](#lsteeringmanager) | New steering manager handle. |
 
 **Example**
 
@@ -1145,7 +958,7 @@ lurek.ai.newStimulusWorld()
 
 | Type | Description |
 |------|-------------|
-| [LStimulusWorld](#lstimulusworld-handle) | New stimulus world handle. |
+| [LStimulusWorld](#lstimulusworld) | New stimulus world handle. |
 
 **Example**
 
@@ -1178,7 +991,7 @@ lurek.ai.newStrategyAI(update_interval)
 
 | Type | Description |
 |------|-------------|
-| [LStrategyAI](#lstrategyai-handle) | New strategy AI handle. |
+| [LStrategyAI](#lstrategyai) | New strategy AI handle. |
 
 **Example**
 
@@ -1206,7 +1019,7 @@ lurek.ai.newSucceeder()
 
 | Type | Description |
 |------|-------------|
-| [LBTNode](#lbtnode-handle) | New succeeder node handle. |
+| [LBTNode](#lbtnode) | New succeeder node handle. |
 
 **Example**
 
@@ -1233,7 +1046,7 @@ lurek.ai.newTraitProfile()
 
 | Type | Description |
 |------|-------------|
-| [LTraitProfile](#ltraitprofile-handle) | New trait profile handle. |
+| [LTraitProfile](#ltraitprofile) | New trait profile handle. |
 
 **Example**
 
@@ -1260,7 +1073,7 @@ lurek.ai.newUtilityAI()
 
 | Type | Description |
 |------|-------------|
-| [LUtilityAI](#lutilityai-handle) | New utility AI handle. |
+| [LUtilityAI](#lutilityai) | New utility AI handle. |
 
 **Example**
 
@@ -1288,7 +1101,7 @@ lurek.ai.newWorld()
 
 | Type | Description |
 |------|-------------|
-| [LAIWorld](#laiworld-handle) | New AI world handle. |
+| [LAIWorld](#laiworld) | New AI world handle. |
 
 **Example**
 
@@ -1308,38 +1121,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAIBlackboard Handle](#laiblackboard-handle)
-- [LAIDirector Handle](#laidirector-handle)
-- [LAILod Handle](#lailod-handle)
-- [LAIWorld Handle](#laiworld-handle)
-- [LBTNode Handle](#lbtnode-handle)
-- [LBandit Handle](#lbandit-handle)
-- [LBehaviorTree Handle](#lbehaviortree-handle)
-- [LBot Handle](#lbot-handle)
-- [LCommandQueue Handle](#lcommandqueue-handle)
-- [LContextSteering Handle](#lcontextsteering-handle)
-- [LDialogueAI Handle](#ldialogueai-handle)
-- [LEmotionModel Handle](#lemotionmodel-handle)
-- [LGOAPPlanner Handle](#lgoapplanner-handle)
-- [LGeneticAlgorithm Handle](#lgeneticalgorithm-handle)
-- [LHTNDomain Handle](#lhtndomain-handle)
-- [LInfluenceMap Handle](#linfluencemap-handle)
-- [LMCTSEngine Handle](#lmctsengine-handle)
-- [LNeedSystem Handle](#lneedsystem-handle)
-- [LNeuralNet Handle](#lneuralnet-handle)
-- [LNeuroevolution Handle](#lneuroevolution-handle)
-- [LORCASolver Handle](#lorcasolver-handle)
-- [LQLearner Handle](#lqlearner-handle)
-- [LSquad Handle](#lsquad-handle)
-- [LStateMachine Handle](#lstatemachine-handle)
-- [LSteeringManager Handle](#lsteeringmanager-handle)
-- [LStimulusWorld Handle](#lstimulusworld-handle)
-- [LStrategyAI Handle](#lstrategyai-handle)
-- [LTraitProfile Handle](#ltraitprofile-handle)
-- [LUtilityAI Handle](#lutilityai-handle)
-
 ## Callbacks
 
 - `lurek.ai.newAction` param `callback` (`function`): Callback invoked when the action node ticks.
@@ -1350,13 +1131,45 @@ end
 
 *No module-specific enums documented.*
 
-## LAIBlackboard Handle
+## Types
 
-### Fields
+- [LAIBlackboard](#laiblackboard)
+- [LAIDirector](#laidirector)
+- [LAILod](#lailod)
+- [LAIWorld](#laiworld)
+- [LBTNode](#lbtnode)
+- [LBandit](#lbandit)
+- [LBehaviorTree](#lbehaviortree)
+- [LBot](#lbot)
+- [LCommandQueue](#lcommandqueue)
+- [LContextSteering](#lcontextsteering)
+- [LDialogueAI](#ldialogueai)
+- [LEmotionModel](#lemotionmodel)
+- [LGOAPPlanner](#lgoapplanner)
+- [LGeneticAlgorithm](#lgeneticalgorithm)
+- [LHTNDomain](#lhtndomain)
+- [LInfluenceMap](#linfluencemap)
+- [LMCTSEngine](#lmctsengine)
+- [LNeedSystem](#lneedsystem)
+- [LNeuralNet](#lneuralnet)
+- [LNeuroevolution](#lneuroevolution)
+- [LORCASolver](#lorcasolver)
+- [LQLearner](#lqlearner)
+- [LSquad](#lsquad)
+- [LStateMachine](#lstatemachine)
+- [LSteeringManager](#lsteeringmanager)
+- [LStimulusWorld](#lstimulusworld)
+- [LStrategyAI](#lstrategyai)
+- [LTraitProfile](#ltraitprofile)
+- [LUtilityAI](#lutilityai)
+
+## LAIBlackboard
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAIBlackboard:clear`
 
@@ -1704,7 +1517,7 @@ LAIBlackboard:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAIBlackboard](#laiblackboard-handle)`. |
+| string | The string `[LAIBlackboard](#laiblackboard)`. |
 
 **Example**
 
@@ -1752,13 +1565,13 @@ end
 
 ---
 
-## LAIDirector Handle
+## LAIDirector
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAIDirector:ambientIntensity`
 
@@ -1979,7 +1792,7 @@ LAIDirector:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAIDirector](#laidirector-handle)`. |
+| string | The string `[LAIDirector](#laidirector)`. |
 
 **Example**
 
@@ -2005,7 +1818,7 @@ LAIDirector:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAIDirector](#laidirector-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAIDirector](#laidirector)` and `Object`. |
 
 **Returns**
 
@@ -2051,13 +1864,13 @@ end
 
 ---
 
-## LAILod Handle
+## LAILod
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAILod:shouldUpdate`
 
@@ -2196,7 +2009,7 @@ LAILod:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAILod](#lailod-handle)`. |
+| string | The string `[LAILod](#lailod)`. |
 
 **Example**
 
@@ -2222,7 +2035,7 @@ LAILod:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LAILod](#lailod-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LAILod](#lailod)` and `Object`. |
 
 **Returns**
 
@@ -2241,13 +2054,13 @@ end
 
 ---
 
-## LAIWorld Handle
+## LAIWorld
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAIWorld:addAgent`
 
@@ -2267,7 +2080,7 @@ LAIWorld:addAgent(name)
 
 | Type | Description |
 |------|-------------|
-| [LBot](#lbot-handle) | Lua handle for the newly inserted bot. |
+| [LBot](#lbot) | Lua handle for the newly inserted bot. |
 
 **Example**
 
@@ -2355,7 +2168,7 @@ LAIWorld:getGlobalBlackboard()
 
 | Type | Description |
 |------|-------------|
-| [LAIBlackboard](#laiblackboard-handle) | Blackboard handle initialized from the world's global blackboard values at call time. |
+| [LAIBlackboard](#laiblackboard) | Blackboard handle initialized from the world's global blackboard values at call time. |
 
 **Example**
 
@@ -2383,7 +2196,7 @@ LAIWorld:removeAgent(agent)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `agent` | [LBot](#lbot-handle) | Bot handle whose stored name identifies the world entry to remove. |
+| `agent` | [LBot](#lbot) | Bot handle whose stored name identifies the world entry to remove. |
 
 **Example**
 
@@ -2410,7 +2223,7 @@ LAIWorld:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LAIWorld](#laiworld-handle)`. |
+| string | The string `[LAIWorld](#laiworld)`. |
 
 **Example**
 
@@ -2489,13 +2302,13 @@ end
 
 ---
 
-## LBTNode Handle
+## LBTNode
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBTNode:addChild`
 
@@ -2509,7 +2322,7 @@ LBTNode:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LBTNode](#lbtnode-handle) | Child node handle to move into this composite node. |
+| `child` | [LBTNode](#lbtnode) | Child node handle to move into this composite node. |
 
 **Example**
 
@@ -2635,7 +2448,7 @@ LBTNode:setChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LBTNode](#lbtnode-handle) | Child node handle to move into this decorator node. |
+| `child` | [LBTNode](#lbtnode) | Child node handle to move into this decorator node. |
 
 **Example**
 
@@ -2743,7 +2556,7 @@ LBTNode:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBTNode](#lbtnode-handle)`. |
+| string | The string `[LBTNode](#lbtnode)`. |
 
 **Example**
 
@@ -2791,13 +2604,13 @@ end
 
 ---
 
-## LBandit Handle
+## LBandit
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBandit:armCount`
 
@@ -2901,7 +2714,7 @@ LBandit:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBandit](#lbandit-handle)`. |
+| string | The string `[LBandit](#lbandit)`. |
 
 ---
 
@@ -2917,7 +2730,7 @@ LBandit:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LBandit](#lbandit-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LBandit](#lbandit)` and `Object`. |
 
 **Returns**
 
@@ -2944,13 +2757,13 @@ LBandit:update(idx, reward)
 
 ---
 
-## LBehaviorTree Handle
+## LBehaviorTree
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBehaviorTree:addChild`
 
@@ -3230,7 +3043,7 @@ LBehaviorTree:setRoot(node)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node` | [LBTNode](#lbtnode-handle) | Node handle to consume as the new tree root. |
+| `node` | [LBTNode](#lbtnode) | Node handle to consume as the new tree root. |
 
 ---
 
@@ -3262,7 +3075,7 @@ LBehaviorTree:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBehaviorTree](#lbehaviortree-handle)`. |
+| string | The string `[LBehaviorTree](#lbehaviortree)`. |
 
 **Example**
 
@@ -3310,13 +3123,13 @@ end
 
 ---
 
-## LBot Handle
+## LBot
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBot:addTag`
 
@@ -3358,7 +3171,7 @@ LBot:getBlackboard()
 
 | Type | Description |
 |------|-------------|
-| [LAIBlackboard](#laiblackboard-handle) | Blackboard handle initialized from the agent's local blackboard values at call time. |
+| [LAIBlackboard](#laiblackboard) | Blackboard handle initialized from the agent's local blackboard values at call time. |
 
 **Example**
 
@@ -3851,7 +3664,7 @@ LBot:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBot](#lbot-handle)`. |
+| string | The string `[LBot](#lbot)`. |
 
 **Example**
 
@@ -3901,13 +3714,13 @@ end
 
 ---
 
-## LCommandQueue Handle
+## LCommandQueue
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCommandQueue:cancelCurrent`
 
@@ -4168,7 +3981,7 @@ LCommandQueue:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LCommandQueue](#lcommandqueue-handle)`. |
+| string | The string `[LCommandQueue](#lcommandqueue)`. |
 
 **Example**
 
@@ -4213,13 +4026,13 @@ end
 
 ---
 
-## LContextSteering Handle
+## LContextSteering
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LContextSteering:addAvoidBounds`
 
@@ -4461,7 +4274,7 @@ LContextSteering:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LContextSteering](#lcontextsteering-handle)`. |
+| string | The string `[LContextSteering](#lcontextsteering)`. |
 
 **Example**
 
@@ -4487,7 +4300,7 @@ LContextSteering:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LContextSteering](#lcontextsteering-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LContextSteering](#lcontextsteering)` and `Object`. |
 
 **Returns**
 
@@ -4506,13 +4319,13 @@ end
 
 ---
 
-## LDialogueAI Handle
+## LDialogueAI
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDialogueAI:addBranch`
 
@@ -4686,7 +4499,7 @@ LDialogueAI:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LDialogueAI](#ldialogueai-handle)`. |
+| string | The string `[LDialogueAI](#ldialogueai)`. |
 
 ---
 
@@ -4712,13 +4525,13 @@ LDialogueAI:typeOf(name)
 
 ---
 
-## LEmotionModel Handle
+## LEmotionModel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LEmotionModel:add`
 
@@ -4910,7 +4723,7 @@ LEmotionModel:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LEmotionModel](#lemotionmodel-handle)`. |
+| string | The string `[LEmotionModel](#lemotionmodel)`. |
 
 **Example**
 
@@ -4936,7 +4749,7 @@ LEmotionModel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LEmotionModel](#lemotionmodel-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LEmotionModel](#lemotionmodel)` and `Object`. |
 
 **Returns**
 
@@ -4983,13 +4796,13 @@ end
 
 ---
 
-## LGOAPPlanner Handle
+## LGOAPPlanner
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGOAPPlanner:addAction`
 
@@ -5294,7 +5107,7 @@ LGOAPPlanner:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LGOAPPlanner](#lgoapplanner-handle)`. |
+| string | The string `[LGOAPPlanner](#lgoapplanner)`. |
 
 **Example**
 
@@ -5339,13 +5152,13 @@ end
 
 ---
 
-## LGeneticAlgorithm Handle
+## LGeneticAlgorithm
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGeneticAlgorithm:bestGenes`
 
@@ -5456,7 +5269,7 @@ LGeneticAlgorithm:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LGeneticAlgorithm](#lgeneticalgorithm-handle)`. |
+| string | The string `[LGeneticAlgorithm](#lgeneticalgorithm)`. |
 
 ---
 
@@ -5472,7 +5285,7 @@ LGeneticAlgorithm:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LGeneticAlgorithm](#lgeneticalgorithm-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LGeneticAlgorithm](#lgeneticalgorithm)` and `Object`. |
 
 **Returns**
 
@@ -5482,13 +5295,13 @@ LGeneticAlgorithm:typeOf(name)
 
 ---
 
-## LHTNDomain Handle
+## LHTNDomain
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LHTNDomain:addCompound`
 
@@ -5627,7 +5440,7 @@ LHTNDomain:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LHTNDomain](#lhtndomain-handle)`. |
+| string | The string `[LHTNDomain](#lhtndomain)`. |
 
 **Example**
 
@@ -5653,7 +5466,7 @@ LHTNDomain:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LHTNDomain](#lhtndomain-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LHTNDomain](#lhtndomain)` and `Object`. |
 
 **Returns**
 
@@ -5672,13 +5485,13 @@ end
 
 ---
 
-## LInfluenceMap Handle
+## LInfluenceMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LInfluenceMap:addLayer`
 
@@ -6187,7 +6000,7 @@ LInfluenceMap:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LInfluenceMap](#linfluencemap-handle)`. |
+| string | The string `[LInfluenceMap](#linfluencemap)`. |
 
 **Example**
 
@@ -6232,13 +6045,13 @@ end
 
 ---
 
-## LMCTSEngine Handle
+## LMCTSEngine
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMCTSEngine:search`
 
@@ -6292,7 +6105,7 @@ LMCTSEngine:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LMCTSEngine](#lmctsengine-handle)`. |
+| string | The string `[LMCTSEngine](#lmctsengine)`. |
 
 **Example**
 
@@ -6318,7 +6131,7 @@ LMCTSEngine:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LMCTSEngine](#lmctsengine-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LMCTSEngine](#lmctsengine)` and `Object`. |
 
 **Returns**
 
@@ -6337,13 +6150,13 @@ end
 
 ---
 
-## LNeedSystem Handle
+## LNeedSystem
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNeedSystem:addNeed`
 
@@ -6444,7 +6257,7 @@ LNeedSystem:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNeedSystem](#lneedsystem-handle)`. |
+| string | The string `[LNeedSystem](#lneedsystem)`. |
 
 **Example**
 
@@ -6470,7 +6283,7 @@ LNeedSystem:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LNeedSystem](#lneedsystem-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LNeedSystem](#lneedsystem)` and `Object`. |
 
 **Returns**
 
@@ -6551,13 +6364,13 @@ end
 
 ---
 
-## LNeuralNet Handle
+## LNeuralNet
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNeuralNet:addLayer`
 
@@ -6703,7 +6516,7 @@ LNeuralNet:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNeuralNet](#lneuralnet-handle)`. |
+| string | The string `[LNeuralNet](#lneuralnet)`. |
 
 ---
 
@@ -6719,7 +6532,7 @@ LNeuralNet:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LNeuralNet](#lneuralnet-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LNeuralNet](#lneuralnet)` and `Object`. |
 
 **Returns**
 
@@ -6729,13 +6542,13 @@ LNeuralNet:typeOf(name)
 
 ---
 
-## LNeuroevolution Handle
+## LNeuroevolution
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNeuroevolution:bestFitness`
 
@@ -6765,7 +6578,7 @@ LNeuroevolution:bestNetwork()
 
 | Type | Description |
 |------|-------------|
-| [LNeuralNet](#lneuralnet-handle) | Neural network handle. |
+| [LNeuralNet](#lneuralnet) | Neural network handle. |
 
 ---
 
@@ -6787,7 +6600,7 @@ LNeuroevolution:chromosomeToNet(idx)
 
 | Type | Description |
 |------|-------------|
-| [LNeuralNet](#lneuralnet-handle) | Neural network handle. |
+| [LNeuralNet](#lneuralnet) | Neural network handle. |
 
 ---
 
@@ -6862,7 +6675,7 @@ LNeuroevolution:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LNeuroevolution](#lneuroevolution-handle)`. |
+| string | The string `[LNeuroevolution](#lneuroevolution)`. |
 
 ---
 
@@ -6878,7 +6691,7 @@ LNeuroevolution:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LNeuroevolution](#lneuroevolution-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LNeuroevolution](#lneuroevolution)` and `Object`. |
 
 **Returns**
 
@@ -6888,13 +6701,13 @@ LNeuroevolution:typeOf(name)
 
 ---
 
-## LORCASolver Handle
+## LORCASolver
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LORCASolver:addAgent`
 
@@ -7094,7 +6907,7 @@ LORCASolver:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LORCASolver](#lorcasolver-handle)`. |
+| string | The string `[LORCASolver](#lorcasolver)`. |
 
 **Example**
 
@@ -7120,7 +6933,7 @@ LORCASolver:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LORCASolver](#lorcasolver-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LORCASolver](#lorcasolver)` and `Object`. |
 
 **Returns**
 
@@ -7139,13 +6952,13 @@ end
 
 ---
 
-## LQLearner Handle
+## LQLearner
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LQLearner:bestAction`
 
@@ -7503,7 +7316,7 @@ LQLearner:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LQLearner](#lqlearner-handle)`. |
+| string | The string `[LQLearner](#lqlearner)`. |
 
 ---
 
@@ -7519,7 +7332,7 @@ LQLearner:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LQLearner](#lqlearner-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LQLearner](#lqlearner)` and `Object`. |
 
 **Returns**
 
@@ -7529,13 +7342,13 @@ LQLearner:typeOf(name)
 
 ---
 
-## LSquad Handle
+## LSquad
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSquad:addMember`
 
@@ -7576,7 +7389,7 @@ LSquad:getBlackboard()
 
 | Type | Description |
 |------|-------------|
-| [LAIBlackboard](#laiblackboard-handle) | Blackboard handle initialized from the squad blackboard values at call time. |
+| [LAIBlackboard](#laiblackboard) | Blackboard handle initialized from the squad blackboard values at call time. |
 
 **Example**
 
@@ -7891,7 +7704,7 @@ LSquad:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LSquad](#lsquad-handle)`. |
+| string | The string `[LSquad](#lsquad)`. |
 
 **Example**
 
@@ -7936,13 +7749,13 @@ end
 
 ---
 
-## LStateMachine Handle
+## LStateMachine
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LStateMachine:addState`
 
@@ -8132,7 +7945,7 @@ LStateMachine:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LStateMachine](#lstatemachine-handle)`. |
+| string | The string `[LStateMachine](#lstatemachine)`. |
 
 **Example**
 
@@ -8180,13 +7993,13 @@ end
 
 ---
 
-## LSteeringManager Handle
+## LSteeringManager
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSteeringManager:addArrive`
 
@@ -8434,7 +8247,7 @@ LSteeringManager:applyCustomSteering(agent, dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `agent` | [LBot](#lbot-handle) | Bot handle passed through to every custom steering callback. |
+| `agent` | [LBot](#lbot) | Bot handle passed through to every custom steering callback. |
 | `dt` | number | Elapsed time in seconds passed to every custom steering callback. |
 
 **Returns**
@@ -8791,7 +8604,7 @@ LSteeringManager:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LSteeringManager](#lsteeringmanager-handle)`. |
+| string | The string `[LSteeringManager](#lsteeringmanager)`. |
 
 **Example**
 
@@ -8839,13 +8652,13 @@ end
 
 ---
 
-## LStimulusWorld Handle
+## LStimulusWorld
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LStimulusWorld:addAuditory`
 
@@ -9014,7 +8827,7 @@ LStimulusWorld:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LStimulusWorld](#lstimulusworld-handle)`. |
+| string | The string `[LStimulusWorld](#lstimulusworld)`. |
 
 **Example**
 
@@ -9040,7 +8853,7 @@ LStimulusWorld:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LStimulusWorld](#lstimulusworld-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LStimulusWorld](#lstimulusworld)` and `Object`. |
 
 **Returns**
 
@@ -9086,13 +8899,13 @@ end
 
 ---
 
-## LStrategyAI Handle
+## LStrategyAI
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LStrategyAI:activeGoal`
 
@@ -9270,7 +9083,7 @@ LStrategyAI:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LStrategyAI](#lstrategyai-handle)`. |
+| string | The string `[LStrategyAI](#lstrategyai)`. |
 
 **Example**
 
@@ -9296,7 +9109,7 @@ LStrategyAI:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LStrategyAI](#lstrategyai-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LStrategyAI](#lstrategyai)` and `Object`. |
 
 **Returns**
 
@@ -9344,13 +9157,13 @@ end
 
 ---
 
-## LTraitProfile Handle
+## LTraitProfile
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTraitProfile:addModifier`
 
@@ -9608,7 +9421,7 @@ LTraitProfile:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTraitProfile](#ltraitprofile-handle)`. |
+| string | The string `[LTraitProfile](#ltraitprofile)`. |
 
 **Example**
 
@@ -9634,7 +9447,7 @@ LTraitProfile:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LTraitProfile](#ltraitprofile-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LTraitProfile](#ltraitprofile)` and `Object`. |
 
 **Returns**
 
@@ -9681,13 +9494,13 @@ end
 
 ---
 
-## LUtilityAI Handle
+## LUtilityAI
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LUtilityAI:addAction`
 
@@ -9850,7 +9663,7 @@ LUtilityAI:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LUtilityAI](#lutilityai-handle)`. |
+| string | The string `[LUtilityAI](#lutilityai)`. |
 
 **Example**
 

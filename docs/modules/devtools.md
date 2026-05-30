@@ -2,75 +2,15 @@
 
 ## Summary
 
-The `devtools` module aggregates developer-facing runtime instrumentation: frame statistics, structured logging, hierarchical profiling, REPL interaction, and file-watcher support. It is an operational toolkit for diagnosis and iteration, not a gameplay feature module.
+The `devtools` module is the main diagnostics toolkit for development-time runtime inspection. It gathers useful signals while the game is running, so teams can understand behavior, detect problems, and iterate faster.
 
-Each submodule owns a clear diagnostic surface: `frame_stats` for timing snapshots and aggregates, `logger` for filtered message capture, `profiler` for nested timing zones, `repl` for interactive scripting flows, `watcher` for file-change tracking, and `time_anchor` for stable elapsed-time references. `lua_display` normalizes value formatting for user-visible debug output.
+Its capabilities are practical and complementary: structured logs for event history, frame statistics for timing trends, hierarchical profiling for hotspot analysis, and REPL evaluation for quick debugging loops.
 
-The design goal is composable instrumentation with minimal disruption to runtime behavior. Tools should be callable from scripting and runtime integration points without introducing tight coupling to specific game systems.
+File-watch support and watch-style value inspection help with rapid iteration when scripts and data change often. This reduces turnaround time for testing fixes and tuning systems.
 
-As an Edge/Integration module, it should preserve clear contracts for output structure, history bounds, and performance overhead, so diagnostics remain useful under both local iteration and automated quality checks.
+The module is operational, not gameplay-facing. It provides instrumentation surfaces that other systems can call, while feature logic stays in dedicated runtime modules.
 
-Implementation detail and boundary guarantees for devtools: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: frame_stats.rs: Collect bounded rolling history of frame-delta samples - Compute aggregate metrics: FPS, average, min, max, and percentiles - Produce immutable snapshots summarizing recent frame performance; logger.rs: Define ordered severity levels with case-insensitive parsing - Store bounded in-memory log history with timestamped entries - Filter log output by minimum severity and optional category prefix - Mirror accepted entries to stderr and optional append-only file - Provide tail and ca; lua_display.rs: Convert Lua values to human-readable text for REPL and debug display - Handle nil, boolean, number, string, table, function, and userdata variants - Return safe fallback labels for unrecognized value kinds; mod.rs: Aggregate frame-time statistics and FPS percentile snapshots - Structured logging with severity filtering, file output, and history - Hierarchical profiler with zone stacking and per-frame capture - Interactive Lua REPL console with bounded command history - File-watcher polling; profiler.rs: Record hierarchical profiling zones with push/pop stack semantics - Compute total and self (exclusive) duration per zone - Capture per-frame zone trees into bounded rolling history - Retrieve frames by positive or negative index - Flatten nested zone trees for aggregate reporting; repl.rs: Compatibility wrapper around the release-safe REPL core - Preserves the devtools ReplConsole API and bounded history behavior - Returns expression results, success markers, command text, or formatted error text; time_anchor.rs: Capture a monotonic instant at construction time - Compute elapsed seconds from that anchor on demand - Provide a shared timing primitive for logger and profiler; watcher.rs: Track watched file paths with last-observed modification timestamps - Poll for mtime changes and report modified paths on each tick - Integrate native notify backend when devtools-plugin feature is enabled - Support forced-stale marking, path registration, and full clear - Dedupl. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
-
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### frame_stats.rs
-
-- Implements bounded rolling frame-timing history used for live performance telemetry.
-- Computes aggregate metrics including FPS, mean, min, max, and percentile summaries.
-- Produces immutable snapshot views for diagnostics overlays and developer reporting paths.
-- Serves as the frame-statistics data source for devtools performance introspection.
-- Keeps sample retention bounded to maintain predictable memory usage in long sessions.
-
-### logger.rs
-
-- Implements structured developer logging with severity levels and bounded in-memory retention.
-- Parses level labels case-insensitively and applies configurable minimum-level filtering.
-- Supports optional category filtering and tail-style retrieval over retained log entries.
-- Mirrors accepted records to stderr and optional append-only file outputs.
-- Serves as the local devtools logging backbone for runtime diagnostics.
-
-### lua_display.rs
-
-- Implements Lua value pretty-print conversion for REPL and debug-facing display output.
-- Handles scalar and structured value variants with stable human-readable formatting behavior.
-- Returns safe fallback labels for unrecognized or unsupported value representations.
-
-### mod.rs
-
-- Defines the devtools module boundary for profiling, logging, REPL, and file-watch diagnostics.
-- Groups developer instrumentation utilities into one cohesive runtime helper surface.
-- Serves as the composition entry for non-production debugging and observability workflows.
-
-### profiler.rs
-
-- Implements hierarchical runtime profiling with nested push-pop zone timing semantics.
-- Computes total and exclusive durations per zone for accurate hotspot attribution.
-- Captures per-frame profiling trees into bounded rolling history collections.
-- Supports indexed frame access and flattened traversal for aggregate performance reporting.
-- Serves as the profiling core for devtools runtime instrumentation.
-
-### repl.rs
-
-- Implements a compatibility wrapper around the release-safe REPL session core.
-- Preserves devtools console API shape with bounded command-history behavior.
-- Returns evaluation outcomes as success markers, value strings, or formatted errors.
-
-### time_anchor.rs
-
-- Implements a monotonic timing anchor used to compute elapsed seconds on demand.
-- Provides shared timestamp base behavior for logger and profiler instrumentation.
-- Serves as a lightweight time-reference primitive for devtools subsystems.
-
-### watcher.rs
-
-- Implements watched-file tracking with mtime snapshots for change-detection workflows.
-- Polls registered paths and reports deterministic modified-path sets per update tick.
-- Integrates optional native notify backend when feature-gated devtools plugin support is enabled.
-- Supports path registration, stale marking, and complete watch-state reset operations.
-- Deduplicates and orders change reports for stable hot-reload consumption.
+In practice, `lurek.devtools` gives one consistent interface for diagnostics across local runs, test workflows, and integration debugging.
 
 ## Functions
 
@@ -783,7 +723,7 @@ lurek.devtools.newFileWatcher(path)
 
 | Type | Description |
 |------|-------------|
-| [LFileWatcher](#lfilewatcher-handle) | File watcher handle with polling and callback methods. |
+| [LFileWatcher](#lfilewatcher) | File watcher handle with polling and callback methods. |
 
 **Example**
 
@@ -814,7 +754,7 @@ lurek.devtools.newRepl(max_history)
 
 | Type | Description |
 |------|-------------|
-| [LReplConsole](#lreplconsole-handle) | REPL console handle for eval and history management. |
+| [LReplConsole](#lreplconsole) | REPL console handle for eval and history management. |
 
 **Example**
 
@@ -1413,11 +1353,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LFileWatcher Handle](#lfilewatcher-handle)
-- [LReplConsole Handle](#lreplconsole-handle)
-
 ## Callbacks
 
 - `lurek.devtools.exposeWatch` param `getter` (`function`): Callback invoked with no arguments when watch values are collected.
@@ -1426,13 +1361,18 @@ end
 
 *No module-specific enums documented.*
 
-## LFileWatcher Handle
+## Types
 
-### Fields
+- [LFileWatcher](#lfilewatcher)
+- [LReplConsole](#lreplconsole)
+
+## LFileWatcher
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFileWatcher:cancel`
 
@@ -1545,7 +1485,7 @@ LFileWatcher:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LFileWatcher](#lfilewatcher-handle)`. |
+| string | The string `[LFileWatcher](#lfilewatcher)`. |
 
 **Example**
 
@@ -1570,7 +1510,7 @@ LFileWatcher:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LFileWatcher](#lfilewatcher-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LFileWatcher](#lfilewatcher)` and `Object`. |
 
 **Returns**
 
@@ -1589,13 +1529,13 @@ end
 
 ---
 
-## LReplConsole Handle
+## LReplConsole
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LReplConsole:clear`
 
@@ -1718,7 +1658,7 @@ LReplConsole:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LReplConsole](#lreplconsole-handle)`. |
+| string | The string `[LReplConsole](#lreplconsole)`. |
 
 **Example**
 
@@ -1743,7 +1683,7 @@ LReplConsole:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LReplConsole](#lreplconsole-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LReplConsole](#lreplconsole)` and `Object`. |
 
 **Returns**
 

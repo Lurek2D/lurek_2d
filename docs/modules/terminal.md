@@ -8,83 +8,6 @@ Beyond raw text rendering, the terminal provides a surprisingly capable immediat
 
 The rendering pipeline bridges the gap between the character grid and the engine's graphical backend. The terminal state is efficiently composited and flattened into batched `RenderCommand` sequences, mapped directly to loaded bitmap fonts for pixel-perfect display. The terminal can also software-rasterize its grid directly into an `ImageData` buffer, useful for generating preview thumbnails or headless output. Fully accessible via the `lurek.terminal.*` API, this module is an invaluable tool for building in-game developer tools, specialized text-based mini-games, and deeply interactive console environments.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### ansi.rs
-
-- This file interprets ANSI terminal escape sequences so colored or styled text streams can be understood by the in-engine terminal.
-- It strips control bytes when plain text is needed and decodes styling spans when visual fidelity matters.
-- Classic palette colors, extended xterm indexes, and full RGB forms are all resolved here into engine-friendly color data.
-- Span extraction is part of the same logic so one input string can become ordered runs with shared style state.
-- Low-level parsing helpers stay close to the decoder because escape handling is sensitive to byte structure and malformed fragments.
-- The file is therefore the compatibility layer between external terminal-style output and the engine's own grid renderer.
-
-### cell.rs
-
-- This file defines the atomic cell unit that the terminal grid stores for every visible character position.
-- It packages glyph and color state into one compact record so the rest of the terminal can treat the screen as a regular matrix.
-- The type is the smallest visible building block of the terminal subsystem.
-
-### completion.rs
-
-- This file provides the terminal's lightweight completion engine for command-like text entry.
-- It manages a candidate set that can be queried by prefix or cycled interactively as the user repeats completion input.
-- Dynamic updates are supported because terminal commands and symbols may change while the application is running.
-- The file is the discoverability helper for typed terminal interaction.
-
-### highlighter.rs
-
-- This file applies simple highlighting rules to terminal text so input or output can be visually segmented by meaning.
-- Matching produces ordered colored spans instead of immediate cell writes, which keeps highlighting reusable across render paths.
-- Rule priority is resolved consistently here so overlapping matches do not create unstable coloring behavior.
-- The file is the terminal's lightweight text-coloring layer.
-
-### mod.rs
-
-- This module provides the in-engine terminal stack, combining a character grid, ANSI-aware text handling, interactive widgets, and renderer handoff.
-- It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model.
-- At the highest level this is the subsystem that lets the engine host terminal behavior as a first-class UI surface.
-
-### render.rs
-
-- This file converts the composed terminal surface into visual output for both renderer command streams and software image snapshots.
-- Grid cells and overlaid widgets are flattened together here so the rest of the engine sees one finished terminal presentation.
-- Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
-- The file is therefore the terminal subsystem's final visual export layer.
-
-### terminal_state.rs
-
-- This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
-- The core grid behaves like a persistent text surface rather than a transient print stream, allowing callers to treat terminal space as editable UI.
-- Resize behavior preserves as much existing content as possible so the terminal remains usable across font or window changes.
-- Scrollback and command history live here because they are part of the terminal's long-lived interactive memory rather than renderer output.
-- Widget composition is layered on top of the cell grid in this file so buttons, lists, panels, and text boxes share one event and focus model.
-- Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
-- Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
-- Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
-- Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
-- The file is intentionally large because it is not one helper.
-- It is the living behavior model of the entire terminal subsystem.
-- Most user-visible terminal semantics, from typing to focus to scrollback, are defined here.
-- Without this file the module would have isolated utilities but no unified terminal behavior.
-- In practice this is the runtime home of text-mode interaction inside the engine.
-- It is where a passive grid becomes a usable terminal environment.
-
-### widget.rs
-
-- This file defines the widget vocabulary used by the terminal so character-grid interfaces can be composed from reusable interactive parts.
-- Shared widget state is centralized here because labels, buttons, lists, text boxes, borders, and panels all need common positioning and visibility rules.
-- Each widget kind extends that shared base with behavior suited to text-mode UI rather than pixel-perfect retained graphics widgets.
-- Border and panel concepts live here because framed layout is a fundamental part of terminal-style interface composition.
-- Text-bearing widgets are shaped around cell coordinates and constrained widths, which keeps them honest to the grid they inhabit.
-- List widgets manage items and selection semantics here so terminal state can treat them as one coherent interactive object.
-- Text boxes enforce cursor and content limits here, giving the terminal a predictable editing model for user input.
-- Type discrimination helpers also belong here because higher layers often need to branch on widget behavior without unpacking every variant manually.
-- The file is therefore the structural UI type system of the terminal module.
-- It gives the terminal more expressive interface primitives than raw cells alone could provide.
-
 ## Functions
 
 ### `lurek.terminal.addCompletion`
@@ -132,7 +55,7 @@ lurek.terminal.applyTheme(terminal, theme)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to theme. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to theme. |
 | `theme` | string | Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord". |
 
 **Example**
@@ -167,7 +90,7 @@ lurek.terminal.clearCmdHistory(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to clear. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to clear. |
 
 **Example**
 
@@ -218,7 +141,7 @@ lurek.terminal.cmdHistoryLen(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to query. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to query. |
 
 **Returns**
 
@@ -342,7 +265,7 @@ lurek.terminal.getScrollback(terminal, offset, count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to read from. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to read from. |
 | `offset` | number | 0-based offset from the newest line. |
 | `count` | number | Number of lines to retrieve. |
 
@@ -389,7 +312,7 @@ lurek.terminal.newBorder(col, row, width, height)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The new border widget. |
+| [LWidget](#lwidget) | The new border widget. |
 
 **Example**
 
@@ -428,7 +351,7 @@ lurek.terminal.newButton(col, row, width, height, text)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The new button widget. |
+| [LWidget](#lwidget) | The new button widget. |
 
 **Example**
 
@@ -469,7 +392,7 @@ lurek.terminal.newLabel(col, row, text)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The new label widget. |
+| [LWidget](#lwidget) | The new label widget. |
 
 **Example**
 
@@ -507,7 +430,7 @@ lurek.terminal.newList(col, row, width, height)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The new list widget. |
+| [LWidget](#lwidget) | The new list widget. |
 
 **Example**
 
@@ -549,7 +472,7 @@ lurek.terminal.newPanel(col, row, width, height)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The new panel widget. |
+| [LWidget](#lwidget) | The new panel widget. |
 
 **Example**
 
@@ -585,7 +508,7 @@ lurek.terminal.newTerminal(cols, rows)
 
 | Type | Description |
 |------|-------------|
-| [LTerminal](#lterminal-handle) | The new terminal object. |
+| [LTerminal](#lterminal) | The new terminal object. |
 
 **Example**
 
@@ -621,7 +544,7 @@ lurek.terminal.newTextBox(col, row, width)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The new text box widget. |
+| [LWidget](#lwidget) | The new text box widget. |
 
 **Example**
 
@@ -651,7 +574,7 @@ lurek.terminal.nextCmd(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to navigate. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to navigate. |
 
 **Returns**
 
@@ -759,7 +682,7 @@ lurek.terminal.prevCmd(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to navigate. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to navigate. |
 
 **Returns**
 
@@ -794,7 +717,7 @@ lurek.terminal.printAnsi(terminal, col, row, text)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to print to. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to print to. |
 | `col` | number | Starting column (1-based). |
 | `row` | number | Row to print on (1-based). |
 | `text` | string | Text containing ANSI escape sequences. |
@@ -825,7 +748,7 @@ lurek.terminal.printHighlighted(terminal, col, row, text, rules)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to print to. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to print to. |
 | `col` | number | Starting column (1-based). |
 | `row` | number | Row to print on (1-based). |
 | `text` | string | The text to highlight. |
@@ -857,7 +780,7 @@ lurek.terminal.pushCmdHistory(terminal, cmd)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to push to. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to push to. |
 | `cmd` | string | The command string to store. |
 
 **Example**
@@ -890,7 +813,7 @@ lurek.terminal.pushScrollback(terminal, line)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to push to. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to push to. |
 | `line` | string | The text line to append. |
 
 **Example**
@@ -975,7 +898,7 @@ lurek.terminal.scrollbackLen(terminal)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to query. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to query. |
 
 **Returns**
 
@@ -1009,7 +932,7 @@ lurek.terminal.setScrollbackCap(terminal, cap)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `terminal` | [LTerminal](#lterminal-handle) | The terminal to configure. |
+| `terminal` | [LTerminal](#lterminal) | The terminal to configure. |
 | `cap` | number | Maximum number of scrollback lines. |
 
 **Example**
@@ -1065,15 +988,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LButton Handle](#lbutton-handle)
-- [LLabel Handle](#llabel-handle)
-- [LList Handle](#llist-handle)
-- [LPanel Handle](#lpanel-handle)
-- [LTerminal Handle](#lterminal-handle)
-- [LWidget Handle](#lwidget-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -1082,13 +996,22 @@ end
 
 *No module-specific enums documented.*
 
-## LButton Handle
+## Types
 
-### Fields
+- [LButton](#lbutton)
+- [LLabel](#llabel)
+- [LList](#llist)
+- [LPanel](#lpanel)
+- [LTerminal](#lterminal)
+- [LWidget](#lwidget)
+
+## LButton
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LButton:getText`
 
@@ -1122,13 +1045,13 @@ LButton:setText(text)
 
 ---
 
-## LLabel Handle
+## LLabel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLabel:getText`
 
@@ -1162,13 +1085,13 @@ LLabel:setText(text)
 
 ---
 
-## LList Handle
+## LList
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LList:add`
 
@@ -1444,13 +1367,13 @@ LList:unshift(value)
 
 ---
 
-## LPanel Handle
+## LPanel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPanel:getTitle`
 
@@ -1500,13 +1423,13 @@ LPanel:setTitle(title)
 
 ---
 
-## LTerminal Handle
+## LTerminal
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTerminal:addWidget`
 
@@ -1520,7 +1443,7 @@ LTerminal:addWidget(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | [LWidget](#lwidget-handle) | The widget to attach. |
+| `widget` | [LWidget](#lwidget) | The widget to attach. |
 
 **Example**
 
@@ -1713,7 +1636,7 @@ LTerminal:getFocused()
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The focused widget, or nil. |
+| [LWidget](#lwidget) | The focused widget, or nil. |
 
 **Example**
 
@@ -1875,7 +1798,7 @@ LTerminal:removeWidget(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | [LWidget](#lwidget-handle) | The widget to detach. |
+| `widget` | [LWidget](#lwidget) | The widget to detach. |
 
 **Example**
 
@@ -2022,7 +1945,7 @@ LTerminal:setFocus(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget?` | [LWidget](#lwidget-handle) | The widget to focus, or nil to clear focus. |
+| `widget?` | [LWidget](#lwidget) | The widget to focus, or nil to clear focus. |
 
 **Example**
 
@@ -2110,7 +2033,7 @@ end
 
 #### `LTerminal:type`
 
-Returns the type name string "[LTerminal](#lterminal-handle)".
+Returns the type name string "[LTerminal](#lterminal)".
 
 ```lua
 LTerminal:type()
@@ -2120,7 +2043,7 @@ LTerminal:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LTerminal](#lterminal-handle)". |
+| string | Always "[LTerminal](#lterminal)". |
 
 **Example**
 
@@ -2135,7 +2058,7 @@ end
 
 #### `LTerminal:typeOf`
 
-Checks whether this object matches a given type name. Accepts "[LTerminal](#lterminal-handle)" or "Object".
+Checks whether this object matches a given type name. Accepts "[LTerminal](#lterminal)" or "Object".
 
 ```lua
 LTerminal:typeOf(name)
@@ -2164,13 +2087,13 @@ end
 
 ---
 
-## LWidget Handle
+## LWidget
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LWidget:addChild`
 
@@ -2184,7 +2107,7 @@ LWidget:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LWidget](#lwidget-handle) | The child widget to add. |
+| `child` | [LWidget](#lwidget) | The child widget to add. |
 
 **Example**
 
@@ -2291,7 +2214,7 @@ LWidget:getChild(index)
 
 | Type | Description |
 |------|-------------|
-| [LWidget](#lwidget-handle) | The child widget, or nil. |
+| [LWidget](#lwidget) | The child widget, or nil. |
 
 **Example**
 
@@ -2713,7 +2636,7 @@ LWidget:removeChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LWidget](#lwidget-handle) | The child widget to remove. |
+| `child` | [LWidget](#lwidget) | The child widget to remove. |
 
 **Example**
 
@@ -3145,7 +3068,7 @@ end
 
 #### `LWidget:type`
 
-Returns the type name string "[LWidget](#lwidget-handle)".
+Returns the type name string "[LWidget](#lwidget)".
 
 ```lua
 LWidget:type()
@@ -3155,7 +3078,7 @@ LWidget:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LWidget](#lwidget-handle)". |
+| string | Always "[LWidget](#lwidget)". |
 
 **Example**
 
@@ -3170,7 +3093,7 @@ end
 
 #### `LWidget:typeOf`
 
-Checks whether this object matches a given type name. Accepts "[LWidget](#lwidget-handle)" or "Object".
+Checks whether this object matches a given type name. Accepts "[LWidget](#lwidget)" or "Object".
 
 ```lua
 LWidget:typeOf(name)

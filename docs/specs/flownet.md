@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `flownet` module is a powerful Foundations tier component designed to model directed flow-simulation networks.
+- The `flownet` module models directed flow networks where typed items move through constrained nodes and edges, with simulation, routing, and analytics in one system.
 
 ## General Info
 
@@ -16,11 +16,19 @@
 
 ## Summary
 
-Moving beyond simple data-structure graphs, this module simulates complex logistics and transportation systems where typed items physically travel through interconnected nodes. The central `Graph` structure utilizes highly efficient `HashMap` storage and maintains persistent adjacency indexes, enabling O(1) neighbor lookups and robust graph traversal.
+The `flownet` module is a logistics simulation framework built on directed graph structure. It models how typed items move through connected nodes and edges under explicit transport rules, so projects can represent production, routing, and consumption behavior in one system.
 
-The simulation is deeply systemic. Items (`GraphItem`) accumulate in node inventories and traverse directed edges (`Edge`). These edges are not merely logical links; they enforce strict constraints including transit capacities, cooldown timers, and item-type filters. Nodes (`Node`) possess configurable item capacities, explicit queueing systems, and distinct flow modes (passive, push, or pull). Furthermore, nodes can execute `ConversionRule`s—acting as economic factories that consume specific inputs to produce new typed outputs. To manage bottlenecks, nodes implement defined `OverflowPolicy` behaviors, dictating whether excess items are rejected, queued, or destroyed.
+Its core value is combining topology with operational constraints. Nodes can store, queue, transform, or demand items, while edges can enforce limits such as capacity, cooldown, directionality, speed, and item-type filters. This turns the graph into a controllable flow network instead of a static map.
 
-The module runs an intricate simulation pipeline (`step(dt)`) that processes item decay, executes conversion rules, matches supply against demand declarations, and progresses items along edges. To support this, the module includes a comprehensive suite of graph algorithms: A* and Dijkstra shortest-path searches, reachability flood-fills, connected component discovery, cycle detection, topological sorting, Kruskal's minimum spanning tree, and graph coloring. Pathfinding inherently respects edge constraints and item-type filters. For performance scalability, the simulation tick can be executed in parallel using multi-threading. The engine exposes this entire logistical framework, alongside event-driven callbacks for state transitions, to Lua scripts via the `lurek.graph.*` namespace.
+Simulation is processed in deterministic steps. Movement, decay, conversion, queue backpressure, and demand fulfillment are applied in defined order, which makes outcomes reproducible and easier to reason about during balancing and debugging.
+
+Routing tools are part of the same runtime surface. Pathfinding and distance queries respect active constraints, so route results match actual simulation rules rather than idealized connectivity. This helps gameplay logic make decisions that stay valid during live progression.
+
+Analytical graph operations are included for structural inspection. Reachability, cycle checks, components, ordering, and related algorithms support diagnostics, content validation, and system tuning without exporting data to external tools first.
+
+The module exposes events and Lua APIs for integration with higher-level systems. Scripts can react to fulfillment, depletion, transit, and other state changes, then attach custom game logic around those transitions.
+
+In practice, `lurek.graph` provides one complete flow-network contract: define network topology, run constrained simulation, inspect structure and routes, and connect logistics outcomes directly to gameplay behavior.
 
 ## Imports
 

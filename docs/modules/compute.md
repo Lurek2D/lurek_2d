@@ -2,86 +2,15 @@
 
 ## Summary
 
-The `compute` module is the CPU numerical workspace for typed n-dimensional array operations and analytics-style transforms. `NdArray` plus `DataType` form the primary data container, while specialized submodules provide FFT, linear algebra, element-wise ops, spatial processing, and aggregate analytics.
+The `compute` module is the engine's general-purpose numeric workspace. It gives scripts and systems one place to create typed arrays and run deterministic math over them, from simple element-wise operations to heavier analytical and transform workflows.
 
-Its architecture is capability-based: `array` handles shape and storage, `ops` handles vectorized/reduction primitives and parallel thresholds, `linalg` handles matrix/transform operations, `fft` handles frequency transforms, and `spatial` handles neighborhood-based processing. `analytics` adds higher-level statistics over these same typed buffers.
+Its functional coverage is broad but coherent. The same array model supports arithmetic, reductions, reshaping, comparisons, and in-place updates, then extends into matrix math, FFT-based spectral analysis, neighborhood filtering, and statistical post-processing.
 
-This module is intentionally GPU-agnostic and gameplay-agnostic. It exists to provide deterministic numerical kernels that other systems can call, from simulation features to offline tooling.
+Because these capabilities share one data contract, teams can build end-to-end numeric pipelines without jumping between incompatible formats. This helps with simulation logic, data preparation, tool-side analysis, and runtime feature code that depends on reliable numerical behavior.
 
-Quality for this module means strong shape/type guarantees, predictable numeric behavior, and transparent performance controls (such as configurable parallel dispatch thresholds) so callers can balance determinism and throughput.
+The module is designed to stay CPU-first and predictable. It exposes shape and type constraints clearly, reports mismatch errors early, and keeps parallelism controls explicit so callers can choose between throughput and strict repeatability.
 
-Implementation detail and boundary guarantees for compute: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analytics.rs: Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d) - Histogram binning with configurable range and bin count - Percentile extraction with linear interpolation - Pairwise statistical measures (covariance, Pearson correlation) - Value normalization helpe; array.rs: Dense n-dimensional array container with typed storage (float32, float64, int32) - Shape validation, stride computation, and flat-index addressing - Constructors for zeros, ones, range, and from-slice initialization - Element access by flat index or multidimensional coordinates -; fft.rs: Radix-2 in-place FFT and inverse FFT for power-of-two length buffers - Real-to-complex forward transform with automatic zero-padding - Complex-to-real inverse transform for spectrum reconstruction - Magnitude spectrum extraction from complex bin pairs; linalg.rs: Vector operations (normalize, cross2d, outer product, dot via spatial) - 2D transformation matrices (rotation, affine, point transform) - Convolution kernels (Gaussian) and edge detection (Sobel) - Linear system solving via Gaussian elimination with partial pivoting - LU decompos; mod.rs: N-dimensional array container, element-wise and reduction operations - FFT, linear algebra, spatial filtering, and statistical analytics - Configurable parallel dispatch threshold for large arrays; ops.rs: Element-wise arithmetic, comparison, and bitwise operations on NdArray - Scalar and array binary operations with row-broadcast support - Reduction operations (sum, mean, min, max) globally and along axes - In-place mutation variants for add, sub, mul, div - Reshape, transpose, cl; spatial.rs: 2D convolution with zero-padded boundary handling - Binary morphology operators (dilate, erode) using Manhattan radius - Flood fill with 4-connected BFS propagation - Sub-region extraction and insertion for 2D arrays - Matrix multiplication and 1D dot product. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
-
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### analytics.rs
-
-- Implements analytical operations over arrays including cumulative, differential, and distribution metrics.
-- Provides histogram generation with configurable domains and binning resolution control.
-- Computes percentile estimates with interpolation for robust quantile-style inspection workflows.
-- Exposes pairwise statistics such as covariance and correlation for relationship analysis.
-- Includes normalization helpers for range scaling and standardized z-score transformations.
-- Serves as the statistical post-processing layer for compute arrays and derived results.
-
-### array.rs
-
-- Implements the dense n-dimensional array container used by all compute submodules.
-- Stores typed scalar buffers with explicit shape metadata and deterministic stride computation.
-- Validates dimensions and element counts to protect allocation and indexing safety boundaries.
-- Provides constructors for common initialization flows including zeros, ones, ranges, and slices.
-- Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns.
-- Exposes utility mapping, filling, and iteration helpers for transformation pipelines.
-- Serves as the foundational data model for operations, analytics, spatial, and linalg layers.
-
-### fft.rs
-
-- Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths.
-- Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes.
-- Provides inverse reconstruction paths from complex spectra back to real-domain samples.
-- Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis.
-- Serves as the spectral-analysis primitive layer for compute-side signal processing tasks.
-
-### linalg.rs
-
-- Implements linear-algebra and geometric helper operations over compute array structures.
-- Provides vector normalization, cross-style products, and matrix-oriented transformation utilities.
-- Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows.
-- Solves linear systems with Gaussian elimination using pivoting for improved numerical stability.
-- Computes LU decomposition with permutation tracking to support determinant-aware factorization.
-- Exposes dominant eigenpair estimation through iterative power-method style evaluation.
-- Serves as the algebraic backbone for higher-level analytical and spatial compute tasks.
-
-### mod.rs
-
-- Defines the compute module boundary for array math, analytics, transforms, and spatial processing.
-- Groups core numeric submodules under one cohesive surface with shared data contracts.
-- Serves as the composition entry for engine-side compute and numeric utility workflows.
-
-### ops.rs
-
-- Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows.
-- Supports scalar-array and array-array binary operations with bounded broadcast compatibility.
-- Provides global and axis-based reductions including sum, mean, min, max, and related aggregates.
-- Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates.
-- Includes reshape, transpose, cloning, thresholding, and conditional selection utilities.
-- Handles integer and floating operation variants through dtype-aware dispatch behavior.
-- Integrates configurable parallel execution thresholds for rayon-backed large-array workloads.
-- Returns deterministic error messages on shape mismatch, invalid axis, or unsupported operation cases.
-- Provides positional and logical queries such as argmin, argmax, nonzero count, any, and all.
-- Preserves predictable semantics across contiguous and non-trivial shape transformations.
-- Serves as the high-throughput compute workhorse used by analytics and algorithmic systems.
-- Anchors most data-manipulation behavior on top of the shared NdArray contract.
-
-### spatial.rs
-
-- Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces.
-- Provides zero-padded convolution for kernel filtering across image-like matrix inputs.
-- Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods.
-- Supports flood-fill propagation and region extraction or insertion for localized data editing.
-- Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition.
-- Serves as the spatial-processing utility layer built on top of NdArray primitives.
+In practice, `lurek.compute` acts as a reusable math foundation for the rest of the project: load numeric data, transform it, analyze it, and pass results forward through one stable API surface.
 
 ## Functions
 
@@ -107,7 +36,7 @@ lurek.compute.affine2d(tx, ty, angle_rad, sx, sy)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New affine transform matrix array. |
+| [LArray](#larray) | New affine transform matrix array. |
 
 **Example**
 
@@ -204,7 +133,7 @@ lurek.compute.fromTable(data, shape, dtype)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array handle containing table values. |
+| [LArray](#larray) | New array handle containing table values. |
 
 **Example**
 
@@ -236,7 +165,7 @@ lurek.compute.gaussianKernel(size, sigma)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New Gaussian kernel array. |
+| [LArray](#larray) | New Gaussian kernel array. |
 
 **Example**
 
@@ -327,7 +256,7 @@ lurek.compute.newArray(shape, dtype)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New zero-filled array handle. |
+| [LArray](#larray) | New zero-filled array handle. |
 
 **Example**
 
@@ -360,7 +289,7 @@ lurek.compute.ones(shape, dtype)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New one-filled array handle. |
+| [LArray](#larray) | New one-filled array handle. |
 
 **Example**
 
@@ -394,7 +323,7 @@ lurek.compute.range(start, stop, step, dtype)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New range array handle. |
+| [LArray](#larray) | New range array handle. |
 
 **Example**
 
@@ -426,7 +355,7 @@ lurek.compute.rotate2dMatrix(angle_rad)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New rotation matrix array. |
+| [LArray](#larray) | New rotation matrix array. |
 
 **Example**
 
@@ -491,7 +420,7 @@ lurek.compute.zeros(shape, dtype)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New zero-filled array handle. |
+| [LArray](#larray) | New zero-filled array handle. |
 
 **Example**
 
@@ -508,10 +437,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LArray Handle](#larray-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -520,13 +445,17 @@ end
 
 *No module-specific enums documented.*
 
-## LArray Handle
+## Types
 
-### Fields
+- [LArray](#larray)
+
+## LArray
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LArray:abs`
 
@@ -540,7 +469,7 @@ LArray:abs()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing absolute values. |
+| [LArray](#larray) | New array containing absolute values. |
 
 **Example**
 
@@ -572,7 +501,7 @@ LArray:add(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing the addition result. |
+| [LArray](#larray) | New array containing the addition result. |
 
 **Example**
 
@@ -598,7 +527,7 @@ LArray:addInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
+| `other` | [LArray](#larray) | Array with a compatible shape. |
 
 **Example**
 
@@ -727,13 +656,13 @@ LArray:bitwiseAnd(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
+| `other` | [LArray](#larray) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing bitwise AND results. |
+| [LArray](#larray) | New array containing bitwise AND results. |
 
 **Example**
 
@@ -766,7 +695,7 @@ LArray:bitwiseLShift(amount)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing shifted values. |
+| [LArray](#larray) | New array containing shifted values. |
 
 **Example**
 
@@ -792,7 +721,7 @@ LArray:bitwiseNot()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing bitwise NOT results. |
+| [LArray](#larray) | New array containing bitwise NOT results. |
 
 **Example**
 
@@ -818,13 +747,13 @@ LArray:bitwiseOr(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
+| `other` | [LArray](#larray) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing bitwise OR results. |
+| [LArray](#larray) | New array containing bitwise OR results. |
 
 **Example**
 
@@ -857,7 +786,7 @@ LArray:bitwiseRShift(amount)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing shifted values. |
+| [LArray](#larray) | New array containing shifted values. |
 
 **Example**
 
@@ -883,13 +812,13 @@ LArray:bitwiseXor(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
+| `other` | [LArray](#larray) | Array used as the right-hand operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing bitwise XOR results. |
+| [LArray](#larray) | New array containing bitwise XOR results. |
 
 **Example**
 
@@ -923,7 +852,7 @@ LArray:clamp(min, max)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing clamped values. |
+| [LArray](#larray) | New array containing clamped values. |
 
 **Example**
 
@@ -949,7 +878,7 @@ LArray:clone()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array with copied data and shape. |
+| [LArray](#larray) | New array with copied data and shape. |
 
 **Example**
 
@@ -976,13 +905,13 @@ LArray:convolve1d(kernel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kernel` | [LArray](#larray-handle) | Kernel array used for convolution. |
+| `kernel` | [LArray](#larray) | Kernel array used for convolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing convolution result. |
+| [LArray](#larray) | New array containing convolution result. |
 
 **Example**
 
@@ -1009,13 +938,13 @@ LArray:convolve2D(kernel)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `kernel` | [LArray](#larray-handle) | Kernel array used for convolution. |
+| `kernel` | [LArray](#larray) | Kernel array used for convolution. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing convolution result. |
+| [LArray](#larray) | New array containing convolution result. |
 
 **Example**
 
@@ -1044,13 +973,13 @@ LArray:correlate1d(template)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `template` | [LArray](#larray-handle) | Template array used for correlation. |
+| `template` | [LArray](#larray) | Template array used for correlation. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing correlation result. |
+| [LArray](#larray) | New array containing correlation result. |
 
 **Example**
 
@@ -1102,7 +1031,7 @@ LArray:covariance(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array used as the second variable. |
+| `other` | [LArray](#larray) | Array used as the second variable. |
 
 **Returns**
 
@@ -1134,7 +1063,7 @@ LArray:cross2d(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Vector array used as the second operand. |
+| `other` | [LArray](#larray) | Vector array used as the second operand. |
 
 **Returns**
 
@@ -1166,7 +1095,7 @@ LArray:cumsum()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing cumulative sums. |
+| [LArray](#larray) | New array containing cumulative sums. |
 
 **Example**
 
@@ -1198,7 +1127,7 @@ LArray:diff(order)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing differences. |
+| [LArray](#larray) | New array containing differences. |
 
 **Example**
 
@@ -1230,7 +1159,7 @@ LArray:dilate(radius)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing dilation result. |
+| [LArray](#larray) | New array containing dilation result. |
 
 **Example**
 
@@ -1263,7 +1192,7 @@ LArray:div(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing the division result. |
+| [LArray](#larray) | New array containing the division result. |
 
 **Example**
 
@@ -1289,7 +1218,7 @@ LArray:divInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
+| `other` | [LArray](#larray) | Array with a compatible shape. |
 
 **Example**
 
@@ -1316,7 +1245,7 @@ LArray:dot(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array used as the right-hand operand. |
+| `other` | [LArray](#larray) | Array used as the right-hand operand. |
 
 **Returns**
 
@@ -1388,7 +1317,7 @@ LArray:eq(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing comparison results. |
+| [LArray](#larray) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1420,7 +1349,7 @@ LArray:erode(radius)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing erosion result. |
+| [LArray](#larray) | New array containing erosion result. |
 
 **Example**
 
@@ -1453,7 +1382,7 @@ LArray:eval(expr)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing expression results. |
+| [LArray](#larray) | New array containing expression results. |
 
 **Example**
 
@@ -1513,7 +1442,7 @@ LArray:floodFill(row, col, val)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing flood-fill result. |
+| [LArray](#larray) | New array containing flood-fill result. |
 
 **Example**
 
@@ -1632,7 +1561,7 @@ LArray:getRegion(row, col, rows, cols)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing the requested region. |
+| [LArray](#larray) | New array containing the requested region. |
 
 **Example**
 
@@ -1716,7 +1645,7 @@ LArray:gt(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing comparison results. |
+| [LArray](#larray) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1748,7 +1677,7 @@ LArray:gte(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing comparison results. |
+| [LArray](#larray) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1834,13 +1763,13 @@ LArray:linsolve(b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `b` | [LArray](#larray-handle) | Right-hand side array. |
+| `b` | [LArray](#larray) | Right-hand side array. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | Solution array. |
+| [LArray](#larray) | Solution array. |
 
 **Example**
 
@@ -1873,7 +1802,7 @@ LArray:lt(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing comparison results. |
+| [LArray](#larray) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1905,7 +1834,7 @@ LArray:lte(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing comparison results. |
+| [LArray](#larray) | New mask array containing comparison results. |
 
 **Example**
 
@@ -1964,7 +1893,7 @@ LArray:map(func)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing mapped values. |
+| [LArray](#larray) | New array containing mapped values. |
 
 **Example**
 
@@ -1990,13 +1919,13 @@ LArray:matmul(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Right-hand matrix array. |
+| `other` | [LArray](#larray) | Right-hand matrix array. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing matrix multiplication result. |
+| [LArray](#larray) | New array containing matrix multiplication result. |
 
 **Example**
 
@@ -2105,7 +2034,7 @@ LArray:mul(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing the multiplication result. |
+| [LArray](#larray) | New array containing the multiplication result. |
 
 **Example**
 
@@ -2131,7 +2060,7 @@ LArray:mulInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
+| `other` | [LArray](#larray) | Array with a compatible shape. |
 
 **Example**
 
@@ -2158,7 +2087,7 @@ LArray:neg()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing negated values. |
+| [LArray](#larray) | New array containing negated values. |
 
 **Example**
 
@@ -2190,7 +2119,7 @@ LArray:neq(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing comparison results. |
+| [LArray](#larray) | New mask array containing comparison results. |
 
 **Example**
 
@@ -2223,7 +2152,7 @@ LArray:normalizeRange(lo, hi)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New normalized array. |
+| [LArray](#larray) | New normalized array. |
 
 **Example**
 
@@ -2249,7 +2178,7 @@ LArray:normalizeVec()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New normalized vector array. |
+| [LArray](#larray) | New normalized vector array. |
 
 **Example**
 
@@ -2276,13 +2205,13 @@ LArray:outer(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Vector array used as the second operand. |
+| `other` | [LArray](#larray) | Vector array used as the second operand. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing outer product result. |
+| [LArray](#larray) | New array containing outer product result. |
 
 **Example**
 
@@ -2309,7 +2238,7 @@ LArray:pearsonCorr(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array used as the second variable. |
+| `other` | [LArray](#larray) | Array used as the second variable. |
 
 **Returns**
 
@@ -2379,7 +2308,7 @@ LArray:pow(exp)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing powered values. |
+| [LArray](#larray) | New array containing powered values. |
 
 **Example**
 
@@ -2444,7 +2373,7 @@ LArray:reshape(shape)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array with the requested shape. |
+| [LArray](#larray) | New array with the requested shape. |
 
 **Example**
 
@@ -2478,7 +2407,7 @@ LArray:scan(func, init)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing accumulator values. |
+| [LArray](#larray) | New array containing accumulator values. |
 
 **Example**
 
@@ -2533,7 +2462,7 @@ LArray:setRegion(row, col, source)
 |------|------|-------------|
 | `row` | number | One-based destination row. |
 | `col` | number | One-based destination column. |
-| `source` | [LArray](#larray-handle) | Source array copied into this array. |
+| `source` | [LArray](#larray) | Source array copied into this array. |
 
 **Example**
 
@@ -2588,7 +2517,7 @@ LArray:sqrt()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing square root values. |
+| [LArray](#larray) | New array containing square root values. |
 
 **Example**
 
@@ -2620,7 +2549,7 @@ LArray:sub(value)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing the subtraction result. |
+| [LArray](#larray) | New array containing the subtraction result. |
 
 **Example**
 
@@ -2646,7 +2575,7 @@ LArray:subInplace(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LArray](#larray-handle) | Array with a compatible shape. |
+| `other` | [LArray](#larray) | Array with a compatible shape. |
 
 **Example**
 
@@ -2705,7 +2634,7 @@ LArray:threshold(val)
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New mask array containing threshold results. |
+| [LArray](#larray) | New mask array containing threshold results. |
 
 **Example**
 
@@ -2757,13 +2686,13 @@ LArray:transformPoints(pts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `pts` | [LArray](#larray-handle) | Point array to transform. |
+| `pts` | [LArray](#larray) | Point array to transform. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing transformed points. |
+| [LArray](#larray) | New array containing transformed points. |
 
 **Example**
 
@@ -2790,7 +2719,7 @@ LArray:transpose()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New transposed array. |
+| [LArray](#larray) | New transposed array. |
 
 **Example**
 
@@ -2817,7 +2746,7 @@ LArray:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LArray](#larray-handle)`. |
+| string | The string `[LArray](#larray)`. |
 
 **Example**
 
@@ -2842,7 +2771,7 @@ LArray:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LArray](#larray-handle)`, `Array`, and `Object`. |
+| `name` | string | Type name to compare against `[LArray](#larray)`, `Array`, and `Object`. |
 
 **Returns**
 
@@ -2874,14 +2803,14 @@ LArray:where(mask, other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mask` | [LArray](#larray-handle) | Mask array used to choose between arrays. |
-| `other` | [LArray](#larray-handle) | Array used where the mask is false. |
+| `mask` | [LArray](#larray) | Mask array used to choose between arrays. |
+| `other` | [LArray](#larray) | Array used where the mask is false. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New array containing selected values. |
+| [LArray](#larray) | New array containing selected values. |
 
 **Example**
 
@@ -2910,7 +2839,7 @@ LArray:zscore()
 
 | Type | Description |
 |------|-------------|
-| [LArray](#larray-handle) | New z-score normalized array. |
+| [LArray](#larray) | New z-score normalized array. |
 
 **Example**
 

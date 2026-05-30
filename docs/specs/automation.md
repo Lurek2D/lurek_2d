@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `automation` module provides a powerful headless input simulation framework designed for automated testing, QA replay, and recorded gameplay sessions.
+- The `automation` module provides deterministic scripted input playback for tests, QA replay, and reproducible runtime scenarios.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `automation` module provides deterministic scripted input playback and assertion-driven simulation used by tests, CI scenarios, and reproducible tool flows. It models automation as time-sorted step sequences and executes them through a simulator that can drive virtual input, macro expansion, conditional actions, and verification checks.
+The `automation` module gives one reliable way to simulate runtime interaction without manual input. It turns test intent into scripted steps and replays those steps in a controlled timeline. This helps teams verify behavior repeatedly with the same sequence and expected outcomes.
 
-`script.rs` owns script structure and parsing concerns, including normalization and repeat expansion. `step.rs` defines the typed action vocabulary (`Action`, `Step`) used to represent replayable behavior. `simulator.rs` executes those steps against runtime state with strict ordering, enabling controlled replay instead of device-dependent live interaction.
+Its core value is deterministic playback. Scripts are stored as ordered actions, then executed by a simulator that advances time and dispatches events in strict order. Because runs are data-driven, results are less dependent on machine timing, device noise, or manual tester variance.
 
-A key architectural property is determinism: scenarios are encoded as data and replayed under engine control rather than by flaky external tooling. That makes this module suitable for regression checks where timing and ordering must remain stable across runs.
+The module supports practical workflow features for test authoring and reuse. Scripts can be loaded, started, paused, resumed, stopped, and limited by step count. Named macros and conditional gates allow larger scenarios to be built from smaller reusable pieces.
 
-Because it is a feature-system integration tool, it should remain focused on sequencing, condition evaluation, and assertions. Device drivers, rendering internals, and gameplay domain logic are inputs to automation scenarios, not responsibilities of this module.
+Verification is part of the runtime flow, not an afterthought. The simulator can apply assertions, track failures, and expose status such as running, paused, complete, failed, and last error. This makes it useful for CI and regression checks where pass/fail signals must be explicit.
 
-Implementation detail and boundary guarantees for automation: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: mod.rs: Automation subsystem for deterministic input replay and visual regression testing.; script.rs: Automation script container: named, time-sorted step sequences for deterministic replay.; simulator.rs: Automation simulator: drives script playback by advancing time and dispatching events.; step.rs: Action enum and Step struct: typed event descriptors for automation playback.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Functionally, the module stays focused on sequencing and control logic. It does not replace device, rendering, or gameplay systems. Instead, it drives those systems through scripted input and observation, providing a stable automation layer for quality and debugging work.
 
 ## Imports
 

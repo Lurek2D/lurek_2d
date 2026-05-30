@@ -8,145 +8,6 @@ At the structural level, the module employs a robust flex-based layout engine (`
 
 Beyond standard UI components and input routing, the module integrates powerful data binding tools. The `GUITable` seamlessly integrates with the `dataframe` module, enabling bulk loading of structured rows directly into UI views without expensive Lua-side iterations. Fully exposed through the `lurek.ui.*` API, this module equips developers with everything needed to build intricate developer dashboards, complex menus, and data-rich game interfaces.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### containers.rs
-
-- This file provides retained-mode UI containers that structure complex screen hierarchies.
-- It defines panels, layouts, windows, splits, and docks as composable spatial building blocks.
-- It drives vertical, horizontal, and grid arrangement with stable spacing and alignment rules.
-- It supplies scrollable viewports for overflowed content without breaking parent layout flow.
-- It supports nine-slice framing so scalable borders keep visual intent across resolutions.
-- It enables draggable and resizable window shells for tool-like and in-game interface scenes.
-- It anchors container semantics that other widgets rely on for predictable composition.
-
-### context.rs
-
-- This file provides the central retained-mode UI context that owns widget state and lifecycle.
-- It stores all widget variants in one indexed arena so references stay compact and stable.
-- It runs recursive layout to compute absolute rectangles from parent-relative placement data.
-- It manages focus traversal and keyboard navigation for consistent interaction behavior.
-- It routes mouse and key events through controlled dispatch paths tied to active widgets.
-- It drives drag-and-drop with safety checks that prevent invalid parent-child cycles.
-- It advances alpha and position transitions so UI motion remains smooth and deterministic.
-- It maintains data bindings that synchronize widget values with script-owned state keys.
-- It tracks render signatures to detect dirtiness without expensive full-tree comparisons.
-- It queues interface events so Lua can consume interactions in a frame-coherent order.
-- It handles toast overlay lifetimes and visibility as transient UI feedback primitives.
-- It maintains root-level viewport and scaling context used by layout and rendering passes.
-- It exposes creation and lookup surfaces that keep widget graph mutations predictable.
-- It centralizes ownership so memory, input, and animation behavior are coordinated.
-- It forms the contract boundary between UI data, behavior, and visual output.
-- It keeps high-volume interface updates efficient enough for runtime and tooling screens.
-- It enables complex widget ecosystems while preserving one coherent execution timeline.
-- It anchors the entire UI subsystem around deterministic per-frame state progression.
-
-### controls.rs
-
-- This file provides the concrete interactive controls used by the retained-mode UI layer.
-- It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior.
-- It embeds common widget base state so style, layout, and interaction remain consistent.
-- It validates and clamps editable values to enforce reliable control invariants.
-- It normalizes selection behavior when list-like data mutates at runtime.
-- It keeps control construction explicit so type identity is always unambiguous.
-- It supports snapshot-friendly cloning for tooling, testing, and reversible operations.
-- It packages core interaction primitives in one predictable and reusable control set.
-- It establishes stable semantics for input-heavy interfaces across gameplay and tools.
-- It forms the practical interaction surface most UI scripts build on top of.
-
-### data_graph_renderer.rs
-
-- This file provides the data graph renderer used for chart-like UI visualization surfaces.
-- It supports multiple series forms so lines, points, and bars share one rendering core.
-- It maps graph space to screen space with reversible coordinate conversion helpers.
-- It computes automatic ranges so diverse datasets fit cleanly into constrained viewports.
-- It serves both runtime HUD analytics and editor-facing diagnostic chart panels.
-- It keeps chart rendering behavior consistent across tooling and in-game dashboards.
-
-### extras.rs
-
-- This file provides the extended widget set that goes beyond baseline UI control primitives.
-- It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements.
-- It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows.
-- It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces.
-- It models hierarchical trees and menu structures in forms suitable for retained updates.
-- It supplies status and notification components that communicate system state to players.
-- It keeps advanced widgets aligned with shared base style and layout semantics.
-- It provides custom widget shells for script-driven rendering and bespoke interactions.
-- It enables dense information surfaces without leaving the core retained UI ecosystem.
-- It expands UI expressiveness while keeping integration with context and renderer coherent.
-- It supports practical tool-building needs alongside in-game menu and HUD requirements.
-- It rounds out the module with specialized pieces required for full product interfaces.
-
-### layout_loader.rs
-
-- This file provides declarative UI loading from TOML definitions into live widget trees.
-- It maps textual widget kinds onto concrete context constructors with consistent defaults.
-- It applies generic and type-specific properties so authored layouts become runtime-ready.
-- It supports recursive child structures that mirror retained parent-child composition.
-- It offers headless image rendering for snapshot checks and offline layout verification.
-- It enables fast iteration on UI structure without hardcoding full trees in Lua scripts.
-
-### mod.rs
-
-- This module delivers the full retained UI toolkit used by gameplay and tooling layers.
-- It combines context, widgets, containers, rendering, and theming into one coherent surface.
-- It keeps interface construction flexible through code-first and data-driven layout paths.
-
-### render.rs
-
-- This file provides UI render emission for GPU commands and headless pixel raster outputs.
-- It draws the full retained widget catalog with consistent visual behavior across states.
-- It resolves theme style data per widget and applies alpha-aware color composition.
-- It emits shared primitives for shadows, fills, borders, gradients, and highlights.
-- It handles control-specific visuals such as sliders, checks, radios, combos, and switches.
-- It renders hierarchical content like trees and menus while preserving structural readability.
-- It supports color-picker internals with hue-space conversion used during visual generation.
-- It threads context, font, and output carriers through one deterministic render traversal.
-- It merges generic and type-specific child sources so nested widgets render in correct order.
-- It measures and aligns text with active font context to keep typography placement stable.
-- It supports CPU fallback output for screenshots, tests, and non-GPU verification paths.
-- It keeps rendering logic centralized so visual changes remain coherent and maintainable.
-- It scales from lightweight HUDs to complex tool panels using one render architecture.
-- It preserves deterministic draw command shape for regression checks and diagnostics.
-- It bridges widget semantics to backend draw primitives without leaking UI internals.
-- It supports theme-driven look changes without requiring widget logic rewrites.
-- It maintains robust rendering behavior under dynamic UI mutation each frame.
-- It anchors the visual execution layer of the retained UI subsystem.
-
-### theme.rs
-
-- This file provides the theming system that maps widget type and state to visual style data.
-- It stores colors, typography, borders, shadows, gradients, and alignment in reusable records.
-- It resolves requested styles with controlled fallback so partial themes remain functional.
-- It ships practical defaults that cover standard widgets without requiring custom setup.
-- It keeps style records clonable for cheap per-screen forks and variation experiments.
-- It supports semantic theme tokens so shared visual meanings stay consistent across widgets.
-- It integrates directly with render-time style resolution inside the UI drawing pipeline.
-- It includes debug-oriented raster helpers for quick visual verification of style states.
-- It enables extension through custom type-state registrations without changing core presets.
-- It separates visual policy from interaction logic for cleaner UI architecture boundaries.
-- It supports rapid skin iteration while preserving stable widget behavior contracts.
-- It keeps style lookup deterministic so rendering output stays predictable across frames.
-- It provides one source of truth for interface look-and-feel in the module.
-- It allows games and tools to share a common style backbone with targeted overrides.
-- It anchors maintainable visual customization across the retained UI ecosystem.
-
-### widget.rs
-
-- This file provides core widget primitives that define shared UI node state and semantics.
-- It models layout metrics, style linkage, identity, and interaction flags per widget instance.
-- It represents the tree unit that context, layout, and renderer pipelines operate on.
-- It supports state transitions that drive hover, focus, press, and animated visual behavior.
-- It keeps parent-child composition explicit so traversal and ownership rules remain stable.
-- It anchors type and state enums used across all concrete control and container variants.
-- It enables consistent text alignment and font override behavior at the widget boundary.
-- It provides reusable base data that reduces duplication across the larger UI catalog.
-- It ensures widget-level contracts remain predictable for script and engine integrations.
-- It defines the structural vocabulary that the retained UI subsystem builds upon.
-
 ## Functions
 
 ### `lurek.ui.addToast`
@@ -440,7 +301,7 @@ lurek.ui.drawToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | The rendered image. |
+| [LImageData](#limagedata) | The rendered image. |
 
 **Example**
 
@@ -743,7 +604,7 @@ lurek.ui.getFont()
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | Current global UI font handle. |
+| [LFont](#lfont) | Current global UI font handle. |
 
 **Example**
 
@@ -772,7 +633,7 @@ lurek.ui.getRoot()
 
 | Type | Description |
 |------|-------------|
-| [LPanel](#lpanel-handle) | The root panel widget table. |
+| [LPanel](#lpanel) | The root panel widget table. |
 
 **Example**
 
@@ -944,13 +805,13 @@ lurek.ui.getWidgetFont(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | [LUiWidget](#luiwidget-handle) | Widget handle to query. |
+| `widget` | [LUiWidget](#luiwidget) | Widget handle to query. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LFont](#lfont-handle) | Font override assigned to the widget. |
+| [LFont](#lfont) | Font override assigned to the widget. |
 
 **Example**
 
@@ -1238,7 +1099,7 @@ lurek.ui.newAccordion()
 
 | Type | Description |
 |------|-------------|
-| [LAccordion](#laccordion-handle) | The new accordion widget table. |
+| [LAccordion](#laccordion) | The new accordion widget table. |
 
 **Example**
 
@@ -1271,7 +1132,7 @@ lurek.ui.newAreaChart(opts)
 
 | Type | Description |
 |------|-------------|
-| [LAreaChart](#lareachart-handle) | The new area chart userdata. |
+| [LAreaChart](#lareachart) | The new area chart userdata. |
 
 **Example**
 
@@ -1306,7 +1167,7 @@ lurek.ui.newBadge(count)
 
 | Type | Description |
 |------|-------------|
-| [LBadge](#lbadge-handle) | The new badge widget table. |
+| [LBadge](#lbadge) | The new badge widget table. |
 
 **Example**
 
@@ -1340,7 +1201,7 @@ lurek.ui.newBarChart(opts)
 
 | Type | Description |
 |------|-------------|
-| [LBarChart](#lbarchart-handle) | The new bar chart userdata. |
+| [LBarChart](#lbarchart) | The new bar chart userdata. |
 
 **Example**
 
@@ -1376,7 +1237,7 @@ lurek.ui.newButton(text)
 
 | Type | Description |
 |------|-------------|
-| [LButton](#lbutton-handle) | The new button widget table. |
+| [LButton](#lbutton) | The new button widget table. |
 
 **Example**
 
@@ -1409,7 +1270,7 @@ lurek.ui.newCheckbox(text)
 
 | Type | Description |
 |------|-------------|
-| [LCheckbox](#lcheckbox-handle) | The new checkbox widget table. |
+| [LCheckbox](#lcheckbox) | The new checkbox widget table. |
 
 **Example**
 
@@ -1437,7 +1298,7 @@ lurek.ui.newColorPicker()
 
 | Type | Description |
 |------|-------------|
-| [LColorPicker](#lcolorpicker-handle) | The new color picker widget table. |
+| [LColorPicker](#lcolorpicker) | The new color picker widget table. |
 
 **Example**
 
@@ -1466,7 +1327,7 @@ lurek.ui.newComboBox()
 
 | Type | Description |
 |------|-------------|
-| [LComboBox](#lcombobox-handle) | The new combo box widget table. |
+| [LComboBox](#lcombobox) | The new combo box widget table. |
 
 **Example**
 
@@ -1499,7 +1360,7 @@ lurek.ui.newCustomWidget(config)
 
 | Type | Description |
 |------|-------------|
-| [LUiWidget](#luiwidget-handle) | The new custom widget table. |
+| [LUiWidget](#luiwidget) | The new custom widget table. |
 
 **Example**
 
@@ -1535,7 +1396,7 @@ lurek.ui.newDialog(title)
 
 | Type | Description |
 |------|-------------|
-| [LDialog](#ldialog-handle) | The new dialog widget table. |
+| [LDialog](#ldialog) | The new dialog widget table. |
 
 **Example**
 
@@ -1577,7 +1438,7 @@ lurek.ui.newDockPanel()
 
 | Type | Description |
 |------|-------------|
-| [LDockPanel](#ldockpanel-handle) | The new dock panel widget table. |
+| [LDockPanel](#ldockpanel) | The new dock panel widget table. |
 
 **Example**
 
@@ -1614,7 +1475,7 @@ lurek.ui.newImageWidget()
 
 | Type | Description |
 |------|-------------|
-| [LImageWidget](#limagewidget-handle) | The new image widget table. |
+| [LImageWidget](#limagewidget) | The new image widget table. |
 
 **Example**
 
@@ -1649,7 +1510,7 @@ lurek.ui.newLabel(text)
 
 | Type | Description |
 |------|-------------|
-| [LLabel](#llabel-handle) | The new label widget table. |
+| [LLabel](#llabel) | The new label widget table. |
 
 **Example**
 
@@ -1683,7 +1544,7 @@ lurek.ui.newLayout(direction)
 
 | Type | Description |
 |------|-------------|
-| [LLayout](#llayout-handle) | The new layout widget table. |
+| [LLayout](#llayout) | The new layout widget table. |
 
 **Example**
 
@@ -1721,7 +1582,7 @@ lurek.ui.newLineChart(opts)
 
 | Type | Description |
 |------|-------------|
-| [LLineChart](#llinechart-handle) | The new line chart userdata. |
+| [LLineChart](#llinechart) | The new line chart userdata. |
 
 **Example**
 
@@ -1750,7 +1611,7 @@ lurek.ui.newList()
 
 | Type | Description |
 |------|-------------|
-| [LListBox](#llistbox-handle) | The new list box widget table. |
+| [LListBox](#llistbox) | The new list box widget table. |
 
 **Example**
 
@@ -1777,7 +1638,7 @@ lurek.ui.newMenuBar()
 
 | Type | Description |
 |------|-------------|
-| [LMenuBar](#lmenubar-handle) | The new menu bar widget table. |
+| [LMenuBar](#lmenubar) | The new menu bar widget table. |
 
 **Example**
 
@@ -1810,7 +1671,7 @@ lurek.ui.newMenuItem(text)
 
 | Type | Description |
 |------|-------------|
-| [LMenuItem](#lmenuitem-handle) | The new menu item widget table. |
+| [LMenuItem](#lmenuitem) | The new menu item widget table. |
 
 **Example**
 
@@ -1838,7 +1699,7 @@ lurek.ui.newNinePatch()
 
 | Type | Description |
 |------|-------------|
-| [LNinePatch](#lninepatch-handle) | The new nine-patch widget table. |
+| [LNinePatch](#lninepatch) | The new nine-patch widget table. |
 
 **Example**
 
@@ -1866,7 +1727,7 @@ lurek.ui.newPanel()
 
 | Type | Description |
 |------|-------------|
-| [LPanel](#lpanel-handle) | The new panel widget table. |
+| [LPanel](#lpanel) | The new panel widget table. |
 
 **Example**
 
@@ -1900,7 +1761,7 @@ lurek.ui.newPieChart(opts)
 
 | Type | Description |
 |------|-------------|
-| [LPieChart](#lpiechart-handle) | The new pie chart userdata. |
+| [LPieChart](#lpiechart) | The new pie chart userdata. |
 
 **Example**
 
@@ -1937,7 +1798,7 @@ lurek.ui.newProgressBar(min, max)
 
 | Type | Description |
 |------|-------------|
-| [LProgressBar](#lprogressbar-handle) | The new progress bar widget table. |
+| [LProgressBar](#lprogressbar) | The new progress bar widget table. |
 
 **Example**
 
@@ -1971,7 +1832,7 @@ lurek.ui.newRadioButton(text, group)
 
 | Type | Description |
 |------|-------------|
-| [LRadioButton](#lradiobutton-handle) | The new radio button widget table. |
+| [LRadioButton](#lradiobutton) | The new radio button widget table. |
 
 **Example**
 
@@ -2008,7 +1869,7 @@ lurek.ui.newScatterPlot(opts)
 
 | Type | Description |
 |------|-------------|
-| [LScatterPlot](#lscatterplot-handle) | The new scatter plot userdata. |
+| [LScatterPlot](#lscatterplot) | The new scatter plot userdata. |
 
 **Example**
 
@@ -2043,7 +1904,7 @@ lurek.ui.newScrollBar(vertical)
 
 | Type | Description |
 |------|-------------|
-| [LScrollBar](#lscrollbar-handle) | The new scroll bar widget table. |
+| [LScrollBar](#lscrollbar) | The new scroll bar widget table. |
 
 **Example**
 
@@ -2070,7 +1931,7 @@ lurek.ui.newScrollPanel()
 
 | Type | Description |
 |------|-------------|
-| [LScrollPanel](#lscrollpanel-handle) | The new scroll panel widget table. |
+| [LScrollPanel](#lscrollpanel) | The new scroll panel widget table. |
 
 **Example**
 
@@ -2109,7 +1970,7 @@ lurek.ui.newSeparator(vertical)
 
 | Type | Description |
 |------|-------------|
-| [LSeparator](#lseparator-handle) | The new separator widget table. |
+| [LSeparator](#lseparator) | The new separator widget table. |
 
 **Example**
 
@@ -2143,7 +2004,7 @@ lurek.ui.newSlider(min, max)
 
 | Type | Description |
 |------|-------------|
-| [LSlider](#lslider-handle) | The new slider widget table. |
+| [LSlider](#lslider) | The new slider widget table. |
 
 **Example**
 
@@ -2212,7 +2073,7 @@ lurek.ui.newSpinBox(min, max)
 
 | Type | Description |
 |------|-------------|
-| [LSpinBox](#lspinbox-handle) | The new spin box widget table. |
+| [LSpinBox](#lspinbox) | The new spin box widget table. |
 
 **Example**
 
@@ -2246,7 +2107,7 @@ lurek.ui.newSplitPanel(orientation)
 
 | Type | Description |
 |------|-------------|
-| [LSplitPanel](#lsplitpanel-handle) | The new split panel widget table. |
+| [LSplitPanel](#lsplitpanel) | The new split panel widget table. |
 
 **Example**
 
@@ -2280,7 +2141,7 @@ lurek.ui.newStatusBar()
 
 | Type | Description |
 |------|-------------|
-| [LStatusBar](#lstatusbar-handle) | The new status bar widget table. |
+| [LStatusBar](#lstatusbar) | The new status bar widget table. |
 
 **Example**
 
@@ -2313,7 +2174,7 @@ lurek.ui.newSwitch(on)
 
 | Type | Description |
 |------|-------------|
-| [LSwitch](#lswitch-handle) | The new switch widget table. |
+| [LSwitch](#lswitch) | The new switch widget table. |
 
 **Example**
 
@@ -2340,7 +2201,7 @@ lurek.ui.newTabBar()
 
 | Type | Description |
 |------|-------------|
-| [LTabBar](#ltabbar-handle) | The new tab bar widget table. |
+| [LTabBar](#ltabbar) | The new tab bar widget table. |
 
 **Example**
 
@@ -2367,7 +2228,7 @@ lurek.ui.newTable()
 
 | Type | Description |
 |------|-------------|
-| [LGuiTable](#lguitable-handle) | The new table widget. |
+| [LGuiTable](#lguitable) | The new table widget. |
 
 **Example**
 
@@ -2403,7 +2264,7 @@ lurek.ui.newTextInput()
 
 | Type | Description |
 |------|-------------|
-| [LTextInput](#ltextinput-handle) | The new text input widget table. |
+| [LTextInput](#ltextinput) | The new text input widget table. |
 
 **Example**
 
@@ -2431,7 +2292,7 @@ lurek.ui.newTheme()
 
 | Type | Description |
 |------|-------------|
-| [LTheme](#ltheme-handle) | The new theme userdata. |
+| [LTheme](#ltheme) | The new theme userdata. |
 
 **Example**
 
@@ -2467,7 +2328,7 @@ lurek.ui.newToast(message, duration)
 
 | Type | Description |
 |------|-------------|
-| [LToast](#ltoast-handle) | The new toast widget table. |
+| [LToast](#ltoast) | The new toast widget table. |
 
 **Example**
 
@@ -2503,7 +2364,7 @@ lurek.ui.newToolbar(orientation)
 
 | Type | Description |
 |------|-------------|
-| [LToolbar](#ltoolbar-handle) | The new toolbar widget table. |
+| [LToolbar](#ltoolbar) | The new toolbar widget table. |
 
 **Example**
 
@@ -2535,7 +2396,7 @@ lurek.ui.newTooltipPanel(text)
 
 | Type | Description |
 |------|-------------|
-| [LTooltipPanel](#ltooltippanel-handle) | The new tooltip panel widget table. |
+| [LTooltipPanel](#ltooltippanel) | The new tooltip panel widget table. |
 
 **Example**
 
@@ -2567,7 +2428,7 @@ lurek.ui.newTreeView()
 
 | Type | Description |
 |------|-------------|
-| [LTreeView](#ltreeview-handle) | The new tree view widget table. |
+| [LTreeView](#ltreeview) | The new tree view widget table. |
 
 **Example**
 
@@ -2601,7 +2462,7 @@ lurek.ui.newWindow(title)
 
 | Type | Description |
 |------|-------------|
-| [LGuiWindow](#lguiwindow-handle) | The new window widget table. |
+| [LGuiWindow](#lguiwindow) | The new window widget table. |
 
 **Example**
 
@@ -2785,7 +2646,7 @@ lurek.ui.setFont(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle used by the UI when widgets do not override it. |
+| `font` | [LFont](#lfont) | Font handle used by the UI when widgets do not override it. |
 
 **Example**
 
@@ -2814,7 +2675,7 @@ lurek.ui.setTheme(theme_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `theme_ud` | [LTheme](#ltheme-handle) | The theme userdata to apply. |
+| `theme_ud` | [LTheme](#ltheme) | The theme userdata to apply. |
 
 **Example**
 
@@ -3096,56 +2957,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAccordion Handle](#laccordion-handle)
-- [LAreaChart Handle](#lareachart-handle)
-- [LBadge Handle](#lbadge-handle)
-- [LBarChart Handle](#lbarchart-handle)
-- [LButton Handle](#lbutton-handle)
-- [LCheckbox Handle](#lcheckbox-handle)
-- [LColorPicker Handle](#lcolorpicker-handle)
-- [LComboBox Handle](#lcombobox-handle)
-- [LCustomWidget Handle](#lcustomwidget-handle)
-- [LDialog Handle](#ldialog-handle)
-- [LDockPanel Handle](#ldockpanel-handle)
-- [LFont Handle](#lfont-handle)
-- [LGuiTable Handle](#lguitable-handle)
-- [LGuiWindow Handle](#lguiwindow-handle)
-- [LImageData Handle](#limagedata-handle)
-- [LImageWidget Handle](#limagewidget-handle)
-- [LLabel Handle](#llabel-handle)
-- [LLayout Handle](#llayout-handle)
-- [LLineChart Handle](#llinechart-handle)
-- [LList Handle](#llist-handle)
-- [LListBox Handle](#llistbox-handle)
-- [LMenuBar Handle](#lmenubar-handle)
-- [LMenuItem Handle](#lmenuitem-handle)
-- [LNinePatch Handle](#lninepatch-handle)
-- [LPanel Handle](#lpanel-handle)
-- [LPieChart Handle](#lpiechart-handle)
-- [LProgressBar Handle](#lprogressbar-handle)
-- [LRadioButton Handle](#lradiobutton-handle)
-- [LScatterPlot Handle](#lscatterplot-handle)
-- [LScrollBar Handle](#lscrollbar-handle)
-- [LScrollPanel Handle](#lscrollpanel-handle)
-- [LSeparator Handle](#lseparator-handle)
-- [LSlider Handle](#lslider-handle)
-- [LSpinBox Handle](#lspinbox-handle)
-- [LSplitPanel Handle](#lsplitpanel-handle)
-- [LStatusBar Handle](#lstatusbar-handle)
-- [LSwitch Handle](#lswitch-handle)
-- [LTabBar Handle](#ltabbar-handle)
-- [LTable Handle](#ltable-handle)
-- [LTextInput Handle](#ltextinput-handle)
-- [LTheme Handle](#ltheme-handle)
-- [LToast Handle](#ltoast-handle)
-- [LToolbar Handle](#ltoolbar-handle)
-- [LTooltipPanel Handle](#ltooltippanel-handle)
-- [LTreeView Handle](#ltreeview-handle)
-- [LUiWidget Handle](#luiwidget-handle)
-- [LWindow Handle](#lwindow-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -3154,13 +2965,60 @@ end
 
 *No module-specific enums documented.*
 
-## LAccordion Handle
+## Types
 
-### Fields
+- [LAccordion](#laccordion)
+- [LAreaChart](#lareachart)
+- [LBadge](#lbadge)
+- [LBarChart](#lbarchart)
+- [LButton](#lbutton)
+- [LCheckbox](#lcheckbox)
+- [LColorPicker](#lcolorpicker)
+- [LComboBox](#lcombobox)
+- [LDialog](#ldialog)
+- [LDockPanel](#ldockpanel)
+- [LFont](#lfont)
+- [LGuiTable](#lguitable)
+- [LGuiWindow](#lguiwindow)
+- [LImageData](#limagedata)
+- [LImageWidget](#limagewidget)
+- [LLabel](#llabel)
+- [LLayout](#llayout)
+- [LLineChart](#llinechart)
+- [LList](#llist)
+- [LListBox](#llistbox)
+- [LMenuBar](#lmenubar)
+- [LMenuItem](#lmenuitem)
+- [LNinePatch](#lninepatch)
+- [LPanel](#lpanel)
+- [LPieChart](#lpiechart)
+- [LProgressBar](#lprogressbar)
+- [LRadioButton](#lradiobutton)
+- [LScatterPlot](#lscatterplot)
+- [LScrollBar](#lscrollbar)
+- [LScrollPanel](#lscrollpanel)
+- [LSeparator](#lseparator)
+- [LSlider](#lslider)
+- [LSpinBox](#lspinbox)
+- [LSplitPanel](#lsplitpanel)
+- [LStatusBar](#lstatusbar)
+- [LSwitch](#lswitch)
+- [LTabBar](#ltabbar)
+- [LTextInput](#ltextinput)
+- [LTheme](#ltheme)
+- [LToast](#ltoast)
+- [LToolbar](#ltoolbar)
+- [LTooltipPanel](#ltooltippanel)
+- [LTreeView](#ltreeview)
+- [LUiWidget](#luiwidget)
+
+## LAccordion
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAccordion:addSection`
 
@@ -3408,13 +3266,13 @@ end
 
 ---
 
-## LAreaChart Handle
+## LAreaChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAreaChart:addLayer`
 
@@ -3462,7 +3320,7 @@ LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | The layer name. |
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `value_col` | string | Column name for layer values. |
 | `r` | number | Red color component. |
 | `g` | number | Green color component. |
@@ -3528,7 +3386,7 @@ LAreaChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
+| `target` | [LImageData](#limagedata) | The image to draw into. |
 
 **Example**
 
@@ -3654,7 +3512,7 @@ LAreaChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LAreaChart](#lareachart-handle)". |
+| string | Always "[LAreaChart](#lareachart)". |
 
 **Example**
 
@@ -3710,13 +3568,13 @@ end
 
 ---
 
-## LBadge Handle
+## LBadge
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBadge:getCount`
 
@@ -3808,13 +3666,13 @@ end
 
 ---
 
-## LBarChart Handle
+## LBarChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBarChart:addCategoriesFromDataFrame`
 
@@ -3828,7 +3686,7 @@ LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `label_col` | string | Column name for category labels. |
 | `value_cols` | string[] | Value columns matching registered series order. |
 | `opts?` | table | Optional table with maxRows integer. |
@@ -3926,7 +3784,7 @@ LBarChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
+| `target` | [LImageData](#limagedata) | The image to draw into. |
 
 **Example**
 
@@ -4039,7 +3897,7 @@ LBarChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LBarChart](#lbarchart-handle)". |
+| string | Always "[LBarChart](#lbarchart)". |
 
 **Example**
 
@@ -4089,13 +3947,13 @@ end
 
 ---
 
-## LButton Handle
+## LButton
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LButton:getText`
 
@@ -4155,13 +4013,13 @@ end
 
 ---
 
-## LCheckbox Handle
+## LCheckbox
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCheckbox:getText`
 
@@ -4279,13 +4137,13 @@ end
 
 ---
 
-## LColorPicker Handle
+## LColorPicker
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LColorPicker:getColor`
 
@@ -4533,13 +4391,13 @@ end
 
 ---
 
-## LComboBox Handle
+## LComboBox
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LComboBox:addItem`
 
@@ -4802,23 +4660,13 @@ end
 
 ---
 
-## LCustomWidget Handle
+## LDialog
 
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LDialog Handle
-
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDialog:addButton`
 
@@ -5134,13 +4982,13 @@ end
 
 ---
 
-## LDockPanel Handle
+## LDockPanel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDockPanel:dock`
 
@@ -5312,13 +5160,13 @@ end
 
 ---
 
-## LFont Handle
+## LFont
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFont:containsGlyph`
 
@@ -5600,7 +5448,7 @@ LFont:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LFont](#lfont-handle)". |
+| string | Always "[LFont](#lfont)". |
 
 ---
 
@@ -5650,13 +5498,13 @@ LFont:wrapText(text, maxWidth, scale)
 
 ---
 
-## LGuiTable Handle
+## LGuiTable
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGuiTable:addColumn`
 
@@ -5983,7 +5831,7 @@ LGuiTable:setDataFrame(df, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `opts?` | table | Optional table with maxRows integer, columns string[], and includeHeaders boolean. |
 
 **Returns**
@@ -6139,13 +5987,13 @@ end
 
 ---
 
-## LGuiWindow Handle
+## LGuiWindow
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LGuiWindow:getTitle`
 
@@ -6405,13 +6253,13 @@ end
 
 ---
 
-## LImageData Handle
+## LImageData
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImageData:alphaMask`
 
@@ -6441,7 +6289,7 @@ LImageData:applyPaletteLut(lut_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `lut_ud` | LPaletteLUT | Palette lookup table handle. |
+| `lut_ud` | [LPaletteLUT](image.md#lpalettelut) | Palette lookup table handle. |
 
 ---
 
@@ -6457,7 +6305,7 @@ LImageData:blit(src_ud, dst_x, dst_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dst_x` | number | Destination x coordinate. |
 | `dst_y` | number | Destination y coordinate. |
 
@@ -6481,7 +6329,7 @@ LImageData:blur(radius)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Blurred image data handle. |
+| [LImageData](#limagedata) | Blurred image data handle. |
 
 ---
 
@@ -6536,7 +6384,7 @@ LImageData:convolve(kernel_t, ksize)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Convolved image data handle. |
+| [LImageData](#limagedata) | Convolved image data handle. |
 
 ---
 
@@ -6561,7 +6409,7 @@ LImageData:crop(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Cropped image data handle. |
+| [LImageData](#limagedata) | Cropped image data handle. |
 
 ---
 
@@ -6577,7 +6425,7 @@ LImageData:diff(other_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other_ud` | [LImageData](#limagedata-handle) | Image data handle to compare with this image. |
+| `other_ud` | [LImageData](#limagedata) | Image data handle to compare with this image. |
 
 **Returns**
 
@@ -6644,7 +6492,7 @@ LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `src_x` | number | Source region x coordinate. |
 | `src_y` | number | Source region y coordinate. |
 | `src_w` | number | Source region width. |
@@ -6856,7 +6704,7 @@ LImageData:getRegion(x, y, w, h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | `[LImageData](#limagedata-handle)` handle, or nil when the region is out of bounds. |
+| [LImageData](#limagedata) | nil | `[LImageData](#limagedata)` handle, or nil when the region is out of bounds. |
 
 ---
 
@@ -6972,7 +6820,7 @@ LImageData:paste(src_ud, dx, dy)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LImageData](#limagedata-handle) | Source image data handle. |
+| `src_ud` | [LImageData](#limagedata) | Source image data handle. |
 | `dx` | number | Destination x coordinate. |
 | `dy` | number | Destination y coordinate. |
 
@@ -7014,7 +6862,7 @@ LImageData:resize(width, height, filter)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | nil | Resized `[LImageData](#limagedata-handle)` handle, or nil when resizing fails. |
+| [LImageData](#limagedata) | nil | Resized `[LImageData](#limagedata)` handle, or nil when resizing fails. |
 
 ---
 
@@ -7037,7 +6885,7 @@ LImageData:resizeNearest(new_w, new_h)
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Resized image data handle. |
+| [LImageData](#limagedata) | Resized image data handle. |
 
 ---
 
@@ -7053,7 +6901,7 @@ LImageData:rotate90cw()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Rotated image data handle. |
+| [LImageData](#limagedata) | Rotated image data handle. |
 
 ---
 
@@ -7132,7 +6980,7 @@ LImageData:sharpen()
 
 | Type | Description |
 |------|-------------|
-| [LImageData](#limagedata-handle) | Sharpened image data handle. |
+| [LImageData](#limagedata) | Sharpened image data handle. |
 
 ---
 
@@ -7183,13 +7031,13 @@ LImageData:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LImageData](#limagedata-handle)`. |
+| string | The string `[LImageData](#limagedata)`. |
 
 ---
 
 #### `LImageData:typeOf`
 
-Returns whether this image data handle matches the `[LImageData](#limagedata-handle)` type name.
+Returns whether this image data handle matches the `[LImageData](#limagedata)` type name.
 
 ```lua
 LImageData:typeOf(name)
@@ -7199,7 +7047,7 @@ LImageData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LImageData](#limagedata-handle)` or `Object`. |
+| `name` | string | Type name to compare against `[LImageData](#limagedata)` or `Object`. |
 
 **Returns**
 
@@ -7209,13 +7057,13 @@ LImageData:typeOf(name)
 
 ---
 
-## LImageWidget Handle
+## LImageWidget
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LImageWidget:getScaleMode`
 
@@ -7347,13 +7195,13 @@ end
 
 ---
 
-## LLabel Handle
+## LLabel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLabel:getText`
 
@@ -7411,13 +7259,13 @@ end
 
 ---
 
-## LLayout Handle
+## LLayout
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLayout:getAlign`
 
@@ -7739,13 +7587,13 @@ end
 
 ---
 
-## LLineChart Handle
+## LLineChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLineChart:addSeries`
 
@@ -7778,7 +7626,7 @@ LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | The series name. |
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `x_col` | string | Column name for X values. |
 | `y_col` | string | Column name for Y values. |
 | `r` | number | Red color component. |
@@ -7827,7 +7675,7 @@ LLineChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
+| `target` | [LImageData](#limagedata) | The image to draw into. |
 
 **Example**
 
@@ -7981,7 +7829,7 @@ LLineChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LLineChart](#llinechart-handle)". |
+| string | Always "[LLineChart](#llinechart)". |
 
 **Example**
 
@@ -8031,13 +7879,13 @@ end
 
 ---
 
-## LList Handle
+## LList
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LList:add`
 
@@ -8313,13 +8161,13 @@ LList:unshift(value)
 
 ---
 
-## LListBox Handle
+## LListBox
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LListBox:addItem`
 
@@ -8575,13 +8423,13 @@ end
 
 ---
 
-## LMenuBar Handle
+## LMenuBar
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMenuBar:addMenu`
 
@@ -8718,13 +8566,13 @@ end
 
 ---
 
-## LMenuItem Handle
+## LMenuItem
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMenuItem:addSubItem`
 
@@ -9009,13 +8857,13 @@ end
 
 ---
 
-## LNinePatch Handle
+## LNinePatch
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LNinePatch:getImageDimensions`
 
@@ -9190,13 +9038,13 @@ end
 
 ---
 
-## LPanel Handle
+## LPanel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPanel:getTitle`
 
@@ -9291,13 +9139,13 @@ end
 
 ---
 
-## LPieChart Handle
+## LPieChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPieChart:addSegment`
 
@@ -9346,7 +9194,7 @@ LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `label_col` | string | Column name for segment labels. |
 | `value_col` | string | Column name for segment values. |
 | `opts?` | table | Optional table with maxRows integer. |
@@ -9410,7 +9258,7 @@ LPieChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
+| `target` | [LImageData](#limagedata) | The image to draw into. |
 
 **Example**
 
@@ -9507,7 +9355,7 @@ LPieChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LPieChart](#lpiechart-handle)". |
+| string | Always "[LPieChart](#lpiechart)". |
 
 **Example**
 
@@ -9563,13 +9411,13 @@ end
 
 ---
 
-## LProgressBar Handle
+## LProgressBar
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LProgressBar:getMax`
 
@@ -9764,13 +9612,13 @@ end
 
 ---
 
-## LRadioButton Handle
+## LRadioButton
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LRadioButton:getGroup`
 
@@ -9980,13 +9828,13 @@ end
 
 ---
 
-## LScatterPlot Handle
+## LScatterPlot
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LScatterPlot:addSeries`
 
@@ -10019,7 +9867,7 @@ LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | The series name. |
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `x_col` | string | Column name for X values. |
 | `y_col` | string | Column name for Y values. |
 | `r` | number | Red color component. |
@@ -10070,7 +9918,7 @@ LScatterPlot:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](#limagedata-handle) | The image to draw into. |
+| `target` | [LImageData](#limagedata) | The image to draw into. |
 
 **Example**
 
@@ -10243,7 +10091,7 @@ LScatterPlot:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LScatterPlot](#lscatterplot-handle)". |
+| string | Always "[LScatterPlot](#lscatterplot)". |
 
 **Example**
 
@@ -10295,13 +10143,13 @@ end
 
 ---
 
-## LScrollBar Handle
+## LScrollBar
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LScrollBar:getContentSize`
 
@@ -10536,13 +10384,13 @@ end
 
 ---
 
-## LScrollPanel Handle
+## LScrollPanel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LScrollPanel:getContentSize`
 
@@ -10752,13 +10600,13 @@ end
 
 ---
 
-## LSeparator Handle
+## LSeparator
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSeparator:getThickness`
 
@@ -10876,13 +10724,13 @@ end
 
 ---
 
-## LSlider Handle
+## LSlider
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSlider:getMax`
 
@@ -11059,13 +10907,13 @@ end
 
 ---
 
-## LSpinBox Handle
+## LSpinBox
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSpinBox:decrement`
 
@@ -11243,13 +11091,13 @@ end
 
 ---
 
-## LSplitPanel Handle
+## LSplitPanel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSplitPanel:getFirstChild`
 
@@ -11633,13 +11481,13 @@ end
 
 ---
 
-## LStatusBar Handle
+## LStatusBar
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LStatusBar:addSection`
 
@@ -11835,13 +11683,13 @@ end
 
 ---
 
-## LSwitch Handle
+## LSwitch
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSwitch:isOn`
 
@@ -11924,13 +11772,13 @@ end
 
 ---
 
-## LTabBar Handle
+## LTabBar
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTabBar:addTab`
 
@@ -12133,23 +11981,13 @@ end
 
 ---
 
-## LTable Handle
+## LTextInput
 
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LTextInput Handle
-
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTextInput:getCursorPosition`
 
@@ -12352,13 +12190,13 @@ end
 
 ---
 
-## LTheme Handle
+## LTheme
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTheme:setStyle`
 
@@ -12411,7 +12249,7 @@ LTheme:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LTheme](#ltheme-handle)". |
+| string | Always "[LTheme](#ltheme)". |
 
 **Example**
 
@@ -12464,13 +12302,13 @@ end
 
 ---
 
-## LToast Handle
+## LToast
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LToast:getDuration`
 
@@ -12670,13 +12508,13 @@ end
 
 ---
 
-## LToolbar Handle
+## LToolbar
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LToolbar:addButton`
 
@@ -12946,13 +12784,13 @@ end
 
 ---
 
-## LTooltipPanel Handle
+## LTooltipPanel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTooltipPanel:getDelay`
 
@@ -13134,13 +12972,13 @@ end
 
 ---
 
-## LTreeView Handle
+## LTreeView
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTreeView:addNode`
 
@@ -13739,13 +13577,13 @@ end
 
 ---
 
-## LUiWidget Handle
+## LUiWidget
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LUiWidget:addChild`
 
@@ -13759,7 +13597,7 @@ LUiWidget:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LUiWidget](#luiwidget-handle)|number | The child widget table or widget index to add. |
+| `child` | [LUiWidget](#luiwidget)|number | The child widget table or widget index to add. |
 
 **Example**
 
@@ -14114,7 +13952,7 @@ LUiWidget:findById(id)
 
 | Type | Description |
 |------|-------------|
-| LWidget | The found widget table, or nil if not found. |
+| [LWidget](terminal.md#lwidget) | The found widget table, or nil if not found. |
 
 **Example**
 
@@ -14762,7 +14600,7 @@ LUiWidget:removeChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LUiWidget](#luiwidget-handle)|number | The child widget table or widget index to remove. |
+| `child` | [LUiWidget](#luiwidget)|number | The child widget table or widget index to remove. |
 
 **Example**
 
@@ -15115,7 +14953,7 @@ LUiWidget:setFont(font)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `font` | [LFont](#lfont-handle) | Font handle to use for this widget subtree. |
+| `font` | [LFont](#lfont) | Font handle to use for this widget subtree. |
 
 **Example**
 
@@ -15780,7 +15618,7 @@ end
 
 #### `LUiWidget:type`
 
-Returns the type name string of this widget (e.g. "[LButton](#lbutton-handle)", "[LSlider](#lslider-handle)").
+Returns the type name string of this widget (e.g. "[LButton](#lbutton)", "[LSlider](#lslider)").
 
 ```lua
 LUiWidget:type()
@@ -15810,7 +15648,7 @@ end
 
 #### `LUiWidget:typeOf`
 
-Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
+Checks whether this widget matches the given type name, including base types "[LWidget](terminal.md#lwidget)" and "Object".
 
 ```lua
 LUiWidget:typeOf(name)
@@ -15867,13 +15705,3 @@ end
 ```
 
 ---
-
-## LWindow Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*

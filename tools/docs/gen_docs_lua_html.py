@@ -1527,10 +1527,10 @@ def generate_site(data: dict[str, Any], output_dir: Path) -> None:
 """
 
     # Root/global legacy pages.
-    (output_dir / "index.html").write_text(redirect_html("../lua-api.html", "Lua API Redirect"), encoding="utf-8")
+    (output_dir / "index.html").write_text(redirect_html("../callbacks.html", "Lua API Redirect"), encoding="utf-8")
     (output_dir / "callbacks.html").write_text(redirect_html("../callbacks.html", "Callbacks Redirect"), encoding="utf-8")
-    (output_dir / "types.html").write_text(redirect_html("../lua-api.html", "Types Redirect"), encoding="utf-8")
-    (output_dir / "search.html").write_text(redirect_html("../lua-api.html", "Search Redirect"), encoding="utf-8")
+    (output_dir / "types.html").write_text(redirect_html("../callbacks.html", "Types Redirect"), encoding="utf-8")
+    (output_dir / "search.html").write_text(redirect_html("../callbacks.html", "Search Redirect"), encoding="utf-8")
 
     # Module and class legacy pages.
     class_to_module: dict[str, str] = {}
@@ -1544,7 +1544,7 @@ def generate_site(data: dict[str, Any], output_dir: Path) -> None:
             class_to_module[str(class_name)] = module_name
 
     for class_name, module_name in sorted(class_to_module.items()):
-        anchor = _slug(class_name) + "-handle"
+        anchor = _slug(class_name)
         (output_dir / "classes" / f"{class_name}.html").write_text(
             redirect_html(
                 f"../../modules/{module_name}.html#{anchor}",

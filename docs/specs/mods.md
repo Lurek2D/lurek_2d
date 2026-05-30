@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `mods` module is a powerful Feature Systems tier component that provides a comprehensive framework for user-generated content and game modifications in Lurek2D.
+- The `mods` module manages mod discovery, validation, dependency order, sandboxing, and hot-reload for user-generated content.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-It is engineered to handle the complete lifecycle of mods, from initial discovery on the filesystem to dependency resolution, load-order sorting, asset mounting, and runtime hot-reloading. The core orchestrator is the `ModManager`, which actively scans designated directories for `mod.toml` manifests, securely parses them, and validates their structural integrity and version constraints.
+The `mods` module is the engine runtime for user-generated content lifecycle management. It discovers mod packages, parses manifests, validates metadata, and keeps mod state organized through one manager surface.
 
-At the heart of the system is the `ModInfo` struct, which encapsulates all vital metadata for a single mod. This includes standard fields like name, version, and author, alongside critical functional data such as script entry points, declared capabilities, custom configuration schemas, and optional SHA-256 integrity signatures. A major responsibility of the `ModManager` is safely resolving inter-mod dependencies. It performs robust cyclic dependency detection and utilizes a topological sort, weighted by author-defined priority values, to compute a deterministic and stable load order. It also supports manual load-order overrides for resolving complex edge-case conflicts.
+Dependency handling is a core responsibility. The module resolves required mod relationships, detects missing or cyclic links, and computes deterministic load order so startup behavior is stable across runs.
 
-Once loaded, the module bridges the gap between engine architecture and user content. Mods can seamlessly override existing game assets within the virtual filesystem, introduce entirely new content via the typed `ContentRegistry`, and inject Lua scripts that execute within the engine's sandboxed environment. The module provides sophisticated runtime tools, including enable/disable toggling for instantaneous mod switching and a robust hot-reload queue that can re-parse and re-apply modified mods on the fly without requiring a full game restart. Fully exposed to Lua via the `lurek.mods.*` API, this system empowers developers to treat first-party game content and community mods with identical architectural parity.
+Capability and API checks are built in through schema and registry support. This helps ensure mods request known engine surfaces and stay within declared sandbox boundaries before script execution begins.
+
+Runtime operations include enabling, disabling, and hot-reload style refresh flows. This allows developers and players to iterate on content quickly without rebuilding the whole game session for every change.
+
+In practice, `lurek.mods` provides one consistent contract for mod governance: discover packages, validate constraints, apply ordered loading, enforce sandbox policy, and maintain content registry integration.
 
 ## Imports
 

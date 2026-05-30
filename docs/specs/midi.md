@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `midi` module provides MIDI file playback via software synthesis using SoundFont data, with full transport controls and per-channel mixing.
+- The `midi` module handles MIDI playback and SoundFont-backed synthesis with transport and channel controls.
 
 ## General Info
 
@@ -16,21 +16,11 @@
 
 ## Summary
 
-The `midi` module encapsulates MIDI file parsing, event sequencing, and PCM synthesis using loaded SoundFont (.sf2) instrument data. It was extracted from `src/audio/` to isolate the MIDI-specific logic from the core playback and mixing pipeline.
+The `midi` module handles MIDI sequencing and SoundFont synthesis for runtime playback.
 
-The `MidiPlayer` struct manages:
-- File loading and parsing of Standard MIDI Files.
-- Transport controls: play, pause, stop, seek, tell, loop toggle.
-- Tempo scaling for adjustable playback speed.
-- Per-channel volume, mute, and instrument (program) assignment across 16 MIDI channels.
-- Bus assignment via `BusKey` for routing MIDI output through the audio bus hierarchy.
+It provides transport controls and channel-level settings through a dedicated player surface, while SoundFont resource state is managed separately for predictable synthesis behavior.
 
-The `MidiState` struct manages global SoundFont state:
-- Loading and validating SoundFont files (RIFF + sfbk header check).
-- Querying whether a SoundFont is currently loaded.
-- Clearing loaded SoundFont data.
-
-Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `SharedState` holds a `midi_state: MidiState` field accessible to both the audio and midi API modules.
+In practice, `lurek.midi` keeps MIDI workflows isolated, scriptable, and compatible with the wider audio pipeline.
 
 ## Imports
 

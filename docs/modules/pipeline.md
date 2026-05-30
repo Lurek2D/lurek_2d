@@ -8,48 +8,6 @@ Each `PipelineStep` is highly configurable, acting as a discrete unit of work. S
 
 Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven async engine that tracks elapsed wall-clock time, manages countdown timers for delayed steps, and seamlessly handles step progression (from `Pending` to `Waiting`, `Running`, and finally `Completed`, `Failed`, or `Skipped`). The scheduler supports both synchronous blocking runs and asynchronous, coroutine-based execution that yields between frames, ensuring the game loop is never stalled by long-running background pipelines. Upon completion or cancellation, the module generates a detailed `PipelineResult` object, summarizing the outcomes, durations, and error messages for all steps. The entire workflow definition and execution API is cleanly exposed to Lua via the `lurek.pipeline.*` namespace, offering script developers a powerful tool for asynchronous task orchestration.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### dag.rs
-
-- Dependency-ordered pipeline graph that models work as named steps linked by explicit prerequisites instead of implicit call ordering.
-- The file gives the module its structural brain by storing step topology, validating references, and determining which work can safely happen before or beside other work.
-- Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
-- Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
-- Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
-- ASCII visualization and execution-order queries turn the graph into something inspectable, not just executable, which is important for debugging author intent.
-- Functionally this file delivers the orchestration map that every pipeline run relies on to know what can start, what must wait, and how the whole workflow hangs together.
-
-### mod.rs
-
-- Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
-- It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
-- Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
-
-### result.rs
-
-- Pipeline outcome model for turning many individual step endings into one readable picture of how a workflow actually finished.
-- The file records lifecycle state, per-step timing, errors, and completion data so callers can inspect success, failure, skips, and duration after a run.
-- Convenience queries keep common result questions cheap and direct instead of forcing every user to re-interpret raw status fields.
-- Functionally this delivers the post-run memory and reporting surface for pipeline execution.
-
-### scheduler.rs
-
-- Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
-- The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
-- Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
-- Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
-
-### step.rs
-
-- Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run.
-- The file combines identity, dependencies, delays, retries, timeout-like settings, metadata, and callback hooks into a single authored execution record.
-- Status tracking gives each step a visible lifecycle from pending through terminal outcomes, which keeps orchestration state legible during async progress.
-- Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
-- Functionally this file delivers the configurable work atom from which larger dependency graphs are assembled.
-
 ## Functions
 
 ### `lurek.pipeline.fromTable`
@@ -70,7 +28,7 @@ lurek.pipeline.fromTable(definition)
 
 | Type | Description |
 |------|-------------|
-| [LPipeline](#lpipeline-handle) | The constructed pipeline. |
+| [LPipeline](#lpipeline) | The constructed pipeline. |
 
 **Example**
 
@@ -123,7 +81,7 @@ lurek.pipeline.newPipeline(name)
 
 | Type | Description |
 |------|-------------|
-| [LPipeline](#lpipeline-handle) | The new pipeline object. |
+| [LPipeline](#lpipeline) | The new pipeline object. |
 
 **Example**
 
@@ -157,7 +115,7 @@ lurek.pipeline.newStep(name, callback)
 
 | Type | Description |
 |------|-------------|
-| [LPipelineStep](#lpipelinestep-handle) | The new step object. |
+| [LPipelineStep](#lpipelinestep) | The new step object. |
 
 **Example**
 
@@ -178,11 +136,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LPipeline Handle](#lpipeline-handle)
-- [LPipelineStep Handle](#lpipelinestep-handle)
-
 ## Callbacks
 
 - `lurek.pipeline.newStep` param `callback?` (`function`): Optional callback executed when this step runs.
@@ -191,13 +144,18 @@ end
 
 *No module-specific enums documented.*
 
-## LPipeline Handle
+## Types
 
-### Fields
+- [LPipeline](#lpipeline)
+- [LPipelineStep](#lpipelinestep)
+
+## LPipeline
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPipeline:addBranch`
 
@@ -221,7 +179,7 @@ LPipeline:addBranch(name, deps, when, thenFn, elseFn)
 
 | Type | Description |
 |------|-------------|
-| [LPipeline](#lpipeline-handle) | Returns self for method chaining. |
+| [LPipeline](#lpipeline) | Returns self for method chaining. |
 
 **Example**
 
@@ -277,7 +235,7 @@ LPipeline:addConditional(name, deps, callback, condition)
 
 | Type | Description |
 |------|-------------|
-| [LPipeline](#lpipeline-handle) | Returns self for method chaining. |
+| [LPipeline](#lpipeline) | Returns self for method chaining. |
 
 **Example**
 
@@ -321,13 +279,13 @@ LPipeline:addStep(step)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `step` | [LPipelineStep](#lpipelinestep-handle) | The step to add. |
+| `step` | [LPipelineStep](#lpipelinestep) | The step to add. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LPipeline](#lpipeline-handle) | Returns self for method chaining. |
+| [LPipeline](#lpipeline) | Returns self for method chaining. |
 
 **Example**
 
@@ -366,7 +324,7 @@ LPipeline:addSubPipeline(subPipeline, alias, deps)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `subPipeline` | [LPipeline](#lpipeline-handle) | The pipeline whose steps will be merged in. |
+| `subPipeline` | [LPipeline](#lpipeline) | The pipeline whose steps will be merged in. |
 | `alias` | string | A prefix applied to all merged step names to avoid collisions. |
 | `deps?` | table | Optional array of step names that all merged steps depend on. |
 
@@ -693,7 +651,7 @@ LPipeline:getStep(name)
 
 | Type | Description |
 |------|-------------|
-| [LPipelineStep](#lpipelinestep-handle) | The step object, or nil if no step with that name exists. |
+| [LPipelineStep](#lpipelinestep) | The step object, or nil if no step with that name exists. |
 
 **Example**
 
@@ -754,7 +712,7 @@ LPipeline:getSteps()
 
 | Type | Description |
 |------|-------------|
-| [LPipelineStep](#lpipelinestep-handle)[] | [LPipelineStep](#lpipelinestep-handle) objects. |
+| [LPipelineStep](#lpipelinestep)[] | [LPipelineStep](#lpipelinestep) objects. |
 
 **Example**
 
@@ -799,7 +757,7 @@ LPipeline:getStepsByTag(tag)
 
 | Type | Description |
 |------|-------------|
-| [LPipelineStep](#lpipelinestep-handle)[] | Matching [LPipelineStep](#lpipelinestep-handle) objects. |
+| [LPipelineStep](#lpipelinestep)[] | Matching [LPipelineStep](#lpipelinestep) objects. |
 
 **Example**
 
@@ -1365,7 +1323,7 @@ end
 
 #### `LPipeline:type`
 
-Returns the type name of this object ("[LPipeline](#lpipeline-handle)").
+Returns the type name of this object ("[LPipeline](#lpipeline)").
 
 ```lua
 LPipeline:type()
@@ -1391,7 +1349,7 @@ end
 
 #### `LPipeline:typeOf`
 
-Checks whether this object is of a given type name. Accepts "[LPipeline](#lpipeline-handle)", "Pipeline", or "Object".
+Checks whether this object is of a given type name. Accepts "[LPipeline](#lpipeline)", "Pipeline", or "Object".
 
 ```lua
 LPipeline:typeOf(name)
@@ -1501,13 +1459,13 @@ end
 
 ---
 
-## LPipelineStep Handle
+## LPipelineStep
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPipelineStep:dependsOn`
 
@@ -1521,13 +1479,13 @@ LPipelineStep:dependsOn(dep)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dep` | string|[LPipelineStep](#lpipelinestep-handle) | The dependency step name or step object. |
+| `dep` | string|[LPipelineStep](#lpipelinestep) | The dependency step name or step object. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LPipelineStep](#lpipelinestep-handle) | Returns self for method chaining. |
+| [LPipelineStep](#lpipelinestep) | Returns self for method chaining. |
 
 **Example**
 
@@ -2401,7 +2359,7 @@ end
 
 #### `LPipelineStep:type`
 
-Returns the type name of this object ("[LPipelineStep](#lpipelinestep-handle)").
+Returns the type name of this object ("[LPipelineStep](#lpipelinestep)").
 
 ```lua
 LPipelineStep:type()
@@ -2427,7 +2385,7 @@ end
 
 #### `LPipelineStep:typeOf`
 
-Checks whether this object is of a given type name. Accepts "[LPipelineStep](#lpipelinestep-handle)", "PipelineStep", or "Object".
+Checks whether this object is of a given type name. Accepts "[LPipelineStep](#lpipelinestep)", "PipelineStep", or "Object".
 
 ```lua
 LPipelineStep:typeOf(name)

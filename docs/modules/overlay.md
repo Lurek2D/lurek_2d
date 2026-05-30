@@ -16,73 +16,6 @@ The `overlay` module provides a self-contained screen-space effects layer that s
 
 All active layers emit `RenderCommand` entries built by `build_render_commands` for compositor integration. Debug visualization helpers render state panels and trigger previews into `ImageData` buffers. The full suite is accessible via `lurek.overlay.*`.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### ambient.rs
-
-- Global ambient tint state driven by a time-of-day curve.
-- Maps day phases into scene-wide color changes for lighting control.
-- Supplies the ambient baseline consumed by the overlay renderer.
-
-### atmosphere.rs
-
-- State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning.
-- Carries per-effect enable flags plus density, intensity, color, and speed parameters.
-- Keeps overlay features opt-in so scenes can select only the layers they need.
-- Provides the data model for long-lived atmospheric presentation effects.
-- Separates configuration from rendering so effect logic stays lightweight.
-
-### controller.rs
-
-- Central overlay controller owning every screen-space effect state block.
-- Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame.
-- Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen.
-- Triggers flash, shake, fade, and lightning events through a simple runtime API.
-- Reports shake offset, flash alpha, lightning alpha, and active state to callers.
-- Builds render commands for flash, fade, lightning, and vignette overlays.
-- Resets every subsystem back to a clean inactive state when needed.
-- Supports debug visualisation of internal timing and offset trails.
-- Keeps presentation effects together so higher-level scene code stays thin.
-- Acts as the single screen-space effect scheduler for the renderer.
-
-### mod.rs
-
-- Screen-space overlay subsystem for ambient lighting, atmosphere, and scene transitions.
-- Groups the state and render paths for weather, water, flash, fog, and fade effects.
-- Keeps screen-space presentation logic under one runtime namespace.
-
-### screen_effects.rs
-
-- Full-screen effect state machines for flash, shake, and fade.
-- Keeps each state focused on timing, activation, and per-frame parameters.
-- Uses a deterministic PRNG for shake offsets without extra RNG plumbing.
-- Provides the short-lived effect core used by the overlay controller.
-
-### transition.rs
-
-- Full-screen transition effects for fade, wipe, iris wipe, and dissolve.
-- Supports string-based kind parsing with canonical name round-tripping.
-- Runs with time-based forward and reverse playback modes.
-- Exposes normalized progress for renderer consumption.
-- Gives scene changes a compact state model with predictable timing.
-
-### water.rs
-
-- Animated water distortion overlay with configurable amplitude, frequency, and speed.
-- Adds shallow-water tint and depth-based color shift with independent blend strengths.
-- Advances the wave pattern through a time-accumulating update loop.
-- Serves as the water-specific screen-space effect for overlays.
-
-### weather.rs
-
-- Weather particle simulation state and management for screen-space overlays.
-- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-- Tracks particle pools, wind parameters, and an internal PRNG.
-- Keeps weather spawning and motion separated from the main scene model.
-- Provides reusable state for long-lived atmospheric weather effects.
-
 ## Functions
 
 ### `lurek.overlay.new`
@@ -104,7 +37,7 @@ lurek.overlay.new(w, h)
 
 | Type | Description |
 |------|-------------|
-| [LOverlay](#loverlay-handle) | New overlay handle. |
+| [LOverlay](#loverlay) | New overlay handle. |
 
 **Example**
 
@@ -139,7 +72,7 @@ lurek.overlay.newTransition(kind, duration, color_tbl)
 
 | Type | Description |
 |------|-------------|
-| [LScreenTransition](#lscreentransition-handle) | New screen transition handle. |
+| [LScreenTransition](#lscreentransition) | New screen transition handle. |
 
 **Example**
 
@@ -157,11 +90,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LOverlay Handle](#loverlay-handle)
-- [LScreenTransition Handle](#lscreentransition-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -170,13 +98,18 @@ end
 
 *No module-specific enums documented.*
 
-## LOverlay Handle
+## Types
 
-### Fields
+- [LOverlay](#loverlay)
+- [LScreenTransition](#lscreentransition)
+
+## LOverlay
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LOverlay:clear`
 
@@ -219,7 +152,7 @@ LOverlay:drawToImage(w, h)
 
 | Type | Description |
 |------|-------------|
-| LImage | Image containing the overlay draw state. |
+| [LImage](render.md#limage) | Image containing the overlay draw state. |
 
 **Example**
 
@@ -2173,7 +2106,7 @@ LOverlay:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LOverlay](#loverlay-handle)`. |
+| string | The string `[LOverlay](#loverlay)`. |
 
 **Example**
 
@@ -2244,13 +2177,13 @@ end
 
 ---
 
-## LScreenTransition Handle
+## LScreenTransition
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LScreenTransition:color`
 
@@ -2467,7 +2400,7 @@ LScreenTransition:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LScreenTransition](#lscreentransition-handle)`. |
+| string | The string `[LScreenTransition](#lscreentransition)`. |
 
 **Example**
 

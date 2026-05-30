@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `image` module is an extensive Platform Services tier component responsible for CPU-side pixel buffer operations, providing a robust suite of tools for loading, manipulating, and exporting image data.
+- The `image` module is the engine's CPU image workspace for loading, editing, layering, packing, and exporting pixel data used by runtime and tools.
 
 ## General Info
 
@@ -16,11 +16,19 @@
 
 ## Summary
 
-The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers along with their dimensions. It supports a wide array of image processing operations including filling, nearest-neighbor and bilinear resizing, flipping, rotation, cropping, and primitive drawing (lines, circles, rectangles, and compact bitmap text). Crucially, it provides a comprehensive set of pixel-level effects—such as brightness, contrast, saturation, gamma correction, tinting, grayscale, sepia, inversion, thresholding, and separable box blurs—many of which are highly optimized using parallel processing (Rayon) for large images.
+The `image` module is the engine's CPU-side image workspace. It gives one stable model for mutable RGBA buffers and one consistent API for loading files, creating buffers, applying edits, and exporting results.
 
-Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
+Its day-to-day value is workflow coverage. Teams can resize, crop, rotate, flip, draw primitives, blit regions, compare outputs, and serialize images without jumping between unrelated helper modules.
 
-The `image` module features specialized systems for game development, most notably the `ProvinceGrid`. This system performs high-speed flood-fill analysis on color-coded PNG maps to generate optimized spatial indexes, identifying distinct provinces, calculating adjacencies, tracing polygonal borders, and exporting compressed shape data for Geoscape-style games. Additionally, `PaletteLUT` provides hardware-accelerated color remapping for retro palette-swapping effects. The module also contains an extensive set of debug visualization renderers for animation, audio, camera bounds, easing curves, and procedural generation (Voronoi, noise, cellular automata). The entire API, including CPU-to-GPU texture upload helpers, is fully exposed to Lua via the `lurek.image.*` namespace.
+Color and filter operations are integrated into the same surface. Brightness, contrast, saturation, gamma, tinting, thresholding, blurs, and kernel-based passes can be chained in predictable ways for runtime effects and tooling pipelines.
+
+Layered composition support enables non-destructive image authoring at runtime. Layers can be stacked, reordered, hidden, renamed, and merged with explicit opacity and blend behavior, which is practical for editor features and generated UI assets.
+
+Asset pipeline features are included, not externalized. Standard format decode and encode paths, compressed texture handling, and atlas packing allow content to move from source files to render-ready forms through one module boundary.
+
+The module also supports data-oriented uses of imagery. Region extraction, palette remapping, and visualization helpers let image buffers act as structured inputs for map workflows, diagnostics, and evidence output, not only as final on-screen pictures.
+
+Because the behavior is deterministic and scriptable, the same operations can be reused for gameplay content, CI validation, and developer tooling. In practice, `lurek.image` provides a complete pixel-data contract: ingest, transform, compose, package, and export image state with predictable results.
 
 ## Imports
 

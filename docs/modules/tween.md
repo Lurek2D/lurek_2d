@@ -8,68 +8,6 @@ To handle complex animation choreography, the module provides powerful combinato
 
 The entire system is driven by a centralized `TweenEngine` that efficiently updates all active tweens, sequences, parallels, and springs every frame. The module is fully integrated with Lua coroutines via the `await()` method, allowing developers to yield execution until an animation completes, drastically simplifying sequential scripting without callback hell. Exposed via the comprehensive `lurek.tween.*` Lua API, this module is an essential tool for bringing fluid, polished motion to Lurek2D games.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### chain.rs
-
-- This file provides composable tween chains for staged motion and timing choreography.
-- It supports sequential and grouped progression so animation beats can be orchestrated clearly.
-- It carries optional step labels that let scripts react to completion boundaries.
-- It advances with frame delta while preserving deterministic chain state transitions.
-- It translates complex cinematic timing into a readable structure for runtime execution.
-- It keeps multi-step animation flow explicit for tools, debugging, and script control.
-
-### engine.rs
-
-- This file provides the active tween engine that updates all running animation handles.
-- It tracks tweens, sequences, parallels, and springs through one coordinated update surface.
-- It resolves easing behavior and value writes directly onto Lua-owned target tables.
-- It manages lifecycle cleanup so completed animations exit without stale runtime state.
-- It keeps tween progression synchronous with frame updates for deterministic visual output.
-
-### handle.rs
-
-- This file provides Lua-facing tween handle types that expose animation control to scripts.
-- It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract.
-- It stores progression state, target bindings, and callback hooks close to each animation unit.
-- It writes interpolated values to Lua tables each frame through explicit field mappings.
-- It supports repeat, yoyo, relative targets, and custom easing for expressive motion design.
-- It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps.
-- It advances parallel lanes together and resolves completion only when all lanes settle.
-- It resumes waiting coroutines on completion so asynchronous script flow stays ergonomic.
-
-### interpolator.rs
-
-- This file provides the multi-channel interpolator that converts progress into animated values.
-- It resolves easing names through flexible aliases so script-facing naming remains forgiving.
-- It keeps independent tween clocks with reset and seek support for controlled playback.
-- It interpolates registered channels each frame using the resolved easing curve semantics.
-- It falls back to linear behavior when easing names are unknown to preserve continuity.
-
-### mod.rs
-
-- This module delivers the motion interpolation stack used for scripted and systemic animation.
-- It combines timed easing, spring dynamics, and composition primitives in one cohesive surface.
-- It gives the runtime one predictable path for updating all active tween workflows.
-
-### spring.rs
-
-- This file provides damped spring simulation for motion that should feel physical and responsive.
-- It models spring parameters and settle rules so values converge smoothly toward targets.
-- It groups named spring axes under shared defaults for coordinated multi-field behaviors.
-- It integrates state each tick and snaps on settle to remove micro-jitter residue.
-- It offers a natural animation path where fixed-duration easing is not a good fit.
-
-### state.rs
-
-- This file provides canonical tween progress state shared across animation handle types.
-- It tracks elapsed time, duration, pause state, and resolved easing behavior in one unit.
-- It resolves easing names case-insensitively with aliases that match common script habits.
-- It exposes built-in easing catalog data for tooling, validation, and autocomplete features.
-- It keeps progress semantics stable so tween updates remain deterministic across runtime paths.
-
 ## Functions
 
 ### `lurek.tween.cancelAll`
@@ -115,7 +53,7 @@ lurek.tween.delay(seconds, cb)
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | A sequence handle representing the delay. |
+| [LTweenSequence](#ltweensequence) | A sequence handle representing the delay. |
 
 **Example**
 
@@ -208,7 +146,7 @@ lurek.tween.newChain(looping)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | New tween chain handle. |
+| [LTweenChain](#ltweenchain) | New tween chain handle. |
 
 **Example**
 
@@ -240,7 +178,7 @@ lurek.tween.newState(duration, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTweenState](#ltweenstate-handle) | The new tween state handle. |
+| [LTweenState](#ltweenstate) | The new tween state handle. |
 
 **Example**
 
@@ -276,7 +214,7 @@ lurek.tween.parallel()
 
 | Type | Description |
 |------|-------------|
-| [LTweenParallel](#ltweenparallel-handle) | The new parallel group handle. |
+| [LTweenParallel](#ltweenparallel) | The new parallel group handle. |
 
 **Example**
 
@@ -349,7 +287,7 @@ lurek.tween.sequence()
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | The new sequence handle. |
+| [LTweenSequence](#ltweensequence) | The new sequence handle. |
 
 **Example**
 
@@ -393,7 +331,7 @@ lurek.tween.spring(target, fields, opts)
 
 | Type | Description |
 |------|-------------|
-| [LSpring](#lspring-handle) | The active spring handle. |
+| [LSpring](#lspring) | The active spring handle. |
 
 **Example**
 
@@ -437,7 +375,7 @@ lurek.tween.to(target, fields, duration, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The active tween handle. |
+| [LTween](#ltween) | The active tween handle. |
 
 **Example**
 
@@ -473,7 +411,7 @@ lurek.tween.tween(duration, target, fields, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The active tween handle. |
+| [LTween](#ltween) | The active tween handle. |
 
 **Example**
 
@@ -507,7 +445,7 @@ lurek.tween.tweenChain(steps)
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | The active sequence handle. |
+| [LTweenSequence](#ltweensequence) | The active sequence handle. |
 
 **Example**
 
@@ -549,7 +487,7 @@ lurek.tween.tweenColor(duration, target, color, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The active tween handle. |
+| [LTween](#ltween) | The active tween handle. |
 
 **Example**
 
@@ -598,18 +536,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LSpring Handle](#lspring-handle)
-- [LTween Handle](#ltween-handle)
-- [LTweenChain Handle](#ltweenchain-handle)
-- [LTweenParallel Handle](#ltweenparallel-handle)
-- [LTweenSequence Handle](#ltweensequence-handle)
-- [LTweenState Handle](#ltweenstate-handle)
-- [Lparallel Handle](#lparallel-handle)
-- [Lsequence Handle](#lsequence-handle)
-- [Lto Handle](#lto-handle)
-
 ## Callbacks
 
 - `lurek.tween.delay` param `cb?` (`function`): Optional callback fired when the delay completes.
@@ -619,13 +545,22 @@ end
 
 *No module-specific enums documented.*
 
-## LSpring Handle
+## Types
 
-### Fields
+- [LSpring](#lspring)
+- [LTween](#ltween)
+- [LTweenChain](#ltweenchain)
+- [LTweenParallel](#ltweenparallel)
+- [LTweenSequence](#ltweensequence)
+- [LTweenState](#ltweenstate)
+
+## LSpring
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSpring:cancel`
 
@@ -854,7 +789,7 @@ LSpring:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LSpring](#lspring-handle)"`. |
+| string | Always `"[LSpring](#lspring)"`. |
 
 **Example**
 
@@ -882,7 +817,7 @@ LSpring:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check against (`"[LSpring](#lspring-handle)"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LSpring](#lspring)"` or `"Object"`). |
 
 **Returns**
 
@@ -938,13 +873,13 @@ end
 
 ---
 
-## LTween Handle
+## LTween
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTween:addValue`
 
@@ -1336,7 +1271,7 @@ LTween:onCancel(f)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1369,7 +1304,7 @@ LTween:onComplete(f)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1402,7 +1337,7 @@ LTween:onUpdate(f)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1460,7 +1395,7 @@ LTween:relative(enabled)
 
 | Type | Description |
 |------|-------------|
-| [LTween](#ltween-handle) | The same tween handle for chaining. |
+| [LTween](#ltween) | The same tween handle for chaining. |
 
 **Example**
 
@@ -1644,7 +1579,7 @@ LTween:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTween](#ltween-handle)`. |
+| string | The string `[LTween](#ltween)`. |
 
 **Example**
 
@@ -1671,7 +1606,7 @@ LTween:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LTween](#ltween-handle)` and `Object`. |
+| `name` | string | Type name to compare against `[LTween](#ltween)` and `Object`. |
 
 **Returns**
 
@@ -1714,13 +1649,13 @@ LTween:update(dt)
 
 ---
 
-## LTweenChain Handle
+## LTweenChain
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTweenChain:call`
 
@@ -1740,7 +1675,7 @@ LTweenChain:call(fn)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2015,7 +1950,7 @@ LTweenChain:loop(n)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2046,7 +1981,7 @@ LTweenChain:onComplete(fn)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2077,7 +2012,7 @@ LTweenChain:onLoop(fn)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2102,7 +2037,7 @@ LTweenChain:pause()
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2177,7 +2112,7 @@ LTweenChain:resume()
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2227,7 +2162,7 @@ LTweenChain:start()
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2252,7 +2187,7 @@ LTweenChain:stop()
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2317,7 +2252,7 @@ LTweenChain:to(target, fields, dur, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2342,7 +2277,7 @@ LTweenChain:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LTweenChain](#ltweenchain-handle)`. |
+| string | The string `[LTweenChain](#ltweenchain)`. |
 
 **Example**
 
@@ -2430,7 +2365,7 @@ LTweenChain:wait(seconds, callback)
 
 | Type | Description |
 |------|-------------|
-| [LTweenChain](#ltweenchain-handle) | This chain. |
+| [LTweenChain](#ltweenchain) | This chain. |
 
 **Example**
 
@@ -2443,13 +2378,13 @@ end
 
 ---
 
-## LTweenParallel Handle
+## LTweenParallel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTweenParallel:add`
 
@@ -2463,7 +2398,7 @@ LTweenParallel:add(tw_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `tw_ud` | [LTween](#ltween-handle) | The tween handle returned by `lurek.tween.tween()` to add to this group. |
+| `tw_ud` | [LTween](#ltween) | The tween handle returned by `lurek.tween.tween()` to add to this group. |
 
 **Example**
 
@@ -2561,7 +2496,7 @@ LTweenParallel:onComplete(f)
 
 | Type | Description |
 |------|-------------|
-| [LTweenParallel](#ltweenparallel-handle) | This parallel group for chaining. |
+| [LTweenParallel](#ltweenparallel) | This parallel group for chaining. |
 
 **Example**
 
@@ -2589,7 +2524,7 @@ LTweenParallel:start()
 
 | Type | Description |
 |------|-------------|
-| [LTweenParallel](#ltweenparallel-handle) | This parallel group for chaining. |
+| [LTweenParallel](#ltweenparallel) | This parallel group for chaining. |
 
 **Example**
 
@@ -2626,7 +2561,7 @@ LTweenParallel:tween(duration, target, fields, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTweenParallel](#ltweenparallel-handle) | This parallel group for chaining. |
+| [LTweenParallel](#ltweenparallel) | This parallel group for chaining. |
 
 **Example**
 
@@ -2654,7 +2589,7 @@ LTweenParallel:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LTweenParallel](#ltweenparallel-handle)"`. |
+| string | Always `"[LTweenParallel](#ltweenparallel)"`. |
 
 **Example**
 
@@ -2682,7 +2617,7 @@ LTweenParallel:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check against (`"[LTweenParallel](#ltweenparallel-handle)"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LTweenParallel](#ltweenparallel)"` or `"Object"`). |
 
 **Returns**
 
@@ -2704,13 +2639,13 @@ end
 
 ---
 
-## LTweenSequence Handle
+## LTweenSequence
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LTweenSequence:await`
 
@@ -2759,7 +2694,7 @@ LTweenSequence:callback(f)
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence) | This sequence for chaining. |
 
 **Example**
 
@@ -2826,7 +2761,7 @@ LTweenSequence:delay(seconds, cb)
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence) | This sequence for chaining. |
 
 **Example**
 
@@ -2930,7 +2865,7 @@ LTweenSequence:onComplete(f)
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence) | This sequence for chaining. |
 
 **Example**
 
@@ -2960,7 +2895,7 @@ LTweenSequence:start()
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence) | This sequence for chaining. |
 
 **Example**
 
@@ -2999,7 +2934,7 @@ LTweenSequence:tween(duration, target, fields, easing)
 
 | Type | Description |
 |------|-------------|
-| [LTweenSequence](#ltweensequence-handle) | This sequence for chaining. |
+| [LTweenSequence](#ltweensequence) | This sequence for chaining. |
 
 **Example**
 
@@ -3030,7 +2965,7 @@ LTweenSequence:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LTweenSequence](#ltweensequence-handle)"`. |
+| string | Always `"[LTweenSequence](#ltweensequence)"`. |
 
 **Example**
 
@@ -3056,7 +2991,7 @@ LTweenSequence:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check against (`"[LTweenSequence](#ltweensequence-handle)"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LTweenSequence](#ltweensequence)"` or `"Object"`). |
 
 **Returns**
 
@@ -3076,15 +3011,15 @@ end
 
 ---
 
-## LTweenState Handle
+## LTweenState
 
-### Fields
+### Type Fields
 
 | Name | Type | Description |
 |------|------|-------------|
 | `paused` | any |  |
 
-### Methods
+### Type Methods
 
 #### `LTweenState:isComplete`
 
@@ -3254,7 +3189,7 @@ LTweenState:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always `"[LTweenState](#ltweenstate-handle)"`. |
+| string | Always `"[LTweenState](#ltweenstate)"`. |
 
 **Example**
 
@@ -3284,7 +3219,7 @@ LTweenState:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check against (`"[LTweenState](#ltweenstate-handle)"` or `"Object"`). |
+| `name` | string | Type name to check against (`"[LTweenState](#ltweenstate)"` or `"Object"`). |
 
 **Returns**
 
@@ -3307,33 +3242,3 @@ end
 ```
 
 ---
-
-## Lparallel Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## Lsequence Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## Lto Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*

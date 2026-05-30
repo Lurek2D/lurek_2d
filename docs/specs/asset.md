@@ -2,9 +2,7 @@
 
 ## TL;DR
 
-`lurek.asset` is a ref-counted asset registry with metadata and search. It tracks
-paths and type classification (not decoded GPU/audio resources), supports tags and
-groups, and exposes query helpers for scripts.
+- The `asset` module is a shared asset registry with ref counts, metadata, tags, and search helpers, so scripts can find and manage assets without owning decode logic.
 
 ## General Info
 
@@ -18,13 +16,15 @@ groups, and exposes query helpers for scripts.
 
 ## Summary
 
-The `asset` module is a ref-counted registry and query surface for media handles and text-like source payloads exposed as `lurek.asset`. It is deliberately narrower than loaders in rendering or audio: it tracks identity, metadata, lifecycle, and lookups, while decode-specific runtime objects remain owned by domain modules such as `image`, `font`, and `audio`.
+The `asset` module provides one shared catalog for asset identity and lifetime. It lets the runtime load entries, keep reference counts, and expose stable handles to scripts. This gives projects a predictable way to track what is currently in use.
 
-Core responsibilities are stable indexing and retrieval by name, group, tag, and type, plus consistent handle semantics for Lua and engine-side callers. `AssetCache` stores `AssetEntry` records with descriptive metadata and source affiliation so scripts can discover assets without duplicating path rules or ad-hoc indexing logic.
+Its functional focus is discovery and metadata, not heavy decoding. The module tracks path, type, group, tags, display name, and reference state, then offers query helpers to search by those fields. This removes repeated ad-hoc indexing logic from gameplay scripts and tools.
 
-The design goal is a lightweight catalog layer, not a universal transcoder. Binary-heavy types (images, fonts, sounds) are primarily represented by handle/path metadata in this module, while text-like assets can retain source content when needed for script tooling and hot-reload workflows. This separation keeps the module performant and avoids tight coupling to decoder internals.
+Because ref counts are first-class, asset ownership is easier to reason about. Systems can acquire and release handles without guessing when data should be removed. The cache can report stats and loaded state, which improves runtime visibility during development and debugging.
 
-In practical usage, `asset` is the lookup and lifetime contract that other systems depend on. High-level gameplay code should query and resolve through this registry, then hand off to module-specific loaders for final decode/playback/render behavior.
+The module is designed as a lightweight coordination layer. Type-specific decode and playback responsibilities stay in specialized modules, while `asset` remains the place for lookup contracts and lifecycle bookkeeping. This keeps integration clean and reduces coupling.
+
+In day-to-day use, the value is consistency: one way to load, label, group, tag, find, and unload assets across a project. That consistency helps both game code and tooling stay simpler as content size grows.
 
 ## Imports
 

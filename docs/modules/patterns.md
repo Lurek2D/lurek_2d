@@ -8,174 +8,6 @@ To facilitate decoupled communication across systems, the module provides a robu
 
 The module also includes specialized data structures optimized for game development. These include a `Graph` (directed/undirected with BFS/DFS traversals), a `Trie` for rapid prefix searches, a `BiMap` for bidirectional lookups, and a `PriorityQueue` with stable FIFO tie-breaking. Time-based operations are supported by a `Ring` buffer for fixed-size rolling histories (useful for telemetry or combo tracking), a `Funnel` for batching events over a time window, and `Throttle`/`Debounce` primitives for rate-limiting inputs or actions. Additionally, the `WeightedRandom` selector enables deterministic, dynamic picking with or without replacement. All these tools are instantiated via `lurek.patterns.*` and operate as standalone userdata objects, ensuring script developers have robust, C-speed architectural primitives at their fingertips.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### behavior_tree.rs
-
-- Behavior tree runtime for composing game and AI decisions as explicit node graphs that evaluate in a stable left-to-right order.
-- The file provides structural node storage for sequences, selectors, parallels, repeaters, inverters, and named leaf actions without hiding execution flow behind opaque callbacks.
-- It keeps build-time graph authoring and tick-time run state close together so trees can be assembled, reset, and stepped with predictable control over parent-child relationships.
-- Repeat counters, running markers, and root selection live alongside compact integer node addressing, which keeps behavior updates easy to reason about and cheap to traverse.
-- Functionally this file delivers the core decision backbone for scripted actors that need readable branching logic, reusable subtrees, and deterministic per-frame evaluation semantics.
-
-### bimap.rs
-
-- Bidirectional map storage for cases where game code must move between symbolic keys and canonical values with equal ease.
-- The file maintains mirrored forward and reverse tables so each mutation preserves a single authoritative pairing instead of forcing callers to manage two separate maps by hand.
-- Inserts, removals, and containment checks are shaped around keeping that two-way contract coherent even when entries are replaced or deleted from either side.
-- Functionally this delivers fast reversible lookup for registries, id-name bindings, alias tables, and other systems that need symmetry rather than one-directional indexing.
-
-### blackboard.rs
-
-- Shared blackboard storage for gameplay and AI systems that need a common language for state without hard-coding direct dependencies between producers and consumers.
-- The file models values as a compact tagged set of common script-facing types and couples each write to revision tracking so readers can cheaply detect what changed and when.
-- Parent-linked lookup lets a local board inherit broader context while still overriding specific keys, which makes squad, faction, and entity state layering practical.
-- Typed getters, defaults, clears, and revision queries turn the store into more than a raw map by giving behavior code a disciplined way to read uncertain state.
-- Functionally this is the coordination memory for systems that want shared facts, incremental change detection, and hierarchical fallback instead of tightly wired state plumbing.
-
-### collections.rs
-
-- Small shared capacity metadata for collection-style pattern objects that expose bounded or unbounded behavior through one consistent rule set.
-- The file centralizes count, limit, and full-state semantics so stacks, queues, and similar wrappers can agree on what capacity means without duplicating bookkeeping code.
-- Functionally this delivers the lightweight policy layer behind collection limits, especially the convention that zero means unbounded while positive values enforce a hard ceiling.
-
-### command_stack.rs
-
-- Command history storage for features that need explicit undo and redo flow instead of ad hoc reversal logic spread across many systems.
-- The file tracks a linear timeline with a movable cursor, letting callers push new actions, walk backward through applied work, and replay discarded steps in order.
-- Batch grouping keeps multi-step edits together as one logical unit, which matters for editors, tactics actions, and scripted transactions that should reverse atomically.
-- Size limits and eviction rules keep history bounded without losing the current navigation model or forcing clients to hand-roll trimming behavior.
-- Functionally this delivers the memory of reversible work for tooling and gameplay flows that care about chronological intent, replay, and controlled rollback.
-
-### event_bus.rs
-
-- Event bus routing for decoupled gameplay communication where systems publish named signals and interested listeners react without direct caller knowledge.
-- The file organizes subscriptions by event name while preserving listener identity, priority order, and wildcard reach so dispatch can stay predictable as projects grow.
-- One-shot listeners, targeted clearing, and ordered listener extraction make the bus practical both for transient reactions and for long-lived system wiring.
-- Rather than executing script callbacks itself, it prepares the dispatch shape that higher layers can consume while keeping subscription state authoritative in one place.
-- Functionally this is the message circulation core for feature coordination, broadcast-style notifications, and low-friction cross-system signaling.
-
-### factory.rs
-
-- Runtime factory registry for systems that construct objects by declared type names instead of hard-wiring every spawn path to concrete branches.
-- The file keeps canonical names and aliases aligned so different labels can converge on the same build target while still allowing registration changes at runtime.
-- Resolution, replacement, and removal are framed around keeping the name graph explicit and queryable rather than letting construction rules disappear into scattered conditionals.
-- Functionally this delivers the naming and lookup backbone for data-driven spawning, pluggable content registration, and alias-friendly creation flows.
-
-### funnel.rs
-
-- Buffered funnel for gathering small tagged numeric events into controlled flush windows instead of reacting to every sample the instant it arrives.
-- The file couples entry accumulation with elapsed-time tracking and count thresholds so callers can model batch release, burst shaping, or windowed aggregation with simple state.
-- Immediate windows, manual discard, and explicit readiness checks make the behavior usable for both deterministic simulation ticks and script-driven control loops.
-- Functionally this delivers a compact batching primitive for telemetry, combo capture, score staging, and other flows where grouping matters more than raw per-event immediacy.
-
-### graph.rs
-
-- General-purpose graph structure for gameplay relationships, navigation-like topologies, and any domain that benefits from explicit nodes connected by weighted or labelled edges.
-- The file stores graph state as stable integer-addressed nodes and adjacency lists, which keeps structural edits straightforward while preserving identities scripts can hold onto.
-- Directed and undirected operation live behind one representation, including automatic reverse-edge behavior when a connection should semantically exist in both directions.
-- Traversal helpers expose breadth-first and depth-first walks as first-class capabilities so callers can inspect reachability, discover neighborhoods, or derive ordered visits without rebuilding utility code.
-- Connectivity checks, node metadata, and edge labels make the graph more than a bare container by supporting practical gameplay queries around ownership, routes, influence, or dependency webs.
-- Functionally this file delivers the relational map backbone for systems that need editable topology, traversable links, and stable graph identities in script-friendly form.
-
-### mediator.rs
-
-- Mediator registry for coordinating communication through named channels when systems should meet through a broker rather than pointing at each other directly.
-- The file assigns durable handler identities per channel so registration, removal, counting, and inspection all speak the same compact vocabulary.
-- By storing channel membership centrally it becomes easy to clear one lane of traffic or reset the whole routing surface without leaking per-subscriber bookkeeping into callers.
-- Functionally this delivers a message rendezvous layer for decoupled gameplay features, scripted services, and hub-style coordination flows.
-
-### mod.rs
-
-- Foundational gameplay pattern toolbox that packages decision flow, state coordination, messaging, reuse, and selection primitives into small reusable building blocks.
-- The module supplies behavior trees, simple and guarded state machines, observer and event distribution layers, mediator routing, factories, service lookup, and undo-oriented command history.
-- It also delivers practical supporting structures such as graphs, tries, rings, priority ordering, bidirectional lookup, weighted picks, throttling windows, buffered funnels, and object reuse pools.
-- At module level this is the high-level kit for assembling decoupled game logic systems in Lua and Rust without re-implementing common orchestration patterns for each feature.
-
-### object_pool.rs
-
-- Object pool state for reuse-heavy systems that would rather recycle stable ids than continuously allocate and discard short-lived gameplay resources.
-- The file separates idle and active membership, supports prewarming, and enforces optional capacity so callers can shape reuse policy without inventing their own lifecycle bookkeeping.
-- Acquire and release flow is designed around predictable id turnover, which suits bullets, particles, temporary actors, and other bursty populations.
-- Functionally this delivers the reuse scheduler behind allocation-sensitive gameplay loops that want bounded churn and explicit ownership transitions.
-
-### observer.rs
-
-- Observer-style notification store for reactive game state where changes on named keys should wake interested listeners without binding readers to writers.
-- The file keeps subscriptions grouped by key while still supporting wildcard reach, so systems can watch a narrow property or an entire stream of change events.
-- Persistent and one-shot modes share one dispatch model, which simplifies lifecycle handling and ensures cleanup happens in the same place that notifications are tracked.
-- Clear operations, listener ids, and stored observer entries make the structure suitable for long-running scenes where subscriptions need explicit ownership and maintenance.
-- Functionally this delivers the change-broadcast layer for reactive UI, quest logic, AI memory watchers, and any flow that responds to named value transitions.
-
-### priority_queue.rs
-
-- Ordered priority queue for gameplay scheduling and selection tasks that need highest-priority work first without losing deterministic order among ties.
-- The file assigns each entry its own identity and insertion sequence so queue mutation remains inspectable even when multiple items share the same score.
-- Push, pop, peek, and targeted removal operate on one consistently sorted store rather than spreading priority semantics across separate containers and side maps.
-- Functionally this delivers stable urgency-based ordering for task systems, AI planners, turn resolution, and any script logic that needs predictable priority arbitration.
-
-### ring.rs
-
-- Fixed-capacity ring buffer for rolling gameplay history where the newest samples matter most but recent context still needs to remain queryable in order.
-- The file stores tagged entries in arrival order and automatically evicts the oldest data once capacity is reached, keeping the window fresh without manual trimming.
-- Numeric and string payload support makes the structure useful for both measured telemetry and symbolic event trails.
-- Aggregate helpers and ordered iteration turn the buffer into a practical runtime history tool instead of a passive overwrite container.
-- Functionally this delivers short-horizon memory for combo tracking, diagnostics, smoothing inputs, and any system that lives on a moving recent window.
-
-### service_locator.rs
-
-- Lightweight service locator for runtime feature discovery when systems need to find shared capabilities by agreed names instead of direct construction paths.
-- The file keeps registration, removal, lookup, and sorted listing in one compact registry so service presence stays explicit and easy to inspect.
-- Functionally this delivers a simple dependency access hub for loosely coupled gameplay code, especially where availability changes during runtime.
-
-### simple_state.rs
-
-- Minimal named-state tracker for systems that only need one active mode at a time without the heavier transition model of a full state machine.
-- The file focuses on managing the known state set and the current selection, which keeps switching semantics explicit and validation cheap.
-- Enumeration and counting support make the registry easy to inspect from scripts and tooling that want to reason about available modes.
-- Functionally this delivers the lightweight mode switch core for menus, AI phases, control states, and other simple single-state flows.
-
-### state_machine.rs
-
-- Full finite state machine runtime for systems that need named states, validated transitions, and a remembered trail of where control has moved over time.
-- The file separates state membership from transition rules so allowed movement stays explicit and can be guarded rather than implied by arbitrary caller behavior.
-- Bounded history gives each machine a replayable memory of recent changes, which is useful for debugging, analytics, and gameplay rules that depend on prior modes.
-- Current-state management, rule inspection, and history maintenance live together so switching logic stays coherent instead of fragmenting across helpers.
-- Functionally this delivers the structured mode-control layer for actors, encounters, UI flows, and scripted systems with meaningful transition policy.
-
-### strategy.rs
-
-- Strategy registry for features that swap among named behaviors or algorithms while keeping the selection surface explicit and data-driven.
-- The file assigns stable ids to registered strategies and tracks which one is currently active so callers can inspect or switch policy without hidden branching.
-- Registration and removal are treated as first-class operations, which fits systems where available strategies change with content, upgrades, or scripting.
-- Functionally this delivers the hot-swappable behavior catalog behind interchangeable decision rules, tactics, generators, or processing modes.
-
-### throttle.rs
-
-- Timing control primitives for gameplay actions that should be rate-limited or delayed instead of firing on every raw input or event edge.
-- The file pairs throttle and debounce behaviors in one place because both solve cadence control while differing in whether they emit immediately or only after quiet time.
-- Shared state around elapsed time, enable flags, fire counts, and reset flow makes these utilities practical for per-frame ticking and script-side inspection.
-- Progress queries on throttle and trigger-cancel semantics on debounce cover the two common rhythms of spaced repetition and delayed confirmation.
-- Functionally this delivers the pacing layer for input smoothing, cooldown-like gates, UI chatter suppression, and event burst control.
-
-### trie.rs
-
-- Prefix trie storage for string-centric gameplay data where whole-key lookup and shared-prefix discovery should both be fast and structurally related.
-- The file models words as character paths, letting inserts and exact searches coexist naturally with prefix queries that expand into many matching keys.
-- Removal includes branch pruning so the structure sheds dead paths instead of accumulating empty nodes after content churn.
-- Depth-first key collection turns the trie into a practical retrieval tool for completions, dictionaries, filters, and lookup-heavy scripting workflows.
-- Functionally this delivers the text-prefix indexing backbone for command palettes, content search, lexicons, and other systems built around incremental string matching.
-
-### weighted_random.rs
-
-- Weighted random selector for content and gameplay systems that want probability-driven picks while still keeping the candidate set editable at runtime.
-- The file stores named weighted entries and supports structural mutation so drops, spawns, behaviors, or narrative beats can rebalance without rebuilding the container.
-- It covers both single draws and multi-pick selection without replacement, which makes the same structure useful for one-off rolls and curated batches.
-- Revision tracking gives outside code a reliable signal that probabilities or membership changed, helping caches and derived tables stay honest.
-- Functionally this delivers the probability orchestration layer for loot tables, encounter variation, weighted choices, and repeat-aware random selection flows.
-
 ## Functions
 
 ### `lurek.patterns.newBehaviorTree`
@@ -190,7 +22,7 @@ lurek.patterns.newBehaviorTree()
 
 | Type | Description |
 |------|-------------|
-| [LBehaviorTree](#lbehaviortree-handle) | A new behavior tree instance. |
+| [LBehaviorTree](#lbehaviortree) | A new behavior tree instance. |
 
 **Example**
 
@@ -234,7 +66,7 @@ lurek.patterns.newBlackboard(name)
 
 | Type | Description |
 |------|-------------|
-| [LBlackboard](#lblackboard-handle) | A new blackboard instance. |
+| [LBlackboard](#lblackboard) | A new blackboard instance. |
 
 **Example**
 
@@ -268,7 +100,7 @@ lurek.patterns.newCommandStack(maxSize)
 
 | Type | Description |
 |------|-------------|
-| [LCommandStack](#lcommandstack-handle) | A new command stack instance. |
+| [LCommandStack](#lcommandstack) | A new command stack instance. |
 
 **Example**
 
@@ -311,7 +143,7 @@ lurek.patterns.newDebounce(wait)
 
 | Type | Description |
 |------|-------------|
-| [LDebounce](#ldebounce-handle) | A new debounce instance. |
+| [LDebounce](#ldebounce) | A new debounce instance. |
 
 **Example**
 
@@ -348,7 +180,7 @@ lurek.patterns.newEventBus(name)
 
 | Type | Description |
 |------|-------------|
-| [LEventBus](#leventbus-handle) | A new event bus instance. |
+| [LEventBus](#leventbus) | A new event bus instance. |
 
 **Example**
 
@@ -378,7 +210,7 @@ lurek.patterns.newFactory()
 
 | Type | Description |
 |------|-------------|
-| [LFactory](#lfactory-handle) | A new factory instance. |
+| [LFactory](#lfactory) | A new factory instance. |
 
 **Example**
 
@@ -416,7 +248,7 @@ lurek.patterns.newFunnel(window, maxEntries, name)
 
 | Type | Description |
 |------|-------------|
-| [LFunnel](#lfunnel-handle) | A new funnel instance. |
+| [LFunnel](#lfunnel) | A new funnel instance. |
 
 **Example**
 
@@ -454,7 +286,7 @@ lurek.patterns.newGraph(undirected)
 
 | Type | Description |
 |------|-------------|
-| [LPatternGraph](#lpatterngraph-handle) | A new graph instance. |
+| [LPatternGraph](#lpatterngraph) | A new graph instance. |
 
 **Example**
 
@@ -483,7 +315,7 @@ lurek.patterns.newList()
 
 | Type | Description |
 |------|-------------|
-| [LList](#llist-handle) | A new list instance. |
+| [LList](#llist) | A new list instance. |
 
 **Example**
 
@@ -512,7 +344,7 @@ lurek.patterns.newMap()
 
 | Type | Description |
 |------|-------------|
-| [LMap](#lmap-handle) | A new map instance. |
+| [LMap](#lmap) | A new map instance. |
 
 **Example**
 
@@ -540,7 +372,7 @@ lurek.patterns.newMediator()
 
 | Type | Description |
 |------|-------------|
-| [LMediator](#lmediator-handle) | A new mediator instance. |
+| [LMediator](#lmediator) | A new mediator instance. |
 
 **Example**
 
@@ -570,7 +402,7 @@ lurek.patterns.newObjectPool()
 
 | Type | Description |
 |------|-------------|
-| [LObjectPool](#lobjectpool-handle) | A new object pool instance. |
+| [LObjectPool](#lobjectpool) | A new object pool instance. |
 
 **Example**
 
@@ -603,7 +435,7 @@ lurek.patterns.newObserver(name)
 
 | Type | Description |
 |------|-------------|
-| [LObserver](#lobserver-handle) | A new observer instance. |
+| [LObserver](#lobserver) | A new observer instance. |
 
 **Example**
 
@@ -639,7 +471,7 @@ lurek.patterns.newPriorityQueue(name)
 
 | Type | Description |
 |------|-------------|
-| [LPriorityQueue](#lpriorityqueue-handle) | A new priority queue instance. |
+| [LPriorityQueue](#lpriorityqueue) | A new priority queue instance. |
 
 **Example**
 
@@ -673,7 +505,7 @@ lurek.patterns.newQueue(capacity)
 
 | Type | Description |
 |------|-------------|
-| [LQueue](#lqueue-handle) | A new queue instance. |
+| [LQueue](#lqueue) | A new queue instance. |
 
 **Example**
 
@@ -701,7 +533,7 @@ lurek.patterns.newRelationshipManager()
 
 | Type | Description |
 |------|-------------|
-| [LRelationshipManager](#lrelationshipmanager-handle) | A new relationship manager instance. |
+| [LRelationshipManager](#lrelationshipmanager) | A new relationship manager instance. |
 
 **Example**
 
@@ -736,7 +568,7 @@ lurek.patterns.newRing(capacity, name)
 
 | Type | Description |
 |------|-------------|
-| [LRing](#lring-handle) | A new ring buffer instance. |
+| [LRing](#lring) | A new ring buffer instance. |
 
 **Example**
 
@@ -765,7 +597,7 @@ lurek.patterns.newServiceLocator()
 
 | Type | Description |
 |------|-------------|
-| [LServiceLocator](#lservicelocator-handle) | A new service locator instance. |
+| [LServiceLocator](#lservicelocator) | A new service locator instance. |
 
 **Example**
 
@@ -792,7 +624,7 @@ lurek.patterns.newSet()
 
 | Type | Description |
 |------|-------------|
-| [LSet](#lset-handle) | A new set instance. |
+| [LSet](#lset) | A new set instance. |
 
 **Example**
 
@@ -820,7 +652,7 @@ lurek.patterns.newSimpleState()
 
 | Type | Description |
 |------|-------------|
-| [LSimpleState](#lsimplestate-handle) | A new state machine instance. |
+| [LSimpleState](#lsimplestate) | A new state machine instance. |
 
 **Example**
 
@@ -861,7 +693,7 @@ lurek.patterns.newStack(capacity)
 
 | Type | Description |
 |------|-------------|
-| [LStack](#lstack-handle) | A new stack instance. |
+| [LStack](#lstack) | A new stack instance. |
 
 **Example**
 
@@ -889,7 +721,7 @@ lurek.patterns.newStrategy()
 
 | Type | Description |
 |------|-------------|
-| [LStrategy](#lstrategy-handle) | A new strategy instance. |
+| [LStrategy](#lstrategy) | A new strategy instance. |
 
 **Example**
 
@@ -928,7 +760,7 @@ lurek.patterns.newThrottle(interval)
 
 | Type | Description |
 |------|-------------|
-| [LThrottle](#lthrottle-handle) | A new throttle instance. |
+| [LThrottle](#lthrottle) | A new throttle instance. |
 
 **Example**
 
@@ -961,7 +793,7 @@ lurek.patterns.newWeightedRandom()
 
 | Type | Description |
 |------|-------------|
-| [LWeightedRandom](#lweightedrandom-handle) | A new weighted random pool instance. |
+| [LWeightedRandom](#lweightedrandom) | A new weighted random pool instance. |
 
 **Example**
 
@@ -981,33 +813,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LBehaviorTree Handle](#lbehaviortree-handle)
-- [LBlackboard Handle](#lblackboard-handle)
-- [LCommandStack Handle](#lcommandstack-handle)
-- [LDebounce Handle](#ldebounce-handle)
-- [LEventBus Handle](#leventbus-handle)
-- [LFactory Handle](#lfactory-handle)
-- [LFunnel Handle](#lfunnel-handle)
-- [LList Handle](#llist-handle)
-- [LMap Handle](#lmap-handle)
-- [LMediator Handle](#lmediator-handle)
-- [LObjectPool Handle](#lobjectpool-handle)
-- [LObserver Handle](#lobserver-handle)
-- [LPatternGraph Handle](#lpatterngraph-handle)
-- [LPriorityQueue Handle](#lpriorityqueue-handle)
-- [LQueue Handle](#lqueue-handle)
-- [LRelationshipManager Handle](#lrelationshipmanager-handle)
-- [LRing Handle](#lring-handle)
-- [LServiceLocator Handle](#lservicelocator-handle)
-- [LSet Handle](#lset-handle)
-- [LSimpleState Handle](#lsimplestate-handle)
-- [LStack Handle](#lstack-handle)
-- [LStrategy Handle](#lstrategy-handle)
-- [LThrottle Handle](#lthrottle-handle)
-- [LWeightedRandom Handle](#lweightedrandom-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -1016,13 +821,40 @@ end
 
 *No module-specific enums documented.*
 
-## LBehaviorTree Handle
+## Types
 
-### Fields
+- [LBehaviorTree](#lbehaviortree)
+- [LBlackboard](#lblackboard)
+- [LCommandStack](#lcommandstack)
+- [LDebounce](#ldebounce)
+- [LEventBus](#leventbus)
+- [LFactory](#lfactory)
+- [LFunnel](#lfunnel)
+- [LList](#llist)
+- [LMap](#lmap)
+- [LMediator](#lmediator)
+- [LObjectPool](#lobjectpool)
+- [LObserver](#lobserver)
+- [LPatternGraph](#lpatterngraph)
+- [LPriorityQueue](#lpriorityqueue)
+- [LQueue](#lqueue)
+- [LRelationshipManager](#lrelationshipmanager)
+- [LRing](#lring)
+- [LServiceLocator](#lservicelocator)
+- [LSet](#lset)
+- [LSimpleState](#lsimplestate)
+- [LStack](#lstack)
+- [LStrategy](#lstrategy)
+- [LThrottle](#lthrottle)
+- [LWeightedRandom](#lweightedrandom)
+
+## LBehaviorTree
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBehaviorTree:addChild`
 
@@ -1488,7 +1320,7 @@ LBehaviorTree:setRoot(node)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `node` | LBTNode | Node handle to consume as the new tree root. |
+| `node` | [LBTNode](ai.md#lbtnode) | Node handle to consume as the new tree root. |
 
 **Example**
 
@@ -1559,7 +1391,7 @@ LBehaviorTree:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBehaviorTree](#lbehaviortree-handle)`. |
+| string | The string `[LBehaviorTree](#lbehaviortree)`. |
 
 ---
 
@@ -1585,13 +1417,13 @@ LBehaviorTree:typeOf(name)
 
 ---
 
-## LBlackboard Handle
+## LBlackboard
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBlackboard:clear`
 
@@ -1894,13 +1726,13 @@ end
 
 ---
 
-## LCommandStack Handle
+## LCommandStack
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCommandStack:canRedo`
 
@@ -2174,13 +2006,13 @@ end
 
 ---
 
-## LDebounce Handle
+## LDebounce
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDebounce:cancel`
 
@@ -2363,13 +2195,13 @@ end
 
 ---
 
-## LEventBus Handle
+## LEventBus
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LEventBus:clear`
 
@@ -2598,13 +2430,13 @@ end
 
 ---
 
-## LFactory Handle
+## LFactory
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFactory:alias`
 
@@ -2831,13 +2663,13 @@ end
 
 ---
 
-## LFunnel Handle
+## LFunnel
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LFunnel:discard`
 
@@ -3057,13 +2889,13 @@ end
 
 ---
 
-## LList Handle
+## LList
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LList:add`
 
@@ -3551,13 +3383,13 @@ end
 
 ---
 
-## LMap Handle
+## LMap
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMap:clear`
 
@@ -3766,7 +3598,7 @@ end
 
 #### `LMap:merge`
 
-Copy all entries from another [LMap](#lmap-handle) into this map. Existing keys are overwritten.
+Copy all entries from another [LMap](#lmap) into this map. Existing keys are overwritten.
 
 ```lua
 LMap:merge(other)
@@ -3776,7 +3608,7 @@ LMap:merge(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LMap](#lmap-handle) | The source map to merge from. |
+| `other` | [LMap](#lmap) | The source map to merge from. |
 
 **Example**
 
@@ -3887,13 +3719,13 @@ end
 
 ---
 
-## LMediator Handle
+## LMediator
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMediator:broadcast`
 
@@ -4155,13 +3987,13 @@ end
 
 ---
 
-## LObjectPool Handle
+## LObjectPool
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LObjectPool:acquire`
 
@@ -4360,13 +4192,13 @@ end
 
 ---
 
-## LObserver Handle
+## LObserver
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LObserver:get`
 
@@ -4532,13 +4364,13 @@ end
 
 ---
 
-## LPatternGraph Handle
+## LPatternGraph
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPatternGraph:addEdge`
 
@@ -4992,13 +4824,13 @@ end
 
 ---
 
-## LPriorityQueue Handle
+## LPriorityQueue
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPriorityQueue:clearAll`
 
@@ -5173,13 +5005,13 @@ end
 
 ---
 
-## LQueue Handle
+## LQueue
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LQueue:back`
 
@@ -5614,13 +5446,13 @@ end
 
 ---
 
-## LRelationshipManager Handle
+## LRelationshipManager
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LRelationshipManager:adjustValue`
 
@@ -5938,13 +5770,13 @@ end
 
 ---
 
-## LRing Handle
+## LRing
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LRing:average`
 
@@ -6181,13 +6013,13 @@ end
 
 ---
 
-## LServiceLocator Handle
+## LServiceLocator
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LServiceLocator:clearAll`
 
@@ -6365,13 +6197,13 @@ end
 
 ---
 
-## LSet Handle
+## LSet
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSet:add`
 
@@ -6476,13 +6308,13 @@ LSet:intersection(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LSet](#lset-handle) | The other set to intersect with. |
+| `other` | [LSet](#lset) | The other set to intersect with. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LSet](#lset-handle) | A new set with only shared items. |
+| [LSet](#lset) | A new set with only shared items. |
 
 **Example**
 
@@ -6634,13 +6466,13 @@ LSet:union(other)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `other` | [LSet](#lset-handle) | The other set to merge with. |
+| `other` | [LSet](#lset) | The other set to merge with. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LSet](#lset-handle) | A new set with the union of both. |
+| [LSet](#lset) | A new set with the union of both. |
 
 **Example**
 
@@ -6660,13 +6492,13 @@ end
 
 ---
 
-## LSimpleState Handle
+## LSimpleState
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSimpleState:addState`
 
@@ -6898,13 +6730,13 @@ end
 
 ---
 
-## LStack Handle
+## LStack
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LStack:clear`
 
@@ -7414,13 +7246,13 @@ end
 
 ---
 
-## LStrategy Handle
+## LStrategy
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LStrategy:clear`
 
@@ -7704,13 +7536,13 @@ end
 
 ---
 
-## LThrottle Handle
+## LThrottle
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LThrottle:getFireCount`
 
@@ -7900,13 +7732,13 @@ end
 
 ---
 
-## LWeightedRandom Handle
+## LWeightedRandom
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LWeightedRandom:add`
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `cursor` module manages OS cursor state, custom image cursors, animated frame sequences, context-sensitive switching, visual trail effects, and a magnifying zoom lens for Lurek2D games.
+- The `cursor` module provides one runtime surface for pointer presentation: system and custom cursors, animation, context switching, trails, and zoom lens behavior.
 
 ## General Info
 
@@ -16,15 +16,13 @@
 
 ## Summary
 
-The `cursor` module owns cursor presentation and behavior policy, including system cursor selection, custom image cursors, animated cursor sequences, context-based switching, trail effects, and cursor magnifier support. It provides a single stateful surface for cursor concerns instead of scattering cursor logic across input and UI code.
+The `cursor` module is the visual control layer for pointer behavior at runtime. It decides how the pointer is shown, hidden, locked, and switched between modes so interaction feedback stays consistent across gameplay and tools.
 
-Submodules map directly to feature domains: `system_cursor` for native cursor kinds, `custom_cursor` for image/hotspot management, `animated_cursor` for timed frame cycling and pulse behavior, `context` for dynamic mode switching, `trail` for visual trails, and `zoom` for cursor-centered magnification.
+It supports system cursors, custom pixel cursors, and animated variants in one flow. Context mapping lets teams apply explicit cursor rules per screen or tool state instead of maintaining ad-hoc logic.
 
-The design keeps input capture and cursor rendering conceptually separate. Input modules report state; cursor modules decide representation and visual behavior. This improves maintainability when adding context-sensitive visuals or accessibility-oriented cursor modes.
+Optional trail and zoom-lens effects add readability and UX feedback without changing core input capture. Input modules report pointer state, and the cursor layer controls presentation policy.
 
-In practice, cursor behavior should remain deterministic and low-latency, with clear fallback paths between native/system cursors and custom/animated variants.
-
-Implementation detail and boundary guarantees for cursor: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: animated_cursor.rs: Animated cursor: frame sequences with per-frame timing and pulse scale effects.; config.rs: Global cursor system configuration shared across the cursor manager.; context.rs: Context-sensitive cursor switching: maps named contexts to cursor states.; custom_cursor.rs: Custom image cursor built from RGBA pixel data with configurable hotspot offset.; mod.rs: Cursor management system.; system_cursor.rs: System cursor shapes available on all desktop platforms.; trail.rs: Cursor trail effects: fading dot trails, connected line trails, and particle modes.; zoom.rs: Cursor magnifier lens: a configurable zoom window that follows the cursor.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+In practice, `lurek.cursor` provides one stable pointer contract: pick mode, map context, and keep visual behavior deterministic across runtime surfaces.
 
 ## Imports
 

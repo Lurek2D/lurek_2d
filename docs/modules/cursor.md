@@ -2,75 +2,15 @@
 
 ## Summary
 
-The `cursor` module owns cursor presentation and behavior policy, including system cursor selection, custom image cursors, animated cursor sequences, context-based switching, trail effects, and cursor magnifier support. It provides a single stateful surface for cursor concerns instead of scattering cursor logic across input and UI code.
+The `cursor` module gives one runtime layer for pointer presentation. It lets scripts control how the pointer looks, when it is visible, whether it is locked, and how it reacts in different runtime contexts.
 
-Submodules map directly to feature domains: `system_cursor` for native cursor kinds, `custom_cursor` for image/hotspot management, `animated_cursor` for timed frame cycling and pulse behavior, `context` for dynamic mode switching, `trail` for visual trails, and `zoom` for cursor-centered magnification.
+It supports both system and custom visuals in the same flow. Teams can use native cursor shapes, pixel-defined custom cursors, or animated cursor sequences, then switch between them through explicit rules instead of ad-hoc per-screen logic.
 
-The design keeps input capture and cursor rendering conceptually separate. Input modules report state; cursor modules decide representation and visual behavior. This improves maintainability when adding context-sensitive visuals or accessibility-oriented cursor modes.
+The module also adds optional feedback features such as trails and zoom lens behavior. These features improve readability and interaction feel without forcing changes in core input capture.
 
-In practice, cursor behavior should remain deterministic and low-latency, with clear fallback paths between native/system cursors and custom/animated variants.
+A key functional boundary is separation from raw input collection. Input systems provide pointer state, and the cursor module decides presentation policy. This keeps cursor behavior easier to tune for accessibility, UX style, and tool-specific modes.
 
-Implementation detail and boundary guarantees for cursor: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: animated_cursor.rs: Animated cursor: frame sequences with per-frame timing and pulse scale effects.; config.rs: Global cursor system configuration shared across the cursor manager.; context.rs: Context-sensitive cursor switching: maps named contexts to cursor states.; custom_cursor.rs: Custom image cursor built from RGBA pixel data with configurable hotspot offset.; mod.rs: Cursor management system.; system_cursor.rs: System cursor shapes available on all desktop platforms.; trail.rs: Cursor trail effects: fading dot trails, connected line trails, and particle modes.; zoom.rs: Cursor magnifier lens: a configurable zoom window that follows the cursor.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
-
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### animated_cursor.rs
-
-- Implements animated cursor state using frame sequences and time-based frame advancement.
-- Supports optional pulse scaling driven by oscillation parameters independent of frame stepping.
-- Maintains deterministic timing behavior through per-frame duration tracking.
-- Integrates as an active cursor-state variant within context-aware cursor orchestration.
-- Serves as the runtime animation layer for custom cursors with motion feedback.
-
-### config.rs
-
-- Defines cursor-system configuration values loaded from project settings and startup defaults.
-- Controls feature toggles and behavior for trail effects, zoom lens, contexts, and idle visibility.
-- Serves as the shared config contract consumed by cursor runtime orchestration.
-
-### context.rs
-
-- Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states.
-- Supports system, custom, and animated cursor variants under one discriminated state model.
-- Applies context changes immediately while preserving a deterministic default fallback path.
-- Integrates optional trail and zoom behavior into active cursor presentation state.
-- Serves as the policy layer for script-driven cursor-mode transitions.
-
-### custom_cursor.rs
-
-- Implements custom cursor images built from RGBA pixel buffers and hotspot metadata.
-- Validates buffer dimensions at construction to prevent malformed cursor payload usage.
-- Supports standalone custom cursors and animated-frame reuse through shared image structure.
-- Serves as the pixel-defined cursor asset contract for script-driven cursor customization.
-
-### mod.rs
-
-- Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior.
-- Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface.
-- Serves as the composition entry for engine and script-side cursor control workflows.
-
-### system_cursor.rs
-
-- Defines cross-platform system cursor shape variants used by runtime cursor state.
-- Maps engine-facing cursor variants to platform-native icon representations.
-- Supports case-insensitive string parsing for config and script-driven selection.
-- Serves as the canonical enum contract for system cursor mode requests.
-
-### trail.rs
-
-- Implements cursor-trail effects with fading points, connected strokes, and particle-style variants.
-- Tracks trail samples as timestamped points with alpha decay progression over update ticks.
-- Maintains bounded point history through capped storage to control runtime memory pressure.
-- Supports multiple trail render modes selected by explicit trail behavior configuration.
-- Serves as the visual motion-feedback layer for cursor movement presentation.
-
-### zoom.rs
-
-- Implements cursor-following zoom-lens state for magnified local inspection around pointer position.
-- Stores radius, magnification, and border settings used by post-process cursor-lens rendering.
-- Serves as the magnifier feature contract controlled through cursor config and scripting paths.
+In practice, `lurek.cursor` provides a stable pointer contract for gameplay and tools: pick active cursor mode, apply context mapping, and keep pointer feedback predictable across different runtime surfaces.
 
 ## Functions
 
@@ -92,7 +32,7 @@ lurek.cursor.newAnimated(looping)
 
 | Type | Description |
 |------|-------------|
-| [LAnimatedCursor](#lanimatedcursor-handle) | A new animated cursor instance. |
+| [LAnimatedCursor](#lanimatedcursor) | A new animated cursor instance. |
 
 **Example**
 
@@ -127,7 +67,7 @@ lurek.cursor.newCustom(w, h, hx, hy)
 
 | Type | Description |
 |------|-------------|
-| [LCustomCursor](#lcustomcursor-handle) | A new custom cursor instance. |
+| [LCustomCursor](#lcustomcursor) | A new custom cursor instance. |
 
 **Example**
 
@@ -154,7 +94,7 @@ lurek.cursor.newManager()
 
 | Type | Description |
 |------|-------------|
-| [LCursorManager](#lcursormanager-handle) | A new cursor manager instance. |
+| [LCursorManager](#lcursormanager) | A new cursor manager instance. |
 
 **Example**
 
@@ -197,12 +137,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAnimatedCursor Handle](#lanimatedcursor-handle)
-- [LCursorManager Handle](#lcursormanager-handle)
-- [LCustomCursor Handle](#lcustomcursor-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -211,13 +145,19 @@ end
 
 *No module-specific enums documented.*
 
-## LAnimatedCursor Handle
+## Types
 
-### Fields
+- [LAnimatedCursor](#lanimatedcursor)
+- [LCursorManager](#lcursormanager)
+- [LCustomCursor](#lcustomcursor)
+
+## LAnimatedCursor
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAnimatedCursor:addFrame`
 
@@ -231,7 +171,7 @@ LAnimatedCursor:addFrame(cursor, duration_ms)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cursor` | [LCustomCursor](#lcustomcursor-handle) | Frame image. |
+| `cursor` | [LCustomCursor](#lcustomcursor) | Frame image. |
 | `duration_ms` | number | Frame duration in milliseconds. |
 
 **Example**
@@ -423,13 +363,13 @@ end
 
 ---
 
-## LCursorManager Handle
+## LCursorManager
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCursorManager:addRule`
 
@@ -734,7 +674,7 @@ LCursorManager:setAnimated(cursor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cursor` | [LAnimatedCursor](#lanimatedcursor-handle) | Animated cursor object. |
+| `cursor` | [LAnimatedCursor](#lanimatedcursor) | Animated cursor object. |
 
 **Example**
 
@@ -787,7 +727,7 @@ LCursorManager:setCustom(cursor)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cursor` | [LCustomCursor](#lcustomcursor-handle) | Custom cursor object. |
+| `cursor` | [LCustomCursor](#lcustomcursor) | Custom cursor object. |
 
 **Example**
 
@@ -910,13 +850,13 @@ end
 
 ---
 
-## LCustomCursor Handle
+## LCustomCursor
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LCustomCursor:getHotspot`
 

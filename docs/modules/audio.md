@@ -2,99 +2,17 @@
 
 ## Summary
 
-The `audio` module is the playback and routing runtime for sound in Lurek2D. Its center is the `Mixer`, which manages active sources, buses, queueable streams, and runtime state transitions while delegating specialized transforms to dedicated components. The module covers source lifecycle, bus-level controls, playback state, and integration hooks for spatial and effect-aware processing.
+The `audio` module is the central runtime for sound behavior in Lurek2D. It manages source lifecycle, playback state, routing, and control so game systems can treat sound as a predictable service. In practice, it gives one place to start, stop, inspect, and shape audio during live gameplay.
 
-`decoder.rs` and `sound_data.rs` provide format decode and in-memory PCM containers, while source metadata and movement context live in `source.rs`. Bus orchestration (`bus.rs`) handles named routing and per-bus controls, and mixer-side APIs expose operations scripts and systems need for starting, stopping, and inspecting playback safely.
+Its mixer and bus model make project-wide control easier. Sources can be grouped, routed, and adjusted through shared bus rules for volume, pitch, pause, and ducking. This allows teams to manage complex mixes with clear structure instead of scattered per-source overrides.
 
-The module intentionally does not absorb every signal-processing concern. DSP-heavy logic is split into `crate::dsp`, and MIDI-specific functionality is split into `crate::midi`, with `audio` acting as the operational transport and policy layer that composes these services into real playback flows. This keeps the boundary clear between "signal transformation" and "sound scheduling/output".
+The module also supports different playback patterns. It handles normal sources, queueable streaming, pool-based repeated playback, and cloned voices. This makes it suitable for music, effects, reactive one-shots, and high-frequency events without forcing one playback style for every case.
 
-In short, `audio` owns runtime sound orchestration and stable playback contracts, while neighboring modules provide decode, synthesis, and advanced processing capabilities that are plugged into this path.
+Spatial and timing features are built into the runtime surface. Listener and source transforms, distance and doppler controls, and beat-clock utilities support both positional sound and rhythm-aware gameplay. Functionally, this keeps audio decisions close to game state and player timing.
 
-Implementation detail and boundary guarantees for audio: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: beat_clock.rs: Musical beat clock â€” tempo and measure tracking for rhythm games and procedural audio.; bus.rs: Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.; decoder.rs: Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.; facade.rs: Stub device enumeration and selection for the audio output backend.; mixer.rs: Mixer central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.; mod.rs: Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.; pool.rs: SoundPool round-robin polyphonic voice pool for one-shot playback of a single sound asset.; sound_data.rs: SoundData in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.; source.rs: SpatialState 3D position, velocity, and orientation for positional audio.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+Sound data workflows are practical for both authored and procedural content. Decode paths, in-memory sample containers, basic transforms, and WAV export support quick iteration and tooling scenarios. At the same time, advanced DSP and MIDI concerns remain in dedicated modules, keeping boundaries clear.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### beat_clock.rs
-
-- Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses.
-- Supports tempo and meter changes while preserving coherent phase continuity over runtime updates.
-- Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination.
-- Applies latency and swing parameters to shape musical timing feel without audio-thread coupling.
-- Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries.
-- Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source.
-- Serves rhythm, sequencing, and procedural trigger systems that require stable musical time.
-- Functions as the temporal backbone for Lua callbacks aligned to musical structure.
-
-### bus.rs
-
-- Implements named audio routing channels that apply shared gain, pitch, pause, and ducking control.
-- Maintains per-bus processing parameters and effect-chain references for downstream mixer application.
-- Supports duck-target relationships so one bus can attenuate others during priority playback.
-- Enforces bounded parameter updates to keep runtime routing behavior stable and predictable.
-
-### decoder.rs
-
-- Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer.
-- Provides random-access cursor movement for rewind, seek, and chunked iteration workflows.
-- Exposes duration and playback-position metrics derived from decoded sample metadata.
-- Serves as the decode bridge between file assets and streaming or buffered playback paths.
-
-### facade.rs
-
-- Provides the audio device facade used for output listing and active-device selection hooks.
-- Exposes a stable API surface while backend-specific device enumeration remains minimal.
-- Validates requested device names against known outputs before accepting selection changes.
-
-### mixer.rs
-
-- Implements the central audio mixer registry that owns sources, buses, streams, and listener state.
-- Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable.
-- Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows.
-- Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping.
-- Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior.
-- Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics.
-- Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues.
-- Applies distance-model and doppler controls for runtime spatialization consistency.
-- Tracks metering data across source, bus, and master levels for diagnostics and gameplay feedback.
-- Provides utility controls for stereo width, random pitch spread, crossfade behavior, and pooled playback.
-- Preserves stable key-based lookup so script calls map deterministically to mixer-owned runtime entities.
-- Coordinates effect processing boundaries while leaving advanced DSP behavior to dedicated modules.
-- Centralizes audio concurrency decisions so frame systems interact through one coherent control plane.
-- Serves as the primary engine-side audio execution surface behind Lua-facing playback APIs.
-- Anchors all real-time audio state mutation under a deterministic, runtime-safe ownership model.
-
-### mod.rs
-
-- Defines the audio module boundary that groups playback, routing, decode, and source-data primitives.
-- Exposes coherent core audio contracts while delegating specialized processing to adjacent modules.
-- Serves as the composition entry for engine-side runtime audio behavior and shared types.
-
-### pool.rs
-
-- Implements round-robin voice pooling for low-latency repeated playback of one sound asset.
-- Cycles preloaded source keys to distribute trigger load across reusable playback voices.
-- Stores per-pool gain and optional bus assignment for grouped routing behavior.
-- Validates pool integrity so empty or invalid voice sets are rejected early.
-
-### sound_data.rs
-
-- Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation.
-- Supports decode from file and direct buffer creation for generated or procedural audio content.
-- Provides waveform synthesis helpers for common tonal and noise signal generation workflows.
-- Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations.
-- Exposes encode paths for export-ready WAV byte output from runtime sample data.
-- Supplies duration and shape queries for tools, previews, and script-side audio reasoning.
-- Bridges sample data to visual workflows through waveform drawing integration points.
-- Serves as the core raw sound-data container for playback and preprocessing pipelines.
-
-### source.rs
-
-- Defines source-level audio metadata and spatial attributes used by mixer-side playback control.
-- Encapsulates position, velocity, and orientation state for positional and motion-aware rendering.
-- Stores identity and basic playback defaults that classify each loaded runtime source.
-- Serves as the foundational source contract shared across routing, playback, and spatialization paths.
+Overall, the module provides a complete operational contract for audio: load or stream sound, route it, schedule it, control it, and monitor it through one Lua-facing API. This consistency improves maintainability as projects grow in content and runtime complexity.
 
 ## Functions
 
@@ -110,7 +28,7 @@ lurek.audio.beatClockFromSource(source, bpm, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Source handle or numeric source id. |
+| `source` | [LSource](#lsource)|number | Source handle or numeric source id. |
 | `bpm` | number | Initial BPM. |
 | `opts?` | table | Optional beat clock options. |
 
@@ -118,7 +36,7 @@ lurek.audio.beatClockFromSource(source, bpm, opts)
 
 | Type | Description |
 |------|-------------|
-| [LBeatClock](#lbeatclock-handle) | New beat clock handle synced to source time. |
+| [LBeatClock](#lbeatclock) | New beat clock handle synced to source time. |
 
 **Example**
 
@@ -147,7 +65,7 @@ lurek.audio.clearFilter(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -195,7 +113,7 @@ lurek.audio.clearRandomPitch(src_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LSource](#lsource-handle) | The audio source to reset. |
+| `src_ud` | [LSource](#lsource) | The audio source to reset. |
 
 **Example**
 
@@ -224,13 +142,13 @@ lurek.audio.clone(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID to clone. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID to clone. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LSource](#lsource-handle) | A new source instance with identical settings. |
+| [LSource](#lsource) | A new source instance with identical settings. |
 
 **Example**
 
@@ -286,8 +204,8 @@ lurek.audio.crossfade(from_ud, to_ud, duration)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `from_ud` | [LSource](#lsource-handle) | The source to fade out. |
-| `to_ud` | [LSource](#lsource-handle) | The source to fade in. |
+| `from_ud` | [LSource](#lsource) | The source to fade out. |
+| `to_ud` | [LSource](#lsource) | The source to fade in. |
 | `duration` | number | Crossfade duration in seconds. |
 
 **Example**
@@ -320,7 +238,7 @@ lurek.audio.fadeIn(source, dur)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `dur` | number | Fade-in duration in seconds. |
 
 **Example**
@@ -493,7 +411,7 @@ lurek.audio.getDuration(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -527,7 +445,7 @@ lurek.audio.getFadeIn(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -595,7 +513,7 @@ lurek.audio.getHighpass(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -712,7 +630,7 @@ lurek.audio.getLowpass(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -827,7 +745,7 @@ lurek.audio.getOrientation(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -868,7 +786,7 @@ lurek.audio.getPan(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -903,7 +821,7 @@ lurek.audio.getPitch(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -990,7 +908,7 @@ lurek.audio.getPosition(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1027,13 +945,13 @@ lurek.audio.getSourceBus(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LBus](#lbus-handle) | The assigned bus, or nil if using direct output. |
+| [LBus](#lbus) | The assigned bus, or nil if using direct output. |
 
 **Example**
 
@@ -1089,7 +1007,7 @@ lurek.audio.getSourceType(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1123,7 +1041,7 @@ lurek.audio.getStereoWidth(src_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LSource](#lsource-handle) | The audio source to query. |
+| `src_ud` | [LSource](#lsource) | The audio source to query. |
 
 **Returns**
 
@@ -1158,7 +1076,7 @@ lurek.audio.getVelocity(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1195,7 +1113,7 @@ lurek.audio.getVolume(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1256,7 +1174,7 @@ lurek.audio.isLooping(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1290,7 +1208,7 @@ lurek.audio.isPaused(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1325,7 +1243,7 @@ lurek.audio.isPlaying(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1359,7 +1277,7 @@ lurek.audio.isStopped(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -1392,7 +1310,7 @@ lurek.audio.judgeBeat(clock, division, hit_offset)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `clock` | [LBeatClock](#lbeatclock-handle) | Beat clock handle. |
+| `clock` | [LBeatClock](#lbeatclock) | Beat clock handle. |
 | `division?` | number | Beat division (defaults to clock subdivision). |
 | `hit_offset?` | number | Signed hit offset in seconds. |
 
@@ -1428,8 +1346,8 @@ lurek.audio.mixInto(dest_ud, src_ud)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dest_ud` | [LSoundData](#lsounddata-handle) | Destination sound data to mix into. |
-| `src_ud` | [LSoundData](#lsounddata-handle) | Source sound data to mix from. |
+| `dest_ud` | [LSoundData](#lsounddata) | Destination sound data to mix into. |
+| `src_ud` | [LSoundData](#lsounddata) | Source sound data to mix from. |
 
 **Example**
 
@@ -1464,7 +1382,7 @@ lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts)
 
 | Type | Description |
 |------|-------------|
-| [LBeatClock](#lbeatclock-handle) | New beat clock handle. |
+| [LBeatClock](#lbeatclock) | New beat clock handle. |
 
 **Example**
 
@@ -1498,7 +1416,7 @@ lurek.audio.newBus(name)
 
 | Type | Description |
 |------|-------------|
-| [LBus](#lbus-handle) | The new audio bus handle. |
+| [LBus](#lbus) | The new audio bus handle. |
 
 **Example**
 
@@ -1531,7 +1449,7 @@ lurek.audio.newDecoder(source, buffersize)
 
 | Type | Description |
 |------|-------------|
-| [LDecoder](#ldecoder-handle) | A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods. |
+| [LDecoder](#ldecoder) | A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods. |
 
 **Example**
 
@@ -1565,7 +1483,7 @@ lurek.audio.newMidiPlayer(path)
 
 | Type | Description |
 |------|-------------|
-| [LMidiPlayer](#lmidiplayer-handle) | A new MIDI player ready for playback. |
+| [LMidiPlayer](#lmidiplayer) | A new MIDI player ready for playback. |
 
 **Example**
 
@@ -1598,7 +1516,7 @@ lurek.audio.newPool(file_path, voice_count)
 
 | Type | Description |
 |------|-------------|
-| [LSoundPool](#lsoundpool-handle) | A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods. |
+| [LSoundPool](#lsoundpool) | A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods. |
 
 **Example**
 
@@ -1668,7 +1586,7 @@ lurek.audio.newSoundData(pathOrCount, sampleRate, channels)
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Raw PCM sample data for manipulation or playback. |
+| [LSoundData](#lsounddata) | Raw PCM sample data for manipulation or playback. |
 
 **Example**
 
@@ -1702,7 +1620,7 @@ lurek.audio.newSource(path, sourceType)
 
 | Type | Description |
 |------|-------------|
-| [LSource](#lsource-handle) | A new audio source ready for playback. |
+| [LSource](#lsource) | A new audio source ready for playback. |
 
 **Example**
 
@@ -1731,7 +1649,7 @@ lurek.audio.pause(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -1783,7 +1701,7 @@ lurek.audio.play(source, options)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `options?` | table | Optional table with "bus" field for bus routing. |
 
 **Returns**
@@ -1818,7 +1736,7 @@ lurek.audio.playLooping(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -1876,7 +1794,7 @@ lurek.audio.queueSource(qsource_id, sd)
 | Name | Type | Description |
 |------|------|-------------|
 | `qsource_id` | number | Queueable source handle returned by `newQueueableSource`. |
-| `sd` | [LSoundData](#lsounddata-handle) | Sound data chunk to enqueue for playback. |
+| `sd` | [LSoundData](#lsounddata) | Sound data chunk to enqueue for playback. |
 
 **Example**
 
@@ -1906,7 +1824,7 @@ lurek.audio.release(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID to release. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID to release. |
 
 **Returns**
 
@@ -1941,7 +1859,7 @@ lurek.audio.resume(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -1995,7 +1913,7 @@ lurek.audio.saveWAV(sd_ud, filename)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `sd_ud` | [LSoundData](#lsounddata-handle) | The sound data to encode and save. |
+| `sd_ud` | [LSoundData](#lsounddata) | The sound data to encode and save. |
 | `filename` | string | Relative output path for the WAV file. |
 
 **Example**
@@ -2022,7 +1940,7 @@ lurek.audio.seek(source, pos)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `pos` | number | Target position in seconds. |
 
 **Example**
@@ -2107,7 +2025,7 @@ lurek.audio.setHighpass(source, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `cutoff_hz` | number | Cutoff frequency in Hertz. |
 
 **Example**
@@ -2218,7 +2136,7 @@ lurek.audio.setLooping(source, looping)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `looping` | boolean | True to loop, false to play once. |
 
 **Example**
@@ -2247,7 +2165,7 @@ lurek.audio.setLowpass(source, cutoff_hz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `cutoff_hz` | number | Cutoff frequency in Hertz. |
 
 **Example**
@@ -2358,7 +2276,7 @@ lurek.audio.setOrientation(source, fx, fy, fz, ux, uy, uz)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `fx` | number | Forward vector X. |
 | `fy` | number | Forward vector Y. |
 | `fz` | number | Forward vector Z. |
@@ -2394,7 +2312,7 @@ lurek.audio.setPan(source, pan)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `pan` | number | Pan from -1.0 (left) to 1.0 (right), 0.0 is center. |
 
 **Example**
@@ -2423,7 +2341,7 @@ lurek.audio.setPitch(source, pitch)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `pitch` | number | Pitch multiplier (1.0 = normal, 2.0 = octave up). |
 
 **Example**
@@ -2480,7 +2398,7 @@ lurek.audio.setPosition(source, x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `x` | number | X position in world units. |
 | `y` | number | Y position in world units. |
 | `z?` | number | Z position (defaults to 0). |
@@ -2512,7 +2430,7 @@ lurek.audio.setRandomPitch(src_ud, min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LSource](#lsource-handle) | The audio source to configure. |
+| `src_ud` | [LSource](#lsource) | The audio source to configure. |
 | `min` | number | Minimum pitch multiplier. |
 | `max` | number | Maximum pitch multiplier. |
 
@@ -2542,8 +2460,8 @@ lurek.audio.setSourceBus(source, bus)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
-| `bus` | [LBus](#lbus-handle) | The bus to route through. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
+| `bus` | [LBus](#lbus) | The bus to route through. |
 
 **Example**
 
@@ -2573,7 +2491,7 @@ lurek.audio.setStereoWidth(src_ud, width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `src_ud` | [LSource](#lsource-handle) | The audio source to adjust. |
+| `src_ud` | [LSource](#lsource) | The audio source to adjust. |
 | `width` | number | Stereo width factor (0.0 = mono, 1.0 = full stereo). |
 
 **Example**
@@ -2602,7 +2520,7 @@ lurek.audio.setVelocity(source, x, y, z)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `x` | number | X velocity component. |
 | `y` | number | Y velocity component. |
 | `z?` | number | Z velocity component (defaults to 0). |
@@ -2634,7 +2552,7 @@ lurek.audio.setVolume(source, vol)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 | `vol` | number | Volume multiplier (0.0 = silent, 1.0 = normal). |
 
 **Example**
@@ -2691,7 +2609,7 @@ lurek.audio.stop(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Example**
 
@@ -2770,7 +2688,7 @@ lurek.audio.tell(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Audio source or numeric source ID. |
+| `source` | [LSource](#lsource)|number | Audio source or numeric source ID. |
 
 **Returns**
 
@@ -2797,16 +2715,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LBeatClock Handle](#lbeatclock-handle)
-- [LBus Handle](#lbus-handle)
-- [LDecoder Handle](#ldecoder-handle)
-- [LMidiPlayer Handle](#lmidiplayer-handle)
-- [LSoundData Handle](#lsounddata-handle)
-- [LSoundPool Handle](#lsoundpool-handle)
-- [LSource Handle](#lsource-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -2815,13 +2723,23 @@ end
 
 *No module-specific enums documented.*
 
-## LBeatClock Handle
+## Types
 
-### Fields
+- [LBeatClock](#lbeatclock)
+- [LBus](#lbus)
+- [LDecoder](#ldecoder)
+- [LMidiPlayer](#lmidiplayer)
+- [LSoundData](#lsounddata)
+- [LSoundPool](#lsoundpool)
+- [LSource](#lsource)
+
+## LBeatClock
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBeatClock:at`
 
@@ -3616,7 +3534,7 @@ LBeatClock:syncToSource(source)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `source` | [LSource](#lsource-handle)|number | Source handle or source id. |
+| `source` | [LSource](#lsource)|number | Source handle or source id. |
 
 **Example**
 
@@ -3703,7 +3621,7 @@ LBeatClock:type()
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LBeatClock](#lbeatclock-handle)`. |
+| string | The string `[LBeatClock](#lbeatclock)`. |
 
 **Example**
 
@@ -3778,13 +3696,13 @@ end
 
 ---
 
-## LBus Handle
+## LBus
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBus:clearDuck`
 
@@ -4071,7 +3989,7 @@ LBus:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LBus](#lbus-handle)". |
+| string | Always returns "[LBus](#lbus)". |
 
 **Example**
 
@@ -4096,7 +4014,7 @@ LBus:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LBus](#lbus-handle)", "Bus", or "Object"). |
+| `name` | string | Type name to check (e.g. "[LBus](#lbus)", "Bus", or "Object"). |
 
 **Returns**
 
@@ -4115,17 +4033,17 @@ end
 
 ---
 
-## LDecoder Handle
+## LDecoder
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LDecoder:decode`
 
-Decodes the next chunk of audio data and returns it as a [LSoundData](#lsounddata-handle) object.
+Decodes the next chunk of audio data and returns it as a [LSoundData](#lsounddata) object.
 
 ```lua
 LDecoder:decode()
@@ -4135,7 +4053,7 @@ LDecoder:decode()
 
 | Type | Description |
 |------|-------------|
-| [LSoundData](#lsounddata-handle) | Decoded PCM data, or nil if end of stream reached. |
+| [LSoundData](#lsounddata) | Decoded PCM data, or nil if end of stream reached. |
 
 **Example**
 
@@ -4394,7 +4312,7 @@ LDecoder:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LDecoder](#ldecoder-handle)". |
+| string | Always returns "[LDecoder](#ldecoder)". |
 
 **Example**
 
@@ -4420,7 +4338,7 @@ LDecoder:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LDecoder](#ldecoder-handle)" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LDecoder](#ldecoder)" or "Object"). |
 
 **Returns**
 
@@ -4440,13 +4358,13 @@ end
 
 ---
 
-## LMidiPlayer Handle
+## LMidiPlayer
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LMidiPlayer:getBus`
 
@@ -4460,7 +4378,7 @@ LMidiPlayer:getBus()
 
 | Type | Description |
 |------|-------------|
-| [LBus](#lbus-handle) | The assigned bus, or nil if using direct output. |
+| [LBus](#lbus) | The assigned bus, or nil if using direct output. |
 
 **Example**
 
@@ -5245,7 +5163,7 @@ LMidiPlayer:setBus(bus)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bus?` | [LBus](#lbus-handle) | Bus to route through, or nil for direct output. |
+| `bus?` | [LBus](#lbus) | Bus to route through, or nil for direct output. |
 
 **Example**
 
@@ -5725,7 +5643,7 @@ LMidiPlayer:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LMidiPlayer](#lmidiplayer-handle)". |
+| string | Always returns "[LMidiPlayer](#lmidiplayer)". |
 
 **Example**
 
@@ -5750,7 +5668,7 @@ LMidiPlayer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LMidiPlayer](#lmidiplayer-handle)", "MidiPlayer", or "Object"). |
+| `name` | string | Type name to check (e.g. "[LMidiPlayer](#lmidiplayer)", "MidiPlayer", or "Object"). |
 
 **Returns**
 
@@ -5810,13 +5728,13 @@ end
 
 ---
 
-## LSoundData Handle
+## LSoundData
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSoundData:drawWaveform`
 
@@ -5830,7 +5748,7 @@ LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | Target image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | Target image to draw into. |
 | `x` | number | Left pixel coordinate. |
 | `y` | number | Top pixel coordinate. |
 | `w` | number | Waveform width in pixels. |
@@ -6055,7 +5973,7 @@ LSoundData:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LSoundData](#lsounddata-handle)". |
+| string | Always returns "[LSoundData](#lsounddata)". |
 
 **Example**
 
@@ -6080,7 +5998,7 @@ LSoundData:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LSoundData](#lsounddata-handle)" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSoundData](#lsounddata)" or "Object"). |
 
 **Returns**
 
@@ -6099,13 +6017,13 @@ end
 
 ---
 
-## LSoundPool Handle
+## LSoundPool
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSoundPool:getVoiceCount`
 
@@ -6270,7 +6188,7 @@ LSoundPool:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LSoundPool](#lsoundpool-handle)". |
+| string | Always returns "[LSoundPool](#lsoundpool)". |
 
 **Example**
 
@@ -6296,7 +6214,7 @@ LSoundPool:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LSoundPool](#lsoundpool-handle)" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSoundPool](#lsoundpool)" or "Object"). |
 
 **Returns**
 
@@ -6316,13 +6234,13 @@ end
 
 ---
 
-## LSource Handle
+## LSource
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LSource:clearFilter`
 
@@ -6358,7 +6276,7 @@ LSource:clone()
 
 | Type | Description |
 |------|-------------|
-| [LSource](#lsource-handle) | A new source instance with identical settings. |
+| [LSource](#lsource) | A new source instance with identical settings. |
 
 **Example**
 
@@ -7048,7 +6966,7 @@ LSource:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always returns "[LSource](#lsource-handle)". |
+| string | Always returns "[LSource](#lsource)". |
 
 **Example**
 
@@ -7074,7 +6992,7 @@ LSource:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check (e.g. "[LSource](#lsource-handle)" or "Object"). |
+| `name` | string | Type name to check (e.g. "[LSource](#lsource)" or "Object"). |
 
 **Returns**
 

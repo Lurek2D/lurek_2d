@@ -2,79 +2,15 @@
 
 ## Summary
 
-The `charts` module is a CPU-side chart rendering system for data visualization, designed to work without a dedicated GPU chart pipeline. It supports line, bar, scatter, pie, and area charts, with shared configuration and raster helpers that produce pixel buffers suitable for reuse as textures in normal render flows.
+The `charts` module turns numeric data into ready-to-display chart images using CPU rasterization. It supports common chart families in one place, so scripts can generate visual summaries without relying on a dedicated GPU chart pipeline.
 
-Each chart type is implemented in its own module (`line`, `bar`, `scatter`, `pie`, `area`) while shared appearance/data contracts live in `config` and drawing primitives live in `render_utils`. This keeps chart-specific behavior isolated while preserving consistent styling and axis/legend behavior across chart families.
+Its main value is predictable image output from structured data. Callers provide series or slice values plus options, and the module produces RGBA buffers that can be shown in UI, overlays, reports, or saved artifacts. This keeps chart generation practical in both runtime and offline workflows.
 
-The module is intentionally data-driven: callers provide series/slice data and chart options, and the renderer emits deterministic software raster output. This makes charts reproducible in tests and usable in headless or tooling contexts where GPU access is not assumed.
+Each chart type keeps its own rendering behavior, while shared configuration and drawing helpers enforce consistent defaults and visual rules. That split allows chart-specific flexibility without losing cross-chart consistency in dimensions, styling, and value mapping.
 
-Because chart rendering can be consumed by UI and reporting paths, the boundary should stay focused on conversion from numeric data to image output. Layout orchestration and interaction policy belong to higher layers.
+Because output is software-rasterized and deterministic, charts are easy to test and reproduce across environments. This makes the module useful for headless validation, automated evidence generation, and tooling scenarios where graphical backend assumptions should stay minimal.
 
-## Spec File Descriptions
-
-_Poniższe opisy plików pochodzą bezpośrednio ze specyfikacji modułu (`docs/specs/<module>.md`)._
-
-### area.rs
-
-- Implements area-chart rasterization where series are rendered as filled regions over plot space.
-- Supports overlapping and stacked accumulation modes for comparative and compositional data views.
-- Maps data coordinates into pixel coordinates through shared chart-space transform helpers.
-- Produces RGBA buffers that downstream systems upload as textures for runtime presentation.
-- Integrates optional DataFrame extraction paths for column-driven area plotting workflows.
-- Serves as the filled-series rendering backend behind the charts area API surface.
-
-### bar.rs
-
-- Implements bar-chart rasterization for categorical comparison through grouped or stacked layouts.
-- Supports configurable bar width, spacing, and orientation behavior across multiple value series.
-- Converts scaled chart coordinates into pixel-aligned rectangle fills for each rendered segment.
-- Produces RGBA image buffers suitable for per-frame upload and display in runtime overlays.
-- Serves as the rectangular-series rendering backend for the charts bar API path.
-
-### config.rs
-
-- Defines shared chart configuration contracts used across all chart rendering variants.
-- Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata.
-- Provides common series and DataFrame mapping structures consumed by concrete chart specs.
-- Serves as the canonical option layer for consistent chart behavior and appearance.
-
-### line.rs
-
-- Implements line-chart rasterization for connected series over categorical or continuous domains.
-- Supports multi-series rendering with configurable color, width, and optional point markers.
-- Maps value space into pixel coordinates through shared chart transformation utilities.
-- Produces RGBA output buffers that can be uploaded as frame-local chart textures.
-- Serves as the polyline rendering backend exposed through the charts line API.
-
-### mod.rs
-
-- Defines the charts module boundary for CPU-rasterized data-visualization rendering.
-- Groups chart types, shared config contracts, and utility drawing primitives into one surface.
-- Serves as the composition entry for runtime chart image generation from raw series or DataFrames.
-
-### pie.rs
-
-- Implements pie-style chart rasterization where values are mapped to proportional angular slices.
-- Computes normalized slice spans and renders arc-filled sectors into RGBA output buffers.
-- Supports optional donut-hole shaping and label metadata for ring-style visual presentation.
-- Integrates DataFrame-derived value extraction for tabular-to-pie plotting workflows.
-- Serves as the circular-segment rendering backend behind the charts pie API.
-
-### render_utils.rs
-
-- Provides shared CPU rasterization helpers used by all chart renderer implementations.
-- Includes primitive pixel operations for points, lines, circles, rectangles, and full-buffer fills.
-- Converts chart data coordinates to screen-space pixels through normalized range mapping utilities.
-- Computes automatic value ranges across multiple series for default axis domain selection.
-- Serves as the low-level drawing toolkit for consistent chart image generation behavior.
-
-### scatter.rs
-
-- Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation.
-- Draws each sample as a configurable filled marker over chart-space transformed coordinates.
-- Supports automatic domain estimation or explicit axis bounds for controlled plot framing.
-- Produces RGBA output buffers suitable for texture upload in runtime chart presentation.
-- Serves as the point-series rendering backend for the charts scatter API path.
+Overall, the module provides a clean conversion boundary: data in, chart pixels out. Higher layers can handle layout and interaction, while `charts` focuses on reliable visual generation from tabular or series-based inputs.
 
 ## Functions
 
@@ -124,7 +60,7 @@ lurek.charts.newArea(config)
 
 | Type | Description |
 |------|-------------|
-| [LAreaChart](#lareachart-handle) | A area chart userdata object. |
+| [LAreaChart](#lareachart) | A area chart userdata object. |
 
 **Example**
 
@@ -156,7 +92,7 @@ lurek.charts.newBar(config)
 
 | Type | Description |
 |------|-------------|
-| [LBarChart](#lbarchart-handle) | A bar chart userdata object. |
+| [LBarChart](#lbarchart) | A bar chart userdata object. |
 
 **Example**
 
@@ -188,7 +124,7 @@ lurek.charts.newLine(config)
 
 | Type | Description |
 |------|-------------|
-| [LLineChart](#llinechart-handle) | A line chart userdata object. |
+| [LLineChart](#llinechart) | A line chart userdata object. |
 
 **Example**
 
@@ -220,7 +156,7 @@ lurek.charts.newPie(config)
 
 | Type | Description |
 |------|-------------|
-| [LPieChart](#lpiechart-handle) | A pie chart userdata object. |
+| [LPieChart](#lpiechart) | A pie chart userdata object. |
 
 **Example**
 
@@ -252,7 +188,7 @@ lurek.charts.newScatter(config)
 
 | Type | Description |
 |------|-------------|
-| [LScatterPlot](#lscatterplot-handle) | A scatter plot userdata object. |
+| [LScatterPlot](#lscatterplot) | A scatter plot userdata object. |
 
 **Example**
 
@@ -302,19 +238,6 @@ end
 
 *No module-level fields documented.*
 
-## Types
-
-- [LAreaChart Handle](#lareachart-handle)
-- [LBarChart Handle](#lbarchart-handle)
-- [LLineChart Handle](#llinechart-handle)
-- [LPieChart Handle](#lpiechart-handle)
-- [LScatterPlot Handle](#lscatterplot-handle)
-- [LuaAreaChart Handle](#luaareachart-handle)
-- [LuaBarChart Handle](#luabarchart-handle)
-- [LuaLineChart Handle](#lualinechart-handle)
-- [LuaPieChart Handle](#luapiechart-handle)
-- [LuaScatterPlot Handle](#luascatterplot-handle)
-
 ## Callbacks
 
 *No callback parameters documented in this module.*
@@ -323,13 +246,21 @@ end
 
 *No module-specific enums documented.*
 
-## LAreaChart Handle
+## Types
 
-### Fields
+- [LAreaChart](#lareachart)
+- [LBarChart](#lbarchart)
+- [LLineChart](#llinechart)
+- [LPieChart](#lpiechart)
+- [LScatterPlot](#lscatterplot)
+
+## LAreaChart
+
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LAreaChart:addLayer`
 
@@ -364,7 +295,7 @@ LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | The layer name. |
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `value_col` | string | Column name for layer values. |
 | `r` | number | Red color component. |
 | `g` | number | Green color component. |
@@ -443,7 +374,7 @@ LAreaChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | The image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
 
 ---
 
@@ -584,7 +515,7 @@ LAreaChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LAreaChart](#lareachart-handle)". |
+| string | Always "[LAreaChart](#lareachart)". |
 
 ---
 
@@ -610,13 +541,13 @@ LAreaChart:typeOf(name)
 
 ---
 
-## LBarChart Handle
+## LBarChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LBarChart:addCategoriesFromDataFrame`
 
@@ -630,7 +561,7 @@ LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `label_col` | string | Column name for category labels. |
 | `value_cols` | string[] | Value columns matching registered series order. |
 | `opts?` | table | Optional table with maxRows integer. |
@@ -724,7 +655,7 @@ LBarChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | The image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
 
 ---
 
@@ -876,7 +807,7 @@ LBarChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LBarChart](#lbarchart-handle)". |
+| string | Always "[LBarChart](#lbarchart)". |
 
 ---
 
@@ -902,13 +833,13 @@ LBarChart:typeOf(name)
 
 ---
 
-## LLineChart Handle
+## LLineChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LLineChart:addSeries`
 
@@ -952,7 +883,7 @@ LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | The series name. |
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `x_col` | string | Column name for X values. |
 | `y_col` | string | Column name for Y values. |
 | `r` | number | Red color component. |
@@ -1003,7 +934,7 @@ LLineChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | The image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
 
 ---
 
@@ -1160,7 +1091,7 @@ LLineChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LLineChart](#llinechart-handle)". |
+| string | Always "[LLineChart](#llinechart)". |
 
 ---
 
@@ -1186,13 +1117,13 @@ LLineChart:typeOf(name)
 
 ---
 
-## LPieChart Handle
+## LPieChart
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LPieChart:addSegment`
 
@@ -1226,7 +1157,7 @@ LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `label_col` | string | Column name for segment labels. |
 | `value_col` | string | Column name for segment values. |
 | `opts?` | table | Optional table with maxRows integer. |
@@ -1305,7 +1236,7 @@ LPieChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | The image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
 
 ---
 
@@ -1432,7 +1363,7 @@ LPieChart:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LPieChart](#lpiechart-handle)". |
+| string | Always "[LPieChart](#lpiechart)". |
 
 ---
 
@@ -1458,13 +1389,13 @@ LPieChart:typeOf(name)
 
 ---
 
-## LScatterPlot Handle
+## LScatterPlot
 
-### Fields
+### Type Fields
 
 *No documented fields for this handle.*
 
-### Methods
+### Type Methods
 
 #### `LScatterPlot:addSeries`
 
@@ -1508,7 +1439,7 @@ LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | The series name. |
-| `df` | LDataFrame | Source dataframe. |
+| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
 | `x_col` | string | Column name for X values. |
 | `y_col` | string | Column name for Y values. |
 | `r` | number | Red color component. |
@@ -1559,7 +1490,7 @@ LScatterPlot:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | LImageData | The image to draw into. |
+| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
 
 ---
 
@@ -1745,7 +1676,7 @@ LScatterPlot:type()
 
 | Type | Description |
 |------|-------------|
-| string | Always "[LScatterPlot](#lscatterplot-handle)". |
+| string | Always "[LScatterPlot](#lscatterplot)". |
 
 ---
 
@@ -1770,53 +1701,3 @@ LScatterPlot:typeOf(name)
 | boolean | True if the name matches this userdata type. |
 
 ---
-
-## LuaAreaChart Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LuaBarChart Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LuaLineChart Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LuaPieChart Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
-
-## LuaScatterPlot Handle
-
-### Fields
-
-*No documented fields for this handle.*
-
-### Methods
-
-*No documented methods for this handle.*
