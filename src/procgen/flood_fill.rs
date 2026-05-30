@@ -1,7 +1,7 @@
-//! Four-connected flood fill on a flat `u8` grid with threshold-based matching.
-//!
-//! - Return a binary mask of reachable cells from a seed coordinate.
-//! - Support both above-threshold and below-threshold fill modes.
+//! Grid flood-fill helper for discovering connected regions from a seed without needing heavier map analysis infrastructure.
+//! The file works over flat byte grids and uses threshold comparison to decide whether propagation should include or exclude a cell.
+//! Above-threshold and below-threshold modes make the same routine usable for holes, landmasses, islands, basins, and similar binary region problems.
+//! Functionally this file delivers reachability masks for contiguous area extraction on simple procedural maps.
 
 /// Flood-fill from `(sx, sy)` over `data` and return a flat mask where 1 = reached cell.
 ///

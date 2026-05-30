@@ -1,8 +1,9 @@
-//! Tween chain — sequential and parallel tween composition for cinematic sequences.
-//!
-//! - `TweenChain` plays tweens one after another (or in parallel groups).
-//! - Each step carries an optional label for event-based Lua callbacks.
-//! - `tick(dt)` advances the chain and returns completed step labels.
+//! This file provides composable tween chains for staged motion and timing choreography.
+//! It supports sequential and grouped progression so animation beats can be orchestrated clearly.
+//! It carries optional step labels that let scripts react to completion boundaries.
+//! It advances with frame delta while preserving deterministic chain state transitions.
+//! It translates complex cinematic timing into a readable structure for runtime execution.
+//! It keeps multi-step animation flow explicit for tools, debugging, and script control.
 
 use crate::math::easing;
 

@@ -1,7 +1,6 @@
-//! Fixed-size render canvas carrying pixel dimensions for the GPU surface.
-//!
-//! - Logs creation at debug level via the CV01 message code.
-//! - Owned by `GpuRenderer`; does not hold GPU resources itself.
+//! This file defines the lightweight canvas handle that describes an off-screen render target by size and identity.
+//! It is metadata for the renderer rather than a GPU allocation, so higher layers can reason about canvas ownership cheaply.
+//! The type exists to keep canvas-facing APIs stable while the renderer manages the actual backing resources elsewhere.
 
 use crate::log_msg;
 use crate::runtime::log_messages::CV01;

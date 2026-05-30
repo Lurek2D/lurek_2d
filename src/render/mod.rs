@@ -1,8 +1,6 @@
-//! GPU rendering pipeline: wgpu device, passes, command encoding, and post-fx chain.
-//!
-//! - Draw primitives: sprites, shapes, meshes, text, decals, and canvas pixel ops.
-//! - Font rasterisation, shader management, and image-effect descriptors.
-//! - Draw-layer ordering and blend/stencil/depth state per command.
+//! This module provides the engine render stack, from command definitions and asset-side helpers to the concrete GPU backend.
+//! It covers shapes, text, textures, meshes, decals, canvas targets, shaders, and full-screen image effects under one rendering vocabulary.
+//! At the highest level it is the subsystem that turns frame-local draw intent into ordered, composited visual output.
 
 /// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
 pub mod canvas;

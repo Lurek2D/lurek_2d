@@ -1,7 +1,7 @@
-//! Named-strategy registry with id assignment and current-selection tracking.
-//!
-//! - Register, remove, query, and switch strategies by string name.
-//! - Provides id-based lookup for the active strategy.
+//! Strategy registry for features that swap among named behaviors or algorithms while keeping the selection surface explicit and data-driven.
+//! The file assigns stable ids to registered strategies and tracks which one is currently active so callers can inspect or switch policy without hidden branching.
+//! Registration and removal are treated as first-class operations, which fits systems where available strategies change with content, upgrades, or scripting.
+//! Functionally this delivers the hot-swappable behavior catalog behind interchangeable decision rules, tactics, generators, or processing modes.
 
 use std::collections::HashMap;
 #[derive(Debug, Default, Clone)]

@@ -1,8 +1,8 @@
-//! Scene transition visual effects for smooth scene switching (fade, slide, wipe, iris, zoom, crossfade).
-//!
-//! - Easing curves with evaluation: linear, quadratic, cubic, bounce, and back overshoot.
-//! - Active transition state tracking elapsed time and computing eased progress.
-//! - Lua string parsing for transition type and easing selection from game scripts.
+//! This file defines the time-based visual language for moving from one scene state to another without abrupt swaps.
+//! It combines transition kinds, easing behavior, and active progress tracking so scene changes can carry controlled visual momentum.
+//! Parsing support is included here because scripts often describe transitions through compact names rather than direct Rust types.
+//! The file turns those names and durations into concrete animated progress over time.
+//! In practice it is the scene module's motion vocabulary for entering, leaving, and revealing states.
 
 use crate::log_msg;
 use crate::math::easing;

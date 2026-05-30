@@ -1,7 +1,6 @@
-//! Time tracking, fixed-step accumulation, and frame-independent scheduling.
-//!
-//! - Provides a high-resolution clock, scaled delta, and sleep utilities.
-//! - Exposes a tick-based scheduler for deferred and repeating callbacks.
+//! This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling.
+//! It keeps frame progression measurable and controllable across gameplay and engine services.
+//! It unifies timing primitives so deferred logic behaves consistently under load.
 
 /// Exposes the accumulator module.
 pub(crate) mod accumulator;

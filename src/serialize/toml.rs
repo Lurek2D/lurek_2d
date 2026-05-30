@@ -1,7 +1,7 @@
-//! Parse TOML strings into engine-internal `SerialValue` trees.
-//!
-//! - Encode `SerialValue` back to TOML text for config persistence.
-//! - Bridge between the `toml` crate's value types and the serial layer.
+//! This file translates TOML documents into the engine's intermediate serial tree and back again.
+//! It exists mainly for human-edited structured configuration where readability and stable nesting matter more than raw compactness.
+//! Conversion details between the external TOML value model and the engine's generic serial model are localized here.
+//! The file is the TOML-specific bridge used whenever engine or game config needs round-trip persistence.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

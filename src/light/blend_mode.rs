@@ -1,7 +1,6 @@
-//! Define blend modes controlling how each light merges into the accumulation buffer.
-//!
-//! - Support additive, subtractive, and alpha-mix compositing strategies.
-//! - Variants: `Add` (classic glow), `Subtract` (shadow zones), `Mix` (alpha compositing).
+//! Defines compositing modes that control how each light contribution merges into accumulated lighting.
+//! Encodes additive, subtractive, and mixed behaviors for different artistic lighting goals.
+//! Provides compact blend-mode discriminants shared across lighting evaluation and rendering paths.
 
 /// Blend mode for how a light's contribution is combined with the light accumulation buffer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

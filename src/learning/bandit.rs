@@ -1,9 +1,9 @@
-//! Compact multi-armed bandit storing per-arm reward history and posterior parameters.
-//!
-//! - Strategy switch for epsilon-greedy, UCB1, and Thompson sampling policies.
-//! - Selection, reward ingestion, and reset for adaptive arm choice without a planning framework.
-//! - Internal gamma and beta sampling driven by a deterministic xorshift64 RNG.
-//! - Per-arm pull counts, cumulative reward, and Bayesian alpha/beta parameter tracking.
+//! Implements multi-armed bandit optimization with per-arm reward history and posterior statistics.
+//! Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component.
+//! Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs.
+//! Uses deterministic random helpers for reproducible sampling during probabilistic strategies.
+//! Exposes reward ingestion, arm selection, and reset operations for online learning loops.
+//! Fits lightweight decision problems where full planning frameworks are unnecessary.
 
 /// A single bandit arm with accumulated reward statistics.
 #[derive(Clone)]

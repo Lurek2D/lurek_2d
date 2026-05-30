@@ -1,9 +1,9 @@
-//! Adjacency-list graph with directed and undirected mode support.
-//!
-//! - Node and edge CRUD with stable integer identifiers.
-//! - Weighted, labelled edges with automatic reverse-edge insertion for undirected graphs.
-//! - BFS and DFS traversals from any start node.
-//! - Connectivity queries and neighbour enumeration.
+//! General-purpose graph structure for gameplay relationships, navigation-like topologies, and any domain that benefits from explicit nodes connected by weighted or labelled edges.
+//! The file stores graph state as stable integer-addressed nodes and adjacency lists, which keeps structural edits straightforward while preserving identities scripts can hold onto.
+//! Directed and undirected operation live behind one representation, including automatic reverse-edge behavior when a connection should semantically exist in both directions.
+//! Traversal helpers expose breadth-first and depth-first walks as first-class capabilities so callers can inspect reachability, discover neighborhoods, or derive ordered visits without rebuilding utility code.
+//! Connectivity checks, node metadata, and edge labels make the graph more than a bare container by supporting practical gameplay queries around ownership, routes, influence, or dependency webs.
+//! Functionally this file delivers the relational map backbone for systems that need editable topology, traversable links, and stable graph identities in script-friendly form.
 
 /// A graph node with a debug label.
 #[derive(Debug, Clone)]

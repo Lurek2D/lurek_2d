@@ -1,7 +1,6 @@
-//! Structured log dispatch with level, tag, and key-value fields.
-//!
-//! - Runtime log-level query and mutation via string names.
-//! - Level-filter check without emitting a message.
+//! Provides the structured logging facade used to emit level-tagged messages with fields.
+//! Handles runtime level queries and updates while enforcing fast level gating before dispatch.
+//! Exposes compact log-entry helpers consumed by Lua and Rust call sites.
 
 use crate::runtime::log_messages;
 use std::collections::BTreeMap;

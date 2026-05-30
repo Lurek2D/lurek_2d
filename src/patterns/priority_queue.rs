@@ -1,7 +1,7 @@
-//! Sorted priority queue with stable FIFO tie-breaking for equal priorities.
-//!
-//! - Push, pop, peek, and remove by id with O(n) insertion via partition point.
-//! - Each item carries an auto-assigned id, priority, label, and sequence number.
+//! Ordered priority queue for gameplay scheduling and selection tasks that need highest-priority work first without losing deterministic order among ties.
+//! The file assigns each entry its own identity and insertion sequence so queue mutation remains inspectable even when multiple items share the same score.
+//! Push, pop, peek, and targeted removal operate on one consistently sorted store rather than spreading priority semantics across separate containers and side maps.
+//! Functionally this delivers stable urgency-based ordering for task systems, AI planners, turn resolution, and any script logic that needs predictable priority arbitration.
 
 /// A single entry in the queue with a stable tie-breaking sequence number.
 #[derive(Debug, Clone)]

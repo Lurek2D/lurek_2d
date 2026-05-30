@@ -1,7 +1,6 @@
-//! Declares `ReplCommand` enum for the five built-in colon commands: `:help`, `:quit`, `:clear`, `:reset`, and `:load <path>`.
-//!
-//! - `display_text` returns a short human-readable confirmation string for each command variant.
-//! - Command data only; dispatch logic and Lua eval live in `session.rs`.
+//! This file defines the small command language for colon-prefixed REPL control actions.
+//! It keeps command intent separate from evaluation logic so parsing and execution stay cleanly divided.
+//! The result is a lightweight vocabulary for session management layered on top of ordinary Lua input.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 /// Special colon command recognised by `ReplSession`.

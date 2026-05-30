@@ -1,10 +1,10 @@
 //! Integer-cost walkability grid for tile-based pathfinding.
-//!
-//! - Per-cell movement weight (0 = blocked, 1–254 = traversal cost).
-//! - Cardinal and diagonal neighbour queries with corner-cut policies.
-//! - Dirty-rectangle tracking for deferred HPA* hierarchy invalidation.
-//! - Bulk fill, rect fill, byte import/export, and deep-copy snapshot.
-//! - Debug visualisation: render grid + path overlay to an ImageData buffer.
+//! Stores per-cell movement weight where zero means blocked and higher values cost more.
+//! Exposes cardinal and diagonal neighbour queries with corner-cut policies.
+//! Tracks dirty rectangles for deferred HPA hierarchy invalidation.
+//! Supports bulk fill, rect fill, byte import/export, and snapshot cloning.
+//! Renders the grid and path overlay into ImageData for debug use.
+//! Forms the base grid model used by higher-level navigation layers.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{NG01, NG02, NG03};

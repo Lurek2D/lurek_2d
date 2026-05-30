@@ -1,9 +1,8 @@
-//! TOML-file-defined validation rules: loaded and compiled from disk at engine startup.
-//!
-//! - `load_rules_from_file` reads a `.toml` rule file and returns `Vec<Box<dyn ValidationRule>>`.
-//! - `load_rules_from_toml` parses the TOML `[[rule]]` array directly from a string.
-//! - Each rule entry specifies `pattern`, `severity`, `message`, and optional `extensions`.
-//! - Loaded rules are appended to the engine rule set before the first validation run.
+//! This file provides TOML-driven rule loading for data-defined validation extensions.
+//! It parses rule entries into runtime rule objects used by the validation engine.
+//! It supports loading from files and raw TOML text for flexible integration points.
+//! It enables configurable policy checks without adding new compiled rule types.
+//! It keeps external rule definitions deterministic so CI behavior remains reproducible.
 
 use super::report::Severity;
 use super::rules_lua::LuaPatternRule;

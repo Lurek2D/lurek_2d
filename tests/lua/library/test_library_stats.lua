@@ -8,6 +8,7 @@ local Stats = require("library.stats")
 
 -- @describe Attribute
 describe("Attribute", function()
+    -- @library lurek.library_stats
     it("should create with base value", function()
         local a = Stats.newAttribute(50)
         expect_equal(a.base, 50)
@@ -15,6 +16,7 @@ describe("Attribute", function()
         expect_equal(a.growth, 0)
     end)
 
+    -- @library lurek.library_stats
     it("should default base to 0", function()
         local a = Stats.newAttribute()
         expect_equal(a.base, 0)
@@ -25,6 +27,7 @@ end)
 
 -- @describe Buff
 describe("Buff", function()
+    -- @library lurek.library_stats
     it("should create with defaults", function()
         local b = Stats.newBuff("hp", 10)
         expect_equal(b.stat, "hp")
@@ -34,6 +37,7 @@ describe("Buff", function()
         expect_equal(b.source, "")
     end)
 
+    -- @library lurek.library_stats
     it("should track expiration", function()
         local b = Stats.newBuff("hp", 5, 1, 3, "potion")
         expect_equal(b:isExpired(), false)
@@ -41,6 +45,7 @@ describe("Buff", function()
         expect_equal(b:isExpired(), true)
     end)
 
+    -- @library lurek.library_stats
     it("permanent buff never expires", function()
         local b = Stats.newBuff("hp", 5, 1, -1, "trait")
         expect_equal(b:isExpired(), false)
@@ -53,6 +58,7 @@ end)
 
 -- @describe Skill
 describe("Skill", function()
+    -- @library lurek.library_stats
     it("should create with defaults", function()
         local sk = Stats.newSkill()
         expect_equal(sk.level, 0)
@@ -62,6 +68,7 @@ describe("Skill", function()
         expect_equal(sk.cooldown, 0)
     end)
 
+    -- @library lurek.library_stats
     it("should accept options", function()
         local sk = Stats.newSkill({ max_level = 5, resource = "mana", cost = 20, cooldown = 3 })
         expect_equal(sk.max_level, 5)
@@ -75,6 +82,7 @@ end)
 
 -- @describe Perk
 describe("Perk", function()
+    -- @library lurek.library_stats
     it("should create with defaults", function()
         local p = Stats.newPerk()
         expect_equal(p.require_level, 0)
@@ -82,6 +90,7 @@ describe("Perk", function()
         expect_equal(p.acquired, false)
     end)
 
+    -- @library lurek.library_stats
     it("should create with options", function()
         local p = Stats.newPerk({ require_level = 5, trait_name = "tough" })
         expect_equal(p.require_level, 5)
@@ -93,6 +102,7 @@ end)
 
 -- @describe ActionPoints
 describe("ActionPoints", function()
+    -- @library lurek.library_stats
     it("should start at max", function()
         local ap = Stats.newActionPoints(6)
         expect_equal(ap.current, 6)
@@ -104,6 +114,7 @@ end)
 
 -- @describe Morale
 describe("Morale", function()
+    -- @library lurek.library_stats
     it("should start at max", function()
         local m = Stats.newMorale(100)
         expect_equal(m.current, 100)
@@ -117,6 +128,7 @@ end)
 
 -- @describe LevelThresholds
 describe("LevelThresholds", function()
+    -- @library lurek.library_stats
     it("table thresholds", function()
         local t = Stats.newTableThresholds({ 100, 200, 400 })
         expect_equal(t:thresholdFor(1), 100)
@@ -125,6 +137,7 @@ describe("LevelThresholds", function()
         expect_equal(t:thresholdFor(99), math.huge)
     end)
 
+    -- @library lurek.library_stats
     it("linear thresholds", function()
         local t = Stats.newLinearThresholds(100, 100)
         expect_equal(t:thresholdFor(1), 100)
@@ -137,6 +150,7 @@ end)
 
 -- @describe Sheet basics
 describe("Sheet basics", function()
+    -- @library lurek.library_stats
     it("should create empty sheet", function()
         local s = Stats.newSheet()
         expect_equal(s.level, 1)
@@ -176,6 +190,7 @@ describe("Sheet basics", function()
         expect_equal(s:getBase("hp"), 0)
     end)
 
+    -- @library lurek.library_stats
     it("getStatNames returns sorted names", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -187,6 +202,7 @@ describe("Sheet basics", function()
         expect_equal(names[3], "str")
     end)
 
+    -- @library lurek.library_stats
     it("min/max/regen accessors", function()
         local s = Stats.newSheet()
         s:define("hp", 100)
@@ -251,6 +267,7 @@ describe("Sheet buffs", function()
         expect_equal(s:get("agi"), 11)
     end)
 
+    -- @library lurek.library_stats
     it("getBuffs returns active buffs", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -260,6 +277,7 @@ describe("Sheet buffs", function()
         expect_equal(buffs[1].add, 5)
     end)
 
+    -- @library lurek.library_stats
     it("getBuffCount", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -289,6 +307,7 @@ describe("Traits", function()
         expect_equal(s:hasTrait("tough"), false)
     end)
 
+    -- @library lurek.library_stats
     it("getActiveTraits", function()
         Stats.defineTrait("fast", { buffs = { { stat = "agi", add = 5, mul = 1 } } })
         local s = Stats.newSheet()
@@ -304,6 +323,7 @@ end)
 
 -- @describe Skills
 describe("Skills", function()
+    -- @library lurek.library_stats
     it("define and learn skill", function()
         local s = Stats.newSheet()
         s:defineSkill("fireball", { max_level = 5, resource = "mana", cost = 20, cooldown = 2 })
@@ -312,6 +332,7 @@ describe("Skills", function()
         expect_equal(s:getSkillLevel("fireball"), 1)
     end)
 
+    -- @library lurek.library_stats
     it("cannot exceed max level", function()
         local s = Stats.newSheet()
         s:defineSkill("slash", { max_level = 1 })
@@ -331,6 +352,7 @@ describe("Skills", function()
         expect_near(s:getCooldownRemaining("heal"), 5, 0.01)
     end)
 
+    -- @library lurek.library_stats
     it("useSkill fails when on cooldown", function()
         local s = Stats.newSheet()
         s:define("mana", 100)
@@ -342,6 +364,7 @@ describe("Skills", function()
         expect_equal(reason, "on cooldown")
     end)
 
+    -- @library lurek.library_stats
     it("useSkill fails when not enough resource", function()
         local s = Stats.newSheet()
         s:define("mana", 10)
@@ -357,6 +380,7 @@ end)
 
 -- @describe Perks
 describe("Perks", function()
+    -- @library lurek.library_stats
     it("define and acquire perk", function()
         local s = Stats.newSheet()
         s:definePerk("iron_skin", { require_level = 3 })
@@ -366,12 +390,14 @@ describe("Perks", function()
         expect_equal(s:hasPerk("iron_skin"), true)
     end)
 
+    -- @library lurek.library_stats
     it("cannot acquire if level too low", function()
         local s = Stats.newSheet()
         s:definePerk("iron_skin", { require_level = 5 })
         expect_equal(s:acquirePerk("iron_skin"), false)
     end)
 
+    -- @library lurek.library_stats
     it("cannot acquire twice", function()
         local s = Stats.newSheet()
         s:definePerk("lucky", {})
@@ -394,6 +420,7 @@ end)
 
 -- @describe Flags
 describe("Flags", function()
+    -- @library lurek.library_stats
     it("set/clear/has/get", function()
         local s = Stats.newSheet()
         s:setFlag("poisoned")
@@ -402,6 +429,7 @@ describe("Flags", function()
         expect_equal(s:hasFlag("poisoned"), false)
     end)
 
+    -- @library lurek.library_stats
     it("getFlags returns sorted list", function()
         local s = Stats.newSheet()
         s:setFlag("burned")
@@ -453,6 +481,7 @@ end)
 
 -- @describe Use tracking
 describe("Use tracking", function()
+    -- @library lurek.library_stats
     it("recordUse increments count", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -480,6 +509,7 @@ end)
 
 -- @describe Action Points
 describe("Action Points", function()
+    -- @library lurek.library_stats
     it("setActionPoints and spend", function()
         local s = Stats.newSheet()
         s:setActionPoints(6)
@@ -491,12 +521,14 @@ describe("Action Points", function()
         expect_equal(cur, 2)
     end)
 
+    -- @library lurek.library_stats
     it("cannot overspend", function()
         local s = Stats.newSheet()
         s:setActionPoints(3)
         expect_equal(s:spendActionPoints(4), false)
     end)
 
+    -- @library lurek.library_stats
     it("beginTurn resets to max", function()
         local s = Stats.newSheet()
         s:setActionPoints(6)
@@ -506,6 +538,7 @@ describe("Action Points", function()
         expect_equal(cur, 6)
     end)
 
+    -- @library lurek.library_stats
     it("recoverActionPoints partial recovery", function()
         local s = Stats.newSheet()
         s:setActionPoints(6)
@@ -520,6 +553,7 @@ end)
 
 -- @describe Morale system
 describe("Morale system", function()
+    -- @library lurek.library_stats
     it("adjustMorale and checkMorale", function()
         local s = Stats.newSheet()
         s:setMorale(100)
@@ -531,6 +565,7 @@ describe("Morale system", function()
         expect_equal(s:hasFlag("panic"), true)
     end)
 
+    -- @library lurek.library_stats
     it("berserk at low morale", function()
         local s = Stats.newSheet()
         s:setMorale(100)
@@ -540,6 +575,7 @@ describe("Morale system", function()
         expect_equal(s:hasFlag("berserk"), true)
     end)
 
+    -- @library lurek.library_stats
     it("nil when morale is fine", function()
         local s = Stats.newSheet()
         s:setMorale(100)
@@ -547,6 +583,7 @@ describe("Morale system", function()
         expect_equal(state, nil)
     end)
 
+    -- @library lurek.library_stats
     it("custom thresholds", function()
         local s = Stats.newSheet()
         s:setMorale(100)
@@ -562,6 +599,7 @@ end)
 
 -- @describe Resistances
 describe("Resistances", function()
+    -- @library lurek.library_stats
     it("setResistance and getResistance", function()
         local s = Stats.newSheet()
         s:setResistance("fire", 0.5)
@@ -594,6 +632,7 @@ end)
 
 -- @describe Encumbrance
 describe("Encumbrance", function()
+    -- @library lurek.library_stats
     it("setEncumbrance and isEncumbered", function()
         local s = Stats.newSheet()
         s:setEncumbrance(50, 100)
@@ -603,6 +642,7 @@ describe("Encumbrance", function()
         expect_equal(s:isEncumbered(), false)
     end)
 
+    -- @library lurek.library_stats
     it("over encumbrance limit", function()
         local s = Stats.newSheet()
         s:setEncumbrance(150, 100)
@@ -614,6 +654,7 @@ end)
 
 -- @describe Initiative
 describe("Initiative", function()
+    -- @library lurek.library_stats
     it("setInitiative and getInitiative", function()
         local s = Stats.newSheet()
         expect_equal(s:getInitiative(), 10) -- default
@@ -703,6 +744,7 @@ end)
 
 -- @describe StatsRegistry
 describe("StatsRegistry", function()
+    -- @library lurek.library_stats
     it("defineTrait and getTraitNames", function()
         Stats.defineTrait("brawler", { buffs = { { stat = "str", add = 3, mul = 1 } } })
         local names = Stats.getTraitNames()
@@ -711,6 +753,7 @@ describe("StatsRegistry", function()
         expect_equal(found, true)
     end)
 
+    -- @library lurek.library_stats
     it("defineRace and getRaceNames", function()
         Stats.defineRace("human", { bases = { hp = 10 }, traits = {} })
         Stats.defineRace("elf", { bases = { agi = 5 }, traits = {} })
@@ -750,6 +793,7 @@ describe("StatsRegistry", function()
         expect_equal(s:get("agi"), 18)
     end)
 
+    -- @library lurek.library_stats
     it("getClassNames returns registered class names", function()
         Stats.defineClass("mage", { bases = { int = 10 }, traits = {} })
         Stats.defineClass("rogue", { bases = { agi = 8 }, traits = {} })
@@ -829,6 +873,7 @@ describe("Buff stack modes", function()
         expect_equal(s:get("str"), 15)
     end)
 
+    -- @library lurek.library_stats
     it("Duration extends existing buff", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -868,6 +913,7 @@ describe("Buff stack modes", function()
         expect_equal(s:get("str"), 20)
     end)
 
+    -- @library lurek.library_stats
     it("different sources bypass stack mode", function()
         local s = Stats.newSheet()
         s:define("str", 10)
@@ -912,18 +958,21 @@ end)
 
 -- @describe Input validation
 describe("Input validation", function()
+    -- @library lurek.library_stats
     it("define ignores nil name", function()
         local s = Stats.newSheet()
         s:define(nil, 10)
         expect_equal(#s:getStatNames(), 0)
     end)
 
+    -- @library lurek.library_stats
     it("addBuff returns nil for nil stat", function()
         local s = Stats.newSheet()
         local h = s:addBuff(nil, 5, 1, -1, "x")
         expect_equal(h, nil)
     end)
 
+    -- @library lurek.library_stats
     it("addXP rejects negative amount", function()
         local s = Stats.newSheet()
         local gained = s:addXP(-100)
@@ -931,6 +980,7 @@ describe("Input validation", function()
         expect_equal(s:getXP(), 0)
     end)
 
+    -- @library lurek.library_stats
     it("addXP handles nil amount", function()
         local s = Stats.newSheet()
         local gained = s:addXP(nil)

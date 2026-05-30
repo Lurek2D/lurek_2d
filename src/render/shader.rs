@@ -1,10 +1,10 @@
-//! Parse and validate user-supplied WGSL fragment shaders via naga.
-//!
-//! - Rewrite fragment entry points into plain helper functions for wrapper-pipeline injection.
-//! - Extract `@location` input slots (color, UV) and enforce vec type constraints.
-//! - Manage typed uniform values (`float`, `vec2`–`vec4`, `int`, `bool`) for per-frame GPU upload.
-//! - Provide deterministic ordered-uniform iteration for stable buffer layout.
-//! - Strip and consume WGSL `@attribute(...)` tokens during header rewriting.
+//! This file handles user-facing shader ingestion so custom WGSL fragments can plug into the renderer without exposing raw backend setup everywhere.
+//! Source code is parsed, constrained, and rewritten into the wrapper shape the engine expects for controlled pipeline generation.
+//! Fragment inputs are inspected so only supported coordinate and color channels enter the custom shader path.
+//! Uniform values are represented in typed form here, which keeps script-driven shader parameters explicit and serializable enough for per-frame upload.
+//! Ordered uniform iteration matters because GPU buffer layout must stay stable once a shader is accepted.
+//! Attribute markers are also normalized here so author-facing shader syntax can remain a little friendlier than raw internal conventions.
+//! The file is therefore the contract layer between flexible user shader text and a renderer that still needs predictable pipeline inputs.
 
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;

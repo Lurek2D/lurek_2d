@@ -1,7 +1,6 @@
-//! Shadow filtering quality presets for soft-shadow rendering.
-//!
-//! - Defines PCF sample kernels at varying tap counts.
-//! - Default is hard shadows (no filtering) for maximum performance.
+//! Defines shadow filtering quality presets used by soft-shadow evaluation paths.
+//! Encodes hard-shadow and PCF-based options with different sampling costs.
+//! Provides a compact quality enum consumed by light shadow configuration.
 
 /// Shadow filter quality preset controlling the soft-shadow sample kernel.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

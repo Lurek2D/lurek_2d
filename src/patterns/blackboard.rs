@@ -1,9 +1,8 @@
-//! Shared key-value store for passing typed state between AI and game systems.
-//!
-//! - Supports bool, number, text, and nil entries with per-key revision tracking.
-//! - Global and per-key revision counters enable efficient change detection.
-//! - Optional parent chain for hierarchical lookup (child inherits parent data).
-//! - Typed getters with defaults that walk the parent chain on miss.
+//! Shared blackboard storage for gameplay and AI systems that need a common language for state without hard-coding direct dependencies between producers and consumers.
+//! The file models values as a compact tagged set of common script-facing types and couples each write to revision tracking so readers can cheaply detect what changed and when.
+//! Parent-linked lookup lets a local board inherit broader context while still overriding specific keys, which makes squad, faction, and entity state layering practical.
+//! Typed getters, defaults, clears, and revision queries turn the store into more than a raw map by giving behavior code a disciplined way to read uncertain state.
+//! Functionally this is the coordination memory for systems that want shared facts, incremental change detection, and hierarchical fallback instead of tightly wired state plumbing.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{BB01, BB02, BB03};

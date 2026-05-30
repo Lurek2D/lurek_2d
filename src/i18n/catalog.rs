@@ -1,9 +1,11 @@
-//! Locale-indexed translation catalog with active locale and ordered fallback chain.
-//!
-//! - Key lookup, category grouping, value search, and word-index caching.
-//! - Coverage-gap analysis comparing locales against a reference table.
-//! - TOML and JSON flattening into dot-separated translation tables.
-//! - Locale validation, RTL detection, and system-locale auto-detection.
+//! Provides a locale-first translation catalog that serves runtime string lookup with fallback chains.
+//! Stores per-locale key tables and active language state so content can switch language without rebuild.
+//! Performs resilient key resolution that walks configured fallback order before reporting missing entries.
+//! Supports import flattening from TOML and JSON trees into dot-path lookup keys for uniform access.
+//! Computes coverage gaps across locales to expose untranslated keys during QA and localization passes.
+//! Offers category grouping and search-style scans that help tools inspect large translation inventories.
+//! Includes locale validation, RTL detection, and system-locale discovery for startup language selection.
+//! Keeps lightweight caches to accelerate repeated text and word lookups in hot UI translation paths.
 
 use serde_json;
 use std::cell::RefCell;

@@ -1,7 +1,6 @@
-//! Geometric shape primitives controlling how individual particles are rendered.
-//!
-//! - Includes simple fills (square, circle, triangle), directional shapes (spark, ray, capsule), and composite outlines (ring).
-//! - Each variant may carry inline parameters (edge count, aspect ratio, thickness).
+//! Geometric shape primitives that control how individual particles are rendered.
+//! Covers fills, directional shapes, and composite outlines with inline parameters.
+//! Gives emitters a compact vocabulary for particle silhouette design.
 
 /// Geometric primitive used to draw a single particle.
 #[derive(Clone, Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]

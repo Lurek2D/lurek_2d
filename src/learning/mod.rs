@@ -1,15 +1,7 @@
-//! Machine learning and evolutionary computation algorithms.
-//!
-//! - This module provides standalone learning algorithms that can be used
-//! - independently or integrated with the AI decision-making systems.
-//! - # Submodules
-//! - `neural_net` — Feedforward neural networks with backpropagation
-//! - `neuroevolution` — Evolving neural network topologies
-//! - `genetic` — Genetic algorithms with configurable crossover and mutation
-//! - `qlearner` — Tabular Q-learning for reinforcement learning
-//! - `bandit` — Multi-armed bandit strategies (UCB1, Thompson, epsilon-greedy)
-//! - `env` — Gym-compatible RL environment wrappers
-//! - `onnx` — ONNX model loading and inference via tract-onnx
+//! High-level learning module that aggregates neural, evolutionary, and reinforcement components.
+//! Re-exports core model, optimizer, tensor, and environment types for unified caller access.
+//! Connects lightweight CPU learning primitives with optional ONNX inference capabilities.
+//! Defines the integration layer for experimentation-oriented training and decision systems.
 
 /// Multi-armed bandit strategies and statistics.
 pub mod bandit;

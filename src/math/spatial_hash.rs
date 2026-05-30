@@ -1,9 +1,9 @@
-//! Uniform-grid spatial hashing for broad-phase 2D collision and proximity queries.
-//!
-//! - AABB insert/remove/update with automatic cell-bucket management.
-//! - Rectangle, circle, and segment query shapes with deduplication.
-//! - Parametric slab-based segment-vs-AABB intersection test.
-//! - O(1) cell lookup per query tile; scales with world density, not total item count.
+//! Uniform-grid spatial hash for broad-phase collision and proximity search.
+//! Buckets moving bounds into cells so query cost follows local density, not world size.
+//! Supports insert, remove, update, and deduplicated multi-shape queries.
+//! Handles rectangle, circle, and segment probes with shared cell traversal logic.
+//! Uses slab-style segment tests for fast box intersection checks.
+//! Works best when many objects stay sparse across a large playfield.
 
 use std::collections::{HashMap, HashSet};
 

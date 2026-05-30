@@ -1,14 +1,13 @@
-//! Define the terminal widget type system: Label, Button, TextBox, List, Border, and Panel.
-//!
-//! - Provide `WidgetBase` for shared layout state: position, size, visibility, enabled flag, and tag.
-//! - Offer `BorderStyle` enum with single, double, and ASCII line-drawing variants.
-//! - Construct widgets from 1-based terminal coordinates with clamped dimensions.
-//! - Get and set display text for text-bearing widgets (Label, Button, TextBox).
-//! - Get and set foreground color for colored widgets (Label, Border).
-//! - Manipulate list contents: add, remove, clear items; track selection and scroll offset.
-//! - Enforce TextBox max-length constraints with automatic cursor clamping.
-//! - Expose border property accessors for style and title.
-//! - Provide type-checking predicates for widget kind discrimination.
+//! This file defines the widget vocabulary used by the terminal so character-grid interfaces can be composed from reusable interactive parts.
+//! Shared widget state is centralized here because labels, buttons, lists, text boxes, borders, and panels all need common positioning and visibility rules.
+//! Each widget kind extends that shared base with behavior suited to text-mode UI rather than pixel-perfect retained graphics widgets.
+//! Border and panel concepts live here because framed layout is a fundamental part of terminal-style interface composition.
+//! Text-bearing widgets are shaped around cell coordinates and constrained widths, which keeps them honest to the grid they inhabit.
+//! List widgets manage items and selection semantics here so terminal state can treat them as one coherent interactive object.
+//! Text boxes enforce cursor and content limits here, giving the terminal a predictable editing model for user input.
+//! Type discrimination helpers also belong here because higher layers often need to branch on widget behavior without unpacking every variant manually.
+//! The file is therefore the structural UI type system of the terminal module.
+//! It gives the terminal more expressive interface primitives than raw cells alone could provide.
 
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};

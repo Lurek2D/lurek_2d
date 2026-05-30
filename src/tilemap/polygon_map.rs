@@ -1,9 +1,9 @@
-//! Named convex/concave polygon regions with fill color and optional text labels.
-//!
-//! - Spatial query via ray-casting point-in-polygon test for hit detection.
-//! - Global outline and highlight styling shared across all regions.
-//! - Region management: add, remove, recolor, label, and enumerate.
-//! - Bounding-box and centroid computation for layout and camera framing.
+//! This file provides named polygon regions for zone semantics layered over tile-based worlds.
+//! It supports convex and concave shapes with fill styling and optional in-region text labels.
+//! It answers point-in-region queries for selection, triggers, and gameplay ownership checks.
+//! It maintains shared outline and highlight styling to keep region feedback visually consistent.
+//! It includes region lifecycle operations so zones can be created, updated, and removed at runtime.
+//! It computes bounds and centroids to support layout decisions, framing, and camera behaviors.
 
 use crate::color::Color;
 use std::collections::HashMap;

@@ -1,10 +1,8 @@
-//! Arbitrary-degree Bézier curve with dynamic control-point list.
-//!
-//! - Evaluation via Bernstein basis, clamped to `[0,1]`.
-//! - Sampling helpers for full curves, sub-segments, and arc-length walks.
-//! - First-derivative computation and tangent-angle extraction.
-//! - Geometric transforms: translate, rotate, scale relative to an origin.
-//! - Control-point CRUD with minimum-count safety.
+//! Flexible Bézier curve utility for smooth motion paths and procedural shaping.
+//! Supports dynamic control points, clamped evaluation, and partial-segment sampling.
+//! Provides tangent and derivative queries for orientation and velocity-aware effects.
+//! Can be transformed in place with translate, rotate, and scale operations.
+//! Designed for path authoring, easing-like shaping, and motion interpolation use cases.
 
 use crate::math::vec2::Vec2;
 

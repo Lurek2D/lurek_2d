@@ -1,12 +1,13 @@
-//! Central `Overlay` struct owning every screen-space post-world effect state block.
-//!
-//! - Per-frame update loop advancing weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning.
-//! - Weather particle spawning and simulation for rain, snow, hail, dust, leaves, ash, and pollen modes.
-//! - Trigger API for flash, camera shake, screen fade, and lightning flash events.
-//! - Query helpers for shake offset, flash/lightning alpha, active state, and target dimensions.
-//! - Render command builder emitting full-screen colored rectangles for flash, fade, lightning, and vignette overlays.
-//! - Clear/reset restoring all subsystems to default inactive state.
-//! - Debug visualization: state panels, flash frame strips, shake offset trails, fade transition strips, and combined trigger previews.
+//! Central overlay controller owning every screen-space effect state block.
+//! Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame.
+//! Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen.
+//! Triggers flash, shake, fade, and lightning events through a simple runtime API.
+//! Reports shake offset, flash alpha, lightning alpha, and active state to callers.
+//! Builds render commands for flash, fade, lightning, and vignette overlays.
+//! Resets every subsystem back to a clean inactive state when needed.
+//! Supports debug visualisation of internal timing and offset trails.
+//! Keeps presentation effects together so higher-level scene code stays thin.
+//! Acts as the single screen-space effect scheduler for the renderer.
 
 use super::ambient::AmbientState;
 use super::atmosphere::{

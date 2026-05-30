@@ -1,9 +1,7 @@
-//! Lua import resolver: validates that all `require()` call targets exist on disk.
-//!
-//! - `ImportCheckRule` scans Lua files for `require("path")` calls via regex.
-//! - Each required path is resolved against the game's `lua_paths` config list.
-//! - Missing modules produce a `Severity::Error`; conditional requires a `Warning`.
-//! - Does not execute Lua; purely textual scan for safety and speed.
+//! This file provides import resolution checks for Lua require targets in project scripts.
+//! It scans textual require patterns and resolves module paths against configured lookup roots.
+//! It surfaces missing dependencies before runtime to reduce integration surprises.
+//! It keeps the check static and safe by avoiding script execution during analysis.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

@@ -1,12 +1,15 @@
-//! Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
-//!
-//! - Accordion panels with optional exclusive-expand mode and tooltip overlays with configurable delay.
-//! - HSVA/RGB colour picker, column-row data grid with sorting, static image display, numeric badge overlay.
-//! - TreeView uses a flat `Vec<TreeNode>` with index-based parent/child links; add, remove, expand, collapse, and depth queries are O(n) worst case.
-//! - Toolbar and MenuBar hold child indices into an external widget list; buttons support enabled/toggled states.
-//! - Dialog supports modal blocking, optional content slot, and footer action buttons.
-//! - CustomWidget provides a blank shell for fully user-controlled rendering via Lua callbacks.
-//! - All widgets embed `WidgetBase` for shared layout, style, and state; widget-type enum discriminant assigned at construction.
+//! This file provides the extended widget set that goes beyond baseline UI control primitives.
+//! It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements.
+//! It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows.
+//! It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces.
+//! It models hierarchical trees and menu structures in forms suitable for retained updates.
+//! It supplies status and notification components that communicate system state to players.
+//! It keeps advanced widgets aligned with shared base style and layout semantics.
+//! It provides custom widget shells for script-driven rendering and bespoke interactions.
+//! It enables dense information surfaces without leaving the core retained UI ecosystem.
+//! It expands UI expressiveness while keeping integration with context and renderer coherent.
+//! It supports practical tool-building needs alongside in-game menu and HUD requirements.
+//! It rounds out the module with specialized pieces required for full product interfaces.
 
 use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};

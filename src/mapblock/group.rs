@@ -1,9 +1,7 @@
-//! Named block groups for weighted random selection and themed zone filling.
-//!
-//! - `BlockGroup` holds a name and a `Vec<(block_id, weight)>` for weighted sampling.
-//! - Groups are registered by name; scripts reference them by string, not index.
-//! - `BlockGroup::pick(rng)` returns a block ID using alias-method weighted sampling.
-//! - Useful for biome zones: register a `"forest"` group and fill a region by name.
+//! Named block group for themed procedural generation passes.
+//! Carries weighted selection metadata for controlled randomness.
+//! Lets scripts reference semantic groups instead of numeric ids.
+//! Supports biome-style or region-style content curation.
 
 use super::block::MapBlock;
 use super::script::MapScript;

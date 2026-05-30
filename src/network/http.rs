@@ -1,7 +1,8 @@
-//! Synchronous HTTP client built on `ureq` for GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
-//!
-//! - Configurable per-request timeout via agent builder.
-//! - Unified `HttpResponse` captures status, body, headers, and optional error message.
+//! Synchronous HTTP client built on ureq for common request verbs.
+//! Supports per-request timeout configuration through the agent builder.
+//! Returns a unified response object with status, body, headers, and error text.
+//! Keeps the API small so game code can fetch remote data without async setup.
+//! Fits simple request/response workflows inside scripts and engine tools.
 
 use log::{debug, warn};
 use std::time::Duration;

@@ -1,7 +1,7 @@
-//! `MidiState` storage for loaded SoundFont binary data and its source path.
-//!
-//! - RIFF+sfbk header validation on `set_soundfont` to reject malformed SF2 files.
-//! - Query and clear helpers for SoundFont availability and data access.
+//! Storage for loaded MIDI SoundFont data and its source path.
+//! Validates SoundFont files before they enter the playback pipeline.
+//! Exposes query and clear helpers for runtime availability checks.
+//! Keeps the shared sample resource separate from transport state.
 
 #[derive(Debug, Clone, Default)]
 /// Stores the loaded SoundFont binary data and its source path for MIDI synthesis.

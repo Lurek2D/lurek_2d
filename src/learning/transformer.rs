@@ -1,4 +1,10 @@
-//! Transformer blocks built from attention, layer norm, and feed-forward layers.
+//! Implements transformer-style blocks composed from attention, normalization, and feed-forward stages.
+//! Defines encoder and decoder building units operating over engine-native tensor structures.
+//! Applies residual pathways and normalization flows for stable sequence representation updates.
+//! Stores trainable parameters in flat vectors to align with evolutionary optimization tooling.
+//! Coordinates multi-stage forward execution across attention and projection subcomponents.
+//! Provides reusable transformer primitives for sequence learning and inference experiments.
+//! Integrates with the wider learning stack through common tensor and layer contracts.
 
 use crate::learning::attention::MultiHeadAttention;
 use crate::learning::tensor::LurekTensor;

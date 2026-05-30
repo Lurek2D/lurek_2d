@@ -1,12 +1,13 @@
-//! Mod registry: register, unregister, and look up mods by id or capability.
-//!
-//! - Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
-//! - Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.
-//! - Asset conflict detection: prevent two mods from declaring the same asset path.
-//! - Hot-reload queue: mark mods dirty, re-parse their manifests, and re-register atomically.
-//! - Folder scanning: discover mod directories on disk and batch-register valid entries.
-//! - Dependency validation: detect missing deps and circular dependency cycles.
-//! - Config schema: carry typed key/default triples from manifests for runtime config UI.
+//! Registry and coordination layer for live mods and their dependencies.
+//! Tracks enabled mods by id and capability for lookup and lifecycle control.
+//! Parses manifests and validates the required fields before registration.
+//! Resolves dependency order with topological sorting and priority ties.
+//! Detects missing dependencies and circular relationships early.
+//! Prevents asset path collisions across simultaneously loaded mods.
+//! Manages hot reload by marking dirty mods and re-registering them atomically.
+//! Scans folders on disk and batches valid entries into the registry.
+//! Carries typed config schema data from manifests into runtime UI.
+//! Serves as the central authority for mod registration and load sequencing.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
@@ -101,7 +102,7 @@ impl ModInfo {
         info.dependencies = dependencies;
         info
     }
-    
+
     /// Checks whether the mod's declared API version is compatible with the host engine version.
     pub fn check_api_version(&self, host_version: &str) -> Result<(), String> {
         let required = match &self.api_version {

@@ -16,28 +16,33 @@ describe("Construction & Authority", function()
         expect_equal(ns:getCurrentTurn(), 0)
     end)
 
+    -- @library lurek.library_netstate
     it("creates with explicit authority=true", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:isAuthority(), true)
     end)
 
+    -- @library lurek.library_netstate
     it("creates with explicit authority=false", function()
         local ns = netstate_mod.new(nil, { authority = false })
         expect_equal(ns:isAuthority(), false)
     end)
 
+    -- @library lurek.library_netstate
     it("detects authority from host:isServer()", function()
         local mock_host = { isServer = function() return true end }
         local ns = netstate_mod.new(mock_host)
         expect_equal(ns:isAuthority(), true)
     end)
 
+    -- @library lurek.library_netstate
     it("explicit authority overrides host:isServer()", function()
         local mock_host = { isServer = function() return true end }
         local ns = netstate_mod.new(mock_host, { authority = false })
         expect_equal(ns:isAuthority(), false)
     end)
 
+    -- @library lurek.library_netstate
     it("setAuthority toggles authority", function()
         local ns = netstate_mod.new(nil, { authority = false })
         expect_equal(ns:isAuthority(), false)
@@ -47,6 +52,7 @@ describe("Construction & Authority", function()
         expect_equal(ns:isAuthority(), false)
     end)
 
+    -- @library lurek.library_netstate
     it("setAuthority rejects non-boolean", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:setAuthority("yes")
@@ -154,6 +160,7 @@ end)
 
 -- @describe Per-Key Versioning
 describe("Per-Key Versioning", function()
+    -- @library lurek.library_netstate
     it("each key starts at version 0", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:getKeyVersion("x"), 0)
@@ -187,6 +194,7 @@ describe("Per-Key Versioning", function()
         expect_equal(ns:getVersion(), 3)
     end)
 
+    -- @library lurek.library_netstate
     it("getKeyVersion returns 0 for non-string key", function()
         local ns = netstate_mod.new(nil, { authority = true })
         expect_equal(ns:getKeyVersion(nil), 0)
@@ -406,6 +414,7 @@ end)
 
 -- @describe Turn-Based Support
 describe("Turn-Based Support", function()
+    -- @library lurek.library_netstate
     it("beginTurn advances turn counter", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 1, 2, 3 })
@@ -414,6 +423,7 @@ describe("Turn-Based Support", function()
         expect_equal(peer, 1)
     end)
 
+    -- @library lurek.library_netstate
     it("turn rotates through peer order", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 10, 20 })
@@ -428,6 +438,7 @@ describe("Turn-Based Support", function()
         expect_equal(p3, 10)  -- wraps around
     end)
 
+    -- @library lurek.library_netstate
     it("beginTurn with empty order returns nil peer", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({})
@@ -436,6 +447,7 @@ describe("Turn-Based Support", function()
         expect_equal(peer, nil)
     end)
 
+    -- @library lurek.library_netstate
     it("beginTurn no-op for non-authority", function()
         local ns = netstate_mod.new(nil, { authority = false, turnBased = true })
         local turn, peer = ns:beginTurn()
@@ -443,6 +455,7 @@ describe("Turn-Based Support", function()
         expect_equal(peer, nil)
     end)
 
+    -- @library lurek.library_netstate
     it("endTurn is alias for beginTurn", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 5 })
@@ -451,6 +464,7 @@ describe("Turn-Based Support", function()
         expect_equal(p1, 5)
     end)
 
+    -- @library lurek.library_netstate
     it("getCurrentTurn returns current counter", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         expect_equal(ns:getCurrentTurn(), 0)
@@ -459,6 +473,7 @@ describe("Turn-Based Support", function()
         expect_equal(ns:getCurrentTurn(), 1)
     end)
 
+    -- @library lurek.library_netstate
     it("getTurnPeer returns current peer", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         expect_equal(ns:getTurnPeer(), nil)
@@ -467,6 +482,7 @@ describe("Turn-Based Support", function()
         expect_equal(ns:getTurnPeer(), 42)
     end)
 
+    -- @library lurek.library_netstate
     it("isTurn checks specific peer", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 1, 2 })
@@ -477,6 +493,7 @@ describe("Turn-Based Support", function()
         expect_equal(ns:isTurn(2), true)
     end)
 
+    -- @library lurek.library_netstate
     it("isTurn rejects non-number peer_id", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 1 })
@@ -485,6 +502,7 @@ describe("Turn-Based Support", function()
         expect_equal(ns:isTurn(nil), false)
     end)
 
+    -- @library lurek.library_netstate
     it("onTurn callback fires on beginTurn", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         local fired = {}
@@ -498,6 +516,7 @@ describe("Turn-Based Support", function()
         expect_equal(fired[1].peer, 7)
     end)
 
+    -- @library lurek.library_netstate
     it("onTurn rejects non-function", function()
         local ns = netstate_mod.new(nil, { authority = true })
         ns:onTurn("not a function")
@@ -507,6 +526,7 @@ describe("Turn-Based Support", function()
         expect_equal(ns:getCurrentTurn(), 1)
     end)
 
+    -- @library lurek.library_netstate
     it("setTurnOrder resets state", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 1, 2, 3 })
@@ -524,6 +544,7 @@ describe("Turn-Based Support", function()
         expect_equal(p, 10)
     end)
 
+    -- @library lurek.library_netstate
     it("setTurnOrder filters non-number entries", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder({ 1, "bad", 2 })
@@ -536,6 +557,7 @@ describe("Turn-Based Support", function()
         expect_equal(ns:getTurnPeer(), 1)
     end)
 
+    -- @library lurek.library_netstate
     it("setTurnOrder rejects non-table", function()
         local ns = netstate_mod.new(nil, { authority = true, turnBased = true })
         ns:setTurnOrder("invalid")
@@ -615,6 +637,7 @@ describe("Delta Handling", function()
         expect_equal(ns:get("hp"), nil)  -- not applied
     end)
 
+    -- @library lurek.library_netstate
     it("handles removed key in delta", function()
         local ns = netstate_mod.new(nil, { authority = false })
         ns:_handle(1, {
@@ -701,6 +724,7 @@ end)
 
 -- @describe Turn Message Handling
 describe("Turn Message Handling", function()
+    -- @library lurek.library_netstate
     it("applies turn update from network", function()
         local ns = netstate_mod.new(nil, { authority = false, turnBased = true })
         ns:_handle(1, {
@@ -712,6 +736,7 @@ describe("Turn Message Handling", function()
         expect_equal(ns:getTurnPeer(), 42)
     end)
 
+    -- @library lurek.library_netstate
     it("turn update with nil peer is accepted", function()
         local ns = netstate_mod.new(nil, { authority = false, turnBased = true })
         ns:_handle(1, {
@@ -723,6 +748,7 @@ describe("Turn Message Handling", function()
         expect_equal(ns:getTurnPeer(), nil)
     end)
 
+    -- @library lurek.library_netstate
     it("fires onTurn callback on turn message", function()
         local ns = netstate_mod.new(nil, { authority = false, turnBased = true })
         local fired = {}
@@ -762,12 +788,14 @@ describe("Sync & Poll nil host", function()
         expect_equal(#changes, 0)
     end)
 
+    -- @library lurek.library_netstate
     it("requestFullState returns false with nil host", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local ok = ns:requestFullState()
         expect_equal(ok, false)
     end)
 
+    -- @library lurek.library_netstate
     it("requestFullState returns false if authority", function()
         local ns = netstate_mod.new(nil, { authority = true })
         local ok = ns:requestFullState()
@@ -850,6 +878,7 @@ describe("Edge Cases", function()
         expect_equal(ns:get("name"), "player1")
     end)
 
+    -- @library lurek.library_netstate
     it("onFullStateTimeout stores callback", function()
         local ns = netstate_mod.new(nil, { authority = false })
         local called = false

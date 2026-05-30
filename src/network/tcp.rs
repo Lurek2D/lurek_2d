@@ -1,7 +1,8 @@
 //! Non-blocking TCP connection pool for the background network thread.
-//!
-//! - Round-robin polling across all active streams with event-based notification.
-//! - Connect, send, close, and bulk-poll operations with automatic error cleanup.
+//! Uses round-robin polling across all active streams with event-based notification.
+//! Supports connect, send, close, and bulk-poll operations with automatic cleanup.
+//! Keeps stream management simple for the threaded network runtime.
+//! Serves as the pooled TCP transport layer for multiplayer I/O.
 
 use super::net_thread::{NetworkResponse, TcpEvent};
 use log::{debug, warn};

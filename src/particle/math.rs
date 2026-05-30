@@ -1,7 +1,7 @@
-//! Keyframe interpolation for particle size, colour, and alpha over normalised lifetime.
-//!
-//! - Uniform and normal random number helpers for emission variance.
-//! - All evaluators clamp `t` to `[0.0, 1.0]` and return sensible defaults on empty input.
+//! Keyframe interpolation for particle size, colour, and alpha over normalized lifetime.
+//! Offers uniform and normal random helpers for emission variance.
+//! Clamps interpolation inputs and falls back cleanly on empty keyframe sets.
+//! Supports the numeric shaping layer used by emitter animation.
 
 pub use crate::math::lerp;
 /// Evaluate the particle size at normalised lifetime `t` with optional per-particle `variation` in `[0.0, 1.0]`.

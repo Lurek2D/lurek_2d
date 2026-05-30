@@ -1,7 +1,8 @@
-//! Seedable pseudo-random number generator wrapping `fastrand` with save/restore support.
-//!
-//! - Uniform integer, float, and Gaussian sampling primitives.
-//! - Seed persistence via string serialisation for deterministic replay.
+//! Seedable pseudo-random generator wrapper for deterministic gameplay and replay.
+//! Produces uniform integer, float, and Gaussian samples from one stateful source.
+//! Serializes and restores seed state so saves can resume the same sequence.
+//! Gives higher-level systems a simple random facade without exposing backend details.
+//! Fits any flow that needs reproducible chance, noise, or procedural variation.
 
 use fastrand::Rng;
 

@@ -1,9 +1,8 @@
-//! Mod API compliance checker: validates Lua scripts against registered type schemas.
-//!
-//! - `ApiComplianceRule` inspects each `lurek.*` call site and checks argument types.
-//! - Unknown function names produce a `Severity::Error`; wrong arg count is a `Warning`.
-//! - Schema is loaded from `ApiRegistry` at engine startup; rules are stateless.
-//! - Returns `Vec<Violation>` per file; violations include file path and line number.
+//! This file provides API compliance validation for Lua calls targeting the lurek namespace.
+//! It scans call sites against registered signatures to catch unknown endpoints early.
+//! It detects argument-shape mismatches that often signal migration or integration drift.
+//! It emits structured violations with location data for actionable feedback in pipelines.
+//! It anchors API contract enforcement within the broader validation engine workflow.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

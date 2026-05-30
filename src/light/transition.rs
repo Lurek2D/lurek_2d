@@ -1,7 +1,7 @@
-//! Time-based linear interpolation of light color, intensity, and radius.
-//!
-//! - Clamps duration to a safe minimum and tracks elapsed progress.
-//! - Returns interpolated values each frame until the transition completes.
+//! Implements time-based linear transitions for light color, intensity, and radius values.
+//! Tracks elapsed progress against duration to produce deterministic interpolated states.
+//! Clamps timing parameters to safe bounds for stable update behavior.
+//! Supports per-frame stepping until transitions reach their configured targets.
 
 /// Time-based linear tween that interpolates a light's color, intensity, and radius.
 #[derive(Clone)]

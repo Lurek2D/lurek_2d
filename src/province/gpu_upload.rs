@@ -1,7 +1,9 @@
-//! Province GPU upload helpers for id, border-index, and distance-field textures.
-//!
-//! - Consistent texture descriptors for `R32Uint`, `R16Uint`, and `R8Unorm` data.
-//! - Byte packing utilities used by upload paths and unit tests.
+//! Province texture upload layer for moving grid-derived ids, border indices, and auxiliary fields from CPU memory into GPU-friendly texture resources.
+//! The file standardizes texture shapes and formats so every upload path speaks the same low-level contract for province data.
+//! Packing helpers keep byte layout rules centralized, which reduces the chance of subtle mismatches between generation code, upload code, and tests.
+//! This is not generic rendering infrastructure but province-specific transfer logic shaped around the module's data products.
+//! Keeping the upload details here lets registry and renderer code stay focused on map meaning instead of texture plumbing.
+//! Functionally this file delivers the last CPU-to-GPU step for province id maps, border textures, and distance data.
 
 /// GPU texture bundle used by the province map renderer.
 pub struct ProvinceGpuTextures {

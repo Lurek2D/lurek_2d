@@ -1,8 +1,8 @@
-//! MessagePack binary encoding and decoding for SerialValue trees.
-//!
-//! - Intermediate MsgValue enum bridging SerialValue to rmp_serde.
-//! - Size estimation for pre-allocated encode buffers.
-//! - JSON-compatible encode/decode path via serde_json::Value.
+//! This file handles the compact binary MessagePack path for serial values when text readability is less important than size and speed.
+//! It translates through an internal bridge representation that fits the expectations of the underlying MessagePack tooling.
+//! Buffer sizing and conversion details are handled here so callers can treat MessagePack as just another supported format.
+//! Compatibility with JSON-like value shapes is preserved where practical to keep cross-format workflows predictable.
+//! The file is the binary-leaning codec within a mostly document-oriented serialization family.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

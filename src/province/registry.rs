@@ -1,13 +1,11 @@
-//! Central province registry: owns pixel grid, span runs, adjacency graph, and per-province records.
-//!
-//! - Builds from a ProvinceGrid or PNG colour-map; computes spans, bounding boxes, and centroids.
-//! - Provides fast lookup by pixel coordinate, province id, or bounding box.
-//! - Manages mutable province style (political colour, terrain, fog, visibility, border style).
-//! - Stores capital positions, label anchor lines, and label text per province.
-//! - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
-//! - Maintains a monotonic revision counter and ordered change log for incremental sync.
-//! - Supports border class overrides keyed by normalised province pair.
-//! - Stores arbitrary string key-value attributes per province via set_attr.
+//! Authoritative province registry that holds the full living state of a province map, from region identity and geometry to style, labels, and incremental change history.
+//! The file is the module's main source of truth, joining pixel-derived structure with higher-level metadata such as political color, terrain, fog, visibility, and custom attributes.
+//! Fast lookup paths matter here because gameplay, rendering, and tools all need to move quickly between coordinates, province ids, and region records.
+//! Adjacency ownership is stored as first-class topology rather than recomputed on demand, which keeps neighborhood and border reasoning efficient and consistent.
+//! Capital markers, label baselines, and province text live alongside style so visual presentation remains attached to the same province identity that game logic uses.
+//! Monotonic revisions and ordered change logs make the registry incrementally observable, which is important for sync, UI refresh, and Lua-facing event delivery.
+//! Pair-specific border overrides give the map a place to express relationship semantics like coast, alliance, or war at the edge between provinces instead of only per province.
+//! Functionally this file delivers the central province runtime database that every other province feature reads from or writes to.
 
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;

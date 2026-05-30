@@ -1,12 +1,11 @@
-//! Camera debug overlay with viewport rectangle and position crosshair.
-//!
-//! - Zoom level comparison panel across multiple scale factors.
-//! - Rotation preview grid with world-to-screen coordinate transforms.
-//! - Camera bounds display with labeled position list.
-//! - Follow and dead-zone trail visualization.
-//! - Shake displacement trail with center and moved-position markers.
-//! - Full-size camera debug wrapper for quick usage.
-//! - HSV color helpers for hue-based visual differentiation.
+//! Produces camera-debug imagery that visualizes framing, motion, and transform behavior in world space.
+//! Draws viewport boxes, crosshairs, and coordinate guides for position and anchor verification.
+//! Compares multiple zoom factors to reveal scale-dependent composition and clipping effects.
+//! Renders rotation-aware grids that expose world-to-screen mapping under angular transforms.
+//! Displays bounds and follow trails to inspect dead-zone tuning and target-tracking responses.
+//! Visualizes shake offsets against center references for temporal stability checks.
+//! Provides wrapper entry points for fast full-panel generation in tests and tooling flows.
+//! Uses hue-based color differentiation to keep layered debug signals visually distinct.
 
 use super::hsv_to_rgb_viz;
 use crate::camera::Camera2D;

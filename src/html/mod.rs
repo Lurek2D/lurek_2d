@@ -1,7 +1,6 @@
-//! HTML document tree with element storage, layout rectangles, and draw-command generation.
-//!
-//! - CSS rule parsing, selector matching, and color normalization.
-//! - Tag parsing and entity escaping for inline HTML content.
+//! High-level HTML module surface that composes parsing, styling, selection, and document orchestration.
+//! Re-exports stable document and element types used by runtime code interacting with HTML-driven UI.
+//! Binds color, parser, selector, and style helpers into one cohesive entry point for the subsystem.
 
 /// CSS color parsing helpers for HTML style handling.
 pub mod color;

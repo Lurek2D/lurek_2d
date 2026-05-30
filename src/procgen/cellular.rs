@@ -1,7 +1,7 @@
-//! Cellular automata cave generator producing flat grid maps from configurable birth/survive rules.
-//!
-//! - Supports reproducible output via seeded LCG randomisation.
-//! - Treats out-of-bounds neighbours as solid, forming natural cave walls at map edges.
+//! Cave-style map generator that uses cellular automata to turn noisy initial occupancy into organic cavern shapes.
+//! The file exposes birth and survival style rules together with seeded randomization so cave density and texture can be tuned while staying reproducible.
+//! Edge treatment is baked into the model to keep map borders naturally enclosed rather than porous or artificially clean.
+//! Functionally this file delivers fast organic cave generation from simple rule-based iteration on a flat grid.
 
 use super::lcg::Lcg;
 

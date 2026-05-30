@@ -1,9 +1,6 @@
-//! Validation rule trait and standard built-in rule implementations.
-//!
-//! - `ValidationRule` trait: `fn check(path, content) -> Vec<Violation>`.
-//! - All built-in rules implement this trait; Lua custom rules are adapter-wrapped.
-//! - Rules are stateless and `Send + Sync` so they can be used from any thread.
-//! - The engine constructs the rule set once from config and reuses it across files.
+//! This file provides the rule trait contract that all validator checks implement.
+//! It defines the required identity, severity, and check interface for rule execution.
+//! It keeps rules composable across built-in logic and externally supplied adapters.
 
 use super::report::{Severity, Violation};
 use std::path::Path;

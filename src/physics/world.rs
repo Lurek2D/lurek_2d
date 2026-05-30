@@ -1,15 +1,18 @@
-//! Full rapier2d-backed physics simulation world with body, collider, and joint management.
-//!
-//! - Collision event collection: begin-contact, end-contact, and overlap pairs per step.
-//! - Raycast queries: single closest hit, point-to-point sweep, and multi-hit gather.
-//! - AABB and point spatial queries via QueryPipeline.
-//! - Joint catalog: revolute, distance, prismatic, weld, rope, wheel, friction, motor, mouse, pulley, gear.
-//! - Joint break-force thresholds with automatic removal on exceeded relative velocity.
-//! - One-way platform normals with velocity projection on contact.
-//! - Trigger zone system: gravity overrides (zero, directional, point, repulsor), damping, enter/exit events.
-//! - Fixed-timestep accumulator helper and pixels-per-meter unit conversion.
-//! - Debug rendering: shape snapshot extraction and direct ImageData line drawing.
-//! - Body lifecycle: add, destroy (disable), clear world, sleep control, CCD toggle.
+//! Central physics simulation world that owns the living state of rigid bodies, colliders, joints, queries, events, and solver progression for the engine.
+//! The file wraps Rapier into an engine-shaped runtime surface where spawning, stepping, sleeping, destruction, and body mutation all speak one consistent game-facing vocabulary.
+//! Fixed-timestep accumulation is part of that surface, which keeps motion and contact results deterministic enough for frame-rate-independent gameplay code.
+//! Collision collection lives beside stepping so begin, end, and overlap information emerges as stable post-step data rather than scattered callbacks fired from deep inside the solver.
+//! Spatial queries such as raycasts, point tests, and area checks share the same authoritative world state, which lets gameplay systems ask where things are without duplicating geometry.
+//! Joint support turns the world from a loose body container into a mechanical playground where links, motors, ropes, sliders, and welded constraints become first-class scene behaviors.
+//! Break thresholds and one-way platform handling add gameplay-oriented control over how contacts and constraints should behave under stress or directional motion.
+//! Trigger zones extend the world beyond classic rigid-body simulation by letting areas override gravity, damping, and enter-exit signaling as bodies move through space.
+//! Pixels-per-meter conversion keeps authored screen-scale intent aligned with simulation-scale correctness, reducing the friction between gameplay numbers and solver numbers.
+//! Debug shape extraction and line drawing make the same world inspectable, so developers can see the geometry and contact surfaces that drive runtime outcomes.
+//! Terrain-linked behavior integrates static environment rebuilding into the same physical authority instead of leaving destructible ground as an external special case.
+//! Body lifecycle controls cover creation, disabling, wake-sleep flow, velocity mutation, material changes, and other everyday manipulations expected from a playable simulation backend.
+//! Query, contact, and mutation responsibilities stay concentrated here so higher layers can treat the world as the one source of truth for physical state.
+//! The result is a large but coherent orchestration surface where simulation, environment effects, and debug visibility reinforce each other instead of fragmenting across helper subsystems.
+//! Functionally this file delivers the full physical stage on which movement, impact, constraints, triggers, terrain interaction, and spatial reasoning all take place.
 
 use super::body::{Body, BodyShape, BodyType};
 use super::shape::Shape;

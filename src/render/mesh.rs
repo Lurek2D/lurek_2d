@@ -1,7 +1,8 @@
-//! 2D mesh geometry: vertices with position, UV, and RGBA color.
-//!
-//! - Triangle topology modes: independent triangles, fan, and strip.
-//! - Index-buffer support and topology-agnostic triangulation.
+//! This file defines reusable 2D mesh data for renderable geometry that is richer than the engine's immediate-mode shape commands.
+//! It keeps positions, UVs, colors, and topology choices together so imported content and generated geometry share one draw-ready format.
+//! Indexed and non-indexed paths are both represented, which gives callers flexibility without forcing a single authoring style.
+//! Triangulation helpers bridge higher-level topology choices into the triangles the backend ultimately needs.
+//! The file is therefore the geometry interchange layer between content generation, importers, and the renderer.
 
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;

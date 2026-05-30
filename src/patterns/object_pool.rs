@@ -1,7 +1,7 @@
-//! Capacity-bounded object pool that tracks idle and active ids for reuse.
-//!
-//! - Supports acquire/release lifecycle, prewarming, and optional capacity limits.
-//! - Useful for entity recycling, bullet pools, and particle systems.
+//! Object pool state for reuse-heavy systems that would rather recycle stable ids than continuously allocate and discard short-lived gameplay resources.
+//! The file separates idle and active membership, supports prewarming, and enforces optional capacity so callers can shape reuse policy without inventing their own lifecycle bookkeeping.
+//! Acquire and release flow is designed around predictable id turnover, which suits bullets, particles, temporary actors, and other bursty populations.
+//! Functionally this delivers the reuse scheduler behind allocation-sensitive gameplay loops that want bounded churn and explicit ownership transitions.
 
 /// Capacity-bounded pool tracking idle and active object ids.
 #[derive(Debug)]

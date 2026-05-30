@@ -1,7 +1,8 @@
-//! Accumulated 2D affine transform backed by a 3×3 matrix.
-//!
-//! - Chainable translate, rotate, scale, and shear mutations.
-//! - Forward and inverse point mapping plus SRT decomposition.
+//! Mutable 2D affine transform that accumulates position, rotation, scale, and shear.
+//! Wraps a 3x3 matrix so chained edits stay compact and composable.
+//! Exposes forward and inverse point mapping for world and local space conversion.
+//! Includes SRT decomposition for systems that need readable transform components.
+//! Bridges low-level matrix math with runtime spatial manipulation.
 
 use crate::math::mat3::Mat3;
 use crate::math::vec2::Vec2;

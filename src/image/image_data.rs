@@ -1,9 +1,13 @@
-//! Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
-//!
-//! - Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
-//! - Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
-//! - Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
-//! - PNG encoding for serialization and export.
+//! Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic.
+//! Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads.
+//! Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants.
+//! Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays.
+//! Supports blending and paste semantics that keep alpha composition behavior explicit and predictable.
+//! Carries width, height, and packed bytes in a compact row-major memory representation.
+//! Encodes images back to portable formats for persistence, export, and diagnostics.
+//! Includes comparison and utility helpers used by tests and content validation steps.
+//! Serves as the common interchange type between image operations and render-facing code paths.
+//! Keeps all mutation local to the instance to avoid hidden shared-state side effects.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};

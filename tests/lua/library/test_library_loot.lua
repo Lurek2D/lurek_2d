@@ -51,6 +51,7 @@ end)
 
 -- @describe LootTable.sampleN unique
 describe("LootTable.sampleN unique", function()
+    -- @library lurek.library_loot
     it("never repeats with unique=true", function()
         local tbl = loot.fromList({
             {id="a", weight=1},{id="b", weight=1},
@@ -65,6 +66,7 @@ describe("LootTable.sampleN unique", function()
         end
     end)
 
+    -- @library lurek.library_loot
     it("errors when unique=true and n > entries", function()
         local tbl = loot.fromList({{id="a",weight=1},{id="b",weight=1}})
         expect_error(function()
@@ -74,6 +76,7 @@ describe("LootTable.sampleN unique", function()
 
     -- @describe LootTable utilities
     describe("LootTable utilities", function()
+        -- @library lurek.library_loot
         it("probability returns normalised weight", function()
             local t = loot.fromList({{id="a",weight=30},{id="b",weight=70}})
             expect_near(0.30, t:probability("a"), 1e-9)
@@ -90,6 +93,7 @@ describe("LootTable.sampleN unique", function()
             expect_equal(110, c:weightOf("a"))
         end)
 
+        -- @library lurek.library_loot
         it("merge sums weights for duplicate ids", function()
             local a = loot.fromList({{id="x",weight=5},{id="y",weight=5}})
             local b = loot.fromList({{id="x",weight=10},{id="z",weight=2}})
@@ -102,6 +106,7 @@ describe("LootTable.sampleN unique", function()
 
     -- @describe DropSet
     describe("DropSet", function()
+        -- @library lurek.library_loot
         it("guarantee always emits the requested count", function()
             local drop = loot.newDrop():guarantee("recall", 3)
             local out = drop:resolve({})
@@ -109,6 +114,7 @@ describe("LootTable.sampleN unique", function()
             expect_equal("recall", out[1].id)
             expect_equal(3, out[1].count)
         end)
+        -- @library lurek.library_loot
         it("when-predicate excludes nested clauses when false", function()
             local tbl = loot.fromList({{id="x",weight=1}})
             local drop = loot.newDrop()
@@ -123,6 +129,7 @@ describe("LootTable.sampleN unique", function()
 
     -- @describe Pity
     describe("Pity", function()
+        -- @library lurek.library_loot
         it("primes after threshold misses and resets on hit", function()
             local p = loot.newPity("rare", 3)
             p:notice("a"); p:notice("b"); p:notice("c")
@@ -145,6 +152,7 @@ describe("LootTable.sampleN unique", function()
 
     -- @describe Modifier
     describe("Modifier", function()
+        -- @library lurek.library_loot
         it("apply yields independent table     original untouched", function()
             local base = loot.fromList({{id="a",weight=10},{id="b",weight=10}})
             local mf = loot.newModifier():add("boost",
@@ -158,6 +166,7 @@ describe("LootTable.sampleN unique", function()
 
     -- @describe error paths
     describe("error paths", function()
+        -- @library lurek.library_loot
         it("fromToml raises on missing engine bindings", function()
             -- lurek.filesystem.read may not be wired in headless test VM     either way it must error
             -- on a path that does not exist or on missing binding.

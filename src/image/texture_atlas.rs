@@ -1,7 +1,8 @@
-//! Shelf-based rectangle packing for combining multiple images into a single atlas texture.
-//!
-//! - Nine-slice inset metadata attached per region for scalable UI sprites.
-//! - Name-keyed region lookup, clearing, and dimension queries.
+//! Builds and maintains texture atlases that group many named regions inside one packed image.
+//! Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees.
+//! Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion.
+//! Supports name-based lookup, mutation, and reset operations for dynamic atlas management.
+//! Exposes region geometry and atlas dimensions needed by render and layout call sites.
 
 use std::collections::HashMap;
 /// Nine-slice border distances used to preserve corners and edges.

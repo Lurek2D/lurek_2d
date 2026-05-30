@@ -1,7 +1,7 @@
-//! Deferred sprite draw-call collector bound to a single texture atlas.
-//!
-//! - Accumulates positioned, rotated, scaled source-quad entries for batch submission.
-//! - Supports optional capacity cap to limit per-frame draw volume.
+//! This file implements sprite batching for cases where many textured quads share one source texture and should travel together through rendering.
+//! It accumulates per-instance transform and source-region data so callers can build dense draw groups without issuing one command per sprite.
+//! Capacity limits are part of the design because some workloads want explicit control over how much batch data is retained per frame.
+//! The file is the performance-oriented collection layer of the sprite subsystem.
 
 use crate::runtime::resource_keys::TextureKey;
 

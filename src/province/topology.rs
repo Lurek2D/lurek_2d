@@ -1,8 +1,7 @@
-//! Undirected adjacency graph storing sorted neighbour lists per province.
-//!
-//! - Rebuild from raw id pairs with dedup and self-loop filtering.
-//! - Binary-search-based neighbour lookup and adjacency queries.
-//! - Extraction of all province ids and unique adjacency pairs.
+//! Province adjacency graph for representing which regions touch each other once the raster map has been decoded into province ids.
+//! The file keeps neighbor lists sorted and deduplicated so adjacency queries remain compact, deterministic, and cheap to inspect.
+//! Rebuild logic turns raw province pairs into a clean undirected graph while filtering out meaningless self-links.
+//! Functionally this file delivers the topological skeleton that route search, border logic, and province relationship queries depend on.
 
 use crate::province::types::ProvinceId;
 use std::collections::{HashMap, HashSet};

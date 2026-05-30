@@ -1,9 +1,7 @@
-//! Lua-defined custom validation rules registered via pattern and callback config.
-//!
-//! - `LuaPatternRule` wraps a Lua callback and a file-extension filter.
-//! - Called from `validation_engine` with `(path, content)` as string arguments.
-//! - Lua callback must return a table of `{line, severity, message}` entries.
-//! - Custom rules run in the same validator pass as built-in rules; no ordering guarantee.
+//! This file provides Lua-backed custom rule adapters for extending validator coverage.
+//! It stores pattern and callback metadata that bridges script-defined checks into Rust flow.
+//! It converts callback outputs into typed violations compatible with native reporting.
+//! It lets teams add project-specific rules without recompiling engine validator code.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

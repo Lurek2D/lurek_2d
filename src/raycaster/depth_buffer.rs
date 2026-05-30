@@ -1,7 +1,6 @@
-//! Per-column depth storage for raycaster wall hits.
-//!
-//! - Used during sprite rendering to cull pixels that fall behind walls.
-//! - Cleared each frame, written during wall-casting, read during sprite-casting.
+//! This file keeps the narrow depth memory that tells the raycaster which wall distance currently owns each screen column.
+//! It exists so later sprite and overlay work can reject fragments that should remain hidden behind already projected geometry.
+//! The structure is intentionally simple because it is cleared, written, and read every frame on the hottest render path.
 
 /// Per-column wall-hit depth used to cull sprite pixels that fall behind a wall.
 pub struct DepthBuffer {

@@ -1,7 +1,8 @@
-//! Catmull-Rom multi-segment spline with dynamic control-point management.
-//!
-//! - Hermite cubic segment defined by endpoints and tangents.
-//! - Normalized parameter sampling across full spline or individual segments.
+//! Multi-segment spline helper for smooth interpolation across control points.
+//! Bridges Catmull-Rom and Hermite style curve handling under one shape.
+//! Supports normalized sampling across full paths or individual segments.
+//! Tracks control points dynamically so paths can be edited at runtime.
+//! Useful for motion trails, camera rails, and other smooth route logic.
 
 /// Multi-point Catmull-Rom spline with dynamic control-point list.
 pub struct CatmullRomSpline {

@@ -1,7 +1,7 @@
-//! Pattern-based text highlighting: match literal strings and assign foreground/background colors.
-//!
-//! - Span splitting: decompose input into colored runs for terminal cell rendering.
-//! - Leftmost-first rule priority with default fallback for unmatched regions.
+//! This file applies simple highlighting rules to terminal text so input or output can be visually segmented by meaning.
+//! Matching produces ordered colored spans instead of immediate cell writes, which keeps highlighting reusable across render paths.
+//! Rule priority is resolved consistently here so overlapping matches do not create unstable coloring behavior.
+//! The file is the terminal's lightweight text-coloring layer.
 
 /// A plain-string pattern with associated foreground and optional background colors.
 pub struct HighlightRule {

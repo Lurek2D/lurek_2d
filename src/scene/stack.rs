@@ -1,10 +1,11 @@
-//! Stack-based scene manager: push, pop, switch, and clear with optional transitions.
-//!
-//! - Overlay support: scenes marked as overlays render above all normal scenes.
-//! - Transition queuing: enqueues fade/slide/wipe transitions and drains them sequentially.
-//! - Layer ordering: per-scene draw priority for front-to-back render sorting.
-//! - Named registry: associate string names with SceneIds for lookup and navigation.
-//! - Per-scene data slots: store and retrieve SceneId-encoded values by string key.
+//! This file implements the actual scene stack that decides which scenes are present, active, paused, resumed, or removed over time.
+//! It supports classic push and pop navigation as well as replacements, overlays, named lookup, and explicit clearing of flow state.
+//! Scene lifecycle callbacks are coordinated here so transitions between states follow one consistent pattern instead of ad hoc caller logic.
+//! Transition queuing is integrated into the stack because movement between scenes often has both control-flow and visual timing aspects.
+//! Shared scene data also lives at this layer, giving separate scenes a structured way to pass values without global sprawl.
+//! Layer and overlay handling let multiple scenes coexist when needed while still preserving a clear notion of current stack order.
+//! The file is therefore the operational controller for game-state progression across menus, levels, popups, and intermediate screens.
+//! It is the place where scene flow becomes a managed runtime system rather than a pile of manual table swaps.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{

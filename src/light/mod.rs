@@ -1,8 +1,6 @@
-//! 2D lighting system with point, spot, and area light types supporting color, falloff, and flicker.
-//!
-//! - Shadow casting via occluder shapes with configurable filter quality.
-//! - Light world accumulator that processes all active lights and emits composited render commands.
-//! - Blend modes and attenuation curves for flexible intensity decay and compositing.
+//! High-level lighting module that groups light types, occluders, world state, and transition utilities.
+//! Re-exports core enums and structs used to configure 2D illumination behavior across the engine.
+//! Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration.
 
 /// Attenuation curve definitions for light intensity decay.
 pub mod attenuation;

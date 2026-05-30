@@ -1,7 +1,6 @@
-//! Single-cell data type for the terminal grid.
-//!
-//! - Default color and character constants.
-//! - `Default` trait wiring for blank cells.
+//! This file defines the atomic cell unit that the terminal grid stores for every visible character position.
+//! It packages glyph and color state into one compact record so the rest of the terminal can treat the screen as a regular matrix.
+//! The type is the smallest visible building block of the terminal subsystem.
 
 /// Default foreground color: opaque white [r, g, b, a].
 pub(crate) const DEFAULT_FG: [f32; 4] = [1.0, 1.0, 1.0, 1.0];

@@ -1,8 +1,8 @@
-//! Multi-monitor enumeration, display info snapshots, and primary-monitor detection.
-//!
-//! - Monitor selection with fallback logic (current → primary → first available).
-//! - Window centering and cross-display movement helpers.
-//! - Startup monitor resolution for initial window placement.
+//! This file provides event-loop side monitor and display helpers for window placement flow.
+//! It enumerates displays and captures snapshot metadata used by window-facing APIs.
+//! It selects startup and fallback monitors with deterministic preference ordering.
+//! It supports centering and cross-display movement operations for runtime window control.
+//! It anchors monitor-aware behavior required by multi-display desktop setups.
 
 use winit::event_loop::ActiveEventLoop;
 use winit::monitor::MonitorHandle;

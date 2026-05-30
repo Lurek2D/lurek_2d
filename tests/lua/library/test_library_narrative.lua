@@ -6,6 +6,7 @@ local narrative = require("library.narrative")
 
 -- @describe compile + continue
 describe("compile + continue", function()
+    -- @library lurek.library_narrative
     it("compiles and runs a single-knot prose-only story", function()
         local s = narrative.compile([[
 === START ===
@@ -20,6 +21,7 @@ Second line.
         expect_true(s:isEnded())
     end)
 
+    -- @library lurek.library_narrative
     it("emits choices and advances on choose(index)", function()
         local s = narrative.compile([[
 === START ===
@@ -46,6 +48,7 @@ end)
 
 -- @describe conditional choices
 describe("conditional choices", function()
+    -- @library lurek.library_narrative
     it("hides choices guarded by failing conditions", function()
         local s = narrative.compile([[
 VAR has_key = false
@@ -63,6 +66,7 @@ A door.
         expect_false(choices[2].available)
     end)
 
+    -- @library lurek.library_narrative
     it("raises when choosing an unavailable choice", function()
         local s = narrative.compile([[
 VAR ok = false
@@ -78,6 +82,7 @@ end)
 
 -- @describe variables & inline substitution
 describe("variables & inline substitution", function()
+    -- @library lurek.library_narrative
     it("substitutes Lua-bound function values inside {fn()} markers", function()
         local s = narrative.compile([[
 === START ===
@@ -88,6 +93,7 @@ HP: {hp()}
         expect_equal("HP: 42", s:continue())
     end)
 
+    -- @library lurek.library_narrative
     it("substitutes simple {var} references", function()
         local s = narrative.compile([[
 VAR who = "Alric"
@@ -101,6 +107,7 @@ end)
 
 -- @describe tags
 describe("tags", function()
+    -- @library lurek.library_narrative
     it("tag handlers fire when their tag appears", function()
         local seen = {}
         local s = narrative.compile([[
@@ -118,6 +125,7 @@ end)
 
 -- @describe flow control
 describe("flow control", function()
+    -- @library lurek.library_narrative
     it("visit counter increments across diverts", function()
         local s = narrative.compile([[
 === START ===
@@ -132,6 +140,7 @@ At court.
         expect_equal(1, s:visit("START"))
     end)
 
+    -- @library lurek.library_narrative
     it("turnsSince returns math.huge for never-visited knots", function()
         local s = narrative.compile("=== START ===\nHi.\n-> END\n"):start()
         expect_equal(math.huge, s:turnsSince("MISSING"))
@@ -161,6 +170,7 @@ end)
 
 -- @describe error paths
 describe("error paths", function()
+    -- @library lurek.library_narrative
     it("raises descriptive error on unknown knot divert", function()
         expect_error(function()
             narrative.compile([[
@@ -171,6 +181,7 @@ Hi.
         end)
     end)
 
+    -- @library lurek.library_narrative
     it("compile raises on malformed VAR", function()
         expect_error(function()
             narrative.compile("VAR _\n=== START ===\nHi.\n-> END\n")
@@ -179,6 +190,7 @@ Hi.
 
     -- @describe module helpers
     describe("module helpers", function()
+        -- @library lurek.library_narrative
         it("formatList emits Oxford-style enumeration", function()
             expect_equal("a", narrative.formatList({"a"}))
             expect_equal("a and b", narrative.formatList({"a","b"}))

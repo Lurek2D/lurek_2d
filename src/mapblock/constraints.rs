@@ -1,9 +1,8 @@
-//! Carcassonne-style edge constraints for matching adjacent map blocks.
-//!
-//! - `EdgeConstraint` describes what socket types are legal on each of the 4 cardinal edges.
-//! - `opposite_edge` returns the mirror direction (North↔South, East↔West).
-//! - Constraint checking is O(1) per neighbor pair; the full grid check is O(w×h).
-//! - Socket type strings are arbitrary game-defined labels (e.g. `"road"`, `"river"`).
+//! Edge compatibility rules that decide whether neighboring blocks can connect.
+//! Describes socket-style match data per edge for fine-grained placement checks.
+//! Provides opposite-edge helpers for two-sided adjacency validation.
+//! Keeps connection semantics data-driven instead of hard-coded.
+//! Powers fast local legality checks during generator execution.
 
 use super::block::Edge;
 use std::collections::{HashMap, HashSet};

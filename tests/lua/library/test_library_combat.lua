@@ -11,6 +11,7 @@ local combat = require("library.combat")
 
 -- @describe CollisionGroupSet
 describe("CollisionGroupSet", function()
+    -- @library lurek.library_combat
     it("defineGroup assigns power-of-2 bits", function()
         local cgs = combat.newCollisionGroupSet()
         local b1 = cgs:defineGroup("players")
@@ -21,6 +22,7 @@ describe("CollisionGroupSet", function()
         expect_equal(b3, 4)
     end)
 
+    -- @library lurek.library_combat
     it("getGroupBit returns correct bit", function()
         local cgs = combat.newCollisionGroupSet()
         cgs:defineGroup("a")
@@ -28,6 +30,7 @@ describe("CollisionGroupSet", function()
         expect_equal(cgs:getGroupBit("missing"), nil)
     end)
 
+    -- @library lurek.library_combat
     it("setCollides and getCollides", function()
         local cgs = combat.newCollisionGroupSet()
         cgs:defineGroup("friends")
@@ -37,6 +40,7 @@ describe("CollisionGroupSet", function()
         expect_equal(cgs:getCollides("friends", "foes"), true)
     end)
 
+    -- @library lurek.library_combat
     it("groupCount and groupNames", function()
         local cgs = combat.newCollisionGroupSet()
         cgs:defineGroup("a")
@@ -46,6 +50,7 @@ describe("CollisionGroupSet", function()
         expect_equal(#names, 2)
     end)
 
+    -- @library lurek.library_combat
     it("reset clears everything", function()
         local cgs = combat.newCollisionGroupSet()
         cgs:defineGroup("x")
@@ -54,6 +59,7 @@ describe("CollisionGroupSet", function()
         expect_equal(cgs:getGroupBit("x"), nil)
     end)
 
+    -- @library lurek.library_combat
     it("duplicate group returns nil", function()
         local cgs = combat.newCollisionGroupSet()
         cgs:defineGroup("a")
@@ -61,6 +67,7 @@ describe("CollisionGroupSet", function()
         expect_equal(b, nil)
     end)
 
+    -- @library lurek.library_combat
     it("computeMask includes colliding groups", function()
         local cgs = combat.newCollisionGroupSet()
         cgs:defineGroup("a")
@@ -77,6 +84,7 @@ end)
 
 -- @describe MountSlot
 describe("MountSlot", function()
+    -- @library lurek.library_combat
     it("creates with defaults", function()
         local s = combat.newMountSlot("turret_1", 10, 20, "large")
         expect_equal(s.id, "turret_1")
@@ -85,6 +93,7 @@ describe("MountSlot", function()
         expect_equal(s.size_class, "large")
     end)
 
+    -- @library lurek.library_combat
     it("arc defaults to full circle and size_class defaults to medium", function()
         local s = combat.newMountSlot("gun", 5, -3)
         expect_equal(s.size_class, "medium")
@@ -97,6 +106,7 @@ end)
 
 -- @describe Chassis
 describe("Chassis", function()
+    -- @library lurek.library_combat
     it("new with max_hp", function()
         local c = combat.newChassis(1, 100)
         expect_equal(c.hp, 100)
@@ -104,6 +114,7 @@ describe("Chassis", function()
         expect_equal(c.destroyed, false)
     end)
 
+    -- @library lurek.library_combat
     it("takeDamage reduces hp and returns actual", function()
         local c = combat.newChassis(1, 50)
         local actual = c:takeDamage(30)
@@ -112,6 +123,7 @@ describe("Chassis", function()
         expect_equal(c:isDead(), false)
     end)
 
+    -- @library lurek.library_combat
     it("takeDamage beyond hp sets destroyed", function()
         local c = combat.newChassis(1, 10)
         local actual = c:takeDamage(25)
@@ -120,6 +132,7 @@ describe("Chassis", function()
         expect_equal(c:isDead(), true)
     end)
 
+    -- @library lurek.library_combat
     it("heal clamps to max_hp", function()
         local c = combat.newChassis(1, 100)
         c:takeDamage(60)
@@ -138,6 +151,7 @@ describe("Chassis", function()
         expect_equal(c:getSlot("missing"), nil)
     end)
 
+    -- @library lurek.library_combat
     it("armor get/set", function()
         local c = combat.newChassis(1, 100)
         c:setArmor("front", 50)
@@ -150,6 +164,7 @@ end)
 
 -- @describe Turret
 describe("Turret", function()
+    -- @library lurek.library_combat
     it("new with defaults", function()
         local t = combat.newTurret(10, 20)
         expect_equal(t.body_id, 10)
@@ -158,12 +173,14 @@ describe("Turret", function()
         expect_equal(t.destroyed, false)
     end)
 
+    -- @library lurek.library_combat
     it("aimAtAngle sets target", function()
         local t = combat.newTurret(1, 2)
         t:aimAtAngle(1.5)
         expect_equal(t.target_angle, 1.5)
     end)
 
+    -- @library lurek.library_combat
     it("clampToArc clamps angle", function()
         local t = combat.newTurret(1, 2)
         t.arc_min = -1.0
@@ -189,11 +206,13 @@ describe("Turret", function()
         expect_equal(t:update(0.1, 0), nil)
     end)
 
+    -- @library lurek.library_combat
     it("isAimed returns true when no target set", function()
         local t = combat.newTurret(1, 2)
         expect_equal(t:isAimed(0.01), true)
     end)
 
+    -- @library lurek.library_combat
     it("isAimed returns true when target is within arc", function()
         local t = combat.newTurret(1, 2)
         t.arc_min = -1.0
@@ -202,6 +221,7 @@ describe("Turret", function()
         expect_equal(t:isAimed(0.01), true)
     end)
 
+    -- @library lurek.library_combat
     it("isAimed returns false when target is outside arc", function()
         local t = combat.newTurret(1, 2)
         t.arc_min = -1.0
@@ -236,6 +256,7 @@ end)
 
 -- @describe Weapon
 describe("Weapon", function()
+    -- @library lurek.library_combat
     it("new with defaults", function()
         local w = combat.newWeapon("Laser")
         expect_equal(w.name, "Laser")
@@ -243,6 +264,7 @@ describe("Weapon", function()
         expect_equal(w:canFire(), true)
     end)
 
+    -- @library lurek.library_combat
     it("fire consumes ammo and sets cooldown", function()
         local w = combat.newWeapon("Gun")
         w.ammo = 5
@@ -253,6 +275,7 @@ describe("Weapon", function()
         expect_equal(w:canFire(), false)  -- cooldown active
     end)
 
+    -- @library lurek.library_combat
     it("updateCooldown reduces cooldown", function()
         local w = combat.newWeapon("Gun")
         w.cooldown_remaining = 0.5
@@ -262,6 +285,7 @@ describe("Weapon", function()
         expect_equal(w.cooldown_remaining, 0)
     end)
 
+    -- @library lurek.library_combat
     it("reload refills to max", function()
         local w = combat.newWeapon("Gun")
         w.ammo = 0
@@ -270,6 +294,7 @@ describe("Weapon", function()
         expect_equal(w.ammo, 10)
     end)
 
+    -- @library lurek.library_combat
     it("reload with amount adds rounds", function()
         local w = combat.newWeapon("Gun")
         w.ammo = 3
@@ -278,11 +303,13 @@ describe("Weapon", function()
         expect_equal(w.ammo, 8)
     end)
 
+    -- @library lurek.library_combat
     it("isOutOfAmmo with infinite ammo", function()
         local w = combat.newWeapon("Laser")
         expect_equal(w:isOutOfAmmo(), false)
     end)
 
+    -- @library lurek.library_combat
     it("isOutOfAmmo with finite ammo", function()
         local w = combat.newWeapon("Gun")
         w.ammo = 0
@@ -290,6 +317,7 @@ describe("Weapon", function()
         expect_equal(w:isOutOfAmmo(), true)
     end)
 
+    -- @library lurek.library_combat
     it("startFiring and stopFiring", function()
         local w = combat.newWeapon("Gun")
         w:startFiring()
@@ -298,6 +326,7 @@ describe("Weapon", function()
         expect_equal(w:isFiring(), false)
     end)
 
+    -- @library lurek.library_combat
     it("defaults match Rust: damage_amount=10 range=500 projectile_speed=300", function()
         local w = combat.newWeapon("TestGun")
         expect_equal(w.damage_amount, 10.0)
@@ -305,6 +334,7 @@ describe("Weapon", function()
         expect_equal(w.projectile_speed, 300.0)
     end)
 
+    -- @library lurek.library_combat
     it("fire with burst_size=3 sets burst_remaining and uses burst_delay", function()
         local w = combat.newWeapon("Burst")
         w.burst_size = 3
@@ -316,6 +346,7 @@ describe("Weapon", function()
         expect_near(w.cooldown_remaining, 0.1, 0.001)
     end)
 
+    -- @library lurek.library_combat
     it("stopFiring resets burst_remaining to 0", function()
         local w = combat.newWeapon("Burst")
         w.burst_size = 3
@@ -403,6 +434,7 @@ end)
 
 -- @describe ProjectilePool
 describe("ProjectilePool", function()
+    -- @library lurek.library_combat
     it("new creates pool with free slots", function()
         local pool = combat.newProjectilePool(10)
         expect_equal(pool:freeCount(), 10)
@@ -440,6 +472,7 @@ describe("ProjectilePool", function()
         expect_equal(pool:freeCount(), 5)
     end)
 
+    -- @library lurek.library_combat
     it("pool capped at MAX_POOL_SIZE", function()
         local pool = combat.newProjectilePool(9999)
         expect_equal(pool.pool_size, 1024)
@@ -479,6 +512,7 @@ end)
 
 -- @describe CombatWorld
 describe("CombatWorld", function()
+    -- @library lurek.library_combat
     it("new creates empty world", function()
         local w = combat.newCombatWorld()
         expect_equal(#w.chassis_list, 0)
@@ -486,6 +520,7 @@ describe("CombatWorld", function()
         expect_equal(#w.weapons, 0)
     end)
 
+    -- @library lurek.library_combat
     it("add and get chassis", function()
         local w = combat.newCombatWorld()
         local c = combat.newChassis(1, 100)
@@ -494,6 +529,7 @@ describe("CombatWorld", function()
         expect_equal(w:getChassis(1).hp, 100)
     end)
 
+    -- @library lurek.library_combat
     it("add and get turret", function()
         local w = combat.newCombatWorld()
         local idx = w:addTurret(combat.newTurret(1, 2))
@@ -501,6 +537,7 @@ describe("CombatWorld", function()
         expect_equal(w:getTurret(1).body_id, 1)
     end)
 
+    -- @library lurek.library_combat
     it("add and get weapon", function()
         local w = combat.newCombatWorld()
         local idx = w:addWeapon(combat.newWeapon("Cannon"))
@@ -508,6 +545,7 @@ describe("CombatWorld", function()
         expect_equal(w:getWeapon(1).name, "Cannon")
     end)
 
+    -- @library lurek.library_combat
     it("add and get pool", function()
         local w = combat.newCombatWorld()
         local pool = combat.newProjectilePool(5)
@@ -516,6 +554,7 @@ describe("CombatWorld", function()
         expect_equal(w:getPool(1).pool_size, 5)
     end)
 
+    -- @library lurek.library_combat
     it("activeChassisCount excludes destroyed", function()
         local w = combat.newCombatWorld()
         w:addChassis(combat.newChassis(1, 100))
@@ -545,6 +584,7 @@ describe("CombatWorld", function()
         expect_near(w:getWeapon(1).cooldown_remaining, 0.5, 0.001)
     end)
 
+    -- @library lurek.library_combat
     it("reset clears everything", function()
         local w = combat.newCombatWorld()
         w:addChassis(combat.newChassis(1, 100))
@@ -554,6 +594,7 @@ describe("CombatWorld", function()
         expect_equal(#w.weapons, 0)
     end)
 
+    -- @library lurek.library_combat
     it("cleanup removes destroyed chassis", function()
         local w = combat.newCombatWorld()
         w:addChassis(combat.newChassis(1, 100))
@@ -570,6 +611,7 @@ end)
 
 -- @describe Enums
 describe("Enums", function()
+    -- @library lurek.library_combat
     it("ProjectileType has all variants", function()
         expect_equal(combat.ProjectileType.Ballistic, "ballistic")
         expect_equal(combat.ProjectileType.Homing, "homing")
@@ -578,6 +620,7 @@ describe("Enums", function()
         expect_equal(combat.ProjectileType.Beam, "beam")
     end)
 
+    -- @library lurek.library_combat
     it("ArmorZone has all variants", function()
         expect_equal(combat.ArmorZone.Front, "front")
         expect_equal(combat.ArmorZone.Rear, "rear")
@@ -589,6 +632,7 @@ end)
 
 -- @describe CollisionGroupSet overflow
 describe("CollisionGroupSet overflow", function()
+    -- @library lurek.library_combat
     it("returns descriptive error when exceeding 16 groups", function()
         local cgs = combat.newCollisionGroupSet()
         for i = 1, 16 do
@@ -604,6 +648,7 @@ describe("CollisionGroupSet overflow", function()
         expect_equal(err:find("overflow") ~= nil, true)
     end)
 
+    -- @library lurek.library_combat
     it("rejects empty group name", function()
         local cgs = combat.newCollisionGroupSet()
         local b, err = cgs:defineGroup("")
@@ -661,6 +706,7 @@ end)
 
 -- @describe Weapon burst cooldown
 describe("Weapon burst cooldown", function()
+    -- @library lurek.library_combat
     it("last burst shot applies fire_rate cooldown, not burst_delay", function()
         local w = combat.newWeapon("BurstGun")
         w.burst_size = 3
@@ -689,6 +735,7 @@ describe("Weapon burst cooldown", function()
         expect_near(w.cooldown_remaining, 0.5, 0.001)
     end)
 
+    -- @library lurek.library_combat
     it("burst_size=1 always uses fire_rate cooldown", function()
         local w = combat.newWeapon("SingleShot")
         w.burst_size = 1
@@ -702,35 +749,43 @@ end)
 
 -- @describe Input validation
 describe("Input validation", function()
+    -- @library lurek.library_combat
     it("newWeapon rejects empty name", function()
         expect_error(function() combat.newWeapon("") end)
     end)
 
+    -- @library lurek.library_combat
     it("newWeapon rejects nil name", function()
         expect_error(function() combat.newWeapon(nil) end)
     end)
 
+    -- @library lurek.library_combat
     it("newChassis rejects negative max_hp", function()
         expect_error(function() combat.newChassis(1, -10) end)
     end)
 
+    -- @library lurek.library_combat
     it("newChassis rejects non-number body_id", function()
         expect_error(function() combat.newChassis("bad", 100) end)
     end)
 
+    -- @library lurek.library_combat
     it("newTurret rejects non-number body_id", function()
         expect_error(function() combat.newTurret(nil, 2) end)
     end)
 
+    -- @library lurek.library_combat
     it("newMountSlot rejects empty id", function()
         expect_error(function() combat.newMountSlot("") end)
     end)
 
+    -- @library lurek.library_combat
     it("takeDamage rejects negative amount", function()
         local c = combat.newChassis(1, 100)
         expect_error(function() c:takeDamage(-5) end)
     end)
 
+    -- @library lurek.library_combat
     it("newProjectilePool rejects zero pool_size", function()
         expect_error(function() combat.newProjectilePool(0) end)
     end)
@@ -740,6 +795,7 @@ end)
 
 -- @describe ProjectilePool defaults
 describe("ProjectilePool defaults", function()
+    -- @library lurek.library_combat
     it("DEFAULT_POOL_SIZE is 64 and used when pool_size is nil", function()
         expect_equal(combat.DEFAULT_POOL_SIZE, 64)
         local pool = combat.newProjectilePool()

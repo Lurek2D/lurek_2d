@@ -1,11 +1,11 @@
-//! Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
-//!
-//! - Each handle owns its easing state, target registry key, start/end values, and lifecycle callbacks.
-//! - Tick-driven interpolation writes computed values directly into Lua tables each frame.
-//! - Repeat, yoyo, relative-offset, and custom easing function support on single tweens.
-//! - Sequences consume multiple steps (tween, delay, callback) in order, carrying leftover dt across boundaries.
-//! - Parallel groups advance all lanes simultaneously and complete when every lane finishes.
-//! - Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
+//! This file provides Lua-facing tween handle types that expose animation control to scripts.
+//! It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract.
+//! It stores progression state, target bindings, and callback hooks close to each animation unit.
+//! It writes interpolated values to Lua tables each frame through explicit field mappings.
+//! It supports repeat, yoyo, relative targets, and custom easing for expressive motion design.
+//! It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps.
+//! It advances parallel lanes together and resolves completion only when all lanes settle.
+//! It resumes waiting coroutines on completion so asynchronous script flow stays ergonomic.
 
 use crate::tween::TweenState;
 use mlua::prelude::*;

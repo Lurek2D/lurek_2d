@@ -1,8 +1,8 @@
-//! Locale-aware number formatting with configurable decimal and thousands separators.
-//!
-//! - Date formatting from Unix timestamps with ISO, long, and short patterns.
-//! - Calendar conversion utilities (days since epoch to year/month/day).
-//! - Month name lookup tables for English output.
+//! Formats locale-facing numbers and dates into human-readable strings for UI presentation.
+//! Chooses decimal and thousands separators from locale prefixes to match regional reading habits.
+//! Converts epoch-based day counts and timestamps into calendar components and formatted date output.
+//! Supplies ISO, short, and long date renderings for compact HUD and verbose panel contexts.
+//! Encodes month-name mapping logic used by textual date labels in localized interfaces.
 
 /// Return decimal and thousands separators for a locale prefix.
 pub fn locale_separators(locale: &str) -> (char, char) {

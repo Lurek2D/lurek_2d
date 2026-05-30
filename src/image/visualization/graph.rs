@@ -1,9 +1,8 @@
-//! Node-edge graph rendering with labels and colored vertices.
-//!
-//! - Removed-edge overlay with dimmed styling.
-//! - Item-flow graph with directional arrows and node items.
-//! - Stats text and title label placement.
-//! - Circle node rendering with adjacency-list edges.
+//! Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays.
+//! Visualizes active and removed connections using distinct styling for topology change analysis.
+//! Supports item-flow style arrows and annotation text for simulation and logic debugging.
+//! Places titles and stats summaries to contextualize rendered graph snapshots.
+//! Uses circle-node layouts and adjacency-driven links for readable relationship visualization.
 
 use crate::image::ImageData;
 #[allow(clippy::too_many_arguments)]

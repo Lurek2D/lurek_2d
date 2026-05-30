@@ -1,9 +1,9 @@
-//! Mono waveform preview with axis grid and peak normalization.
-//!
-//! - Stereo waveform rendering with channel separation.
-//! - Zoomed waveform with interpolated sample detail.
-//! - Labeled waveform strip with custom color mapping.
-//! - Shared peak normalization and column-based rendering.
+//! Converts audio sample streams into waveform images suitable for tooling and in-engine diagnostics.
+//! Renders mono and stereo views with channel separation and baseline guides for quick interpretation.
+//! Supports zoom-oriented sampling views to inspect transient detail in dense signal regions.
+//! Adds labels and configurable color accents so waveform panels fit different UI styles.
+//! Normalizes peak ranges to keep amplitude visualization stable across varying source loudness.
+//! Shares column-based raster logic to keep waveform output deterministic and lightweight.
 
 use crate::image::ImageData;
 /// Render a mono waveform preview into an image.

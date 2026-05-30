@@ -1,7 +1,8 @@
-//! 3D float vector for cross-product normals, raycasting directions, and noise inputs.
-//!
-//! - Arithmetic ops (add, sub, mul, div, neg) and geometric helpers (dot, cross, normalize, reflect, project).
-//! - Lerp, distance, and length utilities for interpolation and spatial queries.
+//! 3D float vector for cross products, directions, and other compact spatial math.
+//! Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work.
+//! Supports projection, interpolation, distance, and length queries.
+//! Acts as the small 3D companion to the 2D math core.
+//! Useful for normals, ray direction math, and procedural inputs.
 
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};

@@ -1,9 +1,13 @@
-//! Walker-Vose alias-method loot table and pity tracker.
-//!
-//! - `LootTable` samples in O(1) using the alias method after an O(n) build.
-//! - `PityTracker` counts misses and primes a guaranteed drop after `threshold` misses.
-//! - `sample_with_pity` combines both: forces the tracked item when the pity is primed.
-//! - Serialisation via `save` / `restore` round-trips the RNG state and all weights.
+//! Weighted loot sampling and pity tracking for deterministic drop systems.
+//! Uses the alias method for O(1) draws after an O(n) build step.
+//! Keeps the raw weight table and RNG state serializable for save files.
+//! Supports guaranteed outcomes once a pity threshold is reached.
+//! Lets callers combine normal sampling with tracked fail counters.
+//! Preserves fast runtime lookups without hiding the probability model.
+//! Fits reward tables, gacha-style drops, and event-driven item rolls.
+//! Restores exactly to the previous random state when deserialized.
+//! Keeps the core data structure simple enough for Lua-driven gameplay flows.
+//! Exposes predictable sampling behavior under both normal and pity paths.
 
 use crate::math::random::RandomGenerator;
 use std::collections::HashMap;

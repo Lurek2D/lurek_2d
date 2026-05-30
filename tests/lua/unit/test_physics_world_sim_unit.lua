@@ -1,4 +1,4 @@
-﻿-- Lurek2D Integration Test: Cellular World Simulation
+-- Lurek2D Integration Test: Cellular World Simulation
 -- Exercises CellularWorld step simulation: sand falling, water spreading,
 -- and serialisation round-trip with non-trivial state.
 

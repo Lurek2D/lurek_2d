@@ -1,7 +1,7 @@
-//! Parse JSON strings into the engine's `SerialValue` intermediate representation.
-//!
-//! - Encode `SerialValue` trees back to JSON (compact or pretty-printed).
-//! - Map JSON types (null, bool, number, string, array, object) to `SerialValue` variants bidirectionally.
+//! This file provides JSON translation to and from the engine's intermediate serial value tree.
+//! It preserves the normal JSON shape of scalars, arrays, and objects while exposing that data through one engine-wide representation.
+//! Pretty and compact output choices live here because readable config and compact payloads are both common JSON use cases.
+//! The file is therefore the JSON-specific adapter inside the broader multi-format serialization system.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

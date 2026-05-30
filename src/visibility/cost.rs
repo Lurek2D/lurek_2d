@@ -1,9 +1,6 @@
-//! Per-region discovery cost and adjacency requirements for visibility reveal logic.
-//!
-//! - `VisibilityCost` stores a movement-point cost and required flag mask per region.
-//! - Regions with `cost = 0` are revealed instantly when any neighbor becomes visible.
-//! - Required flags can block reveal until the player has a specific capability.
-//! - Costs are set from Lua via `lurek.visibility.set_cost(region_id, cost)`.
+//! This file provides per-region discovery cost metadata used by reveal progression logic.
+//! It encodes adjacency prerequisites and progression thresholds for visibility expansion.
+//! It keeps reveal gating explicit so exploration pacing remains tunable and predictable.
 
 /// Configuration for how expensive it is to discover a region.
 #[derive(Debug, Clone, Copy)]

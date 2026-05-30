@@ -1,7 +1,7 @@
-//! Compute visible tile positions for repeating parallax layers within a screen rect plus cull margin.
-//!
-//! - Walk one axis at a time and combine X/Y into a full grid, capped to prevent runaway allocation.
-//! - Non-repeating layers emit only the single start position.
+//! Computes visible tile positions for repeating parallax layers inside a screen rect and cull margin.
+//! Walks one axis at a time and combines X and Y into a full grid with bounded growth.
+//! Emits only the single origin position for non-repeating layers.
+//! Supplies the viewport coverage iterator used by parallax rendering.
 
 /// Fraction of a tile width/height added on each side of the screen as a visibility margin.
 const CULL_MARGIN_TILES: f32 = 1.5;

@@ -1,11 +1,8 @@
-//! Province map system: registry, geometry cache, GPU bridge, and rendering.
-//!
-//! - Imports colour-map PNG + CSV/TOML metadata into an authoritative ProvinceRegistry.
-//! - Generates RenderCommands for fills, borders, capitals, and text labels.
-//! - Provides view-transform helpers for camera fitting and screen-to-map projection.
+//! Province runtime module for irregular region maps that need authoritative state, import tooling, geometry extraction, GPU preparation, and on-screen rendering in one connected system.
+//! It treats provinces as semantic map entities rather than tilemap cells, combining topology, styling, labels, capitals, and change tracking into a single map stack.
+//! The module also owns the bridges that move province data from imported assets through cached geometry and into renderable outputs.
+//! Functionally this file is the high-level entry point for province-based cartography, visualization, and region-centric gameplay support.
 
-/// Border type utilities (classification now game-defined via Lua).
-pub mod borders;
 /// Precomputed border-pair index map for shader and thick-border pipelines.
 pub mod border_index;
 /// Binary-format geometry cache for province spans and border segments.

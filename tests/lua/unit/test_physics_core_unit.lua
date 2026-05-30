@@ -1,4 +1,4 @@
-﻿-- Lurek2D Physics API Tests
+-- Lurek2D Physics API Tests
 
 -- @describe lurek.physics module exists
 describe("lurek.physics module exists", function()

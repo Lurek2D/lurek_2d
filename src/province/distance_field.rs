@@ -1,7 +1,8 @@
-//! Distance-from-border precompute for province pixels.
-//!
-//! - Multi-source BFS seeded from border pixels where neighboring province ids differ.
-//! - Produces a compact u8 field used by later shading or LOD passes.
+//! Border-distance precompute for province pixels so later rendering and analysis code can reason about how deep a location sits inside its owning region.
+//! The file starts from boundary cells and spreads inward with a multi-source traversal, producing a compact measure of interior distance without per-frame recomputation.
+//! Keeping the result as a small field makes it practical for shading, stylization, and level-of-detail style logic.
+//! The computation is map-wide and structural, which means it belongs here rather than in ad hoc rendering code.
+//! Functionally this file delivers the inward-depth signal used for province-edge-aware visuals and spatial heuristics.
 
 use crate::province::registry::ProvinceRegistry;
 

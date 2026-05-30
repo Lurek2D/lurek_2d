@@ -1,13 +1,13 @@
-//! Dynamic AABB bounding-volume hierarchy for broad-phase 2D spatial queries.
-//!
-//! - Insertion, removal, and in-place update of axis-aligned bounding boxes keyed by numeric id.
-//! - Query primitives: rectangle overlap, point containment, circle overlap, and segment intersection.
-//! - Surface-area heuristic descent for high-quality sibling selection on insert.
-//! - Free-list node pool avoiding repeated allocation and fragmentation.
-//! - Incremental bottom-up refit keeping ancestor bounds tight after mutations.
-//! - Helper geometry routines: AABB area, merged bounds, box-box, box-circle, and box-segment tests.
-//! - Leaf-centric design mapping each entry id to a single leaf node for O(1) lookup.
-//! - Suitable for hundreds to low thousands of dynamic bodies at interactive frame rates.
+//! Dynamic broad-phase spatial index for 2D world queries and overlap culling.
+//! Stores moving bounds in a hierarchy that stays tight as entries shift each frame.
+//! Serves fast insert, remove, move, and query flows for dynamic actors.
+//! Reuses nodes through an internal pool to reduce allocation churn.
+//! Chooses sibling branches with a cost heuristic that keeps the tree balanced.
+//! Answers rectangle, point, circle, and segment tests from one entry map.
+//! Exposes helper bound math so callers can combine and compare leaves efficiently.
+//! Fits game-style workloads where many objects move but only a subset interact.
+//! Gives predictable query latency for proximity, visibility, and broad-phase passes.
+//! Keeps the data model leaf-centric so Lua-side handles stay simple and stable.
 
 use std::collections::HashMap;
 

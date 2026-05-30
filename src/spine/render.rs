@@ -1,7 +1,7 @@
-//! Convert a Skeleton's bone and slot state into a flat list of RenderCommands.
-//!
-//! - Draw bones as filled circles at world positions with slot-derived colors.
-//! - Draw slot attachments as outline rectangles around their parent bone.
+//! This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization.
+//! Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
+//! The output emphasizes readable structure over full attachment rendering complexity.
+//! It is the handoff layer from skeletal pose data to generic draw command streams.
 
 use super::skeleton::Skeleton;
 use crate::render::renderer::{DrawMode, RenderCommand};

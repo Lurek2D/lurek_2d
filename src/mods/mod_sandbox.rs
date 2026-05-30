@@ -1,9 +1,8 @@
-//! Mod sandbox: restricts mod Lua API access to the declared capability set.
-//!
-//! - Wraps the shared Lua state with a per-mod permission filter over `lurek.*`.
-//! - Attempts to call undeclared API functions raise a Lua error instead of panicking.
-//! - File system access for mods is limited to their own `content/mods/<id>/` directory.
-//! - Sandbox is re-applied after each hot-reload; capability set cannot expand at runtime.
+//! Sandbox wrapper that restricts mod Lua access to declared capabilities.
+//! Applies per-mod permission filtering over the shared lurek namespace.
+//! Converts undeclared API calls into Lua errors instead of crashes.
+//! Limits file-system access to each mod's own content directory.
+//! Reapplies the sandbox after reload so capabilities never expand at runtime.
 
 use std::collections::HashSet;
 

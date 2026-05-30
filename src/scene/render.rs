@@ -1,7 +1,6 @@
-//! Render-command generation from the active scene in the stack.
-//!
-//! - Off-screen scene capture into ImageData for snapshots and thumbnails.
-//! - Stub implementations returning empty output when no scene is active.
+//! This file bridges the current scene stack state into renderer-facing output and scene snapshots.
+//! It focuses on whatever scene is presently render-active, turning stack state into concrete visual results or captures.
+//! The file is therefore the narrow handoff between scene orchestration and image or command generation.
 
 use super::stack::SceneStack;
 use crate::image::ImageData;

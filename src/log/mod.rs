@@ -1,7 +1,6 @@
-//! Structured logging facade with global level control and dispatch to registered sinks.
-//!
-//! - Rotating file sink and in-memory ring buffer for runtime log capture.
-//! - Level-gated emission so disabled messages cost near-zero.
+//! High-level logging module that combines facade APIs with sink implementations.
+//! Re-exports level control and sink types for centralized runtime log configuration.
+//! Defines the boundary for structured log routing to memory and file backends.
 
 /// Structured log facade: global level, enabled checks, and dispatch to sink registry.
 pub mod facade;

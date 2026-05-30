@@ -1,13 +1,11 @@
-//! Software-rendered raycaster visualization helpers for debugging and demo output.
-//!
-//! - Top-down grid map rendering with player position and radial ray overlay.
-//! - First-person column-based wall rendering with distance-based shading.
-//! - Depth-map greyscale visualization where brightness encodes proximity.
-//! - Line-of-sight connectivity check rendered as a coloured line between two points.
-//! - Camera sweep atlas generating a multi-frame rotation sequence into a single image.
-//! - Procedural textured first-person view with brick, stone, wood, metal, and mosaic patterns.
-//! - All outputs produce an `ImageData` bitmap suitable for GPU upload or file export.
-//! - Procedural texture lookup mapping cell type and UV to RGB without external assets.
+//! This file provides software visualizers that expose how the raycaster sees, marches, shades, and composes space without requiring the main renderer.
+//! It can paint overhead maps, first-person wall bands, line-of-sight traces, depth previews, and sweep atlases directly into image buffers.
+//! Procedural material coloring is embedded here so diagnostic or demo output can still look spatially rich without loading authored textures.
+//! The helpers are useful when tuning collision, sampling, map layout, or visibility because they make invisible intermediate state immediately legible.
+//! Outputs stay in plain image memory, which makes them easy to save, inspect in tools, or present inside UI overlays.
+//! Several views deliberately trade physical correctness for fast explanation, prioritizing readable spatial evidence over final-game polish.
+//! This file therefore acts as the observability layer for the raycaster subsystem, not just a collection of screenshots.
+//! It is where engine authors can inspect the behavior of rays, walls, and depth as pictures instead of logs.
 
 use super::dda::Raycaster2D;
 impl Raycaster2D {

@@ -1,7 +1,7 @@
-//! Math primitives: Vec2, Vec3, Mat3, Rect, Circle, Transform.
-//!
-//! - Spatial structures: AABB tree, spatial hash grid, rectangle bin-packing.
-//! - Curves and interpolation: bezier, splines, tweens, easing functions, scalar helpers.
+//! Core math module wiring the vector, matrix, shape, curve, and utility submodules.
+//! Collects the primitives that other engine systems build on for motion, collision, and mapping.
+//! Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace.
+//! Keeps the public math surface compact while exposing the full foundation layer.
 
 /// AABB broadphase spatial query tree.
 pub mod aabb_tree;

@@ -1,12 +1,13 @@
-//! Stable, structured log message identifiers for all engine subsystems.
-//!
-//! - Each constant provides a short code (e.g. "L001") used as prefix in log output.
-//! - Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.
-//! - Additional prefixes: AN=animation, EN=ECS, TM=tilemap, SV=save, SC=scene, TH=thread, PF=pathfind.
-//! - Extended prefixes: MD=mods, NW=network, PL=pipeline, AT=automation, CP=compute, SR=serial, GU=GUI.
-//! - Runtime log level control via set_log_level/get_log_level with atomic override.
-//! - log_msg! macro for consistent formatted log output with message lookup.
-//! - Codes are stable across versions for log parsing, alerting, and external tool integration.
+//! This file defines the stable identifier layer for engine logs so messages can be grouped, filtered, and recognized across versions.
+//! Codes are organized by subsystem domain rather than by source file, which makes operational analysis easier than raw string logs alone.
+//! The constant catalog gives every log site a compact symbolic handle that remains readable in terminals and machine parsers.
+//! Log level overrides also live here because message identity and message visibility are tightly related runtime concerns.
+//! The supporting macro turns those codes into consistent formatted output without forcing every call site to rebuild the same pattern.
+//! Stability is a design goal of this file.
+//! External tools, tests, and support workflows can rely on these identifiers without scraping fragile prose.
+//! The file therefore acts as the diagnostic index of the engine rather than just a pile of string constants.
+//! It gives the runtime a structured logging spine that other modules can lean on.
+//! When logs matter for debugging or automation, this is where their shared vocabulary begins.
 
 use std::sync::atomic::{AtomicU8, Ordering};
 static LOG_LEVEL_OVERRIDE: AtomicU8 = AtomicU8::new(0);

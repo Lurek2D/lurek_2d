@@ -1,8 +1,7 @@
-//! Fixed-size worker pool backed by LuaThread instances sharing input/output channels.
-//!
-//! - Submit work items, collect results non-blocking, and join with optional timeout.
-//! - Workers auto-register `__pool_input`/`__pool_output` named channels for Lua-side access.
-
+//! This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput.
+//! It binds shared input and output channels so tasks and results travel on a predictable pipeline.
+//! It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration.
+//! It keeps named channel wiring consistent across engine and script boundaries during pooled execution.
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;

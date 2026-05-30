@@ -1,7 +1,7 @@
-//! Template string interpolation with `{name}` placeholder syntax.
-//!
-//! - Supports escaping via `{{` / `}}` and preserves unknown placeholders.
-//! - Provides both map-based and pair-based variable substitution.
+//! Expands localized template text by replacing `{name}` placeholders with runtime values.
+//! Preserves unknown tokens and supports escaped braces so authored text stays readable under partial data.
+//! Provides both map-driven and pair-list substitution flows for ergonomic caller integration.
+//! Keeps output assembly linear and allocation-light for frequent UI string rendering.
 
 use std::collections::HashMap;
 /// Replace `{name}` placeholders from a string map and keep unknown placeholders intact.

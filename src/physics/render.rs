@@ -1,7 +1,8 @@
-//! Debug visualisation of physics bodies as render commands or rasterised images.
-//!
-//! - Colour-codes bodies by type: dynamic, static, kinematic, sensor.
-//! - Draws velocity arrows for dynamic bodies and shape outlines for all bodies.
+//! Physics debug rendering layer for turning invisible simulation state into visible lines, outlines, and motion cues that developers can inspect frame by frame.
+//! The file translates bodies and shapes into render-friendly snapshots without changing the simulation, letting diagnostics live beside gameplay rather than inside it.
+//! Type-based coloring keeps static, dynamic, kinematic, and sensor objects readable at a glance when scenes grow dense.
+//! Velocity arrows and shape outlines expose both form and movement so developers can see why contacts, tunnels, or odd impulses are happening.
+//! Functionally this delivers the visual instrumentation needed to understand, tune, and trust the physics subsystem during development.
 
 use crate::image::ImageData;
 use crate::physics::body::{BodyShape, BodyType};

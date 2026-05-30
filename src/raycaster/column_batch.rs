@@ -1,7 +1,8 @@
-//! Per-column wall-slice projection data produced by the DDA stepper.
-//!
-//! - Full-frame column batch holding screen dimensions and flat floor/ceiling colors.
-//! - Bulk update from packed ray data and per-column depth queries.
+//! This file stores the compact per-column output that the raycaster produces before any richer scene assembly begins.
+//! It keeps wall slice projection, depth, and screen span data in a shape that is cheap to fill for an entire frame at once.
+//! Frame-level metadata for colors and dimensions rides next to the columns so downstream code can treat one batch as a complete column pass.
+//! Packed ray input is unpacked here into stable per-column records that preserve shading and visibility decisions from the DDA stage.
+//! The result is a narrow transport format between hit collection and later wall, floor, or sprite composition work.
 
 use crate::log_msg;
 use crate::color::Color;

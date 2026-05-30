@@ -3,8 +3,10 @@
 local T = ...
 local tween = lurek.tween
 
-T.group("lurek.tween.newChain", function()
-    T.test("newChain creates chain object", function()
+-- @describe lurek.tween.newChain
+describe("lurek.tween.newChain", function()
+    -- @covers lurek.tween.newChain
+    it("newChain creates chain object", function()
         local ch = tween.newChain()
         T.assert_equal(ch:type(), "LTweenChain")
         T.assert_true(ch:typeOf("LTweenChain"))
@@ -12,7 +14,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_equal(ch:getIteration(), 0)
     end)
 
-    T.test("to wait call builds and executes fluent sequence", function()
+    -- @covers lurek.tween.newChain
+    it("to wait call builds and executes fluent sequence", function()
         local obj = { x = 0 }
         local called = false
         local waited = false
@@ -32,7 +35,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_equal(ch:getProgress(), 1)
     end)
 
-    T.test("start plus update animates target table", function()
+    -- @covers lurek.tween.newChain
+    it("start plus update animates target table", function()
         local obj = { x = 0 }
         local ch = tween.newChain():to(obj, { x = 100 }, 1.0, "linear")
         ch:start()
@@ -41,7 +45,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_true(ch:isActive())
     end)
 
-    T.test("loop 3 performs three full passes", function()
+    -- @covers lurek.tween.newChain
+    it("loop 3 performs three full passes", function()
         local obj = { x = 0 }
         local complete_calls = 0
         local ch = tween.newChain()
@@ -56,7 +61,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_equal(complete_calls, 1)
     end)
 
-    T.test("loop 0 runs infinite until stop", function()
+    -- @covers lurek.tween.newChain
+    it("loop 0 runs infinite until stop", function()
         local obj = { x = 0 }
         local loop_seen = 0
         local ch
@@ -77,7 +83,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_false(ch:isComplete())
     end)
 
-    T.test("onLoop receives iteration number", function()
+    -- @covers lurek.tween.newChain
+    it("onLoop receives iteration number", function()
         local seen = {}
         local ch = tween.newChain()
             :to({ x = 0 }, { x = 1 }, 0.05)
@@ -90,7 +97,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_equal(seen[1], 2)
     end)
 
-    T.test("pause and resume controls progress", function()
+    -- @covers lurek.tween.newChain
+    it("pause and resume controls progress", function()
         local obj = { x = 0 }
         local ch = tween.newChain():to(obj, { x = 10 }, 1.0):start()
         tween.update(0.3)
@@ -103,7 +111,8 @@ T.group("lurek.tween.newChain", function()
         T.assert_true(obj.x > before)
     end)
 
-    T.test("legacy push and tick compatibility remains", function()
+    -- @covers lurek.tween.newChain
+    it("legacy push and tick compatibility remains", function()
         local ch = tween.newChain()
         local idx = ch:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
         T.assert_not_nil(idx)

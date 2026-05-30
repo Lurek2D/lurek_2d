@@ -1,9 +1,9 @@
-//! Voronoi diagram generation from 2D point sets via Bowyer-Watson Delaunay triangulation.
-//!
-//! - Circumcenter and circumcircle predicates for incremental insertion.
-//! - Boundary-edge extraction and super-triangle cleanup.
-//! - CCW vertex sorting and deduplication to produce closed polygonal cells.
-//! - Input deduplication to handle coincident sites gracefully.
+//! Voronoi cell builder from 2D point sets using incremental Delaunay construction.
+//! Produces closed polygonal cells with stable point deduplication and cleanup.
+//! Relies on circumcircle predicates to drive triangulation updates.
+//! Extracts boundary edges and orders vertices counter-clockwise for each region.
+//! Handles coincident sites gracefully instead of failing the whole diagram.
+//! Gives procedural generation and spatial partitioning code a ready-made diagram source.
 
 use std::collections::HashMap;
 

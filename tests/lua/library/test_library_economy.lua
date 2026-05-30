@@ -21,12 +21,14 @@ describe("Resource", function()
         expect_equal(r:getReserved(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("clamps value to capacity", function()
         local r = eco.newResource("hp", 100)
         r:setValue(150)
         expect_equal(r:getValue(), 100)
     end)
 
+    -- @library lurek.library_economy
     it("clamps value to minimum", function()
         local r = eco.newResource("hp", 100)
         r:setMinimum(10)
@@ -131,6 +133,7 @@ describe("Resource", function()
         expect_equal(r:canAfford(51), false)
     end)
 
+    -- @library lurek.library_economy
     it("unreserve clamps to zero", function()
         local r = eco.newResource("gold", 100)
         r:reserve(10)
@@ -166,6 +169,7 @@ describe("Resource", function()
         expect_equal(r:getValue(), 100)
     end)
 
+    -- @library lurek.library_economy
     it("group getter/setter", function()
         local r = eco.newResource("gold", 100)
         expect_equal(r:getGroup(), "")
@@ -202,6 +206,7 @@ describe("Modifier", function()
         expect_equal(m:getRemaining(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("target getter/setter", function()
         local m = eco.newModifier("set", 100, -1, "override")
         m:setTarget("gold")
@@ -284,6 +289,7 @@ describe("ConversionRule", function()
         expect_equal(#rule:getModifiers(), 0)
     end)
 
+    -- @library lurek.library_economy
     it("min/max amount", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setMinAmount(5)
@@ -299,6 +305,7 @@ end)
 
 -- @describe ResourceManager
 describe("ResourceManager", function()
+    -- @library lurek.library_economy
     it("creates and manages resources", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 1000)
@@ -452,6 +459,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:spendAll(needs), false)
     end)
 
+    -- @library lurek.library_economy
     it("removeResource removes", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -460,6 +468,7 @@ describe("ResourceManager", function()
         expect_equal(mgr:hasResource("gold"), false)
     end)
 
+    -- @library lurek.library_economy
     it("reset clears everything", function()
         local mgr = eco.newManager()
         mgr:newResource("gold", 100)
@@ -531,11 +540,13 @@ end)
 
 -- @describe Modifier (extra coverage)
 describe("Modifier (extra coverage)", function()
+    -- @library lurek.library_economy
     it("getSource returns source tag", function()
         local m = eco.newModifier("add", 5, -1, "ironforge")
         expect_equal(m:getSource(), "ironforge")
     end)
 
+    -- @library lurek.library_economy
     it("setValue updates the modifier value", function()
         local m = eco.newModifier("add", 5, -1, "")
         m:setValue(42)
@@ -553,6 +564,7 @@ describe("ConversionRule (extra coverage)", function()
         expect_equal(rule:getCooldown(), 3)
     end)
 
+    -- @library lurek.library_economy
     it("setRate updates the base rate", function()
         local rule = eco.newConversionRule("a", "b", 1)
         rule:setRate(5)
@@ -615,6 +627,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:canAfford("iron", 1), false)
     end)
 
+    -- @library lurek.library_economy
     it("getDecayPercent/setDecayPercent delegate", function()
         local mgr = eco.newManager()
         mgr:newResource("mana", 500)
@@ -622,6 +635,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getDecayPercent("mana"), 0.05)
     end)
 
+    -- @library lurek.library_economy
     it("getInterestRate/setInterestRate delegate", function()
         local mgr = eco.newManager()
         mgr:newResource("bank", 10000)
@@ -629,6 +643,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getInterestRate("bank"), 0.02)
     end)
 
+    -- @library lurek.library_economy
     it("getUpkeep/setUpkeep delegate", function()
         local mgr = eco.newManager()
         mgr:newResource("food", 200)
@@ -644,6 +659,7 @@ describe("ResourceManager (extra coverage)", function()
         expect_equal(mgr:getCapacity("wood"), 500)
     end)
 
+    -- @library lurek.library_economy
     it("getMinimum/setMinimum delegate", function()
         local mgr = eco.newManager()
         mgr:newResource("hp", 100)
@@ -666,12 +682,14 @@ end)
 
 -- @describe Enum constants
 describe("Enum constants", function()
+    -- @library lurek.library_economy
     it("OverflowPolicy values are correct strings", function()
         expect_equal(eco.OverflowPolicy.CLAMP, "clamp")
         expect_equal(eco.OverflowPolicy.LOSE,  "lose")
         expect_equal(eco.OverflowPolicy.WRAP,  "wrap")
     end)
 
+    -- @library lurek.library_economy
     it("ModifierType values are correct strings", function()
         expect_equal(eco.ModifierType.MULTIPLY, "multiply")
         expect_equal(eco.ModifierType.ADD,      "add")
@@ -797,14 +815,17 @@ end)
 
 -- @describe Input validation
 describe("Input validation", function()
+    -- @library lurek.library_economy
     it("newResource rejects nil name", function()
         expect_error(function() eco.newResource(nil, 100) end)
     end)
 
+    -- @library lurek.library_economy
     it("newResource rejects empty name", function()
         expect_error(function() eco.newResource("", 100) end)
     end)
 
+    -- @library lurek.library_economy
     it("newResource rejects capacity below -1", function()
         expect_error(function() eco.newResource("gold", -2) end)
     end)
@@ -822,20 +843,24 @@ describe("Input validation", function()
         expect_error(function() r:spend(-5) end)
     end)
 
+    -- @library lurek.library_economy
     it("reserve rejects negative amount", function()
         local r = eco.newResource("gold", 100)
         expect_error(function() r:reserve(-5) end)
     end)
 
+    -- @library lurek.library_economy
     it("unreserve rejects negative amount", function()
         local r = eco.newResource("gold", 100)
         expect_error(function() r:unreserve(-5) end)
     end)
 
+    -- @library lurek.library_economy
     it("newConversionRule rejects empty from", function()
         expect_error(function() eco.newConversionRule("", "b", 1) end)
     end)
 
+    -- @library lurek.library_economy
     it("newConversionRule rejects empty to", function()
         expect_error(function() eco.newConversionRule("a", "", 1) end)
     end)

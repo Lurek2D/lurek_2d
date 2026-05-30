@@ -1,7 +1,8 @@
-//! Core type definitions for the province map system.
-//!
-//! - ProvinceId newtype, BorderType (u8) for game-defined adjacency classification, and ProvinceStyle for per-province visuals.
-//! - ProvinceSnapshot provides an immutable point-in-time view of province state.
+//! Core province domain types for expressing identity, border semantics, style, and snapshot state with names that match the map system's real concepts.
+//! The file gives province ids stronger meaning than plain integers while also defining the compact style and border structures that other province layers share.
+//! Snapshot forms matter because callers often need a stable read-only view of province state without borrowing the full mutable registry.
+//! By concentrating these definitions here, the module keeps shared province vocabulary consistent across import, rendering, routing, and Lua exposure.
+//! Functionally this file delivers the common type language that holds the province subsystem together.
 
 use std::collections::HashMap;
 

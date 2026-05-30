@@ -1,9 +1,8 @@
-//! Operating system detection utilities for platform-specific code paths.
-//!
-//! - `get_os_name()` returns a lowercase string: `"windows"`, `"linux"`, or `"macos"`.
-//! - Used at startup to set OS-specific defaults (e.g. font paths, config directories).
-//! - Exposed to Lua via `lurek.runtime.os()` for platform-conditional game scripts.
-//! - Built on `cfg!` macros; no runtime OS probing, so the result is always correct.
+//! This file exposes the runtime's view of the host operating system for startup policy and script-facing platform checks.
+//! Detection is compile-time oriented rather than probe-heavy, which keeps the answer stable and cheap for every call site.
+//! Startup code relies on this information for platform-shaped defaults such as paths and environment-sensitive behavior.
+//! Lua-visible platform queries also depend on the same source so scripts and Rust agree on the current host label.
+//! The file is intentionally narrow because it exists to answer identity questions, not to abstract whole platform APIs.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{LA03_OPEN_URL_REJECTED};

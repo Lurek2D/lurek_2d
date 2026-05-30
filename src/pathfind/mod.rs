@@ -1,10 +1,7 @@
-//! Grid-based and graph-based pathfinding algorithms (A*, bidirectional, JPS, HPA*).
-//!
-//! - `GoalMap`: multi-source Dijkstra distance field for goal-oriented AI movement.
-//!
-//! - Flow fields and influence maps for group movement and tactical queries.
-//! - Navigation grids, hex grids, isometric grids, and navmesh support.
-//! - Async thread-pool dispatch for off-thread path computation.
+//! Grid-based and graph-based pathfinding algorithms for cells, graphs, and flow fields.
+//! Collects A*, bidirectional search, JPS, HPA*, goal maps, and influence maps under one namespace.
+//! Includes grid, hex, isometric, and navmesh navigation surfaces.
+//! Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
 
 /// Multi-source Dijkstra distance field for goal-oriented AI movement.
 pub mod goal_map;

@@ -1,9 +1,6 @@
-//! Cross-thread messaging via typed MPMC channels for Lua VM isolation.
-//!
-//! - Fixed-size thread pool for CPU-bound background tasks.
-//! - Promise containers for single-value async results.
-//! - Worker harness owning secondary Lua VMs for parallel script execution.
-
+//! This module delivers the high-level concurrency layer for isolated Lua workers in the runtime.
+//! It combines channels, worker execution, pools, and one-shot promises into one coherent flow model.
+//! It keeps cross-thread scripting safe by enforcing message passing instead of shared VM state.
 /// Typed MPMC channel built on `crossbeam`-style semantics for cross-thread messages.
 pub mod channel;
 /// Fixed-size thread pool for CPU-bound tasks dispatched from the game thread.

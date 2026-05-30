@@ -1,7 +1,6 @@
-//! Converts a single `mlua::Value` to a display string for REPL and headless stdout output.
-//!
-//! - Covers all Lua value kinds; opaque types like tables and functions return fixed angle-bracket labels.
-//! - Error values include the Lua error message; nil returns the literal string `"nil"`.
+//! This file turns raw Lua values into stable human-readable text for REPL output and other headless inspection paths.
+//! It gives every major Lua value kind a display strategy, including opaque runtime objects that cannot sensibly print their full internals.
+//! The formatter is tuned for readable interactive feedback rather than lossless serialization of Lua state.
 
 /// Convert one Lua value to display text and return a stable fallback for opaque values.
 pub fn value_to_string(value: &mlua::Value) -> String {

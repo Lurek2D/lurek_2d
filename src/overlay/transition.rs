@@ -1,8 +1,8 @@
-//! Full-screen transition effects: fade, wipe, iris wipe, and dissolve.
-//!
-//! - String-based kind parsing with canonical name round-tripping.
-//! - Time-based playback lifecycle with forward and reverse modes.
-//! - Normalized progress query for renderer consumption.
+//! Full-screen transition effects for fade, wipe, iris wipe, and dissolve.
+//! Supports string-based kind parsing with canonical name round-tripping.
+//! Runs with time-based forward and reverse playback modes.
+//! Exposes normalized progress for renderer consumption.
+//! Gives scene changes a compact state model with predictable timing.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 /// Enumerates supported full-screen transition styles.

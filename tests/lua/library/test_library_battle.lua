@@ -25,6 +25,7 @@ describe("StatusEffect", function()
         expect_equal(e:isExpired(), false) -- never expires
     end)
 
+    -- @library lurek.library_battle
     it("expires after ticking duration", function()
         local e = battle.newStatusEffect("poison", 2)
         e:tickTurn() -- duration = 1
@@ -64,6 +65,7 @@ describe("CombatAction", function()
         expect_equal(a:isReady(), true)
     end)
 
+    -- @library lurek.library_battle
     it("accuracy clamped to 0-1", function()
         local a = battle.newAction("wild")
         a:setAccuracy(1.5)
@@ -92,6 +94,7 @@ describe("Combatant", function()
         expect_equal(c:isAlive(), true)
     end)
 
+    -- @library lurek.library_battle
     it("take_damage applies resistance multiplier", function()
         local c = battle.newCombatant("hero")
         c:setResistance("fire", 0.5) -- half damage from fire
@@ -109,6 +112,7 @@ describe("Combatant", function()
         expect_equal(c:isAlive(), false)
     end)
 
+    -- @library lurek.library_battle
     it("heal capped at max_hp", function()
         local c = battle.newCombatant("hero")
         c:setHp(80)
@@ -117,6 +121,7 @@ describe("Combatant", function()
         expect_equal(healed, 20)
     end)
 
+    -- @library lurek.library_battle
     it("status effects stack", function()
         local c = battle.newCombatant("hero")
         c:addStatus("burn", 3)
@@ -128,6 +133,7 @@ describe("Combatant", function()
         expect_equal(statuses[1].duration, 5)
     end)
 
+    -- @library lurek.library_battle
     it("remove status", function()
         local c = battle.newCombatant("hero")
         c:addStatus("burn", 3)
@@ -137,6 +143,7 @@ describe("Combatant", function()
         expect_equal(c:hasStatus("freeze"), true)
     end)
 
+    -- @library lurek.library_battle
     it("tick statuses removes expired", function()
         local c = battle.newCombatant("hero")
         c:addStatus("flash", 1)
@@ -148,6 +155,7 @@ describe("Combatant", function()
         expect_equal(c:hasStatus("shield"), true)
     end)
 
+    -- @library lurek.library_battle
     it("hp and mp percent", function()
         local c = battle.newCombatant("hero")
         c:setHp(50)
@@ -156,6 +164,7 @@ describe("Combatant", function()
         expect_equal(c:getMpPercent(), 50)
     end)
 
+    -- @library lurek.library_battle
     it("add and get action", function()
         local c = battle.newCombatant("hero")
         local a = battle.newAction("slash")
@@ -167,6 +176,7 @@ describe("Combatant", function()
         expect_equal(got:getBaseDamage(), 10)
     end)
 
+    -- @library lurek.library_battle
     it("stat getter/setter", function()
         local c = battle.newCombatant("hero")
         expect_equal(c:getStat("str"), 0) -- default
@@ -174,6 +184,7 @@ describe("Combatant", function()
         expect_equal(c:getStat("str"), 15)
     end)
 
+    -- @library lurek.library_battle
     it("action and status name lists", function()
         local c = battle.newCombatant("hero")
         c:addAction(battle.newAction("slash"))
@@ -183,6 +194,7 @@ describe("Combatant", function()
         expect_equal(#c:getStatusNames(), 1)
     end)
 
+    -- @library lurek.library_battle
     it("metadata", function()
         local c = battle.newCombatant("hero")
         c:setMeta("class", "warrior")
@@ -254,6 +266,7 @@ describe("CombatBattle", function()
         expect_equal(second:getName(), "b")
     end)
 
+    -- @library lurek.library_battle
     it("attack resolves damage", function()
         local b = battle.newBattle()
         local hero = battle.newCombatant("hero")
@@ -277,11 +290,13 @@ describe("CombatBattle", function()
         expect_equal(g:getHp(), 75)
     end)
 
+    -- @library lurek.library_battle
     it("attack returns nil for missing combatant", function()
         local b = battle.newBattle()
         expect_equal(b:attack("nobody", "slash", "nobody"), nil)
     end)
 
+    -- @library lurek.library_battle
     it("battle over when one team remains", function()
         local b = battle.newBattle()
         local hero = battle.newCombatant("hero")
@@ -308,6 +323,7 @@ describe("CombatBattle", function()
         expect_equal(b:removeCombatant("hero"), false)
     end)
 
+    -- @library lurek.library_battle
     it("force end", function()
         local b = battle.newBattle()
         b:forceEnd("draw")
@@ -315,6 +331,7 @@ describe("CombatBattle", function()
         expect_equal(b:getWinner(), "draw")
     end)
 
+    -- @library lurek.library_battle
     it("alive names", function()
         local b = battle.newBattle()
         local c1 = battle.newCombatant("alive_one")
@@ -330,6 +347,7 @@ describe("CombatBattle", function()
         expect_equal(names[1], "alive_one")
     end)
 
+    -- @library lurek.library_battle
     it("log tracking", function()
         local b = battle.newBattle()
         b:addToLog("Battle started")
@@ -358,6 +376,7 @@ describe("CombatBattle", function()
         expect_equal(hero_slash:getCurrentCooldown(), 1)
     end)
 
+    -- @library lurek.library_battle
     it("attack result contains attacker and target field names", function()
         local b = battle.newBattle()
         local hero = battle.newCombatant("hero")
@@ -398,6 +417,7 @@ describe("CombatBattle", function()
         expect_equal(result2, nil)
     end)
 
+    -- @library lurek.library_battle
     it("attack result includes targetDied when target is killed", function()
         local b = battle.newBattle()
         local hero = battle.newCombatant("hero")
@@ -422,6 +442,7 @@ end)
 
 -- @describe DamageType
 describe("DamageType", function()
+    -- @library lurek.library_battle
     it("exports named constants", function()
         expect_equal(battle.DamageType.Physical,  "physical")
         expect_equal(battle.DamageType.Fire,      "fire")
@@ -467,6 +488,7 @@ describe("CombatAction tags and metadata", function()
         expect_equal(tags[3], "magic")
     end)
 
+    -- @library lurek.library_battle
     it("getMeta / setMeta", function()
         local a = battle.newAction("special")
         a:setMeta("element", "fire")
@@ -481,6 +503,7 @@ end)
 
 -- @describe StatusEffect metadata
 describe("StatusEffect metadata", function()
+    -- @library lurek.library_battle
     it("getMeta / setMeta", function()
         local e = battle.newStatusEffect("burn", 3)
         e:setMeta("source", "dragon")
@@ -488,6 +511,7 @@ describe("StatusEffect metadata", function()
         expect_equal(e:getMeta("missing"), nil)
     end)
 
+    -- @library lurek.library_battle
     it("getMetadata / setMetadata aliases", function()
         local e = battle.newStatusEffect("freeze", 2)
         e:setMetadata("power", "5")
@@ -516,54 +540,66 @@ end)
 
 -- @describe Input validation
 describe("Input validation", function()
+    -- @library lurek.library_battle
     it("newCombatant rejects nil name", function()
         expect_error(function() battle.newCombatant(nil) end)
     end)
 
+    -- @library lurek.library_battle
     it("newCombatant rejects empty name", function()
         expect_error(function() battle.newCombatant("") end)
     end)
 
+    -- @library lurek.library_battle
     it("newAction rejects nil name", function()
         expect_error(function() battle.newAction(nil) end)
     end)
 
+    -- @library lurek.library_battle
     it("newAction rejects empty name", function()
         expect_error(function() battle.newAction("") end)
     end)
 
+    -- @library lurek.library_battle
     it("newStatusEffect rejects nil name", function()
         expect_error(function() battle.newStatusEffect(nil) end)
     end)
 
+    -- @library lurek.library_battle
     it("newStatusEffect rejects empty name", function()
         expect_error(function() battle.newStatusEffect("") end)
     end)
 
+    -- @library lurek.library_battle
     it("newStatusEffect rejects non-number duration", function()
         expect_error(function() battle.newStatusEffect("burn", "forever") end)
     end)
 
+    -- @library lurek.library_battle
     it("takeDamage rejects negative amount", function()
         local c = battle.newCombatant("hero")
         expect_error(function() c:takeDamage(-10) end)
     end)
 
+    -- @library lurek.library_battle
     it("heal rejects negative amount", function()
         local c = battle.newCombatant("hero")
         expect_error(function() c:heal(-5) end)
     end)
 
+    -- @library lurek.library_battle
     it("addStatus rejects nil name", function()
         local c = battle.newCombatant("hero")
         expect_error(function() c:addStatus(nil) end)
     end)
 
+    -- @library lurek.library_battle
     it("setAccuracy rejects non-number", function()
         local a = battle.newAction("slash")
         expect_error(function() a:setAccuracy("high") end)
     end)
 
+    -- @library lurek.library_battle
     it("newBattle rejects non-string name", function()
         expect_error(function() battle.newBattle(123) end)
     end)
@@ -590,6 +626,7 @@ describe("Edge cases", function()
         expect_equal(c:isAlive(), true)
     end)
 
+    -- @library lurek.library_battle
     it("healing at full HP returns 0", function()
         local c = battle.newCombatant("hero")
         local healed = c:heal(50)
@@ -597,39 +634,46 @@ describe("Edge cases", function()
         expect_equal(c:getHp(), 100)
     end)
 
+    -- @library lurek.library_battle
     it("removeStatus on non-existent status is safe", function()
         local c = battle.newCombatant("hero")
         c:removeStatus("nonexistent")
         expect_equal(#c:getStatuses(), 0)
     end)
 
+    -- @library lurek.library_battle
     it("tickStatuses with no effects returns empty", function()
         local c = battle.newCombatant("hero")
         local expired = c:tickStatuses()
         expect_equal(#expired, 0)
     end)
 
+    -- @library lurek.library_battle
     it("empty battle getCurrentCombatant returns nil", function()
         local b = battle.newBattle("empty")
         expect_equal(b:getCurrentCombatant(), nil)
     end)
 
+    -- @library lurek.library_battle
     it("empty battle nextTurn returns false", function()
         local b = battle.newBattle("empty")
         expect_equal(b:nextTurn(), false)
     end)
 
+    -- @library lurek.library_battle
     it("empty battle getAliveNames returns empty", function()
         local b = battle.newBattle("empty")
         expect_equal(#b:getAliveNames(), 0)
     end)
 
+    -- @library lurek.library_battle
     it("getHpPercent returns 0 when max_hp is 0", function()
         local c = battle.newCombatant("hero")
         c:setMaxHp(0)
         expect_equal(c:getHpPercent(), 0)
     end)
 
+    -- @library lurek.library_battle
     it("getMpPercent returns 0 when max_mp is 0", function()
         local c = battle.newCombatant("hero")
         c:setMaxMp(0)
@@ -643,6 +687,7 @@ end)
 
 -- @describe Deep clone metadata
 describe("Deep clone metadata", function()
+    -- @library lurek.library_battle
     it("addAction deep-clones nested metadata", function()
         local a = battle.newAction("fireball")
         a:setMeta("scaling", { str = 1.5, int = 2.0 })
@@ -658,6 +703,7 @@ describe("Deep clone metadata", function()
         expect_equal(a:getMeta("scaling").str, 1.5)
     end)
 
+    -- @library lurek.library_battle
     it("addCombatant deep-clones combatant metadata", function()
         local c = battle.newCombatant("hero")
         c:setMeta("perks", { bonus = 10 })
@@ -673,6 +719,7 @@ describe("Deep clone metadata", function()
         expect_equal(c:getMeta("perks").bonus, 10)
     end)
 
+    -- @library lurek.library_battle
     it("addCombatant deep-clones action metadata", function()
         local a = battle.newAction("slash")
         a:setMeta("effects", { bleed = true })
@@ -722,6 +769,7 @@ describe("CombatBattle resolve", function()
         expect_equal(hero_slash:getCurrentCooldown(), 1)
     end)
 
+    -- @library lurek.library_battle
     it("detects battle over after resolve", function()
         local b = battle.newBattle("arena")
         local hero = battle.newCombatant("hero")
@@ -745,6 +793,7 @@ end)
 
 -- @describe getWinner auto-detect
 describe("getWinner auto-detect", function()
+    -- @library lurek.library_battle
     it("auto-detects winner when one team alive", function()
         local b = battle.newBattle("arena")
         local hero = battle.newCombatant("hero")
@@ -762,6 +811,7 @@ describe("getWinner auto-detect", function()
         expect_equal(b:isOver(), true)
     end)
 
+    -- @library lurek.library_battle
     it("auto-detect returns nil when battle is not over", function()
         local b = battle.newBattle("arena")
         local hero = battle.newCombatant("hero")

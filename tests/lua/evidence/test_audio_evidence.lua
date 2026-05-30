@@ -1,4 +1,4 @@
-﻿-- test_evidence_audio.lua
+-- test_evidence_audio.lua
 -- Evidence test: lurek.audio API + saves generated audio as WAV files
 -- Produces: audio_sine_440hz.wav, audio_chord.wav, audio_sweep.wav
 

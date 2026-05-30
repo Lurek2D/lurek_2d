@@ -1,9 +1,8 @@
-//! Validation engine: orchestrates rule execution across file trees with parallel workers.
-//!
-//! - `ValidationEngine` loads config, builds the rule set, and calls `parallel::validate_parallel`.
-//! - Returns a `ValidationReport` aggregating all violations from all rules and files.
-//! - Custom Lua rules registered via `lurek.validator.add_rule` are injected here.
-//! - Used by `lurek.validator.run()` and the `python tools/validate/` quality gate.
+//! This file provides the validation orchestrator that runs rule sets over project content.
+//! It composes built-in and custom rules into one execution plan shaped by config.
+//! It dispatches checks across files and aggregates findings into structured reports.
+//! It serves as the main engine entry used by runtime tooling and validation commands.
+//! It keeps rule execution boundaries explicit so validation behavior remains auditable.
 
 use super::asset_check::AssetExistenceRule;
 use super::api_check::ApiComplianceRule;

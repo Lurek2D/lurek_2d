@@ -7,6 +7,7 @@ local quest = require("library.quest")
 
 -- @describe Objective
 describe("Objective", function()
+    -- @library lurek.library_quest
     it("creates with correct defaults", function()
         local obj = quest.newObjective("kill_wolves", "Kill 3 wolves", 3)
         expect_equal(obj.id, "kill_wolves")
@@ -18,6 +19,7 @@ describe("Objective", function()
         expect_equal(obj.visible, true)
     end)
 
+    -- @library lurek.library_quest
     it("advance completes when reaching required", function()
         local obj = quest.newObjective("kill_wolves", "Kill 3 wolves", 3)
         obj:advance(2)
@@ -28,6 +30,7 @@ describe("Objective", function()
         expect_equal(obj.status, "done")
     end)
 
+    -- @library lurek.library_quest
     it("advance clamps at required", function()
         local obj = quest.newObjective("fetch", "Fetch 5 apples", 5)
         obj:advance(10)
@@ -35,6 +38,7 @@ describe("Objective", function()
         expect_equal(obj.status, "done")
     end)
 
+    -- @library lurek.library_quest
     it("advance does nothing when done", function()
         local obj = quest.newObjective("task", "Task", 1)
         obj:advance(1)
@@ -43,6 +47,7 @@ describe("Objective", function()
         expect_equal(obj.current, 1) -- unchanged
     end)
 
+    -- @library lurek.library_quest
     it("advance does nothing when failed", function()
         local obj = quest.newObjective("task", "Task", 3)
         obj.status = "failed"
@@ -50,6 +55,7 @@ describe("Objective", function()
         expect_equal(obj.current, 0)
     end)
 
+    -- @library lurek.library_quest
     it("setProgress sets correct status", function()
         local obj = quest.newObjective("task", "Task", 5)
         obj:setProgress(3)
@@ -61,6 +67,7 @@ describe("Objective", function()
         expect_equal(obj.status, "pending")
     end)
 
+    -- @library lurek.library_quest
     it("setProgress clamps to range", function()
         local obj = quest.newObjective("task", "Task", 5)
         obj:setProgress(100)
@@ -69,6 +76,7 @@ describe("Objective", function()
         expect_equal(obj.current, 0)
     end)
 
+    -- @library lurek.library_quest
     it("isComplete returns true for done or skipped", function()
         local obj = quest.newObjective("task", "Task", 1)
         expect_equal(obj:isComplete(), false)
@@ -96,6 +104,7 @@ end)
 
 -- @describe QuestStage
 describe("QuestStage", function()
+    -- @library lurek.library_quest
     it("creates with correct defaults", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         expect_equal(stage.id, "s1")
@@ -103,6 +112,7 @@ describe("QuestStage", function()
         expect_equal(#stage.objectives, 0)
     end)
 
+    -- @library lurek.library_quest
     it("addObjective and getObjective work", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         local obj = quest.newObjective("task1", "Task 1", 1)
@@ -114,6 +124,7 @@ describe("QuestStage", function()
         expect_equal(stage:getObjective("nope"), nil)
     end)
 
+    -- @library lurek.library_quest
     it("hasObjective works", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         stage:addObjective(quest.newObjective("task1", "Task 1", 1))
@@ -121,6 +132,7 @@ describe("QuestStage", function()
         expect_equal(stage:hasObjective("task2"), false)
     end)
 
+    -- @library lurek.library_quest
     it("clearObjectives removes all", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         stage:addObjective(quest.newObjective("task1", "Task 1", 1))
@@ -130,6 +142,7 @@ describe("QuestStage", function()
         expect_equal(stage:objectiveCount(), 0)
     end)
 
+    -- @library lurek.library_quest
     it("isComplete checks mandatory objectives", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         local mandatory = quest.newObjective("m1", "Mandatory", 1)
@@ -142,6 +155,7 @@ describe("QuestStage", function()
         expect_equal(stage:isComplete(), true) -- optional doesn't matter
     end)
 
+    -- @library lurek.library_quest
     it("isComplete returns true when empty", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         expect_equal(stage:isComplete(), true)
@@ -152,6 +166,7 @@ end)
 
 -- @describe Quest
 describe("Quest", function()
+    -- @library lurek.library_quest
     it("creates with correct defaults", function()
         local q = quest.newQuest("tutorial", "Tutorial")
         expect_equal(q.id, "tutorial")
@@ -162,6 +177,7 @@ describe("Quest", function()
         expect_equal(#q.journal, 0)
     end)
 
+    -- @library lurek.library_quest
     it("start/complete/fail transitions", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_equal(q.status, "available")
@@ -171,6 +187,7 @@ describe("Quest", function()
         expect_equal(q.status, "completed")
     end)
 
+    -- @library lurek.library_quest
     it("start only works from available", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_equal(q:start(), true)
@@ -180,6 +197,7 @@ describe("Quest", function()
         expect_equal(q.status, "failed")
     end)
 
+    -- @library lurek.library_quest
     it("stages and nextStage", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -190,6 +208,7 @@ describe("Quest", function()
         expect_equal(q:nextStage(), false) -- already at last
     end)
 
+    -- @library lurek.library_quest
     it("gotoStage works", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -200,6 +219,7 @@ describe("Quest", function()
         expect_equal(q:gotoStage("nope"), false)
     end)
 
+    -- @library lurek.library_quest
     it("getCurrentStage returns active stage", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -207,6 +227,7 @@ describe("Quest", function()
         expect_equal(cs.id, "s1")
     end)
 
+    -- @library lurek.library_quest
     it("getStage by id", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -217,6 +238,7 @@ describe("Quest", function()
         expect_equal(q:getStage("nope"), nil)
     end)
 
+    -- @library lurek.library_quest
     it("advanceObjective works in the current stage", function()
         local q = quest.newQuest("main", "Main Quest")
         local s1 = quest.newQuestStage("s1", "Stage 1")
@@ -229,6 +251,7 @@ describe("Quest", function()
         expect_equal(q:advanceObjective("nope"), false)
     end)
 
+    -- @library lurek.library_quest
     it("setObjectiveStatus works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "Stage 1")
@@ -239,6 +262,7 @@ describe("Quest", function()
         expect_equal(q:setObjectiveStatus("nope", "done"), false)
     end)
 
+    -- @library lurek.library_quest
     it("journal entries", function()
         local q = quest.newQuest("main", "Main Quest")
         local idx1 = q:addJournalEntry("Found the cave", "discovered")
@@ -251,6 +275,7 @@ describe("Quest", function()
         expect_equal(q.journal[2].text, "Defeated the boss")
     end)
 
+    -- @library lurek.library_quest
     it("metadata set/get", function()
         local q = quest.newQuest("main", "Main Quest")
         q:setMeta("giver", "Old Man")
@@ -258,6 +283,7 @@ describe("Quest", function()
         expect_equal(q:getMeta("nope"), nil)
     end)
 
+    -- @library lurek.library_quest
     it("completionPercent works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "Stage 1")
@@ -271,12 +297,14 @@ describe("Quest", function()
         expect_near(q:completionPercent(), 100.0, 0.01)
     end)
 
+    -- @library lurek.library_quest
     it("completionPercent with no objectives returns 0", function()
         local q = quest.newQuest("empty", "Empty")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
         expect_near(q:completionPercent(), 0.0, 0.01)
     end)
 
+    -- @library lurek.library_quest
     it("activeObjectiveIds works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "S1")
@@ -291,6 +319,7 @@ describe("Quest", function()
         expect_equal(active[1], "a")
     end)
 
+    -- @library lurek.library_quest
     it("resetObjective works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "S1")
@@ -304,6 +333,7 @@ describe("Quest", function()
         expect_equal(q:resetObjective("nope"), false)
     end)
 
+    -- @library lurek.library_quest
     it("allObjectivesComplete works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "S1")
@@ -319,12 +349,14 @@ end)
 
 -- @describe QuestLog
 describe("QuestLog", function()
+    -- @library lurek.library_quest
     it("creates empty", function()
         local log = quest.newQuestLog()
         expect_equal(log:questCount(), 0)
         expect_equal(#log:questIds(), 0)
     end)
 
+    -- @library lurek.library_quest
     it("addQuest and getQuest work", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -333,6 +365,7 @@ describe("QuestLog", function()
         expect_equal(q.title, "Quest 1")
     end)
 
+    -- @library lurek.library_quest
     it("addQuest replaces existing", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -341,6 +374,7 @@ describe("QuestLog", function()
         expect_equal(log:getQuest("q1").title, "Quest 1 v2")
     end)
 
+    -- @library lurek.library_quest
     it("removeQuest works", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -349,6 +383,7 @@ describe("QuestLog", function()
         expect_equal(log:removeQuest("q1"), false)
     end)
 
+    -- @library lurek.library_quest
     it("questIds preserves insertion order", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q2", "Quest 2"))
@@ -358,6 +393,7 @@ describe("QuestLog", function()
         expect_equal(ids[2], "q1")
     end)
 
+    -- @library lurek.library_quest
     it("questsWithStatus filters correctly", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -368,6 +404,7 @@ describe("QuestLog", function()
         expect_equal(active[1], "q1")
     end)
 
+    -- @library lurek.library_quest
     it("startQuest transitions available to active", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -375,11 +412,13 @@ describe("QuestLog", function()
         expect_equal(log:getQuest("q1").status, "active")
     end)
 
+    -- @library lurek.library_quest
     it("startQuest returns false for unknown id", function()
         local log = quest.newQuestLog()
         expect_equal(log:startQuest("nope"), false)
     end)
 
+    -- @library lurek.library_quest
     it("completeQuest and failQuest work", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -393,6 +432,7 @@ describe("QuestLog", function()
         expect_equal(log:getQuest("q2").status, "failed")
     end)
 
+    -- @library lurek.library_quest
     it("activeIds/completedIds/failedIds convenience", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Q1"))
@@ -408,6 +448,7 @@ describe("QuestLog", function()
         expect_equal(#log:failedIds(), 1)
     end)
 
+    -- @library lurek.library_quest
     it("advanceObjective through log", function()
         local log = quest.newQuestLog()
         local q = quest.newQuest("q1", "Q1")
@@ -455,6 +496,7 @@ end)
 
 -- @describe QuestStage:getObjectives
 describe("QuestStage:getObjectives", function()
+    -- @library lurek.library_quest
     it("returns all objectives in insertion order", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         stage:addObjective(quest.newObjective("a", "A", 1))
@@ -465,6 +507,7 @@ describe("QuestStage:getObjectives", function()
         expect_equal(objs[2].id, "b")
     end)
 
+    -- @library lurek.library_quest
     it("returns empty table when stage has no objectives", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         expect_equal(#stage:getObjectives(), 0)
@@ -475,6 +518,7 @@ end)
 
 -- @describe QuestLog:resetQuest
 describe("QuestLog:resetQuest", function()
+    -- @library lurek.library_quest
     it("resets status, stage index, and objective progress", function()
         local log = quest.newQuestLog()
         local q = quest.newQuest("q1", "Quest 1")
@@ -499,6 +543,7 @@ describe("QuestLog:resetQuest", function()
         expect_equal(obj.status, "pending")
     end)
 
+    -- @library lurek.library_quest
     it("returns false for unknown quest id", function()
         local log = quest.newQuestLog()
         expect_equal(log:resetQuest("nope"), false)
@@ -507,6 +552,7 @@ end)
 
 -- @describe QuestLog:setQuestReward / getQuestReward
 describe("QuestLog:setQuestReward / getQuestReward", function()
+    -- @library lurek.library_quest
     it("sets and retrieves reward string", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -514,11 +560,13 @@ describe("QuestLog:setQuestReward / getQuestReward", function()
         expect_equal(log:getQuestReward("q1"), "100 gold")
     end)
 
+    -- @library lurek.library_quest
     it("getQuestReward returns nil for unknown quest", function()
         local log = quest.newQuestLog()
         expect_equal(log:getQuestReward("nope"), nil)
     end)
 
+    -- @library lurek.library_quest
     it("setQuestReward overwrites previous value", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -530,6 +578,7 @@ end)
 
 -- @describe QuestLog:activeCount / completedCount
 describe("QuestLog:activeCount / completedCount", function()
+    -- @library lurek.library_quest
     it("counts active and completed quests correctly", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Q1"))
@@ -542,6 +591,7 @@ describe("QuestLog:activeCount / completedCount", function()
         expect_equal(log:completedCount(), 1)
     end)
 
+    -- @library lurek.library_quest
     it("both return 0 for empty log", function()
         local log = quest.newQuestLog()
         expect_equal(log:activeCount(), 0)
@@ -553,6 +603,7 @@ end)
 
 -- @describe M.QuestStatus enum
 describe("M.QuestStatus enum", function()
+    -- @library lurek.library_quest
     it("has expected string constants", function()
         expect_equal(quest.QuestStatus.LOCKED,    "locked")
         expect_equal(quest.QuestStatus.ACTIVE,    "active")
@@ -563,6 +614,7 @@ end)
 
 -- @describe M.ObjectiveStatus enum
 describe("M.ObjectiveStatus enum", function()
+    -- @library lurek.library_quest
     it("has expected string constants", function()
         expect_equal(quest.ObjectiveStatus.LOCKED,    "locked")
         expect_equal(quest.ObjectiveStatus.ACTIVE,    "active")
@@ -574,6 +626,7 @@ end)
 
 -- @describe Quest:advanceObjective current-stage scoping
 describe("Quest:advanceObjective current-stage scoping", function()
+    -- @library lurek.library_quest
     it("does not advance objective in a non-current stage", function()
         local q = quest.newQuest("main", "Main Quest")
         local s1 = quest.newQuestStage("s1", "Stage 1")
@@ -587,6 +640,7 @@ describe("Quest:advanceObjective current-stage scoping", function()
         expect_equal(s2:getObjective("obj_s2").current, 0)
     end)
 
+    -- @library lurek.library_quest
     it("advances objective in explicit stage_id", function()
         local q = quest.newQuest("main", "Main Quest")
         local s1 = quest.newQuestStage("s1", "Stage 1")
@@ -600,6 +654,7 @@ describe("Quest:advanceObjective current-stage scoping", function()
         expect_equal(s2:getObjective("obj_s2").current, 2)
     end)
 
+    -- @library lurek.library_quest
     it("after nextStage, new current stage is searched", function()
         local q = quest.newQuest("main", "Main Quest")
         local s1 = quest.newQuestStage("s1", "Stage 1")
@@ -618,11 +673,13 @@ end)
 
 -- @describe Quest:completionPercent zero objectives
 describe("Quest:completionPercent zero objectives", function()
+    -- @library lurek.library_quest
     it("returns 0 for quest with no stages", function()
         local q = quest.newQuest("empty", "Empty")
         expect_near(q:completionPercent(), 0.0, 0.01)
     end)
 
+    -- @library lurek.library_quest
     it("returns 0 for quest with only optional objectives", function()
         local q = quest.newQuest("opt", "Optional Only")
         local s = quest.newQuestStage("s1", "S1")
@@ -636,18 +693,21 @@ end)
 
 -- @describe Quest state machine enforcement
 describe("Quest state machine enforcement", function()
+    -- @library lurek.library_quest
     it("complete from available is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_equal(q:complete(), false)
         expect_equal(q.status, "available")
     end)
 
+    -- @library lurek.library_quest
     it("fail from available is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_equal(q:fail(), false)
         expect_equal(q.status, "available")
     end)
 
+    -- @library lurek.library_quest
     it("start from completed is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         q:start()
@@ -656,6 +716,7 @@ describe("Quest state machine enforcement", function()
         expect_equal(q.status, "completed")
     end)
 
+    -- @library lurek.library_quest
     it("start from failed is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         q:start()
@@ -664,6 +725,7 @@ describe("Quest state machine enforcement", function()
         expect_equal(q.status, "failed")
     end)
 
+    -- @library lurek.library_quest
     it("fail from completed is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         q:start()
@@ -672,6 +734,7 @@ describe("Quest state machine enforcement", function()
         expect_equal(q.status, "completed")
     end)
 
+    -- @library lurek.library_quest
     it("complete from failed is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         q:start()
@@ -680,6 +743,7 @@ describe("Quest state machine enforcement", function()
         expect_equal(q.status, "failed")
     end)
 
+    -- @library lurek.library_quest
     it("double start is rejected", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_equal(q:start(), true)
@@ -690,6 +754,7 @@ end)
 
 -- @describe Quest journal max-entry limit
 describe("Quest journal max-entry limit", function()
+    -- @library lurek.library_quest
     it("trims oldest entries when exceeding limit", function()
         local q = quest.newQuest("q1", "Quest 1", 3)
         q:addJournalEntry("entry1", "a")
@@ -703,6 +768,7 @@ describe("Quest journal max-entry limit", function()
         expect_equal(q.journal[3].text, "entry4")
     end)
 
+    -- @library lurek.library_quest
     it("nil max means unlimited journal", function()
         local q = quest.newQuest("q1", "Quest 1")
         for i = 1, 100 do
@@ -711,6 +777,7 @@ describe("Quest journal max-entry limit", function()
         expect_equal(#q.journal, 100)
     end)
 
+    -- @library lurek.library_quest
     it("max of 1 keeps only the latest entry", function()
         local q = quest.newQuest("q1", "Quest 1", 1)
         q:addJournalEntry("first")
@@ -722,33 +789,40 @@ end)
 
 -- @describe Input validation
 describe("Input validation", function()
+    -- @library lurek.library_quest
     it("newQuest rejects empty id", function()
         expect_error(function() quest.newQuest("", "Title") end)
     end)
 
+    -- @library lurek.library_quest
     it("newQuest rejects non-string id", function()
         expect_error(function() quest.newQuest(123, "Title") end)
     end)
 
+    -- @library lurek.library_quest
     it("newObjective rejects negative required", function()
         expect_error(function() quest.newObjective("id", "desc", -1) end)
     end)
 
+    -- @library lurek.library_quest
     it("advance rejects zero amount", function()
         local obj = quest.newObjective("id", "desc", 3)
         expect_error(function() obj:advance(0) end)
     end)
 
+    -- @library lurek.library_quest
     it("advance rejects negative amount", function()
         local obj = quest.newObjective("id", "desc", 3)
         expect_error(function() obj:advance(-1) end)
     end)
 
+    -- @library lurek.library_quest
     it("setProgress rejects non-number", function()
         local obj = quest.newObjective("id", "desc", 3)
         expect_error(function() obj:setProgress("abc") end)
     end)
 
+    -- @library lurek.library_quest
     it("addJournalEntry rejects non-string text", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_error(function() q:addJournalEntry(123) end)

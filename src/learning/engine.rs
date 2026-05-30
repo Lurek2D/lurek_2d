@@ -1,4 +1,8 @@
-//! Dynamic neural engine for composing heterogeneous learning blocks.
+//! Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph.
+//! Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface.
+//! Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers.
+//! Executes staged forward passes through configured block sequences on shared tensor carriers.
+//! Serves as the composition hub for mixed-architecture experimentation in the learning module.
 
 use crate::learning::{
     Conv2D, EvolutionaryLayer, GruLayer, LstmLayer, MaxPool2D, NeuralLayer, TransformerDecoderBlock,

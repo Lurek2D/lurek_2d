@@ -7,6 +7,7 @@ local item = require("library.item")
 
 -- @describe TypeRegistry
 describe("TypeRegistry", function()
+    -- @library lurek.library_item
     it("clearTypes resets registry", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -14,6 +15,7 @@ describe("TypeRegistry", function()
         expect_equal(item.getType("sword"), nil)
     end)
 
+    -- @library lurek.library_item
     it("defineType and getType round-trip", function()
         item.clearTypes()
         item.defineType("axe", { category="weapon", base_stats={dmg=15}, base_tags={"equippable"} })
@@ -22,6 +24,7 @@ describe("TypeRegistry", function()
         expect_equal(def.base_stats.dmg, 15)
     end)
 
+    -- @library lurek.library_item
     it("getTypeNames returns sorted names", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -38,6 +41,7 @@ end)
 
 -- @describe Item
 describe("Item", function()
+    -- @library lurek.library_item
     it("stats from base_stats", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10, spd=5}, base_tags={} })
@@ -46,6 +50,7 @@ describe("Item", function()
         expect_equal(it:getStat("spd"), 5)
     end)
 
+    -- @library lurek.library_item
     it("setStat overrides base stat", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -54,6 +59,7 @@ describe("Item", function()
         expect_equal(it:getStat("dmg"), 99)
     end)
 
+    -- @library lurek.library_item
     it("addStat accumulates delta", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -62,6 +68,7 @@ describe("Item", function()
         expect_equal(it:getStat("dmg"), 15)
     end)
 
+    -- @library lurek.library_item
     it("removeStat clears the stat", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -103,6 +110,7 @@ describe("Item", function()
         expect_equal(it:hasTag("rare"), false)
     end)
 
+    -- @library lurek.library_item
     it("getCategory returns registry category", function()
         item.clearTypes()
         item.defineType("wand", { category="magic", base_stats={}, base_tags={} })
@@ -110,6 +118,7 @@ describe("Item", function()
         expect_equal(it:getCategory(), "magic")
     end)
 
+    -- @library lurek.library_item
     it("setMeta / getMeta round-trip", function()
         item.clearTypes()
         local it = item.newItem("ancient_tome")
@@ -117,6 +126,7 @@ describe("Item", function()
         expect_equal(it:getMeta("origin"), "library")
     end)
 
+    -- @library lurek.library_item
     it("setOwner / getOwner", function()
         item.clearTypes()
         local it = item.newItem("coin")
@@ -185,6 +195,7 @@ describe("Stack", function()
         expect_equal(s:size(), 1)
     end)
 
+    -- @library lurek.library_item
     it("pushBottom inserts at index 1", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -193,6 +204,7 @@ describe("Stack", function()
         expect_equal(s:popBottom(), b)
     end)
 
+    -- @library lurek.library_item
     it("peekAt by 1-based index", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local c = item.newItem("c")
@@ -277,6 +289,7 @@ describe("ItemPool", function()
         expect_equal(drawn:getType(), "gold")
     end)
 
+    -- @library lurek.library_item
     it("draw returns nil when empty", function()
         local pool = item.newItemPool()
         local drawn = pool:draw()
@@ -290,6 +303,7 @@ describe("ItemPool", function()
         expect_equal(pool:size(), 2)
     end)
 
+    -- @library lurek.library_item
     it("drawTypes returns n items", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -348,6 +362,7 @@ end)
 
 -- @describe StackHistory
 describe("StackHistory", function()
+    -- @library lurek.library_item
     it("recordPush creates entry", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "sword", 1)
@@ -358,6 +373,7 @@ describe("StackHistory", function()
         expect_equal(ents[1].item_type, "sword")
     end)
 
+    -- @library lurek.library_item
     it("recordPop creates entry", function()
         local h = item.newStackHistory(10)
         h:recordPop("bag", "gem", 0)
@@ -365,6 +381,7 @@ describe("StackHistory", function()
         expect_equal(ents[1].action, item.HistoryAction.Pop)
     end)
 
+    -- @library lurek.library_item
     it("recordClear creates clear entry", function()
         local h = item.newStackHistory(10)
         h:recordClear("bag")
@@ -379,6 +396,7 @@ describe("StackHistory", function()
         expect_equal(h:count(), 3)
     end)
 
+    -- @library lurek.library_item
     it("getLastN returns last n entries", function()
         local h = item.newStackHistory(50)
         for i = 1, 5 do h:recordCustom("src", "ev_"..i, i) end
@@ -395,6 +413,7 @@ describe("StackHistory", function()
         expect_equal(h:count(), 0)
     end)
 
+    -- @library lurek.library_item
     it("HistoryAction constants exist", function()
         expect_equal(item.HistoryAction.Push,   "push")
         expect_equal(item.HistoryAction.Pop,    "pop")
@@ -407,6 +426,7 @@ end)
 
 -- @describe StackManager
 describe("StackManager", function()
+    -- @library lurek.library_item
     it("addStack / getStack round-trip", function()
         local mgr = item.newStackManager()
         local s   = item.newStack("weapons")
@@ -414,6 +434,7 @@ describe("StackManager", function()
         expect_equal(mgr:getStack("weapons"), s)
     end)
 
+    -- @library lurek.library_item
     it("removeStack returns true if existed", function()
         local mgr = item.newStackManager()
         mgr:addStack("x", item.newStack("x"))
@@ -435,6 +456,7 @@ end)
 
 -- @describe findNOfStat
 describe("findNOfStat", function()
+    -- @library lurek.library_item
     it("returns top n indices (0-based)", function()
         item.clearTypes()
         local items = {}
@@ -455,6 +477,7 @@ end)
 
 -- @describe groupByStat
 describe("groupByStat", function()
+    -- @library lurek.library_item
     it("groups items by stat value", function()
         item.clearTypes()
         local items = {}
@@ -489,6 +512,7 @@ end)
 
 -- @describe findSequences
 describe("findSequences", function()
+    -- @library lurek.library_item
     it("finds consecutive runs of same stat value", function()
         item.clearTypes()
         local items = {}
@@ -505,6 +529,7 @@ describe("findSequences", function()
         expect_equal(seqs[2].length, 3)
     end)
 
+    -- @library lurek.library_item
     it("returns empty for all-distinct sequence", function()
         item.clearTypes()
         local items = {}
@@ -575,6 +600,7 @@ describe("StackBuilder", function()
         expect_equal(err, nil)
     end)
 
+    -- @library lurek.library_item
     it("validateStack detects missing required type", function()
         item.clearTypes()
         item.defineType("key", { category="misc", base_stats={}, base_tags={} })
@@ -601,12 +627,14 @@ end)
 
 -- @describe Item counters
 describe("Item counters", function()
+    -- @library lurek.library_item
     it("getCounter returns 0 for unset key", function()
         item.clearTypes()
         local it = item.newItem("thing")
         expect_equal(it:getCounter("charge"), 0)
     end)
 
+    -- @library lurek.library_item
     it("setCounter / getCounter round-trip", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -614,6 +642,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("charge"), 5)
     end)
 
+    -- @library lurek.library_item
     it("addCounter accumulates delta", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -623,6 +652,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("durability"), 7)
     end)
 
+    -- @library lurek.library_item
     it("addCounter creates counter at delta when absent", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -630,6 +660,7 @@ describe("Item counters", function()
         expect_equal(v, 4)
     end)
 
+    -- @library lurek.library_item
     it("removeCounter deletes the key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -638,6 +669,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("temp"), 0)
     end)
 
+    -- @library lurek.library_item
     it("getCounters returns shallow copy", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -690,12 +722,14 @@ describe("Item name and slot", function()
         expect_equal(it:getName(), "Ring of Power")
     end)
 
+    -- @library lurek.library_item
     it("getSlot returns empty string by default", function()
         item.clearTypes()
         local it = item.newItem("coin")
         expect_equal(it:getSlot(), "")
     end)
 
+    -- @library lurek.library_item
     it("setSlot / getSlot round-trip", function()
         item.clearTypes()
         local it = item.newItem("sword")
@@ -733,6 +767,7 @@ describe("Stack peekBottom", function()
         expect_equal(s:size(), 2)
     end)
 
+    -- @library lurek.library_item
     it("returns nil on empty stack", function()
         local s = item.newStack("test")
         expect_equal(s:peekBottom(), nil)
@@ -743,17 +778,20 @@ end)
 
 -- @describe ItemPool isEmpty and totalWeight
 describe("ItemPool isEmpty and totalWeight", function()
+    -- @library lurek.library_item
     it("isEmpty returns true when empty", function()
         local pool = item.newItemPool()
         expect_equal(pool:isEmpty(), true)
     end)
 
+    -- @library lurek.library_item
     it("isEmpty returns false after addType", function()
         local pool = item.newItemPool()
         pool:addType("coin", 1)
         expect_equal(pool:isEmpty(), false)
     end)
 
+    -- @library lurek.library_item
     it("totalWeight returns sum of weights", function()
         local pool = item.newItemPool()
         pool:addType("common", 3)
@@ -783,17 +821,20 @@ end)
 
 -- @describe StackHistory extras
 describe("StackHistory extras", function()
+    -- @library lurek.library_item
     it("isEmpty is true on fresh history", function()
         local h = item.newStackHistory(10)
         expect_equal(h:isEmpty(), true)
     end)
 
+    -- @library lurek.library_item
     it("isEmpty is false after record", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "coin", 1)
         expect_equal(h:isEmpty(), false)
     end)
 
+    -- @library lurek.library_item
     it("last returns most recent entry", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "coin", 1)
@@ -802,11 +843,13 @@ describe("StackHistory extras", function()
         expect_equal(e.item_type, "special")
     end)
 
+    -- @library lurek.library_item
     it("last returns nil on empty history", function()
         local h = item.newStackHistory(10)
         expect_equal(h:last(), nil)
     end)
 
+    -- @library lurek.library_item
     it("entriesFor filters by source", function()
         local h = item.newStackHistory(20)
         h:recordPush("bag",   "coin",  1)
@@ -823,11 +866,13 @@ end)
 
 -- @describe StackManager extras
 describe("StackManager extras", function()
+    -- @library lurek.library_item
     it("hasStack returns false when missing", function()
         local mgr = item.newStackManager()
         expect_equal(mgr:hasStack("unknown"), false)
     end)
 
+    -- @library lurek.library_item
     it("hasStack returns true after addStack", function()
         local mgr = item.newStackManager()
         mgr:addStack("inv", item.newStack("inv"))
@@ -852,6 +897,7 @@ describe("StackManager extras", function()
         expect_equal(s:isFull(), true)
     end)
 
+    -- @library lurek.library_item
     it("totalItems sums across all stacks", function()
         local mgr = item.newStackManager()
         mgr:createStack("a")
@@ -862,6 +908,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:totalItems(), 3)
     end)
 
+    -- @library lurek.library_item
     it("moveItem moves item between stacks", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -876,6 +923,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:getStack("dst"):size(), 1)
     end)
 
+    -- @library lurek.library_item
     it("moveItem returns error for missing stack", function()
         local mgr = item.newStackManager()
         mgr:createStack("src")
@@ -900,6 +948,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:getStack("equip"):size(), 1)
     end)
 
+    -- @library lurek.library_item
     it("moveItemByType returns error when type not found", function()
         local mgr = item.newStackManager()
         mgr:createStack("src")
@@ -909,6 +958,7 @@ describe("StackManager extras", function()
         expect_equal(type(err), "string")
     end)
 
+    -- @library lurek.library_item
     it("moveTop moves the top item", function()
         item.clearTypes()
         item.defineType("ball", { category="misc", base_stats={}, base_tags={} })
@@ -938,11 +988,13 @@ describe("Slot", function()
         expect_equal(s:peek(), sword)
     end)
 
+    -- @library lurek.library_item
     it("isEmpty returns true when empty", function()
         local s = item.newSlot("slot")
         expect_equal(s:isEmpty(), true)
     end)
 
+    -- @library lurek.library_item
     it("isEmpty returns false after push", function()
         local s = item.newSlot("slot")
         s:push(item.newItem("x"))
@@ -1007,6 +1059,7 @@ describe("Slot", function()
         expect_equal(s:isEmpty(), true)
     end)
 
+    -- @library lurek.library_item
     it("items returns shallow copy", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -1027,6 +1080,7 @@ describe("Slot", function()
         expect_equal(s:hasItemWithTag("blessed"), false)
     end)
 
+    -- @library lurek.library_item
     it("hasItemOfType detects item type", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -1047,6 +1101,7 @@ end)
 
 -- @describe sortedIndicesByStat descending
 describe("sortedIndicesByStat descending", function()
+    -- @library lurek.library_item
     it("ascending=false returns highest-first indices", function()
         item.clearTypes()
         local items = {}
@@ -1061,6 +1116,7 @@ describe("sortedIndicesByStat descending", function()
         expect_equal(desc[2], 3)
     end)
 
+    -- @library lurek.library_item
     it("ascending=true matches original behaviour", function()
         item.clearTypes()
         local items = {}
@@ -1074,6 +1130,7 @@ describe("sortedIndicesByStat descending", function()
         expect_equal(asc[3], 1)  -- val=10
     end)
 
+    -- @library lurek.library_item
     it("nil ascending defaults to ascending", function()
         item.clearTypes()
         local items = {}
@@ -1104,6 +1161,7 @@ describe("clearTypes isolation", function()
         expect_equal(it:getType(), "sword")
     end)
 
+    -- @library lurek.library_item
     it("new items after clearTypes get defaults", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -1119,11 +1177,13 @@ end)
 
 -- @describe Pool draw edge cases
 describe("Pool draw edge cases", function()
+    -- @library lurek.library_item
     it("draw returns nil on empty pool", function()
         local pool = item.newItemPool()
         expect_equal(pool:draw(), nil)
     end)
 
+    -- @library lurek.library_item
     it("drawTypes on empty pool returns nils", function()
         local pool = item.newItemPool()
         local drawn = pool:drawTypes(3)
@@ -1149,6 +1209,7 @@ describe("Pool draw edge cases", function()
         expect_equal(seen["b"], true)
     end)
 
+    -- @library lurek.library_item
     it("drawUniqueTypes with n=0 returns empty", function()
         local pool = item.newItemPool()
         pool:addType("x", 1)
@@ -1156,6 +1217,7 @@ describe("Pool draw edge cases", function()
         expect_equal(#drawn, 0)
     end)
 
+    -- @library lurek.library_item
     it("addType rejects zero weight", function()
         local pool = item.newItemPool()
         expect_error(function()
@@ -1163,6 +1225,7 @@ describe("Pool draw edge cases", function()
         end)
     end)
 
+    -- @library lurek.library_item
     it("addType rejects negative weight", function()
         local pool = item.newItemPool()
         expect_error(function()
@@ -1193,12 +1256,14 @@ describe("Undefined type items", function()
         expect_equal(it:getStat("anything"), nil)
     end)
 
+    -- @library lurek.library_item
     it("newItem with empty string errors", function()
         expect_error(function()
             item.newItem("")
         end)
     end)
 
+    -- @library lurek.library_item
     it("newItem with nil errors", function()
         expect_error(function()
             item.newItem(nil)
@@ -1210,36 +1275,42 @@ end)
 
 -- @describe Input validation
 describe("Input validation", function()
+    -- @library lurek.library_item
     it("defineType rejects nil name", function()
         expect_error(function()
             item.defineType(nil, {})
         end)
     end)
 
+    -- @library lurek.library_item
     it("defineType rejects empty string name", function()
         expect_error(function()
             item.defineType("", {})
         end)
     end)
 
+    -- @library lurek.library_item
     it("defineType rejects non-table def", function()
         expect_error(function()
             item.defineType("valid", "not a table")
         end)
     end)
 
+    -- @library lurek.library_item
     it("newStack rejects empty name", function()
         expect_error(function()
             item.newStack("")
         end)
     end)
 
+    -- @library lurek.library_item
     it("newStack rejects negative capacity", function()
         expect_error(function()
             item.newStack("test", -1)
         end)
     end)
 
+    -- @library lurek.library_item
     it("setStat rejects empty key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -1248,6 +1319,7 @@ describe("Input validation", function()
         end)
     end)
 
+    -- @library lurek.library_item
     it("addStat rejects empty key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -1256,6 +1328,7 @@ describe("Input validation", function()
         end)
     end)
 
+    -- @library lurek.library_item
     it("pool addType rejects empty type_name", function()
         local pool = item.newItemPool()
         expect_error(function()
@@ -1263,6 +1336,7 @@ describe("Input validation", function()
         end)
     end)
 
+    -- @library lurek.library_item
     it("pool addType rejects non-number weight", function()
         local pool = item.newItemPool()
         expect_error(function()

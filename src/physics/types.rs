@@ -1,7 +1,6 @@
-//! Core type definitions for the physics subsystem.
-//!
-//! - `BodyId` newtype wrapper for type-safe body identification across Lua and Rust layers.
-//! - Implements `Copy`, `Hash`, and `Display`; converts to/from `usize` without allocation.
+//! Small core type surface for the physics subsystem where stable identifiers need stronger meaning than a bare integer can provide.
+//! The file wraps body identity in a dedicated type so physics handles remain cheap to pass around while still reading as deliberate domain values.
+//! Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
 
 /// Unique identifier for a physics body.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

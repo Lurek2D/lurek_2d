@@ -1,10 +1,8 @@
-//! Tween engine: per-tick interpolation of numeric table fields on Lua objects.
-//!
-//! - `TweenEngine` holds a slab of active `TweenJob` entries; completed jobs are freed.
-//! - Each job targets a Lua registry key and a list of field names to animate.
-//! - Easing functions (linear, ease-in, ease-out, spring, bounce) are value-mapped.
-//! - `on_settle` callback fires once the job reaches its target value within epsilon.
-//! - Updated synchronously inside `lua_tick`; no background threads.
+//! This file provides the active tween engine that updates all running animation handles.
+//! It tracks tweens, sequences, parallels, and springs through one coordinated update surface.
+//! It resolves easing behavior and value writes directly onto Lua-owned target tables.
+//! It manages lifecycle cleanup so completed animations exit without stale runtime state.
+//! It keeps tween progression synchronous with frame updates for deterministic visual output.
 
 use crate::tween::handle::{LuaTween, LuaTweenParallel, LuaTweenSequence};
 use mlua::prelude::*;

@@ -8,8 +8,6 @@
 pub mod agent;
 /// Behavior tree nodes and execution runtime.
 pub mod behavior_tree;
-/// Shared key-value memory for AI systems.
-pub mod blackboard;
 /// Command queue for deferred AI actions.
 pub mod command_queue;
 /// Finite-state machine helpers.
@@ -62,8 +60,8 @@ pub mod traits;
 pub use agent::{Agent, DecisionModel};
 /// Behavior tree nodes, statuses, and policies.
 pub use behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy};
-/// Blackboard storage shared by AI systems.
-pub use blackboard::{Blackboard, BlackboardValue};
+/// Blackboard storage shared by AI systems, re-exported from `crate::patterns`.
+pub use crate::patterns::{Blackboard, BlackboardValue};
 /// Deferred command queue and command variants.
 pub use command_queue::{Command, CommandQueue};
 /// Finite-state machine building blocks.

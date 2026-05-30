@@ -1,10 +1,7 @@
-//! Reingold-Tilford algorithm for compact hierarchical tree node layout.
-//!
-//! - `layout_tree(root, children, config)` returns a `HashMap<NodeId, (f32, f32)>`.
-//! - Handles arbitrary branching factors; sibling subtrees are packed as tightly as possible.
-//! - `TreeConfig` sets horizontal and vertical node separation distances.
-//! - Supports top-down and left-to-right orientations via the `orientation` field.
-//! - Used by `lurek.layout.tree` for dialogue trees, skill trees, and org charts.
+//! Implements rooted hierarchy placement that keeps parent-child reading order clear and branch spacing compact.
+//! Walks subtrees recursively to allocate horizontal extent before anchoring parent coordinates in stable positions.
+//! Applies shared spacing controls to balance density and readability for branching structures of uneven depth.
+//! Targets dialog flows and progression trees that require explicit structure with minimal manual cleanup.
 
 use super::types::*;
 use std::collections::HashMap;

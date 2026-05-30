@@ -1,8 +1,8 @@
 //! Grid-based A* pathfinding over a rectangular isometric cell map.
-//!
-//! - Per-cell blocked flags and movement cost support for weighted searches.
-//! - Bresenham line-of-sight query between two grid positions.
-//! - 4-directional neighbour expansion with bounds and passability filtering.
+//! Stores blocked flags and movement costs for weighted searches.
+//! Uses Bresenham line-of-sight checks for visibility and smoothing support.
+//! Expands four-direction neighbours with bounds and passability filtering.
+//! Gives isometric tile worlds a direct path and visibility helper.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

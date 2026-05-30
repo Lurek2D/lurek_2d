@@ -883,7 +883,7 @@ mod containers_tests {
 mod chart_tests {
     use lurek2d::image::ImageData;
     use lurek2d::color::Color;
-    use lurek2d::ui::chart::*;
+    use lurek2d::charts::*;
 
     fn dashboard_config() -> ChartConfig {
         ChartConfig {

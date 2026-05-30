@@ -1,11 +1,9 @@
-//! Stage deferred window property changes (title, size, position, icon, display).
-//!
-//! - Fullscreen and vsync mode switching with exclusive/desktop variants.
-//! - Minimize, maximize, restore, close, and attention-request staging.
-//! - Focus, visibility, and mouse-focus queries.
-//! - DPI-aware pixel conversion helpers.
-//! - Combined mode update and snapshot via `set_mode`/`get_mode`.
-//! - Native OS message-box dialog via `rfd`.
+//! This file provides deferred window management operations staged for safe event-loop apply.
+//! It controls title, size, position, display target, and icon updates through queued state.
+//! It manages fullscreen and vsync mode changes across desktop and exclusive variants.
+//! It exposes minimize, maximize, restore, close, and attention requests for app lifecycle flow.
+//! It provides focus, visibility, and pointer-presence queries for runtime interaction logic.
+//! It includes DPI conversion and mode snapshot helpers used by Lua and engine integration.
 
 use crate::runtime::shared_state::{FullscreenType, WindowState};
 /// Snapshot of the window's current mode returned by `get_mode`.

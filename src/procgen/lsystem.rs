@@ -1,7 +1,8 @@
-//! Deterministic string-rewriting L-system with configurable axiom, production rules, and iteration depth.
-//!
-//! - Turtle-graphics interpreter converts generated strings into line segments for rendering.
-//! - Supports branching via stack-based `[`/`]` commands for tree and fractal geometry.
+//! L-system generator for recursive symbolic growth where simple rewrite rules can unfold into plants, roads, fractals, or other branching structures.
+//! The file keeps axiom, productions, and iteration depth explicit so generated strings remain deterministic and inspectable rather than hidden inside opaque helpers.
+//! Turtle interpretation turns those symbols into drawable line segments, giving the grammar an immediate geometric payoff.
+//! Stack-based branching support enables structures that fork and return, which is essential for tree-like and fractal forms.
+//! Functionally this file delivers a compact grammar-to-geometry pipeline for recursive content generation.
 
 use std::collections::HashMap;
 

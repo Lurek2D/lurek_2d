@@ -1,16 +1,33 @@
-//! wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
-//!
-//! - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
-//! - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
-//! - Off-screen canvas render targets with lazy depth/stencil attachment creation.
-//! - Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
-//! - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
-//! - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
-//! - Stencil write/test pipeline variants with configurable compare and operation modes.
-//! - Bitmap font fallback renderer and thick-line geometry generation utilities.
-//! - Frustum culling via 2-D AABB visibility test against the camera transform.
-//! - Automatic geometry buffer growth when frame vertex/index demand exceeds current capacity.
-//! - Texture upload, font atlas rebuild, and canvas lifecycle tied to slot-map resource pruning.
+//! This file is the concrete wgpu renderer that turns the engine command vocabulary into encoded GPU work and presented frames.
+//! It owns device-facing state such as pipelines, bind groups, buffers, samplers, and the transient attachments needed during a frame.
+//! Incoming draw commands are interpreted here into flat-color, textured, mesh, font, light, and post-effect passes that share one frame lifecycle.
+//! Geometry for common 2D shapes is tessellated on demand so higher layers can speak in circles, lines, rounded boxes, and polygons instead of vertices.
+//! Vertex and index buffers are resized as frame demand grows, which keeps command recording simple while still adapting to heavy scenes.
+//! Textured drawing and flat drawing travel through separate but coordinated paths so color-only work does not inherit texture overhead by accident.
+//! Off-screen canvas targets are managed beside the swapchain path, allowing the same renderer core to feed composition layers and final output.
+//! Depth and stencil attachments are created only where needed, which keeps specialty passes available without forcing that cost onto every target.
+//! User shaders can be compiled, cached, and driven with typed uniform values so scripted visual experiments fit into the same backend.
+//! Post-processing hooks are integrated at the frame level instead of bolted on after presentation, enabling chained full-screen effects over rendered scenes.
+//! Lighting support includes additive point contributions and shadow-related data preparation that enrich 2D scenes without leaving the renderer.
+//! Screenshot readback and statistics gathering also happen here because this file has the authoritative picture of what the GPU just processed.
+//! Font atlas uploads, texture writes, and canvas surface reuse are coordinated in one place so resource churn stays observable and bounded.
+//! Visibility pruning happens before expensive draw expansion where possible, which helps large scenes skip obviously off-camera work.
+//! Blend, stencil, and depth modes are translated here into the exact pipeline variants the backend needs for compositing correctness.
+//! The file also contains the glue that keeps meshes, particles, Spine output, and generic primitives flowing through one renderer abstraction.
+//! Low-level vertex formats live here because they are backend contracts rather than reusable engine-domain types.
+//! A large part of the file is practical translation work between ergonomic engine commands and the stricter shapes demanded by wgpu.
+//! Frame setup and teardown logic are colocated with pass encoding so lifetime ordering for temporary GPU objects remains explicit.
+//! Canvas rendering, main-surface rendering, and readback all depend on the same shared resource maps keyed by engine handles.
+//! When a command sequence mixes text, textures, shapes, and custom shaders, this file is what turns that mixture into a coherent render graph.
+//! It therefore serves as the mechanical heart of visual output rather than a thin wrapper around API calls.
+//! Most engine rendering features eventually pass through this file, even when their public APIs live elsewhere.
+//! The design favors one rich backend with many translation helpers over scattering GPU details across the rest of the codebase.
+//! That centralization keeps GPU policy, caching, and pass ordering inspectable when rendering bugs appear.
+//! It also makes new draw features cheaper to add because they can target an existing command pipeline instead of inventing a second renderer.
+//! From the outside this file seems like a renderer implementation.
+//! From the inside it is the point where command semantics, resource ownership, and frame orchestration are kept in sync.
+//! It is the place where the engine decides how abstract 2D drawing intent becomes actual pixels on hardware.
+//! Everything else in the render module exists largely to feed or shape the work that this backend executes.
 
 use crate::log_msg;
 use crate::math::{Mat3, Vec2};

@@ -1,9 +1,8 @@
-//! Parse raw HTML strings into a live element tree with parent-child relationships.
-//!
-//! - Split tag headers, extract and normalize attribute key-value pairs.
-//! - Decode and encode the small HTML entity set (amp, lt, gt, quot, #39).
-//! - Collapse whitespace in text nodes before attaching to elements.
-//! - Handle self-closing tags, void tags, closing tags, and comments.
+//! Converts raw HTML text into document nodes with stable parent-child links and normalized attributes.
+//! Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state.
+//! Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization.
+//! Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical.
+//! Collapses insignificant whitespace in text nodes to keep rendered output predictable across content styles.
 
 use crate::html::element::{HtmlElement, HtmlElementId};
 use std::collections::BTreeMap;

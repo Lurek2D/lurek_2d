@@ -1,14 +1,18 @@
-//! Standalone 2D, 3D, and 4D Perlin noise evaluation with configurable seeds.
-//!
-//! - 2D simplex noise with seeded and convenience zero-seed wrappers.
-//! - FBM fractal layering over Perlin noise with normalised output.
-//! - Seeded `NoiseGenerator` with permutation-table Perlin (1D/2D/3D) and Simplex (2D/3D/4D).
-//! - Worley (cellular) noise in 2D and 3D with Euclidean, Manhattan, and Chebyshev metrics.
-//! - Fractal combinators: FBM, ridged multifractal, and turbulence; all normalised.
-//! - Domain warping via Perlin-driven coordinate offsets.
-//! - Sequential and parallel (`rayon`) height-map generation from `MapGenOptions`.
-//! - Tileable periodic 2D Perlin noise for seamless texture synthesis.
-//! - Internal hash and gradient helpers for all supported dimensions.
+//! Core noise engine for procedural generation where continuous variation, repeatable randomness, and composable sampling functions are the raw material behind richer content.
+//! The file gathers the module's foundational field generators in one place so scripts and higher-level Rust systems can sample coherent structure instead of inventing ad hoc randomness.
+//! Perlin support spans multiple dimensions and both stateless helpers and seeded generator state, which makes it useful for quick probes as well as sustained content workflows.
+//! Simplex support broadens that sampling surface with smoother alternatives better suited to some animated or layered fields.
+//! Worley distance fields add cell-like spatial texture, enabling region partitioning, cracked patterns, and other feature-point-driven looks.
+//! Fractal combinators turn base noise into richer terrain-scale structure by layering octaves into smoother hills, harsher ridges, or turbulent distortions.
+//! Domain warping further bends otherwise regular fields so generated output feels less axis-bound and more organically varied.
+//! Height-map generation helpers keep the module tied to practical terrain production rather than remaining a pile of isolated math routines.
+//! Parallel generation support matters here because large maps are a first-class workload, not an afterthought.
+//! Tileable periodic variants let the same toolbox serve looping textures and wraparound worlds where seam-free repetition matters.
+//! Internal hashing, gradients, and permutation logic live close to the public samplers so correctness and determinism share one source of truth.
+//! Seed handling is treated as authored input, which keeps results reproducible across tests, saves, and content pipelines.
+//! The file therefore acts as both a mathematical substrate and a production utility layer for the rest of procedural generation.
+//! It is intentionally broad because many higher-order systems in the module eventually reduce to sampled scalar fields shaped here.
+//! Functionally this file delivers the reusable field-generation backbone behind terrain, texture, biome, and layout variation across the engine.
 
 use rayon::prelude::*;
 

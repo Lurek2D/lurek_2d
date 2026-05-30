@@ -1,9 +1,10 @@
-//! Tile-grid line-of-sight using recursive shadowcasting (8-octant, Björn Bergström method).
-//!
-//! - `TileFov` computes per-cell visibility on a flat tile grid.
-//! - Visible cells accumulate into an `explored` mask that persists across frames.
-//! - The blocker predicate is accepted at `compute` time — no internal cache.
-//! - `save` / `restore` serialise both `visible` and `explored` as compact binary blobs.
+//! This file provides recursive shadowcasting field-of-view for tile-grid visibility queries.
+//! It computes current sight masks while preserving explored history across update frames.
+//! It accepts blocker predicates at compute time for flexible integration with world state.
+//! It serializes visible and explored masks so FOV state can persist across save boundaries.
+//! It supports deterministic octant traversal suitable for stealth and roguelike mechanics.
+//! It gives visibility systems a fast geometric core for line-of-sight decisions.
+//! It keeps FOV computation stable enough for repeated per-frame use in tactical scenarios.
 
 /// Per-cell visibility state for a single observer on a tile grid.
 pub struct TileFov {

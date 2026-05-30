@@ -1,9 +1,10 @@
-//! Emitter configuration struct (`ParticleConfig`) with all tunable parameters serialisable to TOML.
-//!
-//! - Enums controlling spawn distribution, insertion order, operating state, and coordinate mode.
-//! - Geometric emission shapes: point, circle, rectangle, ring, line, cone, star, spiral, and custom callback.
-//! - Helper types for point attractors and axis-aligned bounce boundaries.
-//! - Relative-mode and area-distribution strategies for world-space vs emitter-attached particles.
+//! Runtime configuration for particle emitters and their tunable behavior.
+//! Carries spawn distribution, insertion order, state, and coordinate mode settings.
+//! Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks.
+//! Includes attractor and bounce helper types for motion control.
+//! Covers world-space versus emitter-attached spawning rules.
+//! Packs every serializable knob into one config object for scripts and data files.
+//! Serves as the authored contract for building particle systems.
 
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;

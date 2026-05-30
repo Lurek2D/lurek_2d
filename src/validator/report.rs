@@ -1,9 +1,8 @@
-//! Structured violation report: aggregates, formats, and summarises validation results.
-//!
-//! - `Violation` carries file path, line number, `Severity`, rule name, and message.
-//! - `ValidationReport` holds `Vec<Violation>` and provides filter/sort helpers.
-//! - `Severity` enum: `Info`, `Warning`, `Error` — ordered by increasing severity.
-//! - `ValidationReport::display_summary()` prints a compact human-readable table.
+//! This file provides typed report models for storing and presenting validation outcomes.
+//! It defines violation records with severity, location, identity, and human-readable message.
+//! It supports filtering and summary views so large result sets remain actionable.
+//! It standardizes severity ordering for consistent thresholding and pipeline behavior.
+//! It anchors validator output contracts consumed by tools and user-facing diagnostics.
 
 use std::path::PathBuf;
 

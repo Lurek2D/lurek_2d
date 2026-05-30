@@ -1,11 +1,8 @@
-//! Isometric tile-to-screen and screen-to-tile coordinate conversions.
-//!
-//! - Cardinal direction rotation, naming, and angle snapping for iso grids.
-//! - Hex axial coordinate conversions between screen and grid space.
-//! - Hex neighbor lookup, distance, and rounding for fractional coordinates.
-//! - Line drawing, ring enumeration, spiral traversal, and area fill on hex grids.
-//! - Hex rotation and reflection transforms around arbitrary center cells.
-
+//! This file provides coordinate transforms for isometric and hex grids used across map systems.
+//! It keeps one geometric language between screen space, tile space, and movement direction logic.
+//! It offers orientation, rotation, and side classification helpers for grid navigation flows.
+//! It supports hex metrics and neighborhoods so pathing and range tools share a stable base.
+//! It delivers line, ring, and spiral traversals for tactical gameplay and map UI overlays.
 use crate::math::Vec2;
 use std::f32::consts::PI;
 

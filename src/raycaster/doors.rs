@@ -1,7 +1,8 @@
-//! Animated sliding doors placed on raycaster grid tiles.
-//!
-//! - Per-door state machine: Closed → Opening → Open → Closing → Closed.
-//! - DoorManager registry drives batch updates and spatial lookups.
+//! This file models raycaster doors as animated grid occupants whose openness changes continuously while their tile identity stays stable.
+//! Each door carries movement direction, travel progress, and a small phase machine so gameplay code can request transitions without manual timing.
+//! The manager keeps doors in one indexed registry, making updates and spatial queries deterministic for the rest of the raycaster.
+//! Because door openness is tracked separately from base map cells, rendering and collision code can read evolving passage state without duplicating logic.
+//! The overall effect is a lightweight moving-boundary system that fits the same tile world used by walls, sprites, and picking.
 
 /// Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).
 #[derive(Debug, Clone, Copy, PartialEq)]

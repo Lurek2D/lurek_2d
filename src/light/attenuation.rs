@@ -1,7 +1,7 @@
-//! Distance-based light intensity falloff using quadratic attenuation coefficients.
-//!
-//! - Computes attenuation factor from constant, linear, and quadratic terms.
-//! - Debug visualization of attenuation curves rendered to an image buffer.
+//! Defines quadratic attenuation math controlling how light intensity decays with distance.
+//! Encapsulates constant, linear, and quadratic coefficients in a compact reusable configuration.
+//! Computes attenuation factors used by runtime light contribution evaluation.
+//! Includes simple visualization support for tuning falloff curve behavior.
 
 /// Quadratic attenuation coefficients for distance-based light intensity falloff.
 #[derive(Debug, Clone, Copy, PartialEq)]

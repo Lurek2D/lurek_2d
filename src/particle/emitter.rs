@@ -1,15 +1,13 @@
 //! Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
-//!
-//! - Per-frame integration: gravity, radial/tangential acceleration, linear damping, drag, orbit, and turbulence.
-//! - Point-attractor influence applied per particle each frame with distance falloff.
-//! - Axis-aligned bounce boundaries that reflect particles with configurable restitution.
-//! - Continuous emission via fractional accumulator, burst spawning, and three insert-order modes.
-//! - Child sub-system spawning on particle death with configurable burst count and config clone.
-//! - State machine: Active, Paused, Stopped with lifetime-based auto-stop.
-//! - Render command building: shape mapping, color/alpha/size interpolation, texture quads, and animated frames.
-//! - Warm-up simulation pre-populates the pool by stepping in fixed 50 ms increments.
-//! - Custom emission shape callback support via pending offset indices drained by the Lua bridge.
-//! - Death event queue exposing world-space position and velocity for gameplay hooks.
+//! Integrates gravity, drag, orbit, turbulence, and other per-frame forces.
+//! Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes.
+//! Applies attractors and axis-aligned bounce boundaries to active particles.
+//! Runs child emitters on particle death when sub-systems are configured.
+//! Tracks active, paused, and stopped states with lifetime-based auto-stop.
+//! Builds render commands from current particle state, shape mapping, and interpolation curves.
+//! Supports warm-up simulation so systems can start in a settled state.
+//! Exposes custom emission-shape callbacks through the Lua bridge without coupling spawn math to rendering.
+//! Provides the runtime core for all particle effects.
 
 use super::config::{
     Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig,

@@ -1,8 +1,8 @@
-//! Wave Function Collapse (WFC) grid generator with weighted tile selection.
-//!
-//! - Adjacency-rule constraint propagation with automatic backtracking retries.
-//! - Deterministic seeded output via the internal LCG; each retry increments the seed.
-//! - Returns a flat row-major grid of tile IDs or `None` cells on contradiction.
+//! Constraint-based tile generator for patterns that should emerge from local adjacency rules rather than from direct handcrafted placement.
+//! The file treats each cell as a shrinking set of possible tiles and propagates neighbor constraints until a consistent arrangement collapses into concrete choices.
+//! Weighted selection gives the same ruleset room for stylistic bias so some tiles appear more often without breaking compatibility logic.
+//! Retry behavior acknowledges that contradictions are part of this style of generation and turns them into controlled regeneration rather than silent corruption.
+//! Functionally this file delivers deterministic rule-driven tiling for maps, motifs, and pattern synthesis where local consistency matters most.
 
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;

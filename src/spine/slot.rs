@@ -1,7 +1,6 @@
-//! Slot struct: named attachment point on a bone with RGBA tint and optional texture reference.
-//!
-//! - Constructor defaults to white opaque colour, no attachment, and draw-order zero.
-//! - Draw-order field drives back-to-front rendering when multiple slots share a bone.
+//! This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
+//! Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
+//! The type is the visual attachment bridge between pose evaluation and rendered character parts.
 
 /// Attachment point on a bone with colour tint and optional texture attachment name.
 #[derive(Debug, Clone)]

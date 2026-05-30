@@ -33,6 +33,7 @@ describe("Part", function()
         expect_equal("hero.png", p:getTexture())
     end)
 
+    -- @library lurek.library_doll
     it("sets and gets offset", function()
         local p = doll.newPart()
         p:setOffset(10, 20)
@@ -78,6 +79,7 @@ describe("Part", function()
         expect_equal(1, a)
     end)
 
+    -- @library lurek.library_doll
     it("sets and gets flip", function()
         local p = doll.newPart()
         p:setFlip(true, false)
@@ -86,6 +88,7 @@ describe("Part", function()
         expect_false(fy)
     end)
 
+    -- @library lurek.library_doll
     it("flip with single arg defaults fy to false", function()
         local p = doll.newPart()
         p:setFlip(true)
@@ -114,6 +117,7 @@ describe("Part", function()
         expect_equal(2, #keys, "two keys")
     end)
 
+    -- @library lurek.library_doll
     it("sets and gets fixture ref", function()
         local p = doll.newPart()
         expect_nil(p:getFixture())
@@ -122,6 +126,7 @@ describe("Part", function()
         expect_equal(99, p:getFixture().id)
     end)
 
+    -- @library lurek.library_doll
     it("sets and gets followsRotation", function()
         local p = doll.newPart()
         p:setFollowsRotation(false)
@@ -155,6 +160,7 @@ describe("DollTemplate", function()
         expect_equal("new", t:getName())
     end)
 
+    -- @library lurek.library_doll
     it("adds sockets", function()
         local t = doll.newTemplate("char")
         t:addSocket("head",  "head",  0, -32, 0, 10)
@@ -163,6 +169,7 @@ describe("DollTemplate", function()
         expect_equal(3, t:getSocketCount())
     end)
 
+    -- @library lurek.library_doll
     it("gets socket by name", function()
         local t = doll.newTemplate("char")
         t:addSocket("head", "head", 5, -10, 0.1, 10)
@@ -178,11 +185,13 @@ describe("DollTemplate", function()
         end
     end)
 
+    -- @library lurek.library_doll
     it("get socket returns nil for missing name", function()
         local t = doll.newTemplate("char")
         expect_nil(t:getSocket("nonexist"))
     end)
 
+    -- @library lurek.library_doll
     it("rejects duplicate socket names", function()
         local t = doll.newTemplate("char")
         t:addSocket("head", "head", 0, 0)
@@ -195,6 +204,7 @@ describe("DollTemplate", function()
         end
     end)
 
+    -- @library lurek.library_doll
     it("removes socket", function()
         local t = doll.newTemplate("char")
         t:addSocket("head", "", 0, 0)
@@ -205,11 +215,13 @@ describe("DollTemplate", function()
         expect_not_nil(t:getSocket("body"))
     end)
 
+    -- @library lurek.library_doll
     it("remove nonexistent returns false", function()
         local t = doll.newTemplate("char")
         expect_false(t:removeSocket("nope"))
     end)
 
+    -- @library lurek.library_doll
     it("lists socket names in order", function()
         local t = doll.newTemplate("char")
         t:addSocket("c_legs", "", 0, 0)
@@ -222,6 +234,7 @@ describe("DollTemplate", function()
         expect_equal("b_body", names[3])
     end)
 
+    -- @library lurek.library_doll
     it("uses defaults for optional parameters", function()
         local t = doll.newTemplate("simple")
         t:addSocket("s1")
@@ -249,6 +262,7 @@ describe("Doll", function()
         return t
     end
 
+    -- @library lurek.library_doll
     it("creates with template", function()
         local t = make_template()
         local d = doll.newDoll(t)
@@ -352,6 +366,7 @@ describe("Doll", function()
         expect_equal("turret", d:findSocket(part))
     end)
 
+    -- @library lurek.library_doll
     it("findSocket returns nil for unattached part", function()
         local d = doll.newDoll(make_template())
         local part = doll.newPart()
@@ -368,6 +383,7 @@ describe("Doll", function()
         expect_equal(2, #d:getEmptySockets())
     end)
 
+    -- @library lurek.library_doll
     it("body and userData refs", function()
         local d = doll.newDoll(make_template())
         expect_nil(d:getBody())
@@ -383,6 +399,7 @@ end)
 
 -- @describe Doll:getDrawList
 describe("Doll:getDrawList", function()
+    -- @library lurek.library_doll
     it("empty doll returns empty list", function()
         local t = doll.newTemplate("empty")
         t:addSocket("slot1", "", 0, 0)
@@ -590,6 +607,7 @@ end)
 
 -- @describe Input Validation
 describe("Input Validation", function()
+    -- @library lurek.library_doll
     it("addSocket returns false for duplicate name", function()
         local t = doll.newTemplate("val")
         local ok1 = t:addSocket("head", "", 0, 0)
@@ -599,12 +617,14 @@ describe("Input Validation", function()
         expect_not_nil(msg, "returns error message")
     end)
 
+    -- @library lurek.library_doll
     it("addSocket returns true on success", function()
         local t = doll.newTemplate("val2")
         local ok = t:addSocket("arm", "limb", 5, 10, 0.1, 3)
         expect_true(ok, "valid add returns true")
     end)
 
+    -- @library lurek.library_doll
     it("addSocket returns false for empty name", function()
         local t = doll.newTemplate("val3")
         local ok, msg = t:addSocket("", "", 0, 0)
@@ -619,6 +639,7 @@ describe("Input Validation", function()
         expect_false(ok, "string scale rejected")
     end)
 
+    -- @library lurek.library_doll
     it("setDrawOrder rejects non-number", function()
         local p = doll.newPart()
         local ok = pcall(function() p:setDrawOrder("high") end)
@@ -663,6 +684,7 @@ end)
 
 -- @describe Part:getAttributes
 describe("Part:getAttributes", function()
+    -- @library lurek.library_doll
     it("returns empty table when no attributes set", function()
         local p = doll.newPart()
         local attrs = p:getAttributes()

@@ -1,9 +1,7 @@
-//! Procedural generation toolkit: noise, dungeons, heightmaps, cellular worlds, and world graphs.
-//!
-//! - Algorithms: Perlin/Simplex/Worley noise, BSP & room-scatter dungeons, cellular automata caves.
-//! - Utilities: Poisson disk sampling, L-systems, Markov name generation, Voronoi, WFC.
-//! - Simulation: Falling-sand cellular automaton world (sand, water, fire, gas, rock).
-//! - All generators are deterministic given a seed via the internal LCG.
+//! Procedural generation module that gathers deterministic algorithms for terrain, dungeons, graphs, names, tilings, simulations, and sampling into one reusable content toolbox.
+//! It combines low-level random and noise primitives with higher-order generators so callers can move from seeded numbers to full spatial structure without leaving the module.
+//! The subsystem covers both static generation and evolving grid simulation, which makes it useful for worlds that must be authored once or kept alive over time.
+//! Functionally this file is the high-level entry point for reproducible content synthesis across maps, layouts, regions, patterns, and emergent cellular effects.
 
 /// Biome classification types and rules-based classifier.
 pub mod biome;

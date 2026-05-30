@@ -1,13 +1,15 @@
-//! Grid-based minimap with configurable terrain types, colours, and per-cell fog-of-war.
-//!
-//! - Object tracking with typed, owner-coloured dots and optional texture icons.
-//! - Political and terrain colour modes for strategic map overlays.
-//! - Zoom, pan, and camera-tracking viewport with outline rectangle.
-//! - Timed pings and persistent markers with blink, pulse, and rotate animations.
-//! - Vector overlay shapes (lines, rectangles) and named polyline paths.
-//! - Multi-layer cell data for stacked map views.
-//! - Coordinate conversion between screen pixels and grid cells, with hover info lookup.
-//! - CPU rasterisation to `ImageData` for export and full `RenderCommand` generation.
+//! Grid-based minimap model with configurable terrain colors and fog-of-war.
+//! Tracks world cells, visible state, and overlay layers in one structure.
+//! Stores object markers, pings, and path shapes for live HUD feedback.
+//! Supports terrain and political color modes for strategic presentation.
+//! Manages zoom, pan, camera tracking, and viewport framing.
+//! Projects screen and grid coordinates in both directions for interaction.
+//! Renders CPU-side image buffers for export and preview use cases.
+//! Includes timed animation behaviors for pings and persistent markers.
+//! Separates layer data so the minimap can stack multiple map representations.
+//! Keeps hover and hit information available for UI and debug tools.
+//! Balances compact runtime state with flexible overlay composition.
+//! Provides the main data source for both generic and raycaster-style minimaps.
 
 use super::types::{
     ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject,

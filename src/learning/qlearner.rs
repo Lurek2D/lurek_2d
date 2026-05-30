@@ -1,7 +1,8 @@
-//! Tabular Q-learning model with flat state-action value table and training parameters.
-//!
-//! - Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
-//! - Lightweight persistence helpers for serializing and reloading learned policies.
+//! Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters.
+//! Stores Q-values in a flat table for fast index-based update and query operations.
+//! Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles.
+//! Tracks episode and training metadata useful for monitoring learner progression.
+//! Supports persistence helpers for saving and reloading learned policy tables.
 
 /// Q-learning agent with a flat `state × action` value table.
 pub struct QLearner {

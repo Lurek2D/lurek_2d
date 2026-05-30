@@ -1,7 +1,9 @@
-//! Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
-//!
-//! - Layer-local forward evaluation, activation application, and parameter counting.
-//! - Network-level operations: append layers, run forward passes, load/export weight buffers.
+//! Implements lightweight feed-forward neural networks with dense layers and selectable activations.
+//! Stores weights and biases in flat vectors for compact memory usage and easy serialization.
+//! Performs layer-by-layer forward propagation over vector inputs for inference and evaluation.
+//! Supports parameter counting plus import and export for optimizer and evolution workflows.
+//! Provides network-assembly helpers that append layers into ordered model pipelines.
+//! Targets simple ML tasks where minimal dependencies and predictable behavior are preferred.
 
 use crate::learning::EvolutionaryLayer;
 

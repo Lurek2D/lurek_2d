@@ -1,9 +1,9 @@
-//! DOM element model: tag, attributes, children, parent linkage, and text content.
-//!
-//! - Inline style handling with bidirectional sync to the `style` attribute.
-//! - Class list manipulation: add, remove, toggle, and membership queries.
-//! - Axis-aligned layout rectangle for hit testing and position queries.
-//! - Attribute normalization and void-tag classification helpers.
+//! Defines the core DOM node shape used to store structure, attributes, text, and layout geometry.
+//! Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state.
+//! Provides class token mutation paths that preserve deterministic ordering and membership checks.
+//! Tracks parent-child linkage and removal flags to support stable traversal without index churn.
+//! Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow.
+//! Supplies normalization and void-element classification rules that guide parsing and tree mutations.
 
 use crate::html::style::parse_declarations;
 use std::collections::BTreeMap;

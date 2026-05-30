@@ -1,7 +1,8 @@
-//! Two-bone inverse-kinematics constraint for skeleton animation.
-//!
-//! - Solves root and elbow rotations via law-of-cosines to reach a world-space target.
-//! - Supports configurable bend direction (positive or negative).
+//! This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
+//! It computes joint angles from geometric constraints instead of relying only on keyed animation values.
+//! Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally.
+//! The file adds procedural responsiveness to otherwise keyframed skeletal motion.
+//! It is the module's compact answer to target-seeking limb behavior.
 
 use super::bone::Bone;
 

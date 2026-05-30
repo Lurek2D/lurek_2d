@@ -1,10 +1,8 @@
-//! Infinite sparse tile grid partitioned into fixed-size square chunks.
-//!
-//! - On-demand chunk allocation and explicit load/unload lifecycle.
-//! - Tile read/write by world coordinates with automatic chunk decomposition.
-//! - Rectangular fill, chunk enumeration, and view-frustum culling helpers.
-//! - World-space geometry queries for chunk bounds and overlap testing.
-
+//! This file provides sparse chunk storage for very large tile worlds that load data on demand.
+//! It decouples tile access from raw memory layout so map scale can grow without full allocation.
+//! It keeps world-to-chunk and local cell transforms precise for predictable addressing.
+//! It exposes range operations and visible-chunk selection to drive rendering and streaming paths.
+//! It stabilizes spatial boundaries so culling and update logic stay consistent under scale.
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{CK01, CK02, CK03};

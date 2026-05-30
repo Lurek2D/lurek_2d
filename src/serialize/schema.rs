@@ -1,9 +1,9 @@
-//! Validate a `SerialValue` tree against a schema describing expected types, ranges, and structure.
-//!
-//! - Enforce required fields, numeric min/max, string length bounds, nested table fields, and array items.
-//! - Apply default values from a schema to fill missing fields in a value tree.
-//! - Report path-qualified error messages when validation fails.
-//! - Log schema pass/fail outcomes through the engine log system.
+//! This file validates serialized data against declarative structural expectations before that data reaches game logic.
+//! Schemas describe required fields, allowed types, numeric and string constraints, nested shapes, and array item rules.
+//! Missing values can also be filled from schema defaults so partially specified input can be upgraded into a complete shape.
+//! Validation failures are reported with paths that point at the exact part of the value tree that broke the contract.
+//! Logging support is integrated because schema checks often matter during content ingestion, save loading, and config debugging.
+//! The file is therefore the correctness gate of the serialization subsystem.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

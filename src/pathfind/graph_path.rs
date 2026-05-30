@@ -1,9 +1,9 @@
 //! Province-level A* pathfinding across adjacency graphs with configurable move costs.
-//!
-//! - Dijkstra-based reachability flood to find all provinces within a cost budget.
-//! - Per-province and per-edge-tag cost modelling with blocked-province exclusion.
-//! - Min-heap priority queue node with reverse ordering for standard `BinaryHeap`.
-//! - Euclidean centroid heuristic for A* admissibility.
+//! Adds Dijkstra-based reachability flooding for budget-limited travel.
+//! Models blocked provinces and edge-tag costs in the search cost.
+//! Uses a min-heap priority queue node for standard BinaryHeap ordering.
+//! Applies a Euclidean centroid heuristic for admissible A* search.
+//! Fits strategic map travel where regions, not cells, are the navigation unit.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};

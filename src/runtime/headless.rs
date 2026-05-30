@@ -1,10 +1,9 @@
-//! Implements the no-window headless runtime path for script automation and CI use.
-//!
-//! - `HeadlessOptions` carries game directory, eval snippets, and an optional frame-count override.
-//! - `run_headless` maps engine errors to process exit codes; `run_headless_checked` preserves structured errors for test callers.
-//! - Init sequence installs a stdout-routed `print` global and prepends game-directory roots to `package.path`.
-//! - Frame loop drives `process_physics`, `fixedUpdate`, `process`, and `process_late` in order; count and dt come from config or CLI flag.
-//! - Callback timeout is enforced via Lua instruction-count hooks when a limit is configured in `PerformanceConfig`.
+//! This file implements the runtime path for executing games and scripts without opening a window or interactive frontend.
+//! It exists for automation, tests, batch jobs, and command-line workflows that still need the engine lifecycle to run correctly.
+//! Startup wiring here prepares the Lua environment, script roots, and output behavior so headless sessions still feel like real engine sessions.
+//! Frame stepping follows the normal update rhythm closely enough that gameplay logic can be exercised without a graphical loop.
+//! Error mapping is also handled here because command-line callers need process-oriented outcomes while tests may need structured failures.
+//! The file is therefore the engine's bridge from full runtime behavior to non-visual execution contexts.
 
 use crate::lua_api::create_headless_vm;
 use crate::repl::value_to_string;

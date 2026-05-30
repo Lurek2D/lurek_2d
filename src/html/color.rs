@@ -1,9 +1,8 @@
-//! CSS color string parsing: hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and named keywords.
-//!
-//! - Component extraction for RGB bytes/percent, alpha, hue (deg/turn/rad), and percent values.
-//! - HSL-to-RGB conversion with full hue normalization.
-//! - Named color lookup covering the CSS basic and extended keyword set.
-//! - All outputs normalized to `[f32; 4]` in the 0.0–1.0 range.
+//! Turns raw CSS color text into normalized RGBA values ready for render-side blending.
+//! Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles.
+//! Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape.
+//! Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable.
+//! Returns compact `[f32; 4]` color vectors in 0..1 space for direct engine consumption.
 
 use crate::color::Color;
 /// Parse a CSS color string and return normalized RGBA components, or `None` when unsupported.

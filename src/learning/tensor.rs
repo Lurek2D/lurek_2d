@@ -1,8 +1,7 @@
-//! Lightweight tensor helpers for learning features.
-//!
-//! - Stores row-major tensor shape and data.
-//! - Provides row-major index mapping and flatten helpers.
-//! - Exposes a minimal GEMM helper used by learning layers.
+//! Defines lightweight tensor containers and helpers used by learning components.
+//! Stores shape metadata and flat row-major data for predictable indexing behavior.
+//! Provides indexing, flattening, and conversion utilities needed by model layers.
+//! Includes compact numeric operations that support CPU learning pipelines.
 
 use ndarray::ArrayD;
 use tract_onnx::prelude::{IntoTensor, Tensor};

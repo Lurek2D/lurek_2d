@@ -1,4 +1,8 @@
-//! Convolution and pooling layers for CPU learning pipelines.
+//! Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines.
+//! Implements tensor-shape-aware forward passes over channel-first image-style inputs.
+//! Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows.
+//! Supports stride and padding behavior needed for practical stacked convolution blocks.
+//! Supplies compact building blocks consumed by the higher-level neural engine.
 
 use crate::learning::tensor::LurekTensor;
 use crate::learning::EvolutionaryLayer;

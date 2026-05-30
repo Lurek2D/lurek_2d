@@ -1,7 +1,7 @@
-//! Voronoi diagram generation on a 2D grid with F1/F2 distance fields.
-//!
-//! - Optional domain warp via hash noise for organic region boundaries.
-//! - Returns region indices and per-pixel distance buffers in row-major order.
+//! Voronoi field generator for dividing space into nearest-seed regions and measuring how each cell relates to its closest feature points.
+//! The file returns both ownership and distance information, which makes it useful for region maps, borders, crackle patterns, and cell-based world partitioning.
+//! Optional warp support roughens otherwise clean geometric boundaries so the resulting regions can feel less synthetic.
+//! Functionally this file delivers region tessellation data for map segmentation and distance-based procedural effects.
 
 use super::lcg::Lcg;
 

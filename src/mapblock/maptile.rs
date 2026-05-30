@@ -1,9 +1,7 @@
-//! Map tile and slot definitions: floor, roof, object, wall, and custom-typed slots.
-//!
-//! - `MapTile` is a struct of optional slot IDs: `floor`, `roof`, `object`, `wall`.
-//! - Each slot references a tile ID in the associated tileset; `None` = empty.
-//! - `TileSlotKind` distinguishes slot roles for rendering order and collision.
-//! - `MapTile` is the leaf unit stored in every cell of a `MapBlockGrid`.
+//! Atomic tile payload composed from configurable slot values and metadata.
+//! Encodes tile-slot identifiers that point at tileset entries for rendering and logic.
+//! Distinguishes slot roles so ordered drawing stays consistent.
+//! Serves as the smallest content unit stored inside mapblock grids.
 
 /// A single tile in a map block layer. Contains multiple configurable slots.
 #[derive(Debug, Clone, Default)]

@@ -1,7 +1,6 @@
-//! Rapier2D-backed rigid-body physics: bodies, shapes, world stepping, and raycasting.
-//!
-//! - Collision helpers (AABB, circle, point) and contact/event reporting.
-//! - Terrain tile-maps and spatial trigger zones.
+//! Platform-level 2D physics module that unifies authored bodies, geometric shapes, simulation stepping, spatial queries, terrain sync, and trigger-style environmental effects.
+//! It exposes the major surfaces of the subsystem as one coherent toolbox, from lightweight helper tests through full world simulation and debug-oriented support structures.
+//! Functionally this file is the high-level entry point for physical interaction, movement constraints, collision reporting, and physics-backed world state in Lurek2D.
 
 /// Rigid body management and handle types.
 pub mod body;

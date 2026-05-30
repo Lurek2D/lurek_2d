@@ -1,7 +1,7 @@
-//! Nine-slice (9-patch) descriptor that splits a texture into corners, edges, and a center.
-//!
-//! - Generates source/destination patch tuples for scalable UI borders and panels.
-//! - Preserves corner pixel ratios while stretching edges and center to fit target dimensions.
+//! This file defines nine-slice scaling logic for UI panels and framed elements that must resize without destroying border fidelity.
+//! It splits one source region into corners, edges, and center pieces whose destination layout can adapt to arbitrary target sizes.
+//! Corner preservation and controlled edge stretching are the core visual promises of this file.
+//! It is the geometry helper behind scalable textured panels in the engine.
 
 use crate::runtime::resource_keys::TextureKey;
 

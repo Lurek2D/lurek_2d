@@ -1,9 +1,9 @@
-//! Dijkstra-based flow field that seeds from one or more goal cells and computes shortest paths across a NavGrid.
-//!
-//! - Each reachable cell stores a normalised direction vector toward the nearest goal and its accumulated travel cost.
-//! - Supports variable unit sizes for clearance-aware pathfinding using the backing grid's walkability checks.
-//! - Provides world-space steering that converts pixel coordinates to tile lookups and returns a scaled velocity.
-//! - Includes a debug visualisation helper that renders the field directions and obstacles to an ImageData bitmap.
+//! Dijkstra-based flow field seeded from one or more goal cells over a NavGrid.
+//! Stores normalized direction vectors toward the nearest goal beside accumulated cost.
+//! Supports variable unit sizes for clearance-aware pathfinding.
+//! Converts world-space positions into tile lookups and steering velocities.
+//! Includes debug visualisation for directions and obstacles.
+//! Provides the group-movement layer above raw path search.
 
 use crate::runtime::log_messages::{FF01, FF02, FF03};
 

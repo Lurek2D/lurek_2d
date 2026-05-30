@@ -1,14 +1,15 @@
-//! Procedural tile-map generation driven by reusable block stamps and scripted steps.
-//!
-//! - `MapBlock` stores rectangular tile grids with edge side-IDs for neighbour matching.
-//! - `MapGroup` collects blocks and `MapScript`s into named generation palettes.
-//! - `ScriptStep` parameterises operations: fill, place, scatter, flood-fill, path drawing.
-//! - `MapGen` orchestrates generation using seeded LCG RNG, zones, orientation, and layer modes.
-//! - Supports single-region and multi-region world tiling with independent seeds per region.
-//! - Deterministic output: same seed + script always produces the same map.
-//! - Grid presets (`MapSize`) and horizontal zone bands constrain placement areas.
-//! - Orientation tags (top-down, side-view, isometric, hexagonal) stored for downstream renderers.
-//! - Layer modes control whether blocks share a unified layer or write independently.
+//! This file provides scripted procedural generation for tile worlds built from reusable block pieces.
+//! It models block edges and matching rules so assembled regions connect with coherent boundaries.
+//! It groups reusable content and scripts into named generation palettes for targeted world styles.
+//! It defines step-driven operations for fill, placement, scatter, flood spread, and path carving.
+//! It orchestrates generation with seeded randomness so outputs are repeatable and testable.
+//! It supports both single-map and multi-region production with independent deterministic seeds.
+//! It applies zone and orientation metadata so generated content matches downstream render expectations.
+//! It controls how layers receive writes, enabling unified or split composition strategies.
+//! It gives runtime and tools one procedural contract that scales from prototypes to full maps.
+//! It keeps generation intent explicit so scripts remain readable and maintainable over time.
+//! It enables data-driven map variety without requiring hand-authored full layouts for every scene.
+//! It anchors procedural authoring in predictable structures that can be debugged and replayed.
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;

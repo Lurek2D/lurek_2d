@@ -1,8 +1,6 @@
-//! Locale detection, validation, and flat-table catalog loading from TOML/JSON.
-//!
-//! - Date and number formatting with locale-aware separators.
-//! - Template interpolation with named and pair-based placeholders.
-//! - Plural-form selection for English and Slavic language families.
+//! High-level i18n module entry point combining catalogs, formatting, interpolation, and plural rules.
+//! Re-exports locale utilities and core types so callers consume localization features from one surface.
+//! Defines the integration spine for language detection, lookup, and human-friendly output shaping.
 
 /// Locale catalog storage and flattening helpers.
 pub mod catalog;

@@ -1,10 +1,9 @@
-//! Scene-level container (`LightWorld`) managing all `Light2D` instances and `Occluder` shapes via slotmaps.
-//!
-//! - Add, remove, query, and bulk-update lights and occluders by stable keys.
-//! - Group operations: enable/disable, intensity, and color changes on a named group ID.
-//! - Flicker system: lazy-indexed advance loop that only touches lights with active flicker state.
-//! - Renderer hints: ambient color array, directional light tuples, and normal-map snapshot extraction.
-//! - Debug visualization: rasterize an approximate light-map preview into an `ImageData` bitmap.
+//! Implements scene-level light management for `Light2D` and occluder collections keyed by stable handles.
+//! Supports creation, removal, lookup, and bulk mutation of lighting entities across runtime updates.
+//! Applies group-based operations for coordinated enable, color, and intensity adjustments.
+//! Advances active flicker states efficiently to animate selected lights over time.
+//! Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates.
+//! Provides debug preview rasterization to inspect approximate light-map outcomes.
 
 use crate::light::light2d::Light2D;
 use crate::light::light_type::LightType;

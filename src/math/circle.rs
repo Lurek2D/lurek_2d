@@ -1,7 +1,7 @@
-//! Circle primitive defined by center + radius, clamped non-negative on construction.
-//!
-//! - Point-containment, circle-circle intersection, and AABB queries.
-//! - Area and perimeter helpers using `std::f32::consts::PI`.
+//! Circle primitive for radius-based collision and containment checks.
+//! Keeps radius non-negative and treats the center as the shape anchor.
+//! Answers point, circle, and AABB overlap queries for gameplay geometry.
+//! Includes area and perimeter helpers for higher-level math routines.
 
 use super::vec2::Vec2;
 

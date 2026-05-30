@@ -1,10 +1,8 @@
-//! Fruchterman-Reingold force-directed layout for arbitrary undirected graphs.
-//!
-//! - `layout_force(nodes, edges, config)` iterates attraction/repulsion until convergence.
-//! - `ForceConfig` controls temperature, cooling rate, repulsion constant, and max iterations.
-//! - Initialises nodes on a random grid; deterministic given the same seed.
-//! - Convergence is detected when the max node displacement falls below a threshold.
-//! - Used by `lurek.layout.force` for social graphs, skill webs, and mind maps.
+//! Delivers force-based layout for arbitrary connectivity where organic grouping matters more than strict hierarchy.
+//! Balances repulsion and edge tension over iterative cooling to separate clusters while preserving relation cues.
+//! Exposes tunable simulation intensity, area bounds, and convergence rhythm for different graph densities.
+//! Produces coordinate fields that remain compatible with shared layout result types and downstream alignment passes.
+//! Fits exploratory maps, relation webs, and editor views that need natural spacing without hard rank constraints.
 
 use super::types::*;
 use std::collections::HashMap;

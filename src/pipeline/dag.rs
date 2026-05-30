@@ -1,10 +1,10 @@
-//! DAG-based pipeline representing named steps with explicit dependency edges.
-//!
-//! - Topological ordering via Kahn's algorithm with cycle detection.
-//! - Parallel-level grouping for concurrent scheduling of independent steps.
-//! - Sub-pipeline merging under a namespace prefix with outer dependency wiring.
-//! - Validation of dependency references, execution-order queries, and ASCII diagram rendering.
-//! - Result collection from final step statuses into a typed `PipelineResult`.
+//! Dependency-ordered pipeline graph that models work as named steps linked by explicit prerequisites instead of implicit call ordering.
+//! The file gives the module its structural brain by storing step topology, validating references, and determining which work can safely happen before or beside other work.
+//! Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
+//! Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
+//! Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
+//! ASCII visualization and execution-order queries turn the graph into something inspectable, not just executable, which is important for debugging author intent.
+//! Functionally this file delivers the orchestration map that every pipeline run relies on to know what can start, what must wait, and how the whole workflow hangs together.
 
 use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};

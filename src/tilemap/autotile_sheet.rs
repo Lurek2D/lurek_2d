@@ -1,10 +1,10 @@
-//! Autotile sprite-sheet abstraction: blob-47, composite-48, and minimal-16 layouts.
-//!
-//! - Bitmask table generation and reverse lookup from neighbor mask to tile index.
-//! - 8-bit diagonal collapse for correct cardinal-gated corner resolution.
-//! - Quarter-tile compositing helpers for sub-tile source and destination rects.
-//! - Sheet-to-tileset rule registration for runtime autotile placement.
-
+//! This file provides the autotile sheet model that turns neighborhood context into final tile picks.
+//! It keeps multiple atlas layouts coherent so different terrain styles share one usage contract.
+//! It centralizes bitmask interpretation and rule matching in a single graphics selection layer.
+//! It resolves corner relationships carefully so terrain seams stay clean across transitions.
+//! It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends.
+//! It connects sheet logic to tileset data so runtime autotiling remains deterministic.
+//! It forms a stable foundation for roads, biomes, and organic borders in grid-based worlds.
 use super::tileset::TileSet;
 use crate::math::Rect;
 use std::collections::HashMap;

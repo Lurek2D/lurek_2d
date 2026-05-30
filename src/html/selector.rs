@@ -1,9 +1,8 @@
-//! CSS selector matching for the HTML element tree.
-//!
-//! - Parse selector strings into tag, id, class, and combinator fragments.
-//! - Support descendant and child combinators for ancestor-chain traversal.
-//! - Match parsed selector chains against live elements by walking parent links.
-//! - Provide the core predicate used by style resolution and query APIs.
+//! Implements selector matching logic that maps CSS-like queries onto the live HTML element tree.
+//! Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering.
+//! Supports descendant and direct-child relationships for ancestry-aware filtering semantics.
+//! Walks parent links to evaluate multi-part selector chains against runtime element topology.
+//! Provides the core predicate shared by style cascade resolution and document query operations.
 
 use crate::html::element::{HtmlElement, HtmlElementId};
 /// Selector relationship used between adjacent selector parts.

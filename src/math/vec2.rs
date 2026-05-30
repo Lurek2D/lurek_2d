@@ -1,9 +1,8 @@
-//! 2D float vector type used for all position, direction, and velocity math.
-//!
-//! - Arithmetic operators: add, sub, mul, div, negate, and assign variants.
-//! - Geometric helpers: length, normalize, distance, dot, cross, perpendicular.
-//! - Rotation, reflection, and angle conversion utilities.
-//! - Linear interpolation and unit-direction construction from radians.
+//! Fundamental 2D float vector for position, velocity, direction, and offsets.
+//! Covers arithmetic, normalization, projection, and distance-style helpers.
+//! Adds rotation, reflection, and angle conversion support for gameplay math.
+//! Offers interpolation and unit-direction construction from radians.
+//! Serves as the common scalar pair used throughout the engine.
 
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 

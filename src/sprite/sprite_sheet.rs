@@ -1,10 +1,9 @@
-//! Uniform grid frame extraction from a single texture via per-frame width/height.
-//!
-//! - Precomputed Rect lookup by linear index, row, column, or arbitrary range.
-//! - Named frame groups for tagging animation sequences within the grid.
-//! - Directional animation layout (rows or columns) for multi-facing character sheets.
-//! - Preset constructors for RPGMaker 3×4 sheets and SpriteAtlas-backed sheets.
-//! - Debug visualisation that rasterises the grid into an ImageData with coloured borders.
+//! This file turns a texture divided into repeated cells into a navigable sprite-sheet structure for frame-based animation and lookup.
+//! Frame rectangles are precomputed so callers can move through rows, columns, ranges, and named groups without recalculating geometry each time.
+//! Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
+//! Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
+//! Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
+//! The file is the animation-frame organization layer of the sprite module.
 
 use crate::log_msg;
 use crate::math::Rect;

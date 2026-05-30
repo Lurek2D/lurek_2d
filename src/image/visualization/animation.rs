@@ -1,9 +1,8 @@
-//! Frame grid rendering for animation debug overlays.
-//!
-//! - Playback timeline preview with active frame highlighting.
-//! - Playback control state visualization with run, idle, pause, and resume.
-//! - Default cell-dimension wrapper for quick animation preview.
-//! - Color-coded frame indicators for current vs inactive frames.
+//! Renders animation timelines and frame grids into debug images for rapid visual inspection.
+//! Highlights current playback position against surrounding frames to expose timing behavior.
+//! Draws state-oriented overlays for running, paused, and resumed playback diagnostics.
+//! Provides quick wrappers with sensible cell sizing for tool and test screenshot generation.
+//! Uses consistent color accents so active and inactive frame regions are instantly readable.
 
 use crate::animation::Animation;
 use crate::image::ImageData;

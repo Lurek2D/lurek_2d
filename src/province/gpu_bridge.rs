@@ -1,7 +1,7 @@
-//! GPU-uploadable province data bridge between registry and render pipeline.
-//!
-//! - Packs province style fields into a repr(C) record for direct buffer upload.
-//! - Builds sorted record arrays from the province registry for deterministic GPU ordering.
+//! GPU bridge for translating rich province registry state into tightly packed records suitable for direct shader consumption.
+//! The file strips province visuals down to a deterministic binary layout so rendering can upload stable arrays rather than reinterpret high-level Rust structures on the fly.
+//! Sorted record building keeps province ordering predictable across runs, which matters for synchronization and debugging.
+//! Functionally this file delivers the structured handoff from province data ownership to GPU-ready style buffers.
 
 use crate::province::border_index::ProvinceBorderIndex;
 use crate::province::registry::ProvinceRegistry;

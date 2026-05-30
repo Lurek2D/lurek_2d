@@ -1,7 +1,7 @@
-//! Serialisable geometry cache for province spans and border segments.
-//!
-//! - Binary encode/decode with versioned little-endian format.
-//! - Built from a ProvinceRegistry snapshot for fast load without re-scanning.
+//! Geometry cache for province maps that would otherwise need expensive pixel rescans every time spans and border segments are needed again.
+//! The file captures a registry snapshot into a portable binary form so precomputed geometry can survive reloads and avoid repeating extraction work.
+//! Versioned encoding keeps the cache format explicit and safe to evolve alongside the runtime representation.
+//! Functionally this file delivers fast reloadable province geometry persistence for large map workflows.
 
 use crate::province::registry::ProvinceRegistry;
 

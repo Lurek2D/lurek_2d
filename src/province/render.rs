@@ -1,10 +1,11 @@
-//! Province map rendering: convert registry data into a flat RenderCommand list.
-//!
-//! - Viewport culling based on screen bounds and zoom/pan transform.
-//! - Fill rendering via per-province span rectangles coloured by the active map mode.
-//! - Border rendering with config-based color from registered border types.
-//! - Capital dot markers and text labels with shadow offset.
-//! - Hover and selection highlight outlines for interactive feedback.
+//! Province renderer for turning abstract registry state into concrete draw commands that express political regions, labels, capitals, and border semantics on screen.
+//! The file works from cached province geometry and active map-mode policy so the same province data can be projected into different strategic views without rebuilding the map model.
+//! Viewport culling keeps large maps practical by limiting work to the currently visible window instead of brute-forcing every province each frame.
+//! Fill generation based on span geometry gives irregular regions a raster-efficient rendering path that still respects per-province styling.
+//! Border drawing layers additional meaning through type configs and pair-specific overrides, making the edges between provinces visually informative rather than decorative only.
+//! Capitals and labels add orientation and identity, keeping the renderer tied to map readability as well as raw color fill.
+//! Interaction-oriented highlights ensure the same rendering path can surface hover and selection feedback for tools or gameplay UI.
+//! Functionally this file delivers the visible province map assembled from registry state, view transforms, and style policy.
 
 use crate::province::map_modes::resolve_color_fallback;
 use crate::province::registry::ProvinceRegistry;

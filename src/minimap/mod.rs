@@ -1,9 +1,6 @@
-//! Minimap state, layer composition, marker tracking, and fog-of-war reveal.
-//!
-//! - Pixel-buffer rendering pipeline that writes the minimap texture each frame.
-//! - Province-map adapter bridging world regions into minimap layers.
-//! - Raycaster-specific tile extraction with lighting, LOS, and FOV reveal.
-//! - Shared types for markers, overlays, pings, and color modes.
+//! Minimap subsystem for terrain layers, fog, markers, overlays, and export rendering.
+//! Connects the grid model with renderer output, province data, and raycaster-specific views.
+//! Keeps all minimap-facing state under one runtime namespace.
 
 #[allow(clippy::module_inception)]
 /// Core minimap state and update logic.

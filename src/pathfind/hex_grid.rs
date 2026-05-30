@@ -1,9 +1,10 @@
 //! Hex grid with configurable flat-top or pointy-top offset layout.
-//!
-//! - Per-cell blocked flags and movement cost for weighted pathfinding.
-//! - A* search returning shortest path between two hex cells.
-//! - Line-of-sight, field-of-view, and range-of-movement queries.
-//! - Cube-coordinate math for distance, interpolation, and rounding.
+//! Stores blocked flags and movement costs for weighted pathfinding.
+//! Runs A* search for shortest paths between hex cells.
+//! Exposes line-of-sight, field-of-view, and movement-range queries.
+//! Uses cube-coordinate math for distance, interpolation, and rounding.
+//! Fits tactics and map systems that need hex adjacency instead of squares.
+//! Keeps hex navigation self-contained and script-friendly.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

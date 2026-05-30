@@ -1,9 +1,8 @@
-//! LAN lobby discovery via timed UDP broadcast listen on a fixed port.
-//!
-//! - Lobby advertisement encoding and parsing in a `key=value;...` wire format.
-//! - In-process room registry for create, join, leave, and list operations.
-//! - Broadcast helper that sends a single SO_BROADCAST datagram on all interfaces.
-//! - Deduplication of discovered lobbies by host+port during the scan window.
+//! LAN lobby discovery via timed UDP broadcast on a fixed port.
+//! Encodes and parses lobby advertisements in a compact key-value wire format.
+//! Maintains an in-process room registry for create, join, leave, and list flows.
+//! Sends one broadcast datagram across all interfaces when scanning starts.
+//! Deduplicates discovered lobbies by host and port during the scan window.
 
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 use std::sync::{Mutex, OnceLock};

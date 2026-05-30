@@ -1,9 +1,10 @@
-//! Easing curves (linear, quadratic in/out, step) for inter-keyframe interpolation.
-//!
-//! - Keyframe storage and sorted insertion for bone property timelines.
-//! - BoneTimeline evaluation with clamping and step-hold semantics.
-//! - Event keyframes fired at specific animation times for Lua callback dispatch.
-//! - SkeletonAnimation clip: multi-timeline playback, blending, reversal, and JSON parsing.
+//! This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
+//! Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys.
+//! Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
+//! Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
+//! Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
+//! The file is therefore the temporal logic center of the spine subsystem.
+//! It explains how authored motion unfolds, not just what a static pose looks like.
 
 use super::bone::Bone;
 /// Interpolation curve applied between two adjacent keyframes.

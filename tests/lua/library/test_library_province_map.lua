@@ -11,6 +11,7 @@ local pm = require("library.province_map")
 
 -- @describe Province
 describe("Province", function()
+    -- @library lurek.library_province_map
     it("new with defaults", function()
         local p = pm.newProvince(1, {255, 0, 0})
         expect_equal(p.id, 1)
@@ -19,6 +20,7 @@ describe("Province", function()
         expect_equal(p.name, nil)
     end)
 
+    -- @library lurek.library_province_map
     it("fields are writable", function()
         local p = pm.newProvince(2, {0, 128, 0})
         p.area = 100
@@ -34,6 +36,7 @@ end)
 
 -- @describe AdjacencyEdge
 describe("AdjacencyEdge", function()
+    -- @library lurek.library_province_map
     it("new with default fields", function()
         local e = pm.newAdjacencyEdge(1, 2)
         expect_equal(e.province_a, 1)
@@ -41,6 +44,7 @@ describe("AdjacencyEdge", function()
         expect_equal(e.border_length, 0)
     end)
 
+    -- @library lurek.library_province_map
     it("tags can be added and checked", function()
         local e = pm.newAdjacencyEdge(3, 4)
         pm.addEdgeTag(e, "river")
@@ -53,6 +57,7 @@ end)
 
 -- @describe ProvinceDefinition
 describe("ProvinceDefinition", function()
+    -- @library lurek.library_province_map
     it("new with defaults", function()
         local d = pm.newProvinceDefinition(1, {10, 20, 30}, {x = 5, y = 10})
         expect_equal(d.id, 1)
@@ -66,6 +71,7 @@ end)
 
 -- @describe BorderSegment
 describe("BorderSegment", function()
+    -- @library lurek.library_province_map
     it("new with defaults", function()
         local b = pm.newBorderSegment(1, 2)
         expect_equal(b.province_a, 1)
@@ -78,6 +84,7 @@ end)
 
 -- @describe BorderStyle
 describe("BorderStyle", function()
+    -- @library lurek.library_province_map
     it("new with defaults", function()
         local s = pm.newBorderStyle()
         expect_equal(s.width, 1.0)
@@ -90,24 +97,28 @@ end)
 
 -- @describe MapMode
 describe("MapMode", function()
+    -- @library lurek.library_province_map
     it("new with source color", function()
         local mode = pm.newMapMode("political")
         expect_equal(mode.name, "political")
         expect_equal(mode.color_fn, "source_color")
     end)
 
+    -- @library lurek.library_province_map
     it("fixed color fn", function()
         local fn = pm.newFixedColorFn({[1] = {255,0,0}})
         expect_equal(fn.type, "fixed")
         expect_equal(fn.colors[1][1], 255)
     end)
 
+    -- @library lurek.library_province_map
     it("gradient color fn", function()
         local fn = pm.newGradientColorFn({}, {0,0,0}, {255,255,255}, 0, 100)
         expect_equal(fn.type, "gradient")
         expect_equal(fn.max_val, 100)
     end)
 
+    -- @library lurek.library_province_map
     it("category color fn", function()
         local fn = pm.newCategoryColorFn({}, {}, {64, 64, 64})
         expect_equal(fn.type, "category")
@@ -138,6 +149,7 @@ describe("ProvinceMap", function()
         expect_equal(map:getProvince(99), nil)
     end)
 
+    -- @library lurek.library_province_map
     it("provinceIds returns sorted list", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(3, {0,0,0}))
@@ -158,6 +170,7 @@ describe("ProvinceMap", function()
         expect_equal(map:getProvinceAt(-1, 0), nil)
     end)
 
+    -- @library lurek.library_province_map
     it("insertAdjacency and getAdjacency", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -179,6 +192,7 @@ describe("ProvinceMap", function()
         expect_equal(nbrs[2], 3)
     end)
 
+    -- @library lurek.library_province_map
     it("distance between centroids", function()
         local map = pm.newProvinceMap(100, 100)
         local a = pm.newProvince(1, {0,0,0})
@@ -220,6 +234,7 @@ describe("EventBus", function()
         expect_equal(bus:isEmpty(), true)
     end)
 
+    -- @library lurek.library_province_map
     it("drain returns all and empties", function()
         local bus = pm.newEventBus()
         bus:emitProvinceRemoved(1)
@@ -229,6 +244,7 @@ describe("EventBus", function()
         expect_equal(bus:isEmpty(), true)
     end)
 
+    -- @library lurek.library_province_map
     it("all emit methods work", function()
         local bus = pm.newEventBus()
         bus:emitMapLoaded()
@@ -252,6 +268,7 @@ end)
 
 -- @describe Free Functions
 describe("Free Functions", function()
+    -- @library lurek.library_province_map
     it("colorToId encodes RGB", function()
         expect_equal(pm.colorToId(255, 0, 0), 16711680)
         expect_equal(pm.colorToId(0, 255, 0), 65280)
@@ -293,6 +310,7 @@ describe("Free Functions", function()
         expect_equal(edge.border_length > 0, true)
     end)
 
+    -- @library lurek.library_province_map
     it("extractAllBorders returns segments", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -301,6 +319,7 @@ describe("Free Functions", function()
         expect_equal(#borders, 2)
     end)
 
+    -- @library lurek.library_province_map
     it("extractBordersWithTag filters by tag", function()
         local map = pm.newProvinceMap(10, 10)
         local e1 = pm.newAdjacencyEdge(1, 2)
@@ -311,6 +330,7 @@ describe("Free Functions", function()
         expect_equal(#rivers, 1)
     end)
 
+    -- @library lurek.library_province_map
     it("calculateCapital returns centroid", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(1, {0,0,0})
@@ -323,6 +343,7 @@ describe("Free Functions", function()
         expect_equal(cap.y, 35)
     end)
 
+    -- @library lurek.library_province_map
     it("calculateAllPositions syncs center to centroid", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(1, {0,0,0})
@@ -339,6 +360,7 @@ end)
 
 -- @describe Province.faction
 describe("Province.faction", function()
+    -- @library lurek.library_province_map
     it("setFaction / getFaction", function()
         local p = pm.newProvince(1, {0,0,0})
         expect_equal(p:getFaction(), nil)
@@ -346,12 +368,14 @@ describe("Province.faction", function()
         expect_equal(p:getFaction(), "blue")
     end)
 
+    -- @library lurek.library_province_map
     it("setDefenseRating / getDefenseRating", function()
         local p = pm.newProvince(1, {0,0,0})
         p:setDefenseRating(75)
         expect_equal(p:getDefenseRating(), 75)
     end)
 
+    -- @library lurek.library_province_map
     it("addBuilding / hasBuilding / getBuildings / removeBuilding", function()
         local p = pm.newProvince(1, {0,0,0})
         p:addBuilding("barracks")
@@ -363,6 +387,7 @@ describe("Province.faction", function()
         expect_equal(#p:getBuildings(), 1)
     end)
 
+    -- @library lurek.library_province_map
     it("setResource / getResource / getResources", function()
         local p = pm.newProvince(1, {0,0,0})
         p:setResource("gold", 50)
@@ -389,6 +414,7 @@ describe("ProvinceMap.findRoute", function()
         return map
     end
 
+    -- @library lurek.library_province_map
     it("direct adjacency returns two-element path", function()
         local map = make_chain(2)
         local path = map:findRoute(1, 2)
@@ -399,6 +425,7 @@ describe("ProvinceMap.findRoute", function()
         expect_equal(path[2], 2)
     end)
 
+    -- @library lurek.library_province_map
     it("chain path returns ordered ids", function()
         local map = make_chain(4)
         local path = map:findRoute(1, 4)
@@ -409,6 +436,7 @@ describe("ProvinceMap.findRoute", function()
         expect_equal(#path, 4)
     end)
 
+    -- @library lurek.library_province_map
     it("same province returns single-element path", function()
         local map = make_chain(3)
         local path = map:findRoute(2, 2)
@@ -418,6 +446,7 @@ describe("ProvinceMap.findRoute", function()
         expect_equal(path[1], 2)
     end)
 
+    -- @library lurek.library_province_map
     it("unreachable returns nil", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -425,6 +454,7 @@ describe("ProvinceMap.findRoute", function()
         expect_equal(map:findRoute(1, 5), nil)
     end)
 
+    -- @library lurek.library_province_map
     it("passable_fn can block an edge", function()
         local map = make_chain(3)
         -- block 1-2 edge
@@ -437,6 +467,7 @@ end)
 
 -- @describe ProvinceMap.faction_queries
 describe("ProvinceMap.faction_queries", function()
+    -- @library lurek.library_province_map
     it("getProvincesByFaction returns matching IDs", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 5 do
@@ -449,6 +480,7 @@ describe("ProvinceMap.faction_queries", function()
         expect_equal(reds[1], 1)
     end)
 
+    -- @library lurek.library_province_map
     it("totalResourceForFaction sums across provinces", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 3 do
@@ -460,6 +492,7 @@ describe("ProvinceMap.faction_queries", function()
         expect_equal(map:totalResourceForFaction("red", "gold"), 60)
     end)
 
+    -- @library lurek.library_province_map
     it("getUncontrolledProvinces", function()
         local map = pm.newProvinceMap(10, 10)
         local a = pm.newProvince(1, {0,0,0}); a:setFaction("red"); map:insertProvince(a)
@@ -472,6 +505,7 @@ end)
 
 -- @describe ProvinceMap.setAdjacent
 describe("ProvinceMap.setAdjacent", function()
+    -- @library lurek.library_province_map
     it("creates new edge", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -482,6 +516,7 @@ describe("ProvinceMap.setAdjacent", function()
         expect_equal(map:adjacencyCount(), 1)
     end)
 
+    -- @library lurek.library_province_map
     it("updates existing edge with new tags", function()
         local map = pm.newProvinceMap(10, 10)
         map:setAdjacent(1, 2, {road = true})
@@ -494,6 +529,7 @@ end)
 
 -- @describe ProvinceMap.graph_analysis
 describe("ProvinceMap.graph_analysis", function()
+    -- @library lurek.library_province_map
     it("findIsolatedProvinces returns unconnected ids", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -505,6 +541,7 @@ describe("ProvinceMap.graph_analysis", function()
         expect_equal(iso[1], 3)
     end)
 
+    -- @library lurek.library_province_map
     it("getConnectedComponents partitions provinces", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 4 do map:insertProvince(pm.newProvince(i, {0,0,0})) end
@@ -517,6 +554,7 @@ end)
 
 -- @describe ColorFn_apply
 describe("ColorFn_apply", function()
+    -- @library lurek.library_province_map
     it("applyGradientColor interpolates", function()
         local fn = pm.newGradientColorFn({[1]=0}, {0,0,0}, {255,255,255}, 0, 100)
         local c0 = pm.applyGradientColor(fn, 1)
@@ -526,6 +564,7 @@ describe("ColorFn_apply", function()
         expect_equal(c1[1], 255)
     end)
 
+    -- @library lurek.library_province_map
     it("applyCategoryColor selects by category", function()
         local fn = pm.newCategoryColorFn(
             {[1]="hot"}, {hot={255,0,0}}, {0,0,0})
@@ -538,6 +577,7 @@ end)
 
 -- @describe allFactions
 describe("allFactions", function()
+    -- @library lurek.library_province_map
     it("returns sorted faction list", function()
         local map = pm.newProvinceMap(10, 10)
         for i, f in ipairs({"green","blue","red","blue"}) do
@@ -575,6 +615,7 @@ end)
 
 -- @describe ProvinceMap.removeAdjacency
 describe("ProvinceMap.removeAdjacency", function()
+    -- @library lurek.library_province_map
     it("removes an existing edge and returns true", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -584,12 +625,14 @@ describe("ProvinceMap.removeAdjacency", function()
         expect_equal(map:getAdjacency(1, 2), nil)
     end)
 
+    -- @library lurek.library_province_map
     it("symmetric: removeAdjacency(b, a) also works", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(3, 5))
         expect_equal(map:removeAdjacency(5, 3), true)
     end)
 
+    -- @library lurek.library_province_map
     it("returns false for missing edge", function()
         local map = pm.newProvinceMap(10, 10)
         expect_equal(map:removeAdjacency(1, 2), false)
@@ -598,6 +641,7 @@ end)
 
 -- @describe totalEdgeCount
 describe("totalEdgeCount", function()
+    -- @library lurek.library_province_map
     it("mirrors adjacencyCount", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -624,6 +668,7 @@ end)
 
 -- @describe extractBordersByProperty
 describe("extractBordersByProperty", function()
+    -- @library lurek.library_province_map
     it("returns segments where property differs", function()
         local map = pm.newProvinceMap(10, 10)
         local a = pm.newProvince(1, {0,0,0}); a.terrain = "forest"
@@ -640,6 +685,7 @@ describe("extractBordersByProperty", function()
         expect_equal(segs[1].province_b, 2)
     end)
 
+    -- @library lurek.library_province_map
     it("returns empty when all properties match", function()
         local map = pm.newProvinceMap(10, 10)
         local a = pm.newProvince(1, {0,0,0}); a.biome = "arctic"
@@ -686,6 +732,7 @@ end)
 
 -- @describe adjacencyToGraph
 describe("adjacencyToGraph", function()
+    -- @library lurek.library_province_map
     it("produces nodes and edges from the adjacency table", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(1, 2))
@@ -695,6 +742,7 @@ describe("adjacencyToGraph", function()
         expect_equal(#g.edges, 2)
     end)
 
+    -- @library lurek.library_province_map
     it("nodes are sorted", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertAdjacency(pm.newAdjacencyEdge(5, 2))
@@ -705,6 +753,7 @@ describe("adjacencyToGraph", function()
         expect_equal(g.nodes[3], 5)
     end)
 
+    -- @library lurek.library_province_map
     it("empty map returns empty graph", function()
         local map = pm.newProvinceMap(10, 10)
         local g = pm.adjacencyToGraph(map)
@@ -715,6 +764,7 @@ end)
 
 -- @describe resolveProvinceColors
 describe("resolveProvinceColors", function()
+    -- @library lurek.library_province_map
     it("source color mode returns normalised rgb", function()
         local map = pm.newProvinceMap(10, 10)
         local p = pm.newProvince(1, {255, 0, 128})
@@ -728,6 +778,7 @@ describe("resolveProvinceColors", function()
         expect_equal(colors[1][4], 1.0)
     end)
 
+    -- @library lurek.library_province_map
     it("fixed color mode picks per-province colour", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -738,6 +789,7 @@ describe("resolveProvinceColors", function()
         expect_near(colors[1][2], 0.4, 0.001)
     end)
 
+    -- @library lurek.library_province_map
     it("gradient mode interpolates", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -748,6 +800,7 @@ describe("resolveProvinceColors", function()
         expect_near(colors[1][1], 0.5, 0.01)
     end)
 
+    -- @library lurek.library_province_map
     it("category mode resolves by category", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))
@@ -763,6 +816,7 @@ end)
 
 -- @describe Adjacency.bidirectionality
 describe("Adjacency.bidirectionality", function()
+    -- @library lurek.library_province_map
     it("insertAdjacency normalises edge direction", function()
         local map = pm.newProvinceMap(10, 10)
         -- Manually create an edge with reversed order (5 > 2).
@@ -777,6 +831,7 @@ describe("Adjacency.bidirectionality", function()
         expect_equal(map:getAdjacency(5, 2) ~= nil, true)
     end)
 
+    -- @library lurek.library_province_map
     it("setAdjacent stores normalised edge", function()
         local map = pm.newProvinceMap(10, 10)
         local edge = map:setAdjacent(10, 3)
@@ -856,34 +911,41 @@ end)
 
 -- @describe Input.validation
 describe("Input.validation", function()
+    -- @library lurek.library_province_map
     it("newProvince rejects non-number id", function()
         expect_error(function() pm.newProvince("bad", {0,0,0}) end)
     end)
 
+    -- @library lurek.library_province_map
     it("newAdjacencyEdge rejects non-number ids", function()
         expect_error(function() pm.newAdjacencyEdge("a", 1) end)
     end)
 
+    -- @library lurek.library_province_map
     it("setFaction rejects non-string, non-nil", function()
         local p = pm.newProvince(1, {0,0,0})
         expect_error(function() p:setFaction(123) end)
     end)
 
+    -- @library lurek.library_province_map
     it("setResource rejects negative amount", function()
         local p = pm.newProvince(1, {0,0,0})
         expect_error(function() p:setResource("gold", -5) end)
     end)
 
+    -- @library lurek.library_province_map
     it("colorToId rejects out-of-range values", function()
         expect_error(function() pm.colorToId(256, 0, 0) end)
         expect_error(function() pm.colorToId(0, -1, 0) end)
     end)
 
+    -- @library lurek.library_province_map
     it("setAdjacent rejects non-number ids", function()
         local map = pm.newProvinceMap(10, 10)
         expect_error(function() map:setAdjacent("a", 1) end)
     end)
 
+    -- @library lurek.library_province_map
     it("findRoute rejects non-number ids", function()
         local map = pm.newProvinceMap(10, 10)
         expect_error(function() map:findRoute("a", 1) end)
@@ -894,6 +956,7 @@ end)
 
 -- @describe ProvinceMap.findRoute.edge_cases
 describe("ProvinceMap.findRoute.edge_cases", function()
+    -- @library lurek.library_province_map
     it("route avoids impassable edge and takes detour", function()
         -- Diamond: 1-2, 1-3, 2-4, 3-4.  Block 1-2 edge.
         local map = pm.newProvinceMap(10, 10)
@@ -915,6 +978,7 @@ describe("ProvinceMap.findRoute.edge_cases", function()
         expect_equal(path[2], 3)
     end)
 
+    -- @library lurek.library_province_map
     it("route through single-node graph", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(42, {0,0,0}))
@@ -925,6 +989,7 @@ describe("ProvinceMap.findRoute.edge_cases", function()
         expect_equal(path[1], 42)
     end)
 
+    -- @library lurek.library_province_map
     it("route in disconnected components returns nil", function()
         local map = pm.newProvinceMap(10, 10)
         for i = 1, 4 do map:insertProvince(pm.newProvince(i, {0,0,0})) end
@@ -933,6 +998,7 @@ describe("ProvinceMap.findRoute.edge_cases", function()
         expect_equal(map:findRoute(1, 4), nil)
     end)
 
+    -- @library lurek.library_province_map
     it("all edges impassable returns nil", function()
         local map = pm.newProvinceMap(10, 10)
         map:insertProvince(pm.newProvince(1, {0,0,0}))

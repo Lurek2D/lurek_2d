@@ -1,7 +1,6 @@
-//! Exports the release-safe Lua REPL core: session, commands, completer, and value formatter.
-//!
-//! - Re-exports top-level symbols for convenient use by `lua_api` bindings and `devtools`.
-//! - All REPL state is pure Rust with no wgpu or winit dependencies; safe for headless and test contexts.
+//! This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input.
+//! It keeps the feature independent from rendering concerns so terminals, tests, and tools can all reuse the same session core.
+//! At the top level this is the engine's embeddable interactive console backend rather than a UI implementation.
 
 /// REPL command parsing and command result types.
 pub mod commands;

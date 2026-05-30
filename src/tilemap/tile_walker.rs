@@ -1,9 +1,9 @@
-//! Cardinal facing direction with angle, delta, and rotation helpers.
-//!
-//! - Discrete grid walker with forward, backward, and strafe movement.
-//! - Previous-state snapshot for smooth frame interpolation of position and heading.
-//! - Relative-facing query to classify adjacent tiles as front, back, left, or right.
-//! - Passability checks decoupled from actual collision data.
+//! This file provides a discrete grid walker model with stable cardinal facing semantics.
+//! It supports forward, backward, and strafe movement as first-class motion primitives.
+//! It tracks previous state snapshots so interpolation can smooth visual motion between ticks.
+//! It classifies neighboring cells relative to facing for directional interaction logic.
+//! It separates passability queries from concrete collision backends for flexible integration.
+//! It keeps movement intent readable for gameplay, AI steering, and tactical controls.
 
 use std::f32::consts::PI;
 

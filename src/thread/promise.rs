@@ -1,8 +1,7 @@
-//! One-shot async computation that spawns a LuaThread and collects a single result.
-//!
-//! - Lifecycle tracking via PromiseState (Pending, Done, Error).
-//! - Result delivery through an internal named channel polled by the caller.
-
+//! This file provides a one-shot async result container for Lua work running off the main thread.
+//! It models pending, success, and error states so callers can poll progress without blocking frames.
+//! It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics.
+//! It makes deferred gameplay logic simple by letting results be consumed cleanly in later updates.
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;

@@ -19,12 +19,14 @@ local clips = {
 -- @describe SpriteAnimator
 describe("SpriteAnimator", function()
     -- @covers SpriteAnimator.new
+    -- @library lurek.library_sprite
     it("new() returns non-nil animator", function()
         local anim = SpriteAnimator.new(clips)
         expect_not_nil(anim)
     end)
 
     -- @covers SpriteAnimator:play, SpriteAnimator:currentClip
+    -- @library lurek.library_sprite
     it("play() sets the current clip", function()
         local anim = SpriteAnimator.new(clips)
         anim:play("run")
@@ -32,6 +34,7 @@ describe("SpriteAnimator", function()
     end)
 
     -- @covers SpriteAnimator:currentFrame
+    -- @library lurek.library_sprite
     it("currentFrame() returns correct initial frame", function()
         local anim = SpriteAnimator.new(clips)
         anim:play("idle")
@@ -41,6 +44,7 @@ describe("SpriteAnimator", function()
     end)
 
     -- @covers SpriteAnimator:update, SpriteAnimator:currentFrame
+    -- @library lurek.library_sprite
     it("update() advances frame after enough dt", function()
         local anim = SpriteAnimator.new(clips)
         anim:play("idle") -- fps=8, frame_time=0.125
@@ -51,6 +55,7 @@ describe("SpriteAnimator", function()
     end)
 
     -- @covers SpriteAnimator:pause, SpriteAnimator:resume, SpriteAnimator:isPlaying
+    -- @library lurek.library_sprite
     it("pause()/resume() toggles playing state", function()
         local anim = SpriteAnimator.new(clips)
         anim:play("idle")
@@ -64,6 +69,7 @@ describe("SpriteAnimator", function()
     end)
 
     -- @covers SpriteAnimator:stop, SpriteAnimator:isPlaying, SpriteAnimator:currentFrame
+    -- @library lurek.library_sprite
     it("stop() resets to first frame and stops", function()
         local anim = SpriteAnimator.new(clips)
         anim:play("idle")
@@ -81,6 +87,7 @@ end)
 -- @describe AnimController
 describe("AnimController", function()
     -- @covers AnimController.new
+    -- @library lurek.library_sprite
     it("new() returns a controller", function()
         local anim = SpriteAnimator.new(clips)
         local ctrl = AnimController.new(anim, {
@@ -91,6 +98,7 @@ describe("AnimController", function()
     end)
 
     -- @covers AnimController:update, AnimController:getState
+    -- @library lurek.library_sprite
     it("evaluates rules and selects matching state", function()
         local anim = SpriteAnimator.new(clips)
         local ctrl = AnimController.new(anim, {
@@ -109,6 +117,7 @@ describe("AnimController", function()
     end)
 
     -- @covers AnimController:force, AnimController:getState
+    -- @library lurek.library_sprite
     it("force() locks state temporarily", function()
         local anim = SpriteAnimator.new(clips)
         local ctrl = AnimController.new(anim, {
@@ -134,6 +143,7 @@ describe("AnimController", function()
     end)
 
     -- @covers AnimController:onStateChange
+    -- @library lurek.library_sprite
     it("onStateChange callback fires on transition", function()
         local anim = SpriteAnimator.new(clips)
         local ctrl = AnimController.new(anim, {

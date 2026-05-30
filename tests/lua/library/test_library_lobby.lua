@@ -7,6 +7,7 @@ local lobby_mod = require("library.lobby")
 
 -- @describe Room Creation
 describe("Room Creation", function()
+    -- @library lurek.library_lobby
     it("creates a room with defaults", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:createRoom("alpha")
@@ -15,6 +16,7 @@ describe("Room Creation", function()
         expect_equal(L:getRoomCount(), 1)
     end)
 
+    -- @library lurek.library_lobby
     it("creates a room with custom options", function()
         local L = lobby_mod.new(nil)
         local ok = L:createRoom("bravo", { maxPlayers = 4, password = "secret", data = { mode = "ranked" } })
@@ -25,6 +27,7 @@ describe("Room Creation", function()
         expect_equal(rooms[1].hasPassword, true)
     end)
 
+    -- @library lurek.library_lobby
     it("rejects duplicate room name", function()
         local L = lobby_mod.new(nil)
         L:createRoom("dup")
@@ -33,6 +36,7 @@ describe("Room Creation", function()
         expect_equal(err, "room already exists")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects empty room name", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:createRoom("")
@@ -40,6 +44,7 @@ describe("Room Creation", function()
         expect_equal(err, "room name must be a non-empty string")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects non-string room name", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:createRoom(123)
@@ -47,6 +52,7 @@ describe("Room Creation", function()
         expect_equal(err, "room name must be a non-empty string")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects invalid maxPlayers", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:createRoom("bad", { maxPlayers = 0 })
@@ -65,6 +71,7 @@ end)
 
 -- @describe Room Removal
 describe("Room Removal", function()
+    -- @library lurek.library_lobby
     it("removes an existing room", function()
         local L = lobby_mod.new(nil)
         L:createRoom("temp")
@@ -73,6 +80,7 @@ describe("Room Removal", function()
         expect_equal(L:getRoomCount(), 0)
     end)
 
+    -- @library lurek.library_lobby
     it("no-op for non-existent room", function()
         local L = lobby_mod.new(nil)
         L:removeRoom("ghost")
@@ -86,6 +94,7 @@ end)
 
 -- @describe Join / Leave
 describe("Join / Leave", function()
+    -- @library lurek.library_lobby
     it("local player joins a room", function()
         local L = lobby_mod.new(nil)
         L:setPlayerName("Alice")
@@ -98,6 +107,7 @@ describe("Join / Leave", function()
         expect_equal(players[1].name, "Alice")
     end)
 
+    -- @library lurek.library_lobby
     it("remote peer joins a room", function()
         local L = lobby_mod.new(nil)
         L:createRoom("room1")
@@ -109,6 +119,7 @@ describe("Join / Leave", function()
         expect_equal(players[1].name, "Bob")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects join to non-existent room", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:joinRoom("nowhere")
@@ -116,6 +127,7 @@ describe("Join / Leave", function()
         expect_equal(err, "room not found")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects join to full room", function()
         local L = lobby_mod.new(nil)
         L:createRoom("tiny", { maxPlayers = 1 })
@@ -125,6 +137,7 @@ describe("Join / Leave", function()
         expect_equal(err, "room full")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects duplicate join", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -134,6 +147,7 @@ describe("Join / Leave", function()
         expect_equal(err, "player already in room")
     end)
 
+    -- @library lurek.library_lobby
     it("local player leaves a room", function()
         local L = lobby_mod.new(nil)
         L:createRoom("room1")
@@ -143,6 +157,7 @@ describe("Join / Leave", function()
         expect_equal(L:getCurrentRoom(), nil)
     end)
 
+    -- @library lurek.library_lobby
     it("warns when leaving with no room", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:leaveRoom()
@@ -150,6 +165,7 @@ describe("Join / Leave", function()
         expect_equal(err, "not in a room")
     end)
 
+    -- @library lurek.library_lobby
     it("remote peer leaves a room", function()
         local L = lobby_mod.new(nil)
         L:createRoom("room1")
@@ -162,6 +178,7 @@ describe("Join / Leave", function()
         expect_equal(players[1].peer_id, 20)
     end)
 
+    -- @library lurek.library_lobby
     it("auto-removes empty room after last leave", function()
         local L = lobby_mod.new(nil)
         L:createRoom("solo")
@@ -177,6 +194,7 @@ end)
 
 -- @describe Password Protection
 describe("Password Protection", function()
+    -- @library lurek.library_lobby
     it("rejects join without password", function()
         local L = lobby_mod.new(nil)
         L:createRoom("vault", { password = "abc123" })
@@ -185,6 +203,7 @@ describe("Password Protection", function()
         expect_equal(err, "incorrect password")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects join with wrong password", function()
         local L = lobby_mod.new(nil)
         L:createRoom("vault", { password = "abc123" })
@@ -193,6 +212,7 @@ describe("Password Protection", function()
         expect_equal(err, "incorrect password")
     end)
 
+    -- @library lurek.library_lobby
     it("accepts join with correct password", function()
         local L = lobby_mod.new(nil)
         L:createRoom("vault", { password = "abc123" })
@@ -201,6 +221,7 @@ describe("Password Protection", function()
         expect_equal(#L:getPlayers("vault"), 1)
     end)
 
+    -- @library lurek.library_lobby
     it("open room accepts join without password", function()
         local L = lobby_mod.new(nil)
         L:createRoom("open")
@@ -215,6 +236,7 @@ end)
 
 -- @describe Ready State
 describe("Ready State", function()
+    -- @library lurek.library_lobby
     it("sets local player ready", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -224,6 +246,7 @@ describe("Ready State", function()
         expect_equal(players[1].ready, true)
     end)
 
+    -- @library lurek.library_lobby
     it("sets remote peer ready", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -233,6 +256,7 @@ describe("Ready State", function()
         expect_equal(players[1].ready, true)
     end)
 
+    -- @library lurek.library_lobby
     it("toggles ready off", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -243,6 +267,7 @@ describe("Ready State", function()
         expect_equal(players[1].ready, false)
     end)
 
+    -- @library lurek.library_lobby
     it("all ready with 2+ players", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -253,6 +278,7 @@ describe("Ready State", function()
         expect_equal(L:isAllReady(), true)
     end)
 
+    -- @library lurek.library_lobby
     it("not all ready with only 1 player", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -261,6 +287,7 @@ describe("Ready State", function()
         expect_equal(L:isAllReady(), false)
     end)
 
+    -- @library lurek.library_lobby
     it("not all ready when one is unready", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -278,6 +305,7 @@ end)
 
 -- @describe Host Election
 describe("Host Election", function()
+    -- @library lurek.library_lobby
     it("first joiner becomes host", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -286,6 +314,7 @@ describe("Host Election", function()
         expect_equal(L:getHost("r"), 10)
     end)
 
+    -- @library lurek.library_lobby
     it("re-elects host deterministically on host leave", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -300,6 +329,7 @@ describe("Host Election", function()
         expect_equal(L:getHost("r"), 5)
     end)
 
+    -- @library lurek.library_lobby
     it("non-host leave does not change host", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -310,6 +340,7 @@ describe("Host Election", function()
         expect_equal(L:getHost("r"), 1)
     end)
 
+    -- @library lurek.library_lobby
     it("host is nil when room empties", function()
         local L = lobby_mod.new(nil)
         L:createRoom("r")
@@ -326,6 +357,7 @@ end)
 
 -- @describe Events
 describe("Events", function()
+    -- @library lurek.library_lobby
     it("fires events for room lifecycle", function()
         local L = lobby_mod.new(nil)
         local events = {}
@@ -358,6 +390,7 @@ end)
 
 -- @describe Listing
 describe("Listing", function()
+    -- @library lurek.library_lobby
     it("lists multiple rooms", function()
         local L = lobby_mod.new(nil)
         L:createRoom("a")
@@ -373,12 +406,14 @@ describe("Listing", function()
         expect_equal(b_room.hasPassword, true)
     end)
 
+    -- @library lurek.library_lobby
     it("getPlayers empty for unknown room", function()
         local L = lobby_mod.new(nil)
         local players = L:getPlayers("nonexistent")
         expect_equal(#players, 0)
     end)
 
+    -- @library lurek.library_lobby
     it("getRoomCount tracks changes", function()
         local L = lobby_mod.new(nil)
         expect_equal(L:getRoomCount(), 0)
@@ -396,6 +431,7 @@ end)
 
 -- @describe Player Name
 describe("Player Name", function()
+    -- @library lurek.library_lobby
     it("rejects empty name", function()
         local L = lobby_mod.new(nil)
         L:setPlayerName("Valid")
@@ -407,6 +443,7 @@ describe("Player Name", function()
         expect_equal(players[1].name, "Valid")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects non-string name", function()
         local L = lobby_mod.new(nil)
         L:setPlayerName("Good")
@@ -424,6 +461,7 @@ end)
 
 -- @describe Input Validation
 describe("Input Validation", function()
+    -- @library lurek.library_lobby
     it("rejects empty room name on join", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:joinRoom("")
@@ -431,6 +469,7 @@ describe("Input Validation", function()
         expect_equal(err, "room name must be a non-empty string")
     end)
 
+    -- @library lurek.library_lobby
     it("rejects nil room name on join", function()
         local L = lobby_mod.new(nil)
         local ok, err = L:joinRoom(nil)

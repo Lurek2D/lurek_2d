@@ -1,13 +1,15 @@
-//! Defines the `RenderCommand` enum — the complete vocabulary of draw, state, and control operations submitted each frame.
-//!
-//! - Provides blend, stencil, and depth mode enums for compositing and test configuration.
-//! - Contains text alignment and draw-mode enums shared across shape, font, and path rendering.
-//! - Houses post-processing pass descriptors and rich-text span types.
-//! - Declares particle instance and render-shape types for the particle system pipeline.
-//! - Includes physics debug shape and config records for collider overlay rendering.
-//! - Provides path-segment, gradient, hex, bevel, and nine-slice draw primitives.
-//! - Defines Spine slot draw records, sort-group markers, and compositing layer commands.
-//! - Supplies `TextureData` for CPU-to-GPU texture uploads and `DrawableKind` for generic draw utilities.
+//! This file defines the renderer command language that the rest of the engine speaks when it wants something visual to happen this frame.
+//! It gathers draw operations, state changes, auxiliary descriptors, and shared render-side enums into one canonical vocabulary.
+//! Shapes, text, textures, particles, Spine output, layered sorting, stencil control, and depth behavior all meet here as data instead of immediate API calls.
+//! The command set is broad because many subsystems submit visual intent before the GPU backend ever becomes involved.
+//! Shared enums for alignment, blend, compare, and draw styles live beside the commands so callers agree on meaning without backend coupling.
+//! Higher-level rendering helpers can build rich features simply by emitting combinations of these records.
+//! Post-processing descriptors and upload payloads also sit here because they are part of the same frame command stream.
+//! In practice this file is the renderer's grammar, not its execution engine.
+//! It explains what can be said to the backend, in what shapes, and with what supporting metadata.
+//! Keeping that grammar centralized is what lets Lua, gameplay systems, and specialized modules target one render pipeline.
+//! The file therefore stabilizes render intent across the codebase even as the backend implementation grows more complex.
+//! Almost every visible feature eventually passes through the types defined here.
 
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;

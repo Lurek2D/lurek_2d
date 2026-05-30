@@ -1,10 +1,8 @@
-//! Shared data types for the minimap subsystem: enums, structs, and overlay shapes.
-//!
-//! - `ColorMode` selects between terrain-coloured and political-coloured cell rendering.
-//! - `FogLevel` encodes per-cell fog-of-war visibility as a three-state enum.
-//! - Object, ping, and marker structs hold live map overlays with position, colour, and animation.
-//! - `OverlayShape` and `OverlayPath` describe vector geometry drawn over the terrain grid.
-//! - `LayerData` stores raw cell bytes for named minimap layers.
+//! Shared minimap data types for colors, fog, overlays, and live markers.
+//! Defines the small enums and structs that other minimap files reuse.
+//! Carries per-object and per-path state for animated overlays.
+//! Separates raw layer bytes from higher-level minimap behavior.
+//! Provides the data vocabulary for the whole minimap subsystem.
 
 /// Whether minimap cells are coloured by terrain type or by political owner.
 #[derive(Debug, Clone, Copy, PartialEq)]

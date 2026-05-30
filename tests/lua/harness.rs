@@ -464,11 +464,6 @@ fn lua_unit_compute_unit() {
 }
 
 #[test]
-fn lua_unit_crafting_unit() {
-    run_lua_test("unit/test_crafting_core_unit.lua");
-}
-
-#[test]
 fn lua_unit_dataframe_unit() {
     run_lua_test("unit/test_dataframe_core_unit.lua");
 }

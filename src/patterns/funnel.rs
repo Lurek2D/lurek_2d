@@ -1,7 +1,7 @@
-//! Buffered accumulator that collects tagged numeric entries and flushes on a time window or count threshold.
-//!
-//! - Provides push/update/flush lifecycle: push entries, tick time, drain when ready.
-//! - Supports immediate flush (window=0), count-triggered flush, and manual discard.
+//! Buffered funnel for gathering small tagged numeric events into controlled flush windows instead of reacting to every sample the instant it arrives.
+//! The file couples entry accumulation with elapsed-time tracking and count thresholds so callers can model batch release, burst shaping, or windowed aggregation with simple state.
+//! Immediate windows, manual discard, and explicit readiness checks make the behavior usable for both deterministic simulation ticks and script-driven control loops.
+//! Functionally this delivers a compact batching primitive for telemetry, combo capture, score staging, and other flows where grouping matters more than raw per-event immediacy.
 
 /// A single accumulated value pushed into a `Funnel`.
 #[derive(Debug, Clone)]

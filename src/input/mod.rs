@@ -1,8 +1,6 @@
-//! Keyboard, mouse, gamepad, and touch input state aggregation.
-//!
-//! - Event constants for Lua callbacks (keypressed, mousemoved, etc.).
-//! - Combo gesture detection and input recording for replays.
-//! - Extended action definitions with category metadata for the binding system.
+//! High-level input module that groups keyboard, mouse, gamepad, touch, and recording components.
+//! Re-exports action and state types so caller code can consume one coherent input surface.
+//! Defines the composition boundary where platform events become gameplay-usable input state.
 
 /// Extended action definition with category metadata for the binding system.
 pub mod action_def;

@@ -1,9 +1,8 @@
-//! Multi-level raycaster: stacked horizontal slices for floors, ceilings, and bridges.
-//!
-//! - Extends the flat raycaster with per-column level stacks for multi-storey maps.
-//! - Each level slice defines a floor height, ceiling height, and tile layer pair.
-//! - Level transitions (stairs, portals) are handled as special tile types.
-//! - Blends into the base `level_render` pipeline; no separate render pass needed.
+//! This file extends the flat raycaster into stacked slices so one map position can participate in a multi-storey layout.
+//! Each slice carries its own vertical span and tile layer, allowing bridges, overhead rooms, shafts, and similar structures to share horizontal space.
+//! The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
+//! Special transitions can move the viewer between slices without inventing a separate world format or renderer.
+//! The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline.
 
 /// A single level in a multi-level raycaster world.
 #[derive(Debug, Clone)]

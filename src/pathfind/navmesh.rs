@@ -1,9 +1,8 @@
 //! Polygon-based navigation mesh for 2D pathfinding.
-//!
-//! - A\* search over polygon adjacency graph with centroid heuristic.
-//! - Ray-cast point-in-polygon containment test.
-//! - Centroid waypoint extraction from polygon corridors.
-//! - Directed and bidirectional polygon connectivity.
+//! Runs A* over a polygon adjacency graph with a centroid heuristic.
+//! Checks point containment with ray-cast tests and extracts centroid waypoints.
+//! Supports directed and bidirectional polygon connectivity.
+//! Serves large open areas where cell grids are too coarse.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

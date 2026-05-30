@@ -1,8 +1,8 @@
-//! Precomputed flow field steering multiple agents toward a single goal cell.
-//!
-//! - BFS distance propagation with 8-directional neighbours and diagonal cost.
-//! - Per-cell normalised direction vectors for smooth unit movement.
-//! - Walkability mask support for blocking impassable terrain.
+//! Precomputed flow field steering many agents toward a single goal cell.
+//! Propagates breadth-first distance over 8-directional neighbours with diagonal cost.
+//! Stores per-cell direction vectors for smooth unit movement.
+//! Respects walkability masks when terrain blocks pathing.
+//! Gives group movement code a cheap steering target instead of a full path.
 
 use std::collections::VecDeque;
 

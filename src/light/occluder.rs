@@ -1,7 +1,7 @@
-//! Convex polygon shape that blocks light and casts shadows in the 2D lighting system.
-//!
-//! - Vertex management: construction from Vec2 list or flat coordinate arrays, runtime replacement.
-//! - Per-occluder properties: world position offset, shadow opacity, light-layer bitmask, enabled toggle.
+//! Defines convex polygon occluders that block light and contribute to shadow casting.
+//! Stores local vertices with world offset and opacity controls for flexible scene placement.
+//! Supports runtime vertex replacement from typed points or flat coordinate inputs.
+//! Applies layer-mask and enable flags to scope occluder influence across light groups.
 
 use crate::math::Vec2;
 

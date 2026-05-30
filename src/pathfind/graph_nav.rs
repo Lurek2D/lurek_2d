@@ -1,9 +1,8 @@
-//! A* shortest-path search over weighted directed/bidirectional graphs.
-//!
-//! - Range query returning all nodes reachable within a cost budget.
-//! - Heuristic support for informed search; falls back to Dijkstra when omitted.
-//! - Min-heap priority queue node with reverse ordering for `BinaryHeap`.
-//! - Path reconstruction from predecessor map.
+//! A* shortest-path search over weighted directed or bidirectional graphs.
+//! Supports cost-bounded range queries for reachable nodes.
+//! Falls back to Dijkstra when no heuristic is provided.
+//! Reconstructs paths from predecessor maps for caller consumption.
+//! Serves graph-based navigation where grid adjacency is not enough.
 
 use crate::flownet::core::Graph;
 use std::cmp::Ordering;

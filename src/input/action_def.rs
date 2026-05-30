@@ -1,7 +1,6 @@
-//! Action definition types for the extended action-binding system.
-//! - Defines ActionDef with bindings and a grouping category string.
-//! - Provides ActionMap type alias for the full action map.
-//! - Derives Serialize/Deserialize for JSON round-trip via serializeBindings and deserializeBindings.
+//! Defines action-binding data shapes used to map logical actions onto multiple physical inputs.
+//! Stores ordered binding strings and optional category grouping for tooling and menu presentation.
+//! Provides serializable action-map structures for loading, saving, and sharing binding presets.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

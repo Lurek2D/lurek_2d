@@ -37,6 +37,7 @@ describe("Fov", function()
         expect_false(fov:isVisible(2, 0))   -- no longer in current view
     end)
 
+    -- @library lurek.library_roguelike
     it("resetExplored clears the persistent set", function()
         local fov = rl.newFov({range=3}):setBlocker(open_blocker):compute(0, 0)
         fov:resetExplored()
@@ -98,6 +99,7 @@ end)
 
 -- @describe GoalMap
 describe("GoalMap", function()
+    -- @library lurek.library_roguelike
     it("gradient points toward nearest source", function()
         local g = rl.newGoalMap(10, 10)
             :setSources({ { 5, 5, 0 } })
@@ -107,6 +109,7 @@ describe("GoalMap", function()
         expect_equal(0, dy)
     end)
 
+    -- @library lurek.library_roguelike
     it("distance increases with hop count", function()
         local g = rl.newGoalMap(10, 10):setSources({{5,5,0}}):bake()
         expect_equal(0, g:distanceAt(5, 5))
@@ -114,6 +117,7 @@ describe("GoalMap", function()
         expect_equal(3, g:distanceAt(5, 8))
     end)
 
+    -- @library lurek.library_roguelike
     it("flee inversion produces a step away from threat", function()
         local g = rl.newGoalMap(10, 10):setSources({{5,5,0}}):bake()
         local dx, dy = g:flee(4, 5, 1.5)
@@ -122,6 +126,7 @@ describe("GoalMap", function()
             "flee should not step toward the source")
     end)
 
+    -- @library lurek.library_roguelike
     it("bake without sources raises descriptive error", function()
         local g = rl.newGoalMap(5, 5)
         expect_error(function() g:bake() end)
@@ -130,6 +135,7 @@ end)
 
 -- @describe module helpers
 describe("module helpers", function()
+    -- @library lurek.library_roguelike
     it("bresenham produces continuous endpoints", function()
         local pts = rl.bresenham(0, 0, 3, 2)
         expect_equal(0, pts[1][1]); expect_equal(0, pts[1][2])

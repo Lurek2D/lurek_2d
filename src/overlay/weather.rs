@@ -1,7 +1,8 @@
-//! Weather particle simulation types and state management.
-//!
-//! - Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-//! - Tracks particle pool, wind parameters, and internal PRNG.
+//! Weather particle simulation state and management for screen-space overlays.
+//! Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
+//! Tracks particle pools, wind parameters, and an internal PRNG.
+//! Keeps weather spawning and motion separated from the main scene model.
+//! Provides reusable state for long-lived atmospheric weather effects.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// Enumerates supported weather particle behaviors.

@@ -1,9 +1,7 @@
-//! ONNX model loading and inference via tract-onnx.
-//!
-//! - Provides `OnnxModel` which loads and optimises an ONNX file into a runnable plan.
-//! - `OnnxModel::run` converts `LurekTensor` inputs to tract `Tensor` values, runs the
-//!   plan, and converts outputs back to `LurekTensor`, preserving output shapes.
-//! - Used exclusively by `src/lua_api/learning_api.rs`; no game-loop dependencies.
+//! Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes.
+//! Builds optimized runnable plans from ONNX files for CPU execution paths.
+//! Converts input and output tensors between engine-native and tract-native representations.
+//! Exposes deterministic inference entry points used by learning APIs without game-loop coupling.
 
 use crate::learning::tensor::LurekTensor;
 use tract_onnx::prelude::*;

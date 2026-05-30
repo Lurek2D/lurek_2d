@@ -1,9 +1,9 @@
-//! Bidirectional A* search that expands from both start and goal simultaneously.
-//!
-//! - Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
-//! - Falls back to a partial forward path when the node budget is exhausted.
-//! - Respects NavGrid diagonal mode and per-cell movement cost.
-//! - Supports variable unit sizes for multi-tile pathfinding.
+//! Bidirectional A* search that expands from both start and goal at once.
+//! Meets in the middle when the closed sets overlap to cut explored nodes.
+//! Falls back to a partial forward path when the node budget runs out.
+//! Respects NavGrid diagonal mode and per-cell movement cost.
+//! Supports variable unit sizes for multi-tile pathfinding.
+//! Helps large open grids return useful routes with less search work.
 
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};

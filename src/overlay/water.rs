@@ -1,7 +1,7 @@
 //! Animated water distortion overlay with configurable amplitude, frequency, and speed.
-//!
-//! - Shallow-water tint and depth-based color shift with independent blend strengths.
-//! - Time-accumulating update loop that advances the wave pattern each frame.
+//! Adds shallow-water tint and depth-based color shift with independent blend strengths.
+//! Advances the wave pattern through a time-accumulating update loop.
+//! Serves as the water-specific screen-space effect for overlays.
 
 #[derive(Debug, Clone)]
 /// Stores parameters for animated water distortion and tint overlays.

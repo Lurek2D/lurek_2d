@@ -1,7 +1,6 @@
-//! Poisson-disk sampling: generate evenly-spaced random 2D point distributions.
-//!
-//! - Uses Bridson's algorithm with grid acceleration for O(n) rejection.
-//! - Deterministic via seeded LCG; produces `(x, y)` pair vectors.
+//! Even-spacing point sampler for procedural placement problems where randomness should look natural without collapsing into visible clustering.
+//! The file implements Bridson-style Poisson disk generation with acceleration structures and seeded control so distribution quality and reproducibility both stay strong.
+//! Functionally this file delivers scattered-but-separated 2D points for trees, loot, enemies, landmarks, and other placement-heavy content.
 
 use super::lcg::Lcg;
 

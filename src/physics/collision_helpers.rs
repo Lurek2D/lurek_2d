@@ -1,7 +1,6 @@
-//! Pure-geometry collision tests for AABB, circle, and point queries.
-//!
-//! - No allocations or side effects; suitable for hot-path per-frame checks.
-//! - All coordinates assume x-right, y-down screen space.
+//! Lightweight geometry overlap helpers for code that needs quick collision answers without standing up a full physics world.
+//! The file keeps AABB, circle, and point tests allocation-free and side-effect free so they fit hot loops, culling, and cheap gameplay probes.
+//! Functionally this delivers the smallest collision vocabulary for fast spatial checks in plain screen-space coordinates.
 
 /// Return true when two AABBs overlap (axes: x-right, y-down).
 #[allow(clippy::too_many_arguments)]

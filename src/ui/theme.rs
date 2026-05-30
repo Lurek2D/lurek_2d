@@ -1,12 +1,18 @@
-//! Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
-//!
-//! - Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment.
-//! - Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration.
-//! - Ships a full dark preset covering all standard widget types (buttons, inputs, panels, layouts, menus, dialogs, etc.).
-//! - Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen.
-//! - Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
-//! - Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
-//! - Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
+//! This file provides the theming system that maps widget type and state to visual style data.
+//! It stores colors, typography, borders, shadows, gradients, and alignment in reusable records.
+//! It resolves requested styles with controlled fallback so partial themes remain functional.
+//! It ships practical defaults that cover standard widgets without requiring custom setup.
+//! It keeps style records clonable for cheap per-screen forks and variation experiments.
+//! It supports semantic theme tokens so shared visual meanings stay consistent across widgets.
+//! It integrates directly with render-time style resolution inside the UI drawing pipeline.
+//! It includes debug-oriented raster helpers for quick visual verification of style states.
+//! It enables extension through custom type-state registrations without changing core presets.
+//! It separates visual policy from interaction logic for cleaner UI architecture boundaries.
+//! It supports rapid skin iteration while preserving stable widget behavior contracts.
+//! It keeps style lookup deterministic so rendering output stays predictable across frames.
+//! It provides one source of truth for interface look-and-feel in the module.
+//! It allows games and tools to share a common style backbone with targeted overrides.
+//! It anchors maintainable visual customization across the retained UI ecosystem.
 
 use crate::ui::widget::{WidgetState, WidgetType};
 use std::collections::HashMap;

@@ -1,9 +1,9 @@
-//! Named atlas region type (`AtlasEntry`) with pixel rect, rotation, and flip flags.
-//!
-//! - `SpriteAtlas` lookup table: ordered Vec + HashMap for O(1) name lookup.
-//! - TexturePacker JSON parser supporting both array and object frame formats.
-//! - Aseprite JSON parser with the same dual-format support.
-//! - Conversion from `image::TextureAtlas` for runtime atlas building.
+//! This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
+//! It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
+//! Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
+//! Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
+//! Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
+//! The file is the naming and region-mapping layer for packed sprite content.
 
 use std::collections::HashMap;
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.

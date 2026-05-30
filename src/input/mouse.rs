@@ -1,10 +1,9 @@
-//! Per-frame mouse state tracking: position, button held/pressed/released deltas, and scroll accumulators.
-//!
-//! - System cursor shape selection from a fixed set of OS-provided variants.
-//! - Custom image-based cursor support via raw RGBA pixel buffers with hotspot offsets.
-//! - Cursor visibility, grab (confinement), and relative (delta) mode toggles.
-//! - Warp-to-position requests consumed by the runtime window loop.
-//! - Frame-boundary reset for button deltas and scroll values.
+//! Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics.
+//! Stores held, pressed, and released button sets for deterministic polling across gameplay systems.
+//! Supports system cursor variants and custom cursor image metadata with hotspot offsets.
+//! Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration.
+//! Preserves smooth pointer-control behavior while separating transient and persistent state.
+//! Serves as the central mouse state source for UI interaction and gameplay input checks.
 
 /// OS-provided cursor shape variants available through `lurek.input.setCursor`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

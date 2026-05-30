@@ -1,7 +1,8 @@
-//! Import LDtk project JSON into the engine tilemap representation.
-//!
-//! - Parse levels, tile layers, and auto-layers with tileset geometry reconstruction.
-//! - Map LDtk pixel-based tile coordinates to grid-cell indices.
+//! This file provides LDtk JSON import into the engine-native tilemap representation.
+//! It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps.
+//! It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation.
+//! It keeps external level content aligned with the engine's layered tile data model.
+//! It enables deterministic content ingestion from LDtk authoring workflows.
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;

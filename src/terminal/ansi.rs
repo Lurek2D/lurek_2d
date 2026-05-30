@@ -1,10 +1,9 @@
-//! ANSI escape sequence stripping and SGR attribute parsing.
-//!
-//! - Standard 8-color CGA and bright palette tables (codes 30–37, 90–97).
-//! - Xterm-256 color index decoding: cube (16–231) and grayscale (232–255).
-//! - 24-bit true-color RGB extraction from SGR 38/48 sub-code 2.
-//! - Span-based output splitting text into runs with shared fg/bg/bold state.
-//! - UTF-8 byte-level helpers for raw escape parsing without allocation.
+//! This file interprets ANSI terminal escape sequences so colored or styled text streams can be understood by the in-engine terminal.
+//! It strips control bytes when plain text is needed and decodes styling spans when visual fidelity matters.
+//! Classic palette colors, extended xterm indexes, and full RGB forms are all resolved here into engine-friendly color data.
+//! Span extraction is part of the same logic so one input string can become ordered runs with shared style state.
+//! Low-level parsing helpers stay close to the decoder because escape handling is sensitive to byte structure and malformed fragments.
+//! The file is therefore the compatibility layer between external terminal-style output and the engine's own grid renderer.
 
 /// RGB color produced by ANSI color codes or xterm-256 palette lookup.
 #[derive(Debug, Clone, PartialEq)]

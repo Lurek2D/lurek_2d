@@ -1,13 +1,15 @@
-//! Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
-//!
-//! - 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
-//! - Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
-//! - Ping-pong intermediate textures for multi-pass compositing without extra allocations.
-//! - Named parameter map → 16-float uniform packing for effect configuration.
-//! - Runtime registration of custom WGSL fragment shaders under user-chosen names.
-//! - Auto-uniform injection of time, frame count, and resolution into the last four slots.
-//! - Identity copy pass used as fallback when no effects are enabled.
-//! - Pass sequencing respects insertion order; final result written directly to the surface target.
+//! This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
+//! Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
+//! Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
+//! Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.
+//! Shared fullscreen geometry and ping-pong render targets keep multi-pass execution practical without rebuilding the whole frame graph each time.
+//! Disabled chains degrade gracefully to a plain copy, which keeps the backend simple when no visual treatment is active.
+//! Time, frame count, and resolution are injected centrally so effect authors can rely on common runtime signals.
+//! Pass order follows the configured chain order, making visual stacking explicit rather than implicit.
+//! The file therefore acts as the image-finishing stage of the renderer, where an already rendered frame can be polished or stylized.
+//! It is not about drawing scene geometry.
+//! It is about transforming one finished image into another with controlled GPU shader passes.
+//! In practice this is the renderer's color-grading room, distortion rack, and screen-material toolbox.
 
 use std::collections::HashMap;
 /// Shared fullscreen-triangle vertex shader used by every built-in and custom post-fx effect.

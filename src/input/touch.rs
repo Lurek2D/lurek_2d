@@ -1,7 +1,7 @@
-//! Multi-touch contact tracking with per-frame pressed/released deltas.
-//!
-//! - Position and pressure state for each active touch id.
-//! - Frame-boundary lifecycle: begin_frame clears deltas, start/move/end mutate state.
+//! Tracks multi-touch contacts with active-point state and per-frame transition sets.
+//! Stores per-contact position and pressure values keyed by stable touch identifiers.
+//! Clears transient pressed and released markers at frame boundaries while preserving active points.
+//! Provides touch lifecycle mutation paths for start, move, and end events from the platform layer.
 
 use std::collections::{HashMap, HashSet};
 

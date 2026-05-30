@@ -1,7 +1,6 @@
-//! Scene stack with push/pop lifecycle and unique SceneId handles.
-//!
-//! - Depth-sorted entity ordering for layered draw calls.
-//! - Transition effects (fade, slide, wipe) with configurable easing curves.
+//! This module provides scene-stack flow control, scene rendering helpers, transition behavior, and depth ordering support for multi-state games.
+//! It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states.
+//! At the highest level this is the feature layer that organizes game flow over time rather than individual world entities.
 
 /// Depth-sorted entity ordering for scene draw calls.
 pub mod depth_sorter;

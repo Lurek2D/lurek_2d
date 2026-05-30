@@ -1,9 +1,9 @@
-//! Ear-clipping triangulation for simple polygons and convexity testing.
-//!
-//! - Sutherland-Hodgman polygon clipping against arbitrary half-planes.
-//! - Boolean-style polygon operations: intersection, union, and difference.
-//! - Andrew monotone-chain convex hull and winding-order normalization.
-//! - Internal helpers for signed area, point-in-triangle, and cross-product sign tests.
+//! Polygon toolkit for clipping, hull building, triangulation, and winding cleanup.
+//! Handles simple and concave shapes with routines aimed at gameplay geometry.
+//! Provides intersection and boolean-style operations for shape processing.
+//! Computes signed area and point-in-triangle tests for structural checks.
+//! Normalizes vertex order so downstream consumers can rely on consistent winding.
+//! Supplies the low-level machinery behind map, collision, and editor-style geometry flows.
 
 use crate::math::vec2::Vec2;
 

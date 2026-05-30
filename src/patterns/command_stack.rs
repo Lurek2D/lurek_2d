@@ -1,7 +1,8 @@
-//! Linear undo/redo command history with cursor-based navigation.
-//!
-//! - Batch grouping for multi-command atomic operations.
-//! - Configurable max-size eviction of oldest entries.
+//! Command history storage for features that need explicit undo and redo flow instead of ad hoc reversal logic spread across many systems.
+//! The file tracks a linear timeline with a movable cursor, letting callers push new actions, walk backward through applied work, and replay discarded steps in order.
+//! Batch grouping keeps multi-step edits together as one logical unit, which matters for editors, tactics actions, and scripted transactions that should reverse atomically.
+//! Size limits and eviction rules keep history bounded without losing the current navigation model or forcing clients to hand-roll trimming behavior.
+//! Functionally this delivers the memory of reversible work for tooling and gameplay flows that care about chronological intent, replay, and controlled rollback.
 
 /// Metadata record for a single pushed command.
 #[derive(Debug, Clone)]

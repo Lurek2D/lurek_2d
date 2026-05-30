@@ -1,9 +1,11 @@
-//! Scripted procedural map assembler: executes a sequence of placement steps.
-//!
-//! - `MapBlockGenerator` owns the grid, block registry, and RNG state.
-//! - Runs the `MapScript` step list: Fill, PlaceGroup, PlaceBlock, ApplyLayer.
-//! - After assembly, converts the grid to a `TileMap` via `mapblock::output`.
-//! - Exposed to Lua via `lurek.mapblock.generate(config, script)` returning a tilemap.
+//! Operational core for scripted mapblock assembly over a block grid.
+//! Owns block registries, multi-level placement state, and RNG progression.
+//! Executes fill, targeted placement, random placement, and repeat steps.
+//! Applies neighbor constraints to keep layouts structurally coherent.
+//! Threads orientation and config context through the build process.
+//! Converts intermediate placements into renderer-ready output structures.
+//! Supports deterministic runs through seeded randomness and explicit step ordering.
+//! Serves as the main execution engine behind mapblock authoring tools.
 
 use super::config::MapBlockConfig;
 use super::constraints::NeighborRules;

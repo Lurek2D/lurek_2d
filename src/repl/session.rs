@@ -1,10 +1,8 @@
-//! Implements `ReplSession`, a stateful Lua evaluator with bounded command history.
-//!
-//! - `ReplResult` captures value output, silent success, structured error text, or a parsed colon command.
-//! - Eval dispatches colon commands first; expression input tries `return <input>` then falls back to statement execution.
-//! - History is capped at `max_history` entries; oldest entries are evicted when the cap is reached; default capacity is 200.
-//! - `:load` reads a file from disk and executes it inside the current Lua VM, returning a command or error result.
-//! - Session state is pure Rust; the Lua reference is borrowed per call and never stored on the struct.
+//! This file implements the stateful heart of the REPL, where input is recorded, classified, and evaluated against a caller-supplied Lua VM.
+//! It distinguishes between command-style control input and ordinary Lua text so one prompt can manage both session behavior and code execution.
+//! Expression-first evaluation keeps interactive probing ergonomic while still falling back to statement execution for longer snippets.
+//! Command history is bounded and owned by the session, which keeps repeated use predictable without leaking VM references across calls.
+//! The file is therefore the operational core that makes the REPL feel persistent and interactive while remaining headless and embeddable.
 
 use crate::repl::commands::ReplCommand;
 use crate::repl::completer::complete_prefix;

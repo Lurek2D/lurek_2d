@@ -4,7 +4,7 @@
 //! Produces placement guidance for synchronized movement patterns across common formation styles.
 //! Serves as the structural layer for multi-agent cohesion above individual steering behaviors.
 
-use crate::ai::blackboard::Blackboard;
+use crate::patterns::Blackboard;
 /// Supported squad formation shapes.
 #[derive(Debug, Clone, PartialEq)]
 pub enum FormationType {

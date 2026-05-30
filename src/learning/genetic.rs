@@ -1,9 +1,8 @@
-//! Population-based genetic optimization storing genomes, fitness values, and generation bookkeeping.
-//!
-//! - Evolution step preserving elites, tournament selection, crossover, and in-place mutation.
-//! - Deterministic random helpers driving parent selection, crossover, and Gaussian mutation.
-//! - Stable per-chromosome identifiers persisting across generations for lineage tracking.
-//! - Seeded xorshift64 RNG with Box-Muller normal sampling for reproducible evolution.
+//! Implements population-based genetic optimization over flat genomes with explicit generation tracking.
+//! Executes elite preservation, parent selection, crossover, and mutation during evolution steps.
+//! Maintains stable chromosome identifiers to support lineage tracing across generations.
+//! Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs.
+//! Serves as a general optimizer backend for learning components and parameter-search tasks.
 
 /// Evolving genome with fitness and stable id.
 #[derive(Clone)]

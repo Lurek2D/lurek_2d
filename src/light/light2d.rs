@@ -1,12 +1,10 @@
-//! Complete `Light2D` struct holding position, color, radius, type, shadow, masks, flicker, and attenuation.
-//!
-//! - Constructor defaults to a white point light with full-layer masks and no shadows.
-//! - Getter/setter API for every field: position, color, intensity, energy, blend mode, falloff, masks.
-//! - Spot-light parameters: direction, inner/outer cone angles.
-//! - Shadow controls: enable, tint color, filter preset, smooth, and softness.
-//! - Normal-map attachment with optional path and contribution strength.
-//! - Volumetric scattering toggle and group-id batching support.
-//! - Debug visualization helper rendering falloff-mode comparison panels to `ImageData`.
+//! Defines the full per-light data model covering transform, color, energy, and shading behavior.
+//! Encapsulates light geometry, blend mode, falloff, attenuation, and layer-mask participation.
+//! Stores spot-cone, shadow, normal-map, and volumetric options in one configurable runtime object.
+//! Provides constructor defaults tuned for immediate point-light usage without extra setup.
+//! Exposes field access patterns used by world management and Lua-facing controls.
+//! Supports optional flicker and grouping metadata for batched animation and edits.
+//! Includes debug-oriented helpers that visualize key lighting parameter effects.
 
 use crate::light::attenuation::Attenuation;
 use crate::light::blend_mode::LightBlendMode;

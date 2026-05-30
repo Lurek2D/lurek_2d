@@ -1,9 +1,7 @@
-//! Per-region bitfield flags: terrain type, unit presence, buildings, and custom bits.
-//!
-//! - `VisibilityFlags` is a `u32` bitfield; bits 0-7 are engine-reserved, 8-31 are game-defined.
-//! - Flag constants are registered at game startup; names are mapped to bit positions.
-//! - Used as required-flag masks in `VisibilityCost` to gate region reveal.
-//! - Modified from Lua via `lurek.visibility.set_flags(region_id, flags)`.
+//! This file provides bitflag storage for per-region visibility-related feature markers.
+//! It encodes what information layers are present or unlocked for each map region.
+//! It supports gated reveal logic by combining flag checks with discovery progression rules.
+//! It keeps per-region capability state compact and efficient for frequent visibility queries.
 
 /// Bitfield flags controlling what is visible per region.
 /// Games define their own flag semantics (e.g., bit 0 = terrain, bit 1 = units).

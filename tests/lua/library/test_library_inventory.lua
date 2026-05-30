@@ -26,11 +26,13 @@ describe("InvItem", function()
         expect_near(it:getWeight(), 3.5, 1e-9)
     end)
 
+    -- @library lurek.library_inventory
     it("default stack limit is 1", function()
         local it = inventory.newItem("potion")
         expect_equal(it:getStackLimit(), 1)
     end)
 
+    -- @library lurek.library_inventory
     it("setStackLimit clamps to 1 minimum", function()
         local it = inventory.newItem("potion")
         it:setStackLimit(0)
@@ -69,6 +71,7 @@ describe("InvItem", function()
         expect_equal(tags[2], "z_tag")
     end)
 
+    -- @library lurek.library_inventory
     it("setProperty / getProperty", function()
         local it = inventory.newItem("sword")
         it:setProperty("durability", 100)
@@ -96,6 +99,7 @@ end)
 
 -- @describe ItemStack
 describe("ItemStack", function()
+    -- @library lurek.library_inventory
     it("creates stack with quantity", function()
         local it = inventory.newItem("arrow")
         it:setStackLimit(20)
@@ -112,6 +116,7 @@ describe("ItemStack", function()
         expect_equal(s:isFull(), true)
     end)
 
+    -- @library lurek.library_inventory
     it("isEmpty when quantity 0", function()
         local it = inventory.newItem("coin")
         local s = inventory.newItemStack(it, 0, 10)
@@ -137,6 +142,7 @@ describe("ItemStack", function()
         expect_equal(s:getQuantity(), 5)
     end)
 
+    -- @library lurek.library_inventory
     it("split creates new stack", function()
         local it = inventory.newItem("arrow")
         local s = inventory.newItemStack(it, 10, 10)
@@ -146,6 +152,7 @@ describe("ItemStack", function()
         expect_equal(s:getQuantity(), 6)
     end)
 
+    -- @library lurek.library_inventory
     it("split returns nil for invalid n", function()
         local it = inventory.newItem("arrow")
         local s = inventory.newItemStack(it, 10, 10)
@@ -180,17 +187,20 @@ end)
 
 -- @describe Slot
 describe("Slot", function()
+    -- @library lurek.library_inventory
     it("starts empty", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         expect_equal(sl:isEmpty(), true)
     end)
 
+    -- @library lurek.library_inventory
     it("can accept any-typed item", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
         expect_equal(sl:canAccept(it), true)
     end)
 
+    -- @library lurek.library_inventory
     it("type filter rejects non-matching item", function()
         local sl = inventory.newSlot("weapon", inventory.SlotState.Active)
         local it = inventory.newItem("potion")
@@ -343,6 +353,7 @@ describe("Container.expandable", function()
         expect_equal(5, c:slotCount())
     end)
 
+    -- @library lurek.library_inventory
     it("expand returns false in fixed mode", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         expect_equal(c:expand(2), false)
@@ -394,6 +405,7 @@ describe("ItemSet", function()
         expect_equal(iset:isSatisfied(equip), true)
     end)
 
+    -- @library lurek.library_inventory
     it("not satisfied when tag missing", function()
         local iset = inventory.newItemSet("mage_set")
         iset:addRequirement("arcane", "")
@@ -407,6 +419,7 @@ describe("ItemSet", function()
         expect_equal(iset:isSatisfied(equip), false)
     end)
 
+    -- @library lurek.library_inventory
     it("getRequirements returns array", function()
         local iset = inventory.newItemSet("test")
         iset:addRequirement("fire", "ring_slot")
@@ -421,6 +434,7 @@ end)
 
 -- @describe Inventory
 describe("Inventory", function()
+    -- @library lurek.library_inventory
     it("addContainer / getContainer round-trip", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "unlimited", 0)
@@ -428,6 +442,7 @@ describe("Inventory", function()
         expect_equal(inv:getContainer("bag"), c)
     end)
 
+    -- @library lurek.library_inventory
     it("containerNames returns insertion order", function()
         local inv = inventory.newInventory()
         inv:addContainer("bag", inventory.newContainer("bag", "unlimited", 0))
@@ -437,6 +452,7 @@ describe("Inventory", function()
         expect_equal(names[2], "pouch")
     end)
 
+    -- @library lurek.library_inventory
     it("removeContainer returns true", function()
         local inv = inventory.newInventory()
         inv:addContainer("bag", inventory.newContainer("bag", "unlimited", 0))
@@ -510,12 +526,14 @@ describe("Inventory", function()
         expect_equal(inv:getEquipSlot("main_hand"):isEmpty(), true)
     end)
 
+    -- @library lurek.library_inventory
     it("equip returns false for missing slot", function()
         local inv = inventory.newInventory()
         local sword = inventory.newItem("sword")
         expect_equal(inv:equip("missing", inventory.newItemStack(sword, 1, 1)), false)
     end)
 
+    -- @library lurek.library_inventory
     it("equipSlotNames insertion order", function()
         local inv = inventory.newInventory()
         inv:addEquipSlot("head", inventory.newSlot("any", inventory.SlotState.Active))
@@ -525,6 +543,7 @@ describe("Inventory", function()
         expect_equal(names[2], "chest")
     end)
 
+    -- @library lurek.library_inventory
     it("subsystem enable/disable/check", function()
         local inv = inventory.newInventory()
         expect_equal(inv:isSubsystemEnabled("weight"), false)
@@ -566,6 +585,7 @@ describe("Inventory", function()
         expect_equal(c2:countItem("gem"), 1)
     end)
 
+    -- @library lurek.library_inventory
     it("getItemSets returns all registered sets", function()
         local inv  = inventory.newInventory()
         local s1   = inventory.newItemSet("set_a")
@@ -578,6 +598,7 @@ describe("Inventory", function()
         expect_equal(sets[2]:getName(), "set_b")
     end)
 
+    -- @library lurek.library_inventory
     it("removeEquipSlot removes and returns true", function()
         local inv = inventory.newInventory()
         inv:addEquipSlot("ring", inventory.newSlot("any", inventory.SlotState.Active))
@@ -612,6 +633,7 @@ describe("Inventory", function()
         expect_equal(c:getSlot(1):getStack():getQuantity(), 2)  -- unchanged
     end)
 
+    -- @library lurek.library_inventory
     it("mergeStacks merges two same-type stacks in same container", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "fixed", 3)
@@ -626,6 +648,7 @@ describe("Inventory", function()
         expect_equal(c:getSlot(2):isEmpty(), true)
     end)
 
+    -- @library lurek.library_inventory
     it("mergeStacks returns false for type mismatch", function()
         local inv  = inventory.newInventory()
         local c    = inventory.newContainer("bag", "fixed", 3)
@@ -637,6 +660,7 @@ describe("Inventory", function()
         expect_equal(inv:mergeStacks("bag", 1, 2), false)
     end)
 
+    -- @library lurek.library_inventory
     it("swap exchanges items between two container slots", function()
         local inv = inventory.newInventory()
         local c1  = inventory.newContainer("bag1", "fixed", 2)
@@ -652,6 +676,7 @@ describe("Inventory", function()
         expect_equal(c2:getSlot(1):getItem():getType(), "sword")
     end)
 
+    -- @library lurek.library_inventory
     it("swap within same container", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "fixed", 3)
@@ -683,6 +708,7 @@ describe("Container.removeSlot", function()
         expect_equal(c:getSlot(1):isEmpty(), true)
     end)
 
+    -- @library lurek.library_inventory
     it("returns false for out-of-range index", function()
         local c = inventory.newContainer("bag", "fixed", 2)
         expect_equal(c:removeSlot(0),  false)
@@ -707,11 +733,13 @@ describe("Slot.state", function()
         expect_equal(sl:getState(), inventory.SlotState.Idle)
     end)
 
+    -- @library lurek.library_inventory
     it("getSlotType returns the type filter", function()
         local sl = inventory.newSlot("helmet", inventory.SlotState.Active)
         expect_equal(sl:getSlotType(), "helmet")
     end)
 
+    -- @library lurek.library_inventory
     it("SlotState constants are correct strings", function()
         expect_equal(inventory.SlotState.Active,  "active")
         expect_equal(inventory.SlotState.Passive, "passive")
@@ -723,6 +751,7 @@ end)
 
 -- @describe ContainerMode
 describe("ContainerMode", function()
+    -- @library lurek.library_inventory
     it("enum has correct string values", function()
         expect_equal(inventory.ContainerMode.fixed,      "fixed")
         expect_equal(inventory.ContainerMode.unlimited,  "unlimited")
@@ -864,10 +893,12 @@ end)
 
 -- @describe InputValidation
 describe("InputValidation", function()
+    -- @library lurek.library_inventory
     it("newItem rejects empty string", function()
         expect_error(function() inventory.newItem("") end)
     end)
 
+    -- @library lurek.library_inventory
     it("newItem rejects nil", function()
         expect_error(function() inventory.newItem(nil) end)
     end)
@@ -898,10 +929,12 @@ describe("InputValidation", function()
         expect_error(function() c:removeItem("coin", 0) end)
     end)
 
+    -- @library lurek.library_inventory
     it("newContainer rejects invalid mode", function()
         expect_error(function() inventory.newContainer("bag", "broken", 5) end)
     end)
 
+    -- @library lurek.library_inventory
     it("setWeightLimit rejects negative", function()
         local c = inventory.newContainer("bag", "unlimited", 0)
         expect_error(function() c:setWeightLimit(-1) end)

@@ -1,12 +1,9 @@
-//! Polygon gallery with regular shapes of varying side counts.
-//!
-//! - Archimedes spiral rendering with HSV ring colors.
-//! - Filled primitive samples: rectangles, circles, brightness grid.
-//! - Convex hull computation and overlay drawing.
-//! - Point-in-polygon, centroid, and area visualization.
-//! - Bresenham line rasterization proof.
-//! - Segment-segment and circle-line intersection tests.
-//! - Circle-segment and line intersection proof rendering.
+//! Generates geometry-focused debug images that visualize shape algorithms and spatial relationships.
+//! Renders polygon galleries, primitive fills, and line rasterization examples for correctness checks.
+//! Shows convex hull and centroid style outputs to inspect geometric post-processing behavior.
+//! Illustrates intersection outcomes between segments, circles, and lines with clear overlays.
+//! Draws spiral and ring patterns to stress sampling consistency and color-mapping utilities.
+//! Provides rich visual evidence for math and geometry routines used by higher-level systems.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

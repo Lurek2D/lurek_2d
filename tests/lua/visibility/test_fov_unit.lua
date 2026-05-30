@@ -147,3 +147,5 @@ t.test("typeOf returns correct values", function()
 end)
 
 t.finish()
+
+test_summary()

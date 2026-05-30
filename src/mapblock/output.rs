@@ -1,9 +1,8 @@
-//! Output converter: transforms an assembled map block grid into a `TileMap`.
-//!
-//! - `grid_to_tilemap(grid, tileset_id)` produces a `TileMap` ready for the renderer.
-//! - Slot roles (floor/wall/object) are translated to `TileMap` layer indices.
-//! - Block-local tile IDs are offset by the tileset base ID to produce world tile IDs.
-//! - The returned `TileMap` is owned by the caller; no reference to the block grid is kept.
+//! Final mapblock conversion layer that turns placements into tile data outputs.
+//! Translates layered slot payloads into ordered tile layers and resolved tileset ids.
+//! Applies orientation and level handling so exports match runtime presentation.
+//! Produces owned result structures detached from mutable generator state.
+//! Serves as the last step in the mapblock build pipeline.
 
 use super::config::MapBlockConfig;
 use super::group::MapGroup;

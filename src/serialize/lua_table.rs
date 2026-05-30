@@ -1,7 +1,8 @@
-//! Bidirectional conversion between Lua tables and a typed serial value tree.
-//!
-//! - Supports null, bool, int, float, string, sequence, and map variants.
-//! - Detects array-like tables automatically and emits `Seq`; otherwise emits `Map`.
+//! This file bridges the dynamic world of Lua tables and values into the typed intermediate tree used by the serialization subsystem.
+//! It decides when Lua data should be treated as sequences, maps, scalars, or explicit null-like values for downstream codecs.
+//! Array-like tables are recognized structurally so callers do not have to tag them manually before encoding.
+//! The reverse path also lives here, turning decoded serial values back into Lua-friendly tables and primitives.
+//! This file is the language boundary where loose script data becomes format-ready structured data.
 
 use indexmap::IndexMap;
 use mlua::prelude::{Lua, LuaResult, LuaValue};

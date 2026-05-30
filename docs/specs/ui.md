@@ -23,10 +23,6 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ## Files
 
-### chart.rs
-
-- Compatibility re-exports for chart types under `lurek2d::ui::chart`.
-
 ### containers.rs
 
 - Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.

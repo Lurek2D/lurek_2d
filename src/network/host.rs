@@ -1,12 +1,11 @@
-//! ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
-//!
-//! - Host role classification (Server, Client, combined Host) for session routing.
-//! - Event-driven poll loop yielding Connect, Disconnect, and Receive events.
-//! - Connection lifecycle: initiate, graceful disconnect, forced disconnect, and reset.
-//! - Unicast and broadcast packet sending with reliable or unreliable delivery.
-//! - Peer diagnostics: round-trip time, connection state, address, and full statistics snapshot.
-//! - Bandwidth and channel limit configuration at runtime.
-//! - Convenience constructors for common server and client bind patterns.
+//! ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint.
+//! Classifies the host role as server, client, or combined host for session routing.
+//! Runs the event poll loop that yields connect, disconnect, and receive events.
+//! Manages connection lifecycle, packet delivery, and reset flows.
+//! Exposes peer diagnostics such as round-trip time, state, address, and statistics.
+//! Lets callers tune bandwidth and channel limits at runtime.
+//! Provides convenience constructors for common server and client bind patterns.
+//! Acts as the low-level connection anchor for the multiplayer stack.
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;

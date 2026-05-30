@@ -1,8 +1,6 @@
-//! Engine runtime foundations: configuration, shared state, and error types.
-//!
-//! - Loads `conf.toml` into a typed `Config` struct consumed by all subsystems.
-//! - Provides `SharedState` for mutable cross-module communication during a frame.
-//! - Defines `EngineError` variants and slot-map resource keys.
+//! This module provides the foundational runtime layer that the rest of the engine stands on during startup and per-frame execution.
+//! Configuration, shared mutable state, error contracts, operating modes, and resource handle types are gathered here.
+//! At the highest level this is the engine's coordination core, not a gameplay feature module.
 
 /// Runtime configuration model loaded from `conf.toml`.
 pub mod config;

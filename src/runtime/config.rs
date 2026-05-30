@@ -1,10 +1,13 @@
-//! Runtime configuration types parsed from `conf.toml` at engine startup.
-//!
-//! - Top-level `Config` struct with sections for window, renderer, modules, and performance.
-//! - Feature-toggle table (`ModulesConfig`) controlling which engine subsystems are loaded.
-//! - Dependency validation that auto-disables modules when prerequisites are off.
-//! - TOML merge logic: user overrides are layered on top of built-in defaults.
-//! - Serde-based serialization for round-trip configuration persistence.
+//! This file defines the typed runtime configuration model that turns human-edited TOML into engine startup policy.
+//! It gathers window, renderer, module, performance, and environment-facing options into one coherent structure.
+//! Default values and user overrides meet here, which lets the engine begin from a known baseline and then absorb project-specific changes.
+//! Module toggles are not merely flags in this file.
+//! They also participate in dependency validation so invalid feature combinations degrade into a supported runtime shape.
+//! Serialization support matters here because configuration is both loaded from disk and, in some workflows, written back or inspected programmatically.
+//! The design is intentionally declarative so callers can reason about engine behavior before subsystems are even initialized.
+//! This file therefore acts as the contract between external project configuration and internal runtime setup.
+//! Many startup decisions appear later in code, but their authoritative knobs are described here.
+//! In practice this is the runtime's policy schema expressed as Rust data.
 
 #[allow(unused_imports)]
 use crate::log_msg;

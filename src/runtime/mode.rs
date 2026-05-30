@@ -1,8 +1,7 @@
-//! Defines `RuntimeMode` enum with four variants: `gui`, `tui`, `headless`, and `cli`.
-//!
-//! - Provides lowercase string tokens for config serialization and CLI parsing via `as_str` and `Display`.
-//! - `FromStr` accepts any casing and returns a typed parse error that names the rejected token.
-//! - Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
+//! This file defines the small mode vocabulary that tells the engine which style of runtime entry path to follow.
+//! String conversion rules are kept close to the enum so configuration parsing and CLI parsing agree on accepted names.
+//! Parse errors remain explicit here because mode selection failures should be readable before the rest of startup proceeds.
+//! The file therefore turns user-facing startup labels into one typed branch point for the runtime.
 
 use serde::{Deserialize, Serialize};
 use std::fmt;

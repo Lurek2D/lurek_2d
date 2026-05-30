@@ -1,10 +1,9 @@
 //! Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint.
-//!
-//! - Draw-batch struct that collects tile positions and render state for submission.
-//! - Camera-relative pixel offset computation with optional scroll clamping.
-//! - Tile repetition logic delegated to `tile_iter` for viewport coverage.
-//! - Motion-stretch blur effect injection based on autoscroll velocity.
-//! - Shader effect chain management (set, clear, count) per layer.
+//! Carries draw-batch state so render submission stays separated from configuration.
+//! Computes camera-relative pixel offsets with optional scroll clamping.
+//! Delegates tile repetition to tile_iter for viewport coverage.
+//! Supports motion-stretch blur injection based on autoscroll velocity.
+//! Manages a small shader effect chain per layer for extra visual variation.
 
 use crate::render::BlendMode;
 use crate::render::ShaderPassDescriptor;

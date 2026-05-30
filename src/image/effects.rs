@@ -1,13 +1,13 @@
-//! Pixel-level color adjustments: brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize applied via parallel pixel mapping.
-//!
-//! - Alpha channel masking and deterministic per-pixel noise injection with repeatable seed.
-//! - Geometric transforms: horizontal and vertical flip, 90-degree clockwise rotation, and rectangular crop with bounds validation.
-//! - Resize operations using nearest-neighbor sampling, bilinear interpolation, and Lanczos3 windowed-sinc filtering.
-//! - Separable box blur with configurable radius and 3x3 unsharp-mask sharpening kernel.
-//! - General-purpose NxN kernel convolution with clamped-edge boundary handling and validation of odd kernel dimensions.
-//! - Compositing via alpha-blended blit with fast-path for fully opaque sources and nine-slice stretch drawing.
-//! - Bytewise image difference scoring across same-sized and differently-sized images for test comparison.
-//! - `ResizeFilter` enum for selecting resampling kernels via string parsing at the Lua boundary.
+//! Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing.
+//! Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel.
+//! Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing.
+//! Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows.
+//! Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice.
+//! Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples.
+//! Offers alpha-blended blit and nine-slice stretching for practical sprite and panel assembly tasks.
+//! Computes byte-level difference scores for test assertions and regression image comparisons.
+//! Normalizes effect behavior around mutable `ImageData` buffers without hidden global state.
+//! Exposes filter-selection enums parsed from textual inputs used at scripting boundaries.
 
 use super::image_data::ImageData;
 /// Resize kernels supported by the image resampler.

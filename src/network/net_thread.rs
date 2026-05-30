@@ -1,13 +1,10 @@
-//! Background network thread that owns all blocking I/O (HTTP, TCP, WebSocket).
-//!
-//! - MPSC request/response channels isolate the game thread from socket latency.
-//! - `NetworkRequest` enum drives HTTP fetches, TCP streams, and WebSocket frames.
-//! - `NetworkResponse` carries completed results and lifecycle events back to the game loop.
-//! - `TcpEvent` / `WsEvent` model connection state machines (connect, data, close, error).
-//! - `NetworkRuntime` struct spawns the thread, assigns IDs, and exposes typed helpers.
-//! - 10 ms poll loop processes transports and drains the request channel.
-//! - Graceful shutdown closes all connections and joins the thread on drop.
-//! - Correlation IDs let the game thread match responses to outstanding requests.
+//! Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work.
+//! Uses MPSC request and response channels to keep the game thread isolated from latency.
+//! Drives transport activity through typed request and response enums.
+//! Models connection state with explicit TCP and WebSocket event types.
+//! Spawns, polls, and shuts down the runtime while preserving request ordering.
+//! Routes completed results back with correlation ids for outstanding work.
+//! Keeps the blocking transport surface off the main loop.
 
 use super::http;
 use super::tcp::TcpConnectionManager;

@@ -1,14 +1,21 @@
-//! GPU render-command emission for all retained-mode UI widget types (buttons, sliders, trees, tables, dialogs, etc.).
-//!
-//! - CPU pixel-rasterisation fallback (`draw_to_image`) for headless screenshot and test verification.
-//! - Theme-aware style resolution with per-widget alpha compositing applied to all colour channels.
-//! - Shared helper emitters for common visual patterns: shadow, highlight strip, gradient/rounded box, border.
-//! - Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
-//! - Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
-//! - HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
-//! - `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
-//! - Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
-//! - Font-aware text measurement and alignment using the active UI font when available.
+//! This file provides UI render emission for GPU commands and headless pixel raster outputs.
+//! It draws the full retained widget catalog with consistent visual behavior across states.
+//! It resolves theme style data per widget and applies alpha-aware color composition.
+//! It emits shared primitives for shadows, fills, borders, gradients, and highlights.
+//! It handles control-specific visuals such as sliders, checks, radios, combos, and switches.
+//! It renders hierarchical content like trees and menus while preserving structural readability.
+//! It supports color-picker internals with hue-space conversion used during visual generation.
+//! It threads context, font, and output carriers through one deterministic render traversal.
+//! It merges generic and type-specific child sources so nested widgets render in correct order.
+//! It measures and aligns text with active font context to keep typography placement stable.
+//! It supports CPU fallback output for screenshots, tests, and non-GPU verification paths.
+//! It keeps rendering logic centralized so visual changes remain coherent and maintainable.
+//! It scales from lightweight HUDs to complex tool panels using one render architecture.
+//! It preserves deterministic draw command shape for regression checks and diagnostics.
+//! It bridges widget semantics to backend draw primitives without leaking UI internals.
+//! It supports theme-driven look changes without requiring widget logic rewrites.
+//! It maintains robust rendering behavior under dynamic UI mutation each frame.
+//! It anchors the visual execution layer of the retained UI subsystem.
 
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::render::Font;

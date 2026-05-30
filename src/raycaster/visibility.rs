@@ -1,7 +1,6 @@
-//! Radial visibility polygon computation from a point source.
-//!
-//! - Casts rays at segment-endpoint angles with epsilon jitter for gap-free coverage.
-//! - Returns interleaved coordinate arrays suitable for triangle-fan rendering.
+//! This file computes a radial visibility fan from a source point against segment obstacles in the plane.
+//! Rays are aimed around segment endpoints with slight angular offsets so the resulting contour closes gaps that naive sampling would miss.
+//! The output is shaped for immediate drawing or further masking work wherever a 2D field of view needs explicit polygon points.
 
 use super::segment::{cast_ray_2d, Segment};
 /// Cast radial rays at all segment-endpoint angles from `(ox, oy)` and return.

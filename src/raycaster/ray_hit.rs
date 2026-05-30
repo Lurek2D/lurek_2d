@@ -1,7 +1,6 @@
-//! DDA ray-cast result record holding wall distance, hit coordinates, and texture sampling data.
-//!
-//! - Carries both fish-eye-corrected and raw distances for flexible column rendering.
-//! - Provides side, alpha, and cell value for shading and transparency decisions.
+//! This file defines the hit record that carries everything a marched ray learned when it touched visible map geometry.
+//! It preserves both geometric contact details and render-facing details such as sampled side, distance flavor, opacity, and tile identity.
+//! The struct is the shared currency between stepping, scene building, shading, and any caller that needs precise impact information.
 
 /// Result record for one DDA ray; produced by `Raycaster2D::cast_ray`.
 #[derive(Debug, Clone)]

@@ -1,7 +1,6 @@
 //! Global ambient tint state driven by a time-of-day curve.
-//!
-//! - Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
-//! - Consumed by the overlay renderer when the ambient effect is enabled.
+//! Maps day phases into scene-wide color changes for lighting control.
+//! Supplies the ambient baseline consumed by the overlay renderer.
 
 #[derive(Debug, Clone)]
 /// Stores ambient tint settings applied across the whole screen.

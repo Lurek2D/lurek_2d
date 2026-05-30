@@ -1,8 +1,8 @@
 //! Ribbon trail built from a deque of aged world-space points.
-//!
-//! - Automatic point retirement when age exceeds configurable lifetime.
-//! - Width tapering and head-to-tail colour interpolation.
-//! - Render output as triangle-strip render commands or CPU-rasterised image.
+//! Retires points automatically when they exceed the configured lifetime.
+//! Tapers width and interpolates color from head to tail.
+//! Can render as triangle-strip commands or as a CPU-rasterized image.
+//! Provides a lightweight motion trail for fast effects and debug views.
 
 use crate::color::Color;
 use crate::render::renderer::{DrawMode, RenderCommand};

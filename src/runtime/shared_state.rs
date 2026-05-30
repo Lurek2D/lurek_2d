@@ -1,14 +1,15 @@
-//! Central mutable state container shared across all engine subsystems during a frame.
-//!
-//! - Window state tracking: focus, DPI, fullscreen, scale mode, and pending resize/move requests.
-//! - Resource pools via SlotMap for textures, fonts, canvases, shaders, meshes, and particle systems.
-//! - Input aggregation: keyboard, mouse, touch, and gamepad state with vibration requests.
-//! - Timing and profiling: frame clock, delta time, FPS, per-phase timing breakdown.
-//! - Memory budget enforcement with LRU eviction of textures and canvases.
-//! - Asynchronous file I/O through GameFS with poll-based completion.
-//! - Physics stepping configuration and run-state parameters.
-//! - Render pipeline state: blend mode, stencil, depth, scissor, color mask, and command buffer.
-//! - Province registries, parallax layers, tilemaps, raycaster output, and UI context weak refs.
+//! This file defines the shared mutable runtime container that lets otherwise separate engine systems coordinate during startup and each frame.
+//! It gathers cross-cutting state for windowing, timing, resources, input, rendering, async work, and several feature subsystems into one borrowable hub.
+//! Resource pools live here because textures, canvases, fonts, shaders, meshes, and similar assets need one authoritative ownership home.
+//! Frame-local render state also accumulates here so gameplay code can enqueue visual intent without talking directly to the GPU backend.
+//! Input aggregation and timing data share the same structure because many systems consume them repeatedly throughout a frame.
+//! Memory budget enforcement belongs here as well, since eviction decisions depend on a global view of runtime-managed assets.
+//! Async filesystem operations are tracked here so polling and completion can integrate cleanly with the main loop.
+//! Several feature modules store their live handles or derived outputs in this container when they need to survive across calls and script boundaries.
+//! The file is intentionally broad because it is not modeling one feature.
+//! It is modeling the practical state surface of the whole running engine.
+//! Without this container, subsystems would duplicate ownership logic or pass oversized parameter sets through every call.
+//! In practice this is the mutable coordination nucleus of the runtime.
 
 use crate::midi::MidiState;
 use crate::audio::Mixer;

@@ -23,7 +23,7 @@ Beyond decision logic, the toolkit encompasses extensive systems for perception,
 
 The module also integrates a suite of machine learning and adaptive systems via re-exports from the dedicated [`learning`](learning.md) module. It features multi-armed `Bandit` strategies (epsilon-greedy, UCB1, Thompson sampling), tabular `QLearner` reinforcement learning, and a lightweight `NeuralNet` supporting `Neuroevolution` via a population-based genetic algorithm. This allows for evolving behaviors over generations. Furthermore, agents can possess rich internal states using the `Emotion` and `NeedSystem` modules, alongside archetypal `TraitProfile`s that govern personality variables.
 
-Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store, while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
+Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store re-exported from [`patterns`](patterns.md), while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
 
 ## Files
 
@@ -46,14 +46,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - Running state per composite node enabling cross-tick resume from last active child.
 - Parallel policy configuration with independent success and failure thresholds.
 - Root node container used as the single-instance tree by the per-agent AI runtime.
-
-### blackboard.rs
-
-- Agent blackboard: shared read/write key-value memory for behaviour-tree nodes.
-- Stores typed values (`bool`, `i32`, `f32`, `String`) under string keys.
-- Designed for single-agent or squad-shared access within one Lua game tick.
-- Values are reset or persisted per agent lifecycle at the call site's discretion.
-- Used by BT nodes to communicate patrol targets, attack counts, and state flags.
 
 ### command_queue.rs
 

@@ -1,7 +1,6 @@
-//! Single-sprite data type holding texture, position, scale, rotation, and colour tint.
-//!
-//! - Constructor and transform setters for positioning and styling sprites.
-//! - Designed as a lightweight value object consumed by the render pipeline.
+//! This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
+//! It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
+//! The type is the simplest textured presentation unit in the sprite subsystem.
 
 use crate::color::Color;
 use crate::math::Vec2;

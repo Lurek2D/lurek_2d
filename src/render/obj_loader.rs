@@ -1,29 +1,15 @@
-//! OBJ model loader for 2D projection.
-//!
-//! - Loads Wavefront .obj files and projects 3D geometry into 2D for use with
-//! - the raycaster and globe rendering systems. This is NOT a 3D rendering
-//! - pipeline — models are reduced to 2D projections (orthographic or perspective)
-//! - for display in the 2D engine.
-//! - ## Feature Gate
-//! - This module is gated behind the `obj-loader` feature (enabled by default).
-//! - Disable it to reduce binary size if your game doesn't use 3D model loading:
-//! - ```toml
-//! - [dependencies]
-//! - lurek2d = { version = "...", default-features = false, features = [...] }
-//! - ```
-//! - ## Capabilities
-//! - Wavefront OBJ and MTL file loading via a built-in hand parser.
-//! - Triangulated face model with per-vertex position, UV, and normal indices.
-//! - Named materials carrying diffuse colour and optional texture path.
-//! - CPU software rasteriser producing `ImageData` thumbnails with back-face culling, Z-buffer, and key lighting.
-//! - Perspective projection of OBJ models into engine `Mesh` geometry for GPU rendering.
-//! - Instance projection with Y-axis rotation, uniform scale, and depth output for scene sorting.
-//! - Local `Vec3`/`Vec2` types for self-contained 3-D math without engine-wide dependencies.
-//! - `ObjCamera` helper packing position, lookat target, and FOV for projection calls.
-//! - `ObjLoader` stateless parser facade with both file-based and in-memory entry points.
-//! - MTL parsing extracting `newmtl`, `Kd`, and `map_Kd` into a flat material list.
-//! - OBJ face-vertex index resolver handling 1-based and negative (relative) indices.
-//! - Edge-function barycentric rasterisation for the CPU renderer path.
+//! This file imports Wavefront OBJ content and converts it into forms that make sense inside a 2D engine rather than a full 3D renderer.
+//! Parsed models can be projected into engine mesh data for GPU drawing or rasterized in software for previews and tooling images.
+//! Material parsing keeps basic diffuse color and texture references close to the mesh data so projected results still carry authored surface intent.
+//! Local vector and camera utilities are included here because the conversion work needs lightweight 3D math without spreading that concern across the engine.
+//! Face handling normalizes OBJ indexing quirks such as relative references and mixed attribute indices into stable internal structures.
+//! CPU rasterization gives the module a no-GPU path for thumbnails, validation, and other inspection-oriented workflows.
+//! Projection support is tuned for systems like the raycaster and globe views that want 3D-authored silhouettes in a 2D presentation model.
+//! The file is feature-gated because model import is useful but not fundamental to every game built on the runtime.
+//! In design terms this is an adapter from common 3D content formats to the engine's 2D rendering language.
+//! It preserves enough material and geometric structure to stay expressive without promising a general-purpose 3D pipeline.
+//! That boundary is the point: authored 3D assets may inform a scene, but final display still obeys the engine's 2D rendering architecture.
+//! This file is where that translation is made concrete and reusable.
 
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};

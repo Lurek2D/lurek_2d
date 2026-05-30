@@ -1,10 +1,9 @@
-//! Raycaster-specific minimap overlay rendering.
-//!
-//! - Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
-//! - Bresenham grid traversal for fast obstruction testing between player and map cells.
-//! - FOV ray fan that reveals all traversed cells within a max distance and step size.
-//! - Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
-//! - Player arrow rendering (filled circle plus direction line) composited onto the minimap.
+//! Raycaster-specific minimap overlay renderer for tile-based visibility views.
+//! Builds a pixel-grid minimap from wall, floor, and lighting information.
+//! Uses line-of-sight and Bresenham traversal to reveal reachable cells.
+//! Fills raw RGBA buffers for fast image output and preview rendering.
+//! Draws the player indicator as a compact orientation cue on top of the map.
+//! Serves as the specialised bridge between raycasting state and minimap output.
 
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};

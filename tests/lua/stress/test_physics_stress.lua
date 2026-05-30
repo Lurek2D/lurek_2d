@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Mass Body Creation
+-- Lurek2D Stress Test: Mass Body Creation
 -- Creates 1000 physics bodies and steps the world
 
 -- @describe physics stress: 1000 bodies

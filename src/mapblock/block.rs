@@ -1,9 +1,9 @@
-//! Map block definition: tile slots, edge connection points, and per-block metadata.
-//!
-//! - `MapBlock` holds a grid of `MapTile` slots and a set of edge constraint descriptors.
-//! - `BlockMeta` carries the name, weight, group membership, and tileset reference.
-//! - Blocks are loaded from TOML files under `content/maps/blocks/`.
-//! - Exposed to Lua via `lurek.mapblock.define(spec)` for runtime registration.
+//! Fundamental mapblock unit combining tile payloads, edge sockets, and metadata.
+//! Carries the data needed to match blocks during procedural placement.
+//! Stores selection weighting, naming, and tileset references for later output.
+//! Encodes the local shape and slot content that downstream stages consume.
+//! Keeps neighbor semantics alongside the block so validation stays data-driven.
+//! Acts as the atomic building piece for the entire mapblock pipeline.
 
 use super::config::MapBlockConfig;
 use super::constraints::EdgeConstraint;

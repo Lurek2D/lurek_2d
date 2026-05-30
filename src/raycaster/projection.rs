@@ -1,7 +1,6 @@
-//! Wall-column projection from ray distance to screen-pixel height and vertical bounds.
-//!
-//! - Distance-based shading for depth fog attenuation.
-//! - Returns `(wall_height, draw_start, draw_end)` clamped to valid screen-pixel bounds.
+//! This file contains the compact projection math that turns a ray distance into a visible wall span on screen.
+//! It also derives distance falloff values so farther geometry can darken smoothly as space recedes from the camera.
+//! The formulas here keep screen bounds clamped and predictable for the rest of the raycaster pipeline.
 
 /// Project a wall column at `distance` using `fov` and `screen_height`;.
 /// return `(wall_height, draw_start_y, draw_end_y)` in screen pixels.

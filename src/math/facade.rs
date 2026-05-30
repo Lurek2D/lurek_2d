@@ -1,7 +1,7 @@
-//! Scalar interpolation helpers: lerp, inverse_lerp, remap, smoothstep.
-//!
-//! - Numeric utilities: clamp, sign.
-//! - All functions operate on `f32` and are pure (no side effects).
+//! Small scalar helper layer for interpolation and numeric remapping.
+//! Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior.
+//! Operates on f32 values only and stays side-effect free.
+//! Acts as the lightweight math front door for common numeric tasks.
 
 /// Linearly interpolate from `a` to `b` by factor `t`; t=0 returns `a`, t=1 returns `b`.
 pub fn lerp(a: f32, b: f32, t: f32) -> f32 {

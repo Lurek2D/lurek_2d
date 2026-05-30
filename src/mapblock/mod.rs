@@ -1,12 +1,6 @@
-//! Map-block procedural assembly system.
-//!
-//! - Builds tile maps from composable blocks using scripted placement.
-//! - Supports configurable tile slots (floor, roof, object, walls, custom).
-//! - Carcassonne-style neighbor edge matching for placement constraints.
-//! - Multi-level (Z-layers) for multi-storey maps.
-//! - TopDown and Isometric orientations (no hex).
-//! - Arbitrary map shapes (not limited to rectangles).
-//! - Output converts to standard `TileMap` for rendering.
+//! High-level mapblock module that wires blocks, scripts, constraints, and output conversion together.
+//! Exposes the procedural assembly surface used to build tilemaps from authored content.
+//! Keeps layered generation, orientation handling, and placement validation under one namespace.
 
 /// Map block definition: tile slots, metadata, and per-block configuration.
 pub mod block;

@@ -1,9 +1,9 @@
 //! Grid-based A* pathfinding with 8-directional movement and variable cell costs.
-//!
-//! - Bresenham line-of-sight checks for post-search path smoothing (string-pull).
-//! - World-space coordinate conversion: cell indices map to centres via configurable cell size.
-//! - Diagonal corner-cutting prevention to avoid clipping through blocked corners.
-//! - Octile distance heuristic for consistent and admissible cost estimation.
+//! Uses Bresenham line-of-sight for path smoothing after search.
+//! Converts cell indices to world-space centres with configurable cell size.
+//! Prevents diagonal corner cutting through blocked corners.
+//! Uses an octile heuristic for consistent cost estimation.
+//! Gives tile maps a direct shortest-path implementation.
 
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;

@@ -1,10 +1,9 @@
-//! Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
-//!
-//! - Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
-//! - Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
-//! - Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to PNG.
-//! - Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
-//! - Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
+//! This file provides declarative UI loading from TOML definitions into live widget trees.
+//! It maps textual widget kinds onto concrete context constructors with consistent defaults.
+//! It applies generic and type-specific properties so authored layouts become runtime-ready.
+//! It supports recursive child structures that mirror retained parent-child composition.
+//! It offers headless image rendering for snapshot checks and offline layout verification.
+//! It enables fast iteration on UI structure without hardcoding full trees in Lua scripts.
 
 use crate::ui::context::{GuiContext, WidgetKind};
 use serde::Deserialize;

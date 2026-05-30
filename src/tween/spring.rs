@@ -1,7 +1,8 @@
-//! Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
-//!
-//! - Named spring system aggregating multiple axes under shared default parameters.
-//! - Euler integration with snap-to-target on settle to eliminate micro-oscillation.
+//! This file provides damped spring simulation for motion that should feel physical and responsive.
+//! It models spring parameters and settle rules so values converge smoothly toward targets.
+//! It groups named spring axes under shared defaults for coordinated multi-field behaviors.
+//! It integrates state each tick and snaps on settle to remove micro-jitter residue.
+//! It offers a natural animation path where fixed-duration easing is not a good fit.
 
 use std::collections::HashMap;
 

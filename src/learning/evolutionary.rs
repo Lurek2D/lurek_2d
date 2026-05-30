@@ -1,4 +1,6 @@
-//! Shared trait for layers that expose flat trainable parameters.
+//! Defines the shared trait contract for layers exposing flat trainable parameter buffers.
+//! Standardizes parameter counting, import, and export across heterogeneous learning layers.
+//! Enables neuroevolution and genetic workflows to operate on model components uniformly.
 
 /// Contract for layers usable in neuroevolution workflows.
 pub trait EvolutionaryLayer {

@@ -1,13 +1,13 @@
-//! Owns `HtmlDocument`, the mutable tree that holds parsed elements, CSS state, and interaction focus.
-//!
-//! - Provides document construction from raw HTML with optional viewport size and initial CSS.
-//! - Manages CSS source accumulation, rule parsing, and per-element computed style resolution.
-//! - Implements a simple vertical block layout engine with dirty-flag tracking and viewport resize.
-//! - Exposes DOM query helpers: element-by-id, CSS selector matching, ancestor traversal.
-//! - Supports DOM mutation: set/append inner HTML, set text, remove elements, attribute and class ops.
-//! - Handles focus, hover, hit-testing, mouse/keyboard routing, and text input for form elements.
-//! - Produces `HtmlDrawCommand` vectors consumed by the renderer for box and text passes.
-//! - Includes inner/outer HTML serialization and document-order traversal utilities.
+//! Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state.
+//! Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs.
+//! Resolves selector-driven style cascades into computed per-element visual properties for later layout.
+//! Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry.
+//! Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing.
+//! Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries.
+//! Applies DOM mutations like attribute edits, class toggles, text replacement, and inner fragment insertion.
+//! Serializes inner and outer HTML snapshots so runtime edits can be observed or persisted deterministically.
+//! Generates draw command streams carrying rectangles, text, and color intent for render-side execution.
+//! Collects parse and style warnings so caller code can surface authoring issues without aborting runtime flow.
 
 use crate::html::element::{normalise_name, HtmlElement, HtmlElementId, HtmlRect};
 use crate::html::parser::{escape_attribute, escape_text, parse_into};

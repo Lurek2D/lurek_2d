@@ -1,7 +1,7 @@
-//! Z-ordered draw-callback queue flushed once per frame by the render loop.
-//!
-//! - Entries hold a depth key and an opaque callback ID returned to Lua.
-//! - Sorted at flush time so draw callbacks execute in front-to-back order.
+//! This file stores deferred draw-layer callbacks that should execute in a chosen depth order later in the frame.
+//! Entries carry ordering intent without forcing immediate GPU work, which lets gameplay and UI enqueue layered drawing cheaply.
+//! Sorting is centralized here so every queued callback follows the same layering rule before the renderer flushes it.
+//! The result is a narrow scheduling buffer between scripting-time draw requests and render-time command emission.
 
 /// A pending draw-callback slot queued in `DrawLayer`.
 pub struct LayerEntry {

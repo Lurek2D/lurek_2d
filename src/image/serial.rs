@@ -1,9 +1,9 @@
-//! Serialize and deserialize flat and layered images in the LIMG binary format.
-//!
-//! - Provide zlib compression and decompression for pixel payloads.
-//! - Validate headers, version tags, and type flags on load.
-//! - Encode layer metadata (name, opacity, visibility) alongside pixel data.
-//! - Expose both file-path and raw-byte entry points for flexible I/O.
+//! Implements LIMG binary serialization for flat and layered images with versioned format guards.
+//! Encodes and decodes pixel payloads with compression to reduce storage and transfer overhead.
+//! Validates magic headers, version bytes, and payload type tags before accepting input data.
+//! Preserves layer metadata such as names, opacity, and visibility across save-load round trips.
+//! Exposes both in-memory byte APIs and filesystem helpers for flexible integration contexts.
+//! Keeps format handling deterministic so tooling and runtime produce consistent binary artifacts.
 
 use super::image_data::ImageData;
 use super::layers::LayeredImage;

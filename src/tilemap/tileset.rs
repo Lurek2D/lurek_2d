@@ -1,9 +1,8 @@
-//! Tileset geometry: tile dimensions, spacing, margin, column count, and GID range ownership.
-//!
-//! - Source-rect lookup: compute pixel `Rect` for any local tile ID within the sprite-sheet.
-//! - Collision metadata: per-tile solid flag storage and query.
-//! - Animation sequences: frame-based tile animations keyed by local ID.
-//! - Autotile rules: 4-bit and 8-bit bitmask-to-tile mappings for terrain transitions.
+//! This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels.
+//! It computes source rectangles from local IDs so render code can sample the correct sprite area.
+//! It stores solidity metadata per tile to support collision and gameplay filtering decisions.
+//! It tracks frame-based tile animations so animated map cells advance with deterministic timing.
+//! It holds autotile rule tables that translate neighborhood masks into terrain transition IDs.
 
 use crate::log_msg;
 use crate::math::Rect;

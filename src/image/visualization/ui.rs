@@ -1,9 +1,8 @@
-//! Settings panel layout with controls, sliders, and buttons.
-//!
-//! - HUD bar rendering for health, mana, stamina, and XP.
-//! - Skill cooldown arcs with radial fill indicators.
-//! - Color swatch palette with selection highlight.
-//! - Progress bars and percentage label formatting.
+//! Renders UI-oriented mockups into images to preview panel composition and widget styling.
+//! Draws settings-style panels with controls, sliders, and button affordances for layout checks.
+//! Produces HUD bars and cooldown visuals used to validate gameplay HUD readability.
+//! Includes swatches and progress widgets for color and status presentation experiments.
+//! Supplies deterministic UI snapshots useful in examples, tests, and design iteration loops.
 
 use crate::image::ImageData;
 /// Render a panel layout with borders, labels, and content areas into an image.

@@ -1,8 +1,8 @@
-//! Format detection, decoding, and encoding for the serial module.
-//!
-//! - Supports JSON, TOML, CSV, MsgPack, XML, and INI formats.
-//! - Provides auto-detection of text formats by content inspection.
-//! - Separates text-based and binary decode paths.
+//! This file provides the format-agnostic front door for serialization work across text and binary payloads.
+//! It decides which codec to use, how to route decoding and encoding, and when content can be recognized automatically.
+//! Text and binary paths are separated here so callers can use one interface without collapsing all format quirks into one parser.
+//! The file is therefore the dispatcher that turns unknown serialized input into a chosen translation path.
+//! It is the hub where multi-format support becomes one practical API.
 
 use super::{
     from_csv, from_ini, from_json, from_toml, from_xml, to_csv, to_json, to_toml, CsvOptions,

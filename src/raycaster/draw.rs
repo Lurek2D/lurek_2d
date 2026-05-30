@@ -1,7 +1,7 @@
-//! Software rasterization of a raycaster scene into an `ImageData` pixel buffer.
-//!
-//! - Flat-shaded fills for ceilings, floors, walls, and sprites.
-//! - Back-to-front draw order for correct painter's-algorithm layering.
+//! This file turns a prepared raycaster scene into software pixels when GPU command generation is not the chosen output path.
+//! It fills ceilings, floors, walls, and sprite shapes directly into image memory using the scene ordering established earlier in the pipeline.
+//! Draw order stays deliberately simple so layered surfaces read correctly even without a richer hardware depth workflow.
+//! The result is useful for offline images, debug previews, and tool-facing render outputs that need first-person content in CPU memory.
 
 use crate::image::ImageData;
 use crate::raycaster::scene::RaycasterScene;

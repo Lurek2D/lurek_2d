@@ -1,7 +1,7 @@
-//! Billboard sprite registry for the raycaster subsystem.
-//!
-//! - Manages creation, removal, positioning, and visibility of world-space sprites.
-//! - Provides distance-sorted iteration for back-to-front rendering.
+//! This file manages world-space billboard content that should appear inside the raycast view without becoming part of the wall grid.
+//! It keeps sprite placement, identity, and visibility data in one registry so gameplay systems can add props, pickups, or actors cheaply.
+//! When the camera needs them, sprites are exposed in depth-aware order that fits alpha-friendly first-person rendering.
+//! The registry therefore acts as the dynamic object layer that rides on top of static map geometry.
 
 /// A billboard sprite placed in world space with an associated texture and uniform scale.
 #[derive(Debug, Clone)]

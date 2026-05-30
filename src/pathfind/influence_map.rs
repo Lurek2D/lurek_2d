@@ -1,9 +1,9 @@
 //! Grid-based influence map with named floating-point layers over a uniform cell grid.
-//!
-//! - Stamp radial influence with distance falloff, propagate via neighbourhood smoothing, and decay over time.
-//! - Query aggregated influence inside world-space rectangles or locate extrema positions.
-//! - Blend multiple layers with weighted combination into a destination layer.
-//! - Debug visualisation rendering layers into an RGBA image for inspection.
+//! Stamps radial influence with falloff, smooths through neighbours, and decays over time.
+//! Queries aggregated influence in rectangles or locates extrema positions.
+//! Blends multiple layers into a destination layer with weighted combination.
+//! Exposes debug visualisation into an RGBA image for inspection.
+//! Serves tactical scoring and spatial pressure systems.
 
 use crate::runtime::log_messages::{IF01, IF02, IF03};
 

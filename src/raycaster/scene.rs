@@ -1,7 +1,8 @@
-//! Scene geometry types emitted by the raycaster build pass and consumed by the renderer.
-//!
-//! - Quad primitives for walls, floors, ceilings, billboard sprites, and static meshes.
-//! - `RaycasterScene` collects all quads for one frame with depth and perspective-correct UV data.
+//! This file defines the transient geometry language that the raycaster uses between spatial reasoning and final drawing.
+//! Walls, floors, ceilings, sprites, and injected meshes all share a quad-oriented representation so later stages can sort and emit them uniformly.
+//! Each record carries the texture routing, light tint, depth meaning, and UV state needed to survive the trip from world logic to renderer.
+//! The scene container groups one frame of these surfaces into a single package sized to the active viewport.
+//! In practice it is the raycaster's staging area for everything the camera can currently see.
 
 use crate::math::Vec2;
 use crate::render::mesh::Mesh;

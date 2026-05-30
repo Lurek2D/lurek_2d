@@ -1,7 +1,6 @@
-//! Drift-free microsecond accumulation for scaled elapsed-time tracking.
-//!
-//! - Fractional sub-microsecond carry prevents rounding loss across frames.
-//! - All negative inputs clamped to zero for monotonic guarantees.
+//! This file provides drift-safe microsecond accumulation for scaled runtime timekeeping.
+//! It preserves fractional carry between ticks so long sessions avoid rounding erosion.
+//! It clamps negative inputs to keep elapsed time monotonic and scheduler-safe.
 
 /// Advance `elapsed_micros` by `dt_seconds * scale`, accumulating fractional.
 /// microseconds in `carry_micros` to avoid drift; clamps negative inputs to zero.

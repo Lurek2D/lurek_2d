@@ -1,7 +1,7 @@
-//! LLM-assisted WFC constraint generation.
-//!
-//! Sends structured prompts to the global LLM endpoint and parses
-//! the JSON response into WFC tile sets and adjacency rules.
+//! LLM-assisted helper layer for turning natural-language intent into concrete WFC tiles, weights, and adjacency rules.
+//! The file handles prompt shaping and response parsing so language-model output can become structured generator input rather than loose text.
+//! Keeping that translation here isolates the experimental boundary between authored prompts and deterministic procedural systems.
+//! Functionally this file delivers an assisted authoring path for bootstrapping WFC constraints from descriptive input.
 
 use crate::procgen::{WfcOpts, WfcRules, WfcTile};
 use std::collections::HashMap;

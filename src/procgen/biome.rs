@@ -1,9 +1,9 @@
-//! Biome classification system mapping height, moisture, and temperature to terrain types.
-//!
-//! - Defines `BiomeType` enum covering ocean, coast, desert, forest, tundra, and more.
-//! - Configurable `BiomeRules` thresholds for tuning world generation.
-//! - Stateless `BiomeClassifier` for single-cell or bulk grid classification.
-//! - RGBA color mapping for biome visualisation output.
+//! Biome classification layer for turning raw environmental values such as elevation, moisture, and temperature into readable world-region identities.
+//! The file defines the terrain vocabulary itself and the threshold rules that decide when a sampled point should become ocean, coast, forest, desert, tundra, or another high-level biome.
+//! Classifier logic stays stateless so single points and full maps can be categorized with the same predictable rule set.
+//! Color mapping lives beside the rules, which makes the biome model useful both for gameplay semantics and for direct visualization in tools or previews.
+//! Threshold tuning is part of the authored surface, allowing different world flavors to emerge without changing the classification algorithm.
+//! Functionally this file delivers the semantic translation from continuous climate-like data into discrete terrain meaning.
 
 /// Biome variant covering terrain from ocean to ice cap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

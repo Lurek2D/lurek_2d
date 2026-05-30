@@ -1,10 +1,9 @@
-//! Thread-safe MPMC channel for passing typed values between Lua VMs.
-//!
-//! - Bounded and unbounded variants with configurable overflow policy.
-//! - Blocking `push`/`demand` and non-blocking `try_push`/`pop`/`peek` operations.
-//! - Recursive Lua-to-ChannelValue and ChannelValue-to-Lua conversion (nil, bool, number, string, table, bytes).
-//! - Named channels for diagnostics; monotonic push-count IDs for tracing.
-
+//! This file provides the thread-safe message bus that moves typed payloads between isolated Lua VMs.
+//! It defines a stable transport value model that preserves scalar values, nested tables, and binary blobs.
+//! It supports bounded and unbounded queues so gameplay code can choose backpressure or open throughput.
+//! It offers blocking and non-blocking push and pull flows for deterministic runtime synchronization.
+//! It bridges Rust and Lua value domains with explicit conversion rules that avoid hidden sharing.
+//! It keeps channel identity and message sequencing visible so concurrent data flow stays debuggable.
 use crate::log_msg;
 use crate::runtime::log_messages::{CH01, CH02, CH03, CH04};
 use mlua::prelude::*;

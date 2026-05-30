@@ -1,15 +1,21 @@
-//! Retained-mode GUI context owning a flat arena of widgets addressed by index.
-//!
-//! - Discriminated `WidgetKind` union covering 35+ control/container/overlay types with shared `WidgetBase` access.
-//! - Recursive layout pass computing absolute `computed_rect` from parent-relative positions.
-//! - Focus management with forward/backward cycling and keyboard-driven tab navigation.
-//! - Drag-and-drop API with cycle detection to prevent parent-into-child drops.
-//! - Alpha and position transition animations stepped each frame with automatic expiry.
-//! - Data binding system mapping string keys to numeric, text, or boolean widget values.
-//! - FNV-hash render signature for fast dirty-check without full tree diffing.
-//! - Mouse press/release/move and keyboard input dispatch to the focused widget.
-//! - Toast overlay queue with per-message timers and automatic expiry.
-//! - Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
+//! This file provides the central retained-mode UI context that owns widget state and lifecycle.
+//! It stores all widget variants in one indexed arena so references stay compact and stable.
+//! It runs recursive layout to compute absolute rectangles from parent-relative placement data.
+//! It manages focus traversal and keyboard navigation for consistent interaction behavior.
+//! It routes mouse and key events through controlled dispatch paths tied to active widgets.
+//! It drives drag-and-drop with safety checks that prevent invalid parent-child cycles.
+//! It advances alpha and position transitions so UI motion remains smooth and deterministic.
+//! It maintains data bindings that synchronize widget values with script-owned state keys.
+//! It tracks render signatures to detect dirtiness without expensive full-tree comparisons.
+//! It queues interface events so Lua can consume interactions in a frame-coherent order.
+//! It handles toast overlay lifetimes and visibility as transient UI feedback primitives.
+//! It maintains root-level viewport and scaling context used by layout and rendering passes.
+//! It exposes creation and lookup surfaces that keep widget graph mutations predictable.
+//! It centralizes ownership so memory, input, and animation behavior are coordinated.
+//! It forms the contract boundary between UI data, behavior, and visual output.
+//! It keeps high-volume interface updates efficient enough for runtime and tooling screens.
+//! It enables complex widget ecosystems while preserving one coherent execution timeline.
+//! It anchors the entire UI subsystem around deterministic per-frame state progression.
 
 use crate::log_msg;
 use crate::math::Rect;

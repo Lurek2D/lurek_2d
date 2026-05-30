@@ -1,9 +1,10 @@
-//! Standard easing curves: quad, cubic, quart, sine, expo, elastic, bounce, back.
-//!
-//! - Each family provides in, out, and in-out variants mapping `t∈[0,1]→[0,1]`.
-//! - Boundary-clamped functions (expo, elastic) handle t≤0 and t≥1 explicitly.
-//! - Name-based lookup via `apply` and `resolve_easing_fn` for string-driven tween systems.
-//! - Linear passthrough for identity interpolation.
+//! Curated easing family for animation curves and tween response shaping.
+//! Covers the standard in, out, and in-out variants across common motion families.
+//! Handles edge clamping for curves that need explicit start and end behavior.
+//! Exposes name-based resolution for data-driven animation systems.
+//! Includes linear passthrough for identity interpolation.
+//! Keeps the API focused on normalized t in [0,1] inputs and outputs.
+//! Lets higher-level systems drive motion with consistent curve semantics.
 
 use std::f32::consts::PI;
 

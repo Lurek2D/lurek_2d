@@ -1,10 +1,7 @@
-//! Immediate-mode GUI toolkit: containers, controls, extras, and theming.
-//!
-//! - Provides layout panels, interactive widgets, and data-bound context.
-//! - Optional TOML layout-loader feature behind a feature flag.
+//! This module delivers the full retained UI toolkit used by gameplay and tooling layers.
+//! It combines context, widgets, containers, rendering, and theming into one coherent surface.
+//! It keeps interface construction flexible through code-first and data-driven layout paths.
 
-/// Chart types re-exported from the charts crate module.
-pub mod chart;
 /// Multi-series data graph renderer with viewport and coordinate mapping.
 pub mod data_graph_renderer;
 /// Container widgets: panels, docks, scroll areas, split views.

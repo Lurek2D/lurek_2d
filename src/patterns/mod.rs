@@ -1,7 +1,7 @@
-//! Reusable game-logic design patterns: state machines, behavior trees, event buses, and object pools.
-//!
-//! - Data structures for priority queues, graphs, tries, rings, and bidirectional maps.
-//! - Command stacking, observer subscriptions, throttling, and weighted random selection.
+//! Foundational gameplay pattern toolbox that packages decision flow, state coordination, messaging, reuse, and selection primitives into small reusable building blocks.
+//! The module supplies behavior trees, simple and guarded state machines, observer and event distribution layers, mediator routing, factories, service lookup, and undo-oriented command history.
+//! It also delivers practical supporting structures such as graphs, tries, rings, priority ordering, bidirectional lookup, weighted picks, throttling windows, buffered funnels, and object reuse pools.
+//! At module level this is the high-level kit for assembling decoupled game logic systems in Lua and Rust without re-implementing common orchestration patterns for each feature.
 
 /// Behavior tree execution engine with composite and leaf nodes.
 pub mod behavior_tree;

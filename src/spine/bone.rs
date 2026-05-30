@@ -1,7 +1,7 @@
-//! Bone struct holding local and accumulated world-space transform.
-//!
-//! - Parent-child hierarchy via optional parent index.
-//! - Constructors for root bones and parented child bones.
+//! This file defines the skeletal bone unit that carries local pose data and resolved world transform state.
+//! Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy.
+//! The type exists as the core transform-bearing element for the rest of the spine animation system.
+//! It is where local intent becomes world-space pose context for attached visuals and constraints.
 
 /// Single bone in the skeleton tree with local and accumulated world-space transform.
 #[derive(Debug, Clone)]

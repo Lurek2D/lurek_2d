@@ -1,7 +1,8 @@
-//! Parse CSV text or streams into `SerialValue` sequences of maps or arrays.
-//!
-//! - Serialize `SerialValue` back to CSV with configurable delimiter and header behavior.
-//! - Support both header-keyed (map rows) and index-only (sequence rows) modes.
+//! This file translates between tabular CSV text and the engine's generic serial value tree.
+//! It supports row-oriented data that may be keyed by headers or treated as plain positional sequences.
+//! Delimiters, quoting behavior, and output shape are handled here so spreadsheet-style data stays usable without special caller code.
+//! Encoding and decoding live together because CSV round-trips depend on consistent assumptions about row structure.
+//! The file is the serialization layer for flat table data rather than nested document-like formats.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

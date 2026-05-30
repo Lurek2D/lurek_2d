@@ -1,7 +1,8 @@
-//! Named event bus that routes events to prioritized subscriptions.
-//!
-//! - Supports wildcard listeners, one-shot subscriptions, and per-event clearing.
-//! - Returns ordered listener ID lists for the Lua callback layer to dispatch.
+//! Event bus routing for decoupled gameplay communication where systems publish named signals and interested listeners react without direct caller knowledge.
+//! The file organizes subscriptions by event name while preserving listener identity, priority order, and wildcard reach so dispatch can stay predictable as projects grow.
+//! One-shot listeners, targeted clearing, and ordered listener extraction make the bus practical both for transient reactions and for long-lived system wiring.
+//! Rather than executing script callbacks itself, it prepares the dispatch shape that higher layers can consume while keeping subscription state authoritative in one place.
+//! Functionally this is the message circulation core for feature coordination, broadcast-style notifications, and low-friction cross-system signaling.
 
 use std::collections::HashMap;
 

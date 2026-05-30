@@ -1,9 +1,6 @@
-//! Validator engine configuration: search paths, rule sets, and extension filters.
-//!
-//! - `ValidatorConfig` is deserialized from `[validator]` TOML or constructed from Lua.
-//! - `rules` is a list of rule module names; `"all"` enables every built-in rule.
-//! - `include_paths` and `exclude_paths` scope which files are checked.
-//! - `severity_threshold` controls which violations are returned (ignore Info, etc.).
+//! This file provides configuration structures that shape validator execution policy.
+//! It defines thread usage, file limits, and behavior toggles for analysis runs.
+//! It gives the engine one coherent source of operational constraints.
 
 /// Validator engine configuration.
 #[derive(Debug, Clone)]

@@ -1,9 +1,7 @@
-//! Province property storage: per-province key-value metadata and stat tables.
-//!
-//! - `ProvinceProperties` maps `ProvinceId → HashMap<String, PropertyValue>`.
-//! - `PropertyValue` is an enum covering `Int`, `Float`, `Bool`, and `Text` variants.
-//! - Properties are set from Lua via `lurek.province.set_property(id, key, value)`.
-//! - Serialized into the save file as a flat list for fast round-trip loading.
+//! Per-province property store for game-defined metadata that should live beside map identity without hard-coding economy or strategy logic into the engine core.
+//! The file gives each province a flexible typed key-value table so scripts can attach stats, ownership signals, or gameplay annotations while keeping storage centralized.
+//! Serialization support means those values can round-trip through save flows without custom glue for every separate property family.
+//! Functionally this file delivers the extensible metadata layer that makes the province runtime useful beyond pure rendering.
 
 use std::collections::HashMap;
 

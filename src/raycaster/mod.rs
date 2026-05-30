@@ -1,8 +1,7 @@
-//! Grid-based 2D raycaster using DDA ray-stepping and column projection.
-//!
-//! - Builds per-frame scenes with wall quads, floor/ceiling, sprites, and doors.
-//! - Supports heightmaps, distance lighting, depth occlusion, and FOV visibility.
-//! - Provides debug visualization helpers.
+//! This module delivers the raycast feature stack that turns a 2D tile field into a readable first-person space with walls, floors, ceilings, sprites, and moving doors.
+//! It combines DDA stepping, projection, scene building, visibility, lighting, and helper render paths so game code can ask for either gameplay queries or full presentation output.
+//! Support code for elevation, multilevel layouts, picking, depth, and debug visualization lives beside the core marcher so the subsystem keeps one camera model end to end.
+//! At the highest level, this is the part of the engine that gives Lua and Rust callers a classic grid-based 3D view without leaving the 2D runtime architecture.
 
 /// Raycaster scene construction from camera and world grid.
 pub mod build_scene;

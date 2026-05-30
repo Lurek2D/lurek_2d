@@ -1,9 +1,8 @@
-//! Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
-//!
-//! - Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
-//! - Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
-//! - Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
-//! - Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
+//! This file centralizes engine failure reporting so subsystems can surface problems through one shared error vocabulary.
+//! Variants are grouped by operational meaning as well as by source, which helps logs, tools, and UI distinguish recovery paths.
+//! Stable codes and snapshot forms exist here because runtime failures must remain readable both to humans and to external automation.
+//! The convenience result alias keeps the rest of the codebase aligned with the same error contract.
+//! In effect this file is the runtime's common language for things going wrong.
 
 use thiserror::Error;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

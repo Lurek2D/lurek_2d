@@ -1,10 +1,10 @@
-//! Tile-based terrain grid that syncs solid cells to static physics bodies via chunked rebuilds.
-//!
-//! - Chunk-based dirty tracking: only modified regions regenerate bodies on flush.
-//! - Bulk fill operations (circle, rectangle, fill-all) for terrain editing at runtime.
-//! - Run-length row merging to minimise body count per chunk.
-//! - Compact bitpacked serialisation and deserialisation for save/load.
-//! - Debris spawning and column-collapse utilities for destructible terrain effects.
+//! Destructible terrain map layer that turns editable solid cells into physics-ready world geometry without making callers manage collider lifecycles manually.
+//! The file tracks terrain in chunks so local edits stay local, allowing flush operations to rebuild only the regions that actually changed.
+//! Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
+//! Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
+//! Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
+//! Debris spawning and collapse helpers push the system beyond passive walls into active destructible-environment behavior.
+//! Functionally this file delivers the editable ground model that connects tile logic, destruction effects, and efficient static collision rebuilds.
 
 use super::body::{Body, BodyType};
 use super::world::World;

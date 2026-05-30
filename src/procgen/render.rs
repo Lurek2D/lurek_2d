@@ -1,7 +1,6 @@
-//! Tileable Perlin noise grid generation and cell access.
-//!
-//! - Conversion to flat grayscale RGBA byte buffers for higher-tier projection.
-//! - Does not create `RenderCommand`, `ImageData`, tilemap objects, or Lua userdata.
+//! Lightweight projection layer for sampled noise grids that need storage, cell access, and quick grayscale export without depending on higher rendering systems.
+//! The file keeps tileable Perlin-backed values in a compact grid form and exposes them in a way that is useful for previews, tooling, and texture-oriented workflows.
+//! Functionally this file delivers a small bridge from procedural scalar fields to inspectable pixel-ready grid data.
 
 use crate::procgen::noise::perlin_noise_periodic;
 use crate::procgen::scalar_map_to_rgba_bytes;

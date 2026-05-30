@@ -1,10 +1,6 @@
-//! Collision event queuing and contact processing between physics bodies.
-//!
-//! - `CollisionQueue` accumulates `ContactEvent`s during `physics::step()`.
-//! - Events are drained each Lua tick and delivered as `lurek.physics.on_contact` callbacks.
-//! - Contact events carry both body keys, contact normal, and penetration depth.
-//! - Sensor events (`ContactEvent::SensorEnter` / `SensorExit`) are routed separately.
-//! - The queue is never flushed mid-step; callbacks fire only after step completes.
+//! Collision event buffering for the moments when physical contact needs to become stable gameplay information instead of transient solver state.
+//! The file packages body pairs, normals, penetration data, and sensor transitions into an ordered queue that can be drained after stepping without disturbing the simulation loop.
+//! Functionally this delivers the bridge from raw contact detection to script-consumable collision events with clean step-boundary timing.
 
 use crate::math::Vec2;
 

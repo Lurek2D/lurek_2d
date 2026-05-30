@@ -1,4 +1,7 @@
-//! Gym-compatible RL environment wrappers.
+//! Provides reinforcement-learning environment wrappers modeled after common Gym-like conventions.
+//! Describes action and observation spaces with bounded metadata suitable for generic agents.
+//! Includes frame-stack helpers that accumulate temporal context for history-dependent policies.
+//! Standardizes reset and step-style interaction shapes for training and evaluation loops.
 
 /// Space descriptor shared by observation and action spaces.
 #[derive(Debug, Clone)]

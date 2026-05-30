@@ -1,8 +1,8 @@
-//! Adaptive depth sorting for scene draw calls with four strategy tiers.
-//!
-//! - Selects unstable, stable, 8-bit radix, or rayon parallel sort by entry count and depth shape.
-//! - Radix path requires integral depths and ≥256 entries; parallel kicks in at 10k entries.
-//! - Each entry carries depth, callback index, and object-kind flag for draw dispatch.
+//! This file implements the scene module's depth-ordering utility for draw work that must respect painter-style layering.
+//! It chooses among multiple sorting strategies so small and large batches can both be handled without one rigid algorithm for every case.
+//! Entries carry enough information to sort callbacks and object-style drawables through the same pipeline.
+//! Stable ordering can be preserved where visual flicker matters, while faster paths remain available when the batch shape allows it.
+//! The file is the scene system's answer to getting layered draw order right without hardcoding one sorting cost profile.
 
 /// Minimum entry count that enables the 8-bit radix sort path over unstable sort.
 const RADIX_THRESHOLD: usize = 256;

@@ -1,8 +1,7 @@
-//! Sine-based flicker configuration that modulates light intensity over time.
-//!
-//! - Phase accumulates each frame and wraps at TAU for continuous oscillation.
-//! - Strength controls peak deviation from base intensity; speed sets radians per second.
-//! - Disabled by default; enable to animate torches, candles, or neon lights.
+//! Defines sine-based flicker state that modulates light intensity across time.
+//! Tracks oscillation phase, speed, and strength for controllable temporal variation.
+//! Supports deterministic per-frame advancement with wrapped phase continuity.
+//! Enables torch, candle, and neon style animation without custom update code.
 
 /// Sine-based flicker config that modulates a light's intensity by a small oscillating factor.
 #[derive(Debug, Clone, Copy, PartialEq)]

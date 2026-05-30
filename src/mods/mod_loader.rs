@@ -1,9 +1,8 @@
-//! Mod loader: discovers, validates, and loads mod packages from the mods directory.
-//!
-//! - Scans `content/mods/` for `mod.toml` manifests and loads each into a `ModInstance`.
-//! - `load_instances_from_toml` parses a single manifest and builds the instance.
-//! - Validates API requirements against the `ApiRegistry` before executing any Lua.
-//! - Load order is deterministic (alphabetical by mod ID) and overrideable via priority.
+//! Discovers, validates, and loads mod packages from disk.
+//! Scans manifests, builds instances, and applies deterministic load order.
+//! Verifies API requirements before any Lua code starts running.
+//! Supports priority-based override and atomic reload of changed packages.
+//! Provides the bootstrap path from content folders into live mod instances.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

@@ -4,11 +4,11 @@
 //! Preserves stable cross-system handoff so world updates read one consistent behavioral snapshot.
 //! Serves as the anchor object that orchestration layers drive without leaking subsystem coupling.
 
-use crate::ai::blackboard::Blackboard;
 use crate::ai::emotion::EmotionModel;
 use crate::ai::needs::NeedSystem;
 use crate::ai::perception::Sensor;
 use crate::ai::traits::TraitProfile;
+use crate::patterns::Blackboard;
 use std::collections::HashSet;
 /// Active AI decision strategy assigned to an `Agent`.
 #[derive(Debug, Clone, PartialEq)]

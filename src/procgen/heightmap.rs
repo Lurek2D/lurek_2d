@@ -1,9 +1,8 @@
-//! Procedural heightmap generation from FBM Perlin noise with configurable octaves, lacunarity, and persistence.
-//!
-//! - Simple hydraulic erosion pass that redistributes height differences across 4-connected neighbours.
-//! - Construction from raw noise maps or cellular automata grids with automatic normalisation to 0.0–1.0.
-//! - Clamped coordinate access and flat RGBA byte export for GPU texture upload.
-//! - Deterministic output controlled by a seed value passed through to the noise generator.
+//! Heightmap model for turning procedural fields into normalized terrain elevation that other systems can sample, erode, render, or classify.
+//! The file builds maps from layered noise or other grid sources and keeps results in a form that is easy to query by cell or export by row-major order.
+//! A simple erosion pass gives the generated terrain a way to soften sharp differences and hint at water-shaped structure without introducing a heavyweight terrain solver.
+//! Deterministic seeding keeps terrain reproduction reliable for saves, testing, and content pipelines.
+//! Functionally this file delivers the elevation surface from which broader terrain generation can derive shape, biome, and visual output.
 
 use crate::procgen::noise::{FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use crate::procgen::scalar_map_to_rgba_bytes;

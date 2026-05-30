@@ -1,7 +1,7 @@
-//! Bidirectional map with O(1) lookup by key or by value.
-//!
-//! - Mirrored forward and reverse `HashMap` tables kept in sync on every mutation.
-//! - Insert, remove-by-key, remove-by-value, and containment checks in both directions.
+//! Bidirectional map storage for cases where game code must move between symbolic keys and canonical values with equal ease.
+//! The file maintains mirrored forward and reverse tables so each mutation preserves a single authoritative pairing instead of forcing callers to manage two separate maps by hand.
+//! Inserts, removals, and containment checks are shaped around keeping that two-way contract coherent even when entries are replaced or deleted from either side.
+//! Functionally this delivers fast reversible lookup for registries, id-name bindings, alias tables, and other systems that need symmetry rather than one-directional indexing.
 
 use std::collections::HashMap;
 use std::hash::Hash;

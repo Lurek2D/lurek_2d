@@ -1,13 +1,18 @@
-//! Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize.
-//!
-//! - Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid with default shaded skins.
-//! - Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission.
-//! - Scrollback buffer: capped line history with offset-based windowed retrieval.
-//! - Command history: push/prev/next navigation for console-style input recall.
-//! - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
-//! - Render output: composited cell buffer flattened into batched background and text `RenderCommand` lists for the renderer.
-//! - Border rendering: single, double, and ASCII frame styles with optional title text.
-//! - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
+//! This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
+//! The core grid behaves like a persistent text surface rather than a transient print stream, allowing callers to treat terminal space as editable UI.
+//! Resize behavior preserves as much existing content as possible so the terminal remains usable across font or window changes.
+//! Scrollback and command history live here because they are part of the terminal's long-lived interactive memory rather than renderer output.
+//! Widget composition is layered on top of the cell grid in this file so buttons, lists, panels, and text boxes share one event and focus model.
+//! Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
+//! Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
+//! Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
+//! Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
+//! The file is intentionally large because it is not one helper.
+//! It is the living behavior model of the entire terminal subsystem.
+//! Most user-visible terminal semantics, from typing to focus to scrollback, are defined here.
+//! Without this file the module would have isolated utilities but no unified terminal behavior.
+//! In practice this is the runtime home of text-mode interaction inside the engine.
+//! It is where a passive grid becomes a usable terminal environment.
 
 use super::cell::{TCell, DEFAULT_FG};
 use super::widget::{BorderStyle, Widget, WidgetKind};

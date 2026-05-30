@@ -1,4 +1,9 @@
-//! Recurrent learning layers for sequence modeling.
+//! Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks.
+//! Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation.
+//! Executes timestep iteration while carrying hidden-state context across sequence positions.
+//! Integrates with evolutionary parameter interfaces for genome-based optimization workflows.
+//! Offers compact recurrent primitives for temporal modeling without heavyweight dependencies.
+//! Serves as a reusable foundation for sequence tasks in higher-level learning engines.
 
 use crate::learning::EvolutionaryLayer;
 

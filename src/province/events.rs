@@ -1,7 +1,7 @@
-//! Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
-//!
-//! - High-level map events emitted to Lua callbacks after batched province updates.
-//! - Typed signals for map-mode switches, palette replacements, and fog overlays.
+//! Province change and event vocabulary for describing what shifted in map state without forcing listeners to diff whole registry snapshots.
+//! The file models fine-grained mutation records and higher-level events so Lua and engine code can react to province updates in a deliberate typed way.
+//! It keeps visual state changes, style changes, and map-mode level notifications under one shared event language.
+//! Functionally this file delivers the signaling surface for incremental province sync and reactive map behavior.
 
 use crate::province::types::{BorderType, ProvinceId};
 

@@ -1,7 +1,6 @@
-//! Convert an image buffer into GPU render commands for on-screen display.
-//!
-//! - Provide cloning helpers to snapshot pixel data as standalone values.
-//! - Bridge between ImageData and the engine's RenderCommand pipeline.
+//! Bridges CPU `ImageData` content into render-command payloads consumed by the draw pipeline.
+//! Provides lightweight conversion helpers that reference texture keys and screen placement.
+//! Includes image snapshot utilities used where value-copy semantics are required.
 
 use super::image_data::ImageData;
 use crate::render::renderer::RenderCommand;

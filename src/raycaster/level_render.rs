@@ -1,10 +1,7 @@
-//! Raycaster level renderer: wall, floor, ceiling, and sprite column rendering.
-//!
-//! - `render_level_columns` is the hot path; called once per screen column per frame.
-//! - `compute_hole_visibility` pre-calculates which cells are visible through openings.
-//! - Texture-mapped floors/ceilings use an affine perspective-corrected UV formula.
-//! - All output goes to an RGBA framebuffer; no wgpu calls are made from this module.
-//! - Performance target: 60 FPS at 320×200 on integrated GPUs; scales to 1080p.
+//! This file handles the column-wise drawing logic for stacked raycaster levels where openings can reveal space above or below the current slice.
+//! It decides which neighboring cells remain visible through holes so multi-level layouts feel connected instead of collapsing into isolated layers.
+//! Framebuffer output is written directly in software, with floor and ceiling sampling tuned for readable textured planes in narrow screen columns.
+//! The file therefore acts as the specialized draw path for vertical level relationships that are more complex than the flat scene builder alone.
 
 /// Wireframe highlight configuration for a tile.
 #[derive(Debug, Clone, Copy)]

@@ -1,7 +1,7 @@
-//! Point-light model with position, radius, intensity, and RGB color.
-//!
-//! - Bresenham line-of-sight check to block light through walls.
-//! - Per-tile lighting accumulator combining ambient and point-light contributions.
+//! This file applies simple but readable local lighting to raycast space using colored point emitters and ambient fill.
+//! Visibility between a light and a sample point is checked against blocking tiles so illumination respects corridor walls and corners.
+//! Contributions from multiple emitters are accumulated into one tint that later scene builders can stamp onto walls, floors, and sprites.
+//! The model favors clear spatial mood and cheap evaluation over physically exact light transport.
 
 /// A point light placed in world space that contributes to tile-level lighting.
 #[derive(Debug, Clone)]

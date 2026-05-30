@@ -1,9 +1,8 @@
-//! Mod API schema: JSON-serialisable description of every `lurek.*` function signature.
-//!
-//! - `ApiSchema` is generated from `docs/api/lurek.json` at startup.
-//! - Used by the sandbox to validate that a mod only calls permitted, typed API entries.
-//! - Schema entries carry parameter types, return types, and a human-readable summary.
-//! - Versioned by the engine semver; mods may declare a minimum engine version.
+//! Serializable description of the engine API surface exposed to mods.
+//! Stores parameter types, return types, and short summaries for each entry.
+//! Loads from generated API metadata at startup.
+//! Supports version checks so mods can declare a minimum engine release.
+//! Gives the sandbox a typed contract to validate against.
 
 /// Field type variant for an API schema.
 #[derive(Debug, Clone, PartialEq, Eq)]

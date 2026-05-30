@@ -1,11 +1,6 @@
-//! Asset and content validation engine.
-//!
-//! - Asset existence checking (images, sounds, fonts referenced in scripts).
-//! - Lua import resolution validation.
-//! - Mod API compliance checking.
-//! - Custom validation rules from Lua callbacks or TOML rule files.
-//! - Parallel execution across file trees.
-//! - Structured violation reports with severity and suggestions.
+//! This module delivers the validation surface for script content, assets, imports, and API usage.
+//! It combines built-in and custom rule paths into one extensible quality-check pipeline.
+//! It outputs structured findings that guide fixes in development and continuous integration.
 
 /// Asset existence checker: validates images, sounds, and fonts referenced in scripts.
 pub mod asset_check;

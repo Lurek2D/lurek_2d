@@ -1,7 +1,6 @@
-//! Per-particle runtime state: position, velocity, lifetime, rotation, and acceleration.
-//!
-//! - Holds spawn-time origin for radial/tangential force calculations.
-//! - Carries a shape seed for deterministic procedural polygon generation.
+//! Per-particle runtime state for position, velocity, lifetime, rotation, and acceleration.
+//! Stores spawn origin and shape seed for force calculations and deterministic geometry.
+//! Keeps the minimum state needed by the emitter loop.
 
 /// Per-particle state owned by the `ParticleSystem` pool.
 #[derive(Clone, Debug)]

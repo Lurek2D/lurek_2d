@@ -1,7 +1,7 @@
-//! Frame-driven delay scheduler that counts down per-step timers each update.
-//!
-//! - Report which pipeline steps become ready once their configured delay expires.
-//! - Track wall-clock elapsed time and running state for the owning pipeline.
+//! Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
+//! The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
+//! Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
+//! Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 
 use crate::pipeline::dag::Pipeline;
 use crate::pipeline::step::StepStatus;

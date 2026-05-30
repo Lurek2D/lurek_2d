@@ -1,9 +1,9 @@
-//! Convert minimap state into an ordered list of `RenderCommand` values for the renderer.
-//!
-//! - Draw the background, terrain grid cells with zoom and center offset, and fog-of-war tinting.
-//! - Render overlay shapes (lines, rectangles), multi-segment paths, and the viewport indicator.
-//! - Draw animated pings with fade, map objects with optional icons, and markers with crosshairs.
-//! - All coordinates are projected from grid-space to screen-space via the minimap's transform.
+//! Converts minimap state into an ordered render command stream.
+//! Draws terrain, fog, overlays, objects, pings, markers, and viewport guides.
+//! Projects grid coordinates through the minimap transform into screen space.
+//! Keeps the drawing order stable so HUD elements stack predictably.
+//! Supports zoom-dependent and animated presentation without mutating the world model.
+//! Acts as the generic renderer path for the minimap subsystem.
 
 use super::minimap::Minimap;
 use super::types::{FogLevel, OverlayShape};

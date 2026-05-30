@@ -1,11 +1,9 @@
 //! Multi-source Dijkstra distance field for goal-oriented AI movement.
-//!
-//! - Builds a cost-to-reach field from N weighted source cells.
-//! - `gradient_at` returns the downhill direction (move toward goal).
-//! - `flee_at` returns the uphill direction (move away from goal).
-//! - `flood_fill` returns all reachable cells within a distance threshold.
-//! - `bake` accepts a generic blocker predicate; call from Lua bindings.
-//! - `save` / `restore` serialise the distance field as a compact binary blob.
+//! Builds a cost-to-reach map from many weighted source cells.
+//! Returns downhill gradient, uphill flee direction, and flood-fill reachability.
+//! Supports custom blocker predicates during baking from Lua bindings.
+//! Serializes and restores the field as a compact binary blob.
+//! Gives AI code a reusable distance surface for steering and influence.
 
 use std::collections::BinaryHeap;
 use std::cmp::Reverse;

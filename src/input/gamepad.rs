@@ -1,10 +1,10 @@
-//! Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.
-//!
-//! - Vibration request queuing for delivery to the OS force-feedback driver.
-//! - SDL2-style GUID-based mapping store with file and string parsing.
-//! - Gilrs button/axis to SDL2 string conversion helpers.
-//! - Virtual D-pad synthesis from analog stick values with configurable deadzone.
-//! - Hat (D-pad) direction queries returning 8-way compass strings.
+//! Manages gamepad device state per slot, including buttons, axes, and connection lifecycle changes.
+//! Tracks per-frame deltas for press and release transitions so polling remains deterministic.
+//! Queues rumble requests with normalized motor strengths for runtime delivery to OS backends.
+//! Parses and stores mapping profiles using GUID-keyed formats compatible with common controller data.
+//! Bridges backend-specific button and axis identities into stable engine-facing naming.
+//! Synthesizes virtual directional output from analog sticks with deadzone-aware interpretation.
+//! Exposes hat and direction queries used by gameplay code and Lua input APIs.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{GD01, GD02, GD03};

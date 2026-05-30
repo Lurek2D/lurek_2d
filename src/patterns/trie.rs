@@ -1,8 +1,8 @@
-//! Prefix trie for character-level string key storage and retrieval.
-//!
-//! - Insert, search, remove, and prefix-match operations.
-//! - DFS collection of all keys sharing a common prefix.
-//! - Automatic pruning of empty leaf nodes on removal.
+//! Prefix trie storage for string-centric gameplay data where whole-key lookup and shared-prefix discovery should both be fast and structurally related.
+//! The file models words as character paths, letting inserts and exact searches coexist naturally with prefix queries that expand into many matching keys.
+//! Removal includes branch pruning so the structure sheds dead paths instead of accumulating empty nodes after content churn.
+//! Depth-first key collection turns the trie into a practical retrieval tool for completions, dictionaries, filters, and lookup-heavy scripting workflows.
+//! Functionally this delivers the text-prefix indexing backbone for command palettes, content search, lexicons, and other systems built around incremental string matching.
 
 /// Internal trie node holding child edges and end-of-word marker.
 #[derive(Debug, Default)]

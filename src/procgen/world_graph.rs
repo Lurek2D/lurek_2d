@@ -1,9 +1,9 @@
-//! Region and edge data types representing nodes and weighted connections in a world graph.
-//!
-//! - A* pathfinding with Euclidean heuristic for shortest-path queries between regions.
-//! - Bounded Dijkstra reachability returning all regions within a cumulative travel cost.
-//! - Minimum spanning tree computation via Kruskal's algorithm.
-//! - Random world graph generation placing regions in a bounding box and connecting k-nearest neighbours.
+//! World-graph generation and traversal layer for overworld-style structures where places are discrete nodes connected by weighted travel links.
+//! The file defines the region and edge model itself, then builds pathfinding and reachability logic directly on top of that shared representation.
+//! A* and bounded Dijkstra cover shortest routes and local travel envelopes, which makes the graph useful for quests, logistics, and map progression.
+//! Minimum spanning tree support gives generation and analysis code a way to reason about essential connectivity independent of redundant routes.
+//! Random graph construction turns the same structure into a content generator, placing regions spatially and wiring them into plausible networks.
+//! Functionally this file delivers the connected overworld skeleton for route planning, regional structure, and graph-shaped world content.
 
 use crate::procgen::lcg::Lcg;
 use std::cmp::Ordering;

@@ -1,8 +1,8 @@
-//! Provides `complete_prefix` for tab completion against a static pool and live Lua globals.
-//!
-//! - Static pool includes Lua keywords, built-in globals, standard libraries, colon commands, and all `lurek.*` sub-namespaces.
-//! - Dynamic branch resolves a dot-separated path through Lua globals and collects matching key names.
-//! - Output is sorted and deduplicated; callers pass `None` for the Lua handle when no VM is available.
+//! This file implements completion for interactive REPL input so partially typed commands can expand into useful candidates.
+//! Suggestions come from both a static knowledge base of Lua and engine names and the live global environment of the current VM.
+//! Dot-path completion is resolved step by step, which makes nested tables and engine namespaces feel navigable from the prompt.
+//! Candidate output is normalized and deduplicated so the REPL can present stable suggestions instead of noisy raw table keys.
+//! The file therefore acts as the discoverability layer of the REPL, helping users explore available runtime symbols while typing.
 
 use mlua::prelude::*;
 

@@ -73,6 +73,7 @@ describe("labels & skip", function()
         expect_near(2.0, tl:getTime(), 1e-9)
     end)
 
+    -- @library lurek.library_cinematic
     it("skipTo on unknown label raises", function()
         local tl = cine.newTimeline()
         expect_error(function() tl:skipTo("nope") end)
@@ -130,6 +131,7 @@ end)
 
 -- @describe error paths
 describe("error paths", function()
+    -- @library lurek.library_cinematic
     it("track:add raises on missing 'at'", function()
         local tl = cine.newTimeline()
         expect_error(function() tl:track("x"):add({ kind = "call" }) end)

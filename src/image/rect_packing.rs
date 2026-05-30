@@ -1,7 +1,8 @@
-//! Shelf-first rectangle packing for texture atlas layout.
-//!
-//! - Configurable atlas dimensions and uniform pixel padding between rects.
-//! - Tracks occupancy ratio and returns placement coordinates in insertion order.
+//! Implements shelf-based rectangle packing used to place sprites into compact atlas layouts.
+//! Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions.
+//! Places rectangles in insertion order while tracking shelf growth and remaining horizontal space.
+//! Returns deterministic packed coordinates that map back to source asset identities.
+//! Reports occupancy metrics useful for tuning atlas size and packing efficiency.
 
 /// Placement result for a single packed rectangle.
 #[derive(Debug, Clone, PartialEq, Eq)]

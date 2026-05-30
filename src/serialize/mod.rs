@@ -1,8 +1,6 @@
-//! Serialization and deserialization for multiple formats (JSON, TOML, CSV, XML, MsgPack, INI)
-//!
-//! - Unified codec interface with auto-detection and round-trip encode/decode
-//! - Schema validation and default application for structured data
-//! - Lua table ↔ Rust value bridging via SerialValue
+//! This module provides the engine's multi-format serialization stack around one shared intermediate value representation.
+//! It covers encoding, decoding, schema validation, defaults, and Lua bridging across text and binary data formats.
+//! At the highest level this is the data-translation foundation used when engine data must cross file, tool, or script boundaries.
 
 /// Unified codec: format detection, encode, and decode entry points.
 pub mod codec;

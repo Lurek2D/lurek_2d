@@ -1,13 +1,13 @@
-//! Parse the Tiled TMX XML map format into engine-native structs for tile and object layers.
-//!
-//! - Support orthogonal, isometric, staggered, and hexagonal map orientations.
-//! - Decode tile GID arrays from CSV, raw XML, and base64 encodings with zlib/gzip decompression.
-//! - Extract tileset metadata including image paths, spacing, margins, and solid-tile markers.
-//! - Parse object layers with position, size, type, and optional tile-GID references.
-//! - Mask Tiled flip flags (horizontal, vertical, diagonal) from raw GID values before storage.
-//! - Detect solid tiles via embedded objectgroups or `solid=true` custom properties.
-//! - Propagate parse failures as descriptive error strings with element and attribute context.
-//! - Parse Tiled hex color strings (`#RRGGBB` / `#AARRGGBB`) for map background color.
+//! This file provides TMX import that converts Tiled XML maps into engine-native map structures.
+//! It supports major TMX orientation modes so authored content can target varied 2D projections.
+//! It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams.
+//! It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation.
+//! It parses object layers to retain placement, sizing, and semantic type annotations.
+//! It strips flip flags from raw gids so stored tile identity stays clean and comparable.
+//! It infers solid tiles from embedded markers and custom properties used by authoring tools.
+//! It reports parse failures with contextual messages to speed debugging of malformed assets.
+//! It reads TMX color encodings so visual defaults are preserved during map import.
+//! It delivers a predictable bridge between external level authoring and runtime world assembly.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TL01, TL02};

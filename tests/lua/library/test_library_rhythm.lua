@@ -111,11 +111,13 @@ end)
 
 -- @describe error paths
 describe("error paths", function()
+    -- @library lurek.library_rhythm
     it("newClock with non-positive bpm raises", function()
         expect_error(function() rhythm.newClock(0) end)
         expect_error(function() rhythm.newClock(-1) end)
     end)
 
+    -- @library lurek.library_rhythm
     it("pattern with empty string raises", function()
         local c = rhythm.newClock(120)
         expect_error(function() c:pattern("", function() end) end)

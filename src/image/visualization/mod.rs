@@ -1,7 +1,6 @@
-//! Submodule declarations for all visualization categories.
-//!
-//! - Wildcard re-exports providing a flat public API.
-//! - Shared facade helpers scoped to crate visibility.
+//! High-level visualization module wiring that groups image-debug renderers by domain.
+//! Re-exports category entry points to provide one flat surface for visualization consumers.
+//! Shares internal facade utilities while keeping submodule responsibilities clearly separated.
 
 /// Animation visualizations. This module is publicly re-exported.
 pub mod animation;

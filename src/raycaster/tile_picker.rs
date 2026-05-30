@@ -1,9 +1,8 @@
-//! Tile picker: converts a screen (x, y) click into a raycasted map tile coordinate.
-//!
-//! - `pick_tile(screen_x, screen_y, camera, map)` returns `Option<(tile_x, tile_y)>`.
-//! - Reverses the column rendering math to find the intersection depth for a pixel.
-//! - Accounts for the player's position and angle at the moment of the pick query.
-//! - Used by `lurek.raycaster.pick(x, y)` to report tile coordinates to Lua scripts.
+//! This file maps a screen interaction back into raycaster grid space so UI clicks can target the world the player is looking at.
+//! It replays the essential camera and stepping assumptions of the view transform instead of relying on a separate picking representation.
+//! Screen size, camera pose, and tile scale are all part of the picker state, which keeps repeated queries stable across a frame.
+//! The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
+//! This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
 
 /// Tile picker that maps screen coordinates to raycaster grid tiles.
 #[derive(Debug, Clone)]

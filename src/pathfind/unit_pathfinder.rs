@@ -1,10 +1,9 @@
-//! Stateful per-unit pathfinder wrapping a shared `NavGrid` reference.
-//!
-//! - Full A* path search with optional string-pull smoothing for shorter results.
-//! - Partial-path expansion with configurable node budget for real-time budgets.
-//! - BFS reachability test and nearest-walkable-cell search within a radius.
-//! - LRU path cache with configurable max size and manual invalidation.
-//! - Octile heuristic and Bresenham line-of-sight utility helpers.
+//! Stateful per-unit pathfinder wrapping a shared NavGrid reference.
+//! Runs full A* searches with optional string-pull smoothing.
+//! Supports partial paths, BFS reachability, and nearest-walkable searches.
+//! Caches recent routes with an LRU strategy and manual invalidation.
+//! Exposes octile heuristic and Bresenham LOS helpers for local decisions.
+//! Gives each unit its own path search facade without duplicating grid data.
 
 use crate::runtime::log_messages::{UP01, UP02, UP03};
 

@@ -1,14 +1,11 @@
-//! 2D grid map and Digital Differential Analyzer (DDA) ray-stepping engine.
-//!
-//! - Single-ray casting with perpendicular distance correction and texture-U sampling.
-//! - Multi-hit ray casting through transparent walls up to a configurable depth.
-//! - Fan-cast (cast_rays) with fish-eye correction for full-screen column rendering.
-//! - Flat-packed ray output for efficient Lua-side consumption without per-hit tables.
-//! - Grid-based line-of-sight query using DDA traversal.
-//! - World-to-screen sprite projection with FOV-aware perspective transform.
-//! - Per-pixel floor/ceiling UV generation for textured floor casting.
-//! - Per-tile-type wall alpha overrides enabling transparent and semi-transparent walls.
-//! - Bounds-safe cell access with silent clamping for out-of-range coordinates.
+//! This file owns the grid-backed DDA marcher that turns a 2D tile map into ray hits, corrected distances, and wall sampling coordinates.
+//! It handles both single-hit and layered traversal so partially transparent cells can be marched through without losing the final solid contact.
+//! Wide fan casts for a whole screen are derived from the same stepping rules, which keeps column rendering consistent with ad hoc queries.
+//! Line-of-sight checks reuse the same grid logic, so lighting, AI, and visibility questions follow the same blocking semantics as rendering.
+//! The map storage stays simple and row-major, with safe fallback behavior for out-of-range reads and silent rejection of invalid writes.
+//! Sprite projection helpers live beside ray stepping so billboard placement uses the same camera conventions as wall casting.
+//! Floor and ceiling sampling utilities expose screen-to-world relationships without forcing higher layers to re-derive projection math.
+//! This file is the computational core of the raycaster, where map occupancy becomes reliable spatial hits and camera-facing depth data.
 
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;

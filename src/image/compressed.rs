@@ -1,9 +1,8 @@
-//! DDS compressed-texture parsing: header validation, mipmap extraction, format detection.
-//!
-//! - Recognized block-compression families: BC1–BC7 (desktop) and ETC1/ETC2 (mobile).
-//! - Dual detection path: DXGI format field for DX10+ files, D3DFormat for legacy DDS.
-//! - File-level helpers for magic-byte checks and full-file decode via GameFS or std I/O.
-//! - Data carrier (`CompressedImageData`) holding dimensions, format tag, and raw mip payloads.
+//! Decodes DDS-style compressed textures into structured payloads used by higher-level image loading.
+//! Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload.
+//! Detects desktop and mobile block-compression families from DXGI and legacy format descriptors.
+//! Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines.
+//! Returns stable data carriers containing format tags and raw compressed mip chains.
 
 use crate::runtime::EngineError;
 /// Compressed texture format recognized from DDS metadata.

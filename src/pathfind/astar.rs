@@ -1,9 +1,9 @@
-//! A\* pathfinding on a `NavGrid` with configurable diagonal modes and unit sizes.
-//!
-//! - Heuristic selection: octile distance for diagonal movement, Manhattan otherwise.
-//! - Early termination via `max_nodes` with partial-path fallback to closest reached cell.
-//! - Bresenham line-of-sight checks for walkability validation.
-//! - String-pull path smoothing that removes redundant waypoints.
+//! A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes.
+//! Chooses octile or Manhattan heuristics to match the movement model.
+//! Stops early when a node budget is reached and falls back to a partial path.
+//! Uses Bresenham line-of-sight checks for path smoothing and validation.
+//! Removes redundant waypoints through string-pull smoothing.
+//! Serves as the standard single-unit shortest-path search for grid movement.
 
 use crate::runtime::log_messages::{AT01, AT02, AT03};
 

@@ -1,9 +1,8 @@
-//! Cellular automata grid rendering with alive and dead colors.
-//!
-//! - Voronoi region visualization from seed partitions.
-//! - Point sample rendering as colored dots or circles.
-//! - Dungeon grid display with wall and floor tile scaling.
-//! - Delaunay triangulation overlay with triangle edges and vertices.
+//! Visualizes procedural-generation data structures as images for analysis and tuning loops.
+//! Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics.
+//! Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior.
+//! Displays point samples and topology overlays for algorithm-step debugging.
+//! Provides compact visual proof artifacts for procgen experimentation and regression checks.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

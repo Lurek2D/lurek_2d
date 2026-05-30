@@ -1,8 +1,8 @@
-//! Markov-chain name generator trained on arbitrary word corpora.
-//!
-//! - Configurable n-gram order controls fidelity-vs-variety tradeoff.
-//! - Deterministic output via internal LCG seeding for reproducible generation.
-//! - Batch generation with length constraints and bounded retry logic.
+//! Markov-style name generator for producing plausible invented words from example corpora without hand-authoring every outcome.
+//! The file learns local character transitions from source words and then samples new sequences with configurable order to balance familiarity against novelty.
+//! Deterministic seeding keeps generated names stable when needed for saves, tests, or curated content batches.
+//! Length constraints and bounded retries make batch generation practical rather than endlessly exploratory.
+//! Functionally this file delivers repeatable synthetic naming for characters, places, items, factions, and other worldbuilding surfaces.
 
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;

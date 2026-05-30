@@ -1,7 +1,8 @@
-//! Camera-culled render-command generation for tile-map layers.
-//!
-//! - GID-to-color debug palette for fallback colored tile rendering.
-//! - Per-layer visibility and tint applied during command emission.
+//! This file provides tilemap render-command emission with camera-aware culling across map layers.
+//! It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling.
+//! It applies per-layer visibility and tint state when composing command output for the renderer.
+//! It keeps draw generation predictable so map visualization remains stable during updates.
+//! It provides a stable debug visualization path when textured rendering is unavailable.
 
 use super::tilemap::TileMap;
 use crate::render::renderer::{DrawMode, RenderCommand};

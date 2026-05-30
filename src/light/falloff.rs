@@ -1,7 +1,6 @@
-//! Radial intensity falloff shapes applied on top of distance attenuation.
-//!
-//! - Variants control how brightness decreases from a light's center to its radius edge.
-//! - Modes: `Linear` (default), `Smooth` (smooth-step), and `Constant` (no radial decay).
+//! Defines radial falloff profiles that shape brightness between light center and radius boundary.
+//! Provides linear, smooth, and constant decay modes for distinct lighting aesthetics.
+//! Supplies simple mode flags combined with distance attenuation during light evaluation.
 
 /// Radial intensity falloff shape applied on top of attenuation distance decay.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

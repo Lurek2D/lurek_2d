@@ -1,8 +1,8 @@
-//! Province graph routing and connectivity analysis helpers.
-//!
-//! - BFS route search for unweighted maps.
-//! - Dijkstra route search for weighted edge costs.
-//! - Connected-components and isolation helpers for strategy gameplay queries.
+//! Province-routing helper layer for asking strategic map questions about reachability, shortest paths, and isolated clusters across province adjacencies.
+//! The file offers both unweighted and weighted traversal styles so games can move from simple neighbor hops to cost-aware movement without swapping data models.
+//! Connectivity and component helpers make the map graph useful for analysis, not just for single-route requests.
+//! These routines stay separate from the core registry so graph algorithms do not crowd the state store itself.
+//! Functionally this file delivers travel and connectivity reasoning over the province adjacency network.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};

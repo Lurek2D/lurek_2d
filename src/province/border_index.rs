@@ -1,7 +1,8 @@
-//! Precompute border-pair index map from province id grid.
-//!
-//! - Assigns a stable u16 pair id for each detected border pixel.
-//! - Optional dilation expands border coverage for thick styled borders.
+//! Border-pair indexing layer that turns neighboring province relationships into a stable per-pixel border identifier map.
+//! The file scans province ownership changes across the grid and assigns compact ids that higher rendering paths can treat as semantic border channels instead of raw color differences.
+//! Stable pair ids matter because styled borders need consistent addressing across shading, upload, and change-driven rebuilds.
+//! Optional dilation broadens those indexed borders so thick outlines can be expressed without re-deriving topology at draw time.
+//! Functionally this file delivers the border-id texture logic behind efficient province border styling.
 
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::{BorderPairStyle, ProvinceId};

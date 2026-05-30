@@ -1,9 +1,6 @@
-//! MIDI input and playback sub-system: device discovery, event routing, and sequencing.
-//!
-//! - Enumerates MIDI devices via the `midir` crate; device list is refreshed on demand.
-//! - Incoming MIDI events are translated to `lurek.midi.*` Lua callbacks each tick.
-//! - The built-in sequencer plays SMF (`.mid`) files via the audio mixer.
-//! - MIDI output (to hardware synths) is also supported if an output port is open.
+//! MIDI subsystem for device discovery, event routing, and sequenced playback.
+//! Bridges live MIDI input, software rendering, and hardware output from one module.
+//! Keeps device refresh and callback delivery aligned with the engine tick.
 
 /// Full MIDI playback controller with transport and per-channel controls.
 pub mod player;

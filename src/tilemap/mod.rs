@@ -1,8 +1,7 @@
-//! Tile map storage, rendering, and chunk streaming for large worlds.
-//!
-//! - Supports orthogonal and isometric layouts with layered tiles.
-//! - Imports LDtk and Tiled TMX formats; procedural generation via MapGen.
-//! - Autotile rules, tile-space coordinates, and polygon-region maps.
+//! This module delivers the high-level tile world stack for storage, generation, import, and rendering.
+//! It unifies layered map data for orthogonal and isometric play spaces under one runtime contract.
+//! It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline.
+//! It provides the structural backbone for large interactive 2D worlds in Lurek2D.
 
 /// Autotile sprite-sheet layout and rule matching.
 pub mod autotile_sheet;

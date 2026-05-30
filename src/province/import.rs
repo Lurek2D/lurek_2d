@@ -1,13 +1,11 @@
-//! Province metadata import pipeline: colour-map PNG + RGB CSV + optional TOML → registry.
-//!
-//! - Marker PNG sanitization: replace capital and label marker pixels with nearest non-marker neighbour.
-//! - RGB colour CSV parsing mapping packed (R,G,B) tuples to numeric game_id values.
-//! - TOML province info parsing for display name and terrain token fields.
-//! - Pixel-level marker detection with configurable thresholds for capital (near-white) and label (magenta) markers.
-//! - Expanding-ring neighbour search to resolve marker pixel ownership from surrounding province colours.
-//! - Deterministic political colour derivation from game_id with fixed sea-blue for water provinces.
-//! - Label line extraction: find longest-distance pair from label marker point clusters per province.
-//! - Full import pipeline wiring terrain type, political colour, attributes, capitals, and label lines into the registry.
+//! Province import pipeline for turning external cartography assets into live engine-native registry data without manual per-province construction.
+//! The file reads color maps, metadata tables, and optional structured definitions as one coordinated ingestion process instead of a loose collection of converters.
+//! Marker sanitization is part of that process because capital and label hint pixels must be interpreted semantically and then repaired back into ordinary province ownership.
+//! Neighbor search logic resolves ambiguous marker ownership from surrounding color context, which is essential for real authored maps that encode helper pixels inside regions.
+//! CSV and TOML parsing bind visual source data to game ids, names, terrain, and other metadata expected by the runtime registry.
+//! Deterministic color derivation and label extraction keep imported provinces visually usable even when the source assets provide only partial semantic structure.
+//! By the time this pipeline finishes, capitals, label baselines, style seeds, and attributes are already wired into the same authoritative province model.
+//! Functionally this file delivers the map-ingestion machinery that converts external province assets into a ready-to-render and ready-to-query province runtime.
 
 use crate::image::ImageData;
 use crate::province::registry::ProvinceRegistry;

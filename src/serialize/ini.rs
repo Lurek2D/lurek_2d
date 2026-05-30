@@ -1,7 +1,7 @@
-//! Parse INI text into a nested `SerialValue` map.
-//!
-//! - Support sections, key=value pairs, and comment lines.
-//! - Preserve insertion order via `IndexMap`.
+//! This file handles INI-style configuration text for projects and tools that still prefer simple sectioned key-value documents.
+//! It converts section headers, assignments, and comments into a nested serial representation without pretending INI is richer than it is.
+//! Insertion order is preserved so output remains readable and familiar when round-tripped back toward human-edited config files.
+//! The file is the narrow compatibility bridge between lightweight legacy config text and the engine's generic serial model.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

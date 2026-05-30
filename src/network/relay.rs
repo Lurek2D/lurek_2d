@@ -1,7 +1,6 @@
-//! Relay ticket encoding and decoding for room+peer identification over the wire.
-//!
-//! - UDP hole-punch probe construction and parsing with a magic prefix.
-//! - Lightweight helpers for relay-based NAT traversal signalling.
+//! Relay ticket encoding and decoding for room and peer identification.
+//! Builds UDP hole-punch probe payloads with a magic prefix.
+//! Provides lightweight helpers for relay-based NAT traversal signalling.
 
 /// Relay session ticket identifying a room and the connecting peer.
 #[derive(Debug, Clone, PartialEq, Eq)]

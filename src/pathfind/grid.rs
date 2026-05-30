@@ -1,10 +1,10 @@
 //! Flat 2-D grid with per-cell walkability and movement-cost storage.
-//!
-//! - A* pathfinding with optional diagonal movement and Euclidean/Manhattan heuristic.
-//! - Dijkstra shortest-path search respecting per-cell costs.
-//! - BFS unweighted shortest path for uniform-cost grids.
-//! - Dijkstra-based flow-field generation toward a single goal cell.
-//! - Internal min-heap node and path reconstruction utilities.
+//! Provides A* with optional diagonal movement and selectable heuristics.
+//! Includes Dijkstra and BFS variants for weighted and uniform-cost search.
+//! Builds flow fields from a single goal cell for steering behavior.
+//! Keeps internal heap and path reconstruction helpers close to the grid model.
+//! Supports movement-cost lookups suitable for tile-based gameplay maps.
+//! Acts as the basic navigation surface for cell-level routing.
 
 use crate::runtime::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
 

@@ -4,7 +4,7 @@
 //! Serves as the integration hub where individual agent logic becomes population-level simulation flow.
 
 use crate::ai::agent::Agent;
-use crate::ai::blackboard::Blackboard;
+use crate::patterns::Blackboard;
 use std::collections::HashMap;
 /// World-level AI registry and update surface.
 pub struct AIWorld {

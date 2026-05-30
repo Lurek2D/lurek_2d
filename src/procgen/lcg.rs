@@ -1,7 +1,6 @@
-//! 64-bit linear congruential generator (LCG) for deterministic pseudo-random number output.
-//!
-//! - Provides seeded construction, raw `u64` stepping, and uniform `f32` sampling.
-//! - Used as the shared RNG primitive across all `procgen` subsystems.
+//! Shared deterministic random number primitive for procedural systems that need repeatable variation from a tiny, dependable core.
+//! The file exposes seeded stepping and simple sampling utilities so higher-level generators can stay reproducible without each carrying its own RNG implementation.
+//! Functionally this file delivers the compact source of randomness that keeps the rest of the procgen stack aligned around seeds.
 
 /// 64-bit LCG RNG seeded deterministically; used throughout `procgen` for reproducible results.
 pub struct Lcg {

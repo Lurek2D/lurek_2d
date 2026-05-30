@@ -1,9 +1,8 @@
-//! Z-layer management for multi-storey and multi-level map construction.
-//!
-//! - `LayerStack` holds a `Vec<MapBlockGrid>`, one per Z level starting from 0.
-//! - Layers are independent grids; block placement in one layer does not affect another.
-//! - Layer 0 is the ground floor; negative indices are not supported.
-//! - The `MapBlockConfig::layer_count` field pre-allocates the stack at generator init.
+//! Per-level tile storage for multi-storey mapblock outputs.
+//! Manages independent 2D block layers indexed by non-negative vertical levels.
+//! Provides bounds-aware tile access and mutation for placement operations.
+//! Keeps slot counts and layer dimensions aligned with global config.
+//! Supplies the layered container used by multilevel map assembly.
 
 use super::maptile::MapTile;
 

@@ -1,7 +1,6 @@
-//! Convert scalar procgen output into pixel-ready RGBA byte buffers.
-//!
-//! - Grayscale mapping with automatic 0–1 clamping.
-//! - Suitable for heightmaps, noise previews, and debug visualisation.
+//! Scalar-to-color conversion helpers for procedural outputs that need to become immediate pixel data.
+//! The file focuses on clamped grayscale mapping so noise fields, heightmaps, and other sampled values can be previewed without bringing in a full rendering layer.
+//! Functionally this file delivers the simplest visual projection path from numeric procgen data to RGBA buffers.
 
 /// Convert a normalised float slice to a flat grayscale RGBA buffer; clamps each value to 0.0–1.0.
 pub fn scalar_map_to_rgba_bytes(values: &[f32]) -> Vec<u8> {

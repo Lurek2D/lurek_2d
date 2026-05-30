@@ -1,9 +1,13 @@
-//! Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
-//!
-//! - Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
-//! - Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
-//! - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
-//! - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
+//! This file provides the concrete interactive controls used by the retained-mode UI layer.
+//! It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior.
+//! It embeds common widget base state so style, layout, and interaction remain consistent.
+//! It validates and clamps editable values to enforce reliable control invariants.
+//! It normalizes selection behavior when list-like data mutates at runtime.
+//! It keeps control construction explicit so type identity is always unambiguous.
+//! It supports snapshot-friendly cloning for tooling, testing, and reversible operations.
+//! It packages core interaction primitives in one predictable and reusable control set.
+//! It establishes stable semantics for input-heavy interfaces across gameplay and tools.
+//! It forms the practical interaction surface most UI scripts build on top of.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Clickable push button with a text label.

@@ -1,7 +1,8 @@
-//! Compound shape storage: named, replayable sequences of vector-drawing commands.
-//!
-//! - Shape commands: rectangles, circles, ellipses, arcs, polygons, lines, and polylines.
-//! - State tracking: per-shape color and line-width carried across replays.
+//! This file stores reusable vector shape definitions as replayable command sequences instead of immediate one-off draw calls.
+//! A shape can therefore package many primitive strokes and fills into one named asset-like unit for later reuse.
+//! Drawing state such as color and line width travels with the sequence so replays preserve intended appearance.
+//! The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
+//! It acts as a small retained-mode layer inside the otherwise command-driven renderer.
 
 use super::renderer::DrawMode;
 /// One drawing operation stored inside a `CompoundShape`.

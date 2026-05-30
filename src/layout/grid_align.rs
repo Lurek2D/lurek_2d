@@ -1,9 +1,7 @@
-//! Post-processing utilities: snap node positions to a grid and centre in a bounding box.
-//!
-//! - `snap_to_grid(positions, cell_size)` rounds each node to the nearest grid cell.
-//! - `center_layout(positions, viewport)` translates the whole layout to fill a rect.
-//! - Pure functions; no mutation of the graph structure, only the coordinate map.
-//! - Applied after any layout algorithm before the positions are returned to Lua.
+//! Provides finishing transforms that regularize raw layout coordinates before visual presentation.
+//! Snaps node positions to consistent grid rhythm to improve scanability and manual editing behavior.
+//! Recenters complete layouts into target areas without changing graph topology or sibling ordering.
+//! Acts as the last geometry polish stage shared by multiple upstream layout strategies.
 
 use super::types::*;
 

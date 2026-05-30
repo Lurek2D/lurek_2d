@@ -1,7 +1,6 @@
-//! Sprite, SpriteSheet, and SpriteBatch types for 2D rendering
-//!
-//! - Texture atlas parsing (TexturePacker JSON) and region lookup
-//! - Nine-slice panel geometry for scalable UI elements
+//! This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
+//! It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
+//! At the highest level this is the feature layer that turns textures into reusable 2D presentation pieces.
 
 /// Texture atlas region map and TexturePacker JSON parser.
 pub mod atlas;

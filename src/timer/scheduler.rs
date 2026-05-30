@@ -1,11 +1,11 @@
-//! Time-based and frame-based event scheduling with one-shot and repeating modes.
-//!
-//! - Named events with automatic deduplication on re-registration.
-//! - Global time-scale multiplier applied to wall-clock updates; clamped to safe range.
-//! - Per-event pause/resume, interval mutation, and remaining-time queries.
-//! - Swap-remove expiry during update to avoid O(n) shifts on large event lists.
-//! - Monotonic ID allocation for stable external references into the scheduler.
-//! - Integration point for `lurek.timer` Lua bindings via ID-keyed callback dispatch.
+//! This file provides a scheduler for time-based and frame-based deferred execution flows.
+//! It supports one-shot and repeating events with stable identifiers for external control.
+//! It handles named event replacement so restartable behaviors stay clean and predictable.
+//! It applies global time scaling while preserving safe clamping boundaries for runtime stability.
+//! It exposes pause, resume, interval mutation, and remaining-time inspection for live orchestration.
+//! It removes expired events efficiently to keep update costs steady at larger event counts.
+//! It serves as the central dispatch surface for timer callbacks used by Lua bindings.
+//! It keeps callback timing coherent even when many scheduled entries mutate concurrently.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TI01, TI02, TI03, TI04};

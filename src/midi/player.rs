@@ -1,13 +1,10 @@
-//! `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
-//!
-//! - File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
-//! - Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
-//! - Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
-//! - Per-track mute support keyed by track index.
-//! - Configurable tempo scaling, looping, and output sample rate / channel count.
-//! - Mixer bus assignment via `BusKey` for routed playback.
-//! - `MidiData` metadata struct storing parsed song-level attributes.
-//! - Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
+//! Stateful MIDI transport for file playback through rendered PCM.
+//! Holds parsed song metadata and playback position in one controller object.
+//! Handles play, pause, resume, seek, stop, and duration queries.
+//! Tracks per-channel mix state such as volume, mute, solo, and instrument selection.
+//! Supports per-track muting plus tempo, looping, and output format control.
+//! Routes output through the mixer bus so playback fits the engine audio graph.
+//! Gives Lua a stable player surface for song-driven sequencing and testing.
 
 use crate::audio::PlayState;
 use crate::log_msg;

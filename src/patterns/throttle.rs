@@ -1,7 +1,8 @@
-//! Rate-limiting primitives: throttle (fire at most once per interval) and debounce (fire after quiet period).
-//!
-//! - Both track elapsed time, fire counts, and can be enabled/disabled at runtime.
-//! - Progress query on throttle; trigger/cancel lifecycle on debounce.
+//! Timing control primitives for gameplay actions that should be rate-limited or delayed instead of firing on every raw input or event edge.
+//! The file pairs throttle and debounce behaviors in one place because both solve cadence control while differing in whether they emit immediately or only after quiet time.
+//! Shared state around elapsed time, enable flags, fire counts, and reset flow makes these utilities practical for per-frame ticking and script-side inspection.
+//! Progress queries on throttle and trigger-cancel semantics on debounce cover the two common rhythms of spaced repetition and delayed confirmation.
+//! Functionally this delivers the pacing layer for input smoothing, cooldown-like gates, UI chatter suppression, and event burst control.
 
 /// Timer that fires at most once per `interval` seconds.
 #[derive(Debug, Clone)]

@@ -1,11 +1,11 @@
-//! Bitmap font atlas loading and runtime font rasterisation.
-//!
-//! - This module provides:
-//! - Bundled Courier New bitmap atlases in regular and bold variants.
-//! - Latin-1 coverage for 0x20..=0xFF.
-//! - Terminal-symbol aliases for 0x80..=0x9F and direct Unicode lookups.
-//! - Runtime rasterisation of TTF/OTF fonts into the same atlas format.
-//! - Glyph metrics, text measurement, and word wrapping.
+//! This file handles the text asset side of rendering, from bundled bitmap atlases to dynamically rasterized font faces.
+//! It keeps glyph metrics, atlas placement, and lookup behavior close together so layout and draw code share one text model.
+//! Built-in faces give the engine predictable default text coverage even before user fonts are loaded from content.
+//! Runtime rasterization feeds custom font files into the same practical atlas-oriented representation used by bundled resources.
+//! Measurement helpers live here as well, which keeps wrapping, alignment, and cursor math consistent with the actual glyph data.
+//! Character lookup includes compatibility behavior for terminal-style symbols and legacy code ranges that show up in retro UI work.
+//! The file therefore sits between raw font assets and renderer-facing text quads, preserving both readability and runtime flexibility.
+//! In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
 
 // Re-export the CPU-side font types from the font module for backward compatibility.
 pub use crate::font::{TextMetrics, TextAlign, WordWrap, FontStyle};

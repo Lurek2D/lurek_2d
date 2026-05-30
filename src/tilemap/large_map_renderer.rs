@@ -1,10 +1,9 @@
-//! Chunk-based large-map renderer for tilemaps that exceed single-pass draw limits.
-//!
-//! - Splits the full tile grid into fixed-size square chunks with dirty-flag tracking.
-//! - Camera and viewport state drive visibility culling at chunk granularity.
-//! - Supports per-tile mutation with automatic chunk invalidation.
-//! - Optional LOD down-sampling controlled by configurable zoom thresholds.
-//! - Tileset column count stored for atlas UV computation by the draw backend.
+//! This file provides chunk-oriented rendering support for tilemaps that exceed single-pass scale.
+//! It partitions the full grid into fixed blocks with dirty tracking for incremental refresh.
+//! It uses camera and viewport state to cull work at chunk granularity before draw emission.
+//! It supports per-tile mutation with automatic invalidation so updates stay localized.
+//! It applies optional zoom-aware detail reduction to keep large-world rendering responsive.
+//! It preserves tileset atlas geometry inputs needed by backend UV mapping logic.
 
 use std::collections::HashMap;
 

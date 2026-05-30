@@ -1,8 +1,7 @@
-//! Plural-form enum covering CLDR categories (zero, one, two, few, many, other).
-//!
-//! - Language-specific selection: English (singular/other) and Slavic (mod-10/mod-100 rules).
-//! - Key round-trip: convert between enum and string keys for translation maps.
-//! - Pluralize helpers that pick the best form from a HashMap and fall back gracefully.
+//! Encodes plural category logic used to choose grammatically correct translation variants by count.
+//! Maps quantity values to form keys with dedicated paths for English-style and Slavic-style rules.
+//! Supports stable key conversion so plural forms align with translation-table naming conventions.
+//! Provides fallback-aware pluralized string selection when exact form variants are absent.
 
 /// Plural categories used for translation lookup.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

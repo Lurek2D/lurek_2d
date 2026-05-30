@@ -1,9 +1,9 @@
-//! Random room placement with overlap rejection and configurable size ranges.
-//!
-//! - L-shaped corridor carving between consecutive room centres.
-//! - Flat row-major tile grid output (wall / floor / corridor byte values).
-//! - Prefab stamp system that centre-pastes named mask patterns into placed rooms.
-//! - Round-robin prefab assignment across all placed rooms.
+//! Room-scatter dungeon generator for layouts that start from independent room candidates and then stitch them into a traversable interior.
+//! The file focuses on non-overlapping room placement, giving each accepted space a clear rectangular identity before corridor carving connects the overall layout.
+//! L-shaped corridor logic keeps navigation simple and readable while still creating believable links between dispersed rooms.
+//! Flat tile-grid output makes the generator easy to consume by map systems, tests, and script-side post-processing.
+//! Prefab stamping layers authored motifs on top of procedural geometry so hand-designed shapes can appear inside otherwise generated rooms.
+//! Functionally this file delivers a scatter-style dungeon layout path that balances randomness, navigability, and controlled room embellishment.
 
 use crate::procgen::lcg::Lcg;
 

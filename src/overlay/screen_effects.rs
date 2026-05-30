@@ -1,7 +1,7 @@
-//! Full-screen effect state machines: flash, shake, and fade.
-//!
-//! - Each state tracks active flag, timing, and per-frame parameters.
-//! - Deterministic PRNG for shake offsets without external RNG dependency.
+//! Full-screen effect state machines for flash, shake, and fade.
+//! Keeps each state focused on timing, activation, and per-frame parameters.
+//! Uses a deterministic PRNG for shake offsets without extra RNG plumbing.
+//! Provides the short-lived effect core used by the overlay controller.
 
 #[derive(Debug, Clone)]
 /// Tracks a time-limited full-screen flash overlay.

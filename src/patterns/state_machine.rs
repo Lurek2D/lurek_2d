@@ -1,7 +1,8 @@
-//! Finite state machine with explicit states, guarded transitions, and bounded history.
-//!
-//! - Transition rules with optional guards control allowed state changes.
-//! - Maintains a capped history ring of visited states for replay or debugging.
+//! Full finite state machine runtime for systems that need named states, validated transitions, and a remembered trail of where control has moved over time.
+//! The file separates state membership from transition rules so allowed movement stays explicit and can be guarded rather than implied by arbitrary caller behavior.
+//! Bounded history gives each machine a replayable memory of recent changes, which is useful for debugging, analytics, and gameplay rules that depend on prior modes.
+//! Current-state management, rule inspection, and history maintenance live together so switching logic stays coherent instead of fragmenting across helpers.
+//! Functionally this delivers the structured mode-control layer for actors, encounters, UI flows, and scripted systems with meaningful transition policy.
 
 use std::collections::HashMap;
 

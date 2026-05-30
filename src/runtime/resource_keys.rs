@@ -1,7 +1,6 @@
-//! Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
-//!
-//! - Each key is a lightweight handle safe to store in Lua userdata and pass across frames.
-//! - Generated via `slotmap::new_key_type!` for O(1) lookup with generational validity checks.
+//! This file defines the typed handle keys used to reference runtime-managed resources without exposing storage internals.
+//! The handles are cheap to copy and safe to hold across frames, which is essential for Lua userdata and engine-facing APIs.
+//! It is the type-safety layer that lets many resource pools share one slotmap-style ownership pattern.
 
 use slotmap::new_key_type;
 new_key_type! {

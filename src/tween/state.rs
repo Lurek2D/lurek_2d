@@ -1,7 +1,8 @@
-//! Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
-//!
-//! - Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
-//! - Built-in easing catalog query used by tooling and Lua autocomplete.
+//! This file provides canonical tween progress state shared across animation handle types.
+//! It tracks elapsed time, duration, pause state, and resolved easing behavior in one unit.
+//! It resolves easing names case-insensitively with aliases that match common script habits.
+//! It exposes built-in easing catalog data for tooling, validation, and autocomplete features.
+//! It keeps progress semantics stable so tween updates remain deterministic across runtime paths.
 
 use crate::math::easing;
 

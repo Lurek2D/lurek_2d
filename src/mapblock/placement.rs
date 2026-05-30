@@ -1,9 +1,9 @@
-//! Block placement grid, valid-position search, and placed-block tracking.
-//!
-//! - `PlacementGrid` tracks which cells are occupied and caches constraint state.
-//! - `find_valid_positions(grid, block)` returns all (x, y) cells where the block fits.
-//! - Placement validation is O(edges × constraints) per candidate cell.
-//! - `PlacedBlock` records the block ID, position, and applied rotation for undo support.
+//! Placement-grid state and legality checks for mapblock assembly operations.
+//! Tracks occupied cells and placed-block metadata used by scripted steps.
+//! Evaluates candidates against edge constraints and neighborhood compatibility rules.
+//! Enumerates valid placements for deterministic or random selection passes.
+//! Records coordinates and orientation details for downstream processing.
+//! Acts as the spatial validation core inside the generator loop.
 
 use super::block::{Edge, MapBlock};
 use super::constraints::{opposite_edge, NeighborRules};

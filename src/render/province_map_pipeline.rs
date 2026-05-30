@@ -1,7 +1,9 @@
-//! Dedicated fullscreen province-map GPU pipeline.
-//!
-//! - Binds province id texture, border index texture, distance field texture, and storage buffers.
-//! - Owns uniforms for viewport mapping and strategic/tactical mode selection.
+//! This file provides the specialized GPU pipeline used to render province-map views that need more than generic sprite or mesh drawing.
+//! It binds province identity, borders, and distance-related data together so the shader can reason about map regions instead of plain pixels.
+//! Viewport mapping and mode-dependent behavior are configured here because that logic belongs to this strategic map presentation path.
+//! The pipeline is intentionally dedicated, reflecting that province rendering has distinct data needs from ordinary scene rendering.
+//! It turns map-analysis textures and buffers into a coherent fullscreen visual layer.
+//! This is the render-side home for province-specific screen synthesis.
 
 use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;

@@ -1,9 +1,9 @@
-//! Particle visualization helpers that render live `ParticleSystem` state to `ImageData` bitmaps.
-//!
-//! - Generic renderer using colour/size/alpha keyframes from the emitter configuration.
-//! - Themed preset renderers for explosions, rain, and spark-trail effects.
-//! - Compositing support: overlay particles onto an existing background or paint in-place.
-//! - Bar-chart lifecycle diagram showing particle count over time steps.
+//! Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps.
+//! Includes a generic renderer plus themed presets for explosions, rain, and spark trails.
+//! Supports compositing particles over an existing background or painting in place.
+//! Adds a chart-style lifetime view for inspecting particle counts over time.
+//! Keeps render inspection separate from the particle simulation core.
+//! Helps debug effect tuning without touching the live emitter loop.
 
 use super::emitter::ParticleSystem;
 use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes};

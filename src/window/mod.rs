@@ -1,7 +1,6 @@
-//! OS window lifecycle: creation, sizing, positioning, fullscreen, and DPI handling.
-//!
-//! - Multi-monitor support: display enumeration, selection, and window placement.
-//! - Virtual viewport: logical-to-pixel scaling and scale-mode selection.
+//! This module delivers the high-level desktop window subsystem for lifecycle and display control.
+//! It unifies monitor handling, mode changes, viewport scaling, and state query surfaces.
+//! It provides the runtime boundary between OS window behavior and script-facing APIs.
 
 /// Event-loop helpers: display enumeration, monitor selection, window centering, and startup placement.
 pub mod event_loop;

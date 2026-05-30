@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+ - test(lua): normalize Lua test marker hygiene by adding missing per-case markers in `tests/lua/library/test_library_*.lua`, remove remaining UTF-8 BOM issues in Lua test files, and restore missing trailing `test_summary()` in pathfind/visibility suites; relocate crafting library assertions out of unit by removing `tests/lua/unit/test_crafting_core_unit.lua`, folding namespace-boundary coverage into `tests/lua/library/test_library_crafting.lua`, and deleting obsolete `lua_unit_crafting_unit` harness registration.
+
+ - docs(ideas): add comprehensive MMO support rollout plan in `ideas/mmo_support_detailed_plan.md` covering hybrid architecture, phased roadmap (F0-F12), engineering backlog, SLO metrics, testing strategy, risk controls, and production release gates for 1000-player lobby + 64 rooms + 15v15 battles.
+
+ - refactor(ai,province,ui): remove three dead shim modules from `src/` — delete `src/ai/blackboard.rs`, `src/province/borders.rs`, and `src/ui/chart.rs`; move remaining internal AI imports to `crate::patterns::Blackboard`; drop `pub mod blackboard`, `pub mod borders`, and `pub mod chart`; sync `docs/specs/ai.md`, `docs/specs/province.md`, and `docs/specs/ui.md` to the new canonical module layout.
+
  - fix(api,docs): harden API doc generation at the source — `tools/docs/gen_docs_lua.py` now filters internal `TODO(...)` notes from public descriptions and deduplicates repeated signatures in module output; `tools/docs/gen_docs_rust.py` and `tools/docs/gen_lib_docs.py` also strip TODO debt lines from generated public docs; `tools/docs/gen_lib_docs.py` normalizes shorthand receiver class names (`seq`, `part`, `tmpl`, `doll`, `inv`, `iset`, `it`, `pool`) to stable PascalCase API class names in `lureksome` outputs.
 
  - fix(runtime,api): deprecate `lurek.fixedUpdate(dt)` in favor of `lurek.process_physics(dt)` — callback docs/extension metadata now mark `fixedUpdate` as deprecated, and runtime logs a one-time warning when a game still defines `lurek.fixedUpdate`.

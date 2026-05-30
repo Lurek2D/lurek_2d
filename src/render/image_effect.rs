@@ -1,7 +1,6 @@
-//! Descriptor for a single named shader pass in a post-processing chain.
-//!
-//! - Carries float uniform parameters and an enable flag per pass.
-//! - Used by the render pipeline to build configurable multi-pass effects.
+//! This file defines the compact descriptor for one post-processing step in a larger image-effect chain.
+//! Each record carries effect identity, parameter values, and enable state so pipelines can be configured without custom structs per effect.
+//! The type is the small control surface between high-level effect selection and the GPU post-processing backend.
 
 use std::collections::HashMap;
 /// One named shader pass in a post-processing chain; carries float uniform parameters.

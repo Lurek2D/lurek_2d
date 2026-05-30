@@ -1,8 +1,9 @@
-//! Multi-series data graph renderer with viewport coordinate mapping.
-//!
-//! - Supports line, scatter, and bar chart series. Provides world↔screen
-//! - coordinate conversion and auto-range fitting for use in both runtime
-//! - visualisation and editor panels.
+//! This file provides the data graph renderer used for chart-like UI visualization surfaces.
+//! It supports multiple series forms so lines, points, and bars share one rendering core.
+//! It maps graph space to screen space with reversible coordinate conversion helpers.
+//! It computes automatic ranges so diverse datasets fit cleanly into constrained viewports.
+//! It serves both runtime HUD analytics and editor-facing diagnostic chart panels.
+//! It keeps chart rendering behavior consistent across tooling and in-game dashboards.
 
 use crate::color::Color;
 

@@ -267,6 +267,7 @@ end)
 
 -- @describe node constructors
 describe("node constructors", function()
+    -- @library lurek.library_dialog
     it("M.say creates a say node", function()
         local node = dialog.say("Alice", "Hello")
         expect_equal(node.type,    "say")
@@ -274,12 +275,14 @@ describe("node constructors", function()
         expect_equal(node.text,    "Hello")
     end)
 
+    -- @library lurek.library_dialog
     it("M.say accepts opts table", function()
         local node = dialog.say("Bob", "Hi", { label = "start" })
         expect_equal(node.label, "start")
         expect_equal(node.speaker, "Bob")
     end)
 
+    -- @library lurek.library_dialog
     it("M.choice creates a choice node", function()
         local opts = { { label = "Yes", branch = {} }, { label = "No", branch = {} } }
         local node = dialog.choice("Pick one", opts)
@@ -289,17 +292,20 @@ describe("node constructors", function()
         expect_equal(node.options[1].label, "Yes")
     end)
 
+    -- @library lurek.library_dialog
     it("M.wait creates a wait node", function()
         local node = dialog.wait(1.5)
         expect_equal(node.type, "wait")
         expect_equal(node.time, 1.5)
     end)
 
+    -- @library lurek.library_dialog
     it("M.wait defaults time to 1.0", function()
         local node = dialog.wait()
         expect_equal(node.time, 1.0)
     end)
 
+    -- @library lurek.library_dialog
     it("M.event creates an event node", function()
         local node = dialog.event("unlock", { key = "door" })
         expect_equal(node.type,     "event")
@@ -307,6 +313,7 @@ describe("node constructors", function()
         expect_equal(node.data.key, "door")
     end)
 
+    -- @library lurek.library_dialog
     it("M.call creates a call node", function()
         local fn = function() end
         local node = dialog.call(fn)
@@ -314,12 +321,14 @@ describe("node constructors", function()
         expect_equal(node.fn,   fn)
     end)
 
+    -- @library lurek.library_dialog
     it("M.jump creates a jump node", function()
         local node = dialog.jump("end_label")
         expect_equal(node.type,   "jump")
         expect_equal(node.target, "end_label")
     end)
 
+    -- @library lurek.library_dialog
     it("M.NodeType constants have correct values", function()
         expect_equal(dialog.NodeType.SAY,    "say")
         expect_equal(dialog.NodeType.CHOICE, "choice")
@@ -329,6 +338,7 @@ describe("node constructors", function()
         expect_equal(dialog.NodeType.JUMP,   "jump")
     end)
 
+    -- @library lurek.library_dialog
     it("M.SequencerState constants match sequencer states", function()
         expect_equal(dialog.SequencerState.IDLE,    "idle")
         expect_equal(dialog.SequencerState.TYPING,  "typing")
@@ -338,6 +348,7 @@ describe("node constructors", function()
         expect_equal(dialog.SequencerState.DONE,    "done")
     end)
 
+    -- @library lurek.library_dialog
     it("M.SequencerState legacy aliases are present", function()
         expect_equal(dialog.SequencerState.RUNNING,        "typing")
         expect_equal(dialog.SequencerState.WAITING_CHOICE, "choice")
@@ -383,6 +394,7 @@ end)
 
 -- @describe jump node
 describe("jump node", function()
+    -- @library lurek.library_dialog
     it("jumps to the labeled node, skipping intermediate nodes", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -395,6 +407,7 @@ describe("jump node", function()
         expect_equal(seq:currentText(),    "reached")
     end)
 
+    -- @library lurek.library_dialog
     it("M.jump constructor produces correct node", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -424,6 +437,7 @@ end)
 
 -- @describe cond predicate
 describe("cond predicate", function()
+    -- @library lurek.library_dialog
     it("skips a node when cond returns false", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -436,6 +450,7 @@ describe("cond predicate", function()
         expect_equal(seq:currentText(),    "shown")
     end)
 
+    -- @library lurek.library_dialog
     it("does not skip a node when cond returns true", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -446,6 +461,7 @@ describe("cond predicate", function()
         expect_equal(seq:currentSpeaker(), "A")
     end)
 
+    -- @library lurek.library_dialog
     it("skips multiple consecutive nodes with false cond", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -590,6 +606,7 @@ describe("choice index validation", function()
         expect_error(function() seq:choose("bad") end)
     end)
 
+    -- @library lurek.library_dialog
     it("errors on index below 1", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -601,6 +618,7 @@ describe("choice index validation", function()
         expect_error(function() seq:choose(0) end)
     end)
 
+    -- @library lurek.library_dialog
     it("errors on index above option count", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -675,6 +693,7 @@ describe("load validation", function()
         expect_equal(seq:getState(), "done")
     end)
 
+    -- @library lurek.library_dialog
     it("errors on non-table argument", function()
         local seq = dialog.newSequencer()
         expect_error(function() seq:load("bad") end)
@@ -684,6 +703,7 @@ end)
 
 -- @describe cond error recovery
 describe("cond error recovery", function()
+    -- @library lurek.library_dialog
     it("skips node when cond() throws an error", function()
         local seq = dialog.newSequencer()
         seq:load({
@@ -696,6 +716,7 @@ describe("cond error recovery", function()
         expect_equal(seq:currentText(), "shown")
     end)
 
+    -- @library lurek.library_dialog
     it("skips multiple nodes with throwing cond()", function()
         local seq = dialog.newSequencer()
         seq:load({

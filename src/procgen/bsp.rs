@@ -1,9 +1,9 @@
-//! Binary Space Partition dungeon generator: recursive splitting, leaf room placement, corridor linking.
-//!
-//! - Configuration via `BspOpts`: grid size, recursion depth, minimum partition size, padding, seed.
-//! - Prefab stamping: round-robin placement of named template shapes centred in qualifying rooms.
-//! - Deterministic output driven by a seeded `Lcg` RNG for reproducible layouts.
-//! - Pure algorithm module with no rendering or tilemap dependency.
+//! BSP dungeon generator for layouts that should feel structured, room-based, and reproducible rather than hand-authored tile by tile.
+//! The file recursively splits a rectangular space into partitions, chooses usable leaves for rooms, and then links those rooms with corridors that preserve navigable flow.
+//! Configuration controls the personality of the result through size, depth, padding, and seed rather than scattering generation policy across unrelated helpers.
+//! Prefab stamping extends the base dungeon with authored patterns that can be placed into qualifying rooms without sacrificing determinism.
+//! The implementation stays algorithmic and headless, which makes it suitable for offline generation, tests, and data-driven tooling.
+//! Functionally this file delivers a reproducible room-and-corridor dungeon backbone shaped by binary spatial subdivision.
 
 use crate::procgen::lcg::Lcg;
 

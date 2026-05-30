@@ -1,7 +1,8 @@
-//! Ready-made `ParticleConfig` constructors for common visual effects (fire, smoke, rain, snow, sparks).
-//!
-//! - Each preset returns a standalone config with tuned lifetime, speed, color ramp, and shape.
-//! - Designed for one-call usage; callers can override individual fields after construction.
+//! Ready-made ParticleConfig constructors for common visual effects.
+//! Covers fire, smoke, rain, snow, sparks, and other standard patterns.
+//! Returns self-contained configs with tuned lifetime, speed, color ramp, and shape.
+//! Lets callers start from a stable preset and override fields afterward.
+//! Makes quick particle authoring simple without hiding the underlying config.
 
 use crate::particle::{EmissionShape, ParticleConfig};
 /// Return a `ParticleConfig` producing an upward fire effect with turbulence and RGB fade.

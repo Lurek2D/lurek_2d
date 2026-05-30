@@ -1,9 +1,9 @@
-//! Manage a pool of active WebSocket connections keyed by caller-assigned ID.
-//!
-//! - Spawn background threads for TLS/TCP handshakes so connect never blocks the game loop.
-//! - Non-blocking poll loop reads text, binary, and close frames from all live sockets.
-//! - Send text or binary frames, and perform graceful close with drain semantics.
-//! - Post all connection lifecycle events (open, message, error, close) through an MPSC channel.
+//! Pool of active WebSocket connections keyed by caller-assigned id.
+//! Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop.
+//! Polls live sockets for text, binary, and close frames without blocking.
+//! Sends text or binary frames and performs graceful close with drain semantics.
+//! Posts connection lifecycle events through an MPSC channel.
+//! Keeps WebSocket transport behaviour isolated from game-thread timing.
 
 use super::net_thread::{NetworkResponse, WsEvent};
 use log::{debug, warn};

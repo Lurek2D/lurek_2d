@@ -1,8 +1,6 @@
-//! In-engine terminal emulator with ANSI escape-code support
-//!
-//! - Grid-based cell model, tab completion, and syntax highlighting
-//! - Converts terminal state into RenderCommand sequences for display
-//! - Widget primitives for composing custom terminal UIs
+//! This module provides the in-engine terminal stack, combining a character grid, ANSI-aware text handling, interactive widgets, and renderer handoff.
+//! It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model.
+//! At the highest level this is the subsystem that lets the engine host terminal behavior as a first-class UI surface.
 
 /// ANSI escape-code parsing and attribute types.
 pub mod ansi;

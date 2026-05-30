@@ -1,4 +1,4 @@
-﻿-- Lurek2D Audio API Tests
+-- Lurek2D Audio API Tests
 
 -- @describe lurek.audio module exists
 describe("lurek.audio module exists", function()

@@ -4,20 +4,24 @@
 local T = ...
 local audio = lurek.audio
 
-T.group("lurek.audio.newBeatClock", function()
-    T.test("creates clock at given bpm", function()
+-- @describe lurek.audio.newBeatClock
+describe("lurek.audio.newBeatClock", function()
+    -- @covers lurek.audio.newBeatClock
+    it("creates clock at given bpm", function()
         local bc = audio.newBeatClock(120.0, 4)
         T.assert_equal(bc:bpm(), 120.0)
         T.assert_equal(bc:beatsPerBar(), 4)
     end)
 
-    T.test("starts stopped, no crossings on tick", function()
+    -- @covers lurek.audio.newBeatClock
+    it("starts stopped, no crossings on tick", function()
         local bc = audio.newBeatClock(120.0)
         local crossings = bc:tick(1.0)
         T.assert_equal(#crossings, 0, "stopped clock must not tick")
     end)
 
-    T.test("start / tick produces beat crossings at 60 bpm", function()
+    -- @covers lurek.audio.newBeatClock
+    it("start / tick produces beat crossings at 60 bpm", function()
         local bc = audio.newBeatClock(60.0, 4)
         bc:start()
         -- At 60 bpm, 1 beat = 1 second
@@ -26,7 +30,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_equal(#crossings, 2)
     end)
 
-    T.test("position fields are present", function()
+    -- @covers lurek.audio.newBeatClock
+    it("position fields are present", function()
         local bc = audio.newBeatClock(120.0, 4)
         bc:start()
         bc:tick(0.5)
@@ -37,7 +42,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_not_nil(pos.phase)
     end)
 
-    T.test("stop pauses the clock", function()
+    -- @covers lurek.audio.newBeatClock
+    it("stop pauses the clock", function()
         local bc = audio.newBeatClock(120.0, 4)
         bc:start()
         bc:tick(0.5)
@@ -48,7 +54,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_equal(b1, b2, "stopped clock must not advance")
     end)
 
-    T.test("reset clears elapsed time", function()
+    -- @covers lurek.audio.newBeatClock
+    it("reset clears elapsed time", function()
         local bc = audio.newBeatClock(120.0)
         bc:start()
         bc:tick(2.0)
@@ -56,26 +63,30 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_true(bc:position().beat < 0.001)
     end)
 
-    T.test("setBpm changes rate", function()
+    -- @covers lurek.audio.newBeatClock
+    it("setBpm changes rate", function()
         local bc = audio.newBeatClock(120.0)
         bc:setBpm(240.0)
         T.assert_equal(bc:bpm(), 240.0)
     end)
 
-    T.test("setBeatsPerBar changes signature", function()
+    -- @covers lurek.audio.newBeatClock
+    it("setBeatsPerBar changes signature", function()
         local bc = audio.newBeatClock(120.0, 4)
         bc:setBeatsPerBar(3)
         T.assert_equal(bc:beatsPerBar(), 3)
     end)
 
-    T.test("tap returns bpm estimate after 2 taps", function()
+    -- @covers lurek.audio.newBeatClock
+    it("tap returns bpm estimate after 2 taps", function()
         local bc = audio.newBeatClock(120.0)
         bc:tap(0.0)
         local bpm = bc:tap(0.5)  -- 0.5s interval => 120 bpm
         T.assert_true(bpm > 100 and bpm < 140, "tap bpm out of range: " .. bpm)
     end)
 
-    T.test("scheduleAt fires via drainFired", function()
+    -- @covers lurek.audio.newBeatClock
+    it("scheduleAt fires via drainFired", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
         bc:scheduleAt(1.0)
@@ -84,7 +95,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_equal(#fired, 1)
     end)
 
-    T.test("every invokes callback on each crossed division step", function()
+    -- @covers lurek.audio.newBeatClock
+    it("every invokes callback on each crossed division step", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
         local steps = {}
@@ -95,7 +107,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_true(#steps >= 4, "expected at least 4 callbacks, got " .. tostring(#steps))
     end)
 
-    T.test("at invokes callback once when beat is crossed", function()
+    -- @covers lurek.audio.newBeatClock
+    it("at invokes callback once when beat is crossed", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
         local hits = 0
@@ -110,7 +123,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_true(seen >= 1.0)
     end)
 
-    T.test("pattern invokes callback on active slots", function()
+    -- @covers lurek.audio.newBeatClock
+    it("pattern invokes callback on active slots", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
         local slots = {}
@@ -122,7 +136,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_true(slots[1] == 1 or slots[1] == 3)
     end)
 
-    T.test("cancel stops future scheduled callbacks", function()
+    -- @covers lurek.audio.newBeatClock
+    it("cancel stops future scheduled callbacks", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
         local hits = 0
@@ -137,7 +152,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_equal(hits, before)
     end)
 
-    T.test("cancelAll clears all callback schedules", function()
+    -- @covers lurek.audio.newBeatClock
+    it("cancelAll clears all callback schedules", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
         local hits = 0
@@ -152,18 +168,21 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_equal(hits, 0)
     end)
 
-    T.test("secondsPerBeat is reciprocal of bpm", function()
+    -- @covers lurek.audio.newBeatClock
+    it("secondsPerBeat is reciprocal of bpm", function()
         local bc = audio.newBeatClock(60.0)
         T.assert_true(math.abs(bc:secondsPerBeat() - 1.0) < 1e-6)
     end)
 
-    T.test("quantise rounds to grid", function()
+    -- @covers lurek.audio.newBeatClock
+    it("quantise rounds to grid", function()
         local bc = audio.newBeatClock(120.0)
         local q = bc:quantise(1.3, 0.25)
         T.assert_true(math.abs(q - 1.25) < 1e-9 or math.abs(q - 1.5) < 1e-9)
     end)
 
-    T.test("isRunning reflects state", function()
+    -- @covers lurek.audio.newBeatClock
+    it("isRunning reflects state", function()
         local bc = audio.newBeatClock(120.0)
         T.assert_false(bc:isRunning())
         bc:start()
@@ -172,14 +191,16 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_false(bc:isRunning())
     end)
 
-    T.test("typeOf returns LBeatClock", function()
+    -- @covers lurek.audio.newBeatClock
+    it("typeOf returns LBeatClock", function()
         local bc = audio.newBeatClock(120.0)
         T.assert_true(bc:typeOf("LBeatClock"))
         T.assert_true(bc:typeOf("LObject"))
         T.assert_false(bc:typeOf("LLootTable"))
     end)
 
-    T.test("newBeatClock accepts opts table and exposes extended position helpers", function()
+    -- @covers lurek.audio.newBeatClock
+    it("newBeatClock accepts opts table and exposes extended position helpers", function()
         local bc = audio.newBeatClock(120.0, { subdivision = 8, swing = 0.2, latency_ms = 5 })
         bc:start()
         local ev = bc:update(0.3)
@@ -193,7 +214,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_not_nil(err)
     end)
 
-    T.test("rampBpm updates bpm over time", function()
+    -- @covers lurek.audio.newBeatClock
+    it("rampBpm updates bpm over time", function()
         local bc = audio.newBeatClock(120.0)
         bc:start()
         bc:rampBpm(180.0, 0.5)
@@ -201,7 +223,8 @@ T.group("lurek.audio.newBeatClock", function()
         T.assert_true(bc:getBpm() > 120.0)
     end)
 
-    T.test("judgeBeat and global judgement windows are available", function()
+    -- @covers lurek.audio.newBeatClock
+    it("judgeBeat and global judgement windows are available", function()
         local before = audio.getJudgementWindows()
         audio.setJudgementWindows({ perfect = 0.02, great = 0.05, good = 0.09 })
         local cfg = audio.getJudgementWindows()
@@ -215,7 +238,8 @@ T.group("lurek.audio.newBeatClock", function()
         audio.setJudgementWindows(before)
     end)
 
-    T.test("dump returns snapshot table", function()
+    -- @covers lurek.audio.newBeatClock
+    it("dump returns snapshot table", function()
         local bc = audio.newBeatClock(100.0)
         local snap = bc:dump()
         T.assert_not_nil(snap.bpm)

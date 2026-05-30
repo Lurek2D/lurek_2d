@@ -1,4 +1,9 @@
-//! Attention components for transformer-like sequence models.
+//! Implements attention primitives used by sequence-learning stacks in the learning subsystem.
+//! Provides positional encodings and multi-head attention flows over row-major tensor buffers.
+//! Computes query-key-value interactions and head projection paths for contextual token mixing.
+//! Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored.
+//! Targets CPU inference and training-style experiments without external deep-learning runtimes.
+//! Supplies reusable building blocks consumed by transformer encoder and decoder compositions.
 
 use crate::learning::tensor::LurekTensor;
 use crate::learning::EvolutionaryLayer;

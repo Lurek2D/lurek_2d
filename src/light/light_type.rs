@@ -1,7 +1,6 @@
-//! Define the geometric illumination models available for 2D lights.
-//!
-//! - Discriminate between point, directional, and spot light behavior.
-//! - Drive intensity falloff and ray direction logic in the lighting pipeline.
+//! Defines geometric light models used by the 2D lighting pipeline.
+//! Distinguishes point, directional, and spot semantics for illumination behavior.
+//! Supplies compact type discriminants used during shading and shadow evaluation.
 
 /// Discriminant for the geometric illumination model used by a `Light2D`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

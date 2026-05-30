@@ -1,7 +1,6 @@
-//! Name-based service registry for runtime feature discovery.
-//!
-//! - Register, unregister, and query string-keyed services.
-//! - Sorted enumeration of all active service names.
+//! Lightweight service locator for runtime feature discovery when systems need to find shared capabilities by agreed names instead of direct construction paths.
+//! The file keeps registration, removal, lookup, and sorted listing in one compact registry so service presence stays explicit and easy to inspect.
+//! Functionally this delivers a simple dependency access hub for loosely coupled gameplay code, especially where availability changes during runtime.
 
 use std::collections::HashSet;
 

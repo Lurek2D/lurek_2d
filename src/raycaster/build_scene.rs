@@ -1,13 +1,18 @@
-//! Build a complete `RaycasterScene` each frame from camera parameters, a DDA grid, and texture lookups.
-//!
-//! - Project floor and ceiling tiles as perspective-correct quads with per-tile lighting and UV mapping.
-//! - Generate lowered-floor pit geometry including depth-offset surfaces and side-wall extrusions.
-//! - Emit wall-face quads for every visible solid-cell boundary with roof-side thickness geometry.
-//! - Project billboard sprites to screen space with distance-based sizing and lighting.
-//! - Integrate ambient light, point-light contributions, distance shading, and roofed-ambient darkening.
-//! - Provide camera-space depth projection helpers (`camera_depth`, `project_ground_point`, `project_horizontal_plane`).
-//! - Snap projected coordinates to half-pixel boundaries to reduce sub-pixel jitter on floor/ceiling edges.
-//! - Supply UV-generation utilities for axis-aligned quads and world-space column strips.
+//! This file assembles the full per-frame raycaster scene from camera state, grid hits, texture routing, and lighting inputs.
+//! It turns wall contacts into screen-space quads whose geometry already matches the perspective rules expected by the render stage.
+//! Floor and ceiling strips are expanded into textured spans with stable UVs so long corridors and open rooms keep coherent surface motion.
+//! Lowered cells become pits with visible bottoms, side faces, and transitions that preserve depth cues instead of flattening into one plane.
+//! Roofed regions are darkened differently from open regions so covered space reads denser even before dynamic lights are applied.
+//! Point lights, ambient light, and distance falloff are blended here so every emitted surface leaves this file with its final light tint.
+//! Billboard sprites are projected into the same camera space as walls, which keeps monsters, props, and pickups aligned with corridor depth.
+//! Static meshes can be injected beside billboarded elements without asking later stages to reconstruct world-space context.
+//! Ground projection helpers convert world corners into screen corners for both top and bottom planes with near-plane rejection baked in.
+//! UV helpers keep repeated strips and axis-aligned quads visually stable when the camera rotates or grazes a tile boundary.
+//! Half-pixel snapping is applied where needed to reduce shimmer along long floor edges and thin seam lines.
+//! The file also decides how visible boundaries around solid cells become roof lips, pit walls, and other secondary surfaces.
+//! Output is a dense scene description rather than immediate pixels, so later stages can sort, batch, or rasterize without redoing math.
+//! Most of the expensive spatial reasoning for textured raycast presentation lives here, not in the draw backends.
+//! In practice this is the bridge between raw DDA hit data and a believable first-person space built from quads and light.
 
 use crate::color::Color;
 use crate::math::Vec2;

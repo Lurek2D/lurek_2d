@@ -1,7 +1,8 @@
-//! Axis-aligned rectangle defined by top-left corner and size (y-down convention).
-//!
-//! - Containment, intersection, union, and bounding-box construction from point sets.
-//! - Center-based and corner-based constructors for layout and collision use cases.
+//! Axis-aligned rectangle helper for layout, bounds, and collision checks.
+//! Stores top-left position plus size under the engine's y-down convention.
+//! Supports containment, overlap, union, and bounding-box construction.
+//! Offers both corner-based and center-based creation paths.
+//! Acts as the basic 2D box type used across spatial code.
 
 use super::vec2::Vec2;
 

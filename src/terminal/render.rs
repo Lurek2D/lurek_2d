@@ -1,7 +1,7 @@
-//! Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
-//!
-//! - Rasterise the composited grid into an `ImageData` thumbnail for previews and tests.
-//! - Both paths include terminal widgets and map foreground/background colours to output.
+//! This file converts the composed terminal surface into visual output for both renderer command streams and software image snapshots.
+//! Grid cells and overlaid widgets are flattened together here so the rest of the engine sees one finished terminal presentation.
+//! Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
+//! The file is therefore the terminal subsystem's final visual export layer.
 
 use super::terminal_state::Terminal;
 use crate::image::ImageData;
