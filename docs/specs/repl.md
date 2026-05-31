@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `repl` module provides a headless interactive Lua session with evaluation, history, commands, and completion support.
+- Evaluates Lua inputs with tab completion.
 
 ## General Info
 
@@ -16,13 +16,9 @@
 
 ## Summary
 
-The `repl` module gives a live Lua interaction surface over an existing runtime VM for quick diagnostics and experiments.
+This module provides a headless, embeddable interactive Lua session that evaluates code against the running VM. It operates independently of rendering layers, maintaining a bounded history and executing colon-prefixed console commands.
 
-Its design is headless, so the same session core can run in an in-game console, test harness, or external terminal. Input, evaluation, and output stay in one predictable text contract.
-
-Usability features include bounded history, command-style controls, expression-first evaluation, and deterministic output formatting.
-
-In practice, `lurek.repl` is the engine's stable interactive scripting and inspection tool.
+To assist users, a completer scans live globals and keywords to suggest autocomplete candidates, resolving dot-paths. Raw values are formatted into readable text for interactive debugging feedback.
 
 ## Imports
 
@@ -68,7 +64,7 @@ In practice, `lurek.repl` is the engine's stable interactive scripting and inspe
 
 ### Functions
 
-- `lurek.repl.new`: Creates a release-safe REPL session with bounded command history.
+- `lurek.repl.new(max_history?) -> LReplSession`: Creates a release-safe REPL session with bounded command history.
 
 ### Callbacks
 
@@ -90,10 +86,10 @@ In practice, `lurek.repl` is the engine's stable interactive scripting and inspe
 
 ##### Methods
 
-- `LReplSession:clear`: Clears all entries from this REPL session history.
-- `LReplSession:complete`: Returns completion candidates that begin with the supplied prefix.
-- `LReplSession:eval`: Evaluates Lua code and records the input in this REPL history.
-- `LReplSession:history`: Returns the recorded REPL input history in oldest-first order.
-- `LReplSession:len`: Returns the number of entries stored in this REPL history.
-- `LReplSession:type`: Returns the Lua-visible type name for this REPL session handle.
-- `LReplSession:typeOf`: Returns whether this REPL session handle matches a supported type name.
+- `LReplSession:clear() -> nil`: Clears all entries from this REPL session history.
+- `LReplSession:complete(prefix) -> string[]`: Returns completion candidates that begin with the supplied prefix.
+- `LReplSession:eval(code) -> string`: Evaluates Lua code and records the input in this REPL history.
+- `LReplSession:history() -> string[]`: Returns the recorded REPL input history in oldest-first order.
+- `LReplSession:len() -> integer`: Returns the number of entries stored in this REPL history.
+- `LReplSession:type() -> string`: Returns the Lua-visible type name for this REPL session handle.
+- `LReplSession:typeOf(name) -> boolean`: Returns whether this REPL session handle matches a supported type name.

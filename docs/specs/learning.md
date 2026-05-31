@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `learning` module provides CPU-first machine learning primitives, from bandits and Q-learning to neural, recurrent, and transformer blocks with evolutionary optimization support.
+- Manages dynamic neural nets, attention blocks, transformers, and flat tensor buffers.
+- Supports genetic algorithms, neuroevolution, bandits, tabular Q-learning, and ONNX models.
 
 ## General Info
 
@@ -16,23 +17,15 @@
 
 ## Summary
 
-The `learning` module is the engine's standalone machine-learning toolkit. It provides reusable CPU-side algorithms that can run independently from high-level AI planners, so teams can apply learning workflows in gameplay logic, balancing systems, and analytics tools.
+This module represents the machine-learning runtime and artificial intelligence modeling subsystem, providing a rich collection of CPU-side training and inference blocks. It allows developers to build, organize, and evaluate various learning architectures directly in active game sessions. These models run without external runtime dependencies, utilizing flat, row-major tensor buffers for fast and predictable numeric calculations on the main CPU thread.
 
-Its practical range includes lightweight online methods and deeper model building blocks. Bandits and tabular Q-learning support quick adaptive decisions, while feed-forward networks, convolution layers, recurrent layers, and transformer components support richer inference pipelines.
+At the core of the neural modeling system is a dynamic network engine that chains diverse layer types into unified model pipelines. It supports feed-forward dense layers, spatial Conv2D grids, downsampling MaxPool2D layers, and stateful GRU or LSTM recurrent sequence blocks. Additionally, advanced sequence blocks like multi-head attention and transformer blocks are supported, complete with sinusoidal positional encodings for temporal context modeling.
 
-Evolutionary optimization is built into the same surface. Genetic search, neuroevolution orchestration, and flat-parameter interfaces let models be trained or tuned through population-based workflows without custom glue around each layer type.
+To optimize weights, the module implements population-based genetic algorithms and neuroevolution workflows. Trainable parameters are exported and imported as flat floating-point buffers, allowing evolutionary search tools to manipulate layer architectures uniformly. The neuroevolution orchestrator rebuilds neural nets from flat chromosomes and tracks generation metadata, making it easy to evolve behavioral policies and prototype gameplay agents.
 
-A shared tensor foundation keeps data movement consistent across modules. Core tensor and matrix helpers, layer parameter packing, and import/export paths allow different model components to interoperate under one runtime contract.
+For decision-making tasks under uncertainty, the module integrates reinforcement learning components. A multi-armed bandit selector supports epsilon-greedy, Thompson sampling, and upper confidence bound strategies. This is paired with tabular Q-learning over discrete state-action spaces, supporting epsilon decay and Bellman updates. Environment wrappers standardize reward step structures and observation limits to streamline training loops.
 
-The module is designed for deterministic, headless, CPU-first operation. This makes it practical for test pipelines, reproducible experiments, and runtime systems where predictable behavior matters more than external ML stack complexity.
-
-Integration flexibility is another key benefit. Different systems can start with simple methods like bandits or tabular learners, then scale up to recurrent or attention-based models without leaving the same module surface or rewriting surrounding data plumbing.
-
-Because parameter handling is standardized, experimentation and deployment use the same model lifecycle. Teams can iterate in controlled training loops, export stable state, and reuse those artifacts in live gameplay or tooling runs with minimal friction.
-
-This also improves long-term maintainability, because model interfaces, persistence paths, and optimization hooks stay aligned under one module contract.
-
-In practice, `lurek.learning` gives one complete learning workspace: define environments, build models, run inference, evolve parameters, and persist state through consistent Lua-facing APIs.
+Finally, the module provides a seamless path for integrating externally trained models via ONNX format loading. By converting native tensor descriptors into plan structures, it performs optimized CPU inference on pre-trained networks. This enables developers to deploy complex, industry-standard neural network policies directly into game scripts, combining local training, evolutionary prototyping, and external inference in one cohesive system.
 
 ## Imports
 
@@ -163,26 +156,26 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ### Functions
 
-- `lurek.learning.defineEnv`: Defines a Lua-described RL environment from a config table.
-- `lurek.learning.frameStack`: Creates a frame-stacking ring buffer of the last n observations.
-- `lurek.learning.loadOnnx`: Loads and optimises an ONNX model from a file path.
-- `lurek.learning.newBandit`: Creates a multi-armed bandit with a named selection strategy.
-- `lurek.learning.newConv2D`: Creates a Conv2D layer wrapper for deterministic CPU spatial inference.
-- `lurek.learning.newGeneticAlgorithm`: Creates a genetic algorithm population with fixed chromosome length.
-- `lurek.learning.newGru`: Creates a stateful GRU layer wrapper.
-- `lurek.learning.newLstm`: Creates a stateful LSTM layer wrapper.
-- `lurek.learning.newMaxPool2D`: Creates a MaxPool2D layer wrapper.
-- `lurek.learning.newMultiHeadAttention`: Creates a multi-head attention block.
-- `lurek.learning.newNeuralNet`: Creates an empty feed-forward neural network.
-- `lurek.learning.newNeuroevolution`: Creates a neuroevolution population from a layer specification table.
-- `lurek.learning.newPositionalEncoding`: Creates a sinusoidal positional encoding helper.
-- `lurek.learning.newQLearner`: Creates a Q-learner with fixed state and action counts.
-- `lurek.learning.newTensor`: Creates a tensor from a shape (integer array) and flat float data (number array).
-- `lurek.learning.newTransformerDecoder`: Creates a transformer decoder block.
-- `lurek.learning.newTransformerEncoder`: Creates a transformer encoder block.
-- `lurek.learning.normalizeEnv`: Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.
-- `lurek.learning.timeLimit`: Wraps an LEnv so episodes end automatically after max_steps steps.
-- `lurek.learning.wrap`: Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
+- `lurek.learning.defineEnv(config) -> LEnv`: Defines a Lua-described RL environment from a config table.
+- `lurek.learning.frameStack(n) -> LFrameStack`: Creates a frame-stacking ring buffer of the last n observations.
+- `lurek.learning.loadOnnx(path) -> LOnnxModel`: Loads and optimises an ONNX model from a file path.
+- `lurek.learning.newBandit(arm_count, strategy, epsilon, seed) -> LBandit`: Creates a multi-armed bandit with a named selection strategy.
+- `lurek.learning.newConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w) -> LConv2D`: Creates a Conv2D layer wrapper for deterministic CPU spatial inference.
+- `lurek.learning.newGeneticAlgorithm(pop_size, gene_count, seed) -> LGeneticAlgorithm`: Creates a genetic algorithm population with fixed chromosome length.
+- `lurek.learning.newGru(input_size, hidden_size) -> LGRU`: Creates a stateful GRU layer wrapper.
+- `lurek.learning.newLstm(input_size, hidden_size) -> LLSTM`: Creates a stateful LSTM layer wrapper.
+- `lurek.learning.newMaxPool2D(kernel_h, kernel_w, stride_h, stride_w) -> LMaxPool2D`: Creates a MaxPool2D layer wrapper.
+- `lurek.learning.newMultiHeadAttention(d_model, num_heads) -> LMultiHeadAttention`: Creates a multi-head attention block.
+- `lurek.learning.newNeuralNet() -> LNeuralNet`: Creates an empty feed-forward neural network.
+- `lurek.learning.newNeuroevolution(layer_spec, pop_size, seed) -> LNeuroevolution`: Creates a neuroevolution population from a layer specification table.
+- `lurek.learning.newPositionalEncoding(d_model, max_len) -> LPositionalEncoding`: Creates a sinusoidal positional encoding helper.
+- `lurek.learning.newQLearner(sc, ac) -> LQLearner`: Creates a Q-learner with fixed state and action counts.
+- `lurek.learning.newTensor(shape, data) -> LTensor`: Creates a tensor from a shape (integer array) and flat float data (number array).
+- `lurek.learning.newTransformerDecoder(d_model, num_heads, d_ff) -> LTransformerDecoder`: Creates a transformer decoder block.
+- `lurek.learning.newTransformerEncoder(d_model, num_heads, d_ff) -> LTransformerEncoder`: Creates a transformer encoder block.
+- `lurek.learning.normalizeEnv(env, mean, std) -> LEnv`: Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.
+- `lurek.learning.timeLimit(env, max_steps) -> LEnv`: Wraps an LEnv so episodes end automatically after max_steps steps.
+- `lurek.learning.wrap(model) -> LModel`: Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
 
 ### Callbacks
 
@@ -204,15 +197,15 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LBandit:armCount`: Returns the number of arms in this bandit.
-- `LBandit:bestArm`: Returns the arm with the best current estimate.
-- `LBandit:predict`: Alias for `select`. Selects an arm using the configured bandit strategy.
-- `LBandit:reset`: Resets all bandit arm statistics. This method is available to Lua scripts.
-- `LBandit:select`: Selects an arm using the configured bandit strategy.
-- `LBandit:totalPulls`: Returns the total number of arm selections recorded by this bandit.
-- `LBandit:type`: Returns the Lua-visible type name for this bandit handle.
-- `LBandit:typeOf`: Returns whether this bandit handle matches a supported type name.
-- `LBandit:update`: Updates one arm with a received reward.
+- `LBandit:armCount() -> integer`: Returns the number of arms in this bandit.
+- `LBandit:bestArm() -> integer`: Returns the arm with the best current estimate.
+- `LBandit:predict() -> integer`: Alias for `select`. Selects an arm using the configured bandit strategy.
+- `LBandit:reset() -> nil`: Resets all bandit arm statistics. This method is available to Lua scripts.
+- `LBandit:select() -> integer`: Selects an arm using the configured bandit strategy.
+- `LBandit:totalPulls() -> integer`: Returns the total number of arm selections recorded by this bandit.
+- `LBandit:type() -> string`: Returns the Lua-visible type name for this bandit handle.
+- `LBandit:typeOf(name) -> boolean`: Returns whether this bandit handle matches a supported type name.
+- `LBandit:update(idx, reward) -> nil`: Updates one arm with a received reward.
 
 #### LConv2D Type
 
@@ -224,12 +217,12 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LConv2D:forward`: Runs convolution over an input tensor shaped as `[channels,height,width]`.
-- `LConv2D:getWeights`: Exports flattened convolution weights and biases from this layer.
-- `LConv2D:paramCount`: Returns trainable parameter count for this Conv2D layer.
-- `LConv2D:setWeights`: Loads flattened convolution weights and biases into this layer.
-- `LConv2D:type`: Returns the Lua-visible type name for this wrapper.
-- `LConv2D:typeOf`: Returns whether this userdata matches the requested type string.
+- `LConv2D:forward(input) -> LTensor`: Runs convolution over an input tensor shaped as `[channels,height,width]`.
+- `LConv2D:getWeights() -> table`: Exports flattened convolution weights and biases from this layer.
+- `LConv2D:paramCount() -> integer`: Returns trainable parameter count for this Conv2D layer.
+- `LConv2D:setWeights(weights) -> boolean`: Loads flattened convolution weights and biases into this layer.
+- `LConv2D:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LConv2D:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LEnv Type
 
@@ -241,12 +234,12 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LEnv:actionSpace`: Returns the action space descriptor.
-- `LEnv:obsSpace`: Returns the observation space descriptor.
-- `LEnv:reset`: Resets the environment and returns the initial observation.
-- `LEnv:step`: Advances the environment one step.
-- `LEnv:type`: Returns this environment wrapper's type name `"LEnv"`.
-- `LEnv:typeOf`: Returns whether this env handle matches a supported type name.
+- `LEnv:actionSpace() -> table`: Returns the action space descriptor.
+- `LEnv:obsSpace() -> table`: Returns the observation space descriptor.
+- `LEnv:reset() -> number[]`: Resets the environment and returns the initial observation.
+- `LEnv:step(action) -> number[]`: Advances the environment one step.
+- `LEnv:type() -> string`: Returns this environment wrapper's type name `"LEnv"`.
+- `LEnv:typeOf(name) -> boolean`: Returns whether this env handle matches a supported type name.
 
 #### LFrameStack Type
 
@@ -258,12 +251,12 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LFrameStack:capacity`: Returns the maximum number of frames retained.
-- `LFrameStack:get`: Returns the flattened observation stack, zero-padded when not yet full.
-- `LFrameStack:push`: Pushes one observation into the stack.
-- `LFrameStack:reset`: Clears all stored observation frames from the stack.
-- `LFrameStack:type`: Returns the type name `"LFrameStack"`.
-- `LFrameStack:typeOf`: Returns whether this frame stack handle matches a supported type name.
+- `LFrameStack:capacity() -> integer`: Returns the maximum number of frames retained.
+- `LFrameStack:get() -> number[]`: Returns the flattened observation stack, zero-padded when not yet full.
+- `LFrameStack:push(obs) -> nil`: Pushes one observation into the stack.
+- `LFrameStack:reset() -> nil`: Clears all stored observation frames from the stack.
+- `LFrameStack:type() -> string`: Returns the type name `"LFrameStack"`.
+- `LFrameStack:typeOf(name) -> boolean`: Returns whether this frame stack handle matches a supported type name.
 
 #### LGRU Type
 
@@ -275,13 +268,13 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LGRU:forward`: Runs one GRU recurrent step on input data and returns next hidden state values.
-- `LGRU:getWeights`: Exports flattened layer weights and biases from the wrapped GRU layer.
-- `LGRU:paramCount`: Returns trainable parameter count for this GRU layer.
-- `LGRU:reset`: Resets the recurrent hidden state buffer to zeros.
-- `LGRU:setWeights`: Loads flattened layer weights and biases into the wrapped GRU layer.
-- `LGRU:type`: Returns the Lua-visible type name for this wrapper.
-- `LGRU:typeOf`: Returns whether this userdata matches the requested type string.
+- `LGRU:forward(input) -> table`: Runs one GRU recurrent step on input data and returns next hidden state values.
+- `LGRU:getWeights() -> table`: Exports flattened layer weights and biases from the wrapped GRU layer.
+- `LGRU:paramCount() -> integer`: Returns trainable parameter count for this GRU layer.
+- `LGRU:reset() -> nil`: Resets the recurrent hidden state buffer to zeros.
+- `LGRU:setWeights(weights) -> boolean`: Loads flattened layer weights and biases into the wrapped GRU layer.
+- `LGRU:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LGRU:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LGeneticAlgorithm Type
 
@@ -293,14 +286,14 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LGeneticAlgorithm:bestGenes`: Returns the genes for the best chromosome in the population.
-- `LGeneticAlgorithm:evolve`: Advances the genetic algorithm by one generation.
-- `LGeneticAlgorithm:generation`: Returns the current generation index.
-- `LGeneticAlgorithm:getGenes`: Returns the genes for a chromosome by zero-based index.
-- `LGeneticAlgorithm:popSize`: Returns the population size. This method is available to Lua scripts.
-- `LGeneticAlgorithm:setFitness`: Sets the fitness value for a chromosome by zero-based index.
-- `LGeneticAlgorithm:type`: Returns the Lua-visible type name for this genetic algorithm handle.
-- `LGeneticAlgorithm:typeOf`: Returns whether this genetic algorithm handle matches a supported type name.
+- `LGeneticAlgorithm:bestGenes() -> number[]`: Returns the genes for the best chromosome in the population.
+- `LGeneticAlgorithm:evolve() -> nil`: Advances the genetic algorithm by one generation.
+- `LGeneticAlgorithm:generation() -> integer`: Returns the current generation index.
+- `LGeneticAlgorithm:getGenes(idx) -> number[]`: Returns the genes for a chromosome by zero-based index.
+- `LGeneticAlgorithm:popSize() -> integer`: Returns the population size. This method is available to Lua scripts.
+- `LGeneticAlgorithm:setFitness(idx, fitness) -> nil`: Sets the fitness value for a chromosome by zero-based index.
+- `LGeneticAlgorithm:type() -> string`: Returns the Lua-visible type name for this genetic algorithm handle.
+- `LGeneticAlgorithm:typeOf(name) -> boolean`: Returns whether this genetic algorithm handle matches a supported type name.
 
 #### LLSTM Type
 
@@ -312,13 +305,13 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LLSTM:forward`: Runs one LSTM recurrent step on input data and returns next hidden state values.
-- `LLSTM:getWeights`: Exports flattened layer weights and biases from the wrapped LSTM layer.
-- `LLSTM:paramCount`: Returns trainable parameter count for this LSTM layer.
-- `LLSTM:reset`: Resets both hidden and cell recurrent state buffers to zeros.
-- `LLSTM:setWeights`: Loads flattened layer weights and biases into the wrapped LSTM layer.
-- `LLSTM:type`: Returns the Lua-visible type name for this wrapper.
-- `LLSTM:typeOf`: Returns whether this userdata matches the requested type string.
+- `LLSTM:forward(input) -> table`: Runs one LSTM recurrent step on input data and returns next hidden state values.
+- `LLSTM:getWeights() -> table`: Exports flattened layer weights and biases from the wrapped LSTM layer.
+- `LLSTM:paramCount() -> integer`: Returns trainable parameter count for this LSTM layer.
+- `LLSTM:reset() -> nil`: Resets both hidden and cell recurrent state buffers to zeros.
+- `LLSTM:setWeights(weights) -> boolean`: Loads flattened layer weights and biases into the wrapped LSTM layer.
+- `LLSTM:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LLSTM:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LMaxPool2D Type
 
@@ -330,9 +323,9 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LMaxPool2D:forward`: Runs max-pooling over an input tensor shaped as `[channels,height,width]`.
-- `LMaxPool2D:type`: Returns the Lua-visible type name for this wrapper.
-- `LMaxPool2D:typeOf`: Returns whether this userdata matches the requested type string.
+- `LMaxPool2D:forward(input) -> LTensor`: Runs max-pooling over an input tensor shaped as `[channels,height,width]`.
+- `LMaxPool2D:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LMaxPool2D:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LModel Type
 
@@ -344,9 +337,9 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LModel:predict`: Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
-- `LModel:type`: Returns this wrapper's stable type name `"LModel"`.
-- `LModel:typeOf`: Returns whether this model wrapper matches a supported type name.
+- `LModel:predict(input) -> integer, table`: Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
+- `LModel:type() -> string`: Returns this wrapper's stable type name `"LModel"`.
+- `LModel:typeOf(name) -> boolean`: Returns whether this model wrapper matches a supported type name.
 
 #### LMultiHeadAttention Type
 
@@ -358,12 +351,12 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LMultiHeadAttention:forward`: Runs multi-head self-attention over an input tensor shaped as `[seq_len,d_model]`.
-- `LMultiHeadAttention:getWeights`: Exports flattened projection weights and biases from this MHA block.
-- `LMultiHeadAttention:paramCount`: Returns trainable parameter count for this MHA block.
-- `LMultiHeadAttention:setWeights`: Loads flattened projection weights and biases into this MHA block.
-- `LMultiHeadAttention:type`: Returns the Lua-visible type name for this wrapper.
-- `LMultiHeadAttention:typeOf`: Returns whether this userdata matches the requested type string.
+- `LMultiHeadAttention:forward(input) -> LTensor`: Runs multi-head self-attention over an input tensor shaped as `[seq_len,d_model]`.
+- `LMultiHeadAttention:getWeights() -> table`: Exports flattened projection weights and biases from this MHA block.
+- `LMultiHeadAttention:paramCount() -> integer`: Returns trainable parameter count for this MHA block.
+- `LMultiHeadAttention:setWeights(weights) -> boolean`: Loads flattened projection weights and biases into this MHA block.
+- `LMultiHeadAttention:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LMultiHeadAttention:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LNeuralNet Type
 
@@ -375,15 +368,15 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LNeuralNet:addLayer`: Adds a neural network layer with an activation function.
-- `LNeuralNet:forward`: Runs a forward pass and returns output values.
-- `LNeuralNet:getWeights`: Returns the network weights as a flat numeric array.
-- `LNeuralNet:layerCount`: Returns the number of layers in the network.
-- `LNeuralNet:paramCount`: Returns the total number of trainable parameters.
-- `LNeuralNet:predict`: Alias for `forward`. Runs a forward pass and returns output values.
-- `LNeuralNet:setWeights`: Replaces the network weights from a flat numeric array.
-- `LNeuralNet:type`: Returns the Lua-visible type name for this neural network handle.
-- `LNeuralNet:typeOf`: Returns whether this neural network handle matches a supported type name.
+- `LNeuralNet:addLayer(inputs, outputs, activation) -> nil`: Adds a neural network layer with an activation function.
+- `LNeuralNet:forward(input) -> number[]`: Runs a forward pass and returns output values.
+- `LNeuralNet:getWeights() -> number[]`: Returns the network weights as a flat numeric array.
+- `LNeuralNet:layerCount() -> integer`: Returns the number of layers in the network.
+- `LNeuralNet:paramCount() -> integer`: Returns the total number of trainable parameters.
+- `LNeuralNet:predict(input) -> number[]`: Alias for `forward`. Runs a forward pass and returns output values.
+- `LNeuralNet:setWeights(weights) -> boolean`: Replaces the network weights from a flat numeric array.
+- `LNeuralNet:type() -> string`: Returns the Lua-visible type name for this neural network handle.
+- `LNeuralNet:typeOf(name) -> boolean`: Returns whether this neural network handle matches a supported type name.
 
 #### LNeuroevolution Type
 
@@ -395,15 +388,15 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LNeuroevolution:bestFitness`: Returns the best fitness value in the population.
-- `LNeuroevolution:bestNetwork`: Converts the best chromosome into a neural network handle when one exists.
-- `LNeuroevolution:chromosomeToNet`: Converts one chromosome into a neural network handle when the index is valid.
-- `LNeuroevolution:evolve`: Advances the neuroevolution population by one generation.
-- `LNeuroevolution:generation`: Returns the current generation index.
-- `LNeuroevolution:popSize`: Returns the population size. This method is available to Lua scripts.
-- `LNeuroevolution:setFitness`: Sets the fitness value for a chromosome by zero-based index.
-- `LNeuroevolution:type`: Returns the Lua-visible type name for this neuroevolution handle.
-- `LNeuroevolution:typeOf`: Returns whether this neuroevolution handle matches a supported type name.
+- `LNeuroevolution:bestFitness() -> number`: Returns the best fitness value in the population.
+- `LNeuroevolution:bestNetwork() -> LNeuralNet`: Converts the best chromosome into a neural network handle when one exists.
+- `LNeuroevolution:chromosomeToNet(idx) -> LNeuralNet`: Converts one chromosome into a neural network handle when the index is valid.
+- `LNeuroevolution:evolve() -> nil`: Advances the neuroevolution population by one generation.
+- `LNeuroevolution:generation() -> integer`: Returns the current generation index.
+- `LNeuroevolution:popSize() -> integer`: Returns the population size. This method is available to Lua scripts.
+- `LNeuroevolution:setFitness(idx, fitness) -> nil`: Sets the fitness value for a chromosome by zero-based index.
+- `LNeuroevolution:type() -> string`: Returns the Lua-visible type name for this neuroevolution handle.
+- `LNeuroevolution:typeOf(name) -> boolean`: Returns whether this neuroevolution handle matches a supported type name.
 
 #### LOnnxModel Type
 
@@ -415,11 +408,11 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LOnnxModel:inputCount`: Returns the number of input tensors expected by the model.
-- `LOnnxModel:outputCount`: Returns the number of output tensors produced by the model.
-- `LOnnxModel:run`: Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
-- `LOnnxModel:type`: Returns the type name `"LOnnxModel"`.
-- `LOnnxModel:typeOf`: Returns whether this model handle matches a supported type name.
+- `LOnnxModel:inputCount() -> integer`: Returns the number of input tensors expected by the model.
+- `LOnnxModel:outputCount() -> integer`: Returns the number of output tensors produced by the model.
+- `LOnnxModel:run(inputs) -> table`: Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
+- `LOnnxModel:type() -> string`: Returns the type name `"LOnnxModel"`.
+- `LOnnxModel:typeOf(name) -> boolean`: Returns whether this model handle matches a supported type name.
 
 #### LPositionalEncoding Type
 
@@ -431,9 +424,9 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LPositionalEncoding:apply`: Applies sinusoidal positional encoding values to a `[seq_len,d_model]` tensor.
-- `LPositionalEncoding:type`: Returns the Lua-visible type name for this wrapper.
-- `LPositionalEncoding:typeOf`: Returns whether this userdata matches the requested type string.
+- `LPositionalEncoding:apply(input) -> LTensor`: Applies sinusoidal positional encoding values to a `[seq_len,d_model]` tensor.
+- `LPositionalEncoding:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LPositionalEncoding:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LQLearner Type
 
@@ -445,28 +438,28 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LQLearner:bestAction`: Returns the highest-valued action for a one-based state index without exploration.
-- `LQLearner:chooseAction`: Chooses an action for a one-based state index using the learner's exploration policy.
-- `LQLearner:deserialize`: Replaces the Q-learner state from a JSON string.
-- `LQLearner:endEpisode`: Decays epsilon and increments the episode count.
-- `LQLearner:getActionCount`: Returns the number of actions represented by this learner.
-- `LQLearner:getDiscountFactor`: Returns the Q-learning gamma discount factor.
-- `LQLearner:getEpisodeCount`: Returns the total number of episodes completed so far.
-- `LQLearner:getExplorationDecay`: Returns the exploration decay multiplier.
-- `LQLearner:getExplorationRate`: Returns the exploration rate used by action selection.
-- `LQLearner:getLearningRate`: Returns the Q-learning alpha learning rate.
-- `LQLearner:getQValue`: Returns the stored Q-value for a one-based state and action pair.
-- `LQLearner:getStateCount`: Returns the number of states represented by this learner.
-- `LQLearner:learn`: Applies one Q-learning update from a transition and reward.
-- `LQLearner:predict`: Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
-- `LQLearner:serialize`: Serializes the Q-learner state to a JSON string.
-- `LQLearner:setDiscountFactor`: Sets the Q-learning gamma discount factor.
-- `LQLearner:setExplorationDecay`: Sets the exploration decay multiplier applied across episodes.
-- `LQLearner:setExplorationRate`: Sets the exploration rate used by action selection.
-- `LQLearner:setLearningRate`: Sets the Q-learning alpha learning rate.
-- `LQLearner:setQValue`: Sets the stored Q-value for a one-based state and action pair.
-- `LQLearner:type`: Returns the Lua-visible type name for this Q-learner handle.
-- `LQLearner:typeOf`: Returns whether this Q-learner handle matches a supported type name.
+- `LQLearner:bestAction(state) -> integer`: Returns the highest-valued action for a one-based state index without exploration.
+- `LQLearner:chooseAction(state) -> integer`: Chooses an action for a one-based state index using the learner's exploration policy.
+- `LQLearner:deserialize(json) -> nil`: Replaces the Q-learner state from a JSON string.
+- `LQLearner:endEpisode() -> nil`: Decays epsilon and increments the episode count.
+- `LQLearner:getActionCount() -> integer`: Returns the number of actions represented by this learner.
+- `LQLearner:getDiscountFactor() -> number`: Returns the Q-learning gamma discount factor.
+- `LQLearner:getEpisodeCount() -> integer`: Returns the total number of episodes completed so far.
+- `LQLearner:getExplorationDecay() -> number`: Returns the exploration decay multiplier.
+- `LQLearner:getExplorationRate() -> number`: Returns the exploration rate used by action selection.
+- `LQLearner:getLearningRate() -> number`: Returns the Q-learning alpha learning rate.
+- `LQLearner:getQValue(state, action) -> number`: Returns the stored Q-value for a one-based state and action pair.
+- `LQLearner:getStateCount() -> integer`: Returns the number of states represented by this learner.
+- `LQLearner:learn(state, action, reward, next_state) -> nil`: Applies one Q-learning update from a transition and reward.
+- `LQLearner:predict(state) -> integer`: Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
+- `LQLearner:serialize() -> string`: Serializes the Q-learner state to a JSON string.
+- `LQLearner:setDiscountFactor(v) -> nil`: Sets the Q-learning gamma discount factor.
+- `LQLearner:setExplorationDecay(v) -> nil`: Sets the exploration decay multiplier applied across episodes.
+- `LQLearner:setExplorationRate(v) -> nil`: Sets the exploration rate used by action selection.
+- `LQLearner:setLearningRate(v) -> nil`: Sets the Q-learning alpha learning rate.
+- `LQLearner:setQValue(state, action, value) -> nil`: Sets the stored Q-value for a one-based state and action pair.
+- `LQLearner:type() -> string`: Returns the Lua-visible type name for this Q-learner handle.
+- `LQLearner:typeOf(name) -> boolean`: Returns whether this Q-learner handle matches a supported type name.
 
 #### LTensor Type
 
@@ -478,12 +471,12 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LTensor:data`: Returns all elements as a flat number array in row-major order.
-- `LTensor:get`: Gets a single element by one-based multi-dimensional indices.
-- `LTensor:len`: Returns the total number of elements in the tensor.
-- `LTensor:shape`: Returns the tensor's dimension sizes as an integer array (one entry per axis).
-- `LTensor:type`: Returns the type name `"LTensor"`.
-- `LTensor:typeOf`: Returns whether this tensor handle matches a supported type name.
+- `LTensor:data() -> number[]`: Returns all elements as a flat number array in row-major order.
+- `LTensor:get(indices) -> number`: Gets a single element by one-based multi-dimensional indices.
+- `LTensor:len() -> integer`: Returns the total number of elements in the tensor.
+- `LTensor:shape() -> integer[]`: Returns the tensor's dimension sizes as an integer array (one entry per axis).
+- `LTensor:type() -> string`: Returns the type name `"LTensor"`.
+- `LTensor:typeOf(name) -> boolean`: Returns whether this tensor handle matches a supported type name.
 
 #### LTransformerDecoder Type
 
@@ -495,12 +488,12 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LTransformerDecoder:forward`: Runs one transformer decoder block over input and encoder-output tensors.
-- `LTransformerDecoder:getWeights`: Exports flattened trainable parameters for this decoder block.
-- `LTransformerDecoder:paramCount`: Returns trainable parameter count for this decoder block.
-- `LTransformerDecoder:setWeights`: Loads flattened trainable parameters for this decoder block.
-- `LTransformerDecoder:type`: Returns the Lua-visible type name for this wrapper.
-- `LTransformerDecoder:typeOf`: Returns whether this userdata matches the requested type string.
+- `LTransformerDecoder:forward(input, encoder_out) -> LTensor`: Runs one transformer decoder block over input and encoder-output tensors.
+- `LTransformerDecoder:getWeights() -> table`: Exports flattened trainable parameters for this decoder block.
+- `LTransformerDecoder:paramCount() -> integer`: Returns trainable parameter count for this decoder block.
+- `LTransformerDecoder:setWeights(weights) -> boolean`: Loads flattened trainable parameters for this decoder block.
+- `LTransformerDecoder:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LTransformerDecoder:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
 #### LTransformerEncoder Type
 
@@ -512,9 +505,9 @@ In practice, `lurek.learning` gives one complete learning workspace: define envi
 
 ##### Methods
 
-- `LTransformerEncoder:forward`: Runs one transformer encoder block over an input `[seq_len,d_model]` tensor.
-- `LTransformerEncoder:getWeights`: Exports flattened trainable parameters for this encoder block.
-- `LTransformerEncoder:paramCount`: Returns trainable parameter count for this encoder block.
-- `LTransformerEncoder:setWeights`: Loads flattened trainable parameters for this encoder block.
-- `LTransformerEncoder:type`: Returns the Lua-visible type name for this wrapper.
-- `LTransformerEncoder:typeOf`: Returns whether this userdata matches the requested type string.
+- `LTransformerEncoder:forward(input) -> LTensor`: Runs one transformer encoder block over an input `[seq_len,d_model]` tensor.
+- `LTransformerEncoder:getWeights() -> table`: Exports flattened trainable parameters for this encoder block.
+- `LTransformerEncoder:paramCount() -> integer`: Returns trainable parameter count for this encoder block.
+- `LTransformerEncoder:setWeights(weights) -> boolean`: Loads flattened trainable parameters for this encoder block.
+- `LTransformerEncoder:type() -> string`: Returns the Lua-visible type name for this wrapper.
+- `LTransformerEncoder:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.

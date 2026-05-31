@@ -2,8 +2,7 @@
 
 ## TL;DR
 
-- The `dialog` module provides branching conversation runtime primitives with topic selection, branch gating, speaker metadata, and state progression.
-
+- Orchestrates branching narrative graphs using conditional gates.
 
 ## General Info
 
@@ -17,13 +16,9 @@
 
 ## Summary
 
-The `dialog` module is the runtime backbone for conversation flow. It lets projects define topics, branches, and progression state in a structured form, so dialogue behavior stays predictable during gameplay.
+This module provides the narrative scripting and conversation logic system, allowing gameplay scripts to choreograph complex dialogues. It handles multi-character conversation graphs, player choices, and conditional narrative gates. Conversations are built as dialogue trees where branches are evaluated and ranked dynamically using utility scoring, ensuring the engine can select contextually appropriate dialogue paths.
 
-Its main value is controlled branching. Options can be gated by context rules, weighted for selection, and advanced through explicit transitions. This avoids fragile ad-hoc branching spread across many scripts.
-
-Speaker metadata and dialogue events are part of the same runtime surface. That makes UI and tools easier to integrate, because they can react to conversation changes through stable module contracts.
-
-The module stays focused on dialogue logic, not presentation policy. Games can layer custom pacing and visual style on top, while `lurek.dialog` provides consistent choice, gate, and progression behavior underneath.
+To keep dialogue flows organized, the system separates narrative structure from presentation. It features a dedicated speaker registry that maps character IDs to display names, portraits, and audio properties. Additionally, a persistent state tracker maintains the history of visited nodes, active conversation nodes, and custom variable stores. This decouples visual layouts from script logic while ensuring progression stays coherent.
 
 ## Imports
 
@@ -77,9 +72,9 @@ The module stays focused on dialogue logic, not presentation policy. Games can l
 
 ### Functions
 
-- `lurek.dialog.newAI`: Creates an empty dialogue selector for weighted topics and branches.
-- `lurek.dialog.newSpeakerRegistry`: Creates an empty speaker registry for dialog participants.
-- `lurek.dialog.newState`: Creates an empty dialogue state for tracking conversation progress.
+- `lurek.dialog.newAI() -> LDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
+- `lurek.dialog.newSpeakerRegistry() -> LSpeakerRegistry`: Creates an empty speaker registry for dialog participants.
+- `lurek.dialog.newState() -> LDialogueState`: Creates an empty dialogue state for tracking conversation progress.
 
 ### Callbacks
 
@@ -101,17 +96,17 @@ The module stays focused on dialogue logic, not presentation policy. Games can l
 
 ##### Methods
 
-- `LDialogueAI:addBranch`: Adds a selectable branch under an existing dialogue topic.
-- `LDialogueAI:addTopic`: Adds a selectable dialogue topic with optional context filters.
-- `LDialogueAI:clearUtilityScores`: Removes every stored utility score from this dialogue selector.
-- `LDialogueAI:getTopicCount`: Returns the number of topics registered in this dialogue selector.
-- `LDialogueAI:selectBranch`: Selects the best currently valid branch for the given topic.
-- `LDialogueAI:selectTopic`: Selects the best currently valid topic using weights and context filters.
-- `LDialogueAI:setBTStatus`: Sets the behavior-tree status used as dialogue selection context.
-- `LDialogueAI:setFSMState`: Sets the finite-state-machine state used as dialogue selection context.
-- `LDialogueAI:setUtilityScore`: Stores a utility score used by topics and branches that reference the given key.
-- `LDialogueAI:type`: Returns the Lua-visible type name for this dialogue AI handle.
-- `LDialogueAI:typeOf`: Returns whether this dialogue AI handle matches a supported type name.
+- `LDialogueAI:addBranch(topic_id, branch_id, weight?, fsm_state?, bt_status?, utility_key?) -> boolean`: Adds a selectable branch under an existing dialogue topic.
+- `LDialogueAI:addTopic(id, weight?, fsm_state?, bt_status?, utility_key?) -> nil`: Adds a selectable dialogue topic with optional context filters.
+- `LDialogueAI:clearUtilityScores() -> nil`: Removes every stored utility score from this dialogue selector.
+- `LDialogueAI:getTopicCount() -> integer`: Returns the number of topics registered in this dialogue selector.
+- `LDialogueAI:selectBranch(topic_id) -> string`: Selects the best currently valid branch for the given topic.
+- `LDialogueAI:selectTopic() -> string`: Selects the best currently valid topic using weights and context filters.
+- `LDialogueAI:setBTStatus(status?) -> nil`: Sets the behavior-tree status used as dialogue selection context.
+- `LDialogueAI:setFSMState(state?) -> nil`: Sets the finite-state-machine state used as dialogue selection context.
+- `LDialogueAI:setUtilityScore(key, score) -> nil`: Stores a utility score used by topics and branches that reference the given key.
+- `LDialogueAI:type() -> string`: Returns the Lua-visible type name for this dialogue AI handle.
+- `LDialogueAI:typeOf(name) -> boolean`: Returns whether this dialogue AI handle matches a supported type name.
 
 #### LDialogueState Type
 
@@ -123,18 +118,18 @@ The module stays focused on dialogue logic, not presentation policy. Games can l
 
 ##### Methods
 
-- `LDialogueState:advance`: Advances to a new node in the conversation.
-- `LDialogueState:current`: Returns the ID of the currently active dialogue node or nil.
-- `LDialogueState:end_`: End the active conversation and release its state data.
-- `LDialogueState:getVariable`: Gets a conversation variable by key.
-- `LDialogueState:hasVisited`: Check whether a given conversation node has been visited.
-- `LDialogueState:isActive`: Returns whether the conversation is currently active.
-- `LDialogueState:reset`: Reset all conversation progress, history, and visited flags.
-- `LDialogueState:setVariable`: Sets a conversation variable for this object.
-- `LDialogueState:start`: Starts a conversation at the given node.
-- `LDialogueState:type`: Returns the Lua-visible type name.
-- `LDialogueState:typeOf`: Returns whether this handle matches a supported type name.
-- `LDialogueState:visitCount`: Returns the number of visited nodes.
+- `LDialogueState:advance(node_id) -> nil`: Advances to a new node in the conversation.
+- `LDialogueState:current() -> string`: Returns the ID of the currently active dialogue node or nil.
+- `LDialogueState:end_() -> nil`: End the active conversation and release its state data.
+- `LDialogueState:getVariable(key) -> string`: Gets a conversation variable by key.
+- `LDialogueState:hasVisited(node_id) -> boolean`: Check whether a given conversation node has been visited.
+- `LDialogueState:isActive() -> boolean`: Returns whether the conversation is currently active.
+- `LDialogueState:reset() -> nil`: Reset all conversation progress, history, and visited flags.
+- `LDialogueState:setVariable(key, value) -> nil`: Sets a conversation variable for this object.
+- `LDialogueState:start(node_id) -> nil`: Starts a conversation at the given node.
+- `LDialogueState:type() -> string`: Returns the Lua-visible type name.
+- `LDialogueState:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+- `LDialogueState:visitCount() -> integer`: Returns the number of visited nodes.
 
 #### LSpeakerRegistry Type
 
@@ -146,10 +141,10 @@ The module stays focused on dialogue logic, not presentation policy. Games can l
 
 ##### Methods
 
-- `LSpeakerRegistry:add`: Registers a speaker in the registry.
-- `LSpeakerRegistry:contains`: Checks if a speaker exists in the registry.
-- `LSpeakerRegistry:count`: Returns the number of registered speakers.
-- `LSpeakerRegistry:get`: Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
-- `LSpeakerRegistry:remove`: Removes a speaker by ID for this object.
-- `LSpeakerRegistry:type`: Returns the Lua-visible type name.
-- `LSpeakerRegistry:typeOf`: Returns whether this handle matches a supported type name.
+- `LSpeakerRegistry:add(id, name, portrait?, voice_id?) -> nil`: Registers a speaker in the registry.
+- `LSpeakerRegistry:contains(id) -> boolean`: Checks if a speaker exists in the registry.
+- `LSpeakerRegistry:count() -> integer`: Returns the number of registered speakers.
+- `LSpeakerRegistry:get(id) -> table`: Gets a speaker by ID as a table with id, name, portrait, voice_id fields.
+- `LSpeakerRegistry:remove(id) -> boolean`: Removes a speaker by ID for this object.
+- `LSpeakerRegistry:type() -> string`: Returns the Lua-visible type name.
+- `LSpeakerRegistry:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.

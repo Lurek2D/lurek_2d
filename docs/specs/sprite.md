@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `sprite` module is a powerful Feature Systems tier component dedicated to 2D texture rendering primitives.
+- Manages 2D sprites, JSON atlases, animation sheets, and nine-slice panels.
+- Supports sprite batching.
 
 ## General Info
 
@@ -16,11 +17,11 @@
 
 ## Summary
 
-It provides the essential building blocks for 2D game visuals, encompassing sprite sheets, texture atlases, scalable UI panels, and high-performance batch rendering. At its most basic level, the `Sprite` struct defines a single textured unit with properties for position, scale, rotation, and color tint. To manage animation frames, the `SpriteSheet` divides a single texture into a uniform grid. It supports precomputed frame rectangles, named frame groups for animation sequences, and specific layouts for directional character sprites (such as the standard RPG Maker 3x4 layout). 
+This module turns raw textures into reusable sprites, sheets, and UI panels. It supports named texture atlases parsed from TexturePacker and Aseprite JSON data, mapping semantic names to specific regions while handling rotation and flip flags. This allows scripts to query packed sprites by name instead of raw coordinates.
 
-For more complex texture packing, the module features a comprehensive `SpriteAtlas` system. It parses standard texture atlas formats, specifically supporting JSON exports from popular tools like TexturePacker and Aseprite. The atlas stores named regions (`AtlasEntry`) complete with pixel rectangles and flags for rotation or flipping, allowing for O(1) name lookups and seamless integration with existing art pipelines. The module also includes `NineSlice`, a specialized struct that generates 9-patch geometry. This enables the creation of scalable UI elements—such as dialog boxes, health bars, or menu panels—that preserve their corner and edge pixel ratios while stretching to fit target dimensions.
+For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
 
-To ensure optimal rendering performance, the module provides the `SpriteBatch` mechanism. A `SpriteBatch` acts as a deferred draw-call collector bound to a single texture atlas. Instead of submitting individual sprites to the GPU one by one, developers can accumulate hundreds of positioned, rotated, and scaled sprite entries into a single batch. This approach drastically reduces state changes and GPU draw calls, making it highly efficient for rendering dense tile layers, complex UI screens, or large swarms of characters. Fully accessible via the `lurek.sprite.*` Lua API, this module is indispensable for performant 2D game development in Lurek2D.
+To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
 
 ## Imports
 
@@ -79,11 +80,11 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 
 ### Functions
 
-- `lurek.sprite.newAtlasSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
-- `lurek.sprite.newRPGMakerSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
-- `lurek.sprite.newSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
-- `lurek.sprite.parseAsepriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
-- `lurek.sprite.parseAtlas`: Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
+- `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
+- `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
+- `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
+- `lurek.sprite.parseAsepriteAtlas(json_str) -> LSpriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
+- `lurek.sprite.parseAtlas(json_str) -> LSpriteAtlas`: Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
 
 ### Callbacks
 
@@ -105,13 +106,13 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 
 ##### Methods
 
-- `LSpriteAtlas:entryCount`: Returns the total number of entries (sprite regions) in the atlas.
-- `LSpriteAtlas:entryNames`: Returns an array of all entry names in the atlas.
-- `LSpriteAtlas:getByIndex`: Returns a sprite region by its 1-based index in the atlas.
-- `LSpriteAtlas:getEntry`: Looks up a named sprite region in the atlas by its original filename or tag.
-- `LSpriteAtlas:getFlipped`: Returns a copy of a named atlas entry with the specified flip flags applied.
-- `LSpriteAtlas:type`: Returns the type name of this object.
-- `LSpriteAtlas:typeOf`: Checks whether this object matches the given type name.
+- `LSpriteAtlas:entryCount() -> integer`: Returns the total number of entries (sprite regions) in the atlas.
+- `LSpriteAtlas:entryNames() -> string[]`: Returns an array of all entry names in the atlas.
+- `LSpriteAtlas:getByIndex(index) -> table`: Returns a sprite region by its 1-based index in the atlas.
+- `LSpriteAtlas:getEntry(name) -> table`: Looks up a named sprite region in the atlas by its original filename or tag.
+- `LSpriteAtlas:getFlipped(name, flip_x, flip_y) -> table`: Returns a copy of a named atlas entry with the specified flip flags applied.
+- `LSpriteAtlas:type() -> string`: Returns the type name of this object.
+- `LSpriteAtlas:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LSpriteAtlasGetByIndexResult Type
 
@@ -178,18 +179,18 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 
 ##### Methods
 
-- `LSpriteSheet:drawToImage`: Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
-- `LSpriteSheet:getColumn`: Returns all frame quads in the given column of the sprite sheet grid.
-- `LSpriteSheet:getFrame`: Returns the UV quad for a single frame by its 1-based index.
-- `LSpriteSheet:getFrameCount`: Returns the total number of frames in this sprite sheet.
-- `LSpriteSheet:getFrameSize`: Returns the pixel dimensions of a single frame cell.
-- `LSpriteSheet:getGridSize`: Returns the number of columns and rows in the sprite sheet grid.
-- `LSpriteSheet:getGroupFrames`: Returns the frame quads for a named animation group.
-- `LSpriteSheet:getGroupNames`: Returns an array of all named animation group names defined on this sheet.
-- `LSpriteSheet:getRow`: Returns all frame quads in the given row of the sprite sheet grid.
-- `LSpriteSheet:nameGroup`: Defines a named animation group as a contiguous range of frames.
-- `LSpriteSheet:type`: Returns the type name of this object.
-- `LSpriteSheet:typeOf`: Checks whether this object matches the given type name.
+- `LSpriteSheet:drawToImage(w, h) -> LImage`: Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
+- `LSpriteSheet:getColumn(col) -> table`: Returns all frame quads in the given column of the sprite sheet grid.
+- `LSpriteSheet:getFrame(index) -> table`: Returns the UV quad for a single frame by its 1-based index.
+- `LSpriteSheet:getFrameCount() -> integer`: Returns the total number of frames in this sprite sheet.
+- `LSpriteSheet:getFrameSize() -> integer`: Returns the pixel dimensions of a single frame cell.
+- `LSpriteSheet:getGridSize() -> integer`: Returns the number of columns and rows in the sprite sheet grid.
+- `LSpriteSheet:getGroupFrames(name) -> table`: Returns the frame quads for a named animation group.
+- `LSpriteSheet:getGroupNames() -> string[]`: Returns an array of all named animation group names defined on this sheet.
+- `LSpriteSheet:getRow(row) -> table`: Returns all frame quads in the given row of the sprite sheet grid.
+- `LSpriteSheet:nameGroup(name, start, count) -> nil`: Defines a named animation group as a contiguous range of frames.
+- `LSpriteSheet:type() -> string`: Returns the type name of this object.
+- `LSpriteSheet:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LSpriteSheetGetColumnResult Type
 

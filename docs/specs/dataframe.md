@@ -2,7 +2,9 @@
 
 ## TL;DR
 
-- The `dataframe` module is a tabular data workspace for runtime and tools, with typed columns, query operations, SQL-style access, and import/export in one consistent API.
+- Manages DataFrames, databases, SQL query execution, and lazy pipelines.
+- Employs parallel vectorized column operations and background query threads.
+- Computes rolling statistics, pivot tables, and CSV/JSON/LVDF serialization.
 
 ## General Info
 
@@ -16,21 +18,15 @@
 
 ## Summary
 
-The `dataframe` module is the engine's tabular data workspace for runtime systems and developer tooling. It provides one consistent model for rows, columns, and typed cell values, so teams can handle structured data without building custom table logic in each feature.
+The dataframe module delivers a complete tabular data workspace and in-memory relational database framework for Lurek2D. Its core purpose is to provide scripts and engine subsystems with high-performance table management, enabling tabular gameplay data, analytics, and diagnostic reporting. It centers around a dual model: DataFrames storing structured columns and typed cell values, and Databases grouping multiple tables under one logical schema boundary for relational queries and frame joins.
 
-Its functional scope covers the full lifecycle of table work. Data can be loaded, inspected, filtered, sorted, grouped, aggregated, reshaped, merged, and exported through one module surface. This keeps pipelines easier to read and maintain than ad-hoc transformations spread across scripts.
+To retrieve and transform tabular datasets efficiently, the module supports declarative and pipeline-based query designs. It incorporates a SQL-style parsing engine that executes structured query text—including table joins, multi-column filters, having clauses, projection arithmetic with aliasing, and aggregate groupings—over database tables. Alternatively, developers can chain sorting, slicing, and column selections into lazy query pipelines that defer execution, optimizing resources by only materializing data when collected.
 
-The module supports both immediate and staged processing styles. Small operations can run directly for simple scripts, while larger workflows can be planned as deferred step chains and materialized later. This helps balance readability, reuse, and runtime cost.
+For heavy statistical calculations over large tables, the module integrates a vectorized column storage layer. It stores raw column vectors with validity masks, executing mathematical reductions and binary operations in parallel using a Rayon thread pool. To keep gameplay loops responsive and frame rates stable, it provides background task managers that run file parsing and complex SQL queries on asynchronous worker threads, returning results through pollable handles and thread-safe snapshots.
 
-Query patterns are flexible. Teams can use function-style operations, window-style analytics, grouping and pivot behavior, or SQL-like access depending on the task. Because these paths share the same data model, results remain consistent across different query styles.
+Tabular analysis is bolstered by advanced statistical windowing and reshaping operations. The engine computes rolling aggregates like rolling means, sums, minimums, and maximums across chronological rows, along with dense rankings, cumulative running totals, and percentage changes for trend analysis. This is complemented by pivot-table reshaping, min-max normalizations, z-score transformations, Pearson correlation matrices, and duplicate-row diagnostic reports for data validation.
 
-Analytics features make the module useful beyond basic CRUD. It supports common statistics, frequency summaries, missing-value and duplicate checks, ranking, rolling windows, percent-change analysis, and correlation-oriented workflows. These capabilities are practical for balancing, telemetry, and debugging tasks.
-
-Portability is built in through structured serialization paths. CSV, JSON, and binary formats allow datasets to move between runtime, tools, and automation pipelines with predictable behavior. This improves reproducibility when teams validate data flows in tests and CI.
-
-The module also provides database-style containers that group multiple frames under stable names. This makes multi-table workflows easier to organize and lets scripts treat related datasets as one coherent data workspace.
-
-In practice, `lurek.dataframe` gives a complete contract for tabular processing: ingest data, transform it deterministically, run analysis, and export results through one reusable API designed for both gameplay runtime and development operations. It is the default data workspace for repeatable table logic in the engine.
+Data persistence and interchange are handled through a robust serialization system. The module parses and encodes tables across multiple standard formats, offering CSV file loading with automatic type inference, JSON data mapping for nested database structures, and a compact proprietary binary format (LVDF) for optimized storage on disk. It also includes automatic text-table formatting utilities that render data tables into highly legible diagnostic logs for session debugging.
 
 ## Imports
 
@@ -191,21 +187,21 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ### Functions
 
-- `lurek.dataframe.fromBinary`: Parses a dataframe from binary data.
-- `lurek.dataframe.fromCSV`: Parses a dataframe from CSV text. This function is exposed to Lua scripts.
-- `lurek.dataframe.fromCSVFile`: Reads CSV text from GameFS and parses it into a dataframe.
-- `lurek.dataframe.fromCSVFileAsync`: Starts a Rust worker task that reads CSV text from GameFS and parses it into a dataframe.
-- `lurek.dataframe.fromJSON`: Parses a dataframe from JSON text. This function is exposed to Lua scripts.
-- `lurek.dataframe.fromJSONFile`: Reads JSON text from GameFS and parses it into a dataframe.
-- `lurek.dataframe.fromJSONFileAsync`: Starts a Rust worker task that reads JSON text from GameFS and parses it into a dataframe.
-- `lurek.dataframe.fromRows`: Creates a dataframe from column names and array-style rows.
-- `lurek.dataframe.fromTable`: Creates a dataframe from an array table of row tables.
-- `lurek.dataframe.fromVec`: Converts a vectorized frame to a dataframe.
-- `lurek.dataframe.loadDatabase`: Reads a JSON database file from GameFS and parses it into a database.
-- `lurek.dataframe.newDataFrame`: Creates an empty dataframe. This function is exposed to Lua scripts.
-- `lurek.dataframe.newDatabase`: Creates an empty dataframe database.
-- `lurek.dataframe.random`: Creates a random dataframe from column definitions.
-- `lurek.dataframe.toVec`: Converts a dataframe to a vectorized frame.
+- `lurek.dataframe.fromBinary(s) -> LDataFrame`: Parses a dataframe from binary data.
+- `lurek.dataframe.fromCSV(s) -> LDataFrame`: Parses a dataframe from CSV text. This function is exposed to Lua scripts.
+- `lurek.dataframe.fromCSVFile(path, opts?) -> LDataFrame`: Reads CSV text from GameFS and parses it into a dataframe.
+- `lurek.dataframe.fromCSVFileAsync(path, opts?) -> LDataFrameTask`: Starts a Rust worker task that reads CSV text from GameFS and parses it into a dataframe.
+- `lurek.dataframe.fromJSON(s) -> LDataFrame`: Parses a dataframe from JSON text. This function is exposed to Lua scripts.
+- `lurek.dataframe.fromJSONFile(path, opts?) -> LDataFrame`: Reads JSON text from GameFS and parses it into a dataframe.
+- `lurek.dataframe.fromJSONFileAsync(path, opts?) -> LDataFrameTask`: Starts a Rust worker task that reads JSON text from GameFS and parses it into a dataframe.
+- `lurek.dataframe.fromRows(columns_tbl, rows_tbl) -> LDataFrame`: Creates a dataframe from column names and array-style rows.
+- `lurek.dataframe.fromTable(rows) -> LDataFrame`: Creates a dataframe from an array table of row tables.
+- `lurek.dataframe.fromVec(vf) -> LDataFrame`: Converts a vectorized frame to a dataframe.
+- `lurek.dataframe.loadDatabase(path, opts?) -> LDatabase`: Reads a JSON database file from GameFS and parses it into a database.
+- `lurek.dataframe.newDataFrame() -> LDataFrame`: Creates an empty dataframe. This function is exposed to Lua scripts.
+- `lurek.dataframe.newDatabase() -> LDatabase`: Creates an empty dataframe database.
+- `lurek.dataframe.random(defs_tbl, n, seed?) -> LDataFrame`: Creates a random dataframe from column definitions.
+- `lurek.dataframe.toVec(df) -> LVecFrame`: Converts a dataframe to a vectorized frame.
 
 ### Callbacks
 
@@ -228,88 +224,88 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ##### Methods
 
-- `LDataFrame:addColumn`: Adds a column with an optional default value.
-- `LDataFrame:addRow`: Adds a row from an optional map table and returns its one-based row index.
-- `LDataFrame:addRowBatch`: Appends multiple rows from array-style row tables.
-- `LDataFrame:apply`: Applies a Lua function to each value in a column in place.
-- `LDataFrame:clone`: Returns a deep copy of this dataframe.
-- `LDataFrame:columns`: Returns all column names in order. This method is available to Lua scripts.
-- `LDataFrame:corr`: Returns correlation between two numeric columns.
-- `LDataFrame:correlationMatrix`: Returns a correlation matrix for numeric columns.
-- `LDataFrame:count`: Returns the row count for this dataframe.
-- `LDataFrame:countBy`: Counts occurrences of each value in a column.
-- `LDataFrame:dateParts`: Returns a new dataframe with year, month, and day columns extracted from ISO `yyyy-mm-dd` text.
-- `LDataFrame:describe`: Returns summary statistics for numeric columns.
-- `LDataFrame:dropNil`: Returns rows where the chosen column is not nil.
-- `LDataFrame:duplicateRows`: Returns rows whose full-row key or selected-column key appears more than once.
-- `LDataFrame:entropy`: Returns entropy for a column. This method is available to Lua scripts.
-- `LDataFrame:fillNil`: Replaces nil cells in a column with a value.
-- `LDataFrame:filter`: Returns rows whose column value matches a comparison.
-- `LDataFrame:getColumn`: Returns a column as an array table. This method is available to Lua scripts.
-- `LDataFrame:getColumnAsF64`: Returns a numeric column as an array of numbers.
-- `LDataFrame:getRow`: Returns a row as a table keyed by column name.
-- `LDataFrame:getValue`: Returns one cell value by one-based row and column reference.
-- `LDataFrame:groupAgg`: Groups by one column and aggregates another column.
-- `LDataFrame:groupBy`: Groups rows by a column and returns a table from group key to dataframe.
-- `LDataFrame:groupByObj`: Groups rows by a column and returns a grouped-frame object.
-- `LDataFrame:head`: Returns the first rows of this dataframe.
-- `LDataFrame:join`: Joins this dataframe with another dataframe by column references.
-- `LDataFrame:lazy`: Starts a lazy query pipeline from this dataframe.
-- `LDataFrame:max`: Returns the maximum value of a column.
-- `LDataFrame:mean`: Returns the numeric mean of a column.
-- `LDataFrame:median`: Returns the numeric median of a column.
-- `LDataFrame:merge`: Appends another dataframe into this dataframe in place.
-- `LDataFrame:min`: Returns the minimum value of a column.
-- `LDataFrame:missingReport`: Reports missing and non-missing cell counts for every column.
-- `LDataFrame:modeVal`: Returns the mode value of a column. This method is available to Lua scripts.
-- `LDataFrame:ncols`: Returns the number of columns in this dataframe.
-- `LDataFrame:normalizeCol`: Adds a range-normalized column in place.
-- `LDataFrame:nrows`: Returns the number of rows in this dataframe.
-- `LDataFrame:outliers`: Returns rows considered outliers for a numeric column.
-- `LDataFrame:parFilter`: Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.
-- `LDataFrame:parGroupAgg`: Parallel group-by aggregation â€” partitions and aggregates in parallel.
-- `LDataFrame:pivot`: Pivots rows into columns using row, column, and value fields.
-- `LDataFrame:pivotTable`: Builds a pivot table using row key, column key, value column, and aggregate function.
-- `LDataFrame:query`: Runs a SQL-style query against this dataframe.
-- `LDataFrame:queryAsync`: Runs a SQL-style query against this dataframe on a Rust worker thread.
-- `LDataFrame:rank`: Returns a dataframe with a rank column.
-- `LDataFrame:removeColumn`: Removes a column by name or one-based index.
-- `LDataFrame:removeRow`: Removes a row by one-based index. This method is available to Lua scripts.
-- `LDataFrame:rename`: Renames a column by name or one-based index.
-- `LDataFrame:rollingMean`: Returns a dataframe with a rolling mean column.
-- `LDataFrame:rollingSum`: Returns a dataframe with a rolling sum column.
-- `LDataFrame:rows`: Returns an iterator function over one-based row index and row table pairs.
-- `LDataFrame:sample`: Returns a sampled dataframe. This method is available to Lua scripts.
-- `LDataFrame:select`: Returns a dataframe with selected columns.
-- `LDataFrame:setColumnFromF64`: Replaces a numeric column from an array table of numbers.
-- `LDataFrame:setValue`: Sets one cell value by one-based row and column reference.
-- `LDataFrame:slice`: Returns a one-based inclusive row slice.
-- `LDataFrame:sort`: Returns rows sorted by a column. This method is available to Lua scripts.
-- `LDataFrame:stddev`: Returns the numeric standard deviation of a column.
-- `LDataFrame:sum`: Returns the numeric sum of a column.
-- `LDataFrame:tail`: Returns the last rows of this dataframe.
-- `LDataFrame:toBinary`: Serializes this dataframe to binary data.
-- `LDataFrame:toBinaryFile`: Serializes this dataframe to LVDF binary data and writes it through GameFS.
-- `LDataFrame:toCSV`: Serializes this dataframe to CSV text.
-- `LDataFrame:toCSVFile`: Serializes this dataframe to CSV text and writes it through GameFS.
-- `LDataFrame:toJSON`: Serializes this dataframe to JSON text.
-- `LDataFrame:toJSONFile`: Serializes this dataframe to JSON text and writes it through GameFS.
-- `LDataFrame:toString`: Formats this dataframe as a human-readable text table.
-- `LDataFrame:toTable`: Converts this dataframe to an array table of row tables.
-- `LDataFrame:type`: Returns the Lua-visible type name for this dataframe handle.
-- `LDataFrame:typeOf`: Returns whether this dataframe handle matches a supported type name.
-- `LDataFrame:unique`: Returns unique values from a column.
-- `LDataFrame:valueCounts`: Counts occurrences of each value in a column with optional percentage output.
-- `LDataFrame:variance`: Returns the numeric variance of a column.
-- `LDataFrame:withCumsum`: Adds a cumulative-sum column in place.
-- `LDataFrame:withEval`: Returns a dataframe with a column computed from an expression.
-- `LDataFrame:withPctChange`: Adds a percent-change column in place.
-- `LDataFrame:withRank`: Adds a rank column in place. This method is available to Lua scripts.
-- `LDataFrame:withRollingMax`: Adds a rolling maximum column in place.
-- `LDataFrame:withRollingMean`: Adds a rolling mean column in place.
-- `LDataFrame:withRollingMin`: Adds a rolling minimum column in place.
-- `LDataFrame:withRollingSum`: Adds a rolling sum column in place. This method is available to Lua scripts.
-- `LDataFrame:zscoreCol`: Adds a z-score normalized column in place.
+- `LDataFrame:addColumn(name, default?) -> nil`: Adds a column with an optional default value.
+- `LDataFrame:addRow(row_tbl?) -> integer`: Adds a row from an optional map table and returns its one-based row index.
+- `LDataFrame:addRowBatch(rows) -> nil`: Appends multiple rows from array-style row tables.
+- `LDataFrame:apply(col_val, func) -> nil`: Applies a Lua function to each value in a column in place.
+- `LDataFrame:clone() -> LDataFrame`: Returns a deep copy of this dataframe.
+- `LDataFrame:columns() -> string[]`: Returns all column names in order. This method is available to Lua scripts.
+- `LDataFrame:corr(col_a, col_b) -> number`: Returns correlation between two numeric columns.
+- `LDataFrame:correlationMatrix() -> LDataFrame`: Returns a correlation matrix for numeric columns.
+- `LDataFrame:count() -> integer`: Returns the row count for this dataframe.
+- `LDataFrame:countBy(col) -> LDataFrame`: Counts occurrences of each value in a column.
+- `LDataFrame:dateParts(date_col, prefix?) -> LDataFrame`: Returns a new dataframe with year, month, and day columns extracted from ISO `yyyy-mm-dd` text.
+- `LDataFrame:describe() -> LDataFrame`: Returns summary statistics for numeric columns.
+- `LDataFrame:dropNil(col) -> LDataFrame`: Returns rows where the chosen column is not nil.
+- `LDataFrame:duplicateRows(cols?) -> LDataFrame`: Returns rows whose full-row key or selected-column key appears more than once.
+- `LDataFrame:entropy(col) -> number`: Returns entropy for a column. This method is available to Lua scripts.
+- `LDataFrame:fillNil(col, val) -> nil`: Replaces nil cells in a column with a value.
+- `LDataFrame:filter(col, op, val) -> LDataFrame`: Returns rows whose column value matches a comparison.
+- `LDataFrame:getColumn(col) -> number[]`: Returns a column as an array table. This method is available to Lua scripts.
+- `LDataFrame:getColumnAsF64(col) -> number[]`: Returns a numeric column as an array of numbers.
+- `LDataFrame:getRow(row) -> table`: Returns a row as a table keyed by column name.
+- `LDataFrame:getValue(row, col) -> number|string|boolean|nil`: Returns one cell value by one-based row and column reference.
+- `LDataFrame:groupAgg(group_col, agg_col, fn_name) -> LDataFrame`: Groups by one column and aggregates another column.
+- `LDataFrame:groupBy(col) -> table`: Groups rows by a column and returns a table from group key to dataframe.
+- `LDataFrame:groupByObj(col) -> LGroupedFrame`: Groups rows by a column and returns a grouped-frame object.
+- `LDataFrame:head(n?) -> LDataFrame`: Returns the first rows of this dataframe.
+- `LDataFrame:join(other, this_col, other_col, jtype?) -> LDataFrame`: Joins this dataframe with another dataframe by column references.
+- `LDataFrame:lazy() -> LLazyQuery`: Starts a lazy query pipeline from this dataframe.
+- `LDataFrame:max(col) -> number|string|boolean|nil`: Returns the maximum value of a column.
+- `LDataFrame:mean(col) -> number`: Returns the numeric mean of a column.
+- `LDataFrame:median(col) -> number`: Returns the numeric median of a column.
+- `LDataFrame:merge(other) -> nil`: Appends another dataframe into this dataframe in place.
+- `LDataFrame:min(col) -> number|string|boolean|nil`: Returns the minimum value of a column.
+- `LDataFrame:missingReport(opts?) -> LDataFrame`: Reports missing and non-missing cell counts for every column.
+- `LDataFrame:modeVal(col) -> number|string|boolean|nil`: Returns the mode value of a column. This method is available to Lua scripts.
+- `LDataFrame:ncols() -> integer`: Returns the number of columns in this dataframe.
+- `LDataFrame:normalizeCol(col, out_min, out_max, name) -> nil`: Adds a range-normalized column in place.
+- `LDataFrame:nrows() -> integer`: Returns the number of rows in this dataframe.
+- `LDataFrame:outliers(col, threshold?) -> LDataFrame`: Returns rows considered outliers for a numeric column.
+- `LDataFrame:parFilter(col, op, val) -> LDataFrame`: Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.
+- `LDataFrame:parGroupAgg(group_col, agg_col, fn_name) -> LDataFrame`: Parallel group-by aggregation â€” partitions and aggregates in parallel.
+- `LDataFrame:pivot(row_col, col_col, val_col) -> LDataFrame`: Pivots rows into columns using row, column, and value fields.
+- `LDataFrame:pivotTable(row_key, col_key, value_key, agg?) -> LDataFrame`: Builds a pivot table using row key, column key, value column, and aggregate function.
+- `LDataFrame:query(sql_str) -> LDataFrame`: Runs a SQL-style query against this dataframe.
+- `LDataFrame:queryAsync(sql_str) -> LDataFrameTask`: Runs a SQL-style query against this dataframe on a Rust worker thread.
+- `LDataFrame:rank(col, order?, result_col?) -> LDataFrame`: Returns a dataframe with a rank column.
+- `LDataFrame:removeColumn(col) -> nil`: Removes a column by name or one-based index.
+- `LDataFrame:removeRow(row) -> nil`: Removes a row by one-based index. This method is available to Lua scripts.
+- `LDataFrame:rename(col, new_name) -> nil`: Renames a column by name or one-based index.
+- `LDataFrame:rollingMean(col, window, result_col?) -> LDataFrame`: Returns a dataframe with a rolling mean column.
+- `LDataFrame:rollingSum(col, window, result_col?) -> LDataFrame`: Returns a dataframe with a rolling sum column.
+- `LDataFrame:rows() -> function`: Returns an iterator function over one-based row index and row table pairs.
+- `LDataFrame:sample(n, seed?) -> LDataFrame`: Returns a sampled dataframe. This method is available to Lua scripts.
+- `LDataFrame:select(...) -> LDataFrame`: Returns a dataframe with selected columns.
+- `LDataFrame:setColumnFromF64(col, values) -> nil`: Replaces a numeric column from an array table of numbers.
+- `LDataFrame:setValue(row, col, val) -> nil`: Sets one cell value by one-based row and column reference.
+- `LDataFrame:slice(start, end) -> LDataFrame`: Returns a one-based inclusive row slice.
+- `LDataFrame:sort(col, ascending?) -> LDataFrame`: Returns rows sorted by a column. This method is available to Lua scripts.
+- `LDataFrame:stddev(col) -> number`: Returns the numeric standard deviation of a column.
+- `LDataFrame:sum(col) -> number`: Returns the numeric sum of a column.
+- `LDataFrame:tail(n?) -> LDataFrame`: Returns the last rows of this dataframe.
+- `LDataFrame:toBinary() -> string`: Serializes this dataframe to binary data.
+- `LDataFrame:toBinaryFile(path, opts?) -> boolean`: Serializes this dataframe to LVDF binary data and writes it through GameFS.
+- `LDataFrame:toCSV() -> string`: Serializes this dataframe to CSV text.
+- `LDataFrame:toCSVFile(path, opts?) -> boolean`: Serializes this dataframe to CSV text and writes it through GameFS.
+- `LDataFrame:toJSON() -> string`: Serializes this dataframe to JSON text.
+- `LDataFrame:toJSONFile(path, opts?) -> boolean`: Serializes this dataframe to JSON text and writes it through GameFS.
+- `LDataFrame:toString() -> string`: Formats this dataframe as a human-readable text table.
+- `LDataFrame:toTable() -> table`: Converts this dataframe to an array table of row tables.
+- `LDataFrame:type() -> string`: Returns the Lua-visible type name for this dataframe handle.
+- `LDataFrame:typeOf(name) -> boolean`: Returns whether this dataframe handle matches a supported type name.
+- `LDataFrame:unique(col) -> number[]`: Returns unique values from a column.
+- `LDataFrame:valueCounts(col, opts?) -> LDataFrame`: Counts occurrences of each value in a column with optional percentage output.
+- `LDataFrame:variance(col) -> number`: Returns the numeric variance of a column.
+- `LDataFrame:withCumsum(col, name) -> nil`: Adds a cumulative-sum column in place.
+- `LDataFrame:withEval(col_name, expr) -> LDataFrame`: Returns a dataframe with a column computed from an expression.
+- `LDataFrame:withPctChange(col, name) -> nil`: Adds a percent-change column in place.
+- `LDataFrame:withRank(col, asc?, name) -> nil`: Adds a rank column in place. This method is available to Lua scripts.
+- `LDataFrame:withRollingMax(col, window, name) -> nil`: Adds a rolling maximum column in place.
+- `LDataFrame:withRollingMean(col, window, name) -> nil`: Adds a rolling mean column in place.
+- `LDataFrame:withRollingMin(col, window, name) -> nil`: Adds a rolling minimum column in place.
+- `LDataFrame:withRollingSum(col, window, name) -> nil`: Adds a rolling sum column in place. This method is available to Lua scripts.
+- `LDataFrame:zscoreCol(col, name) -> nil`: Adds a z-score normalized column in place.
 
 #### LDataFrameTask Type
 
@@ -321,13 +317,13 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ##### Methods
 
-- `LDataFrameTask:getError`: Returns the task error message after failure.
-- `LDataFrameTask:isDone`: Returns whether this dataframe task has completed with success or failure.
-- `LDataFrameTask:progress`: Returns a coarse task progress estimate.
-- `LDataFrameTask:result`: Returns the completed dataframe result.
-- `LDataFrameTask:type`: Returns the Lua-visible type name for this dataframe task handle.
-- `LDataFrameTask:typeOf`: Returns whether this dataframe task handle matches a supported type name.
-- `LDataFrameTask:wait`: Blocks until this dataframe task completes.
+- `LDataFrameTask:getError() -> string`: Returns the task error message after failure.
+- `LDataFrameTask:isDone() -> boolean`: Returns whether this dataframe task has completed with success or failure.
+- `LDataFrameTask:progress() -> number`: Returns a coarse task progress estimate.
+- `LDataFrameTask:result() -> LDataFrame`: Returns the completed dataframe result.
+- `LDataFrameTask:type() -> string`: Returns the Lua-visible type name for this dataframe task handle.
+- `LDataFrameTask:typeOf(name) -> boolean`: Returns whether this dataframe task handle matches a supported type name.
+- `LDataFrameTask:wait() -> boolean`: Blocks until this dataframe task completes.
 
 #### LDatabase Type
 
@@ -339,22 +335,22 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ##### Methods
 
-- `LDatabase:addTable`: Adds or replaces a named dataframe table in the database.
-- `LDatabase:clear`: Removes every table from the database.
-- `LDatabase:getTable`: Returns a copy of a named table when it exists.
-- `LDatabase:hasTable`: Returns whether a named table exists.
-- `LDatabase:listTables`: Returns all table names in the database.
-- `LDatabase:merge`: Merges another database into this database.
-- `LDatabase:query`: Runs a SQL-style query against the database tables.
-- `LDatabase:queryAsync`: Runs a SQL-style query against a snapshot of the database tables on a Rust worker thread.
-- `LDatabase:queryParams`: Runs a SQL-style query against the database tables with positional parameters.
-- `LDatabase:queryParamsAsync`: Runs a parameterized SQL query against a snapshot of the database tables on a Rust worker thread.
-- `LDatabase:removeTable`: Removes a named table from the database.
-- `LDatabase:save`: Serializes the database to the JSON database file format and writes it through GameFS.
-- `LDatabase:tableCount`: Returns the number of tables in the database.
-- `LDatabase:toJSON`: Serializes the database to JSON text.
-- `LDatabase:type`: Returns the Lua-visible type name for this database handle.
-- `LDatabase:typeOf`: Returns whether this database handle matches a supported type name.
+- `LDatabase:addTable(name, df_ud) -> nil`: Adds or replaces a named dataframe table in the database.
+- `LDatabase:clear() -> nil`: Removes every table from the database.
+- `LDatabase:getTable(name) -> LDataFrame`: Returns a copy of a named table when it exists.
+- `LDatabase:hasTable(name) -> boolean`: Returns whether a named table exists.
+- `LDatabase:listTables() -> string[]`: Returns all table names in the database.
+- `LDatabase:merge(other) -> nil`: Merges another database into this database.
+- `LDatabase:query(sql_str) -> LDataFrame`: Runs a SQL-style query against the database tables.
+- `LDatabase:queryAsync(sql_str) -> LDataFrameTask`: Runs a SQL-style query against a snapshot of the database tables on a Rust worker thread.
+- `LDatabase:queryParams(sql_str, params) -> LDataFrame`: Runs a SQL-style query against the database tables with positional parameters.
+- `LDatabase:queryParamsAsync(sql_str, params) -> LDataFrameTask`: Runs a parameterized SQL query against a snapshot of the database tables on a Rust worker thread.
+- `LDatabase:removeTable(name) -> nil`: Removes a named table from the database.
+- `LDatabase:save(path, opts?) -> boolean`: Serializes the database to the JSON database file format and writes it through GameFS.
+- `LDatabase:tableCount() -> integer`: Returns the number of tables in the database.
+- `LDatabase:toJSON() -> string`: Serializes the database to JSON text.
+- `LDatabase:type() -> string`: Returns the Lua-visible type name for this database handle.
+- `LDatabase:typeOf(name) -> boolean`: Returns whether this database handle matches a supported type name.
 
 #### LGroupedFrame Type
 
@@ -366,9 +362,9 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ##### Methods
 
-- `LGroupedFrame:aggregate`: Aggregates one numeric column in every group by calling a Lua function with that group's numeric values.
-- `LGroupedFrame:type`: Returns the Lua-visible type name for this grouped frame handle.
-- `LGroupedFrame:typeOf`: Returns whether this grouped frame handle matches a supported type name.
+- `LGroupedFrame:aggregate(col_name, func) -> LDataFrame`: Aggregates one numeric column in every group by calling a Lua function with that group's numeric values.
+- `LGroupedFrame:type() -> string`: Returns the Lua-visible type name for this grouped frame handle.
+- `LGroupedFrame:typeOf(name) -> boolean`: Returns whether this grouped frame handle matches a supported type name.
 
 #### LLazyQuery Type
 
@@ -380,17 +376,17 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ##### Methods
 
-- `LLazyQuery:collect`: Executes the lazy query and returns a dataframe.
-- `LLazyQuery:dropNil`: Adds a step that drops rows with nil values in a column.
-- `LLazyQuery:filter`: Adds a filter step to the lazy query.
-- `LLazyQuery:head`: Adds a head limit step to the lazy query.
-- `LLazyQuery:limit`: Adds a row limit step to the lazy query.
-- `LLazyQuery:select`: Adds a column selection step to the lazy query.
-- `LLazyQuery:slice`: Adds a one-based row slice step to the lazy query.
-- `LLazyQuery:sort`: Adds a sort step to the lazy query. This method is available to Lua scripts.
-- `LLazyQuery:tail`: Adds a tail limit step to the lazy query.
-- `LLazyQuery:type`: Returns the Lua-visible type name for this lazy query handle.
-- `LLazyQuery:typeOf`: Returns whether this lazy query handle matches a supported type name.
+- `LLazyQuery:collect() -> LDataFrame`: Executes the lazy query and returns a dataframe.
+- `LLazyQuery:dropNil(col) -> LLazyQuery`: Adds a step that drops rows with nil values in a column.
+- `LLazyQuery:filter(col, op, val) -> LLazyQuery`: Adds a filter step to the lazy query.
+- `LLazyQuery:head(n) -> LLazyQuery`: Adds a head limit step to the lazy query.
+- `LLazyQuery:limit(n) -> LLazyQuery`: Adds a row limit step to the lazy query.
+- `LLazyQuery:select(cols) -> LLazyQuery`: Adds a column selection step to the lazy query.
+- `LLazyQuery:slice(start, end) -> LLazyQuery`: Adds a one-based row slice step to the lazy query.
+- `LLazyQuery:sort(col, ascending?) -> LLazyQuery`: Adds a sort step to the lazy query. This method is available to Lua scripts.
+- `LLazyQuery:tail(n) -> LLazyQuery`: Adds a tail limit step to the lazy query.
+- `LLazyQuery:type() -> string`: Returns the Lua-visible type name for this lazy query handle.
+- `LLazyQuery:typeOf(name) -> boolean`: Returns whether this lazy query handle matches a supported type name.
 
 #### LVecFrame Type
 
@@ -402,28 +398,27 @@ In practice, `lurek.dataframe` gives a complete contract for tabular processing:
 
 ##### Methods
 
-- `LVecFrame:applyMask`: Returns a vectorized frame filtered by a boolean mask table.
-- `LVecFrame:colAbs`: Applies absolute value to a numeric column in place.
-- `LVecFrame:colAdd`: Adds a scalar to a numeric column in place.
-- `LVecFrame:colCast`: Casts a vectorized column to another data type in place.
-- `LVecFrame:colCeil`: Applies ceil to a numeric column in place.
-- `LVecFrame:colClamp`: Clamps a numeric column in place. This method is available to Lua scripts.
-- `LVecFrame:colDiv`: Divides a numeric column by a scalar in place.
-- `LVecFrame:colFloor`: Applies floor to a numeric column in place.
-- `LVecFrame:colMul`: Multiplies a numeric column by a scalar in place.
-- `LVecFrame:colNeg`: Negates a numeric column in place. This method is available to Lua scripts.
-- `LVecFrame:colOp`: Applies a binary column operation into an output column.
-- `LVecFrame:colSqrt`: Applies square root to a numeric column in place.
-- `LVecFrame:colSub`: Subtracts a scalar from a numeric column in place.
-- `LVecFrame:colType`: Returns the data type name for a vectorized column.
-- `LVecFrame:columns`: Returns all vectorized column names in order.
-- `LVecFrame:filterMask`: Builds a boolean mask for a numeric column comparison.
-- `LVecFrame:ncols`: Returns the number of columns in this vectorized frame.
-- `LVecFrame:nrows`: Returns the number of rows in this vectorized frame.
-- `LVecFrame:parReduce`: Reduces multiple numeric columns in parallel.
-- `LVecFrame:parScalarOp`: Applies a scalar operation to multiple numeric columns in parallel.
-- `LVecFrame:reduce`: Reduces a numeric column with a named operation.
-- `LVecFrame:toDataFrame`: Converts this vectorized frame to a dataframe.
-- `LVecFrame:type`: Returns the Lua-visible type name for this vectorized frame handle.
-- `LVecFrame:typeOf`: Returns whether this vectorized frame handle matches a supported type name.
-
+- `LVecFrame:applyMask(mask_tbl) -> LVecFrame`: Returns a vectorized frame filtered by a boolean mask table.
+- `LVecFrame:colAbs(col) -> nil`: Applies absolute value to a numeric column in place.
+- `LVecFrame:colAdd(col, val) -> nil`: Adds a scalar to a numeric column in place.
+- `LVecFrame:colCast(col, dtype) -> nil`: Casts a vectorized column to another data type in place.
+- `LVecFrame:colCeil(col) -> nil`: Applies ceil to a numeric column in place.
+- `LVecFrame:colClamp(col, min_val, max_val) -> nil`: Clamps a numeric column in place. This method is available to Lua scripts.
+- `LVecFrame:colDiv(col, val) -> nil`: Divides a numeric column by a scalar in place.
+- `LVecFrame:colFloor(col) -> nil`: Applies floor to a numeric column in place.
+- `LVecFrame:colMul(col, val) -> nil`: Multiplies a numeric column by a scalar in place.
+- `LVecFrame:colNeg(col) -> nil`: Negates a numeric column in place. This method is available to Lua scripts.
+- `LVecFrame:colOp(out_col, left_col, op, right_col) -> nil`: Applies a binary column operation into an output column.
+- `LVecFrame:colSqrt(col) -> nil`: Applies square root to a numeric column in place.
+- `LVecFrame:colSub(col, val) -> nil`: Subtracts a scalar from a numeric column in place.
+- `LVecFrame:colType(col) -> string`: Returns the data type name for a vectorized column.
+- `LVecFrame:columns() -> string[]`: Returns all vectorized column names in order.
+- `LVecFrame:filterMask(col, cmp_op, val) -> number[]`: Builds a boolean mask for a numeric column comparison.
+- `LVecFrame:ncols() -> integer`: Returns the number of columns in this vectorized frame.
+- `LVecFrame:nrows() -> integer`: Returns the number of rows in this vectorized frame.
+- `LVecFrame:parReduce(cols_tbl, op) -> table`: Reduces multiple numeric columns in parallel.
+- `LVecFrame:parScalarOp(cols_tbl, op, val) -> nil`: Applies a scalar operation to multiple numeric columns in parallel.
+- `LVecFrame:reduce(col, op) -> number`: Reduces a numeric column with a named operation.
+- `LVecFrame:toDataFrame() -> LDataFrame`: Converts this vectorized frame to a dataframe.
+- `LVecFrame:type() -> string`: Returns the Lua-visible type name for this vectorized frame handle.
+- `LVecFrame:typeOf(name) -> boolean`: Returns whether this vectorized frame handle matches a supported type name.

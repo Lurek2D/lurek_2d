@@ -2,7 +2,9 @@
 
 ## TL;DR
 
-- The `math` module is the foundational numeric toolkit for vectors, geometry, transforms, interpolation, spatial indexing, and procedural helpers across the engine.
+- Provides vectors, matrices, spatial indexes (AABB tree and spatial hash), and polygon geometry.
+- Supports splines, Bézier curves, tweens with easing, seedable randoms, and loot pity-trackers.
+- Centralizes core mathematical formulas to guarantee consistent, drift-free engine behaviors.
 
 ## General Info
 
@@ -16,33 +18,19 @@
 
 ## Summary
 
-The `math` module is the core numeric foundation used by most engine systems. It provides the shared language for positions, directions, distances, transforms, and geometric relations, so gameplay and tooling code can rely on one consistent set of rules.
+This module represents the core numeric and geometric foundation of the engine, supplying a comprehensive suite of mathematical types, algorithms, and spatial data structures. It provides basic vectors and row-major matrices to manage positions, velocities, and affine transformations. Chained operations like translation, rotation, scale, and shear are packaged in memory-efficient structures, serving as the mathematical backbone for motion and collision across the entire engine.
 
-At the base level, vector and matrix primitives cover the common operations needed every frame. 2D and 3D vectors handle arithmetic and directional logic, while affine transforms and matrices handle translation, rotation, scale, and coordinate mapping.
+For coordinate manipulation, the module implements lightweight scalar helpers and vector primitives. Flat 2D and 3D float vectors support essential calculations like normalisation, dot products, cross products, and reflections. These are paired with scalar tools for interpolation, range remapping, and clamp functions. Linear, inverse, and smoothstep algorithms ensure that numeric ranges can be evaluated and converted cleanly across different subsystems.
 
-Geometry support extends this into practical world reasoning. Rectangles, circles, polygons, segments, and intersection helpers make collision checks and spatial queries deterministic and reusable across modules.
+For spatial organization and querying, the module implements advanced broad-phase index structures. A dynamic axis-aligned bounding box tree organizes moving boundaries hierarchically, reusing nodes to prevent heap allocations. This is paired with a uniform spatial hash grid that partitions sparse entities across large playfields. Both structures support optimized range searches, segment intersection tests, and proximity checks to keep query latencies predictable.
 
-The module also includes higher-level shape processing tools such as triangulation, clipping, convex hull generation, and centroid or area calculations. These utilities help map, editor, and simulation features operate on complex geometry without custom implementations.
+Geometric calculations are supported by primitives for circles, rectangles, and complex polygons. The module handles containment checks, Boolean polygon operations (intersections, differences, and unions), convex hull generation, and Delaunay triangulation. These low-level routines support path grid traversals, spatial partitioning, and Voronoi cell constructions, bridging graphics and geography with reliable, data-driven geometric computations.
 
-For performance-sensitive queries, it provides spatial indexing structures. Tree- and grid-based broad-phase helpers reduce search cost for overlap and proximity checks when many objects are active.
+To animate gameplay transitions and camera rails, the system provides advanced curve and tween tools. It includes multi-segment splines supporting Hermite and Catmull-Rom formulations, alongside Bézier curves with dynamic control points and derivative evaluations for velocity tracking. A structured tween engine handles multi-value animation clocks, applying a curated library of easing functions to shape interpolation responses smoothly.
 
-Animation and interpolation needs are covered by easing, tweening, and curve systems. Bezier and spline paths support smooth movement control, while easing functions provide predictable timing behavior for UI and gameplay transitions.
+Procedural generation and loot systems are driven by stateful random generators and sampling algorithms. A seedable pseudo-random wrapper produces Gaussian, uniform float, and integer distributions that serialize easily to preserve continuity across restarts. This is paired with gacha-style loot tables implementing the Walker-Vose alias method for constant-time weighted rolls, complete with pity-tracking managers to guarantee drops.
 
-Procedural workflows are part of the same toolbox. Seeded random generation, noise functions, and related helpers support deterministic content generation, reproducible tests, and tunable variation.
-
-The module is intentionally broad because it acts as a shared base for many higher systems. By keeping these operations in one place, teams avoid duplicate implementations of common math behaviors that can drift over time.
-
-It also supports data-driven use. Named easing families, reusable shape helpers, and stable transform behavior let scripts describe motion and geometry intent at a higher level while relying on deterministic low-level calculations.
-
-For simulation and gameplay logic, consistency matters as much as feature count. This module provides the numerical primitives that help keep movement, collisions, queries, and procedural outputs aligned across different feature modules.
-
-In tooling contexts, the same math contract enables repeatable editor behavior and reproducible diagnostics. That reduces surprises when the same data is viewed, edited, or simulated through different runtime paths.
-
-By serving both low-level primitives and practical higher-level helpers, the module lets teams move from raw calculations to production-ready geometry and motion behavior without leaving a consistent numerical model.
-
-This shared base reduces numerical drift between systems.
-
-In practice, `lurek.math` is the shared numerical contract for the whole project: compute motion, evaluate geometry, organize space, shape time-based transitions, and drive procedural systems through one stable API surface.
+Additionally, the module unifies coordinate and spatial helpers that serve as the common language between independent engine layers. By centralizing operations for collision boxes, coordinate conversions, and deterministic algorithms in one side-effect-free library, it ensures that graphics, physics, pathfinding, and scripting layers share consistent math behaviors, preventing rounding drift and keeping replication networks stable.
 
 ## Imports
 
@@ -214,105 +202,105 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ### Functions
 
-- `lurek.math.Vec2`: Creates a 2D vector. This function is exposed to Lua scripts.
-- `lurek.math.Vec3`: Creates a 3D vector. This function is exposed to Lua scripts.
-- `lurek.math.aabbTree`: Creates an empty AABB tree. This function is exposed to Lua scripts.
-- `lurek.math.abs`: Returns absolute value. This function is exposed to Lua scripts.
-- `lurek.math.acos`: Returns arccosine of a value. This function is exposed to Lua scripts.
-- `lurek.math.angleBetween`: Returns the angle between two points.
-- `lurek.math.applyEasing`: Applies a named easing function to a normalized value.
-- `lurek.math.asin`: Returns arcsine of a value. This function is exposed to Lua scripts.
-- `lurek.math.atan`: Returns arctangent or two-argument arctangent.
-- `lurek.math.atan2`: Returns two-argument arctangent.
-- `lurek.math.bresenham`: Returns integer grid points along a Bresenham line.
-- `lurek.math.catmullRom`: Creates a Catmull-Rom spline from point tables.
-- `lurek.math.ceil`: Returns ceiling of a value. This function is exposed to Lua scripts.
-- `lurek.math.circleContainsPoint`: Returns whether a circle contains a point.
-- `lurek.math.circleIntersectsCircle`: Returns whether two circles intersect.
-- `lurek.math.circleIntersectsLine`: Returns circle-line intersection state and hit points when present.
-- `lurek.math.circleIntersectsSegment`: Returns circle-segment intersection state and hit points when present.
-- `lurek.math.clamp`: Clamps a value to a range. This function is exposed to Lua scripts.
-- `lurek.math.closestPointOnSegment`: Returns the closest point on a segment to an input point.
-- `lurek.math.convexHull`: Computes the convex hull for a flat point table.
-- `lurek.math.cos`: Returns cosine of an angle. This function is exposed to Lua scripts.
-- `lurek.math.cubicBezier`: Computes the CSS cubic-bezier Y value at input t (0..1).
-- `lurek.math.deg`: Converts radians to degrees. This function is exposed to Lua scripts.
-- `lurek.math.delaunayTriangulate`: Computes Delaunay triangles for a flat point table.
-- `lurek.math.distance`: Returns Euclidean distance between two points.
-- `lurek.math.distanceSq`: Returns squared Euclidean distance between two points.
-- `lurek.math.easingNames`: Returns an array of all built-in easing function names.
-- `lurek.math.exp`: Returns exponential of a value. This function is exposed to Lua scripts.
-- `lurek.math.floor`: Returns floor of a value. This function is exposed to Lua scripts.
-- `lurek.math.fmod`: Returns floating-point remainder.
-- `lurek.math.hermite`: Creates a Hermite spline from endpoints and tangents.
-- `lurek.math.inBack`: Applies back ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inBounce`: Applies bounce ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inCubic`: Applies cubic ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inElastic`: Applies elastic ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inExpo`: Applies exponential ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inOutBack`: Applies back ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inOutBounce`: Applies bounce ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inOutCubic`: Applies cubic ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inOutElastic`: Applies elastic ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inOutExpo`: Applies exponential ease-in-out.
-- `lurek.math.inOutQuad`: Applies quadratic ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inOutQuart`: Applies quartic ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inOutSine`: Applies sine ease-in-out. This function is exposed to Lua scripts.
-- `lurek.math.inQuad`: Applies quadratic ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inQuart`: Applies quartic ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inSine`: Applies sine ease-in. This function is exposed to Lua scripts.
-- `lurek.math.inverseLerp`: Returns the interpolation factor of a value between two bounds.
-- `lurek.math.isConvex`: Returns whether a flat polygon point table is convex.
-- `lurek.math.lerp`: Linearly interpolates between two values.
-- `lurek.math.lineIntersect`: Returns intersection point for two infinite lines when present.
-- `lurek.math.linear`: Applies linear easing. This function is exposed to Lua scripts.
-- `lurek.math.log`: Returns natural logarithm or logarithm with a supplied base.
-- `lurek.math.lootFromList`: Creates a loot table from a Lua list of entry tables.
-- `lurek.math.lootFromToml`: Loads a loot table from a TOML file path.
-- `lurek.math.max`: Returns the largest supplied value.
-- `lurek.math.min`: Returns the smallest supplied value.
-- `lurek.math.newBezierCurve`: Creates a Bezier curve from a flat point table.
-- `lurek.math.newCircle`: Creates a circle primitive. This function is exposed to Lua scripts.
-- `lurek.math.newLootTable`: Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.
-- `lurek.math.newPityTracker`: Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.
-- `lurek.math.newRandomGenerator`: Creates a deterministic random generator with an optional seed.
-- `lurek.math.newRectPacker`: Creates a rectangle packer. This function is exposed to Lua scripts.
-- `lurek.math.newSpatialHash`: Creates a spatial hash index with a cell size.
-- `lurek.math.newTransform`: Creates a 2D transform. All components are optional; omitting all returns an identity transform.
-- `lurek.math.newTween`: Creates a tween with a duration and optional easing name.
-- `lurek.math.outBack`: Applies back ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outBounce`: Applies bounce ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outCubic`: Applies cubic ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outElastic`: Applies elastic ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outExpo`: Applies exponential ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outQuad`: Applies quadratic ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outQuart`: Applies quartic ease-out. This function is exposed to Lua scripts.
-- `lurek.math.outSine`: Applies sine ease-out. This function is exposed to Lua scripts.
-- `lurek.math.pointInPolygon`: Returns whether a point lies inside a polygon.
-- `lurek.math.polygonArea`: Computes signed area for a flat polygon point table.
-- `lurek.math.polygonCentroid`: Computes the centroid for a flat polygon point table.
-- `lurek.math.polygonClip`: Clips a flat polygon point table against a plane.
-- `lurek.math.polygonDifference`: Returns polygon difference points for two polygon tables.
-- `lurek.math.polygonIntersection`: Returns polygon intersection points for two polygon tables.
-- `lurek.math.polygonUnion`: Returns polygon union points for two polygon tables.
-- `lurek.math.pow`: Raises a value to a power. This function is exposed to Lua scripts.
-- `lurek.math.rad`: Converts degrees to radians. This function is exposed to Lua scripts.
-- `lurek.math.random`: Returns a Lua math random value, optionally scaled to one or two bounds.
-- `lurek.math.randomInt`: Returns a Lua math random integer in an inclusive range.
-- `lurek.math.rectFromCenter`: Creates a rectangle tuple from center coordinates and size.
-- `lurek.math.rectUnion`: Returns the union rectangle for two rectangles.
-- `lurek.math.remap`: Remaps a value from one range to another.
-- `lurek.math.round`: Returns rounded value. This function is exposed to Lua scripts.
-- `lurek.math.sampleWithPity`: Samples loot table with pity behavior: forced target when tracker is primed.
-- `lurek.math.segmentIntersectsSegment`: Returns whether two segments intersect and their intersection point when present.
-- `lurek.math.sign`: Returns the sign of a value. This function is exposed to Lua scripts.
-- `lurek.math.sin`: Returns sine of an angle. This function is exposed to Lua scripts.
-- `lurek.math.smoothstep`: Applies smoothstep interpolation between two edges.
-- `lurek.math.sqrt`: Returns square root of a value. This function is exposed to Lua scripts.
-- `lurek.math.tan`: Returns tangent of an angle. This function is exposed to Lua scripts.
-- `lurek.math.triangulate`: Triangulates a flat polygon point table.
-- `lurek.math.vec2`: Creates a 2D vector. This function is exposed to Lua scripts.
-- `lurek.math.vec3`: Creates a 3D vector. This function is exposed to Lua scripts.
+- `lurek.math.Vec2(x, y) -> LVec2`: Creates a 2D vector. This function is exposed to Lua scripts.
+- `lurek.math.Vec3(x, y, z) -> LVec3`: Creates a 3D vector. This function is exposed to Lua scripts.
+- `lurek.math.aabbTree() -> LAabbTree`: Creates an empty AABB tree. This function is exposed to Lua scripts.
+- `lurek.math.abs(x) -> number`: Returns absolute value. This function is exposed to Lua scripts.
+- `lurek.math.acos(x) -> number`: Returns arccosine of a value. This function is exposed to Lua scripts.
+- `lurek.math.angleBetween(x1, y1, x2, y2) -> number`: Returns the angle between two points.
+- `lurek.math.applyEasing(name, t) -> number`: Applies a named easing function to a normalized value.
+- `lurek.math.asin(x) -> number`: Returns arcsine of a value. This function is exposed to Lua scripts.
+- `lurek.math.atan(y, x?) -> number`: Returns arctangent or two-argument arctangent.
+- `lurek.math.atan2(y, x) -> number`: Returns two-argument arctangent.
+- `lurek.math.bresenham(x1, y1, x2, y2) -> table`: Returns integer grid points along a Bresenham line.
+- `lurek.math.catmullRom(points) -> LCatmullRom`: Creates a Catmull-Rom spline from point tables.
+- `lurek.math.ceil(x) -> number`: Returns ceiling of a value. This function is exposed to Lua scripts.
+- `lurek.math.circleContainsPoint(cx, cy, r, px, py) -> boolean`: Returns whether a circle contains a point.
+- `lurek.math.circleIntersectsCircle(x1, y1, r1, x2, y2, r2) -> boolean`: Returns whether two circles intersect.
+- `lurek.math.circleIntersectsLine(cx, cy, r, lx1, ly1, lx2, ly2) -> boolean`: Returns circle-line intersection state and hit points when present.
+- `lurek.math.circleIntersectsSegment(cx, cy, r, sx1, sy1, sx2, sy2) -> boolean`: Returns circle-segment intersection state and hit points when present.
+- `lurek.math.clamp(v, min, max) -> number`: Clamps a value to a range. This function is exposed to Lua scripts.
+- `lurek.math.closestPointOnSegment(px, py, x1, y1, x2, y2) -> number`: Returns the closest point on a segment to an input point.
+- `lurek.math.convexHull(pts) -> number[]`: Computes the convex hull for a flat point table.
+- `lurek.math.cos(x) -> number`: Returns cosine of an angle. This function is exposed to Lua scripts.
+- `lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t) -> number`: Computes the CSS cubic-bezier Y value at input t (0..1).
+- `lurek.math.deg(rad) -> number`: Converts radians to degrees. This function is exposed to Lua scripts.
+- `lurek.math.delaunayTriangulate(pts) -> table`: Computes Delaunay triangles for a flat point table.
+- `lurek.math.distance(x1, y1, x2, y2) -> number`: Returns Euclidean distance between two points.
+- `lurek.math.distanceSq(x1, y1, x2, y2) -> number`: Returns squared Euclidean distance between two points.
+- `lurek.math.easingNames() -> string[]`: Returns an array of all built-in easing function names.
+- `lurek.math.exp(x) -> number`: Returns exponential of a value. This function is exposed to Lua scripts.
+- `lurek.math.floor(x) -> number`: Returns floor of a value. This function is exposed to Lua scripts.
+- `lurek.math.fmod(x, y) -> number`: Returns floating-point remainder.
+- `lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y) -> LHermite`: Creates a Hermite spline from endpoints and tangents.
+- `lurek.math.inBack(t) -> number`: Applies back ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inBounce(t) -> number`: Applies bounce ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inCubic(t) -> number`: Applies cubic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inElastic(t) -> number`: Applies elastic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inExpo(t) -> number`: Applies exponential ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inOutBack(t) -> number`: Applies back ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutBounce(t) -> number`: Applies bounce ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutCubic(t) -> number`: Applies cubic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutElastic(t) -> number`: Applies elastic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutExpo(t) -> number`: Applies exponential ease-in-out.
+- `lurek.math.inOutQuad(t) -> number`: Applies quadratic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutQuart(t) -> number`: Applies quartic ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inOutSine(t) -> number`: Applies sine ease-in-out. This function is exposed to Lua scripts.
+- `lurek.math.inQuad(t) -> number`: Applies quadratic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inQuart(t) -> number`: Applies quartic ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inSine(t) -> number`: Applies sine ease-in. This function is exposed to Lua scripts.
+- `lurek.math.inverseLerp(a, b, v) -> number`: Returns the interpolation factor of a value between two bounds.
+- `lurek.math.isConvex(pts) -> boolean`: Returns whether a flat polygon point table is convex.
+- `lurek.math.lerp(a, b, t) -> number`: Linearly interpolates between two values.
+- `lurek.math.lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) -> number`: Returns intersection point for two infinite lines when present.
+- `lurek.math.linear(t) -> number`: Applies linear easing. This function is exposed to Lua scripts.
+- `lurek.math.log(x, b?) -> number`: Returns natural logarithm or logarithm with a supplied base.
+- `lurek.math.lootFromList(entries) -> LLootTable`: Creates a loot table from a Lua list of entry tables.
+- `lurek.math.lootFromToml(path) -> LLootTable`: Loads a loot table from a TOML file path.
+- `lurek.math.max(...) -> number`: Returns the largest supplied value.
+- `lurek.math.min(...) -> number`: Returns the smallest supplied value.
+- `lurek.math.newBezierCurve(points) -> LBezierCurve`: Creates a Bezier curve from a flat point table.
+- `lurek.math.newCircle(x, y, radius) -> LCircle`: Creates a circle primitive. This function is exposed to Lua scripts.
+- `lurek.math.newLootTable(opts?) -> LLootTable`: Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.
+- `lurek.math.newPityTracker(target_id, threshold) -> LPityTracker`: Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.
+- `lurek.math.newRandomGenerator(seed?) -> LRandomGenerator`: Creates a deterministic random generator with an optional seed.
+- `lurek.math.newRectPacker(width, height, padding?) -> LRectPacker`: Creates a rectangle packer. This function is exposed to Lua scripts.
+- `lurek.math.newSpatialHash(cell_size) -> LSpatialHash`: Creates a spatial hash index with a cell size.
+- `lurek.math.newTransform(x?, y?, angle?, sx?, sy?, ox?, oy?, kx?, ky?) -> LTransform`: Creates a 2D transform. All components are optional; omitting all returns an identity transform.
+- `lurek.math.newTween(duration, easing_name?) -> LTween`: Creates a tween with a duration and optional easing name.
+- `lurek.math.outBack(t) -> number`: Applies back ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outBounce(t) -> number`: Applies bounce ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outCubic(t) -> number`: Applies cubic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outElastic(t) -> number`: Applies elastic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outExpo(t) -> number`: Applies exponential ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outQuad(t) -> number`: Applies quadratic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outQuart(t) -> number`: Applies quartic ease-out. This function is exposed to Lua scripts.
+- `lurek.math.outSine(t) -> number`: Applies sine ease-out. This function is exposed to Lua scripts.
+- `lurek.math.pointInPolygon(pts, px, py) -> boolean`: Returns whether a point lies inside a polygon.
+- `lurek.math.polygonArea(pts) -> number`: Computes signed area for a flat polygon point table.
+- `lurek.math.polygonCentroid(pts) -> number`: Computes the centroid for a flat polygon point table.
+- `lurek.math.polygonClip(pts, nx, ny, d) -> number[]`: Clips a flat polygon point table against a plane.
+- `lurek.math.polygonDifference(a, b) -> number[]`: Returns polygon difference points for two polygon tables.
+- `lurek.math.polygonIntersection(a, b) -> number[]`: Returns polygon intersection points for two polygon tables.
+- `lurek.math.polygonUnion(a, b) -> number[]`: Returns polygon union points for two polygon tables.
+- `lurek.math.pow(x, y) -> number`: Raises a value to a power. This function is exposed to Lua scripts.
+- `lurek.math.rad(deg) -> number`: Converts degrees to radians. This function is exposed to Lua scripts.
+- `lurek.math.random(a?, b?) -> number`: Returns a Lua math random value, optionally scaled to one or two bounds.
+- `lurek.math.randomInt(lo, hi) -> integer`: Returns a Lua math random integer in an inclusive range.
+- `lurek.math.rectFromCenter(cx, cy, w, h) -> number`: Creates a rectangle tuple from center coordinates and size.
+- `lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2) -> number`: Returns the union rectangle for two rectangles.
+- `lurek.math.remap(v, in_min, in_max, out_min, out_max) -> number`: Remaps a value from one range to another.
+- `lurek.math.round(x) -> number`: Returns rounded value. This function is exposed to Lua scripts.
+- `lurek.math.sampleWithPity(loot_table, pity) -> string`: Samples loot table with pity behavior: forced target when tracker is primed.
+- `lurek.math.segmentIntersectsSegment(x1, y1, x2, y2, x3, y3, x4, y4) -> boolean`: Returns whether two segments intersect and their intersection point when present.
+- `lurek.math.sign(v) -> number`: Returns the sign of a value. This function is exposed to Lua scripts.
+- `lurek.math.sin(x) -> number`: Returns sine of an angle. This function is exposed to Lua scripts.
+- `lurek.math.smoothstep(edge0, edge1, x) -> number`: Applies smoothstep interpolation between two edges.
+- `lurek.math.sqrt(x) -> number`: Returns square root of a value. This function is exposed to Lua scripts.
+- `lurek.math.tan(x) -> number`: Returns tangent of an angle. This function is exposed to Lua scripts.
+- `lurek.math.triangulate(pts) -> table`: Triangulates a flat polygon point table.
+- `lurek.math.vec2(x, y) -> LVec2`: Creates a 2D vector. This function is exposed to Lua scripts.
+- `lurek.math.vec3(x, y, z) -> LVec3`: Creates a 3D vector. This function is exposed to Lua scripts.
 
 ### Callbacks
 
@@ -334,17 +322,17 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LAabbTree:clear`: Clears all items from the tree. This method is available to Lua scripts.
-- `LAabbTree:contains`: Returns whether the tree contains an id.
-- `LAabbTree:insert`: Inserts an AABB by id. This method is available to Lua scripts.
-- `LAabbTree:isEmpty`: Returns whether the tree has no items.
-- `LAabbTree:len`: Returns the number of items in the tree.
-- `LAabbTree:query`: Queries ids intersecting an AABB. This method is available to Lua scripts.
-- `LAabbTree:queryPoint`: Queries ids containing a point. This method is available to Lua scripts.
-- `LAabbTree:remove`: Removes an AABB by id. This method is available to Lua scripts.
-- `LAabbTree:type`: Returns the Lua-visible type name for this AABB tree handle.
-- `LAabbTree:typeOf`: Returns whether this AABB tree handle matches a supported type name.
-- `LAabbTree:update`: Updates an AABB by id. This method is available to Lua scripts.
+- `LAabbTree:clear() -> nil`: Clears all items from the tree. This method is available to Lua scripts.
+- `LAabbTree:contains(id) -> boolean`: Returns whether the tree contains an id.
+- `LAabbTree:insert(id, min_x, min_y, max_x, max_y) -> nil`: Inserts an AABB by id. This method is available to Lua scripts.
+- `LAabbTree:isEmpty() -> boolean`: Returns whether the tree has no items.
+- `LAabbTree:len() -> integer`: Returns the number of items in the tree.
+- `LAabbTree:query(min_x, min_y, max_x, max_y) -> integer[]`: Queries ids intersecting an AABB. This method is available to Lua scripts.
+- `LAabbTree:queryPoint(x, y) -> integer[]`: Queries ids containing a point. This method is available to Lua scripts.
+- `LAabbTree:remove(id) -> boolean`: Removes an AABB by id. This method is available to Lua scripts.
+- `LAabbTree:type() -> string`: Returns the Lua-visible type name for this AABB tree handle.
+- `LAabbTree:typeOf(name) -> boolean`: Returns whether this AABB tree handle matches a supported type name.
+- `LAabbTree:update(id, min_x, min_y, max_x, max_y) -> boolean`: Updates an AABB by id. This method is available to Lua scripts.
 
 #### LBezierCurve Type
 
@@ -356,21 +344,21 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LBezierCurve:evaluate`: Evaluates this curve at normalized parameter `t`.
-- `LBezierCurve:evaluateAtDistance`: Evaluates this curve at an approximate distance along the curve.
-- `LBezierCurve:getControlPoint`: Returns a control point by one-based index.
-- `LBezierCurve:getControlPointCount`: Returns the number of control points in this curve.
-- `LBezierCurve:getDerivative`: Returns the derivative curve for this Bezier curve.
-- `LBezierCurve:insertControlPoint`: Inserts a control point, optionally before a one-based index.
-- `LBezierCurve:length`: Returns the approximate curve length.
-- `LBezierCurve:removeControlPoint`: Removes a control point by one-based index.
-- `LBezierCurve:render`: Returns sampled points along this curve.
-- `LBezierCurve:rotate`: Rotates all control points around an origin.
-- `LBezierCurve:scale`: Scales all control points around an origin.
-- `LBezierCurve:setControlPoint`: Sets a control point by one-based index.
-- `LBezierCurve:translate`: Translates all control points. This method is available to Lua scripts.
-- `LBezierCurve:type`: Returns the Lua-visible type name for this Bezier curve handle.
-- `LBezierCurve:typeOf`: Returns whether this Bezier curve handle matches a supported type name.
+- `LBezierCurve:evaluate(t) -> number`: Evaluates this curve at normalized parameter `t`.
+- `LBezierCurve:evaluateAtDistance(distance, samples?) -> number`: Evaluates this curve at an approximate distance along the curve.
+- `LBezierCurve:getControlPoint(index) -> number`: Returns a control point by one-based index.
+- `LBezierCurve:getControlPointCount() -> integer`: Returns the number of control points in this curve.
+- `LBezierCurve:getDerivative() -> LBezierCurve`: Returns the derivative curve for this Bezier curve.
+- `LBezierCurve:insertControlPoint(x, y, index?) -> nil`: Inserts a control point, optionally before a one-based index.
+- `LBezierCurve:length() -> number`: Returns the approximate curve length.
+- `LBezierCurve:removeControlPoint(index) -> boolean`: Removes a control point by one-based index.
+- `LBezierCurve:render(segments) -> table`: Returns sampled points along this curve.
+- `LBezierCurve:rotate(angle, ox, oy) -> nil`: Rotates all control points around an origin.
+- `LBezierCurve:scale(s, ox, oy) -> nil`: Scales all control points around an origin.
+- `LBezierCurve:setControlPoint(index, x, y) -> boolean`: Sets a control point by one-based index.
+- `LBezierCurve:translate(dx, dy) -> nil`: Translates all control points. This method is available to Lua scripts.
+- `LBezierCurve:type() -> string`: Returns the Lua-visible type name for this Bezier curve handle.
+- `LBezierCurve:typeOf(name) -> boolean`: Returns whether this Bezier curve handle matches a supported type name.
 
 #### LBezierCurveRenderResult Type
 
@@ -395,13 +383,13 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LCatmullRom:addPoint`: Adds a point to the spline. This method is available to Lua scripts.
-- `LCatmullRom:len`: Returns the number of points in the spline.
-- `LCatmullRom:removePoint`: Removes a point by zero-based index and returns its coordinates.
-- `LCatmullRom:sample`: Samples the spline at normalized parameter `t`.
-- `LCatmullRom:sampleSegment`: Samples one spline segment at local parameter `t`.
-- `LCatmullRom:type`: Returns the Lua-visible type name for this spline handle.
-- `LCatmullRom:typeOf`: Returns whether this spline handle matches a supported type name.
+- `LCatmullRom:addPoint(x, y) -> nil`: Adds a point to the spline. This method is available to Lua scripts.
+- `LCatmullRom:len() -> integer`: Returns the number of points in the spline.
+- `LCatmullRom:removePoint(idx) -> number`: Removes a point by zero-based index and returns its coordinates.
+- `LCatmullRom:sample(t) -> number`: Samples the spline at normalized parameter `t`.
+- `LCatmullRom:sampleSegment(seg, t) -> number`: Samples one spline segment at local parameter `t`.
+- `LCatmullRom:type() -> string`: Returns the Lua-visible type name for this spline handle.
+- `LCatmullRom:typeOf(name) -> boolean`: Returns whether this spline handle matches a supported type name.
 
 #### LCircle Type
 
@@ -413,16 +401,16 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LCircle:aabb`: Returns this circle axis-aligned bounding box.
-- `LCircle:area`: Returns this circle area. This method is available to Lua scripts.
-- `LCircle:contains`: Returns whether this circle contains a point.
-- `LCircle:intersects`: Returns whether this circle intersects another circle.
-- `LCircle:perimeter`: Returns this circle perimeter. This method is available to Lua scripts.
-- `LCircle:radius`: Returns this circle radius. This method is available to Lua scripts.
-- `LCircle:type`: Returns the Lua-visible type name for this circle handle.
-- `LCircle:typeOf`: Returns whether this circle handle matches a supported type name.
-- `LCircle:x`: Returns this circle center x coordinate.
-- `LCircle:y`: Returns this circle center y coordinate.
+- `LCircle:aabb() -> number`: Returns this circle axis-aligned bounding box.
+- `LCircle:area() -> number`: Returns this circle area. This method is available to Lua scripts.
+- `LCircle:contains(px, py) -> boolean`: Returns whether this circle contains a point.
+- `LCircle:intersects(other) -> boolean`: Returns whether this circle intersects another circle.
+- `LCircle:perimeter() -> number`: Returns this circle perimeter. This method is available to Lua scripts.
+- `LCircle:radius() -> number`: Returns this circle radius. This method is available to Lua scripts.
+- `LCircle:type() -> string`: Returns the Lua-visible type name for this circle handle.
+- `LCircle:typeOf(name) -> boolean`: Returns whether this circle handle matches a supported type name.
+- `LCircle:x() -> number`: Returns this circle center x coordinate.
+- `LCircle:y() -> number`: Returns this circle center y coordinate.
 
 #### LHermite Type
 
@@ -434,9 +422,9 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LHermite:sample`: Samples the spline at normalized parameter `t`.
-- `LHermite:type`: Returns the Lua-visible type name for this spline handle.
-- `LHermite:typeOf`: Returns whether this spline handle matches a supported type name.
+- `LHermite:sample(t) -> number`: Samples the spline at normalized parameter `t`.
+- `LHermite:type() -> string`: Returns the Lua-visible type name for this spline handle.
+- `LHermite:typeOf(name) -> boolean`: Returns whether this spline handle matches a supported type name.
 
 #### LLootTable Type
 
@@ -448,20 +436,20 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LLootTable:add`: Adds an entry to the table. Re-build is required before the next sample.
-- `LLootTable:build`: Rebuilds the alias table after mutations. Call before sampling.
-- `LLootTable:entryCount`: Returns the number of entries in the table.
-- `LLootTable:merge`: Merges entries from another loot table into this one.
-- `LLootTable:remove`: Removes an entry by id. Returns true when found.
-- `LLootTable:restore`: Restores loot table state from a blob produced by `save`.
-- `LLootTable:sample`: Samples one entry in O(1), returning nil instead of a table when empty.
-- `LLootTable:sampleN`: Samples n entries with replacement. Returns an array table.
-- `LLootTable:sampleUnique`: Samples up to n unique entries (by id). Returns an array table.
-- `LLootTable:save`: Serialises loot table state to a binary blob.
-- `LLootTable:setSeed`: Sets the RNG seed. The alias table remains valid.
-- `LLootTable:setWeight`: Updates the weight of an existing entry. Returns true when found.
-- `LLootTable:type`: Returns the Lua-visible type name.
-- `LLootTable:typeOf`: Returns whether this handle matches the given type name.
+- `LLootTable:add(id, weight, meta?) -> nil`: Adds an entry to the table. Re-build is required before the next sample.
+- `LLootTable:build() -> nil`: Rebuilds the alias table after mutations. Call before sampling.
+- `LLootTable:entryCount() -> integer`: Returns the number of entries in the table.
+- `LLootTable:merge(other) -> nil`: Merges entries from another loot table into this one.
+- `LLootTable:remove(id) -> boolean`: Removes an entry by id. Returns true when found.
+- `LLootTable:restore(blob) -> nil`: Restores loot table state from a blob produced by `save`.
+- `LLootTable:sample() -> table`: Samples one entry in O(1), returning nil instead of a table when empty.
+- `LLootTable:sampleN(n) -> table`: Samples n entries with replacement. Returns an array table.
+- `LLootTable:sampleUnique(n) -> table`: Samples up to n unique entries (by id). Returns an array table.
+- `LLootTable:save() -> string`: Serialises loot table state to a binary blob.
+- `LLootTable:setSeed(seed) -> nil`: Sets the RNG seed. The alias table remains valid.
+- `LLootTable:setWeight(id, weight) -> boolean`: Updates the weight of an existing entry. Returns true when found.
+- `LLootTable:type() -> string`: Returns the Lua-visible type name.
+- `LLootTable:typeOf(name) -> boolean`: Returns whether this handle matches the given type name.
 
 #### LMathBresenhamResult Type
 
@@ -512,16 +500,16 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LPityTracker:counter`: Returns the current miss counter used by pity-prime progression logic.
-- `LPityTracker:export`: Compatibility alias for `save` that exports the same binary payload.
-- `LPityTracker:import`: Compatibility alias for `restore`.
-- `LPityTracker:isPrimed`: Returns true when the guaranteed drop is due.
-- `LPityTracker:notice`: Notifies the tracker of a sample result id.
-- `LPityTracker:reset`: Resets the miss counter and clears primed guaranteed-drop state.
-- `LPityTracker:restore`: Restores pity state from a blob produced by `save`.
-- `LPityTracker:save`: Serialises pity state to a binary blob.
-- `LPityTracker:type`: Returns the Lua-visible type name.
-- `LPityTracker:typeOf`: Returns whether this handle matches the given type name.
+- `LPityTracker:counter() -> integer`: Returns the current miss counter used by pity-prime progression logic.
+- `LPityTracker:export() -> string`: Compatibility alias for `save` that exports the same binary payload.
+- `LPityTracker:import(blob) -> nil`: Compatibility alias for `restore`.
+- `LPityTracker:isPrimed() -> boolean`: Returns true when the guaranteed drop is due.
+- `LPityTracker:notice(result_id) -> boolean`: Notifies the tracker of a sample result id.
+- `LPityTracker:reset() -> nil`: Resets the miss counter and clears primed guaranteed-drop state.
+- `LPityTracker:restore(blob) -> nil`: Restores pity state from a blob produced by `save`.
+- `LPityTracker:save() -> string`: Serialises pity state to a binary blob.
+- `LPityTracker:type() -> string`: Returns the Lua-visible type name.
+- `LPityTracker:typeOf(name) -> boolean`: Returns whether this handle matches the given type name.
 
 #### LRandomGenerator Type
 
@@ -533,26 +521,26 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LRandomGenerator:chance`: Returns true with the given probability (0.0 = never, 1.0 = always).
-- `LRandomGenerator:countSuccesses`: Rolls N dice and counts how many results are >= the target number.
-- `LRandomGenerator:getSeed`: Returns this generator seed. This method is available to Lua scripts.
-- `LRandomGenerator:getState`: Returns this generator serialized state string.
-- `LRandomGenerator:random`: Returns a random floating-point value from the generator.
-- `LRandomGenerator:randomFloat`: Returns a random floating-point value in a range.
-- `LRandomGenerator:randomInt`: Returns a random integer in a range.
-- `LRandomGenerator:randomNormal`: Returns a normally distributed random value.
-- `LRandomGenerator:roll`: Rolls a single die with the given number of sides.
-- `LRandomGenerator:rollAdvantage`: Rolls two dice and returns the higher result (advantage mechanic).
-- `LRandomGenerator:rollDisadvantage`: Rolls two dice and returns the lower result (disadvantage mechanic).
-- `LRandomGenerator:rollExploding`: Rolls N exploding dice: when a die shows its maximum value, roll again and add.
-- `LRandomGenerator:rollKeepHighest`: Rolls N dice and returns the sum of the highest K results.
-- `LRandomGenerator:rollKeepLowest`: Rolls N dice and returns the sum of the lowest K results.
-- `LRandomGenerator:rollN`: Rolls N dice with the given number of sides and returns all results.
-- `LRandomGenerator:rollSum`: Rolls N dice and returns the sum of all results.
-- `LRandomGenerator:setSeed`: Resets this generator to a seed value.
-- `LRandomGenerator:setState`: Restores this generator from a serialized state string.
-- `LRandomGenerator:type`: Returns the Lua-visible type name for this random generator handle.
-- `LRandomGenerator:typeOf`: Returns whether this random generator handle matches a supported type name.
+- `LRandomGenerator:chance(probability) -> boolean`: Returns true with the given probability (0.0 = never, 1.0 = always).
+- `LRandomGenerator:countSuccesses(count, sides, target) -> integer`: Rolls N dice and counts how many results are >= the target number.
+- `LRandomGenerator:getSeed() -> integer`: Returns this generator seed. This method is available to Lua scripts.
+- `LRandomGenerator:getState() -> string`: Returns this generator serialized state string.
+- `LRandomGenerator:random() -> number`: Returns a random floating-point value from the generator.
+- `LRandomGenerator:randomFloat(min, max) -> number`: Returns a random floating-point value in a range.
+- `LRandomGenerator:randomInt(min, max) -> integer`: Returns a random integer in a range.
+- `LRandomGenerator:randomNormal(stddev?, mean?) -> number`: Returns a normally distributed random value.
+- `LRandomGenerator:roll(sides) -> integer`: Rolls a single die with the given number of sides.
+- `LRandomGenerator:rollAdvantage(sides) -> integer`: Rolls two dice and returns the higher result (advantage mechanic).
+- `LRandomGenerator:rollDisadvantage(sides) -> integer`: Rolls two dice and returns the lower result (disadvantage mechanic).
+- `LRandomGenerator:rollExploding(count, sides) -> integer`: Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+- `LRandomGenerator:rollKeepHighest(count, sides, keep) -> integer`: Rolls N dice and returns the sum of the highest K results.
+- `LRandomGenerator:rollKeepLowest(count, sides, keep) -> integer`: Rolls N dice and returns the sum of the lowest K results.
+- `LRandomGenerator:rollN(count, sides) -> integer[]`: Rolls N dice with the given number of sides and returns all results.
+- `LRandomGenerator:rollSum(count, sides) -> integer`: Rolls N dice and returns the sum of all results.
+- `LRandomGenerator:setSeed(seed) -> nil`: Resets this generator to a seed value.
+- `LRandomGenerator:setState(state) -> nil`: Restores this generator from a serialized state string.
+- `LRandomGenerator:type() -> string`: Returns the Lua-visible type name for this random generator handle.
+- `LRandomGenerator:typeOf(name) -> boolean`: Returns whether this random generator handle matches a supported type name.
 
 #### LRectPacker Type
 
@@ -564,10 +552,10 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LRectPacker:clear`: Clears packed rectangles from this packer.
-- `LRectPacker:getPacked`: Returns packed rectangle records.
-- `LRectPacker:occupancy`: Returns occupied area ratio. This method is available to Lua scripts.
-- `LRectPacker:pack`: Attempts to pack a rectangle and returns its placement coordinates.
+- `LRectPacker:clear() -> nil`: Clears packed rectangles from this packer.
+- `LRectPacker:getPacked() -> table`: Returns packed rectangle records.
+- `LRectPacker:occupancy() -> number`: Returns occupied area ratio. This method is available to Lua scripts.
+- `LRectPacker:pack(w, h, id?) -> integer`: Attempts to pack a rectangle and returns its placement coordinates.
 
 #### LRectPackerGetPackedResult Type
 
@@ -595,17 +583,17 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LSpatialHash:clear`: Clears all items from the spatial hash.
-- `LSpatialHash:getCellSize`: Returns the spatial hash cell size.
-- `LSpatialHash:getItemCount`: Returns the number of items in the spatial hash.
-- `LSpatialHash:insert`: Inserts an item rectangle into the spatial hash.
-- `LSpatialHash:queryCircle`: Returns ids intersecting a query circle.
-- `LSpatialHash:queryRect`: Returns ids intersecting a query rectangle.
-- `LSpatialHash:querySegment`: Returns ids intersecting a query line segment.
-- `LSpatialHash:remove`: Removes an item from the spatial hash.
-- `LSpatialHash:type`: Returns the Lua-visible type name for this spatial hash handle.
-- `LSpatialHash:typeOf`: Returns whether this spatial hash handle matches a supported type name.
-- `LSpatialHash:update`: Updates an item rectangle in the spatial hash.
+- `LSpatialHash:clear() -> nil`: Clears all items from the spatial hash.
+- `LSpatialHash:getCellSize() -> number`: Returns the spatial hash cell size.
+- `LSpatialHash:getItemCount() -> integer`: Returns the number of items in the spatial hash.
+- `LSpatialHash:insert(id, x, y, w, h) -> nil`: Inserts an item rectangle into the spatial hash.
+- `LSpatialHash:queryCircle(cx, cy, radius) -> integer[]`: Returns ids intersecting a query circle.
+- `LSpatialHash:queryRect(x, y, w, h) -> integer[]`: Returns ids intersecting a query rectangle.
+- `LSpatialHash:querySegment(x1, y1, x2, y2) -> integer[]`: Returns ids intersecting a query line segment.
+- `LSpatialHash:remove(id) -> nil`: Removes an item from the spatial hash.
+- `LSpatialHash:type() -> string`: Returns the Lua-visible type name for this spatial hash handle.
+- `LSpatialHash:typeOf(name) -> boolean`: Returns whether this spatial hash handle matches a supported type name.
+- `LSpatialHash:update(id, x, y, w, h) -> nil`: Updates an item rectangle in the spatial hash.
 
 #### LTransform Type
 
@@ -617,20 +605,20 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LTransform:clone`: Returns a copy of this transform. This method is available to Lua scripts.
-- `LTransform:decompose`: Decomposes this transform into component values.
-- `LTransform:getMatrix`: Returns this transform matrix as a flat array table.
-- `LTransform:inverse`: Returns this transform's inverse.
-- `LTransform:inverseTransformPoint`: Transforms a point by this transform's inverse.
-- `LTransform:reset`: Resets this transform to identity.
-- `LTransform:rotate`: Applies a rotation to this transform.
-- `LTransform:scale`: Applies scale to this transform. This method is available to Lua scripts.
-- `LTransform:setTransformation`: Replaces this transform from position, rotation, scale, origin, and shear components.
-- `LTransform:shear`: Applies shear to this transform. This method is available to Lua scripts.
-- `LTransform:transformPoint`: Transforms a point by this transform.
-- `LTransform:translate`: Applies a translation to this transform.
-- `LTransform:type`: Returns the Lua-visible type name for this transform handle.
-- `LTransform:typeOf`: Returns whether this transform handle matches a supported type name.
+- `LTransform:clone() -> LTransform`: Returns a copy of this transform. This method is available to Lua scripts.
+- `LTransform:decompose() -> number`: Decomposes this transform into component values.
+- `LTransform:getMatrix() -> number[]`: Returns this transform matrix as a flat array table.
+- `LTransform:inverse() -> LTransform`: Returns this transform's inverse.
+- `LTransform:inverseTransformPoint(x, y) -> number`: Transforms a point by this transform's inverse.
+- `LTransform:reset() -> nil`: Resets this transform to identity.
+- `LTransform:rotate(angle) -> nil`: Applies a rotation to this transform.
+- `LTransform:scale(sx, sy?) -> nil`: Applies scale to this transform. This method is available to Lua scripts.
+- `LTransform:setTransformation(x, y, angle?, sx?, sy?, ox?, oy?, kx?, ky?) -> nil`: Replaces this transform from position, rotation, scale, origin, and shear components.
+- `LTransform:shear(kx, ky) -> nil`: Applies shear to this transform. This method is available to Lua scripts.
+- `LTransform:transformPoint(x, y) -> number`: Transforms a point by this transform.
+- `LTransform:translate(dx, dy) -> nil`: Applies a translation to this transform.
+- `LTransform:type() -> string`: Returns the Lua-visible type name for this transform handle.
+- `LTransform:typeOf(name) -> boolean`: Returns whether this transform handle matches a supported type name.
 
 #### LTween Type
 
@@ -642,21 +630,21 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LTween:addValue`: Adds a value track to this tween. This method is available to Lua scripts.
-- `LTween:getAllValues`: Returns all current tween values. This method is available to Lua scripts.
-- `LTween:getClock`: Returns this tween clock time. This method is available to Lua scripts.
-- `LTween:getDuration`: Returns this tween duration. This method is available to Lua scripts.
-- `LTween:getEasingName`: Returns this tween easing function name.
-- `LTween:getTime`: Returns this tween clock time. This method is available to Lua scripts.
-- `LTween:getValue`: Returns one tween value by one-based index or all values when no index is provided.
-- `LTween:getValueCount`: Returns the number of values animated by this tween.
-- `LTween:isComplete`: Returns whether this tween is complete.
-- `LTween:reset`: Resets the tween clock to the beginning.
-- `LTween:set`: Sets this tween clock time. This method is available to Lua scripts.
-- `LTween:setTime`: Sets this tween clock time. This method is available to Lua scripts.
-- `LTween:type`: Returns the Lua-visible type name for this tween handle.
-- `LTween:typeOf`: Returns whether this tween handle matches a supported type name.
-- `LTween:update`: Advances the tween clock and returns whether it is complete.
+- `LTween:addValue(start, target) -> integer`: Adds a value track to this tween. This method is available to Lua scripts.
+- `LTween:getAllValues() -> number[]`: Returns all current tween values. This method is available to Lua scripts.
+- `LTween:getClock() -> number`: Returns this tween clock time. This method is available to Lua scripts.
+- `LTween:getDuration() -> number`: Returns this tween duration. This method is available to Lua scripts.
+- `LTween:getEasingName() -> string`: Returns this tween easing function name.
+- `LTween:getTime() -> number`: Returns this tween clock time. This method is available to Lua scripts.
+- `LTween:getValue(index?) -> number`: Returns one tween value by one-based index or all values when no index is provided.
+- `LTween:getValueCount() -> integer`: Returns the number of values animated by this tween.
+- `LTween:isComplete() -> boolean`: Returns whether this tween is complete.
+- `LTween:reset() -> nil`: Resets the tween clock to the beginning.
+- `LTween:set(t) -> nil`: Sets this tween clock time. This method is available to Lua scripts.
+- `LTween:setTime(t) -> nil`: Sets this tween clock time. This method is available to Lua scripts.
+- `LTween:type() -> string`: Returns the Lua-visible type name for this tween handle.
+- `LTween:typeOf(name) -> boolean`: Returns whether this tween handle matches a supported type name.
+- `LTween:update(dt) -> boolean`: Advances the tween clock and returns whether it is complete.
 
 #### LVec2 Type
 
@@ -669,23 +657,23 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LVec2:angle`: Returns this vector angle. This method is available to Lua scripts.
-- `LVec2:cross`: Returns the scalar 2D cross product with another vector.
-- `LVec2:distance`: Returns distance to another vector.
-- `LVec2:dot`: Returns the dot product with another vector.
-- `LVec2:fromAngle`: Creates a unit vector from an angle.
-- `LVec2:length`: Returns this vector length. This method is available to Lua scripts.
-- `LVec2:lengthSquared`: Returns this vector squared length.
-- `LVec2:lerp`: Returns a vector interpolated toward another vector.
-- `LVec2:normalize`: Returns a normalized copy of this vector.
-- `LVec2:normalized`: Returns a normalized copy of this vector.
-- `LVec2:perpendicular`: Returns a perpendicular vector. This method is available to Lua scripts.
-- `LVec2:reflect`: Returns this vector reflected around a normal vector.
-- `LVec2:rotate`: Returns this vector rotated by an angle.
-- `LVec2:type`: Returns the Lua-visible type name for this vector handle.
-- `LVec2:typeOf`: Returns whether this vector handle matches a supported type name.
-- `LVec2:x`: Returns this vector x component. This method is available to Lua scripts.
-- `LVec2:y`: Returns this vector y component. This method is available to Lua scripts.
+- `LVec2:angle() -> number`: Returns this vector angle. This method is available to Lua scripts.
+- `LVec2:cross(other) -> number`: Returns the scalar 2D cross product with another vector.
+- `LVec2:distance(other) -> number`: Returns distance to another vector.
+- `LVec2:dot(other) -> number`: Returns the dot product with another vector.
+- `LVec2:fromAngle(self, radians) -> LVec2`: Creates a unit vector from an angle.
+- `LVec2:length() -> number`: Returns this vector length. This method is available to Lua scripts.
+- `LVec2:lengthSquared() -> number`: Returns this vector squared length.
+- `LVec2:lerp(other, t) -> LVec2`: Returns a vector interpolated toward another vector.
+- `LVec2:normalize() -> LVec2`: Returns a normalized copy of this vector.
+- `LVec2:normalized() -> LVec2`: Returns a normalized copy of this vector.
+- `LVec2:perpendicular() -> LVec2`: Returns a perpendicular vector. This method is available to Lua scripts.
+- `LVec2:reflect(normal) -> LVec2`: Returns this vector reflected around a normal vector.
+- `LVec2:rotate(angle) -> LVec2`: Returns this vector rotated by an angle.
+- `LVec2:type() -> string`: Returns the Lua-visible type name for this vector handle.
+- `LVec2:typeOf(name) -> boolean`: Returns whether this vector handle matches a supported type name.
+- `LVec2:x() -> number`: Returns this vector x component. This method is available to Lua scripts.
+- `LVec2:y() -> number`: Returns this vector y component. This method is available to Lua scripts.
 
 #### LVec3 Type
 
@@ -699,16 +687,16 @@ In practice, `lurek.math` is the shared numerical contract for the whole project
 
 ##### Methods
 
-- `LVec3:add`: Returns the sum with another vector.
-- `LVec3:cross`: Returns the 3D cross product with another vector.
-- `LVec3:distance`: Returns distance to another vector.
-- `LVec3:dot`: Returns the dot product with another vector.
-- `LVec3:length`: Returns this vector length. This method is available to Lua scripts.
-- `LVec3:lengthSquared`: Returns this vector squared length.
-- `LVec3:lerp`: Returns a vector interpolated toward another vector.
-- `LVec3:normalize`: Returns a normalized copy of this vector.
-- `LVec3:scale`: Returns this vector multiplied by a scalar.
-- `LVec3:splat`: Creates a vector with all components set to one value.
-- `LVec3:sub`: Returns the difference from another vector.
-- `LVec3:type`: Returns the Lua-visible type name for this vector handle.
-- `LVec3:typeOf`: Returns whether this vector handle matches a supported type name.
+- `LVec3:add(other) -> LVec3`: Returns the sum with another vector.
+- `LVec3:cross(other) -> LVec3`: Returns the 3D cross product with another vector.
+- `LVec3:distance(other) -> number`: Returns distance to another vector.
+- `LVec3:dot(other) -> number`: Returns the dot product with another vector.
+- `LVec3:length() -> number`: Returns this vector length. This method is available to Lua scripts.
+- `LVec3:lengthSquared() -> number`: Returns this vector squared length.
+- `LVec3:lerp(other, t) -> LVec3`: Returns a vector interpolated toward another vector.
+- `LVec3:normalize() -> LVec3`: Returns a normalized copy of this vector.
+- `LVec3:scale(s) -> LVec3`: Returns this vector multiplied by a scalar.
+- `LVec3:splat(self, v) -> LVec3`: Creates a vector with all components set to one value.
+- `LVec3:sub(other) -> LVec3`: Returns the difference from another vector.
+- `LVec3:type() -> string`: Returns the Lua-visible type name for this vector handle.
+- `LVec3:typeOf(name) -> boolean`: Returns whether this vector handle matches a supported type name.

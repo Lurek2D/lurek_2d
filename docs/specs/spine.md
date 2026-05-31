@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `spine` module is an advanced Feature Systems tier component that provides a complete, high-performance runtime for 2D skeletal animation.
+- Simulates skeletal rigs using bone hierarchies, slots, skin swaps, and target IK.
 
 ## General Info
 
@@ -16,11 +16,11 @@
 
 ## Summary
 
-Moving beyond traditional frame-by-frame sprites, this module enables fluid, dynamic animations using hierarchical bone trees and slot-based attachments. Central to the system is the `Skeleton` struct, which maintains an ordered array of `Bone` elements. Each bone stores local transform properties (position, rotation, scale) and automatically computes accumulated world-space transforms as they propagate down the parent-child hierarchy. Visual representation is handled via `Slot` attachments, which bind graphical content—such as sprite regions, meshes, or bounding boxes—to specific bones with precise draw-order and blend-mode configurations, ensuring correct back-to-front rendering even in complex layered characters.
+This module provides a skeletal animation runtime for 2D assets, offering pose-driven movement through hierarchies of bones and slots. Bones carry local transform offsets that propagate down parent-child chains to resolve world-space positions. To achieve organic, procedural responsiveness alongside keyframed animations, the system implements an inverse-kinematics solver that constrains joint angles toward target positions with controllable bend directions.
 
-To achieve sophisticated, procedural motion, the module features a dedicated Inverse Kinematics (IK) system. The `IKConstraint` solver calculates the necessary joint rotations for a two-bone chain (e.g., an arm or leg) to reach a specific world-space target, vastly simplifying dynamic interactions like foot placement on uneven terrain or aiming weapons. The animation pipeline itself is driven by `SkeletonAnimation` clips, which organize multiple `BoneTimeline` and `SlotTimeline` sequences containing keyed property changes. The runtime efficiently interpolates between these keyframes using various easing curves (linear, stepped, bezier) and applies the resulting poses to the skeleton. Animations can be blended together using configurable weights, allowing for smooth transitions between states (like transitioning from a run cycle to a jump).
+Skins and slots isolate visual assets from bone hierarchies. Slots are attached directly to bones to manage layering and draw order, letting sprites swap dynamically. Skins group slot mappings to switch visual variants on a single skeletal rig. Playback advances through sampled timelines, interpolating values with smooth or stepped curves while triggering timeline event markers.
 
-The module also supports extensive customization and event handling. The Skin system allows developers to group specific slot attachments into switchable visual sets, enabling character customization (e.g., changing armor or weapons) without duplicating the underlying animation rig. Furthermore, `EventKeyframe` markers can be embedded within timelines to trigger Lua callbacks at precise moments, perfect for syncing footstep audio or hit-box activation. Fully exposed through the `lurek.spine.*` API, this module provides the robust tooling necessary to bring complex, expressive, and interactive 2D characters to life.
+The module also integrates rendering and diagnostic layers. It flattens rig poses into generic draw commands, letting the renderer paint attachments without skeleton awareness. The system parses JSON rig files and provides software visualizers that render skeleton linkages to CPU images for debug inspection.
 
 ## Imports
 
@@ -89,9 +89,9 @@ The module also supports extensive customization and event handling. The Skin sy
 
 ### Functions
 
-- `lurek.spine.animationFromJson`: Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
-- `lurek.spine.newSkeleton`: Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
-- `lurek.spine.newSkeletonAnimation`: Creates a new empty animation with the given name and duration. Add keyframes to define motion.
+- `lurek.spine.animationFromJson(json) -> LSkeletonAnimation`: Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
+- `lurek.spine.newSkeleton(name) -> LSkeleton`: Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
+- `lurek.spine.newSkeletonAnimation(name, duration) -> LSkeletonAnimation`: Creates a new empty animation with the given name and duration. Add keyframes to define motion.
 
 ### Callbacks
 
@@ -113,31 +113,31 @@ The module also supports extensive customization and event handling. The Skin sy
 
 ##### Methods
 
-- `LSkeleton:addAnimation`: Registers a SkeletonAnimation object with this skeleton so it can be played by name.
-- `LSkeleton:addBone`: Adds a root-level bone to the skeleton with optional transform properties.
-- `LSkeleton:addChildBone`: Adds a bone as a child of an existing bone, inheriting its parent's world transform.
-- `LSkeleton:addIKConstraint`: Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
-- `LSkeleton:addSkin`: Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
-- `LSkeleton:addSlot`: Adds a slot attached to a specific bone, optionally assigning a default attachment name.
-- `LSkeleton:blendAnimation`: Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
-- `LSkeleton:boneCount`: Returns the total number of bones in the skeleton.
-- `LSkeleton:drawToImage`: Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
-- `LSkeleton:findBone`: Searches for a bone by name and returns its zero-based index, or nil if not found.
-- `LSkeleton:findSlot`: Searches for a slot by name and returns its zero-based index, or nil if not found.
-- `LSkeleton:getAnimationTime`: Returns the current playback time of the active animation in seconds.
-- `LSkeleton:getBoneWorld`: Returns the final world-space transform of a bone after hierarchy resolution.
-- `LSkeleton:getSkin`: Returns the name of the currently active skin, or nil if no skin is set.
-- `LSkeleton:playAnimation`: Starts playing a named animation on this skeleton. Optionally loops.
-- `LSkeleton:setIKTarget`: Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
-- `LSkeleton:setPosition`: Sets the root bone world position, shifting the entire skeleton.
-- `LSkeleton:setSkin`: Activates a named skin, applying its slot-attachment mappings to the skeleton.
-- `LSkeleton:setSkinMapping`: Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
-- `LSkeleton:slotCount`: Returns the total number of slots in the skeleton.
-- `LSkeleton:stopAnimation`: Stops the currently playing animation and resets playback state.
-- `LSkeleton:type`: Returns the type name of this userdata object.
-- `LSkeleton:typeOf`: Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
-- `LSkeleton:updateAnimation`: Advances the current animation by a delta time, applying bone transforms to the skeleton.
-- `LSkeleton:updateWorldTransforms`: Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
+- `LSkeleton:addAnimation(anim) -> nil`: Registers a SkeletonAnimation object with this skeleton so it can be played by name.
+- `LSkeleton:addBone(name, opts?) -> integer`: Adds a root-level bone to the skeleton with optional transform properties.
+- `LSkeleton:addChildBone(name, parent_idx, opts?) -> integer`: Adds a bone as a child of an existing bone, inheriting its parent's world transform.
+- `LSkeleton:addIKConstraint(name, chain, bend_positive?) -> integer`: Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
+- `LSkeleton:addSkin(name) -> nil`: Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
+- `LSkeleton:addSlot(name, bone_idx, attachment?) -> integer`: Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+- `LSkeleton:blendAnimation(anim, time, blend_weight?) -> nil`: Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
+- `LSkeleton:boneCount() -> integer`: Returns the total number of bones in the skeleton.
+- `LSkeleton:drawToImage(w, h) -> LImageData`: Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
+- `LSkeleton:findBone(name) -> integer`: Searches for a bone by name and returns its zero-based index, or nil if not found.
+- `LSkeleton:findSlot(name) -> integer`: Searches for a slot by name and returns its zero-based index, or nil if not found.
+- `LSkeleton:getAnimationTime() -> number`: Returns the current playback time of the active animation in seconds.
+- `LSkeleton:getBoneWorld(idx) -> table`: Returns the final world-space transform of a bone after hierarchy resolution.
+- `LSkeleton:getSkin() -> string`: Returns the name of the currently active skin, or nil if no skin is set.
+- `LSkeleton:playAnimation(name, looping?) -> boolean`: Starts playing a named animation on this skeleton. Optionally loops.
+- `LSkeleton:setIKTarget(name, x, y) -> boolean`: Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
+- `LSkeleton:setPosition(x, y) -> nil`: Sets the root bone world position, shifting the entire skeleton.
+- `LSkeleton:setSkin(name) -> boolean`: Activates a named skin, applying its slot-attachment mappings to the skeleton.
+- `LSkeleton:setSkinMapping(skin, slot, attachment) -> nil`: Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
+- `LSkeleton:slotCount() -> integer`: Returns the total number of slots in the skeleton.
+- `LSkeleton:stopAnimation() -> nil`: Stops the currently playing animation and resets playback state.
+- `LSkeleton:type() -> string`: Returns the type name of this userdata object.
+- `LSkeleton:typeOf(name) -> boolean`: Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
+- `LSkeleton:updateAnimation(dt) -> nil`: Advances the current animation by a delta time, applying bone transforms to the skeleton.
+- `LSkeleton:updateWorldTransforms() -> nil`: Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
 
 #### LSkeletonAnimation Type
 
@@ -149,15 +149,15 @@ The module also supports extensive customization and event handling. The Skin sy
 
 ##### Methods
 
-- `LSkeletonAnimation:addEventKey`: Inserts an event trigger at a specific time within the animation timeline.
-- `LSkeletonAnimation:addKeyframe`: Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
-- `LSkeletonAnimation:getDuration`: Returns the total duration of this animation in seconds.
-- `LSkeletonAnimation:getEvents`: Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
-- `LSkeletonAnimation:getTimelineCount`: Returns the number of bone-property timelines in this animation.
-- `LSkeletonAnimation:poseAt`: Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
-- `LSkeletonAnimation:reverse`: Creates a new animation that plays this animation's keyframes in reverse order.
-- `LSkeletonAnimation:type`: Returns the type name of this userdata object.
-- `LSkeletonAnimation:typeOf`: Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
+- `LSkeletonAnimation:addEventKey(time, name, value?) -> nil`: Inserts an event trigger at a specific time within the animation timeline.
+- `LSkeletonAnimation:addKeyframe(bone_idx, property, time, value, easing?) -> nil`: Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
+- `LSkeletonAnimation:getDuration() -> number`: Returns the total duration of this animation in seconds.
+- `LSkeletonAnimation:getEvents(from, to) -> table`: Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
+- `LSkeletonAnimation:getTimelineCount() -> integer`: Returns the number of bone-property timelines in this animation.
+- `LSkeletonAnimation:poseAt(time) -> table`: Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
+- `LSkeletonAnimation:reverse() -> LSkeletonAnimation`: Creates a new animation that plays this animation's keyframes in reverse order.
+- `LSkeletonAnimation:type() -> string`: Returns the type name of this userdata object.
+- `LSkeletonAnimation:typeOf(name) -> boolean`: Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
 
 #### LSkeletonAnimationGetEventsResult Type
 

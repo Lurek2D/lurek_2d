@@ -2,7 +2,9 @@
 
 ## TL;DR
 
-- The `agent` module gives one AI layer for games and tools: run prompts, coordinate agents, keep memory, and get results without blocking frame updates.
+- Orchestrates multi-agent AI completions and stateful conversations.
+- Supports tiered, persistent working, episodic, and semantic memory.
+- Manages local Ollama lifecycles and background request polling.
 
 ## General Info
 
@@ -16,15 +18,13 @@
 
 ## Summary
 
-The `agent` module turns model access into a stable service for gameplay and tools. Instead of many one-off scripts, it gives one consistent way to send prompts, receive answers, and handle callbacks. This makes AI features easier to build, easier to reason about, and safer to reuse across a project.
+The agent module provides a complete artificial intelligence and language model capability layer for the Lurek2D engine runtime, enabling gameplay scripts to integrate smart behaviors and dynamic conversations. It establishes stateful and stateless interface models that allow game entities to interact with large language models, perform text prompt completions, execute structured JSON requests, and generate text embeddings directly within the live simulation framework.
 
-Its main functional value is non-blocking work. Requests run in the background while the frame loop keeps moving, then scripts poll and consume completed results. This protects runtime responsiveness and gives practical control over timeout, retry, cancellation, and response format.
+To support long-term reasoning and context-aware interactions, the module supplies a robust, tiered agent memory system. Scripts can utilize bounded first-in-first-out working memory for immediate conversation contexts, append-only episodic memory to log and query timestamped game events, and unbounded semantic memory to retain key-value facts. These tiers can be unified into a cohesive memory bundle that supports saving and loading across sessions for persistent player-agent history.
 
-The module also supports orchestration at different scales. You can run one agent, batch several tasks, or use a system that combines shared instructions with keyword-matched skills. This keeps prompt behavior more consistent between teams and features, because common context rules are managed in one place.
+For complex multi-agent simulation scenarios, the module exposes high-level orchestration architectures like multi-agent managers and intelligent AI systems. Developers can register several distinct agent profiles with specialized roles, supply explicit instructions, and define keyword-gated systems that automatically inject relevant skill prompts based on user input. This setup coordinates parallel execution flows and schedules background processing seamlessly.
 
-For direct use, the module includes synchronous completions, JSON output, embeddings, model listing, and availability checks. It also provides stateful chat sessions and simple template rendering, so both quick utility calls and longer multi-turn interactions can use the same module surface.
-
-Memory is treated as a practical stack: short-term working context, episodic history, semantic facts, and a bundled memory that can persist across sessions. In real use, this helps agents keep continuity, retain useful facts, and restart with context, without every game script building custom memory plumbing.
+Additionally, the module takes charge of local Ollama infrastructure management, providing complete control over server processes, model downloads, and operational status checks. By handling network transport details—such as request retries, time-out bounds, task cancellations, and frame-safe background polling—the runtime isolates gameplay loops from networking latency, ensuring deterministic frame updates and stable performance.
 
 ## Imports
 
@@ -99,23 +99,23 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ### Functions
 
-- `lurek.agent.complete`: Sends a single prompt to the global LLM and returns the response text.
-- `lurek.agent.completeAsync`: Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
-- `lurek.agent.completeJson`: Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
-- `lurek.agent.configure`: Configures the global LLM provider settings used by module-level functions.
-- `lurek.agent.embed`: Returns an embedding vector for `text` from the global LLM.
-- `lurek.agent.isAvailable`: Returns `true` if the configured LLM server responds within 5 seconds.
-- `lurek.agent.listModels`: Returns a list of available model names from the configured LLM server.
-- `lurek.agent.new`: Creates a new configurable LLM Agent runtime instance.
-- `lurek.agent.newAgentMemory`: Creates a bundled working+episodic+semantic memory with optional disk persistence.
-- `lurek.agent.newChat`: Creates a new stateful chat session using the global LLM config.
-- `lurek.agent.newEpisodicMemory`: Creates a new episodic memory for recording time-stamped events.
-- `lurek.agent.newManager`: Creates a new Agent Manager for batching multiple LLM agents over a shared client.
-- `lurek.agent.newOllama`: Creates an Ollama infrastructure manager for server lifecycle and model management.
-- `lurek.agent.newSemanticMemory`: Creates a new semantic memory for storing named facts.
-- `lurek.agent.newSystem`: Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
-- `lurek.agent.newTemplate`: Creates a new `{key}` placeholder prompt template.
-- `lurek.agent.newWorkingMemory`: Creates a new bounded FIFO working memory with the given capacity.
+- `lurek.agent.complete(prompt) -> string`: Sends a single prompt to the global LLM and returns the response text.
+- `lurek.agent.completeAsync(prompt, callback) -> nil`: Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+- `lurek.agent.completeJson(prompt) -> table`: Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
+- `lurek.agent.configure(config) -> nil`: Configures the global LLM provider settings used by module-level functions.
+- `lurek.agent.embed(text) -> table`: Returns an embedding vector for `text` from the global LLM.
+- `lurek.agent.isAvailable() -> boolean`: Returns `true` if the configured LLM server responds within 5 seconds.
+- `lurek.agent.listModels() -> table`: Returns a list of available model names from the configured LLM server.
+- `lurek.agent.new(config) -> LAgent`: Creates a new configurable LLM Agent runtime instance.
+- `lurek.agent.newAgentMemory(config?) -> LAgentMemory`: Creates a bundled working+episodic+semantic memory with optional disk persistence.
+- `lurek.agent.newChat() -> LAgentChat`: Creates a new stateful chat session using the global LLM config.
+- `lurek.agent.newEpisodicMemory() -> LEpisodicMemory`: Creates a new episodic memory for recording time-stamped events.
+- `lurek.agent.newManager() -> LAgentManager`: Creates a new Agent Manager for batching multiple LLM agents over a shared client.
+- `lurek.agent.newOllama(config?) -> LOllamaManager`: Creates an Ollama infrastructure manager for server lifecycle and model management.
+- `lurek.agent.newSemanticMemory() -> LSemanticMemory`: Creates a new semantic memory for storing named facts.
+- `lurek.agent.newSystem(config) -> LAISystem`: Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
+- `lurek.agent.newTemplate(pattern) -> LAgentTemplate`: Creates a new `{key}` placeholder prompt template.
+- `lurek.agent.newWorkingMemory(capacity) -> LWorkingMemory`: Creates a new bounded FIFO working memory with the given capacity.
 
 ### Callbacks
 
@@ -143,24 +143,24 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LAISystem:addAgent`: Registers a named agent in the system.
-- `LAISystem:addInstruction`: Adds a named instruction block the user can explicitly include per prompt.
-- `LAISystem:addSkill`: Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
-- `LAISystem:agentCount`: Returns the number of registered agents.
-- `LAISystem:buildContext`: Builds and returns the full context string that would be sent for a given prompt.
-- `LAISystem:hasAgent`: Returns `true` if an agent with `name` is registered.
-- `LAISystem:hasInstruction`: Returns `true` if an instruction with `key` is registered.
-- `LAISystem:hasSkill`: Returns `true` if a system skill with `name` is registered.
-- `LAISystem:instructionCount`: Returns the number of registered instruction blocks.
-- `LAISystem:listAgents`: Returns a sorted list of all registered agent names.
-- `LAISystem:listInstructions`: Returns a list of registered instruction keys in insertion order.
-- `LAISystem:prompt`: Sends a prompt to a named agent through the system, auto-injecting matching context.
-- `LAISystem:removeAgent`: Removes a registered agent by name.
-- `LAISystem:removeInstruction`: Removes an instruction block by key.
-- `LAISystem:removeSkill`: Removes a registered system skill by exact name.
-- `LAISystem:runAll`: Dispatches multiple named-agent tasks in parallel through the system.
-- `LAISystem:skillCount`: Returns the number of registered system skills.
-- `LAISystem:update`: Polls the system's background client for completed requests and dispatches callbacks.
+- `LAISystem:addAgent(name, agent) -> nil`: Registers a named agent in the system.
+- `LAISystem:addInstruction(key, text) -> nil`: Adds a named instruction block the user can explicitly include per prompt.
+- `LAISystem:addSkill(name, keywords, prompt) -> nil`: Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
+- `LAISystem:agentCount() -> integer`: Returns the number of registered agents.
+- `LAISystem:buildContext(instruction, opts?) -> string`: Builds and returns the full context string that would be sent for a given prompt.
+- `LAISystem:hasAgent(name) -> boolean`: Returns `true` if an agent with `name` is registered.
+- `LAISystem:hasInstruction(key) -> boolean`: Returns `true` if an instruction with `key` is registered.
+- `LAISystem:hasSkill(name) -> boolean`: Returns `true` if a system skill with `name` is registered.
+- `LAISystem:instructionCount() -> integer`: Returns the number of registered instruction blocks.
+- `LAISystem:listAgents() -> table`: Returns a sorted list of all registered agent names.
+- `LAISystem:listInstructions() -> table`: Returns a list of registered instruction keys in insertion order.
+- `LAISystem:prompt(agent_name, instruction, callback, opts) -> integer`: Sends a prompt to a named agent through the system, auto-injecting matching context.
+- `LAISystem:removeAgent(name) -> boolean`: Removes a registered agent by name.
+- `LAISystem:removeInstruction(key) -> boolean`: Removes an instruction block by key.
+- `LAISystem:removeSkill(name) -> boolean`: Removes a registered system skill by exact name.
+- `LAISystem:runAll(tasks, callback) -> integer`: Dispatches multiple named-agent tasks in parallel through the system.
+- `LAISystem:skillCount() -> integer`: Returns the number of registered system skills.
+- `LAISystem:update() -> nil`: Polls the system's background client for completed requests and dispatches callbacks.
 
 #### LAgent Type
 
@@ -172,32 +172,32 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LAgent:addSkill`: Appends a named skill prompt to the agent's context block.
-- `LAgent:cancel`: Cancels an in-flight or pending request by callback ID.
-- `LAgent:clearSkills`: Removes all registered skills from the agent's context.
-- `LAgent:evalCode`: Evaluates a Lua code string inside the active VM.
-- `LAgent:getDescription`: Returns the agent's role description.
-- `LAgent:getFormat`: Returns the current response format string.
-- `LAgent:getModel`: Returns the current model identifier.
-- `LAgent:getName`: Returns the agent's name identifier.
-- `LAgent:getUrl`: Returns the current LLM endpoint URL.
-- `LAgent:hasSkill`: Returns `true` if a skill with `name` is registered.
-- `LAgent:listSkills`: Returns a list of registered skill names in insertion order.
-- `LAgent:pendingCount`: Returns the number of in-flight requests that have not yet completed.
-- `LAgent:prompt`: Sends an instructional prompt to the LLM asynchronously.
-- `LAgent:promptBatch`: Sends a batch of prompts to the LLM asynchronously.
-- `LAgent:setContextSize`: Sets the token context window size forwarded to the LLM backend.
-- `LAgent:setDescription`: Sets the agent's role description injected after the system prompt when routed through an AISystem.
-- `LAgent:setFormat`: Changes the response format for future prompts.
-- `LAgent:setMaxRetries`: Sets the maximum retry count on transient network or timeout errors.
-- `LAgent:setModel`: Changes the model identifier for future prompts.
-- `LAgent:setName`: Sets the agent's name identifier used when added to an AISystem.
-- `LAgent:setOption`: Sets a single model option forwarded to the LLM backend.
-- `LAgent:setTemperature`: Sets the sampling temperature forwarded to the LLM backend.
-- `LAgent:setTimeout`: Sets the per-request timeout in seconds (0 uses the default 60 s).
-- `LAgent:setUrl`: Changes the LLM endpoint URL for future prompts.
-- `LAgent:skillCount`: Returns the number of registered skills.
-- `LAgent:update`: Polls the background client for completed LLM requests and dispatches callbacks.
+- `LAgent:addSkill(name, prompt) -> nil`: Appends a named skill prompt to the agent's context block.
+- `LAgent:cancel(callback_id) -> nil`: Cancels an in-flight or pending request by callback ID.
+- `LAgent:clearSkills() -> nil`: Removes all registered skills from the agent's context.
+- `LAgent:evalCode(code) -> boolean`: Evaluates a Lua code string inside the active VM.
+- `LAgent:getDescription() -> string`: Returns the agent's role description.
+- `LAgent:getFormat() -> string`: Returns the current response format string.
+- `LAgent:getModel() -> string`: Returns the current model identifier.
+- `LAgent:getName() -> string`: Returns the agent's name identifier.
+- `LAgent:getUrl() -> string`: Returns the current LLM endpoint URL.
+- `LAgent:hasSkill(name) -> boolean`: Returns `true` if a skill with `name` is registered.
+- `LAgent:listSkills() -> table`: Returns a list of registered skill names in insertion order.
+- `LAgent:pendingCount() -> integer`: Returns the number of in-flight requests that have not yet completed.
+- `LAgent:prompt(instruction, callback) -> integer`: Sends an instructional prompt to the LLM asynchronously.
+- `LAgent:promptBatch(instructions, callback) -> integer`: Sends a batch of prompts to the LLM asynchronously.
+- `LAgent:setContextSize(n) -> nil`: Sets the token context window size forwarded to the LLM backend.
+- `LAgent:setDescription(description) -> nil`: Sets the agent's role description injected after the system prompt when routed through an AISystem.
+- `LAgent:setFormat(format) -> nil`: Changes the response format for future prompts.
+- `LAgent:setMaxRetries(n) -> nil`: Sets the maximum retry count on transient network or timeout errors.
+- `LAgent:setModel(model) -> nil`: Changes the model identifier for future prompts.
+- `LAgent:setName(name) -> nil`: Sets the agent's name identifier used when added to an AISystem.
+- `LAgent:setOption(key, value) -> nil`: Sets a single model option forwarded to the LLM backend.
+- `LAgent:setTemperature(t) -> nil`: Sets the sampling temperature forwarded to the LLM backend.
+- `LAgent:setTimeout(secs) -> nil`: Sets the per-request timeout in seconds (0 uses the default 60 s).
+- `LAgent:setUrl(url) -> nil`: Changes the LLM endpoint URL for future prompts.
+- `LAgent:skillCount() -> integer`: Returns the number of registered skills.
+- `LAgent:update() -> nil`: Polls the background client for completed LLM requests and dispatches callbacks.
 
 #### LAgentChat Type
 
@@ -209,11 +209,11 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LAgentChat:addMessage`: Appends a message to the chat history without sending a completion.
-- `LAgentChat:clear`: Clears all stored chat history messages.
-- `LAgentChat:complete`: Sends the current history to the LLM and returns the assistant reply.
-- `LAgentChat:getHistory`: Returns the chat history as an array of `{role, content}` tables.
-- `LAgentChat:setSystemPrompt`: Sets the system prompt used for all completions in this session.
+- `LAgentChat:addMessage(role, content) -> nil`: Appends a message to the chat history without sending a completion.
+- `LAgentChat:clear() -> nil`: Clears all stored chat history messages.
+- `LAgentChat:complete() -> string`: Sends the current history to the LLM and returns the assistant reply.
+- `LAgentChat:getHistory() -> table`: Returns the chat history as an array of `{role, content}` tables.
+- `LAgentChat:setSystemPrompt(prompt) -> nil`: Sets the system prompt used for all completions in this session.
 
 #### LAgentManager Type
 
@@ -225,8 +225,8 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LAgentManager:runAll`: Runs multiple agent tasks in parallel and calls a single callback when all finish.
-- `LAgentManager:update`: Polls the manager's background client for completed tasks and dispatches callbacks.
+- `LAgentManager:runAll(tasks, callback) -> integer`: Runs multiple agent tasks in parallel and calls a single callback when all finish.
+- `LAgentManager:update() -> nil`: Polls the manager's background client for completed tasks and dispatches callbacks.
 
 #### LAgentMemory Type
 
@@ -238,11 +238,11 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LAgentMemory:episodic`: Returns the episodic memory component.
-- `LAgentMemory:load`: Deserialises memory state from the configured persist_path.
-- `LAgentMemory:save`: Serialises all memory banks to the configured persist_path.
-- `LAgentMemory:semantic`: Returns the semantic memory component.
-- `LAgentMemory:working`: Returns the working memory component.
+- `LAgentMemory:episodic() -> LEpisodicMemory`: Returns the episodic memory component.
+- `LAgentMemory:load() -> boolean`: Deserialises memory state from the configured persist_path.
+- `LAgentMemory:save() -> boolean`: Serialises all memory banks to the configured persist_path.
+- `LAgentMemory:semantic() -> LSemanticMemory`: Returns the semantic memory component.
+- `LAgentMemory:working() -> LWorkingMemory`: Returns the working memory component.
 
 #### LAgentTemplate Type
 
@@ -254,7 +254,7 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LAgentTemplate:render`: Renders the template by substituting `{key}` placeholders from `values`.
+- `LAgentTemplate:render(values) -> string`: Renders the template by substituting `{key}` placeholders from `values`.
 
 #### LEpisodicMemory Type
 
@@ -266,10 +266,10 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LEpisodicMemory:forgetBefore`: Removes all episodes with tick < `cutoff`.
-- `LEpisodicMemory:len`: Returns the number of stored episodes.
-- `LEpisodicMemory:query`: Returns all episodes whose data matches every key-value pair in `filter`.
-- `LEpisodicMemory:record`: Records a new episode at `tick` with `data`.
+- `LEpisodicMemory:forgetBefore(cutoff) -> nil`: Removes all episodes with tick < `cutoff`.
+- `LEpisodicMemory:len() -> integer`: Returns the number of stored episodes.
+- `LEpisodicMemory:query(filter) -> table`: Returns all episodes whose data matches every key-value pair in `filter`.
+- `LEpisodicMemory:record(tick, data) -> nil`: Records a new episode at `tick` with `data`.
 
 #### LOllamaManager Type
 
@@ -281,19 +281,19 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LOllamaManager:baseUrl`: Returns the base URL this manager was created with.
-- `LOllamaManager:deleteModel`: Sends `DELETE /api/delete` to remove a model from local Ollama storage.
-- `LOllamaManager:hasModel`: Returns `true` if a model with the given name (or name prefix) is available locally.
-- `LOllamaManager:isRunning`: Returns `true` if the Ollama HTTP server responds within 5 seconds.
-- `LOllamaManager:listModels`: Returns a table of locally available models, each with `name` and `size_gb` fields.
-- `LOllamaManager:modelNames`: Returns a string array of locally available model names; empty if Ollama is not running.
-- `LOllamaManager:pendingCount`: Returns the number of in-flight model pull operations.
-- `LOllamaManager:pullModel`: Dispatches an async model download; calls `callback(success, err_msg)` on completion.
-- `LOllamaManager:restart`: Stops then restarts the managed Ollama process. Returns `true` on success.
-- `LOllamaManager:start`: Spawns `ollama serve` as a managed child process. Returns `true` on success.
-- `LOllamaManager:stop`: Kills the Ollama process started by this manager. Returns `true` if it was running.
-- `LOllamaManager:update`: Polls completed pull operations and dispatches registered callbacks.
-- `LOllamaManager:version`: Returns the Ollama version string, or an empty string if not running.
+- `LOllamaManager:baseUrl() -> string`: Returns the base URL this manager was created with.
+- `LOllamaManager:deleteModel(name) -> boolean`: Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+- `LOllamaManager:hasModel(name) -> boolean`: Returns `true` if a model with the given name (or name prefix) is available locally.
+- `LOllamaManager:isRunning() -> boolean`: Returns `true` if the Ollama HTTP server responds within 5 seconds.
+- `LOllamaManager:listModels() -> table`: Returns a table of locally available models, each with `name` and `size_gb` fields.
+- `LOllamaManager:modelNames() -> table`: Returns a string array of locally available model names; empty if Ollama is not running.
+- `LOllamaManager:pendingCount() -> integer`: Returns the number of in-flight model pull operations.
+- `LOllamaManager:pullModel(name, callback) -> integer`: Dispatches an async model download; calls `callback(success, err_msg)` on completion.
+- `LOllamaManager:restart() -> boolean`: Stops then restarts the managed Ollama process. Returns `true` on success.
+- `LOllamaManager:start() -> boolean`: Spawns `ollama serve` as a managed child process. Returns `true` on success.
+- `LOllamaManager:stop() -> boolean`: Kills the Ollama process started by this manager. Returns `true` if it was running.
+- `LOllamaManager:update() -> nil`: Polls completed pull operations and dispatches registered callbacks.
+- `LOllamaManager:version() -> string`: Returns the Ollama version string, or an empty string if not running.
 
 #### LSemanticMemory Type
 
@@ -305,11 +305,11 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LSemanticMemory:forget`: Removes the fact at `key`.  Returns `true` if it existed.
-- `LSemanticMemory:learn`: Inserts or replaces a fact at `key`.
-- `LSemanticMemory:len`: Returns the number of stored facts.
-- `LSemanticMemory:query`: Returns all facts whose value matches every key-value pair in `filter`.
-- `LSemanticMemory:recall`: Returns the fact for `key`, or `nil` if not found.
+- `LSemanticMemory:forget(key) -> boolean`: Removes the fact at `key`.  Returns `true` if it existed.
+- `LSemanticMemory:learn(key, value) -> nil`: Inserts or replaces a fact at `key`.
+- `LSemanticMemory:len() -> integer`: Returns the number of stored facts.
+- `LSemanticMemory:query(filter) -> table`: Returns all facts whose value matches every key-value pair in `filter`.
+- `LSemanticMemory:recall(key) -> table`: Returns the fact for `key`, or `nil` if not found.
 
 #### LWorkingMemory Type
 
@@ -321,9 +321,9 @@ Memory is treated as a practical stack: short-term working context, episodic his
 
 ##### Methods
 
-- `LWorkingMemory:capacity`: Returns the configured capacity (0 = unlimited).
-- `LWorkingMemory:forget`: Removes the entry with `key`.  Returns `true` if it existed.
-- `LWorkingMemory:get`: Returns the value for `key`, or `nil` if not found.
-- `LWorkingMemory:getRecent`: Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
-- `LWorkingMemory:len`: Returns the current number of entries.
-- `LWorkingMemory:push`: Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
+- `LWorkingMemory:capacity() -> integer`: Returns the configured capacity (0 = unlimited).
+- `LWorkingMemory:forget(key) -> boolean`: Removes the entry with `key`.  Returns `true` if it existed.
+- `LWorkingMemory:get(key) -> table`: Returns the value for `key`, or `nil` if not found.
+- `LWorkingMemory:getRecent(n) -> table`: Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
+- `LWorkingMemory:len() -> integer`: Returns the current number of entries.
+- `LWorkingMemory:push(key, value) -> nil`: Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.

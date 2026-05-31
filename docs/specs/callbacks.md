@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-This spec is the central inventory of global `lurek.*` engine callbacks, kept separate from module specs and synchronized from generated callback metadata.
+Global `lurek.*` callbacks are documented here as a dedicated generated spec, independent from thin-wrapper module specs.
 
 ## General Info
 
@@ -16,13 +16,9 @@ This spec is the central inventory of global `lurek.*` engine callbacks, kept se
 
 ## Summary
 
-The `callbacks` spec defines the global callback surface that the engine can call on the `lurek` table during runtime. It covers lifecycle, input, update, render, and shutdown callback names so teams have one clear list of entry points for script-side integration.
+This spec documents global `lurek.*` lifecycle/input/render callbacks exposed by the engine runtime. It is generated from `logs/data/lua_api_data.json` (`engine_callbacks`) so callback contracts stay in sync with Rust+Lua API extraction without hardcoded lists.
 
-Its main function is contract visibility. Instead of spreading callback ownership across many module specs, this file keeps one dedicated inventory that explains what callback hooks exist and why they are part of the global runtime surface.
-
-The file is intentionally metadata-driven. It is generated from callback extraction data, which helps keep the inventory aligned with actual engine behavior and reduces drift from manually maintained lists.
-
-This spec does not duplicate full signature details. It owns callback discovery and scope context, while parameter-level and signature-level definitions remain in generated API reference documents. That split keeps this page concise and keeps deep API details in the canonical generated sources.
+Scope boundary: this file owns only callback inventory and ownership context. Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`).
 
 ## Imports
 

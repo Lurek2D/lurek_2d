@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `mapblock` module builds larger tilemaps from reusable block pieces, with scripted placement rules and edge constraints that keep joins coherent.
+- Assembles tilemaps from block pieces using socket rules, scripts, and multi-level grids.
 
 ## General Info
 
@@ -16,15 +16,11 @@
 
 ## Summary
 
-The `mapblock` module is a structured map-construction system for tile worlds built from reusable prefab blocks. Instead of painting every cell by hand, teams define block pieces once and assemble larger maps through repeatable script steps.
+This module provides the procedural map block assembly and generation subsystem, enabling developers to build large tilemaps from pre-configured block layouts. It manages individual map blocks that bundle tile grids, edge connectors, and weighted metadata. Adjacency constraints use socket-style interfaces, defining how blocks link to their neighbors. This allows the generator to validate boundary compatibilities during runtime procedurally.
 
-Its main functional value is controlled procedural assembly. Scripts describe placement flow in explicit order, including region fills, targeted placement, random sampling, and repeat patterns. This gives predictable map shape with enough variation for replay and content diversity.
+The generation engine is controlled by scripted procedural steps, driving layout passes through fill, targeted, and random placement operations. The generator evaluates candidates using neighbor rules, resolving conflicts dynamically to maintain structural consistency. Multiple vertical storeys are supported, allowing developers to generate multi-level buildings and layered biomes under unified grid seeds.
 
-Compatibility checks are part of the placement core. Neighbor edges must match declared rules, so generated seams stay logical and connected. This is important for paths, walls, channels, and other features that must continue cleanly across block boundaries.
-
-The module also supports practical production grouping. Blocks can be organized by theme and routed through shared tileset references, so one generation program can build multiple visual styles without rewriting the generator logic.
-
-Layered and orientation-aware output keeps the same assembly model useful for different presentation targets. In practice, `lurek.mapblock` provides one complete pipeline: define blocks, apply constrained scripts, and produce stable runtime tilemap data.
+Placement grids handle spatial validation and keep track of cell occupancies. These coordinate fields support top-down and isometric orientations, tailoring block placements to the game's presentation style. When placement finishes, the output converter translates layered slot layouts into concrete tile layer arrays and resolves tileset IDs. This decouples procedural generation logic from final map rendering systems.
 
 ## Imports
 
@@ -146,16 +142,16 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ### Functions
 
-- `lurek.mapblock.newBlock`: Create a new map block exposed by the lurek engine.
-- `lurek.mapblock.newConfig`: Create a new map block configuration with default slots.
-- `lurek.mapblock.newEmptyConfig`: Create an empty config with no predefined slots.
-- `lurek.mapblock.newEmptyGrid`: Create an empty placement grid (for arbitrary shapes).
-- `lurek.mapblock.newGenerator`: Create a new procedural map block generator instance.
-- `lurek.mapblock.newGrid`: Create a rectangular placement grid.
-- `lurek.mapblock.newGroup`: Create a new map group exposed by the lurek engine.
-- `lurek.mapblock.newRules`: Create new neighbor rules exposed by the lurek engine.
-- `lurek.mapblock.newScript`: Create a new map script exposed by the lurek engine.
-- `lurek.mapblock.newTilesetRef`: Create a tileset reference exposed by the lurek engine.
+- `lurek.mapblock.newBlock(width, height, layers, config) -> MapBlock`: Create a new map block exposed by the lurek engine.
+- `lurek.mapblock.newConfig() -> MapBlockConfig`: Create a new map block configuration with default slots.
+- `lurek.mapblock.newEmptyConfig() -> MapBlockConfig`: Create an empty config with no predefined slots.
+- `lurek.mapblock.newEmptyGrid() -> PlacementGrid`: Create an empty placement grid (for arbitrary shapes).
+- `lurek.mapblock.newGenerator(config) -> MapBlockGenerator`: Create a new procedural map block generator instance.
+- `lurek.mapblock.newGrid(width, height) -> PlacementGrid`: Create a rectangular placement grid.
+- `lurek.mapblock.newGroup(name) -> MapGroup`: Create a new map group exposed by the lurek engine.
+- `lurek.mapblock.newRules() -> NeighborRules`: Create new neighbor rules exposed by the lurek engine.
+- `lurek.mapblock.newScript(name?) -> MapScript`: Create a new map script exposed by the lurek engine.
+- `lurek.mapblock.newTilesetRef(id, name, tile_count, columns, tile_width, tile_height) -> TilesetRef`: Create a tileset reference exposed by the lurek engine.
 
 ### Callbacks
 
@@ -177,18 +173,18 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LMapBlock:getHeight`: Get height in tiles for this object.
-- `LMapBlock:getLayerCount`: Get the number of tile layers in this map block.
-- `LMapBlock:getName`: Get the map block's display or lookup name string value.
-- `LMapBlock:getTile`: Get the tile GID at a specified row and column position.
-- `LMapBlock:getWidth`: Get the block width measured in tile grid units.
-- `LMapBlock:setEdge`: Set edge type for a side and segment.
-- `LMapBlock:setEdgeOnly`: Set whether block must be on map edge.
-- `LMapBlock:setInteriorOnly`: Set whether block must be in interior.
-- `LMapBlock:setLevelSpan`: Set multi-level span for this object.
-- `LMapBlock:setName`: Set the map block's display or lookup name string value.
-- `LMapBlock:setTile`: Set a tile slot value â€” Lua userdata object exposed by the engine.
-- `LMapBlock:setWeight`: Set block weight for random selection.
+- `LMapBlock:getHeight() -> integer`: Get height in tiles for this object.
+- `LMapBlock:getLayerCount() -> integer`: Get the number of tile layers in this map block.
+- `LMapBlock:getName() -> string`: Get the map block's display or lookup name string value.
+- `LMapBlock:getTile(layer, x, y, slot) -> integer`: Get the tile GID at a specified row and column position.
+- `LMapBlock:getWidth() -> integer`: Get the block width measured in tile grid units.
+- `LMapBlock:setEdge(edge, segment, edge_type) -> nil`: Set edge type for a side and segment.
+- `LMapBlock:setEdgeOnly(edge_only) -> nil`: Set whether block must be on map edge.
+- `LMapBlock:setInteriorOnly(interior_only) -> nil`: Set whether block must be in interior.
+- `LMapBlock:setLevelSpan(levels) -> nil`: Set multi-level span for this object.
+- `LMapBlock:setName(name) -> nil`: Set the map block's display or lookup name string value.
+- `LMapBlock:setTile(layer, x, y, slot, tileset_id, gid) -> nil`: Set a tile slot value â€” Lua userdata object exposed by the engine.
+- `LMapBlock:setWeight(weight) -> nil`: Set block weight for random selection.
 
 #### LMapBlockConfig Type
 
@@ -200,11 +196,11 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LMapBlockConfig:addSlot`: Add a slot definition â€” Lua userdata object exposed by the engine.
-- `LMapBlockConfig:getSlotCount`: Get the number of slots for this object.
-- `LMapBlockConfig:removeSlot`: Remove a slot by name for this object.
-- `LMapBlockConfig:setDefaultSegmentSize`: Set default segment size for this object.
-- `LMapBlockConfig:setMaxLayers`: Set maximum layers per block for this object.
+- `LMapBlockConfig:addSlot(name, required?, default_gid?) -> nil`: Add a slot definition â€” Lua userdata object exposed by the engine.
+- `LMapBlockConfig:getSlotCount() -> integer`: Get the number of slots for this object.
+- `LMapBlockConfig:removeSlot(name) -> boolean`: Remove a slot by name for this object.
+- `LMapBlockConfig:setDefaultSegmentSize(size) -> nil`: Set default segment size for this object.
+- `LMapBlockConfig:setMaxLayers(max) -> nil`: Set maximum layers per block for this object.
 
 #### LMapBlockGenerator Type
 
@@ -216,16 +212,16 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LMapBlockGenerator:addGroup`: Add a named block group definition to this map generator.
-- `LMapBlockGenerator:generate`: Generate map using a script for this object.
-- `LMapBlockGenerator:getLastPlacedCount`: Get last placement count for this object.
-- `LMapBlockGenerator:setMaxLevels`: Set the number of vertical levels or storeys to generate.
-- `LMapBlockGenerator:setOrientation`: Set rendering orientation for this object.
-- `LMapBlockGenerator:setRectShape`: Set rectangular map shape â€” Lua userdata object exposed by the engine.
-- `LMapBlockGenerator:setRules`: Set neighbor matching rules for this object.
-- `LMapBlockGenerator:setSeed`: Set RNG seed for deterministic generation.
-- `LMapBlockGenerator:setShape`: Set the generator map shape using a list of tile positions.
-- `LMapBlockGenerator:setTileSize`: Set tile pixel dimensions for this object.
+- `LMapBlockGenerator:addGroup(group) -> nil`: Add a named block group definition to this map generator.
+- `LMapBlockGenerator:generate(script) -> MapBlockResult`: Generate map using a script for this object.
+- `LMapBlockGenerator:getLastPlacedCount() -> integer`: Get last placement count for this object.
+- `LMapBlockGenerator:setMaxLevels(levels) -> nil`: Set the number of vertical levels or storeys to generate.
+- `LMapBlockGenerator:setOrientation(orientation) -> nil`: Set rendering orientation for this object.
+- `LMapBlockGenerator:setRectShape(width, height) -> nil`: Set rectangular map shape â€” Lua userdata object exposed by the engine.
+- `LMapBlockGenerator:setRules(rules) -> nil`: Set neighbor matching rules for this object.
+- `LMapBlockGenerator:setSeed(seed) -> nil`: Set RNG seed for deterministic generation.
+- `LMapBlockGenerator:setShape(positions) -> nil`: Set the generator map shape using a list of tile positions.
+- `LMapBlockGenerator:setTileSize(w, h) -> nil`: Set tile pixel dimensions for this object.
 
 #### LMapBlockResult Type
 
@@ -237,13 +233,13 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LMapBlockResult:getBlocksPlaced`: Get number of blocks placed for this object.
-- `LMapBlockResult:getGid`: Get tile GID at position for this object.
-- `LMapBlockResult:getHeight`: Get total height in tiles â€” Lua userdata object exposed by the engine.
-- `LMapBlockResult:getLayerCount`: Get number of layers for this object.
-- `LMapBlockResult:getLevelCount`: Get number of levels for this object.
-- `LMapBlockResult:getWidth`: Get total width in tiles for this object.
-- `LMapBlockResult:isEmpty`: Check if result is empty for this object.
+- `LMapBlockResult:getBlocksPlaced() -> integer`: Get number of blocks placed for this object.
+- `LMapBlockResult:getGid(level, layer, x, y, slot) -> integer`: Get tile GID at position for this object.
+- `LMapBlockResult:getHeight() -> integer`: Get total height in tiles â€” Lua userdata object exposed by the engine.
+- `LMapBlockResult:getLayerCount() -> integer`: Get number of layers for this object.
+- `LMapBlockResult:getLevelCount() -> integer`: Get number of levels for this object.
+- `LMapBlockResult:getWidth() -> integer`: Get total width in tiles for this object.
+- `LMapBlockResult:isEmpty() -> boolean`: Check if result is empty for this object.
 
 #### LMapGroup Type
 
@@ -255,10 +251,10 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LMapGroup:addBlock`: Add a block to this group for this object.
-- `LMapGroup:addScript`: Add a script to this group for this object.
-- `LMapGroup:getBlockCount`: Get the number of blocks for this object.
-- `LMapGroup:getName`: Get the display name of this map group object.
+- `LMapGroup:addBlock(block) -> nil`: Add a block to this group for this object.
+- `LMapGroup:addScript(script) -> nil`: Add a script to this group for this object.
+- `LMapGroup:getBlockCount() -> integer`: Get the number of blocks for this object.
+- `LMapGroup:getName() -> string`: Get the display name of this map group object.
 
 #### LMapScript Type
 
@@ -270,10 +266,10 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LMapScript:addStep`: Add a generation step â€” Lua userdata object exposed by the engine.
-- `LMapScript:clear`: Clear all queued script steps from this map script.
-- `LMapScript:getName`: Get the script name for this object.
-- `LMapScript:getStepCount`: Get the number of steps for this object.
+- `LMapScript:addStep(step_type, opts?) -> nil`: Add a generation step â€” Lua userdata object exposed by the engine.
+- `LMapScript:clear() -> nil`: Clear all queued script steps from this map script.
+- `LMapScript:getName() -> string`: Get the script name for this object.
+- `LMapScript:getStepCount() -> integer`: Get the number of steps for this object.
 
 #### LNeighborRules Type
 
@@ -285,10 +281,10 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LNeighborRules:addCompatible`: Add bidirectional compatibility between two edge types.
-- `LNeighborRules:addCompatibleOneWay`: Add one-way compatibility for this object.
-- `LNeighborRules:clear`: Clear all neighbor placement rules from this rule set.
-- `LNeighborRules:isCompatible`: Check if two edge types are compatible.
+- `LNeighborRules:addCompatible(type_a, type_b) -> nil`: Add bidirectional compatibility between two edge types.
+- `LNeighborRules:addCompatibleOneWay(type_a, type_b) -> nil`: Add one-way compatibility for this object.
+- `LNeighborRules:clear() -> nil`: Clear all neighbor placement rules from this rule set.
+- `LNeighborRules:isCompatible(type_a, type_b) -> boolean`: Check if two edge types are compatible.
 
 #### LPlacementGrid Type
 
@@ -300,10 +296,10 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LPlacementGrid:addPosition`: Add a position to the grid â€” Lua userdata object exposed by the engine.
-- `LPlacementGrid:clear`: Clear all positions and placed blocks.
-- `LPlacementGrid:getAvailableCount`: Get available position count for this object.
-- `LPlacementGrid:isAvailable`: Check whether a placement grid position is currently available.
+- `LPlacementGrid:addPosition(x, y) -> nil`: Add a position to the grid â€” Lua userdata object exposed by the engine.
+- `LPlacementGrid:clear() -> nil`: Clear all positions and placed blocks.
+- `LPlacementGrid:getAvailableCount() -> integer`: Get available position count for this object.
+- `LPlacementGrid:isAvailable(x, y) -> boolean`: Check whether a placement grid position is currently available.
 
 #### LTilesetRef Type
 
@@ -315,6 +311,6 @@ Layered and orientation-aware output keeps the same assembly model useful for di
 
 ##### Methods
 
-- `LTilesetRef:getId`: Get the numeric tileset ID for this tileset reference.
-- `LTilesetRef:getName`: Get tileset name â€” Lua userdata object exposed by the engine.
-- `LTilesetRef:setImagePath`: Set the image file path for this tileset reference.
+- `LTilesetRef:getId() -> integer`: Get the numeric tileset ID for this tileset reference.
+- `LTilesetRef:getName() -> string`: Get tileset name â€” Lua userdata object exposed by the engine.
+- `LTilesetRef:setImagePath(path) -> nil`: Set the image file path for this tileset reference.

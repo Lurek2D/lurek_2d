@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `flownet` module models directed flow networks where typed items move through constrained nodes and edges, with simulation, routing, and analytics in one system.
+- Simulates directed logistics networks using node inventories, push-pull rates, and overflow policies.
+- Integrates weighted transits, pathfinding, supply-demand balancing, and circular layouts.
 
 ## General Info
 
@@ -16,19 +17,15 @@
 
 ## Summary
 
-The `flownet` module is a logistics simulation framework built on directed graph structure. It models how typed items move through connected nodes and edges under explicit transport rules, so projects can represent production, routing, and consumption behavior in one system.
+This module represents the directed logistics and transport network subsystem, providing tools to build, analyze, and simulate complex graph networks. The graph container stores nodes, connections, and individual payloads, managing entity lifecycles to ensure consistency across connections. This architecture allows developers to design logistics networks, supply grids, or economic pipelines directly using structured network nodes and connection endpoints.
 
-Its core value is combining topology with operational constraints. Nodes can store, queue, transform, or demand items, while edges can enforce limits such as capacity, cooldown, directionality, speed, and item-type filters. This turns the graph into a controllable flow network instead of a static map.
+At the network junctions, nodes are configured with item capacities, inventory records, and queue rules. Nodes support advanced push and pull mechanics to guide item transfers automatically. They also manage item conversion recipes, consuming specific input items and generating transformed outputs after defined process intervals. When capacity limits are reached, customizable overflow policies decide how excess arrivals are handled at the node boundaries.
 
-Simulation is processed in deterministic steps. Movement, decay, conversion, queue backpressure, and demand fulfillment are applied in defined order, which makes outcomes reproducible and easier to reason about during balancing and debugging.
+Connections between nodes represent weighted transit paths that carry payloads over defined intervals. Connection edges enforce throughput limits, traversal cooldown timers, and directional rules. They also support item-type filtering to restrict which items may traverse specific routes. During simulation updates, items move along these edges, and their velocities are modified dynamically by edge attributes like distance and custom speed scales.
 
-Routing tools are part of the same runtime surface. Pathfinding and distance queries respect active constraints, so route results match actual simulation rules rather than idealized connectivity. This helps gameplay logic make decisions that stay valid during live progression.
+To coordinate movement, the system includes algorithms for pathfinding and logistics balancing. A priority-based routing engine computes the cheapest pathways across connections, respecting current traversal constraints and filters. Additionally, a supply-demand manager matches prioritized needs at consumer nodes with resources available at producer sites, scheduling pathfinding routes to transport materials through the network.
 
-Analytical graph operations are included for structural inspection. Reachability, cycle checks, components, ordering, and related algorithms support diagnostics, content validation, and system tuning without exporting data to external tools first.
-
-The module exposes events and Lua APIs for integration with higher-level systems. Scripts can react to fulfillment, depletion, transit, and other state changes, then attach custom game logic around those transitions.
-
-In practice, `lurek.graph` provides one complete flow-network contract: define network topology, run constrained simulation, inspect structure and routes, and connect logistics outcomes directly to gameplay behavior.
+The simulation core updates all transit queues, item lifetimes, and node conversion timers dynamically. It resolves waiting items, handles backpressure, and removes expired items automatically. The graph structure supports diagnostic algorithms that perform structural health checks, including cycle detection and topological sorting. Additionally, a circular layout generator produces debug diagrams to help visualize the network state.
 
 ## Imports
 
@@ -143,7 +140,7 @@ In practice, `lurek.graph` provides one complete flow-network contract: define n
 
 ### Functions
 
-- `lurek.graph.newGraph`: Creates an empty logistics graph with no nodes, edges, items, or callbacks.
+- `lurek.graph.newGraph() -> LGraph`: Creates an empty logistics graph with no nodes, edges, items, or callbacks.
 
 ### Callbacks
 
@@ -165,49 +162,49 @@ In practice, `lurek.graph` provides one complete flow-network contract: define n
 
 ##### Methods
 
-- `LGraph:addEdge`: Creates an edge between two nodes with an optional edge type.
-- `LGraph:addEdgeUnchecked`: Adds an edge without validating endpoint nodes exist. Faster for batch construction.
-- `LGraph:addItem`: Places an item onto a destination node.
-- `LGraph:addNode`: Creates a node with optional type and capacity.
-- `LGraph:astar`: Runs A* pathfinding between two nodes.
-- `LGraph:batchAddEdges`: Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.
-- `LGraph:batchAddNodes`: Creates multiple nodes at once, returning their IDs as a table.
-- `LGraph:batchStep`: Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.
-- `LGraph:colorGraph`: Computes graph coloring and returns color indices by node id.
-- `LGraph:createItem`: Creates an unplaced graph item with optional type and decay time.
-- `LGraph:findPath`: Finds a path between two graph nodes.
-- `LGraph:findPathForItem`: Finds a path for a specific item between two nodes while respecting item constraints.
-- `LGraph:getComponents`: Returns connected components as arrays of node handles.
-- `LGraph:getDistance`: Returns graph distance between two nodes when reachable.
-- `LGraph:getEdgeBetween`: Returns the edge connecting two nodes when one exists.
-- `LGraph:getEdgeCount`: Returns the number of edges in this graph.
-- `LGraph:getEdges`: Returns all edges in this logistics graph.
-- `LGraph:getItemCount`: Returns the number of items in this graph.
-- `LGraph:getItems`: Returns all items in this logistics graph.
-- `LGraph:getNeighbors`: Returns neighbor nodes connected to a node.
-- `LGraph:getNodeCount`: Returns the number of nodes in this graph.
-- `LGraph:getNodes`: Returns all nodes in this logistics graph.
-- `LGraph:getReachable`: Returns nodes reachable from a start node within an optional maximum distance.
-- `LGraph:getStats`: Returns graph counts and aggregate supply-demand statistics.
-- `LGraph:hasCycle`: Returns whether this graph contains a cycle.
-- `LGraph:hasEdge`: Returns whether an edge handle still exists in this graph.
-- `LGraph:hasItem`: Returns whether an item handle still exists in this graph.
-- `LGraph:hasNode`: Returns whether a node handle still exists in this graph.
-- `LGraph:isBipartite`: Returns whether this graph is bipartite.
-- `LGraph:mst`: Computes a minimum spanning tree using Kruskal and returns edge ids.
-- `LGraph:on`: Registers a callback for a named graph event generated during simulation.
-- `LGraph:processDemand`: Processes graph supply and demand once and dispatches generated callbacks.
-- `LGraph:removeEdge`: Removes an edge by handle on this object.
-- `LGraph:removeItem`: Removes an item from this logistics graph.
-- `LGraph:removeNode`: Removes a node and graph links associated with it.
-- `LGraph:sendItem`: Starts moving an item along an edge.
-- `LGraph:step`: Runs one discrete graph simulation step and dispatches generated callbacks.
-- `LGraph:subgraph`: Creates a new graph containing a subset of nodes.
-- `LGraph:tickParallel`: Advances graph simulation through the parallel update path and dispatches generated callbacks.
-- `LGraph:topologicalSort`: Returns nodes in topological order when the graph is acyclic.
-- `LGraph:type`: Returns the Lua-visible type name for this graph handle.
-- `LGraph:typeOf`: Returns whether this graph handle matches a supported type name.
-- `LGraph:update`: Advances graph simulation by delta time and dispatches generated callbacks.
+- `LGraph:addEdge(from_ud, to_ud, edge_type?) -> LGraphEdge`: Creates an edge between two nodes with an optional edge type.
+- `LGraph:addEdgeUnchecked(from_ud, to_ud, edge_type?) -> LGraphEdge`: Adds an edge without validating endpoint nodes exist. Faster for batch construction.
+- `LGraph:addItem(item_ud, node_ud) -> nil`: Places an item onto a destination node.
+- `LGraph:addNode(node_type?, capacity?) -> LGraphNode`: Creates a node with optional type and capacity.
+- `LGraph:astar(from_node, to_node) -> LGraphNode[]`: Runs A* pathfinding between two nodes.
+- `LGraph:batchAddEdges(edges) -> integer[]`: Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.
+- `LGraph:batchAddNodes(count, config?) -> integer[]`: Creates multiple nodes at once, returning their IDs as a table.
+- `LGraph:batchStep(dt, iterations) -> nil`: Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.
+- `LGraph:colorGraph() -> table`: Computes graph coloring and returns color indices by node id.
+- `LGraph:createItem(item_type?, decay_time?) -> LGraphItem`: Creates an unplaced graph item with optional type and decay time.
+- `LGraph:findPath(from_ud, to_ud) -> table`: Finds a path between two graph nodes.
+- `LGraph:findPathForItem(item_ud, from_ud, to_ud) -> table`: Finds a path for a specific item between two nodes while respecting item constraints.
+- `LGraph:getComponents() -> LGraphNode[]`: Returns connected components as arrays of node handles.
+- `LGraph:getDistance(from_ud, to_ud) -> number`: Returns graph distance between two nodes when reachable.
+- `LGraph:getEdgeBetween(from_ud, to_ud) -> LGraphEdge`: Returns the edge connecting two nodes when one exists.
+- `LGraph:getEdgeCount() -> integer`: Returns the number of edges in this graph.
+- `LGraph:getEdges() -> LGraphEdge[]`: Returns all edges in this logistics graph.
+- `LGraph:getItemCount() -> integer`: Returns the number of items in this graph.
+- `LGraph:getItems() -> LGraphItem[]`: Returns all items in this logistics graph.
+- `LGraph:getNeighbors(node_ud) -> LGraphNode[]`: Returns neighbor nodes connected to a node.
+- `LGraph:getNodeCount() -> integer`: Returns the number of nodes in this graph.
+- `LGraph:getNodes() -> LGraphNode[]`: Returns all nodes in this logistics graph.
+- `LGraph:getReachable(from_ud, max_dist?) -> LGraphNode[]`: Returns nodes reachable from a start node within an optional maximum distance.
+- `LGraph:getStats() -> table`: Returns graph counts and aggregate supply-demand statistics.
+- `LGraph:hasCycle() -> boolean`: Returns whether this graph contains a cycle.
+- `LGraph:hasEdge(edge_ud) -> boolean`: Returns whether an edge handle still exists in this graph.
+- `LGraph:hasItem(item_ud) -> boolean`: Returns whether an item handle still exists in this graph.
+- `LGraph:hasNode(node_ud) -> boolean`: Returns whether a node handle still exists in this graph.
+- `LGraph:isBipartite() -> boolean`: Returns whether this graph is bipartite.
+- `LGraph:mst() -> integer[]`: Computes a minimum spanning tree using Kruskal and returns edge ids.
+- `LGraph:on(event_name, func) -> nil`: Registers a callback for a named graph event generated during simulation.
+- `LGraph:processDemand() -> nil`: Processes graph supply and demand once and dispatches generated callbacks.
+- `LGraph:removeEdge(edge_ud) -> boolean`: Removes an edge by handle on this object.
+- `LGraph:removeItem(item_ud) -> boolean`: Removes an item from this logistics graph.
+- `LGraph:removeNode(node_ud) -> boolean`: Removes a node and graph links associated with it.
+- `LGraph:sendItem(item_ud, edge_ud) -> nil`: Starts moving an item along an edge.
+- `LGraph:step() -> nil`: Runs one discrete graph simulation step and dispatches generated callbacks.
+- `LGraph:subgraph(nodes) -> LGraph`: Creates a new graph containing a subset of nodes.
+- `LGraph:tickParallel(dt) -> nil`: Advances graph simulation through the parallel update path and dispatches generated callbacks.
+- `LGraph:topologicalSort() -> LGraphNode[]`: Returns nodes in topological order when the graph is acyclic.
+- `LGraph:type() -> string`: Returns the Lua-visible type name for this graph handle.
+- `LGraph:typeOf(name) -> boolean`: Returns whether this graph handle matches a supported type name.
+- `LGraph:update(dt) -> nil`: Advances graph simulation by delta time and dispatches generated callbacks.
 
 #### LGraphEdge Type
 
@@ -219,34 +216,34 @@ In practice, `lurek.graph` provides one complete flow-network contract: define n
 
 ##### Methods
 
-- `LGraphEdge:addAllowedType`: Allows an item type to traverse this edge.
-- `LGraphEdge:clearAllowedTypes`: Clears this edge's item type allow-list.
-- `LGraphEdge:getCapacity`: Returns this edge's maximum concurrent item capacity.
-- `LGraphEdge:getCooldown`: Returns this edge's cooldown timer value.
-- `LGraphEdge:getFrom`: Returns the source node for this edge.
-- `LGraphEdge:getItemsInTransit`: Returns graph items currently traveling along this edge.
-- `LGraphEdge:getSpeedModifier`: Returns this edge's speed modifier.
-- `LGraphEdge:getThroughput`: Returns this edge's throughput value.
-- `LGraphEdge:getTo`: Returns the destination node for this edge.
-- `LGraphEdge:getTravelTime`: Returns the travel time for items moving across this edge.
-- `LGraphEdge:getType`: Returns the edge type string used by routing and filters.
-- `LGraphEdge:getWeight`: Returns the pathfinding weight for this edge.
-- `LGraphEdge:isActive`: Returns whether this edge is active for routing and simulation.
-- `LGraphEdge:isBidirectional`: Returns whether this edge allows travel in both directions.
-- `LGraphEdge:isItemTypeAllowed`: Returns whether an item type may traverse this edge.
-- `LGraphEdge:isOnCooldown`: Returns whether this edge is currently on cooldown.
-- `LGraphEdge:removeAllowedType`: Removes an item type from this edge's allow-list.
-- `LGraphEdge:setActive`: Enables or disables this edge for routing and simulation.
-- `LGraphEdge:setBidirectional`: Sets whether this edge allows travel in both directions.
-- `LGraphEdge:setCapacity`: Sets this edge's maximum concurrent item capacity.
-- `LGraphEdge:setCooldown`: Sets this edge's cooldown timer value.
-- `LGraphEdge:setSpeedModifier`: Sets this edge's speed modifier value.
-- `LGraphEdge:setThroughput`: Sets this edge's throughput value.
-- `LGraphEdge:setTravelTime`: Sets the travel time for items moving across this edge.
-- `LGraphEdge:setType`: Sets the edge type string used by routing and filters.
-- `LGraphEdge:setWeight`: Sets the pathfinding weight for this edge.
-- `LGraphEdge:type`: Returns the Lua-visible type name for this graph edge handle.
-- `LGraphEdge:typeOf`: Returns whether this graph edge handle matches a supported type name.
+- `LGraphEdge:addAllowedType(t) -> nil`: Allows an item type to traverse this edge.
+- `LGraphEdge:clearAllowedTypes() -> nil`: Clears this edge's item type allow-list.
+- `LGraphEdge:getCapacity() -> integer`: Returns this edge's maximum concurrent item capacity.
+- `LGraphEdge:getCooldown() -> number`: Returns this edge's cooldown timer value.
+- `LGraphEdge:getFrom() -> LGraphNode`: Returns the source node for this edge.
+- `LGraphEdge:getItemsInTransit() -> LGraphItem[]`: Returns graph items currently traveling along this edge.
+- `LGraphEdge:getSpeedModifier() -> number`: Returns this edge's speed modifier.
+- `LGraphEdge:getThroughput() -> number`: Returns this edge's throughput value.
+- `LGraphEdge:getTo() -> LGraphNode`: Returns the destination node for this edge.
+- `LGraphEdge:getTravelTime() -> number`: Returns the travel time for items moving across this edge.
+- `LGraphEdge:getType() -> string`: Returns the edge type string used by routing and filters.
+- `LGraphEdge:getWeight() -> number`: Returns the pathfinding weight for this edge.
+- `LGraphEdge:isActive() -> boolean`: Returns whether this edge is active for routing and simulation.
+- `LGraphEdge:isBidirectional() -> boolean`: Returns whether this edge allows travel in both directions.
+- `LGraphEdge:isItemTypeAllowed(t) -> boolean`: Returns whether an item type may traverse this edge.
+- `LGraphEdge:isOnCooldown() -> boolean`: Returns whether this edge is currently on cooldown.
+- `LGraphEdge:removeAllowedType(t) -> boolean`: Removes an item type from this edge's allow-list.
+- `LGraphEdge:setActive(a) -> nil`: Enables or disables this edge for routing and simulation.
+- `LGraphEdge:setBidirectional(b) -> nil`: Sets whether this edge allows travel in both directions.
+- `LGraphEdge:setCapacity(c) -> nil`: Sets this edge's maximum concurrent item capacity.
+- `LGraphEdge:setCooldown(c) -> nil`: Sets this edge's cooldown timer value.
+- `LGraphEdge:setSpeedModifier(m) -> nil`: Sets this edge's speed modifier value.
+- `LGraphEdge:setThroughput(t) -> nil`: Sets this edge's throughput value.
+- `LGraphEdge:setTravelTime(t) -> nil`: Sets the travel time for items moving across this edge.
+- `LGraphEdge:setType(t) -> nil`: Sets the edge type string used by routing and filters.
+- `LGraphEdge:setWeight(w) -> nil`: Sets the pathfinding weight for this edge.
+- `LGraphEdge:type() -> string`: Returns the Lua-visible type name for this graph edge handle.
+- `LGraphEdge:typeOf(name) -> boolean`: Returns whether this graph edge handle matches a supported type name.
 
 #### LGraphFindPathForItemResult Type
 
@@ -307,18 +304,18 @@ In practice, `lurek.graph` provides one complete flow-network contract: define n
 
 ##### Methods
 
-- `LGraphItem:getDecayTime`: Returns the total decay lifetime configured for this item.
-- `LGraphItem:getPosition`: Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
-- `LGraphItem:getPriority`: Returns this item's routing or queue priority.
-- `LGraphItem:getRemainingLife`: Returns this item's remaining lifetime before decay.
-- `LGraphItem:getType`: Returns the item type string used by filters, conversions, supplies, and demands.
-- `LGraphItem:isAlive`: Returns whether this item is still alive in the graph simulation.
-- `LGraphItem:kill`: Marks this item as dead so graph processing can remove or ignore it.
-- `LGraphItem:setDecayTime`: Sets the total decay lifetime for this item.
-- `LGraphItem:setPriority`: Sets this item's routing or queue priority.
-- `LGraphItem:setType`: Changes the item type string used by graph routing and processing rules.
-- `LGraphItem:type`: Returns the Lua-visible type name for this graph item handle.
-- `LGraphItem:typeOf`: Returns whether this graph item handle matches a supported type name.
+- `LGraphItem:getDecayTime() -> number`: Returns the total decay lifetime configured for this item.
+- `LGraphItem:getPosition() -> LGraphNode`: Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
+- `LGraphItem:getPriority() -> integer`: Returns this item's routing or queue priority.
+- `LGraphItem:getRemainingLife() -> number`: Returns this item's remaining lifetime before decay.
+- `LGraphItem:getType() -> string`: Returns the item type string used by filters, conversions, supplies, and demands.
+- `LGraphItem:isAlive() -> boolean`: Returns whether this item is still alive in the graph simulation.
+- `LGraphItem:kill() -> nil`: Marks this item as dead so graph processing can remove or ignore it.
+- `LGraphItem:setDecayTime(t) -> nil`: Sets the total decay lifetime for this item.
+- `LGraphItem:setPriority(p) -> nil`: Sets this item's routing or queue priority.
+- `LGraphItem:setType(t) -> nil`: Changes the item type string used by graph routing and processing rules.
+- `LGraphItem:type() -> string`: Returns the Lua-visible type name for this graph item handle.
+- `LGraphItem:typeOf(name) -> boolean`: Returns whether this graph item handle matches a supported type name.
 
 #### LGraphNode Type
 
@@ -330,50 +327,50 @@ In practice, `lurek.graph` provides one complete flow-network contract: define n
 
 ##### Methods
 
-- `LGraphNode:addDemand`: Adds demand quantity and optional priority for an item type on this node.
-- `LGraphNode:addSupply`: Adds supply quantity for an item type on this node.
-- `LGraphNode:addTag`: Adds a tag to this node on this object.
-- `LGraphNode:clearAllConversions`: Removes every conversion rule from this node.
-- `LGraphNode:clearConversion`: Removes a conversion rule by input item type.
-- `LGraphNode:clearDemands`: Removes every demand entry from this node.
-- `LGraphNode:clearSupplies`: Removes every supply entry from this node.
-- `LGraphNode:clearTags`: Removes every tag from this graph node.
-- `LGraphNode:dequeue`: Removes and returns the next item from this node's explicit queue.
-- `LGraphNode:enqueue`: Adds an item handle to this node's explicit queue.
-- `LGraphNode:getCapacity`: Returns this node's item capacity.
-- `LGraphNode:getEdges`: Returns edge handles connected to this node in the requested direction.
-- `LGraphNode:getFlowMode`: Returns this node's flow mode name.
-- `LGraphNode:getItemCount`: Returns the number of items currently stored on this node.
-- `LGraphNode:getItems`: Returns item handles currently stored on this node.
-- `LGraphNode:getOverflowPolicy`: Returns this node's overflow policy name.
-- `LGraphNode:getProcessTime`: Returns the processing time used by this node's conversions.
-- `LGraphNode:getPullFilter`: Returns this node's optional pull item-type filter.
-- `LGraphNode:getPullRate`: Returns this node's pull rate value.
-- `LGraphNode:getPushFilter`: Returns this node's optional push item-type filter.
-- `LGraphNode:getPushRate`: Returns this node's push rate value.
-- `LGraphNode:getQueueCapacity`: Returns this node's queue capacity.
-- `LGraphNode:getQueueSize`: Returns the number of item ids currently queued at this node.
-- `LGraphNode:getTags`: Returns all tags assigned to this node.
-- `LGraphNode:getType`: Returns this node's type classification string.
-- `LGraphNode:hasTag`: Returns whether this node has a tag.
-- `LGraphNode:isActive`: Returns whether this node is active for graph simulation.
-- `LGraphNode:isFull`: Returns whether this node has reached its item capacity.
-- `LGraphNode:isQueueEnabled`: Returns whether this node's explicit queue is enabled.
-- `LGraphNode:removeDemand`: Removes demand entry for an item type from this node.
-- `LGraphNode:removeSupply`: Removes supply entry for an item type from this node.
-- `LGraphNode:removeTag`: Removes a tag from this node on this object.
-- `LGraphNode:setActive`: Enables or disables this node for graph simulation.
-- `LGraphNode:setCapacity`: Sets this node's item capacity value.
-- `LGraphNode:setConversion`: Configures an item conversion rule on this node.
-- `LGraphNode:setFlowMode`: Sets this node's flow mode from a mode name.
-- `LGraphNode:setOverflowPolicy`: Sets this node's overflow policy from a policy name.
-- `LGraphNode:setProcessTime`: Sets the processing time used by this node's conversions.
-- `LGraphNode:setPullFilter`: Sets or clears this node's pull item-type filter.
-- `LGraphNode:setPullRate`: Sets this node's pull rate for this object.
-- `LGraphNode:setPushFilter`: Sets or clears this node's push item-type filter.
-- `LGraphNode:setPushRate`: Sets this node's push rate for this object.
-- `LGraphNode:setQueueCapacity`: Sets this node's queue capacity value.
-- `LGraphNode:setQueueEnabled`: Enables or disables this node's explicit queue.
-- `LGraphNode:setType`: Sets this node's type string for this object.
-- `LGraphNode:type`: Returns the Lua-visible type name for this graph node handle.
-- `LGraphNode:typeOf`: Returns whether this graph node handle matches a supported type name.
+- `LGraphNode:addDemand(item_type, quantity, priority?) -> nil`: Adds demand quantity and optional priority for an item type on this node.
+- `LGraphNode:addSupply(item_type, quantity) -> nil`: Adds supply quantity for an item type on this node.
+- `LGraphNode:addTag(tag) -> nil`: Adds a tag to this node on this object.
+- `LGraphNode:clearAllConversions() -> nil`: Removes every conversion rule from this node.
+- `LGraphNode:clearConversion(in_type) -> boolean`: Removes a conversion rule by input item type.
+- `LGraphNode:clearDemands() -> nil`: Removes every demand entry from this node.
+- `LGraphNode:clearSupplies() -> nil`: Removes every supply entry from this node.
+- `LGraphNode:clearTags() -> nil`: Removes every tag from this graph node.
+- `LGraphNode:dequeue() -> LGraphItem`: Removes and returns the next item from this node's explicit queue.
+- `LGraphNode:enqueue(item_ud) -> boolean`: Adds an item handle to this node's explicit queue.
+- `LGraphNode:getCapacity() -> integer`: Returns this node's item capacity.
+- `LGraphNode:getEdges(dir?) -> LGraphEdge[]`: Returns edge handles connected to this node in the requested direction.
+- `LGraphNode:getFlowMode() -> string`: Returns this node's flow mode name.
+- `LGraphNode:getItemCount() -> integer`: Returns the number of items currently stored on this node.
+- `LGraphNode:getItems() -> LGraphItem[]`: Returns item handles currently stored on this node.
+- `LGraphNode:getOverflowPolicy() -> string`: Returns this node's overflow policy name.
+- `LGraphNode:getProcessTime() -> number`: Returns the processing time used by this node's conversions.
+- `LGraphNode:getPullFilter() -> string`: Returns this node's optional pull item-type filter.
+- `LGraphNode:getPullRate() -> number`: Returns this node's pull rate value.
+- `LGraphNode:getPushFilter() -> string`: Returns this node's optional push item-type filter.
+- `LGraphNode:getPushRate() -> number`: Returns this node's push rate value.
+- `LGraphNode:getQueueCapacity() -> integer`: Returns this node's queue capacity.
+- `LGraphNode:getQueueSize() -> integer`: Returns the number of item ids currently queued at this node.
+- `LGraphNode:getTags() -> string[]`: Returns all tags assigned to this node.
+- `LGraphNode:getType() -> string`: Returns this node's type classification string.
+- `LGraphNode:hasTag(tag) -> boolean`: Returns whether this node has a tag.
+- `LGraphNode:isActive() -> boolean`: Returns whether this node is active for graph simulation.
+- `LGraphNode:isFull() -> boolean`: Returns whether this node has reached its item capacity.
+- `LGraphNode:isQueueEnabled() -> boolean`: Returns whether this node's explicit queue is enabled.
+- `LGraphNode:removeDemand(item_type) -> boolean`: Removes demand entry for an item type from this node.
+- `LGraphNode:removeSupply(item_type) -> boolean`: Removes supply entry for an item type from this node.
+- `LGraphNode:removeTag(tag) -> boolean`: Removes a tag from this node on this object.
+- `LGraphNode:setActive(a) -> nil`: Enables or disables this node for graph simulation.
+- `LGraphNode:setCapacity(c) -> nil`: Sets this node's item capacity value.
+- `LGraphNode:setConversion(in_type, out_type, in_count?, out_count?) -> nil`: Configures an item conversion rule on this node.
+- `LGraphNode:setFlowMode(m) -> nil`: Sets this node's flow mode from a mode name.
+- `LGraphNode:setOverflowPolicy(p) -> nil`: Sets this node's overflow policy from a policy name.
+- `LGraphNode:setProcessTime(t) -> nil`: Sets the processing time used by this node's conversions.
+- `LGraphNode:setPullFilter(f?) -> nil`: Sets or clears this node's pull item-type filter.
+- `LGraphNode:setPullRate(r) -> nil`: Sets this node's pull rate for this object.
+- `LGraphNode:setPushFilter(f?) -> nil`: Sets or clears this node's push item-type filter.
+- `LGraphNode:setPushRate(r) -> nil`: Sets this node's push rate for this object.
+- `LGraphNode:setQueueCapacity(c) -> nil`: Sets this node's queue capacity value.
+- `LGraphNode:setQueueEnabled(e) -> nil`: Enables or disables this node's explicit queue.
+- `LGraphNode:setType(t) -> nil`: Sets this node's type string for this object.
+- `LGraphNode:type() -> string`: Returns the Lua-visible type name for this graph node handle.
+- `LGraphNode:typeOf(name) -> boolean`: Returns whether this graph node handle matches a supported type name.

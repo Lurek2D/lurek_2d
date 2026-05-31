@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `serial` module gives one unified data-conversion layer: read, write, detect, and validate multiple formats through a single Lua-facing API.
+- Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
+- Validates data against schemas.
 
 ## General Info
 
@@ -16,17 +17,11 @@
 
 ## Summary
 
-The `serial` module is the shared data bridge between Lua values and external file or payload formats. It gives one consistent workflow for decode, encode, and format routing across game runtime and tools.
+This module serves as the primary data-translation and validation subsystem for Lurek2D, providing a unified frontend to ingest and export data. The subsystem translates all text and binary inputs into a format-agnostic intermediate value tree. Through a single entry point, the codec automatically detects and parses payloads—including JSON, TOML, CSV, XML, INI, and MessagePack—isolating format quirks from the runtime.
 
-Its practical advantage is uniform handling of mixed formats. JSON, TOML, CSV, XML, INI, and MessagePack are exposed through one API family, so scripts keep one interaction style instead of many format-specific paths.
+The module provides dedicated adapters to bridge scripts and raw files. It handles CSV rows, sectioned INI settings, hierarchical XML nodes, TOML configs, MessagePack binary packets, and JSON streams. The system automatically distinguishes between sequence arrays and maps when bridging dynamic Lua tables to the intermediate tree, preserving layout structures without manual tagging.
 
-The module also improves ingestion reliability. It can detect format when content source is unknown, and it keeps conversion boundaries explicit between dynamic Lua data and serialized payload representations.
-
-Validation and defaults are first-class features. Schemas can reject malformed structures early, while default filling can complete partial inputs before gameplay systems consume them.
-
-For performance-sensitive workflows, compact binary transport is available through MessagePack without leaving the same module contract.
-
-In practice, `lurek.serial` is the engine data-gateway layer: normalize payloads, verify structure, and return predictable Lua-ready data for configs, saves, and external integrations.
+To guarantee data integrity, a declarative schema validation engine defines required types and constraints. Validation passes automatically merge schema-defined default values into missing fields. When validation fails, it reports precise paths pointing to the exact entry that broke the contract.
 
 ## Imports
 
@@ -113,21 +108,21 @@ In practice, `lurek.serial` is the engine data-gateway layer: normalize payloads
 
 ### Functions
 
-- `lurek.serial.applyDefaults`: Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
-- `lurek.serial.decode`: Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
-- `lurek.serial.decodeMsgPack`: Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
-- `lurek.serial.decodeXml`: Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
-- `lurek.serial.detectFormat`: Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
-- `lurek.serial.encode`: Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
-- `lurek.serial.encodeMsgPack`: Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
-- `lurek.serial.fromCsv`: Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
-- `lurek.serial.fromIni`: Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
-- `lurek.serial.fromJson`: Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
-- `lurek.serial.fromToml`: Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
-- `lurek.serial.toCsv`: Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
-- `lurek.serial.toJson`: Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
-- `lurek.serial.toToml`: Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
-- `lurek.serial.validate`: Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
+- `lurek.serial.applyDefaults(value, schema) -> table`: Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
+- `lurek.serial.decode(payload, format?, opts?) -> table`: Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
+- `lurek.serial.decodeMsgPack(bytes) -> table`: Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
+- `lurek.serial.decodeXml(text) -> table`: Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
+- `lurek.serial.detectFormat(text) -> string`: Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
+- `lurek.serial.encode(value, format, opts?) -> string`: Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
+- `lurek.serial.encodeMsgPack(value) -> string`: Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
+- `lurek.serial.fromCsv(text, delimiter?, hasHeaders?) -> table`: Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
+- `lurek.serial.fromIni(text) -> table`: Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
+- `lurek.serial.fromJson(text) -> table`: Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
+- `lurek.serial.fromToml(text) -> table`: Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
+- `lurek.serial.toCsv(value, delimiter?, hasHeaders?) -> string`: Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
+- `lurek.serial.toJson(value, pretty?) -> string`: Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
+- `lurek.serial.toToml(value) -> string`: Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
+- `lurek.serial.validate(value, schema) -> boolean`: Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
 
 ### Callbacks
 

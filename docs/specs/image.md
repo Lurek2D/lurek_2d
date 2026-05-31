@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `image` module is the engine's CPU image workspace for loading, editing, layering, packing, and exporting pixel data used by runtime and tools.
+- Manages CPU image buffers, compressed textures, layered stacks, palette remapping, and atlases.
+- Supports pixel-level effects, nine-slices, province grids, and graphical debug visualizations.
 
 ## General Info
 
@@ -16,23 +17,15 @@
 
 ## Summary
 
-The `image` module is the engine's CPU-side image workspace. It gives one stable model for mutable RGBA buffers and one consistent API for loading files, creating buffers, applying edits, and exporting results.
+This module represents the CPU-side image manipulation and asset preparation subsystem, supplying comprehensive tools to load, decode, and transform pixel buffers. It manages mutable raw pixel maps and compressed DDS texture streams, handling format tags, mip chains, and transparency models. This ensures that assets are validated and pre-processed in memory before being staged for GPU uploads, keeping all pixel mutations isolated without side effects.
 
-Its day-to-day value is workflow coverage. Teams can resize, crop, rotate, flip, draw primitives, blit regions, compare outputs, and serialize images without jumping between unrelated helper modules.
+For visual operations, the module offers a rich image editing toolkit. Developers can adjust properties like brightness, saturation, contrast, and gamma, or run kernel convolutions for blur and sharpening. It supports spatial edits like crop, rotate, flip, and resample using Lanczos or bilinear filters. Additionally, it provides sprite composition helpers including alpha-blended blitting, nine-slice stretching, and raster drawing for debug guides.
 
-Color and filter operations are integrated into the same surface. Brightness, contrast, saturation, gamma, tinting, thresholding, blurs, and kernel-based passes can be chained in predictable ways for runtime effects and tooling pipelines.
+To support advanced workflows, the system implements multi-layer image stacks and color remapping. Layered stacks manage ordering, visibility, and opacity, merging layers using alpha-over compositing. Color remapping maps source colors through lookup tables to support palette cycling and theme variations in real-time. Additionally, a shelf-based rectangle packing algorithm arranges independent sprites into tightly packed texture atlases.
 
-Layered composition support enables non-destructive image authoring at runtime. Layers can be stacked, reordered, hidden, renamed, and merged with explicit opacity and blend behavior, which is practical for editor features and generated UI assets.
+A unique capability is the province grid analyzer, which decodes geographic data from pixel grids. It parses image grids into distinct regions, extracting boundary coordinates, neighbor adjacencies, and vector polygons. These shapes can be simplified, serialized, or drawn as filled vector meshes. This bridges image-driven maps with logical game worlds, simplifying the translation of graphics into gameplay structures.
 
-Asset pipeline features are included, not externalized. Standard format decode and encode paths, compressed texture handling, and atlas packing allow content to move from source files to render-ready forms through one module boundary.
-
-The module also supports data-oriented uses of imagery. Region extraction, palette remapping, and visualization helpers let image buffers act as structured inputs for map workflows, diagnostics, and evidence output, not only as final on-screen pictures.
-
-Another practical strength is that the same buffer model works for both tiny UI assets and large content textures. Teams can use identical APIs for quick icon edits, atlas preprocessing, validation snapshots, and heavy batch transforms. This consistency lowers maintenance cost because utility code, tests, and runtime scripts do not need separate image stacks for different asset scales.
-
-It also improves review quality, because visual changes can be reproduced through the same deterministic operations in local runs, CI checks, and debugging tools.
-
-Because the behavior is deterministic and scriptable, the same operations can be reused for gameplay content, CI validation, and developer tooling. In practice, `lurek.image` provides a complete pixel-data contract: ingest, transform, compose, package, and export image state with predictable results.
+Finally, the module provides a robust suite of diagnostic visualization utilities. These tools render complex runtime datasets into clear debug images, including audio waveforms, camera follow paths, easing curves, noise generators, and UI mockups. By producing deterministic visual snapshots of internal engine states, they make debugging, automated regression testing, and design iteration loops highly efficient.
 
 ## Imports
 
@@ -243,18 +236,18 @@ Because the behavior is deterministic and scriptable, the same operations can be
 
 ### Functions
 
-- `lurek.image.fromScreen`: Returns a completed screen capture image or requests one for a future call.
-- `lurek.image.isCompressed`: Returns whether a GameFS image file begins with DDS compressed image magic bytes.
-- `lurek.image.loadImage`: Loads and decodes image data from GameFS.
-- `lurek.image.loadLayered`: Loads a serialized layered image stack from GameFS.
-- `lurek.image.newCompressedData`: Loads DDS compressed image data from GameFS.
-- `lurek.image.newImageData`: Creates empty image data from dimensions or decodes image data from a GameFS filename.
-- `lurek.image.newImageDataFromBytes`: Creates image data from raw RGBA bytes and explicit dimensions.
-- `lurek.image.newLayeredImage`: Creates a layered image stack with one or more blank layers.
-- `lurek.image.newPaletteLut`: Creates an empty palette lookup table.
-- `lurek.image.newProvinceGrid`: Loads a province id grid from an image file under the current game directory.
-- `lurek.image.saveImage`: Saves an image data object to a path under the current game directory.
-- `lurek.image.savePNG`: Encodes image data as PNG and writes it under the current game directory.
+- `lurek.image.fromScreen() -> LImageData|nil`: Returns a completed screen capture image or requests one for a future call.
+- `lurek.image.isCompressed(filename) -> boolean`: Returns whether a GameFS image file begins with DDS compressed image magic bytes.
+- `lurek.image.loadImage(filename) -> LImageData`: Loads and decodes image data from GameFS.
+- `lurek.image.loadLayered(filename) -> LLayeredImage`: Loads a serialized layered image stack from GameFS.
+- `lurek.image.newCompressedData(filename) -> LCompressedImageData`: Loads DDS compressed image data from GameFS.
+- `lurek.image.newImageData(width_or_filename, height?) -> LImageData`: Creates empty image data from dimensions or decodes image data from a GameFS filename.
+- `lurek.image.newImageDataFromBytes(w, h, bytes) -> LImageData`: Creates image data from raw RGBA bytes and explicit dimensions.
+- `lurek.image.newLayeredImage(width, height) -> LLayeredImage`: Creates a layered image stack with one or more blank layers.
+- `lurek.image.newPaletteLut() -> LPaletteLUT`: Creates an empty palette lookup table.
+- `lurek.image.newProvinceGrid(filename) -> LProvinceGrid`: Loads a province id grid from an image file under the current game directory.
+- `lurek.image.saveImage(img_ud, filename) -> nil`: Saves an image data object to a path under the current game directory.
+- `lurek.image.savePNG(img_ud, filename) -> nil`: Encodes image data as PNG and writes it under the current game directory.
 
 ### Callbacks
 
@@ -277,13 +270,13 @@ Because the behavior is deterministic and scriptable, the same operations can be
 
 ##### Methods
 
-- `LCompressedImageData:getDimensions`: Returns compressed image dimensions.
-- `LCompressedImageData:getFormat`: Returns the compressed image format name.
-- `LCompressedImageData:getHeight`: Returns compressed image height. This method is available to Lua scripts.
-- `LCompressedImageData:getMipmapCount`: Returns the number of mipmap levels in this compressed image.
-- `LCompressedImageData:getWidth`: Returns compressed image width. This method is available to Lua scripts.
-- `LCompressedImageData:type`: Returns the Lua-visible type name for this compressed image handle.
-- `LCompressedImageData:typeOf`: Returns whether this compressed image handle matches a supported type name.
+- `LCompressedImageData:getDimensions() -> integer`: Returns compressed image dimensions.
+- `LCompressedImageData:getFormat() -> string`: Returns the compressed image format name.
+- `LCompressedImageData:getHeight() -> integer`: Returns compressed image height. This method is available to Lua scripts.
+- `LCompressedImageData:getMipmapCount() -> integer`: Returns the number of mipmap levels in this compressed image.
+- `LCompressedImageData:getWidth() -> integer`: Returns compressed image width. This method is available to Lua scripts.
+- `LCompressedImageData:type() -> string`: Returns the Lua-visible type name for this compressed image handle.
+- `LCompressedImageData:typeOf(name) -> boolean`: Returns whether this compressed image handle matches a supported type name.
 
 #### LImageData Type
 
@@ -295,50 +288,50 @@ Because the behavior is deterministic and scriptable, the same operations can be
 
 ##### Methods
 
-- `LImageData:alphaMask`: Multiplies this image alpha channel by a factor in place.
-- `LImageData:applyPaletteLut`: Applies a palette lookup table to this image in place.
-- `LImageData:blit`: Copies a source image into this image at a destination coordinate.
-- `LImageData:blur`: Returns a blurred copy of this image.
-- `LImageData:brightness`: Applies a brightness factor to this image in place.
-- `LImageData:contrast`: Applies a contrast factor to this image in place.
-- `LImageData:convolve`: Applies a convolution kernel and returns the filtered image.
-- `LImageData:crop`: Returns a cropped image region. This method is available to Lua scripts.
-- `LImageData:diff`: Computes a difference metric against another image.
-- `LImageData:drawCircle`: Draws a filled circle into this image.
-- `LImageData:drawLine`: Draws a line into this image. This method is available to Lua scripts.
-- `LImageData:drawNineSlice`: Draws a nine-slice region from a source image into this image.
-- `LImageData:drawRect`: Draws a filled rectangle into this image.
-- `LImageData:encode`: Encodes image data in a supported format.
-- `LImageData:fill`: Fills the whole image with one RGBA color.
-- `LImageData:flipHorizontal`: Flips this image horizontally in place.
-- `LImageData:flipVertical`: Flips this image vertically in place.
-- `LImageData:gamma`: Applies gamma correction to this image in place.
-- `LImageData:getDimensions`: Returns image dimensions. This method is available to Lua scripts.
-- `LImageData:getHeight`: Returns image height. This method is available to Lua scripts.
-- `LImageData:getPixel`: Returns RGBA channels at a pixel coordinate.
-- `LImageData:getRawBytes`: Returns raw image bytes as a Lua string.
-- `LImageData:getRegion`: Returns an image region when the requested rectangle is inside bounds.
-- `LImageData:getString`: Returns raw image bytes as a Lua string.
-- `LImageData:getWidth`: Returns image width. This method is available to Lua scripts.
-- `LImageData:grayscale`: Converts this image to grayscale in place.
-- `LImageData:invert`: Inverts image color channels in place.
-- `LImageData:mapPixel`: Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
-- `LImageData:mapPixels`: Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
-- `LImageData:noise`: Adds noise to this image in place. This method is available to Lua scripts.
-- `LImageData:paste`: Pastes a source image into this image at unsigned destination coordinates.
-- `LImageData:posterize`: Reduces image colors to a fixed number of levels in place.
-- `LImageData:resize`: Returns a resized image using an optional named filter.
-- `LImageData:resizeNearest`: Returns a resized image using nearest-neighbor sampling.
-- `LImageData:rotate90cw`: Returns a new image rotated ninety degrees clockwise.
-- `LImageData:saturation`: Applies a saturation factor to this image in place.
-- `LImageData:sepia`: Applies a sepia filter to this image in place.
-- `LImageData:setPixel`: Sets RGBA channels at a pixel coordinate.
-- `LImageData:setRawData`: Replaces the image byte buffer with raw bytes.
-- `LImageData:sharpen`: Returns a sharpened copy of this image.
-- `LImageData:threshold`: Applies a threshold filter to this image in place.
-- `LImageData:tint`: Blends this image toward a tint color in place.
-- `LImageData:type`: Returns the Lua-visible type name for this image data handle.
-- `LImageData:typeOf`: Returns whether this image data handle matches the `LImageData` type name.
+- `LImageData:alphaMask(factor) -> nil`: Multiplies this image alpha channel by a factor in place.
+- `LImageData:applyPaletteLut(lut_ud) -> nil`: Applies a palette lookup table to this image in place.
+- `LImageData:blit(src_ud, dst_x, dst_y) -> nil`: Copies a source image into this image at a destination coordinate.
+- `LImageData:blur(radius) -> LImageData`: Returns a blurred copy of this image.
+- `LImageData:brightness(factor) -> nil`: Applies a brightness factor to this image in place.
+- `LImageData:contrast(factor) -> nil`: Applies a contrast factor to this image in place.
+- `LImageData:convolve(kernel_t, ksize) -> LImageData`: Applies a convolution kernel and returns the filtered image.
+- `LImageData:crop(x, y, w, h) -> LImageData`: Returns a cropped image region. This method is available to Lua scripts.
+- `LImageData:diff(other_ud) -> number`: Computes a difference metric against another image.
+- `LImageData:drawCircle(cx, cy, radius, r, g, b, a) -> nil`: Draws a filled circle into this image.
+- `LImageData:drawLine(x0, y0, x1, y1, r, g, b, a) -> nil`: Draws a line into this image. This method is available to Lua scripts.
+- `LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom) -> nil`: Draws a nine-slice region from a source image into this image.
+- `LImageData:drawRect(x, y, w, h, r, g, b, a) -> nil`: Draws a filled rectangle into this image.
+- `LImageData:encode(format) -> string`: Encodes image data in a supported format.
+- `LImageData:fill(r, g, b, a) -> nil`: Fills the whole image with one RGBA color.
+- `LImageData:flipHorizontal() -> nil`: Flips this image horizontally in place.
+- `LImageData:flipVertical() -> nil`: Flips this image vertically in place.
+- `LImageData:gamma(gamma) -> nil`: Applies gamma correction to this image in place.
+- `LImageData:getDimensions() -> integer`: Returns image dimensions. This method is available to Lua scripts.
+- `LImageData:getHeight() -> integer`: Returns image height. This method is available to Lua scripts.
+- `LImageData:getPixel(x, y) -> integer`: Returns RGBA channels at a pixel coordinate.
+- `LImageData:getRawBytes() -> string`: Returns raw image bytes as a Lua string.
+- `LImageData:getRegion(x, y, w, h) -> LImageData|nil`: Returns an image region when the requested rectangle is inside bounds.
+- `LImageData:getString() -> string`: Returns raw image bytes as a Lua string.
+- `LImageData:getWidth() -> integer`: Returns image width. This method is available to Lua scripts.
+- `LImageData:grayscale() -> nil`: Converts this image to grayscale in place.
+- `LImageData:invert() -> nil`: Inverts image color channels in place.
+- `LImageData:mapPixel(func) -> nil`: Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+- `LImageData:mapPixels(func) -> nil`: Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+- `LImageData:noise(amount) -> nil`: Adds noise to this image in place. This method is available to Lua scripts.
+- `LImageData:paste(src_ud, dx, dy) -> nil`: Pastes a source image into this image at unsigned destination coordinates.
+- `LImageData:posterize(levels) -> nil`: Reduces image colors to a fixed number of levels in place.
+- `LImageData:resize(width, height, filter) -> LImageData|nil`: Returns a resized image using an optional named filter.
+- `LImageData:resizeNearest(new_w, new_h) -> LImageData`: Returns a resized image using nearest-neighbor sampling.
+- `LImageData:rotate90cw() -> LImageData`: Returns a new image rotated ninety degrees clockwise.
+- `LImageData:saturation(factor) -> nil`: Applies a saturation factor to this image in place.
+- `LImageData:sepia() -> nil`: Applies a sepia filter to this image in place.
+- `LImageData:setPixel(x, y, r, g, b, a) -> nil`: Sets RGBA channels at a pixel coordinate.
+- `LImageData:setRawData(bytes) -> nil`: Replaces the image byte buffer with raw bytes.
+- `LImageData:sharpen() -> LImageData`: Returns a sharpened copy of this image.
+- `LImageData:threshold(value) -> nil`: Applies a threshold filter to this image in place.
+- `LImageData:tint(tr, tg, tb, factor) -> nil`: Blends this image toward a tint color in place.
+- `LImageData:type() -> string`: Returns the Lua-visible type name for this image data handle.
+- `LImageData:typeOf(name) -> boolean`: Returns whether this image data handle matches the `LImageData` type name.
 
 #### LLayeredImage Type
 
@@ -350,25 +343,25 @@ Because the behavior is deterministic and scriptable, the same operations can be
 
 ##### Methods
 
-- `LLayeredImage:addLayer`: Adds a blank layer with an optional name.
-- `LLayeredImage:getHeight`: Returns the layered image height. This method is available to Lua scripts.
-- `LLayeredImage:getLayer`: Returns image data for a layer by one-based index.
-- `LLayeredImage:getName`: Returns a layer name by one-based index.
-- `LLayeredImage:getOpacity`: Returns a layer opacity by one-based index.
-- `LLayeredImage:getWidth`: Returns the layered image width. This method is available to Lua scripts.
-- `LLayeredImage:isVisible`: Returns layer visibility by one-based index.
-- `LLayeredImage:layerCount`: Returns the number of layers in the stack.
-- `LLayeredImage:merge`: Merges visible layers into a single image data object.
-- `LLayeredImage:moveLayer`: Moves a layer from one one-based index to another.
-- `LLayeredImage:removeLayer`: Removes a layer by one-based index.
-- `LLayeredImage:save`: Saves the layered image stack to a file.
-- `LLayeredImage:setLayer`: Replaces a layer's image data by one-based index.
-- `LLayeredImage:setName`: Sets a layer name by one-based index.
-- `LLayeredImage:setOpacity`: Sets a layer opacity by one-based index.
-- `LLayeredImage:setVisible`: Sets layer visibility by one-based index.
-- `LLayeredImage:swapLayers`: Swaps two layers by one-based indices.
-- `LLayeredImage:type`: Returns the Lua-visible type name for this layered image handle.
-- `LLayeredImage:typeOf`: Returns whether this layered image handle matches a supported type name.
+- `LLayeredImage:addLayer(name?) -> integer`: Adds a blank layer with an optional name.
+- `LLayeredImage:getHeight() -> integer`: Returns the layered image height. This method is available to Lua scripts.
+- `LLayeredImage:getLayer(index) -> LImageData`: Returns image data for a layer by one-based index.
+- `LLayeredImage:getName(index) -> string`: Returns a layer name by one-based index.
+- `LLayeredImage:getOpacity(index) -> number`: Returns a layer opacity by one-based index.
+- `LLayeredImage:getWidth() -> integer`: Returns the layered image width. This method is available to Lua scripts.
+- `LLayeredImage:isVisible(index) -> boolean`: Returns layer visibility by one-based index.
+- `LLayeredImage:layerCount() -> integer`: Returns the number of layers in the stack.
+- `LLayeredImage:merge() -> LImageData`: Merges visible layers into a single image data object.
+- `LLayeredImage:moveLayer(from_idx, to_idx) -> boolean`: Moves a layer from one one-based index to another.
+- `LLayeredImage:removeLayer(index) -> boolean`: Removes a layer by one-based index.
+- `LLayeredImage:save(path) -> nil`: Saves the layered image stack to a file.
+- `LLayeredImage:setLayer(index, img) -> boolean`: Replaces a layer's image data by one-based index.
+- `LLayeredImage:setName(index, name) -> boolean`: Sets a layer name by one-based index.
+- `LLayeredImage:setOpacity(index, opacity) -> boolean`: Sets a layer opacity by one-based index.
+- `LLayeredImage:setVisible(index, visible) -> boolean`: Sets layer visibility by one-based index.
+- `LLayeredImage:swapLayers(a, b) -> boolean`: Swaps two layers by one-based indices.
+- `LLayeredImage:type() -> string`: Returns the Lua-visible type name for this layered image handle.
+- `LLayeredImage:typeOf(name) -> boolean`: Returns whether this layered image handle matches a supported type name.
 
 #### LPaletteLUT Type
 
@@ -380,12 +373,12 @@ Because the behavior is deterministic and scriptable, the same operations can be
 
 ##### Methods
 
-- `LPaletteLUT:clear`: Removes every color mapping from this palette lookup table.
-- `LPaletteLUT:cycle`: Cycles palette mappings by an offset.
-- `LPaletteLUT:getColorCount`: Returns the number of color mappings in this palette lookup table.
-- `LPaletteLUT:setColor`: Adds a color mapping from source RGBA channels to destination RGBA channels.
-- `LPaletteLUT:type`: Returns the Lua-visible type name for this palette lookup table handle.
-- `LPaletteLUT:typeOf`: Returns whether this palette lookup table handle matches a supported type name.
+- `LPaletteLUT:clear() -> nil`: Removes every color mapping from this palette lookup table.
+- `LPaletteLUT:cycle(offset) -> nil`: Cycles palette mappings by an offset.
+- `LPaletteLUT:getColorCount() -> integer`: Returns the number of color mappings in this palette lookup table.
+- `LPaletteLUT:setColor(fr, fg, fb, fa, tr, tg, tb, ta) -> nil`: Adds a color mapping from source RGBA channels to destination RGBA channels.
+- `LPaletteLUT:type() -> string`: Returns the Lua-visible type name for this palette lookup table handle.
+- `LPaletteLUT:typeOf(name) -> boolean`: Returns whether this palette lookup table handle matches a supported type name.
 
 #### LProvinceGrid Type
 
@@ -397,20 +390,20 @@ Because the behavior is deterministic and scriptable, the same operations can be
 
 ##### Methods
 
-- `LProvinceGrid:adjacencies`: Returns province adjacency records and shared border pixel counts.
-- `LProvinceGrid:borderSegments`: Returns border line segments between neighboring provinces.
-- `LProvinceGrid:deserializeShapeData`: Decodes serialized province shape data into span and segment tables.
-- `LProvinceGrid:drawShapes`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
-- `LProvinceGrid:getAt`: Returns the province id stored at grid coordinates.
-- `LProvinceGrid:getHeight`: Returns the province grid height. This method is available to Lua scripts.
-- `LProvinceGrid:getPolygons`: Returns polygon rings for every province.
-- `LProvinceGrid:getPolygonsSimplified`: Returns simplified polygon rings for every province.
-- `LProvinceGrid:getWidth`: Returns the province grid width. This method is available to Lua scripts.
-- `LProvinceGrid:provinceCount`: Returns the number of distinct provinces in the grid.
-- `LProvinceGrid:provinceSpans`: Returns horizontal province spans by row.
-- `LProvinceGrid:serializeShapeData`: Serializes province span and border shape data into a binary Lua string.
-- `LProvinceGrid:type`: Returns the Lua-visible type name for this province grid handle.
-- `LProvinceGrid:typeOf`: Returns whether this province grid handle matches a supported type name.
+- `LProvinceGrid:adjacencies() -> table`: Returns province adjacency records and shared border pixel counts.
+- `LProvinceGrid:borderSegments() -> table`: Returns border line segments between neighboring provinces.
+- `LProvinceGrid:deserializeShapeData(bytes) -> LuaValue`: Decodes serialized province shape data into span and segment tables.
+- `LProvinceGrid:drawShapes(x?, y?, w?, h?) -> integer`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+- `LProvinceGrid:getAt(x, y) -> integer`: Returns the province id stored at grid coordinates.
+- `LProvinceGrid:getHeight() -> integer`: Returns the province grid height. This method is available to Lua scripts.
+- `LProvinceGrid:getPolygons() -> table`: Returns polygon rings for every province.
+- `LProvinceGrid:getPolygonsSimplified() -> table`: Returns simplified polygon rings for every province.
+- `LProvinceGrid:getWidth() -> integer`: Returns the province grid width. This method is available to Lua scripts.
+- `LProvinceGrid:provinceCount() -> integer`: Returns the number of distinct provinces in the grid.
+- `LProvinceGrid:provinceSpans() -> table`: Returns horizontal province spans by row.
+- `LProvinceGrid:serializeShapeData() -> string`: Serializes province span and border shape data into a binary Lua string.
+- `LProvinceGrid:type() -> string`: Returns the Lua-visible type name for this province grid handle.
+- `LProvinceGrid:typeOf(name) -> boolean`: Returns whether this province grid handle matches a supported type name.
 
 #### LProvinceGridAdjacenciesResult Type
 

@@ -2,7 +2,10 @@
 
 ## TL;DR
 
-- The `province` module is the engine runtime for irregular region maps, including registry state, topology, styles, visibility, and map rendering support.
+- Simulates region maps decoded from color-coded PNG cartographic assets.
+- Imports capitals, angled labels, and terrain metadata, compiling adjacencies.
+- Supports horizontal span runs, binary geometry caches, and map modes.
+- Calculates depth distance fields, strategic routing, and revision logs.
 
 ## General Info
 
@@ -16,28 +19,19 @@
 
 ## Summary
 
-The `province` module is the runtime map system for irregular region-based worlds. It manages province identity, adjacency, ownership-facing metadata, and visual state in one authoritative registry designed for strategic and map-centric gameplay.
+This module provides a province-based cartography and region simulation subsystem that manages irregular region maps as semantic gameplay entities. Unlike cell-based tilemaps, provinces represent cohesive territories parsed from color-coded map graphics. The system maintains an authoritative registry that decodes raster pixels into stable province identities, establishing an adjacency network that acts as the topological foundation for map-wide routing and borders.
 
-Its core value is treating provinces as semantic regions rather than tile cells. Registry data includes topology, per-province properties, labels, capitals, style choices, and visibility/fog-like state, so gameplay and UI can query one consistent source of truth.
+To ingest custom worlds, the module implements an asset import pipeline. It parses color-coded PNG files, sanitizes capital markers, and extracts label baselines. A neighbor-searching algorithm resolves capital and label hint pixels to surrounding provinces by checking local context, bridging the gap between graphical assets and active game registries. Extracted regions are mapped to CSV color tables and TOML definitions.
 
-Rendering is driven by precomputed geometry and map-mode policy. Region spans, borders, and style records are prepared for efficient draw and GPU upload paths, which keeps large political maps practical without per-frame full raster scans.
+To keep large strategic maps running efficiently, the engine optimizes and caches region geometry. It decodes irregular shapes into horizontal cell runs that are highly efficient for rendering and bounds testing. Traced border contours are simplified to remove staircase pixel artifacts, and the resulting structures are stored in a binary geometry cache, letting imported maps load almost instantly without expensive pixel rescans.
 
-Border behavior supports pair-specific semantics and styling, allowing relationships between neighboring provinces to be encoded visually. This supports strategic overlays such as contested borders, alliance edges, or coast/land distinctions.
+Visual presentation is driven by extensible styles and map modes. The rendering system can draw political overlays, terrain fills, and visibility layers over the same province geometry. Each province tracks styling parameters, including political colors, terrain indices, and fog-of-war bytes. Specific borders between neighboring provinces can be customized with distinct thicknesses, colors, and relationship styles.
 
-Import and conversion workflows turn color-coded assets and metadata into live province runtime state. Marker cleanup, topology extraction, and geometry preparation are integrated so external map files become immediately usable by gameplay systems.
+Spatial reasoning is supported through precomputed depth and positioning metrics. The system generates multi-source inward-depth distance fields to measure how far any coordinate lies from its regional boundary, providing visual shading signals. Centroid calculators find actual geometric centers for label placement, and transform maps allow interactive mouse picks, anchors, and zooms.
 
-Incremental revision and change-stream support make the module suitable for reactive UI and sync-oriented workflows. In practice, `lurek.province` provides a complete province-map contract: ingest regions, manage state, render modes, and query topology through a single API surface.
+Strategic pathfinding is handled by routing tools that operate over the adjacency graph. The module provides unweighted neighbor search and cost-aware Dijkstra algorithms, allowing agents to plot optimal paths across strategic regions. The routing engine checks map connectivity, detects isolated province clusters, and returns topological groupings without cluttering the central registry.
 
-This makes the module practical as both a game-state layer and a presentation layer. Systems that reason about control, diplomacy, route planning, or region status can rely on the same province model that the renderer and UI use, which reduces duplication and mismatch between logic and map visuals.
-
-It also gives one stable place to evolve cartographic features over time without splitting map truth across unrelated subsystems.
-
-### Visibility Rendering Contract
-
-- `visibility_state = 0`: hidden. The renderer skips province fill, border, capital marker, and label.
-- `visibility_state = 1`: discovered. The renderer emits only a gray fill (no border, capital, or label).
-- `visibility_state >= 2`: fully visible. The renderer emits normal map-mode fill and full details.
-- Border segments render only when both adjacent provinces are fully visible (`>= 2`).
+Finally, the registry implements change-tracking mechanics. Monotonic revision counters increment on every styling, visibility, or political update, generating detailed chronological change logs. This incrementally observable database lets Lua scripts and external shaders sync state efficiently, driving reactive user interfaces and tactical map updates without expensive map diff calculations.
 
 ## Imports
 
@@ -201,21 +195,21 @@ It also gives one stable place to evolve cartographic features over time without
 
 ### Functions
 
-- `lurek.province.clearProperties`: Removes all properties, attributes, and flags for a province.
-- `lurek.province.exists`: Checks whether a province registry with the given name exists.
-- `lurek.province.get`: Retrieves an existing province registry by name. Returns nil if no registry with that name has been created.
-- `lurek.province.getActive`: Returns the currently active province registry, or nil if none is set.
-- `lurek.province.getAttr`: Gets a string attribute from a province. Returns nil if not set.
-- `lurek.province.getProperty`: Gets a numeric property from a province. Returns nil if not set.
-- `lurek.province.hasFlag`: Checks whether a flag bit is set on a province.
-- `lurek.province.newFromPng`: Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.
-- `lurek.province.remove`: Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.
-- `lurek.province.sanitizeMarkedPng`: Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.
-- `lurek.province.setActive`: Sets the named registry as the active province registry. Returns false if no registry with that name exists.
-- `lurek.province.setAttr`: Sets a string attribute on a province.
-- `lurek.province.setFlag`: Sets a single flag bit (0â€“63) on a province.
-- `lurek.province.setProperty`: Sets a numeric property on a province. Game logic defines the semantics of each key.
-- `lurek.province.zoomCameraAt`: Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.
+- `lurek.province.clearProperties(id) -> nil`: Removes all properties, attributes, and flags for a province.
+- `lurek.province.exists(name) -> boolean`: Checks whether a province registry with the given name exists.
+- `lurek.province.get(name) -> LProvinceRegistry`: Retrieves an existing province registry by name. Returns nil if no registry with that name has been created.
+- `lurek.province.getActive() -> LProvinceRegistry`: Returns the currently active province registry, or nil if none is set.
+- `lurek.province.getAttr(id, key) -> string`: Gets a string attribute from a province. Returns nil if not set.
+- `lurek.province.getProperty(id, key) -> number`: Gets a numeric property from a province. Returns nil if not set.
+- `lurek.province.hasFlag(id, bit) -> boolean`: Checks whether a flag bit is set on a province.
+- `lurek.province.newFromPng(name, png_path) -> LProvinceRegistry`: Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.
+- `lurek.province.remove(name) -> boolean`: Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.
+- `lurek.province.sanitizeMarkedPng(input_png, output_png, opts?) -> table`: Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.
+- `lurek.province.setActive(name) -> boolean`: Sets the named registry as the active province registry. Returns false if no registry with that name exists.
+- `lurek.province.setAttr(id, key, value) -> nil`: Sets a string attribute on a province.
+- `lurek.province.setFlag(id, bit, value) -> nil`: Sets a single flag bit (0â€“63) on a province.
+- `lurek.province.setProperty(id, key, value) -> nil`: Sets a numeric property on a province. Game logic defines the semantics of each key.
+- `lurek.province.zoomCameraAt(anchor_x, anchor_y, cam_x, cam_y, old_zoom, new_zoom) -> number, number`: Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.
 
 ### Callbacks
 
@@ -238,51 +232,51 @@ It also gives one stable place to evolve cartographic features over time without
 
 ##### Methods
 
-- `LProvinceRegistry:adjacencies`: Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
-- `LProvinceRegistry:borderSegments`: Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.
-- `LProvinceRegistry:findIsolatedProvinces`: Returns provinces that have no adjacent province with the same owner attribute.
-- `LProvinceRegistry:findRoute`: Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
-- `LProvinceRegistry:findRoutes`: Finds routes for a batch of `{from, to}` pairs.
-- `LProvinceRegistry:fitCamera`: Computes camera position and zoom so the entire province map fits within the given screen dimensions.
-- `LProvinceRegistry:getAt`: Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
-- `LProvinceRegistry:getBorderClass`: Backward-compatible alias for getBorderType. Returns the border type ID.
-- `LProvinceRegistry:getBorderPairStyle`: Returns the style override for a specific adjacency pair, or nil when unset.
-- `LProvinceRegistry:getBorderType`: Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
-- `LProvinceRegistry:getChangesSince`: Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
-- `LProvinceRegistry:getConnectedComponents`: Returns connected components in the province adjacency graph.
-- `LProvinceRegistry:getHeight`: Returns the height of the province grid in cells (pixels of the source PNG).
-- `LProvinceRegistry:getMapMode`: Returns the name of the currently active map mode.
-- `LProvinceRegistry:getName`: Returns the string name used to identify this registry in the province system.
-- `LProvinceRegistry:getNeighbors`: Returns a table of province IDs that share a border with the given province.
-- `LProvinceRegistry:getProvince`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
-- `LProvinceRegistry:getRevision`: Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
-- `LProvinceRegistry:getWidth`: Returns the width of the province grid in cells (pixels of the source PNG).
-- `LProvinceRegistry:importMetadataFromFiles`: Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
-- `LProvinceRegistry:isConnected`: Returns true when there is at least one route between two provinces.
-- `LProvinceRegistry:provinceCount`: Returns the total number of distinct provinces in this registry (excluding ID 0).
-- `LProvinceRegistry:provinceIds`: Returns a sequential table of all province IDs in this registry.
-- `LProvinceRegistry:provinceSpans`: Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
-- `LProvinceRegistry:registerBorderType`: Registers a border type config by ID. Defines visual appearance for borders of this type.
-- `LProvinceRegistry:registerMapMode`: Registers a named map mode with display configuration. Overwrites if name exists.
-- `LProvinceRegistry:render`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
-- `LProvinceRegistry:screenToMap`: Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
-- `LProvinceRegistry:screenToProvince`: Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
-- `LProvinceRegistry:setAttr`: Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
-- `LProvinceRegistry:setBorderClass`: Backward-compatible alias for setBorderType. Sets the border type ID.
-- `LProvinceRegistry:setBorderPairStyle`: Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
-- `LProvinceRegistry:setBorderStyle`: Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
-- `LProvinceRegistry:setBorderType`: Sets the border type ID between two adjacent provinces. Register types first with registerBorderType.
-- `LProvinceRegistry:setCapital`: Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.
-- `LProvinceRegistry:setFogState`: Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
-- `LProvinceRegistry:setLabelLine`: Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.
-- `LProvinceRegistry:setLabelText`: Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
-- `LProvinceRegistry:setMapMode`: Switches the active map mode to a previously registered mode name.
-- `LProvinceRegistry:setPoliticalColor`: Sets the political map color for a province. Used in political map mode rendering and change tracking.
-- `LProvinceRegistry:setTerrainType`: Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
-- `LProvinceRegistry:setVisibilityState`: Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
-- `LProvinceRegistry:totalAttrForOwner`: Sums a numeric attribute for all provinces with matching owner value.
-- `LProvinceRegistry:type`: Returns the type name string for this userdata object.
-- `LProvinceRegistry:typeOf`: Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
+- `LProvinceRegistry:adjacencies() -> table`: Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
+- `LProvinceRegistry:borderSegments() -> table`: Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.
+- `LProvinceRegistry:findIsolatedProvinces(owner_attr) -> integer[]`: Returns provinces that have no adjacent province with the same owner attribute.
+- `LProvinceRegistry:findRoute(from_id, to_id, cost_fn?) -> table`: Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
+- `LProvinceRegistry:findRoutes(pairs, cost_fn?) -> table`: Finds routes for a batch of `{from, to}` pairs.
+- `LProvinceRegistry:fitCamera(screen_w, screen_h, pixel_size?) -> number, number, number`: Computes camera position and zoom so the entire province map fits within the given screen dimensions.
+- `LProvinceRegistry:getAt(x, y) -> integer`: Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
+- `LProvinceRegistry:getBorderClass(a, b) -> integer`: Backward-compatible alias for getBorderType. Returns the border type ID.
+- `LProvinceRegistry:getBorderPairStyle(a, b) -> table`: Returns the style override for a specific adjacency pair, or nil when unset.
+- `LProvinceRegistry:getBorderType(a, b) -> integer`: Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
+- `LProvinceRegistry:getChangesSince(revision) -> table`: Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
+- `LProvinceRegistry:getConnectedComponents() -> table`: Returns connected components in the province adjacency graph.
+- `LProvinceRegistry:getHeight() -> integer`: Returns the height of the province grid in cells (pixels of the source PNG).
+- `LProvinceRegistry:getMapMode() -> string`: Returns the name of the currently active map mode.
+- `LProvinceRegistry:getName() -> string`: Returns the string name used to identify this registry in the province system.
+- `LProvinceRegistry:getNeighbors(id) -> integer[]`: Returns a table of province IDs that share a border with the given province.
+- `LProvinceRegistry:getProvince(id) -> table`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+- `LProvinceRegistry:getRevision() -> integer`: Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
+- `LProvinceRegistry:getWidth() -> integer`: Returns the width of the province grid in cells (pixels of the source PNG).
+- `LProvinceRegistry:importMetadataFromFiles(opts) -> table`: Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
+- `LProvinceRegistry:isConnected(from_id, to_id) -> boolean`: Returns true when there is at least one route between two provinces.
+- `LProvinceRegistry:provinceCount() -> integer`: Returns the total number of distinct provinces in this registry (excluding ID 0).
+- `LProvinceRegistry:provinceIds() -> integer[]`: Returns a sequential table of all province IDs in this registry.
+- `LProvinceRegistry:provinceSpans() -> table`: Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
+- `LProvinceRegistry:registerBorderType(type_id, config) -> nil`: Registers a border type config by ID. Defines visual appearance for borders of this type.
+- `LProvinceRegistry:registerMapMode(name, config) -> nil`: Registers a named map mode with display configuration. Overwrites if name exists.
+- `LProvinceRegistry:render(opts?) -> nil`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
+- `LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> number, number`: Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
+- `LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> integer`: Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
+- `LProvinceRegistry:setAttr(id, key, value) -> boolean`: Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
+- `LProvinceRegistry:setBorderClass(a, b, border_type) -> nil`: Backward-compatible alias for setBorderType. Sets the border type ID.
+- `LProvinceRegistry:setBorderPairStyle(a, b, style) -> boolean`: Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
+- `LProvinceRegistry:setBorderStyle(id, border_style) -> boolean`: Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
+- `LProvinceRegistry:setBorderType(a, b, border_type) -> nil`: Sets the border type ID between two adjacent provinces. Register types first with registerBorderType.
+- `LProvinceRegistry:setCapital(id, x, y) -> boolean`: Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.
+- `LProvinceRegistry:setFogState(id, fog_state) -> boolean`: Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.
+- `LProvinceRegistry:setLabelLine(id, ax, ay, bx, by) -> boolean`: Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.
+- `LProvinceRegistry:setLabelText(id, text) -> boolean`: Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
+- `LProvinceRegistry:setMapMode(name) -> boolean`: Switches the active map mode to a previously registered mode name.
+- `LProvinceRegistry:setPoliticalColor(id, r, g, b, a?) -> boolean`: Sets the political map color for a province. Used in political map mode rendering and change tracking.
+- `LProvinceRegistry:setTerrainType(id, terrain_type) -> boolean`: Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
+- `LProvinceRegistry:setVisibilityState(id, visibility_state) -> boolean`: Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.
+- `LProvinceRegistry:totalAttrForOwner(owner_attr, owner_val, sum_attr) -> number`: Sums a numeric attribute for all provinces with matching owner value.
+- `LProvinceRegistry:type() -> string`: Returns the type name string for this userdata object.
+- `LProvinceRegistry:typeOf(name) -> boolean`: Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
 
 #### LProvinceRegistryAdjacenciesResult Type
 

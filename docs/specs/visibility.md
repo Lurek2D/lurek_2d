@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `visibility` module is a geometry-agnostic fog-of-war, discovery state, and line-of-sight system attachable to any region-based map (tilemap, province, globe, or custom grids).
+- Geometry-agnostic fog-of-war and shadowcasting field-of-view simulation.
 
 ## General Info
 
@@ -16,13 +16,9 @@
 
 ## Summary
 
-The `visibility` module provides a universal fog-of-war and discovery layer that can be attached to any region-based map without coupling to a specific map module. The foundational abstraction is the `AdjacencyProvider` trait: callers implement a single `neighbors(region_id)` method to describe neighbor relationships. Grid maps inject 4- or 8-directional adjacency; province maps use their border index; custom systems supply arbitrary neighbor lists. This injection point is the only geometry dependency.
+This module delivers a highly flexible, geometry-agnostic visibility and fog-of-war system that integrates seamlessly with varied world models. By decoupling layout metrics from visibility calculations through a generic adjacency interface, the system can track exploration across tile grids, hex maps, province networks, and global spheres. It tracks hidden, discovered, and visible statuses separately across factions.
 
-Per-region state is stored in the `VisibilityGrid`, a compact `(faction_id, region_id)` map tracking three built-in `VisibilityState` levels: `Hidden` (never seen), `Discovered` (seen at least once, currently out of range), and `Visible` (currently in sight range). Custom intermediate levels can be defined for richer game-state models. Multiple factions are supported simultaneously; the `PlayerOwnership` tracker groups allies so that shared-vision alliances propagate reveals automatically.
-
-Discovery semantics are controlled per region via `VisibilityCost`: a movement-point cost gates reveal progression, and a required-flag mask (`VisibilityFlags`, a `u32` bitfield with 24 game-defined bits) can block reveal until the player possesses a specific capability. When regions transition between states, the grid queues `VisibilityEvent` entries (`RegionRevealed`, `RegionDiscovered`, `RegionHidden`) that are drained to Lua each tick — providing clean hooks for map-reveal animations, narrator cues, and scripted responses.
-
-Rendering integration is handled via `FogRenderConfig`, which supplies per-state fog opacity values and RGBA tint colors composited as per-tile multiply in the world render pass. The full grid state serializes compactly (2 bits per region per faction) into the save file. The `lurek.visibility.*` Lua API exposes grid construction, reveal/hide calls, state queries, event draining, cost and flag mutation, faction grouping, and fog configuration.
+For tactical environments, the module features a recursive shadowcasting engine that calculates field-of-view masks with custom obstacle predicates. It supports exploration-sharing alliances, customizable discovery costs, and compact state serialization for game saves. When visibility updates occur, the system dispatches transition events, letting scripts react to changes dynamically.
 
 ## Imports
 
@@ -103,8 +99,8 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 
 ### Functions
 
-- `lurek.visibility.new`: Create a new visibility grid for shadow-cast computation.
-- `lurek.visibility.newFov`: Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+- `lurek.visibility.new(config) -> LVisibilityGrid`: Create a new visibility grid for shadow-cast computation.
+- `lurek.visibility.newFov(opts) -> LFov`: Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
 
 ### Callbacks
 
@@ -127,18 +123,18 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 
 ##### Methods
 
-- `LFov:compute`: Runs recursive shadowcasting from the observer position.
-- `LFov:eachVisible`: Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
-- `LFov:export`: Serialises the visible and explored masks to a binary blob.
-- `LFov:import`: Restores visible and explored masks from a blob produced by `export`.
-- `LFov:isExplored`: Returns true if the cell has ever been visible.
-- `LFov:isVisible`: Returns true if the cell is visible in the current frame.
-- `LFov:resetExplored`: Clears the explored mask so all cells appear unexplored.
-- `LFov:setBlocker`: Sets the Lua predicate that determines which cells are opaque.
-- `LFov:setRange`: Changes the visibility radius for subsequent compute calls.
-- `LFov:type`: Returns the Lua-visible type name for this FOV handle.
-- `LFov:typeOf`: Returns whether this FOV handle matches the given type name.
-- `LFov:visibleCells`: Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+- `LFov:compute(ox, oy) -> nil`: Runs recursive shadowcasting from the observer position.
+- `LFov:eachVisible(fn) -> nil`: Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+- `LFov:export() -> string`: Serialises the visible and explored masks to a binary blob.
+- `LFov:import(blob) -> nil`: Restores visible and explored masks from a blob produced by `export`.
+- `LFov:isExplored(x, y) -> boolean`: Returns true if the cell has ever been visible.
+- `LFov:isVisible(x, y) -> boolean`: Returns true if the cell is visible in the current frame.
+- `LFov:resetExplored() -> nil`: Clears the explored mask so all cells appear unexplored.
+- `LFov:setBlocker(fn) -> nil`: Sets the Lua predicate that determines which cells are opaque.
+- `LFov:setRange(range) -> nil`: Changes the visibility radius for subsequent compute calls.
+- `LFov:type() -> string`: Returns the Lua-visible type name for this FOV handle.
+- `LFov:typeOf(name) -> boolean`: Returns whether this FOV handle matches the given type name.
+- `LFov:visibleCells() -> table`: Returns an array of `{x, y}` tables for all currently visible cells (one-based).
 
 #### LVisibilityGrid Type
 
@@ -150,18 +146,18 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 
 ##### Methods
 
-- `LVisibilityGrid:drainEvents`: Drains and returns all pending visibility events.
-- `LVisibilityGrid:getCost`: Gets the discovery cost for a region.
-- `LVisibilityGrid:getFogIntensity`: Gets the fog intensity for a region from a player's perspective.
-- `LVisibilityGrid:getState`: Gets the visibility state for a player at a region.
-- `LVisibilityGrid:hasFlag`: Checks if a visibility flag bit is set on a region.
-- `LVisibilityGrid:hide`: Hides a region for a player (moves from Visible to Discovered).
-- `LVisibilityGrid:playerCount`: Returns the total number of players in the grid.
-- `LVisibilityGrid:regionCount`: Returns the total number of regions in the grid.
-- `LVisibilityGrid:reset`: Resets all visibility to Hidden for a player.
-- `LVisibilityGrid:reveal`: Reveals a region for a player (and their allies). Optional flags argument.
-- `LVisibilityGrid:revealAll`: Reveals all regions for a player (debug/cheat).
-- `LVisibilityGrid:setCost`: Sets the discovery cost for a region.
-- `LVisibilityGrid:setFlag`: Sets a visibility flag bit on a region.
-- `LVisibilityGrid:setGroup`: Sets an alliance group for a list of players (shared visibility).
-- `LVisibilityGrid:sharesVisibility`: Checks if two players share visibility (same alliance group or same player).
+- `LVisibilityGrid:drainEvents() -> table`: Drains and returns all pending visibility events.
+- `LVisibilityGrid:getCost(region_id) -> number`: Gets the discovery cost for a region.
+- `LVisibilityGrid:getFogIntensity(player_id, region_id) -> number`: Gets the fog intensity for a region from a player's perspective.
+- `LVisibilityGrid:getState(player_id, region_id) -> string`: Gets the visibility state for a player at a region.
+- `LVisibilityGrid:hasFlag(region_id, bit) -> boolean`: Checks if a visibility flag bit is set on a region.
+- `LVisibilityGrid:hide(player_id, region_id) -> nil`: Hides a region for a player (moves from Visible to Discovered).
+- `LVisibilityGrid:playerCount() -> integer`: Returns the total number of players in the grid.
+- `LVisibilityGrid:regionCount() -> integer`: Returns the total number of regions in the grid.
+- `LVisibilityGrid:reset(player_id) -> nil`: Resets all visibility to Hidden for a player.
+- `LVisibilityGrid:reveal(player_id, region_id, flags?) -> nil`: Reveals a region for a player (and their allies). Optional flags argument.
+- `LVisibilityGrid:revealAll(player_id) -> nil`: Reveals all regions for a player (debug/cheat).
+- `LVisibilityGrid:setCost(region_id, cost) -> nil`: Sets the discovery cost for a region.
+- `LVisibilityGrid:setFlag(region_id, bit, value) -> nil`: Sets a visibility flag bit on a region.
+- `LVisibilityGrid:setGroup(players) -> integer`: Sets an alliance group for a list of players (shared visibility).
+- `LVisibilityGrid:sharesVisibility(player_a, player_b) -> boolean`: Checks if two players share visibility (same alliance group or same player).

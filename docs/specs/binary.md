@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `binary` module provides foundational byte tools for packing, unpacking, encoding, compression, hashing, and bounded buffering through one stable Lua API.
+- Manages byte buffers, format packing, and MsgPack/TOML serialization.
+- Controls compression, cryptographic hashing, and element ring buffers.
 
 ## General Info
 
@@ -16,14 +17,11 @@
 
 ## Summary
 
-The `binary` module is the low-level data toolbox for byte-oriented workflows in the engine. It gives scripts and systems one consistent way to create buffers, read and write typed values, and transform payloads between raw bytes and transport-friendly formats.
+The binary module serves as the core byte-manipulation and low-level data transformation toolbox for Lurek2D. Its primary purpose is to provide scripts with high-performance, safe control over raw binary structures, memory buffers, and network interchange payloads. It exposes mutable, owned byte containers supporting bit-level updates and text decoding, read-only typed window views for bounds-checked numeric reads, and growable, seekable data writers for endian-aware structure construction.
 
-Its practical scope covers the full binary path: structured pack and unpack operations, sequential writing, read-only views, text encoding and decoding, compression and decompression, and integrity checks with checksums and hashes. This makes it useful for save data, protocol payloads, and tool interoperability.
+To serialize structured data compactly, the module implements dynamic format-driven packing and unpacking systems. Developers can pack heterogeneous Lua tables and values into binary strings using tokenized formatting rules that support endian directives, padding alignments, and value coercions. It also parses standard TOML documents and decodes high-efficiency MsgPack payloads directly into standard Lua values, bridging data interchange and runtime memory models seamlessly.
 
-The module is intentionally composable. Instead of forcing one serializer style, it offers focused building blocks that can be combined as needed. Teams can use quick helpers for small tasks or build strict format-driven flows for larger binary contracts.
-
-Predictability is a key value here. Endianness, bounds checks, cursor behavior, and conversion semantics are explicit and deterministic, so higher modules can rely on stable behavior over time.
-
+Rhythmic queues, network protocols, and data protection are supported by a suite of helper structures. Fixed-capacity elements are managed by a circular element ring buffer that applies FIFO element caching and evictions. This is paired with multi-codec data compression systems—handling zlib, gzip, deflate, and lz4 streams—alongside base64 and hexadecimal conversions, MD5 and SHA cryptographic hashing, and CRC32 fast checksums for data integrity verification.
 
 ## Imports
 
@@ -118,28 +116,28 @@ Predictability is a key value here. Endianness, bounds checks, cursor behavior, 
 
 ### Functions
 
-- `lurek.binary.compress`: Compresses a binary string using a named compression format.
-- `lurek.binary.compressChunks`: Compresses a string or table of strings as a chunked byte stream.
-- `lurek.binary.crc32`: Computes CRC32 for a binary string.
-- `lurek.binary.decode`: Decodes a string using a named text encoding format.
-- `lurek.binary.decompress`: Decompresses a binary string using a named compression format.
-- `lurek.binary.decompressChunks`: Decompresses a string or table of strings as a chunked byte stream.
-- `lurek.binary.encode`: Encodes a binary string using a named text encoding format.
-- `lurek.binary.encodeToml`: Encodes a Lua table into a TOML document string.
-- `lurek.binary.fromMsgPack`: Decodes a structured binary interchange payload back into Lua values.
-- `lurek.binary.getPackedSize`: Computes the packed byte size for values and a format string.
-- `lurek.binary.hash`: Hashes a binary string with a named algorithm.
-- `lurek.binary.newByteData`: Creates ByteData from a size or string.
-- `lurek.binary.newDataView`: Creates a DataView over a binary string slice.
-- `lurek.binary.newRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
-- `lurek.binary.newWriter`: Creates an empty binary data writer.
-- `lurek.binary.pack`: Packs Lua values into a binary string using a format string.
-- `lurek.binary.parseToml`: Parses TOML text into Lua tables and scalar values.
-- `lurek.binary.read`: Reads binary values from a byte string using a format string.
-- `lurek.binary.size`: Measures fixed byte size for a binary format string.
-- `lurek.binary.toMsgPack`: Encodes a Lua value into the current structured binary interchange payload.
-- `lurek.binary.unpack`: Unpacks values from a binary string using a format string.
-- `lurek.binary.write`: Writes binary values into a byte string using a format string.
+- `lurek.binary.compress(format_str, raw_data, level?) -> string`: Compresses a binary string using a named compression format.
+- `lurek.binary.compressChunks(format_str, chunks, level?) -> string`: Compresses a string or table of strings as a chunked byte stream.
+- `lurek.binary.crc32(raw_data) -> integer`: Computes CRC32 for a binary string.
+- `lurek.binary.decode(format_str, encoded) -> string`: Decodes a string using a named text encoding format.
+- `lurek.binary.decompress(format_str, compressed) -> string`: Decompresses a binary string using a named compression format.
+- `lurek.binary.decompressChunks(format_str, chunks) -> string`: Decompresses a string or table of strings as a chunked byte stream.
+- `lurek.binary.encode(format_str, raw_data) -> string`: Encodes a binary string using a named text encoding format.
+- `lurek.binary.encodeToml(tbl) -> string`: Encodes a Lua table into a TOML document string.
+- `lurek.binary.fromMsgPack(bytes) -> LuaValue`: Decodes a structured binary interchange payload back into Lua values.
+- `lurek.binary.getPackedSize(fmt, ...) -> integer`: Computes the packed byte size for values and a format string.
+- `lurek.binary.hash(algo_str, raw_data) -> string`: Hashes a binary string with a named algorithm.
+- `lurek.binary.newByteData(value) -> LByteData`: Creates ByteData from a size or string.
+- `lurek.binary.newDataView(raw, offset?, size?) -> LDataView`: Creates a DataView over a binary string slice.
+- `lurek.binary.newRingBuffer(capacity) -> LRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
+- `lurek.binary.newWriter() -> LDataWriter`: Creates an empty binary data writer.
+- `lurek.binary.pack(fmt, ...) -> string`: Packs Lua values into a binary string using a format string.
+- `lurek.binary.parseToml(text) -> table`: Parses TOML text into Lua tables and scalar values.
+- `lurek.binary.read(fmt, raw, offset?) -> LuaValue`: Reads binary values from a byte string using a format string.
+- `lurek.binary.size(fmt) -> integer`: Measures fixed byte size for a binary format string.
+- `lurek.binary.toMsgPack(value) -> string`: Encodes a Lua value into the current structured binary interchange payload.
+- `lurek.binary.unpack(fmt, raw, offset?) -> LuaValue`: Unpacks values from a binary string using a format string.
+- `lurek.binary.write(fmt, ...) -> string`: Writes binary values into a byte string using a format string.
 
 ### Callbacks
 
@@ -161,16 +159,16 @@ Predictability is a key value here. Endianness, bounds checks, cursor behavior, 
 
 ##### Methods
 
-- `LByteData:clone`: Returns a deep copy of the entire byte buffer.
-- `LByteData:getBit`: Reads one bit inside a byte at the given offsets.
-- `LByteData:getByte`: Reads one byte at a zero-based offset.
-- `LByteData:getSize`: Returns the byte buffer length in bytes.
-- `LByteData:getString`: Returns the byte buffer as a string.
-- `LByteData:readBits`: Reads up to 32 bits starting at a byte and bit offset.
-- `LByteData:setBit`: Sets or clears one bit inside a byte at the given offset.
-- `LByteData:setByte`: Writes one byte at a zero-based offset inside the buffer.
-- `LByteData:type`: Returns the type name of this object for runtime type-checking.
-- `LByteData:typeOf`: Checks whether this object matches the given type name.
+- `LByteData:clone() -> LByteData`: Returns a deep copy of the entire byte buffer.
+- `LByteData:getBit(byte_offset, bit_offset) -> boolean`: Reads one bit inside a byte at the given offsets.
+- `LByteData:getByte(offset) -> integer`: Reads one byte at a zero-based offset.
+- `LByteData:getSize() -> integer`: Returns the byte buffer length in bytes.
+- `LByteData:getString() -> string`: Returns the byte buffer as a string.
+- `LByteData:readBits(byte_offset, bit_offset, count) -> integer`: Reads up to 32 bits starting at a byte and bit offset.
+- `LByteData:setBit(byte_offset, bit_offset, value) -> nil`: Sets or clears one bit inside a byte at the given offset.
+- `LByteData:setByte(offset, value) -> nil`: Writes one byte at a zero-based offset inside the buffer.
+- `LByteData:type() -> string`: Returns the type name of this object for runtime type-checking.
+- `LByteData:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LDataView Type
 
@@ -182,17 +180,17 @@ Predictability is a key value here. Endianness, bounds checks, cursor behavior, 
 
 ##### Methods
 
-- `LDataView:getDouble`: Reads a 64-bit float at a byte offset.
-- `LDataView:getFloat`: Reads a 32-bit float at a byte offset.
-- `LDataView:getInt16`: Reads a signed 16-bit integer at a byte offset.
-- `LDataView:getInt32`: Reads a signed 32-bit integer at a byte offset.
-- `LDataView:getInt8`: Reads a signed 8-bit integer at a byte offset.
-- `LDataView:getSize`: Returns this data view size in bytes.
-- `LDataView:getUInt16`: Reads an unsigned 16-bit integer at a byte offset.
-- `LDataView:getUInt32`: Reads an unsigned 32-bit integer at a byte offset.
-- `LDataView:getUInt8`: Reads an unsigned 8-bit integer at a byte offset.
-- `LDataView:type`: Returns the Lua-visible type name for this data view handle.
-- `LDataView:typeOf`: Returns whether this data view handle matches a supported type name.
+- `LDataView:getDouble(offset) -> number`: Reads a 64-bit float at a byte offset.
+- `LDataView:getFloat(offset) -> number`: Reads a 32-bit float at a byte offset.
+- `LDataView:getInt16(offset) -> integer`: Reads a signed 16-bit integer at a byte offset.
+- `LDataView:getInt32(offset) -> integer`: Reads a signed 32-bit integer at a byte offset.
+- `LDataView:getInt8(offset) -> integer`: Reads a signed 8-bit integer at a byte offset.
+- `LDataView:getSize() -> integer`: Returns this data view size in bytes.
+- `LDataView:getUInt16(offset) -> integer`: Reads an unsigned 16-bit integer at a byte offset.
+- `LDataView:getUInt32(offset) -> integer`: Reads an unsigned 32-bit integer at a byte offset.
+- `LDataView:getUInt8(offset) -> integer`: Reads an unsigned 8-bit integer at a byte offset.
+- `LDataView:type() -> string`: Returns the Lua-visible type name for this data view handle.
+- `LDataView:typeOf(name) -> boolean`: Returns whether this data view handle matches a supported type name.
 
 #### LDataWriter Type
 
@@ -204,23 +202,23 @@ Predictability is a key value here. Endianness, bounds checks, cursor behavior, 
 
 ##### Methods
 
-- `LDataWriter:len`: Returns the current length of the writer buffer.
-- `LDataWriter:seek`: Moves the writer cursor to a specific byte position.
-- `LDataWriter:tell`: Returns the writer cursor position.
-- `LDataWriter:toBytes`: Returns the writer buffer as a binary string.
-- `LDataWriter:type`: Returns the Lua-visible type name for this data writer handle.
-- `LDataWriter:typeOf`: Returns whether this data writer handle matches a supported type name.
-- `LDataWriter:writeBytes`: Appends raw bytes from a Lua string to the writer buffer.
-- `LDataWriter:writeF32LE`: Appends a 32-bit float value in little-endian byte order.
-- `LDataWriter:writeF64LE`: Appends a 64-bit float value in little-endian byte order.
-- `LDataWriter:writeI16LE`: Appends a signed 16-bit integer in little-endian byte order.
-- `LDataWriter:writeI32LE`: Appends a signed 32-bit integer in little-endian byte order.
-- `LDataWriter:writeI8`: Appends a signed 8-bit integer to the writer buffer.
-- `LDataWriter:writeString`: Appends a UTF-8 encoded string to the writer buffer.
-- `LDataWriter:writeU16BE`: Appends an unsigned 16-bit integer in big-endian byte order.
-- `LDataWriter:writeU16LE`: Appends an unsigned 16-bit integer in little-endian byte order.
-- `LDataWriter:writeU32LE`: Appends an unsigned 32-bit integer in little-endian byte order.
-- `LDataWriter:writeU8`: Appends an unsigned 8-bit integer to the writer buffer.
+- `LDataWriter:len() -> integer`: Returns the current length of the writer buffer.
+- `LDataWriter:seek(pos) -> nil`: Moves the writer cursor to a specific byte position.
+- `LDataWriter:tell() -> integer`: Returns the writer cursor position.
+- `LDataWriter:toBytes() -> string`: Returns the writer buffer as a binary string.
+- `LDataWriter:type() -> string`: Returns the Lua-visible type name for this data writer handle.
+- `LDataWriter:typeOf(name) -> boolean`: Returns whether this data writer handle matches a supported type name.
+- `LDataWriter:writeBytes(s) -> nil`: Appends raw bytes from a Lua string to the writer buffer.
+- `LDataWriter:writeF32LE(v) -> nil`: Appends a 32-bit float value in little-endian byte order.
+- `LDataWriter:writeF64LE(v) -> nil`: Appends a 64-bit float value in little-endian byte order.
+- `LDataWriter:writeI16LE(v) -> nil`: Appends a signed 16-bit integer in little-endian byte order.
+- `LDataWriter:writeI32LE(v) -> nil`: Appends a signed 32-bit integer in little-endian byte order.
+- `LDataWriter:writeI8(v) -> nil`: Appends a signed 8-bit integer to the writer buffer.
+- `LDataWriter:writeString(s) -> nil`: Appends a UTF-8 encoded string to the writer buffer.
+- `LDataWriter:writeU16BE(v) -> nil`: Appends an unsigned 16-bit integer in big-endian byte order.
+- `LDataWriter:writeU16LE(v) -> nil`: Appends an unsigned 16-bit integer in little-endian byte order.
+- `LDataWriter:writeU32LE(v) -> nil`: Appends an unsigned 32-bit integer in little-endian byte order.
+- `LDataWriter:writeU8(v) -> nil`: Appends an unsigned 8-bit integer to the writer buffer.
 
 #### LRingBuffer Type
 
@@ -232,17 +230,15 @@ Predictability is a key value here. Endianness, bounds checks, cursor behavior, 
 
 ##### Methods
 
-- `LRingBuffer:capacity`: Returns the maximum capacity of the ring buffer.
-- `LRingBuffer:clear`: Removes every stored value and releases their registry keys.
-- `LRingBuffer:isEmpty`: Returns whether the ring buffer has no values.
-- `LRingBuffer:isFull`: Returns whether the ring buffer is at capacity.
-- `LRingBuffer:len`: Returns the number of values currently stored.
-- `LRingBuffer:peek`: Returns the oldest stored value without removing it from the ring buffer.
-- `LRingBuffer:peekNewest`: Returns the newest stored value without removing it from the ring buffer.
-- `LRingBuffer:pop`: Removes and returns the oldest stored value from the ring buffer.
-- `LRingBuffer:push`: Pushes a value into the ring buffer and evicts the oldest value when full.
-- `LRingBuffer:toTable`: Returns stored values in oldest-to-newest order.
-- `LRingBuffer:type`: Returns the Lua-visible type name for this ring buffer handle.
-- `LRingBuffer:typeOf`: Returns whether this ring buffer handle matches a supported type name.
-
-
+- `LRingBuffer:capacity() -> integer`: Returns the maximum capacity of the ring buffer.
+- `LRingBuffer:clear() -> nil`: Removes every stored value and releases their registry keys.
+- `LRingBuffer:isEmpty() -> boolean`: Returns whether the ring buffer has no values.
+- `LRingBuffer:isFull() -> boolean`: Returns whether the ring buffer is at capacity.
+- `LRingBuffer:len() -> integer`: Returns the number of values currently stored.
+- `LRingBuffer:peek() -> LuaValue`: Returns the oldest stored value without removing it from the ring buffer.
+- `LRingBuffer:peekNewest() -> LuaValue`: Returns the newest stored value without removing it from the ring buffer.
+- `LRingBuffer:pop() -> LuaValue`: Removes and returns the oldest stored value from the ring buffer.
+- `LRingBuffer:push(value) -> boolean`: Pushes a value into the ring buffer and evicts the oldest value when full.
+- `LRingBuffer:toTable() -> number[]`: Returns stored values in oldest-to-newest order.
+- `LRingBuffer:type() -> string`: Returns the Lua-visible type name for this ring buffer handle.
+- `LRingBuffer:typeOf(name) -> boolean`: Returns whether this ring buffer handle matches a supported type name.

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `color` module provides core RGBA utilities, color-space conversion, blend modes, and palette helpers for consistent visual behavior across the engine.
+- Manages color spaces, blends, and retro palettes.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `color` module is the base utility layer for working with color values in the engine. It provides a consistent RGBA model and common operations so rendering, UI, effects, and tools can use the same color rules.
+The color module provides fundamental color representations, space conversions, blending mathematics, and curated palettes for Lurek2D, supporting UI, rendering, and effects. It manages RGBA colors, supplying conversions between RGB, HSL, and HSV spaces, alongside Hex string parsing. For rendering, it computes clamped linear interpolations, alpha compositing (Porter-Duff), channel inversions, perceived luminance, gamma-to-linear conversions, and multiple blend modes. It also includes retro palettes like PICO-8, Game Boy, and NES.
 
-Its functional scope includes creation, conversion, blending, and palette access. Scripts can move between RGB, HSL, and HSV forms, convert gamma and linear components, and apply practical blend modes for real-time visual work.
-
-Because these operations are centralized, teams avoid repeating ad-hoc color formulas in many modules. This improves predictability and testability, especially when visual behavior must stay stable across runtime paths and content updates.
-
-Palette helpers add reusable curated color sets, while core math stays lightweight and deterministic. Together, this gives both quick authoring convenience and low-level control when custom visual logic is needed.
-
-Overall, the module provides one reliable color contract: define values, transform them, combine them, and reuse them consistently across the project.
+This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -66,25 +60,25 @@ Overall, the module provides one reliable color contract: define values, transfo
 
 ### Functions
 
-- `lurek.color.additive`: Additive blend of two colors (clamped to 0â€“1 per channel).
-- `lurek.color.alphaBlend`: Alpha compositing (Porter-Duff "over") of foreground over background.
-- `lurek.color.brightness`: Computes perceived luminance (ITU-R BT.601) of an RGB color.
-- `lurek.color.fromHex`: Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
-- `lurek.color.fromHsl`: Creates a color from HSL components. Returns an opaque color (alpha = 1).
-- `lurek.color.fromHsv`: Creates a color from HSV components. Returns an opaque color (alpha = 1).
-- `lurek.color.fromU8`: Creates a color from 0â€“255 integer components. Alpha defaults to 255.
-- `lurek.color.gammaToLinear`: Converts a single sRGB gamma-encoded component to linear space.
-- `lurek.color.invert`: Inverts the RGB channels of a color, keeping alpha unchanged.
-- `lurek.color.lerp`: Linearly interpolates between two color tables by factor t (clamped to 0â€“1).
-- `lurek.color.linearToGamma`: Converts a single linear component to sRGB gamma-encoded space.
-- `lurek.color.multiply`: Channel-wise multiply blend of two colors.
-- `lurek.color.new`: Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.
-- `lurek.color.overlay`: Overlay blend of two colors exposed by the lurek engine.
-- `lurek.color.palette`: Returns a named retro palette as a table of color tables. Supported: "pico8", "gameboy", "nes".
-- `lurek.color.screen`: Apply screen blend mode to combine two color values.
-- `lurek.color.toHex`: Converts RGBA components to a hex string ("#RRGGBB" or "#RRGGBBAA" if alpha < 1).
-- `lurek.color.toHsl`: Convert RGB color components to HSL color representation.
-- `lurek.color.withAlpha`: Returns a color with the alpha channel replaced.
+- `lurek.color.additive(c1, c2) -> table`: Additive blend of two colors (clamped to 0â€“1 per channel).
+- `lurek.color.alphaBlend(fg, bg) -> table`: Alpha compositing (Porter-Duff "over") of foreground over background.
+- `lurek.color.brightness(r, g, b) -> number`: Computes perceived luminance (ITU-R BT.601) of an RGB color.
+- `lurek.color.fromHex(hex) -> table|nil`: Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+- `lurek.color.fromHsl(h, s, l) -> table`: Creates a color from HSL components. Returns an opaque color (alpha = 1).
+- `lurek.color.fromHsv(h, s, v) -> table`: Creates a color from HSV components. Returns an opaque color (alpha = 1).
+- `lurek.color.fromU8(r, g, b, a?) -> table`: Creates a color from 0â€“255 integer components. Alpha defaults to 255.
+- `lurek.color.gammaToLinear(c) -> number`: Converts a single sRGB gamma-encoded component to linear space.
+- `lurek.color.invert(r, g, b, a?) -> table`: Inverts the RGB channels of a color, keeping alpha unchanged.
+- `lurek.color.lerp(c1, c2, t) -> table`: Linearly interpolates between two color tables by factor t (clamped to 0â€“1).
+- `lurek.color.linearToGamma(c) -> number`: Converts a single linear component to sRGB gamma-encoded space.
+- `lurek.color.multiply(c1, c2) -> table`: Channel-wise multiply blend of two colors.
+- `lurek.color.new(r, g, b, a?) -> table`: Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.
+- `lurek.color.overlay(base, blend) -> table`: Overlay blend of two colors exposed by the lurek engine.
+- `lurek.color.palette(name) -> table`: Returns a named retro palette as a table of color tables. Supported: "pico8", "gameboy", "nes".
+- `lurek.color.screen(c1, c2) -> table`: Apply screen blend mode to combine two color values.
+- `lurek.color.toHex(r, g, b, a?) -> string`: Converts RGBA components to a hex string ("#RRGGBB" or "#RRGGBBAA" if alpha < 1).
+- `lurek.color.toHsl(r, g, b) -> number, number, number`: Convert RGB color components to HSL color representation.
+- `lurek.color.withAlpha(r, g, b, a, newAlpha) -> table`: Returns a color with the alpha channel replaced.
 
 ### Callbacks
 

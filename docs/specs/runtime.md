@@ -2,7 +2,9 @@
 
 ## TL;DR
 
-- The `runtime` module is the engine core for shared state, configuration, modes, errors, and cross-system coordination.
+- Manages engine shared state, asset registries, and configurations.
+- Supports headless or windowed modes and stable error codes.
+- Reports frame profiling, memory budgets, and locale messages.
 
 ## General Info
 
@@ -16,19 +18,13 @@
 
 ## Summary
 
-The `runtime` module is the coordination foundation of the engine. It defines the shared state and startup policy that other modules depend on, so frame execution, resources, and system services can stay synchronized.
+This module serves as the central coordination nucleus of the Lurek2D engine, orchestrating shared state, configurations, and system-wide behaviors. At its core, the subsystem manages a global borrowable state container that unites windowing, timing, and inputs under one unified hub. It provides authoritative ownership for essential asset pools—including textures, canvases, fonts, shaders, and meshes—preventing duplicate resource allocation and managing global memory budgets.
 
-Its central shared-state model gathers cross-cutting runtime data in one authoritative container. Input snapshots, frame timing, resource pools, async operations, and render-facing queues are coordinated through this hub to avoid fragmented ownership.
+Engine startup and execution policies are driven by a typed configuration schema loaded from human-edited TOML data. This configuration validates active features to ensure stable setups, and supports dynamic runtime reloading. The system determines entry paths using a robust mode enums system, distinguishing between full graphics-oriented window loops and lightweight, non-visual headless modes suitable for automated testing and command-line execution.
 
-Configuration and mode handling are also part of the core contract. Startup settings, feature toggles, runtime defaults, and hot-reload-friendly values are parsed and exposed in one typed system that guides subsystem initialization.
+To support deep system integration, the module exposes detailed host diagnostic queries and unified error reporting layers. It queries platform-specific environment variables, clipboard text, operating system details, CPU counts, and system power statuses. When failures occur, the engine standardizes error reporting through stable diagnostic codes, capturing detailed error snapshots that are easy for both developers and automated tools to interpret.
 
-Error and diagnostic behavior is unified through common runtime error types and structured log-message mapping. This improves observability by keeping failures and telemetry semantics consistent across module boundaries.
-
-Typed resource keys and runtime metadata helpers provide safe references that can move between Rust and Lua surfaces without exposing internal storage details.
-
-Because this module owns core coordination rules, it reduces integration drift between systems that run at different frequencies and with different lifecycles. Subsystems can plug into one frame rhythm and one state authority instead of negotiating state transfer in many custom paths.
-
-In practice, `lurek.runtime` is the engine control spine: initialize policy, host shared mutable state, coordinate frame lifecycle, expose stable diagnostics, and anchor cross-module interaction through one core API surface.
+Performance telemetry and lifecycle tracking are processed through specialized frame profiles and type-safe handle keys. The runtime measures precise frame intervals across diverse engine phases (like physics, ticking, and rendering), reporting active resource counts and memory usage. Additionally, a lazy embedded message catalog flattens and translates string lookups, providing diagnostic and localized feedback throughout the game session.
 
 ## Imports
 
@@ -150,47 +146,47 @@ In practice, `lurek.runtime` is the engine control spine: initialize policy, hos
 
 ### Functions
 
-- `lurek.engine.fps`: Returns the latest frames-per-second value stored by the runtime.
-- `lurek.engine.frameCount`: Returns the number of frames counted by the shared runtime clock.
-- `lurek.engine.getConfigRevision`: Returns the configuration reload revision counter.
-- `lurek.engine.getFrameBudget`: Returns the target frame budget for a 60 FPS update loop.
-- `lurek.engine.getFrameProfile`: Returns the latest frame timing profile split by engine phase.
-- `lurek.engine.getFrameProfileText`: Returns the latest frame timing profile formatted as one text line.
-- `lurek.engine.getResourceStats`: Returns current resource memory usage and object counts by resource kind.
-- `lurek.engine.getVersion`: Returns the engine crate version string embedded at build time.
-- `lurek.engine.isDebug`: Returns whether the engine binary was built with debug assertions.
-- `lurek.engine.memoryUsage`: Returns Lua VM memory usage as bytes and rounded kilobytes.
-- `lurek.engine.platform`: Returns the current desktop operating system name.
-- `lurek.engine.setResourceBudget`: Sets the resource memory budget used by resource statistics reporting.
-- `lurek.engine.uptime`: Returns total engine runtime accumulated by the main loop.
-- `lurek.runtime.errorSnapshot`: Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
-- `lurek.runtime.getArch`: Returns the CPU architecture of the host system.
-- `lurek.runtime.getArgs`: Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
-- `lurek.runtime.getBatchResults`: Summarizes batch results by counting passed, failed, and skipped tasks.
-- `lurek.runtime.getClipboardText`: Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
-- `lurek.runtime.getConfig`: Returns a table containing the current engine runtime configuration values.
-- `lurek.runtime.getDebugOverlay`: Returns whether the on-screen debug overlay is currently enabled.
-- `lurek.runtime.getEnv`: Reads an environment variable by name. Returns `nil` if the variable is not set.
-- `lurek.runtime.getInfo`: Returns a table with comprehensive engine and host information.
-- `lurek.runtime.getLastError`: Returns the last error for Lua scripts in this module.
-- `lurek.runtime.getLogLevel`: Returns the current engine log verbosity level as a string.
-- `lurek.runtime.getMemorySize`: Returns the total physical memory of the host system in megabytes.
-- `lurek.runtime.getMessage`: Resolves a message string by its identifier from the engine message catalog.
-- `lurek.runtime.getMessageCount`: Returns the total number of messages registered in the engine message catalog.
-- `lurek.runtime.getOS`: Returns the name of the host operating system as a string.
-- `lurek.runtime.getPowerInfo`: Returns the current power supply state, battery percentage, and estimated time remaining.
-- `lurek.runtime.getPreferredLocales`: Returns a list of the user's preferred locale identifiers from the operating system.
-- `lurek.runtime.getProcessorCount`: Returns the number of logical processors available on the host machine.
-- `lurek.runtime.getVersion`: Returns the semantic version string of the Lurek2D engine.
-- `lurek.runtime.hasMessage`: Checks whether a message identifier exists in the engine message catalog.
-- `lurek.runtime.log`: Writes a message to the engine log at the specified severity level.
-- `lurek.runtime.openURL`: Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
-- `lurek.runtime.parseArgs`: Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
-- `lurek.runtime.reloadConfig`: Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
-- `lurek.runtime.runBatch`: Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
-- `lurek.runtime.setClipboardText`: Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
-- `lurek.runtime.setDebugOverlay`: Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
-- `lurek.runtime.setLogLevel`: Sets the engine-wide log verbosity level at runtime.
+- `lurek.engine.fps() -> number`: Returns the latest frames-per-second value stored by the runtime.
+- `lurek.engine.frameCount() -> integer`: Returns the number of frames counted by the shared runtime clock.
+- `lurek.engine.getConfigRevision() -> integer`: Returns the configuration reload revision counter.
+- `lurek.engine.getFrameBudget() -> number`: Returns the target frame budget for a 60 FPS update loop.
+- `lurek.engine.getFrameProfile() -> table`: Returns the latest frame timing profile split by engine phase.
+- `lurek.engine.getFrameProfileText() -> string`: Returns the latest frame timing profile formatted as one text line.
+- `lurek.engine.getResourceStats() -> table`: Returns current resource memory usage and object counts by resource kind.
+- `lurek.engine.getVersion() -> string`: Returns the engine crate version string embedded at build time.
+- `lurek.engine.isDebug() -> boolean`: Returns whether the engine binary was built with debug assertions.
+- `lurek.engine.memoryUsage() -> table`: Returns Lua VM memory usage as bytes and rounded kilobytes.
+- `lurek.engine.platform() -> string`: Returns the current desktop operating system name.
+- `lurek.engine.setResourceBudget(budget_bytes) -> nil`: Sets the resource memory budget used by resource statistics reporting.
+- `lurek.engine.uptime() -> number`: Returns total engine runtime accumulated by the main loop.
+- `lurek.runtime.errorSnapshot(msg) -> string`: Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
+- `lurek.runtime.getArch() -> string`: Returns the CPU architecture of the host system.
+- `lurek.runtime.getArgs() -> string[]`: Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
+- `lurek.runtime.getBatchResults(results) -> number`: Summarizes batch results by counting passed, failed, and skipped tasks.
+- `lurek.runtime.getClipboardText() -> string`: Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
+- `lurek.runtime.getConfig() -> table`: Returns a table containing the current engine runtime configuration values.
+- `lurek.runtime.getDebugOverlay() -> boolean`: Returns whether the on-screen debug overlay is currently enabled.
+- `lurek.runtime.getEnv(name) -> string`: Reads an environment variable by name. Returns `nil` if the variable is not set.
+- `lurek.runtime.getInfo() -> table`: Returns a table with comprehensive engine and host information.
+- `lurek.runtime.getLastError() -> table`: Returns the last error for Lua scripts in this module.
+- `lurek.runtime.getLogLevel() -> string`: Returns the current engine log verbosity level as a string.
+- `lurek.runtime.getMemorySize() -> number`: Returns the total physical memory of the host system in megabytes.
+- `lurek.runtime.getMessage(id) -> string`: Resolves a message string by its identifier from the engine message catalog.
+- `lurek.runtime.getMessageCount() -> number`: Returns the total number of messages registered in the engine message catalog.
+- `lurek.runtime.getOS() -> string`: Returns the name of the host operating system as a string.
+- `lurek.runtime.getPowerInfo() -> string`: Returns the current power supply state, battery percentage, and estimated time remaining.
+- `lurek.runtime.getPreferredLocales() -> string[]`: Returns a list of the user's preferred locale identifiers from the operating system.
+- `lurek.runtime.getProcessorCount() -> number`: Returns the number of logical processors available on the host machine.
+- `lurek.runtime.getVersion() -> string`: Returns the semantic version string of the Lurek2D engine.
+- `lurek.runtime.hasMessage(id) -> boolean`: Checks whether a message identifier exists in the engine message catalog.
+- `lurek.runtime.log(level, message) -> nil`: Writes a message to the engine log at the specified severity level.
+- `lurek.runtime.openURL(url) -> boolean`: Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
+- `lurek.runtime.parseArgs(args?) -> table`: Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
+- `lurek.runtime.reloadConfig() -> nil`: Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
+- `lurek.runtime.runBatch(tasks, opts?) -> table`: Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
+- `lurek.runtime.setClipboardText(text) -> nil`: Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
+- `lurek.runtime.setDebugOverlay(enabled) -> nil`: Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
+- `lurek.runtime.setLogLevel(level) -> nil`: Sets the engine-wide log verbosity level at runtime.
 
 ### Callbacks
 

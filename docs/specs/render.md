@@ -2,7 +2,10 @@
 
 ## TL;DR
 
-- The `render` module is the engine's visual backend, translating deferred draw commands into GPU work for shapes, text, textures, meshes, canvases, shaders, and post-effects.
+- Orchestrates the engine's visual backend using a device-facing wgpu renderer.
+- Supports shapes, batched textures, off-screen canvases, and dynamic font rasterization.
+- Enables custom WGSL shaders, chained post-processing filters, and stencil portal masks.
+- Projects 3D Wavefront models into 2D vertex meshes with software screenshot readbacks.
 
 ## General Info
 
@@ -16,31 +19,21 @@
 
 ## Summary
 
-The `render` module is the engine's visual execution backbone. It receives drawing intent from scripts and systems, keeps that intent in a frame command model, and turns it into ordered GPU work that produces the final image.
+This module serves as the primary visual execution backend for Lurek2D, orchestrating all deferred draw operations to produce final frame outputs. It establishes a robust 2D rendering pipeline that supports basic vector shapes, dynamically rasterized text, custom vertex meshes, and complex fullscreen post-processing layers. By acting as a central gateway, it unifies diverse presentation requests from scripting and internal systems into a single frame lifecycle.
 
-Its core contract is deferred rendering through one shared command vocabulary. Gameplay code can describe what to draw without issuing low-level GPU operations directly. Later, the backend resolves ordering, batching, state transitions, and pass structure in a single coordinated stage.
+At the mechanical heart of this pipeline is a device-facing wgpu renderer. This backend translates the engine's high-level command vocabulary into encoded GPU commands, managing pipelines, buffers, and shader attachments. It tessellates shapes like circles, arcs, and rounded rectangles on demand, and maintains separate flat and textured render paths to ensure that color-only operations do not incur unwanted texture overhead.
 
-This separation is functionally important: feature modules can focus on intent, while render policy stays centralized. As a result, many systems can submit visual output in parallel development flows without each re-implementing buffer policy, blend behavior, or pass sequencing.
+For structured and high-frequency rendering, the toolkit supports both retained-mode shapes and instanced batches. Retained compound shapes package multiple vector strokes into named assets for fast replay. Sprite batches collect massive sets of identical texture references to draw thousands of particles or tiles in a single draw call. Additionally, off-screen canvases and splat surfaces facilitate layered compositions.
 
-The module supports broad visual scope under one API family. Basic primitives, textured draws, mesh content, text rendering, layer-aware ordering, blend and stencil behavior, and depth-related controls are all represented in compatible command forms.
+The typography engine bridges raw text assets with GPU-rendered quads. It handles bundled bitmap atlases alongside custom font files dynamically rasterized at runtime. The system tracks precise glyph metrics, atlas placements, and text wraps, ensuring that multi-line formatting remains visually stable. It also supports terminal-style retro symbols and character lookups to accommodate classic user interface grids.
 
-Typography is part of the same contract, not a separate subsystem. Font management, glyph raster paths, and measurement behavior allow UI, debug overlays, and in-world labels to share stable text rules and avoid divergent text pipelines.
+Advanced graphic styling is achieved through custom shader programs. Developers can compile user-authored fragment programs, sending typed parameters such as vectors or textures directly to the GPU. The engine automatically inspects shader inputs to ensure coordinate compatibility, and ordered uniform uploads at the start of each frame, providing a safe, script-driven environment for custom visual filters.
 
-Off-screen rendering is integrated through canvas-style targets, which enables composition workflows such as UI staging, intermediate pass rendering, and reusable render surfaces for complex visual assembly.
+Chained visual finishes are managed by a dedicated post-processing pipeline. By utilizing fullscreen geometry and ping-pong render targets, it applies multi-pass effects like bloom, blur, depth-of-field, color grading, and screen distortion. The pipeline automatically feeds dynamic time, frame count, and resolution variables into the active fragment shaders, degrading gracefully to a direct copy when no treatments are enabled.
 
-Post-processing is also built in as a first-class finishing stage. Full-screen effect chains can apply visual style and screen-space treatments after scene draw completion, with built-in and custom shader paths living in one controlled pipeline.
+For intricate scene layouts, the subsystem exposes fine-grained layering and stencil controls. Z-depth sorted groups schedule draw callbacks in priority order, preventing visual conflicts when enqueuing overlays. The stencil engine configures comparison tests, masks, and write actions, allowing developers to implement circular portals, clipping boundaries, and masked user interface frames with hardware-accelerated precision.
 
-Resource lifecycle is centralized to keep visual execution stable over long sessions. Texture uploads, transient buffers, pipeline variants, and attachment reuse are managed in one backend authority, reducing duplication and state mismatch across modules.
-
-The module is also designed as a shared integration boundary for many feature systems. UI, particles, map renderers, raycaster output, text overlays, and debug tools can all target the same draw grammar and rely on the same backend timing. This matters functionally because visual interoperability is not left to chance; layers from different domains can coexist inside one frame model with predictable ordering and composition.
-
-Another practical benefit is portability of visual workflows. Since command creation is separated from backend execution details, gameplay-side rendering logic can stay stable while backend internals evolve for performance, new effects, or platform maintenance. Teams can improve rendering quality and throughput without rewriting all feature-level drawing code.
-
-This module also supports iterative production work. Artists and developers can tune blend behavior, effect stacks, text presentation, and off-screen composition in stages, while keeping output deterministic enough for debugging and regression checks. The same command stream can be inspected, replayed, and reasoned about as a coherent frame narrative.
-
-Because command grammar and backend execution are unified, debugging and extension are more predictable. New features can target existing render primitives and pass rules instead of adding isolated rendering stacks.
-
-In practice, `lurek.render` is the module that turns frame intent into presented pixels: collect commands, organize passes, manage GPU state, apply composition and effects, and expose one stable rendering surface for the rest of the engine.
+Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This utility projects 3D mesh coordinates through a virtual camera into 2D triangles, drawing detailed silhouettes and animated mesh structures without requiring a full 3D pipeline. It also supports CPU-side software rasterization stubs, allowing tools to generate thumbnails, save screenshots, and gather rendering stats in headless environments.
 
 ## Imports
 
@@ -212,136 +205,136 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ### Functions
 
-- `lurek.render.applyTransform`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
-- `lurek.render.arc`: Draws a filled or outlined circular arc segment.
-- `lurek.render.beginSortGroup`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-- `lurek.render.beginSortGroup`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-- `lurek.render.captureScreenshot`: Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
-- `lurek.render.circle`: Draws a filled or outlined circle at the given position.
-- `lurek.render.clear`: Clears all queued render commands for the current frame.
-- `lurek.render.clearStencil`: Resets the stencil state to defaults (no stencil operations).
-- `lurek.render.currentLayer`: Returns the name of the currently active rendering layer.
-- `lurek.render.draw`: Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
-- `lurek.render.drawBatch`: Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
-- `lurek.render.drawBevelRect`: Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
-- `lurek.render.drawBevelRect`: Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
-- `lurek.render.drawColoredPolygon`: Draws a polygon with per-vertex colors.
-- `lurek.render.drawColoredPolygon`: Draws a polygon with per-vertex colors.
-- `lurek.render.drawCubicBezier`: Draws a cubic Bezier curve through start, two control points, and end.
-- `lurek.render.drawCubicBezier`: Draws a cubic Bezier curve through start, two control points, and end.
-- `lurek.render.drawGradientRect`: Draws a rectangle with a two-color gradient fill.
-- `lurek.render.drawGradientRect`: Draws a rectangle with a two-color gradient fill.
-- `lurek.render.drawHexTile`: Draws a regular hexagonal tile at the given center position.
-- `lurek.render.drawHexTile`: Draws a regular hexagonal tile at the given center position.
-- `lurek.render.drawIsoCubeTile`: Draws an isometric cube tile with configurable face colors and optional textures.
-- `lurek.render.drawIsoCubeTile`: Draws an isometric cube tile with configurable face colors and optional textures.
-- `lurek.render.drawMany`: Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
-- `lurek.render.drawNineSlice`: Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
-- `lurek.render.drawPath`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
-- `lurek.render.drawPath`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
-- `lurek.render.drawQuadBezier`: Draws a quadratic Bezier curve through start, control, and end points.
-- `lurek.render.drawQuadBezier`: Draws a quadratic Bezier curve through start, control, and end points.
-- `lurek.render.drawq`: Draws a sub-region of an image defined by a Quad, with optional transform.
-- `lurek.render.ellipse`: Draws a filled or outlined ellipse at the given position.
-- `lurek.render.flushSortGroup`: Ends a sort group and emits all accumulated draw calls in sorted order.
-- `lurek.render.flushSortGroup`: Ends a sort group and emits all accumulated draw calls in sorted order.
-- `lurek.render.getBackgroundColor`: Returns the current background clear color.
-- `lurek.render.getBlendMode`: Returns the current blend mode name.
-- `lurek.render.getBuiltInFontNames`: Returns all stable built-in font names.
-- `lurek.render.getCanvas`: Returns the currently active canvas, or nil if drawing to the screen.
-- `lurek.render.getCanvasSize`: Returns the pixel dimensions of a canvas.
-- `lurek.render.getColor`: Returns the current drawing color.
-- `lurek.render.getColorMask`: Returns the current color write mask.
-- `lurek.render.getDefaultFilter`: Returns the current default texture filtering settings.
-- `lurek.render.getDefaultFont`: Returns a built-in default font at the nearest available bundled point size.
-- `lurek.render.getDepthMode`: Returns the current depth comparison mode and write-enable flag.
-- `lurek.render.getDimensions`: Returns the current window width and height.
-- `lurek.render.getFont`: Returns the currently active font, or nil if none is set.
-- `lurek.render.getFontAscent`: Returns the ascent (pixels above baseline) of the given font.
-- `lurek.render.getFontCellWidth`: Returns the fixed cell width of a bitmap font.
-- `lurek.render.getFontDescent`: Returns the descent (pixels below baseline) of the given font.
-- `lurek.render.getFontHeight`: Returns the line height of the given font.
-- `lurek.render.getFontLineHeight`: Returns the line spacing of the given font.
-- `lurek.render.getFontSizes`: Returns all available built-in point sizes.
-- `lurek.render.getFontWidth`: Measures the pixel width of text using the given font.
-- `lurek.render.getFontWrap`: Word-wraps text using the active font and returns the resulting lines and widest line width.
-- `lurek.render.getHeight`: Returns the current window height in pixels.
-- `lurek.render.getLayerZOrder`: Returns the z-order value of a named rendering layer.
-- `lurek.render.getLineWidth`: Returns the current line width used for line-mode drawing.
-- `lurek.render.getPointSize`: Returns the current point diameter used for point drawing.
-- `lurek.render.getScissor`: Returns the current scissor rectangle, or nothing if no scissor is set.
-- `lurek.render.getShader`: Returns the currently active shader, or nil if using the default.
-- `lurek.render.getStats`: Returns a table of rendering statistics for the current frame.
-- `lurek.render.getStencilMode`: Returns the current stencil action, compare mode, and reference value.
-- `lurek.render.getWidth`: Returns the current window width in pixels.
-- `lurek.render.intersectScissor`: Intersects the given rectangle with the current scissor, narrowing the drawable region.
-- `lurek.render.isBold`: Returns true if the current default font selection uses the bold variant.
-- `lurek.render.isLayerVisible`: Returns whether a named rendering layer is currently visible.
-- `lurek.render.isWireframe`: Returns whether wireframe rendering is currently active.
-- `lurek.render.line`: Draws a line between two points, or a polyline through multiple points.
-- `lurek.render.loadModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
-- `lurek.render.loadObj`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
-- `lurek.render.newCanvas`: Creates a new off-screen render target with the given dimensions.
-- `lurek.render.newDepthSorter`: Registers the depth-sorted drawing helper constructor in the render module.
-- `lurek.render.newDrawLayer`: Creates a new z-ordered draw layer for sorting draw callbacks by depth.
-- `lurek.render.newFont`: Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
-- `lurek.render.newImage`: Loads a texture from a file path or creates one from an ImageData object.
-- `lurek.render.newLayer`: Creates a named rendering layer with an optional z-order for draw call organization.
-- `lurek.render.newMesh`: Creates a custom vertex mesh from an array of vertex data tables.
-- `lurek.render.newNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
-- `lurek.render.newQuad`: Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
-- `lurek.render.newShader`: Compiles a WGSL shader program from source code and returns a handle.
-- `lurek.render.newShape`: Creates a new retained compound shape for accumulating draw commands.
-- `lurek.render.newSpriteBatch`: Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
-- `lurek.render.origin`: Resets the current transformation matrix to the identity (no transform).
-- `lurek.render.points`: Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
-- `lurek.render.polygon`: Draws a polygon from a flat list of x,y vertex coordinates.
-- `lurek.render.pop`: Pops the top transformation matrix from the transform stack, restoring the previous one.
-- `lurek.render.popLayer`: Ends a compositing layer and composites it with the previous content.
-- `lurek.render.popLayer`: Ends a compositing layer and composites it with the previous content.
-- `lurek.render.print`: Draws text using the active font at the given position.
-- `lurek.render.printRich`: Draws rich text composed of individually styled spans at the given position.
-- `lurek.render.printRichWithFont`: Draws rich text using a specific font without changing the global active font.
-- `lurek.render.printRotated`: Draws text centered and rotated around its midpoint.
-- `lurek.render.printRotatedWithFont`: Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
-- `lurek.render.printWithFont`: Draws text using a specific font without changing the global active font.
-- `lurek.render.printf`: Draws word-wrapped and aligned text within a pixel-width limit.
-- `lurek.render.printfWithFont`: Draws word-wrapped and aligned text with a specific font without changing the global active font.
-- `lurek.render.push`: Pushes the current transformation matrix onto the transform stack.
-- `lurek.render.pushLayer`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
-- `lurek.render.pushLayer`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
-- `lurek.render.pushSortKey`: Sets the depth sort key for subsequent draw calls within the current sort group.
-- `lurek.render.pushSortKey`: Sets the depth sort key for subsequent draw calls within the current sort group.
-- `lurek.render.rectangle`: Draws a rectangle. If rx is provided, draws a rounded rectangle.
-- `lurek.render.resetCanvas`: Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
-- `lurek.render.rotate`: Applies a rotation to the current transformation matrix.
-- `lurek.render.saveScreenshot`: Saves a screenshot of the current frame to a file under the save/ directory.
-- `lurek.render.scale`: Applies scaling to the current transformation matrix.
-- `lurek.render.setBackgroundColor`: Sets the background clear color used at the start of each frame.
-- `lurek.render.setBlendMode`: Sets the blend mode for subsequent draw operations.
-- `lurek.render.setBold`: Sets whether subsequent font size lookups use the bold Courier New variant.
-- `lurek.render.setCanvas`: Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
-- `lurek.render.setColor`: Sets the active drawing color for all subsequent draw operations.
-- `lurek.render.setColorMask`: Sets which color channels are written during draw calls. Call with no args to enable all.
-- `lurek.render.setDefaultFilter`: Sets the default texture filtering mode for newly created images.
-- `lurek.render.setDefaultFont`: Selects a built-in default font by bundled point size and makes it the active render font.
-- `lurek.render.setDepthMode`: Sets the depth comparison mode and whether depth writes are enabled.
-- `lurek.render.setFont`: Sets the active font used by print, printf, and other text rendering calls.
-- `lurek.render.setFontLineHeight`: Sets the line height override for a font (currently a no-op stub).
-- `lurek.render.setLayer`: Sets the active rendering layer by name. Creates the layer if it does not exist.
-- `lurek.render.setLayerVisible`: Sets whether a named rendering layer is visible.
-- `lurek.render.setLayerZOrder`: Sets the z-order value of a named rendering layer.
-- `lurek.render.setLineWidth`: Sets the line width for subsequent line-mode draw calls.
-- `lurek.render.setPointSize`: Sets the point size for subsequent point draw calls.
-- `lurek.render.setScissor`: Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
-- `lurek.render.setShader`: Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
-- `lurek.render.setStencilMode`: Sets the stencil write action, compare function, and reference value at once.
-- `lurek.render.setStencilTest`: Configures the stencil comparison test for subsequent draws. Pass nil to disable.
-- `lurek.render.setWireframe`: Enables or disables wireframe rendering mode.
-- `lurek.render.shear`: Applies a shear (skew) to the current transformation matrix.
-- `lurek.render.stencil`: Begins a stencil write pass with the given action and reference value.
-- `lurek.render.translate`: Applies a translation to the current transformation matrix.
-- `lurek.render.triangle`: Draws a triangle from three vertex positions.
+- `lurek.render.applyTransform(mat) -> nil`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
+- `lurek.render.arc(mode, x, y, radius, angle1, angle2, segments?) -> nil`: Draws a filled or outlined circular arc segment.
+- `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
+- `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
+- `lurek.render.captureScreenshot(callback) -> nil`: Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
+- `lurek.render.circle(mode, x, y, radius) -> nil`: Draws a filled or outlined circle at the given position.
+- `lurek.render.clear(r?, g?, b?) -> nil`: Clears all queued render commands for the current frame.
+- `lurek.render.clearStencil() -> nil`: Resets the stencil state to defaults (no stencil operations).
+- `lurek.render.currentLayer() -> string`: Returns the name of the currently active rendering layer.
+- `lurek.render.draw(drawable, x?, y?, r?, sx?, sy?, ox?, oy?) -> nil`: Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
+- `lurek.render.drawBatch(batch) -> nil`: Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
+- `lurek.render.drawBevelRect(x, y, w, h, bevelW?, style?, opts?) -> nil`: Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
+- `lurek.render.drawBevelRect(x, y, w, h, bevelW?, style?, opts?) -> nil`: Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
+- `lurek.render.drawColoredPolygon(vertices, colors, mode?) -> nil`: Draws a polygon with per-vertex colors.
+- `lurek.render.drawColoredPolygon(vertices, colors, mode?) -> nil`: Draws a polygon with per-vertex colors.
+- `lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segs?) -> nil`: Draws a cubic Bezier curve through start, two control points, and end.
+- `lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments?) -> nil`: Draws a cubic Bezier curve through start, two control points, and end.
+- `lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir?) -> nil`: Draws a rectangle with a two-color gradient fill.
+- `lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir?) -> nil`: Draws a rectangle with a two-color gradient fill.
+- `lurek.render.drawHexTile(cx, cy, size, orientation?, mode?) -> nil`: Draws a regular hexagonal tile at the given center position.
+- `lurek.render.drawHexTile(cx, cy, size, orientation?, mode?) -> nil`: Draws a regular hexagonal tile at the given center position.
+- `lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts?) -> nil`: Draws an isometric cube tile with configurable face colors and optional textures.
+- `lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts?) -> nil`: Draws an isometric cube tile with configurable face colors and optional textures.
+- `lurek.render.drawMany(list) -> nil`: Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
+- `lurek.render.drawNineSlice(slice, x, y, w, h) -> nil`: Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
+- `lurek.render.drawPath(path, mode?, close?) -> nil`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
+- `lurek.render.drawPath(path, mode?, close?) -> nil`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
+- `lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segs?) -> nil`: Draws a quadratic Bezier curve through start, control, and end points.
+- `lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segments?) -> nil`: Draws a quadratic Bezier curve through start, control, and end points.
+- `lurek.render.drawq(image, quad, x?, y?, r?, sx?, sy?, ox?, oy?) -> nil`: Draws a sub-region of an image defined by a Quad, with optional transform.
+- `lurek.render.ellipse(mode, x, y, rx, ry) -> nil`: Draws a filled or outlined ellipse at the given position.
+- `lurek.render.flushSortGroup(id) -> nil`: Ends a sort group and emits all accumulated draw calls in sorted order.
+- `lurek.render.flushSortGroup(id) -> nil`: Ends a sort group and emits all accumulated draw calls in sorted order.
+- `lurek.render.getBackgroundColor() -> number, number, number, number`: Returns the current background clear color.
+- `lurek.render.getBlendMode() -> string`: Returns the current blend mode name.
+- `lurek.render.getBuiltInFontNames() -> string[]`: Returns all stable built-in font names.
+- `lurek.render.getCanvas() -> LCanvas`: Returns the currently active canvas, or nil if drawing to the screen.
+- `lurek.render.getCanvasSize(canvas) -> number, number`: Returns the pixel dimensions of a canvas.
+- `lurek.render.getColor() -> number, number, number, number`: Returns the current drawing color.
+- `lurek.render.getColorMask() -> boolean, boolean, boolean, boolean`: Returns the current color write mask.
+- `lurek.render.getDefaultFilter() -> string, string, number`: Returns the current default texture filtering settings.
+- `lurek.render.getDefaultFont(pointSize?, bold?) -> LFont`: Returns a built-in default font at the nearest available bundled point size.
+- `lurek.render.getDepthMode() -> string, boolean`: Returns the current depth comparison mode and write-enable flag.
+- `lurek.render.getDimensions() -> number, number`: Returns the current window width and height.
+- `lurek.render.getFont() -> LFont`: Returns the currently active font, or nil if none is set.
+- `lurek.render.getFontAscent(font) -> number`: Returns the ascent (pixels above baseline) of the given font.
+- `lurek.render.getFontCellWidth(font) -> number`: Returns the fixed cell width of a bitmap font.
+- `lurek.render.getFontDescent(font) -> number`: Returns the descent (pixels below baseline) of the given font.
+- `lurek.render.getFontHeight(font) -> number`: Returns the line height of the given font.
+- `lurek.render.getFontLineHeight(font) -> number`: Returns the line spacing of the given font.
+- `lurek.render.getFontSizes() -> number[]`: Returns all available built-in point sizes.
+- `lurek.render.getFontWidth(font, text) -> number`: Measures the pixel width of text using the given font.
+- `lurek.render.getFontWrap(text, limit) -> LuaValue, number`: Word-wraps text using the active font and returns the resulting lines and widest line width.
+- `lurek.render.getHeight() -> number`: Returns the current window height in pixels.
+- `lurek.render.getLayerZOrder(name) -> number`: Returns the z-order value of a named rendering layer.
+- `lurek.render.getLineWidth() -> number`: Returns the current line width used for line-mode drawing.
+- `lurek.render.getPointSize() -> number`: Returns the current point diameter used for point drawing.
+- `lurek.render.getScissor() -> number, number, number, number`: Returns the current scissor rectangle, or nothing if no scissor is set.
+- `lurek.render.getShader() -> LShader`: Returns the currently active shader, or nil if using the default.
+- `lurek.render.getStats() -> table`: Returns a table of rendering statistics for the current frame.
+- `lurek.render.getStencilMode() -> string, string, number`: Returns the current stencil action, compare mode, and reference value.
+- `lurek.render.getWidth() -> number`: Returns the current window width in pixels.
+- `lurek.render.intersectScissor(x, y, w, h) -> nil`: Intersects the given rectangle with the current scissor, narrowing the drawable region.
+- `lurek.render.isBold() -> boolean`: Returns true if the current default font selection uses the bold variant.
+- `lurek.render.isLayerVisible(name) -> boolean`: Returns whether a named rendering layer is currently visible.
+- `lurek.render.isWireframe() -> boolean`: Returns whether wireframe rendering is currently active.
+- `lurek.render.line(...) -> nil`: Draws a line between two points, or a polyline through multiple points.
+- `lurek.render.loadModel(path) -> LObjModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
+- `lurek.render.loadObj(path) -> LObjModel`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
+- `lurek.render.newCanvas(width, height) -> LCanvas`: Creates a new off-screen render target with the given dimensions.
+- `lurek.render.newDepthSorter() -> LDepthSorter`: Registers the depth-sorted drawing helper constructor in the render module.
+- `lurek.render.newDrawLayer() -> LDrawLayer`: Creates a new z-ordered draw layer for sorting draw callbacks by depth.
+- `lurek.render.newFont(pathOrSize, size?) -> LFont`: Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
+- `lurek.render.newImage(pathOrData, colorSpace?) -> LImage`: Loads a texture from a file path or creates one from an ImageData object.
+- `lurek.render.newLayer(name, zOrder?) -> nil`: Creates a named rendering layer with an optional z-order for draw call organization.
+- `lurek.render.newMesh(verts, mode?) -> LMesh`: Creates a custom vertex mesh from an array of vertex data tables.
+- `lurek.render.newNineSlice(image, top, right, bottom, left) -> LNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
+- `lurek.render.newQuad(x, y, w, h, sw, sh) -> LQuad`: Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
+- `lurek.render.newShader(code) -> LShader`: Compiles a WGSL shader program from source code and returns a handle.
+- `lurek.render.newShape() -> LShape`: Creates a new retained compound shape for accumulating draw commands.
+- `lurek.render.newSpriteBatch(image, max?) -> LSpriteBatch`: Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
+- `lurek.render.origin() -> nil`: Resets the current transformation matrix to the identity (no transform).
+- `lurek.render.points(...) -> nil`: Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
+- `lurek.render.polygon(mode, ...) -> nil`: Draws a polygon from a flat list of x,y vertex coordinates.
+- `lurek.render.pop() -> nil`: Pops the top transformation matrix from the transform stack, restoring the previous one.
+- `lurek.render.popLayer(id) -> nil`: Ends a compositing layer and composites it with the previous content.
+- `lurek.render.popLayer(id) -> nil`: Ends a compositing layer and composites it with the previous content.
+- `lurek.render.print(text, x?, y?, scale?) -> nil`: Draws text using the active font at the given position.
+- `lurek.render.printRich(spans, x, y) -> nil`: Draws rich text composed of individually styled spans at the given position.
+- `lurek.render.printRichWithFont(font, spans, x, y) -> nil`: Draws rich text using a specific font without changing the global active font.
+- `lurek.render.printRotated(text, x, y, angle, scale?) -> nil`: Draws text centered and rotated around its midpoint.
+- `lurek.render.printRotatedWithFont(font, text, x, y, angle, scale?) -> nil`: Draws text centered and rotated around its midpoint using a specific font without changing the global active font.
+- `lurek.render.printWithFont(font, text, x?, y?, scale?) -> nil`: Draws text using a specific font without changing the global active font.
+- `lurek.render.printf(text, x, y, limit, align?) -> nil`: Draws word-wrapped and aligned text within a pixel-width limit.
+- `lurek.render.printfWithFont(font, text, x, y, limit, align?) -> nil`: Draws word-wrapped and aligned text with a specific font without changing the global active font.
+- `lurek.render.push() -> nil`: Pushes the current transformation matrix onto the transform stack.
+- `lurek.render.pushLayer(id, alpha?, blendMode?) -> nil`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
+- `lurek.render.pushLayer(id, alpha?, blendMode?) -> nil`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
+- `lurek.render.pushSortKey(depth) -> nil`: Sets the depth sort key for subsequent draw calls within the current sort group.
+- `lurek.render.pushSortKey(depth) -> nil`: Sets the depth sort key for subsequent draw calls within the current sort group.
+- `lurek.render.rectangle(mode, x, y, w, h, rx?, ry?) -> nil`: Draws a rectangle. If rx is provided, draws a rounded rectangle.
+- `lurek.render.resetCanvas(canvas) -> nil`: Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
+- `lurek.render.rotate(angle) -> nil`: Applies a rotation to the current transformation matrix.
+- `lurek.render.saveScreenshot(path) -> nil`: Saves a screenshot of the current frame to a file under the save/ directory.
+- `lurek.render.scale(sx, sy?) -> nil`: Applies scaling to the current transformation matrix.
+- `lurek.render.setBackgroundColor(r, g, b) -> nil`: Sets the background clear color used at the start of each frame.
+- `lurek.render.setBlendMode(mode) -> nil`: Sets the blend mode for subsequent draw operations.
+- `lurek.render.setBold(bold) -> nil`: Sets whether subsequent font size lookups use the bold Courier New variant.
+- `lurek.render.setCanvas(canvas?) -> nil`: Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
+- `lurek.render.setColor(r, g, b, a?) -> nil`: Sets the active drawing color for all subsequent draw operations.
+- `lurek.render.setColorMask(r?, g?, b?, a?) -> nil`: Sets which color channels are written during draw calls. Call with no args to enable all.
+- `lurek.render.setDefaultFilter(min, mag, anisotropy?) -> nil`: Sets the default texture filtering mode for newly created images.
+- `lurek.render.setDefaultFont(pointSize?, bold?) -> LFont`: Selects a built-in default font by bundled point size and makes it the active render font.
+- `lurek.render.setDepthMode(mode, write?) -> nil`: Sets the depth comparison mode and whether depth writes are enabled.
+- `lurek.render.setFont(font) -> nil`: Sets the active font used by print, printf, and other text rendering calls.
+- `lurek.render.setFontLineHeight(font, lh) -> nil`: Sets the line height override for a font (currently a no-op stub).
+- `lurek.render.setLayer(name) -> nil`: Sets the active rendering layer by name. Creates the layer if it does not exist.
+- `lurek.render.setLayerVisible(name, visible) -> nil`: Sets whether a named rendering layer is visible.
+- `lurek.render.setLayerZOrder(name, z) -> nil`: Sets the z-order value of a named rendering layer.
+- `lurek.render.setLineWidth(w) -> nil`: Sets the line width for subsequent line-mode draw calls.
+- `lurek.render.setPointSize(size) -> nil`: Sets the point size for subsequent point draw calls.
+- `lurek.render.setScissor(x?, y?, w?, h?) -> nil`: Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
+- `lurek.render.setShader(shader?) -> nil`: Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
+- `lurek.render.setStencilMode(action, compare?, value?) -> nil`: Sets the stencil write action, compare function, and reference value at once.
+- `lurek.render.setStencilTest(compare?, value?) -> nil`: Configures the stencil comparison test for subsequent draws. Pass nil to disable.
+- `lurek.render.setWireframe(enabled) -> nil`: Enables or disables wireframe rendering mode.
+- `lurek.render.shear(kx, ky) -> nil`: Applies a shear (skew) to the current transformation matrix.
+- `lurek.render.stencil(action?, value?) -> nil`: Begins a stencil write pass with the given action and reference value.
+- `lurek.render.translate(x, y) -> nil`: Applies a translation to the current transformation matrix.
+- `lurek.render.triangle(mode, x1, y1, x2, y2, x3, y3) -> nil`: Draws a triangle from three vertex positions.
 
 ### Callbacks
 
@@ -365,12 +358,12 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LCanvas:getDimensions`: Returns both width and height of this canvas.
-- `LCanvas:getHeight`: Returns the height of this canvas in pixels.
-- `LCanvas:getWidth`: Returns the width of this canvas in pixels.
-- `LCanvas:release`: Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
-- `LCanvas:type`: Returns the type name string for this canvas object.
-- `LCanvas:typeOf`: Checks whether this object matches the given type name.
+- `LCanvas:getDimensions() -> number, number`: Returns both width and height of this canvas.
+- `LCanvas:getHeight() -> number`: Returns the height of this canvas in pixels.
+- `LCanvas:getWidth() -> number`: Returns the width of this canvas in pixels.
+- `LCanvas:release() -> boolean`: Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
+- `LCanvas:type() -> string`: Returns the type name string for this canvas object.
+- `LCanvas:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LDrawLayer Type
 
@@ -382,12 +375,12 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LDrawLayer:clear`: Discards all queued callbacks without executing them.
-- `LDrawLayer:flush`: Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
-- `LDrawLayer:getCount`: Returns the number of callbacks currently queued.
-- `LDrawLayer:queue`: Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
-- `LDrawLayer:type`: Returns the type name string for this draw layer.
-- `LDrawLayer:typeOf`: Checks whether this object matches the given type name.
+- `LDrawLayer:clear() -> nil`: Discards all queued callbacks without executing them.
+- `LDrawLayer:flush() -> nil`: Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
+- `LDrawLayer:getCount() -> number`: Returns the number of callbacks currently queued.
+- `LDrawLayer:queue(z, f) -> nil`: Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
+- `LDrawLayer:type() -> string`: Returns the type name string for this draw layer.
+- `LDrawLayer:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LFont Type
 
@@ -399,16 +392,16 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LFont:getAscent`: Returns the ascent (pixels above the baseline) of this font.
-- `LFont:getDescent`: Returns the descent (pixels below the baseline) of this font.
-- `LFont:getHeight`: Returns the line height of this font in pixels.
-- `LFont:getLineHeight`: Returns the spacing between consecutive lines of text.
-- `LFont:getWidth`: Measures the pixel width of a string when rendered with this font.
-- `LFont:getWrap`: Word-wraps text to fit within a pixel width limit and returns the resulting lines.
-- `LFont:release`: Releases the font resource. The handle becomes invalid after this call.
-- `LFont:setLineHeight`: Overrides the line height used for multi-line text rendering.
-- `LFont:type`: Returns the type name string for this font object.
-- `LFont:typeOf`: Checks whether this object matches the given type name.
+- `LFont:getAscent() -> number`: Returns the ascent (pixels above the baseline) of this font.
+- `LFont:getDescent() -> number`: Returns the descent (pixels below the baseline) of this font.
+- `LFont:getHeight() -> number`: Returns the line height of this font in pixels.
+- `LFont:getLineHeight() -> number`: Returns the spacing between consecutive lines of text.
+- `LFont:getWidth(text) -> number`: Measures the pixel width of a string when rendered with this font.
+- `LFont:getWrap(text, limit) -> table, number`: Word-wraps text to fit within a pixel width limit and returns the resulting lines.
+- `LFont:release() -> boolean`: Releases the font resource. The handle becomes invalid after this call.
+- `LFont:setLineHeight(height) -> nil`: Overrides the line height used for multi-line text rendering.
+- `LFont:type() -> string`: Returns the type name string for this font object.
+- `LFont:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LImage Type
 
@@ -420,13 +413,13 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LImage:getDimensions`: Returns both width and height of this image.
-- `LImage:getHeight`: Returns the height of this image in pixels.
-- `LImage:getId`: Returns the internal numeric handle ID for this image.
-- `LImage:getWidth`: Returns the width of this image in pixels.
-- `LImage:release`: Releases the GPU memory for this image. The handle becomes invalid after this call.
-- `LImage:type`: Returns the type name string for this image object.
-- `LImage:typeOf`: Checks whether this object matches the given type name.
+- `LImage:getDimensions() -> number, number`: Returns both width and height of this image.
+- `LImage:getHeight() -> number`: Returns the height of this image in pixels.
+- `LImage:getId() -> number`: Returns the internal numeric handle ID for this image.
+- `LImage:getWidth() -> number`: Returns the width of this image in pixels.
+- `LImage:release() -> boolean`: Releases the GPU memory for this image. The handle becomes invalid after this call.
+- `LImage:type() -> string`: Returns the type name string for this image object.
+- `LImage:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LImageData Type
 
@@ -438,15 +431,15 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LImageData:blit`: Copies pixel data from another ImageData onto this one at the specified position.
-- `LImageData:diff`: Computes a numeric difference score between this image and another of the same size.
-- `LImageData:getHeight`: Returns the height of this image data in pixels.
-- `LImageData:getRegion`: Extracts a rectangular sub-region as a new ImageData.
-- `LImageData:getWidth`: Returns the width of this image data in pixels.
-- `LImageData:mapPixels`: Iterates over every pixel and replaces its color with the return value of the callback.
-- `LImageData:resize`: Creates a new ImageData resized to the given dimensions using bilinear sampling.
-- `LImageData:type`: Returns the type name of this object.
-- `LImageData:typeOf`: Checks whether this object matches the given type name.
+- `LImageData:blit(source, dstX, dstY) -> nil`: Copies pixel data from another ImageData onto this one at the specified position.
+- `LImageData:diff(other) -> number`: Computes a numeric difference score between this image and another of the same size.
+- `LImageData:getHeight() -> number`: Returns the height of this image data in pixels.
+- `LImageData:getRegion(x, y, w, h) -> LImageData`: Extracts a rectangular sub-region as a new ImageData.
+- `LImageData:getWidth() -> number`: Returns the width of this image data in pixels.
+- `LImageData:mapPixels(callback) -> nil`: Iterates over every pixel and replaces its color with the return value of the callback.
+- `LImageData:resize(w, h) -> LImageData`: Creates a new ImageData resized to the given dimensions using bilinear sampling.
+- `LImageData:type() -> string`: Returns the type name of this object.
+- `LImageData:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LMesh Type
 
@@ -458,13 +451,13 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LMesh:getVertex`: Returns the data for a single vertex by 1-based index.
-- `LMesh:getVertexCount`: Returns the number of vertices in this mesh.
-- `LMesh:release`: Releases the mesh GPU resource and invalidates the handle.
-- `LMesh:setTexture`: Assigns or removes a texture for this mesh. Pass nil to clear the texture.
-- `LMesh:setVertex`: Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
-- `LMesh:type`: Returns the type name string for this mesh object.
-- `LMesh:typeOf`: Checks whether this object matches the given type name.
+- `LMesh:getVertex(index) -> number, number, number, number, number, number, number, number`: Returns the data for a single vertex by 1-based index.
+- `LMesh:getVertexCount() -> number`: Returns the number of vertices in this mesh.
+- `LMesh:release() -> boolean`: Releases the mesh GPU resource and invalidates the handle.
+- `LMesh:setTexture(image?) -> nil`: Assigns or removes a texture for this mesh. Pass nil to clear the texture.
+- `LMesh:setVertex(index, data) -> nil`: Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
+- `LMesh:type() -> string`: Returns the type name string for this mesh object.
+- `LMesh:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LNineSlice Type
 
@@ -476,10 +469,10 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LNineSlice:getInsets`: Returns the border insets (top, right, bottom, left) that define the stretchable regions.
-- `LNineSlice:getTextureSize`: Returns the pixel dimensions of the underlying source texture.
-- `LNineSlice:type`: Returns the type name of this object.
-- `LNineSlice:typeOf`: Checks whether this object matches the given type name.
+- `LNineSlice:getInsets() -> number, number, number, number`: Returns the border insets (top, right, bottom, left) that define the stretchable regions.
+- `LNineSlice:getTextureSize() -> number, number`: Returns the pixel dimensions of the underlying source texture.
+- `LNineSlice:type() -> string`: Returns the type name of this object.
+- `LNineSlice:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LObjModel Type
 
@@ -491,12 +484,12 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LObjModel:getFaceCount`: Returns the number of faces (triangles) in this OBJ model.
-- `LObjModel:getNormalCount`: Returns the number of vertex normals in this OBJ model.
-- `LObjModel:getUvCount`: Returns the number of UV texture coordinates in this OBJ model.
-- `LObjModel:getVertexCount`: Returns the number of vertices in this OBJ model.
-- `LObjModel:projectToMesh`: Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
-- `LObjModel:renderToImage`: Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
+- `LObjModel:getFaceCount() -> number`: Returns the number of faces (triangles) in this OBJ model.
+- `LObjModel:getNormalCount() -> number`: Returns the number of vertex normals in this OBJ model.
+- `LObjModel:getUvCount() -> number`: Returns the number of UV texture coordinates in this OBJ model.
+- `LObjModel:getVertexCount() -> number`: Returns the number of vertices in this OBJ model.
+- `LObjModel:projectToMesh(camera, screenW, screenH) -> table`: Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
+- `LObjModel:renderToImage(width, height, rotation?) -> LImage`: Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
 
 #### LObjModelProjectToMeshResult Type
 
@@ -527,11 +520,11 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LQuad:getTextureDimensions`: Returns the full dimensions of the source texture this quad references.
-- `LQuad:getViewport`: Returns the quad's viewport rectangle within the source texture.
-- `LQuad:setViewport`: Updates the quad's viewport rectangle.
-- `LQuad:type`: Returns the type name string for this quad object.
-- `LQuad:typeOf`: Checks whether this object matches the given type name.
+- `LQuad:getTextureDimensions() -> number, number`: Returns the full dimensions of the source texture this quad references.
+- `LQuad:getViewport() -> number, number, number, number`: Returns the quad's viewport rectangle within the source texture.
+- `LQuad:setViewport(x, y, w, h) -> nil`: Updates the quad's viewport rectangle.
+- `LQuad:type() -> string`: Returns the type name string for this quad object.
+- `LQuad:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LRenderGetStatsResult Type
 
@@ -565,11 +558,11 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LShader:hasUniform`: Checks whether this shader declares a uniform with the given name.
-- `LShader:release`: Releases the shader resource. If active, the default shader is restored.
-- `LShader:send`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
-- `LShader:type`: Returns the type name string for this shader object.
-- `LShader:typeOf`: Checks whether this object matches the given type name.
+- `LShader:hasUniform(name) -> boolean`: Checks whether this shader declares a uniform with the given name.
+- `LShader:release() -> boolean`: Releases the shader resource. If active, the default shader is restored.
+- `LShader:send(name, value) -> nil`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+- `LShader:type() -> string`: Returns the type name string for this shader object.
+- `LShader:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LShape Type
 
@@ -581,22 +574,22 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LShape:arc`: Adds a filled or outlined arc command to the shape.
-- `LShape:circle`: Adds a filled or outlined circle command to the shape.
-- `LShape:clear`: Removes all drawing commands from this shape, making it empty.
-- `LShape:draw`: Renders the accumulated shape commands to the screen with optional transform.
-- `LShape:ellipse`: Adds an ellipse command to the shape.
-- `LShape:getCommandCount`: Returns the number of drawing commands accumulated in this shape.
-- `LShape:line`: Adds a line segment command to the shape.
-- `LShape:polygon`: Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
-- `LShape:polyline`: Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
-- `LShape:rectangle`: Adds a rectangle command to the shape.
-- `LShape:roundedRectangle`: Adds a rounded rectangle command to the shape.
-- `LShape:setColor`: Sets the drawing color for subsequent shape commands.
-- `LShape:setLineWidth`: Sets the line width for subsequent line-mode shape commands.
-- `LShape:triangle`: Adds a triangle command to the shape.
-- `LShape:type`: Returns the type name string for this shape object.
-- `LShape:typeOf`: Checks whether this object matches the given type name.
+- `LShape:arc(mode, x, y, r, astart, aend, segments?) -> nil`: Adds a filled or outlined arc command to the shape.
+- `LShape:circle(mode, x, y, r) -> nil`: Adds a filled or outlined circle command to the shape.
+- `LShape:clear() -> nil`: Removes all drawing commands from this shape, making it empty.
+- `LShape:draw(x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Renders the accumulated shape commands to the screen with optional transform.
+- `LShape:ellipse(mode, x, y, rx, ry) -> nil`: Adds an ellipse command to the shape.
+- `LShape:getCommandCount() -> number`: Returns the number of drawing commands accumulated in this shape.
+- `LShape:line(x1, y1, x2, y2) -> nil`: Adds a line segment command to the shape.
+- `LShape:polygon(mode, ...) -> nil`: Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
+- `LShape:polyline(...) -> nil`: Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
+- `LShape:rectangle(mode, x, y, w, h) -> nil`: Adds a rectangle command to the shape.
+- `LShape:roundedRectangle(mode, x, y, w, h, rx, ry?) -> nil`: Adds a rounded rectangle command to the shape.
+- `LShape:setColor(r, g, b, a?) -> nil`: Sets the drawing color for subsequent shape commands.
+- `LShape:setLineWidth(w) -> nil`: Sets the line width for subsequent line-mode shape commands.
+- `LShape:triangle(mode, x1, y1, x2, y2, x3, y3) -> nil`: Adds a triangle command to the shape.
+- `LShape:type() -> string`: Returns the type name string for this shape object.
+- `LShape:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LSpriteBatch Type
 
@@ -608,10 +601,10 @@ In practice, `lurek.render` is the module that turns frame intent into presented
 
 ##### Methods
 
-- `LSpriteBatch:add`: Adds a sprite entry to the batch at the given position with optional transform.
-- `LSpriteBatch:clear`: Removes all entries from the sprite batch.
-- `LSpriteBatch:getBufferSize`: Returns the maximum number of entries this batch can hold.
-- `LSpriteBatch:getCount`: Returns the number of sprite entries currently in the batch.
-- `LSpriteBatch:release`: Releases the sprite batch resource.
-- `LSpriteBatch:type`: Returns the type name string for this sprite batch.
-- `LSpriteBatch:typeOf`: Checks whether this object matches the given type name.
+- `LSpriteBatch:add(x, y, r?, sx?, sy?, ox?, oy?) -> number`: Adds a sprite entry to the batch at the given position with optional transform.
+- `LSpriteBatch:clear() -> nil`: Removes all entries from the sprite batch.
+- `LSpriteBatch:getBufferSize() -> number`: Returns the maximum number of entries this batch can hold.
+- `LSpriteBatch:getCount() -> number`: Returns the number of sprite entries currently in the batch.
+- `LSpriteBatch:release() -> boolean`: Releases the sprite batch resource.
+- `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
+- `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.

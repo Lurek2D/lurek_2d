@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `terminal` module is a sophisticated Feature Systems tier component that provides a full-featured character-grid terminal emulator within the engine.
+- Grid terminal supporting ANSI formats, syntax highlighting, and cycling tab-completions.
+- Cell widgets with input focus, scrollback history, and pixel-perfect rendering.
 
 ## General Info
 
@@ -16,11 +17,13 @@
 
 ## Summary
 
-Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
+This module introduces a highly interactive, character-grid emulator that maps text-based layouts directly into the visual window. By translating virtual screen positions into structured cell matrices, it allows developers to build classic console-like displays and terminal environments within the game runtime. The system stores detailed cell attributes including glyphs, foreground and background colors, and custom styles, serving as the foundational layer for text-mode graphics.
 
-Beyond raw text rendering, the terminal provides a surprisingly capable immediate-mode widget framework (`widget.rs`). Developers can compose interactive interfaces directly on the character grid using pre-built elements like Buttons, Labels, TextBoxes, Lists, and Panels. These widgets handle their own bounds checking, input routing, and rendering (complete with ASCII border drawing and shaded backgrounds). To support command-line workflows, the module includes a `CompletionEngine` for context-aware tab completion, a persistent command history buffer for quick recall, and a scrollback buffer that gracefully evicts the oldest lines when capacity is reached. For specialized display needs—such as the interactive Lua REPL (`lurek.repl`)—the module integrates a regex-driven `highlighter.rs` that applies token-based syntax coloring to code inputs in real-time.
+To drive dynamic interactions, the terminal incorporates an advanced ANSI parser that extracts rich styling flags, bold formatting, and full RGB colors from incoming byte streams. This parser coexists with a lightweight syntax highlighter that applies regex-based rules to colorize text on the fly. Furthermore, an intelligent completion engine processes command histories and cycles candidates, offering console navigation and text-entry assistance.
 
-The rendering pipeline bridges the gap between the character grid and the engine's graphical backend. The terminal state is efficiently composited and flattened into batched `RenderCommand` sequences, mapped directly to loaded bitmap fonts for pixel-perfect display. The terminal can also software-rasterize its grid directly into an `ImageData` buffer, useful for generating preview thumbnails or headless output. Fully accessible via the `lurek.terminal.*` API, this module is an invaluable tool for building in-game developer tools, specialized text-based mini-games, and deeply interactive console environments.
+Beyond simple character output, the module features an interactive widget framework built specifically for cell-bound layouts. Standard components include labels, action buttons, scrollable lists, text input fields, and decorative border panels drawn with box characters. These widgets share a unified event model and input dispatcher that maps raw mouse coordinates and key presses to the active widget layout, keeping keyboard focus and mouse interactions intuitive.
+
+Finally, the terminal integrates a powerful render path that projects the active cells and widget compositions directly onto the screen. This system also handles software image snapshots and exports terminal content to static files. When cell metrics or display scales shift, the engine refits the main window to maintain crisp, pixel-perfect text presentation, completing the module's role as a self-contained environment.
 
 ## Imports
 
@@ -107,35 +110,35 @@ The rendering pipeline bridges the gap between the character grid and the engine
 
 ### Functions
 
-- `lurek.terminal.addCompletion`: Registers a candidate string for tab-completion in the shared completion engine.
-- `lurek.terminal.applyTheme`: Applies a named color theme to the terminal, setting default foreground and background colors.
-- `lurek.terminal.clearCmdHistory`: Removes all entries from the terminal command history.
-- `lurek.terminal.clearCompletions`: Removes all registered completion candidates from the shared completion engine.
-- `lurek.terminal.cmdHistoryLen`: Returns the number of commands currently stored in the terminal command history.
-- `lurek.terminal.getCompletions`: Returns all completion candidates matching the given prefix string.
-- `lurek.terminal.getMaxCols`: Returns the engine-defined maximum number of columns a terminal grid can have.
-- `lurek.terminal.getMaxRows`: Returns the engine-defined maximum number of rows a terminal grid can have.
-- `lurek.terminal.getScrollback`: Retrieves a range of lines from the terminal scrollback buffer.
-- `lurek.terminal.newBorder`: Creates a new decorative border widget drawn using box-drawing characters.
-- `lurek.terminal.newButton`: Creates a new clickable button widget with the given position, size, and label text.
-- `lurek.terminal.newLabel`: Creates a new label widget that displays static text at the given cell position.
-- `lurek.terminal.newList`: Creates a new scrollable list widget for displaying and selecting items.
-- `lurek.terminal.newPanel`: Creates a new panel widget that can contain child widgets for grouped layout.
-- `lurek.terminal.newTerminal`: Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
-- `lurek.terminal.newTextBox`: Creates a new single-line text input widget at the given position with a fixed width.
-- `lurek.terminal.nextCmd`: Navigates forward in the terminal command history, returning the next command or nil if at the end.
-- `lurek.terminal.nextCompletion`: Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
-- `lurek.terminal.parseAnsi`: Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.
-- `lurek.terminal.prevCmd`: Navigates backward in the terminal command history, returning the previous command or nil if at the start.
-- `lurek.terminal.printAnsi`: Renders ANSI-colored text directly onto the terminal grid at the given cell position.
-- `lurek.terminal.printHighlighted`: Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.
-- `lurek.terminal.pushCmdHistory`: Appends a command string to the terminal command history for up/down arrow recall.
-- `lurek.terminal.pushScrollback`: Appends a line of text to the terminal scrollback buffer for later retrieval.
-- `lurek.terminal.removeCompletion`: Removes a previously registered completion candidate from the shared completion engine.
-- `lurek.terminal.resetCompletion`: Resets the completion cycling state so the next call to nextCompletion starts from the first match.
-- `lurek.terminal.scrollbackLen`: Returns the number of lines currently stored in the terminal scrollback buffer.
-- `lurek.terminal.setScrollbackCap`: Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
-- `lurek.terminal.stripAnsi`: Removes all ANSI escape sequences from a string, returning plain text.
+- `lurek.terminal.addCompletion(candidate) -> nil`: Registers a candidate string for tab-completion in the shared completion engine.
+- `lurek.terminal.applyTheme(terminal, theme) -> nil`: Applies a named color theme to the terminal, setting default foreground and background colors.
+- `lurek.terminal.clearCmdHistory(terminal) -> nil`: Removes all entries from the terminal command history.
+- `lurek.terminal.clearCompletions() -> nil`: Removes all registered completion candidates from the shared completion engine.
+- `lurek.terminal.cmdHistoryLen(terminal) -> integer`: Returns the number of commands currently stored in the terminal command history.
+- `lurek.terminal.getCompletions(prefix) -> string[]`: Returns all completion candidates matching the given prefix string.
+- `lurek.terminal.getMaxCols() -> integer`: Returns the engine-defined maximum number of columns a terminal grid can have.
+- `lurek.terminal.getMaxRows() -> integer`: Returns the engine-defined maximum number of rows a terminal grid can have.
+- `lurek.terminal.getScrollback(terminal, offset, count) -> string[]`: Retrieves a range of lines from the terminal scrollback buffer.
+- `lurek.terminal.newBorder(col, row, width, height) -> LWidget`: Creates a new decorative border widget drawn using box-drawing characters.
+- `lurek.terminal.newButton(col, row, width, height?, text?) -> LWidget`: Creates a new clickable button widget with the given position, size, and label text.
+- `lurek.terminal.newLabel(col, row, text?) -> LWidget`: Creates a new label widget that displays static text at the given cell position.
+- `lurek.terminal.newList(col, row, width, height) -> LWidget`: Creates a new scrollable list widget for displaying and selecting items.
+- `lurek.terminal.newPanel(col, row, width?, height?) -> LWidget`: Creates a new panel widget that can contain child widgets for grouped layout.
+- `lurek.terminal.newTerminal(cols?, rows?) -> LTerminal`: Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
+- `lurek.terminal.newTextBox(col, row, width) -> LWidget`: Creates a new single-line text input widget at the given position with a fixed width.
+- `lurek.terminal.nextCmd(terminal) -> string`: Navigates forward in the terminal command history, returning the next command or nil if at the end.
+- `lurek.terminal.nextCompletion(prefix) -> string`: Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
+- `lurek.terminal.parseAnsi(text) -> table`: Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.
+- `lurek.terminal.prevCmd(terminal) -> string`: Navigates backward in the terminal command history, returning the previous command or nil if at the start.
+- `lurek.terminal.printAnsi(terminal, col, row, text) -> nil`: Renders ANSI-colored text directly onto the terminal grid at the given cell position.
+- `lurek.terminal.printHighlighted(terminal, col, row, text, rules) -> nil`: Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.
+- `lurek.terminal.pushCmdHistory(terminal, cmd) -> nil`: Appends a command string to the terminal command history for up/down arrow recall.
+- `lurek.terminal.pushScrollback(terminal, line) -> nil`: Appends a line of text to the terminal scrollback buffer for later retrieval.
+- `lurek.terminal.removeCompletion(candidate) -> nil`: Removes a previously registered completion candidate from the shared completion engine.
+- `lurek.terminal.resetCompletion() -> nil`: Resets the completion cycling state so the next call to nextCompletion starts from the first match.
+- `lurek.terminal.scrollbackLen(terminal) -> integer`: Returns the number of lines currently stored in the terminal scrollback buffer.
+- `lurek.terminal.setScrollbackCap(terminal, cap) -> nil`: Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
+- `lurek.terminal.stripAnsi(text) -> string`: Removes all ANSI escape sequences from a string, returning plain text.
 
 ### Callbacks
 
@@ -159,28 +162,28 @@ The rendering pipeline bridges the gap between the character grid and the engine
 
 ##### Methods
 
-- `LTerminal:addWidget`: Attaches a widget to this terminal so it is rendered and receives input events.
-- `LTerminal:autoResize`: Requests the window to resize so it exactly fits the terminal grid at the current cell size.
-- `LTerminal:clear`: Clears all cells in the terminal grid, resetting characters and colors to defaults.
-- `LTerminal:clearWidgets`: Removes all attached widgets from this terminal at once.
-- `LTerminal:get`: Reads the character and colors at a specific cell in the terminal grid.
-- `LTerminal:getCellSize`: Returns the active terminal cell width and height in pixels, using custom override or font metrics.
-- `LTerminal:getDimensions`: Returns the number of columns and rows in the terminal grid.
-- `LTerminal:getFocused`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
-- `LTerminal:getWidgetCount`: Returns the number of widgets currently attached to this terminal.
-- `LTerminal:keypressed`: Forwards a key press event to the terminal for widget input processing.
-- `LTerminal:mousepressed`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
-- `LTerminal:print`: Writes text to the terminal grid starting at a specific cell.
-- `LTerminal:removeWidget`: Detaches a widget from this terminal, removing it from rendering and input handling.
-- `LTerminal:render`: Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
-- `LTerminal:resetCellSize`: Removes any custom cell size override, reverting to the active font metrics and refitting the window.
-- `LTerminal:set`: Writes a character with foreground and background color to a specific cell in the terminal grid.
-- `LTerminal:setCellSize`: Overrides the cell width and height used for rendering this terminal grid and refits the window.
-- `LTerminal:setFocus`: Sets which widget currently has keyboard focus, or clears focus when nil is passed.
-- `LTerminal:setFont`: Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
-- `LTerminal:textinput`: Forwards a text input event to the terminal for character entry into focused widgets.
-- `LTerminal:type`: Returns the type name string "LTerminal".
-- `LTerminal:typeOf`: Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+- `LTerminal:addWidget(widget) -> nil`: Attaches a widget to this terminal so it is rendered and receives input events.
+- `LTerminal:autoResize() -> nil`: Requests the window to resize so it exactly fits the terminal grid at the current cell size.
+- `LTerminal:clear() -> nil`: Clears all cells in the terminal grid, resetting characters and colors to defaults.
+- `LTerminal:clearWidgets() -> nil`: Removes all attached widgets from this terminal at once.
+- `LTerminal:get(col, row) -> integer, number, number, number, number, number, number, number, number`: Reads the character and colors at a specific cell in the terminal grid.
+- `LTerminal:getCellSize() -> number, number`: Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+- `LTerminal:getDimensions() -> integer, integer`: Returns the number of columns and rows in the terminal grid.
+- `LTerminal:getFocused() -> LWidget`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
+- `LTerminal:getWidgetCount() -> integer`: Returns the number of widgets currently attached to this terminal.
+- `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing.
+- `LTerminal:mousepressed(px, py, button?) -> nil`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
+- `LTerminal:print(col, row, text) -> nil`: Writes text to the terminal grid starting at a specific cell.
+- `LTerminal:removeWidget(widget) -> nil`: Detaches a widget from this terminal, removing it from rendering and input handling.
+- `LTerminal:render(x?, y?) -> nil`: Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+- `LTerminal:resetCellSize() -> nil`: Removes any custom cell size override, reverting to the active font metrics and refitting the window.
+- `LTerminal:set(col, row, ch, fr?, fg?, fb?, fa?, br?, bg?, bb?, ba?) -> nil`: Writes a character with foreground and background color to a specific cell in the terminal grid.
+- `LTerminal:setCellSize(w, h) -> nil`: Overrides the cell width and height used for rendering this terminal grid and refits the window.
+- `LTerminal:setFocus(widget?) -> nil`: Sets which widget currently has keyboard focus, or clears focus when nil is passed.
+- `LTerminal:setFont(height) -> nil`: Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+- `LTerminal:textinput(text) -> boolean`: Forwards a text input event to the terminal for character entry into focused widgets.
+- `LTerminal:type() -> string`: Returns the type name string "LTerminal".
+- `LTerminal:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
 
 #### LTerminalParseAnsiResult Type
 
@@ -208,40 +211,40 @@ The rendering pipeline bridges the gap between the character grid and the engine
 
 ##### Methods
 
-- `LWidget:addChild`: Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
-- `LWidget:addItem`: Appends a text item to a list widget.
-- `LWidget:clearChildren`: Removes all child widgets from a panel widget.
-- `LWidget:clearItems`: Removes all items from a list widget.
-- `LWidget:getChild`: Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
-- `LWidget:getChildCount`: Returns the number of child widgets in a panel widget.
-- `LWidget:getColor`: Returns the foreground color of the widget as RGBA components.
-- `LWidget:getItem`: Returns the text of a list item by its 1-based index.
-- `LWidget:getItemCount`: Returns the number of items in a list widget.
-- `LWidget:getMaxLength`: Returns the maximum character limit of a text box widget.
-- `LWidget:getPosition`: Returns the widget position as 1-based column and row.
-- `LWidget:getSelected`: Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
-- `LWidget:getSize`: Returns the widget dimensions as width and height in cell units.
-- `LWidget:getStyle`: Returns the current border style name of a border or panel widget.
-- `LWidget:getTag`: Returns the current tag string assigned to the widget.
-- `LWidget:getText`: Returns the current text content of a label, button, or text box widget.
-- `LWidget:getTitle`: Returns the current title text of a border or panel widget.
-- `LWidget:isEnabled`: Returns whether the widget is currently enabled for user interaction.
-- `LWidget:isVisible`: Returns whether the widget is currently visible.
-- `LWidget:removeChild`: Removes a child widget from a panel, detaching it from the panel layout.
-- `LWidget:removeItem`: Removes a list item by its 1-based index.
-- `LWidget:setColor`: Sets the foreground color of the widget as RGBA components (0-1 range).
-- `LWidget:setEnabled`: Controls whether the widget accepts user interaction (clicks, typing).
-- `LWidget:setMaxLength`: Sets the maximum number of characters allowed in a text box widget.
-- `LWidget:setOnChange`: Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
-- `LWidget:setOnClick`: Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
-- `LWidget:setOnSelect`: Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
-- `LWidget:setPosition`: Sets the widget position in 1-based cell coordinates within the terminal grid.
-- `LWidget:setSelected`: Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
-- `LWidget:setSize`: Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
-- `LWidget:setStyle`: Sets the border drawing style for a border or panel widget.
-- `LWidget:setTag`: Assigns an arbitrary string tag to the widget for identification or grouping.
-- `LWidget:setText`: Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
-- `LWidget:setTitle`: Sets the title text displayed in the border of a border or panel widget.
-- `LWidget:setVisible`: Controls whether the widget is drawn and receives input events.
-- `LWidget:type`: Returns the type name string "LWidget".
-- `LWidget:typeOf`: Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
+- `LWidget:addChild(child) -> nil`: Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
+- `LWidget:addItem(item) -> nil`: Appends a text item to a list widget.
+- `LWidget:clearChildren() -> nil`: Removes all child widgets from a panel widget.
+- `LWidget:clearItems() -> nil`: Removes all items from a list widget.
+- `LWidget:getChild(index) -> LWidget`: Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
+- `LWidget:getChildCount() -> integer`: Returns the number of child widgets in a panel widget.
+- `LWidget:getColor() -> number, number, number, number`: Returns the foreground color of the widget as RGBA components.
+- `LWidget:getItem(index) -> string`: Returns the text of a list item by its 1-based index.
+- `LWidget:getItemCount() -> integer`: Returns the number of items in a list widget.
+- `LWidget:getMaxLength() -> integer`: Returns the maximum character limit of a text box widget.
+- `LWidget:getPosition() -> integer, integer`: Returns the widget position as 1-based column and row.
+- `LWidget:getSelected() -> integer`: Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
+- `LWidget:getSize() -> integer, integer`: Returns the widget dimensions as width and height in cell units.
+- `LWidget:getStyle() -> string`: Returns the current border style name of a border or panel widget.
+- `LWidget:getTag() -> string`: Returns the current tag string assigned to the widget.
+- `LWidget:getText() -> string`: Returns the current text content of a label, button, or text box widget.
+- `LWidget:getTitle() -> string`: Returns the current title text of a border or panel widget.
+- `LWidget:isEnabled() -> boolean`: Returns whether the widget is currently enabled for user interaction.
+- `LWidget:isVisible() -> boolean`: Returns whether the widget is currently visible.
+- `LWidget:removeChild(child) -> nil`: Removes a child widget from a panel, detaching it from the panel layout.
+- `LWidget:removeItem(index) -> nil`: Removes a list item by its 1-based index.
+- `LWidget:setColor(r, g, b, a?) -> nil`: Sets the foreground color of the widget as RGBA components (0-1 range).
+- `LWidget:setEnabled(enabled) -> nil`: Controls whether the widget accepts user interaction (clicks, typing).
+- `LWidget:setMaxLength(maxLength) -> nil`: Sets the maximum number of characters allowed in a text box widget.
+- `LWidget:setOnChange(callback?) -> nil`: Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
+- `LWidget:setOnClick(callback?) -> nil`: Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
+- `LWidget:setOnSelect(callback?) -> nil`: Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
+- `LWidget:setPosition(col, row) -> nil`: Sets the widget position in 1-based cell coordinates within the terminal grid.
+- `LWidget:setSelected(index?) -> nil`: Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
+- `LWidget:setSize(width, height) -> nil`: Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
+- `LWidget:setStyle(styleName) -> nil`: Sets the border drawing style for a border or panel widget.
+- `LWidget:setTag(tag) -> nil`: Assigns an arbitrary string tag to the widget for identification or grouping.
+- `LWidget:setText(text) -> nil`: Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
+- `LWidget:setTitle(title) -> nil`: Sets the title text displayed in the border of a border or panel widget.
+- `LWidget:setVisible(visible) -> nil`: Controls whether the widget is drawn and receives input events.
+- `LWidget:type() -> string`: Returns the type name string "LWidget".
+- `LWidget:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LWidget" or "Object".

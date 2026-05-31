@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `effect` module manages post-processing effect state and ordered effect stacks for screen-space visuals; weather and atmosphere overlays are handled in the `overlay` module.
+- Manages visual post-processing stacks, shader parameters, and presets.
+- Coordinates capture boundaries, image effect chains, and diagnostics.
 
 ## General Info
 
@@ -16,15 +17,13 @@
 
 ## Summary
 
-The `effect` module is the orchestration layer for post-processing visuals. It manages effect instances, parameter values, stack order, and lifecycle state so teams can build and tune visual pipelines without hardcoding each render path.
+This module represents the visual post-processing pipeline, enabling developers to apply full-screen shader effects to render outputs. It manages effect instances coupling specific shader algorithms with customizable parameters. These apply dynamically using either built-in effect types or custom shaders, giving developers control over the final visual presentation of their games.
 
-Its main job is composition policy. Effects can be enabled, disabled, reordered, inserted, removed, and grouped into reusable presets. This gives projects a practical way to keep visual style consistent across scenes while still allowing runtime adjustments.
+The post-processing stack coordinates the order and execution of multiple visual passes. The stack manages active capture boundaries, directing the renderer to intercept draw commands and route them through the active shader sequence. Effects can be enabled or reordered dynamically, automatically falling back to no-op modes when inactive to preserve processing performance.
 
-The module is data-driven by design. Built-in and custom effects use parameter maps and typed identifiers, so Lua scripts and tooling can configure behavior dynamically. This reduces custom glue code and makes effect setups easier to save, clone, and inspect.
+To streamline styling, a preset system bundles curated configurations into ready-to-use stacks. These presets allow developers to apply complex visual moods with a single operation. Viewport-aware initializations ensure that newly spawned stacks automatically scale to match the window dimensions, maintaining sharp scaling and alignment across different display sizes.
 
-Render integration stays adapter-based: the module prepares capture and apply command sequences, while the renderer performs GPU execution. That boundary keeps responsibilities clean and improves maintainability.
-
-In practice, `lurek.effect` provides one stable control surface for post-FX state: define effects, organize stacks, apply presets, and emit predictable render-facing instructions.
+Additionally, the module supports image-specific processing chains operating independently from main game capture. These custom chains apply shader filters directly to separate graphical assets. Introspection features offer diagnostic stack indicators and shader error displays to make debugging and tuning visual effects straightforward.
 
 ## Imports
 
@@ -98,16 +97,16 @@ In practice, `lurek.effect` provides one stable control surface for post-FX stat
 
 ### Functions
 
-- `lurek.effect.getEffectTypes`: Returns all built-in post-processing effect type names.
-- `lurek.effect.getPresetNames`: Returns all built-in post-processing preset names.
-- `lurek.effect.getShaderErrorDisplay`: Returns whether renderer shader error display overlays are enabled.
-- `lurek.effect.newCustomEffect`: Creates a custom post-processing effect that references an existing shader id.
-- `lurek.effect.newEffect`: Creates a built-in post-processing effect by type name.
-- `lurek.effect.newImageEffect`: Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
-- `lurek.effect.newPass`: Creates a custom post-processing pass from an existing shader id.
-- `lurek.effect.newPresetStack`: Creates a named preset post-processing stack with optional dimensions.
-- `lurek.effect.newStack`: Creates a post-processing stack using optional dimensions or the current window size.
-- `lurek.effect.setShaderErrorDisplay`: Enables or disables renderer shader error display overlays.
+- `lurek.effect.getEffectTypes() -> string[]`: Returns all built-in post-processing effect type names.
+- `lurek.effect.getPresetNames() -> string[]`: Returns all built-in post-processing preset names.
+- `lurek.effect.getShaderErrorDisplay() -> boolean`: Returns whether renderer shader error display overlays are enabled.
+- `lurek.effect.newCustomEffect(shader_id) -> LPostFxEffect`: Creates a custom post-processing effect that references an existing shader id.
+- `lurek.effect.newEffect(type_name) -> LPostFxEffect`: Creates a built-in post-processing effect by type name.
+- `lurek.effect.newImageEffect(spec?, params?) -> LImageEffect`: Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
+- `lurek.effect.newPass(shader_id) -> LPostFxEffect`: Creates a custom post-processing pass from an existing shader id.
+- `lurek.effect.newPresetStack(name, w?, h?) -> LPostFxStack`: Creates a named preset post-processing stack with optional dimensions.
+- `lurek.effect.newStack(w?, h?) -> LPostFxStack`: Creates a post-processing stack using optional dimensions or the current window size.
+- `lurek.effect.setShaderErrorDisplay(enabled) -> nil`: Enables or disables renderer shader error display overlays.
 
 ### Callbacks
 
@@ -129,19 +128,19 @@ In practice, `lurek.effect` provides one stable control surface for post-FX stat
 
 ##### Methods
 
-- `LImageEffect:addEffect`: Appends a built-in post-effect by type name to this image effect chain.
-- `LImageEffect:clear`: Removes every effect from this image effect chain.
-- `LImageEffect:clearEffects`: Removes every effect from this image effect chain.
-- `LImageEffect:clone`: Creates a new image effect chain with cloned effect entries.
-- `LImageEffect:effectCount`: Returns the number of effects in this image effect chain.
-- `LImageEffect:getEffect`: Looks up an image effect by one-based index or effect type name.
-- `LImageEffect:getEffectCount`: Returns the number of effects in this image effect chain.
-- `LImageEffect:removeByIndex`: Removes an image effect by zero-based internal index.
-- `LImageEffect:removeByName`: Removes the first image effect with a matching effect type name.
-- `LImageEffect:removeEffect`: Removes an image effect by one-based index or effect type name.
-- `LImageEffect:save`: Reports success for the current image effect save placeholder.
-- `LImageEffect:type`: Returns the Lua-visible type name for this image effect handle.
-- `LImageEffect:typeOf`: Returns whether this image effect handle matches a supported type name.
+- `LImageEffect:addEffect(name) -> LPostFxEffect`: Appends a built-in post-effect by type name to this image effect chain.
+- `LImageEffect:clear() -> nil`: Removes every effect from this image effect chain.
+- `LImageEffect:clearEffects() -> nil`: Removes every effect from this image effect chain.
+- `LImageEffect:clone() -> LImageEffect`: Creates a new image effect chain with cloned effect entries.
+- `LImageEffect:effectCount() -> integer`: Returns the number of effects in this image effect chain.
+- `LImageEffect:getEffect(key) -> LuaValue`: Looks up an image effect by one-based index or effect type name.
+- `LImageEffect:getEffectCount() -> integer`: Returns the number of effects in this image effect chain.
+- `LImageEffect:removeByIndex(idx) -> boolean`: Removes an image effect by zero-based internal index.
+- `LImageEffect:removeByName(name) -> boolean`: Removes the first image effect with a matching effect type name.
+- `LImageEffect:removeEffect(key) -> boolean`: Removes an image effect by one-based index or effect type name.
+- `LImageEffect:save() -> boolean`: Reports success for the current image effect save placeholder.
+- `LImageEffect:type() -> string`: Returns the Lua-visible type name for this image effect handle.
+- `LImageEffect:typeOf(name) -> boolean`: Returns whether this image effect handle matches a supported type name.
 
 #### LPostFxEffect Type
 
@@ -153,30 +152,30 @@ In practice, `lurek.effect` provides one stable control surface for post-FX stat
 
 ##### Methods
 
-- `LPostFxEffect:disableAutoUniforms`: Disables automatic time and resolution uniforms for this effect.
-- `LPostFxEffect:enableAutoUniforms`: Enables automatic time and resolution uniforms for this effect.
-- `LPostFxEffect:getEffectType`: Returns the renderer effect type name.
-- `LPostFxEffect:getParameter`: Reads a numeric shader parameter and falls back to a default value when missing.
-- `LPostFxEffect:getParameterNames`: Returns the parameter names stored on this effect.
-- `LPostFxEffect:getType`: Returns the renderer effect type name.
-- `LPostFxEffect:getTypeName`: Returns the built-in or custom effect type name.
-- `LPostFxEffect:hasParameter`: Returns whether a shader parameter exists on this effect.
-- `LPostFxEffect:isAutoUniforms`: Returns whether automatic uniforms are enabled for this effect.
-- `LPostFxEffect:isBuiltIn`: Returns whether this effect uses one of the engine built-in effect types.
-- `LPostFxEffect:isEnabled`: Returns whether this effect is enabled on its owning effect object.
-- `LPostFxEffect:setBrightness`: Sets the brightness shader parameter on this effect.
-- `LPostFxEffect:setContrast`: Sets the contrast shader parameter on this effect.
-- `LPostFxEffect:setEnabled`: Enables or disables this effect. This method is available to Lua scripts.
-- `LPostFxEffect:setIntensity`: Sets the intensity shader parameter on this effect.
-- `LPostFxEffect:setOffset`: Sets the offset shader parameter on this effect.
-- `LPostFxEffect:setParameter`: Sets a numeric shader parameter by name.
-- `LPostFxEffect:setRadius`: Sets the radius shader parameter on this effect.
-- `LPostFxEffect:setSaturation`: Sets the saturation shader parameter on this effect.
-- `LPostFxEffect:setScanlineStrength`: Sets the scanline strength shader parameter on this effect.
-- `LPostFxEffect:setStrength`: Sets the strength shader parameter on this effect.
-- `LPostFxEffect:setThreshold`: Sets the threshold shader parameter on this effect.
-- `LPostFxEffect:type`: Returns the Lua-visible type name for this post-processing effect handle.
-- `LPostFxEffect:typeOf`: Returns whether this effect handle matches a supported type name.
+- `LPostFxEffect:disableAutoUniforms() -> nil`: Disables automatic time and resolution uniforms for this effect.
+- `LPostFxEffect:enableAutoUniforms() -> nil`: Enables automatic time and resolution uniforms for this effect.
+- `LPostFxEffect:getEffectType() -> string`: Returns the renderer effect type name.
+- `LPostFxEffect:getParameter(name, default?) -> number`: Reads a numeric shader parameter and falls back to a default value when missing.
+- `LPostFxEffect:getParameterNames() -> string[]`: Returns the parameter names stored on this effect.
+- `LPostFxEffect:getType() -> string`: Returns the renderer effect type name.
+- `LPostFxEffect:getTypeName() -> string`: Returns the built-in or custom effect type name.
+- `LPostFxEffect:hasParameter(name) -> boolean`: Returns whether a shader parameter exists on this effect.
+- `LPostFxEffect:isAutoUniforms() -> boolean`: Returns whether automatic uniforms are enabled for this effect.
+- `LPostFxEffect:isBuiltIn() -> boolean`: Returns whether this effect uses one of the engine built-in effect types.
+- `LPostFxEffect:isEnabled() -> boolean`: Returns whether this effect is enabled on its owning effect object.
+- `LPostFxEffect:setBrightness(v) -> nil`: Sets the brightness shader parameter on this effect.
+- `LPostFxEffect:setContrast(v) -> nil`: Sets the contrast shader parameter on this effect.
+- `LPostFxEffect:setEnabled(enabled) -> nil`: Enables or disables this effect. This method is available to Lua scripts.
+- `LPostFxEffect:setIntensity(v) -> nil`: Sets the intensity shader parameter on this effect.
+- `LPostFxEffect:setOffset(v) -> nil`: Sets the offset shader parameter on this effect.
+- `LPostFxEffect:setParameter(name, value) -> nil`: Sets a numeric shader parameter by name.
+- `LPostFxEffect:setRadius(v) -> nil`: Sets the radius shader parameter on this effect.
+- `LPostFxEffect:setSaturation(v) -> nil`: Sets the saturation shader parameter on this effect.
+- `LPostFxEffect:setScanlineStrength(v) -> nil`: Sets the scanline strength shader parameter on this effect.
+- `LPostFxEffect:setStrength(v) -> nil`: Sets the strength shader parameter on this effect.
+- `LPostFxEffect:setThreshold(v) -> nil`: Sets the threshold shader parameter on this effect.
+- `LPostFxEffect:type() -> string`: Returns the Lua-visible type name for this post-processing effect handle.
+- `LPostFxEffect:typeOf(name) -> boolean`: Returns whether this effect handle matches a supported type name.
 
 #### LPostFxStack Type
 
@@ -188,28 +187,28 @@ In practice, `lurek.effect` provides one stable control surface for post-FX stat
 
 ##### Methods
 
-- `LPostFxStack:add`: Appends an effect to the end of this stack.
-- `LPostFxStack:apply`: Queues this stack's enabled post-effect passes for renderer application.
-- `LPostFxStack:beginCapture`: Starts post-effect capture and queues a renderer begin-capture command.
-- `LPostFxStack:clear`: Removes all effects and pass state from this stack.
-- `LPostFxStack:clearFeedback`: Resets the stack feedback blend factor to zero.
-- `LPostFxStack:dedup`: Removes duplicate effect handles while preserving first occurrences.
-- `LPostFxStack:endCapture`: Ends post-effect capture and queues a renderer end-capture command.
-- `LPostFxStack:getDimensions`: Returns the stack render dimensions.
-- `LPostFxStack:getEffect`: Returns the effect handle at a one-based position.
-- `LPostFxStack:getEffectCount`: Returns the number of effect handles in this stack.
-- `LPostFxStack:getEnabledEffects`: Returns effect handles whose stack passes are enabled.
-- `LPostFxStack:getFeedback`: Returns the current stack feedback blend factor.
-- `LPostFxStack:getHeight`: Returns the stack render height. This method is available to Lua scripts.
-- `LPostFxStack:getWidth`: Returns the stack render width. This method is available to Lua scripts.
-- `LPostFxStack:insert`: Inserts an effect at a one-based stack position.
-- `LPostFxStack:isCapturing`: Returns whether this stack is currently capturing draw commands.
-- `LPostFxStack:isEmpty`: Returns whether this stack has no effects.
-- `LPostFxStack:isEnabled`: Returns whether the effect pass at a one-based position is enabled.
-- `LPostFxStack:len`: Returns the number of effect handles in this stack.
-- `LPostFxStack:remove`: Removes the first matching effect handle from this stack.
-- `LPostFxStack:resize`: Resizes the post-processing stack render target dimensions.
-- `LPostFxStack:setEnabled`: Enables or disables the effect pass at a one-based stack position.
-- `LPostFxStack:setFeedback`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
-- `LPostFxStack:type`: Returns the Lua-visible type name for this post-processing stack handle.
-- `LPostFxStack:typeOf`: Returns whether this stack handle matches a supported type name.
+- `LPostFxStack:add(effect_ud) -> nil`: Appends an effect to the end of this stack.
+- `LPostFxStack:apply() -> nil`: Queues this stack's enabled post-effect passes for renderer application.
+- `LPostFxStack:beginCapture() -> nil`: Starts post-effect capture and queues a renderer begin-capture command.
+- `LPostFxStack:clear() -> nil`: Removes all effects and pass state from this stack.
+- `LPostFxStack:clearFeedback() -> nil`: Resets the stack feedback blend factor to zero.
+- `LPostFxStack:dedup() -> integer`: Removes duplicate effect handles while preserving first occurrences.
+- `LPostFxStack:endCapture() -> nil`: Ends post-effect capture and queues a renderer end-capture command.
+- `LPostFxStack:getDimensions() -> integer`: Returns the stack render dimensions.
+- `LPostFxStack:getEffect(index) -> LuaValue`: Returns the effect handle at a one-based position.
+- `LPostFxStack:getEffectCount() -> integer`: Returns the number of effect handles in this stack.
+- `LPostFxStack:getEnabledEffects() -> LPostFxEffect[]`: Returns effect handles whose stack passes are enabled.
+- `LPostFxStack:getFeedback() -> number`: Returns the current stack feedback blend factor.
+- `LPostFxStack:getHeight() -> integer`: Returns the stack render height. This method is available to Lua scripts.
+- `LPostFxStack:getWidth() -> integer`: Returns the stack render width. This method is available to Lua scripts.
+- `LPostFxStack:insert(position, effect_ud) -> nil`: Inserts an effect at a one-based stack position.
+- `LPostFxStack:isCapturing() -> boolean`: Returns whether this stack is currently capturing draw commands.
+- `LPostFxStack:isEmpty() -> boolean`: Returns whether this stack has no effects.
+- `LPostFxStack:isEnabled(position) -> boolean`: Returns whether the effect pass at a one-based position is enabled.
+- `LPostFxStack:len() -> integer`: Returns the number of effect handles in this stack.
+- `LPostFxStack:remove(effect_ud) -> boolean`: Removes the first matching effect handle from this stack.
+- `LPostFxStack:resize(w, h) -> nil`: Resizes the post-processing stack render target dimensions.
+- `LPostFxStack:setEnabled(position, enabled) -> nil`: Enables or disables the effect pass at a one-based stack position.
+- `LPostFxStack:setFeedback(factor) -> nil`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
+- `LPostFxStack:type() -> string`: Returns the Lua-visible type name for this post-processing stack handle.
+- `LPostFxStack:typeOf(name) -> boolean`: Returns whether this stack handle matches a supported type name.

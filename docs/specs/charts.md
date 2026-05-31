@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `charts` module rasterizes line, bar, scatter, pie, and area charts on CPU and returns RGBA pixel output for runtime UI and tooling use.
+- Rasterizes line, bar, area, scatter, and pie charts into RGBA buffers.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `charts` module turns numeric data into ready-to-display chart images using CPU rasterization. It supports common chart families in one place, so scripts can generate visual summaries without relying on a dedicated GPU chart pipeline.
+The charts module provides a CPU-rasterized data-visualization rendering engine for Lurek2D. Its functional purpose is to generate static chart images directly from raw data series, Lua tables, or column-driven tabular DataFrames. This enables the creation of debug telemetry panels, player statistics HUDs, and diagnostic data overlays at runtime without external dependencies. 
 
-Its main value is predictable image output from structured data. Callers provide series or slice values plus options, and the module produces RGBA buffers that can be shown in UI, overlays, reports, or saved artifacts. This keeps chart generation practical in both runtime and offline workflows.
-
-Each chart type keeps its own rendering behavior, while shared configuration and drawing helpers enforce consistent defaults and visual rules. That split allows chart-specific flexibility without losing cross-chart consistency in dimensions, styling, and value mapping.
-
-Because output is software-rasterized and deterministic, charts are easy to test and reproduce across environments. This makes the module useful for headless validation, automated evidence generation, and tooling scenarios where graphical backend assumptions should stay minimal.
-
-Overall, the module provides a clean conversion boundary: data in, chart pixels out. Higher layers can handle layout and interaction, while `charts` focuses on reliable visual generation from tabular or series-based inputs.
+The rasterization engine supports several standard chart formats: line charts for continuous trends, vertical or horizontal bar charts for categorical comparisons, stacked area charts for compositional trends, scatter plots for sample distributions, and proportional pie charts with optional donut-hole ring designs. It translates numerical data arrays into 32-bit RGBA pixel buffers, managing coordinate transformations, automatic axis domain estimation, title margins, and multi-color palette mappings.
 
 ## Imports
 
@@ -100,13 +94,13 @@ Overall, the module provides a clean conversion boundary: data in, chart pixels 
 
 ### Functions
 
-- `lurek.charts.defaultPalette`: Get the default 8-color series palette.
-- `lurek.charts.newArea`: Create a new area chart exposed by the lurek engine.
-- `lurek.charts.newBar`: Create a new bar chart exposed by the lurek engine.
-- `lurek.charts.newLine`: Create a new line chart exposed by the lurek engine.
-- `lurek.charts.newPie`: Create a new pie chart exposed by the lurek engine.
-- `lurek.charts.newScatter`: Create a new scatter plot exposed by the lurek engine.
-- `lurek.charts.seriesColor`: Get a palette color by 1-based index (wraps around for index > 8).
+- `lurek.charts.defaultPalette() -> table`: Get the default 8-color series palette.
+- `lurek.charts.newArea(config?) -> LAreaChart`: Create a new area chart exposed by the lurek engine.
+- `lurek.charts.newBar(config?) -> LBarChart`: Create a new bar chart exposed by the lurek engine.
+- `lurek.charts.newLine(config?) -> LLineChart`: Create a new line chart exposed by the lurek engine.
+- `lurek.charts.newPie(config?) -> LPieChart`: Create a new pie chart exposed by the lurek engine.
+- `lurek.charts.newScatter(config?) -> LScatterPlot`: Create a new scatter plot exposed by the lurek engine.
+- `lurek.charts.seriesColor(index) -> table`: Get a palette color by 1-based index (wraps around for index > 8).
 
 ### Callbacks
 
@@ -128,12 +122,12 @@ Overall, the module provides a clean conversion boundary: data in, chart pixels 
 
 ##### Methods
 
-- `LAreaChart:addSeries`: Add a named data series to the area chart (stacked above previous).
-- `LAreaChart:clear`: Removes all data series from this chart.
-- `LAreaChart:getHeight`: Get the chart output height in pixels.
-- `LAreaChart:getWidth`: Get the chart output width in pixels.
-- `LAreaChart:render`: Renders the chart contents into a new pixel buffer.
-- `LAreaChart:setTitle`: Set or update the chart's displayed title.
+- `LAreaChart:addSeries(name, data, color?) -> nil`: Add a named data series to the area chart (stacked above previous).
+- `LAreaChart:clear() -> nil`: Removes all data series from this chart.
+- `LAreaChart:getHeight() -> number`: Get the chart output height in pixels.
+- `LAreaChart:getWidth() -> number`: Get the chart output width in pixels.
+- `LAreaChart:render() -> number`: Renders the chart contents into a new pixel buffer.
+- `LAreaChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
 
 #### LBarChart Type
 
@@ -145,13 +139,13 @@ Overall, the module provides a clean conversion boundary: data in, chart pixels 
 
 ##### Methods
 
-- `LBarChart:addSeries`: Add a named data series to the bar chart.
-- `LBarChart:clear`: Removes all data series from this chart.
-- `LBarChart:getHeight`: Get the chart output height in pixels.
-- `LBarChart:getWidth`: Get the chart output width in pixels.
-- `LBarChart:render`: Renders the chart contents into a new pixel buffer.
-- `LBarChart:setBarWidth`: Set the pixel width of individual bars in this chart.
-- `LBarChart:setTitle`: Set or update the chart's displayed title.
+- `LBarChart:addSeries(name, data, color?) -> nil`: Add a named data series to the bar chart.
+- `LBarChart:clear() -> nil`: Removes all data series from this chart.
+- `LBarChart:getHeight() -> number`: Get the chart output height in pixels.
+- `LBarChart:getWidth() -> number`: Get the chart output width in pixels.
+- `LBarChart:render() -> number`: Renders the chart contents into a new pixel buffer.
+- `LBarChart:setBarWidth(width) -> nil`: Set the pixel width of individual bars in this chart.
+- `LBarChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
 
 #### LLineChart Type
 
@@ -163,12 +157,12 @@ Overall, the module provides a clean conversion boundary: data in, chart pixels 
 
 ##### Methods
 
-- `LLineChart:addSeries`: Add a named data series to the line chart.
-- `LLineChart:clear`: Removes all data series from this chart.
-- `LLineChart:getHeight`: Get the chart output height in pixels.
-- `LLineChart:getWidth`: Get the chart output width in pixels.
-- `LLineChart:render`: Renders the chart contents into a new pixel buffer.
-- `LLineChart:setTitle`: Set or update the chart's displayed title.
+- `LLineChart:addSeries(name, data, color?) -> nil`: Add a named data series to the line chart.
+- `LLineChart:clear() -> nil`: Removes all data series from this chart.
+- `LLineChart:getHeight() -> number`: Get the chart output height in pixels.
+- `LLineChart:getWidth() -> number`: Get the chart output width in pixels.
+- `LLineChart:render() -> number`: Renders the chart contents into a new pixel buffer.
+- `LLineChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
 
 #### LPieChart Type
 
@@ -180,12 +174,12 @@ Overall, the module provides a clean conversion boundary: data in, chart pixels 
 
 ##### Methods
 
-- `LPieChart:addSlice`: Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
-- `LPieChart:clear`: Removes all pie data slices from this chart.
-- `LPieChart:getHeight`: Get the chart output height in pixels.
-- `LPieChart:getWidth`: Get the chart output width in pixels.
-- `LPieChart:render`: Renders the chart contents into a new pixel buffer.
-- `LPieChart:setTitle`: Set or update the chart's displayed title.
+- `LPieChart:addSlice(label, value, color?) -> nil`: Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
+- `LPieChart:clear() -> nil`: Removes all pie data slices from this chart.
+- `LPieChart:getHeight() -> number`: Get the chart output height in pixels.
+- `LPieChart:getWidth() -> number`: Get the chart output width in pixels.
+- `LPieChart:render() -> number`: Renders the chart contents into a new pixel buffer.
+- `LPieChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
 
 #### LScatterPlot Type
 
@@ -197,10 +191,10 @@ Overall, the module provides a clean conversion boundary: data in, chart pixels 
 
 ##### Methods
 
-- `LScatterPlot:addSeries`: Add a named data series to the scatter plot.
-- `LScatterPlot:clear`: Removes all data series from this chart.
-- `LScatterPlot:getHeight`: Get the chart output height in pixels.
-- `LScatterPlot:getWidth`: Get the chart output width in pixels.
-- `LScatterPlot:render`: Renders the chart contents into a new pixel buffer.
-- `LScatterPlot:setDotRadius`: Set the radius of the dot drawn for each data point.
-- `LScatterPlot:setTitle`: Set or update the chart's displayed title.
+- `LScatterPlot:addSeries(name, data, color?) -> nil`: Add a named data series to the scatter plot.
+- `LScatterPlot:clear() -> nil`: Removes all data series from this chart.
+- `LScatterPlot:getHeight() -> number`: Get the chart output height in pixels.
+- `LScatterPlot:getWidth() -> number`: Get the chart output width in pixels.
+- `LScatterPlot:render() -> number`: Renders the chart contents into a new pixel buffer.
+- `LScatterPlot:setDotRadius(r) -> nil`: Set the radius of the dot drawn for each data point.
+- `LScatterPlot:setTitle(title) -> nil`: Set or update the chart's displayed title.

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `save` module gives one safe, slot-based save flow for games: collect state from many systems, persist it, migrate old versions, and restore it reliably.
+- Manages game saves with compression, auto-save timers, and schema migrations.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `save` module is the persistence contract for gameplay state. It lets teams collect data from many systems, store it in named slots, and restore it later through one stable flow.
+This module provides a unified state persistence and save slot manager designed to handle game progress. Diverse gameplay systems register data sections using collector and restorer callback pairs. When saving, the manager invokes collectors to assemble a single structured state payload; during loads, it distributes this data back to their respective systems to ensure smooth, reliable state restorations.
 
-Instead of forcing one monolithic save script, it supports section-based collection and restore callbacks. This keeps save ownership close to each gameplay feature while still producing one coherent save payload.
-
-Write behavior is practical for runtime use: state can be marked dirty, unnecessary writes can be skipped, and auto-save can run on interval. This protects progress without constant disk churn.
-
-Slot metadata is available without full data load, so save-selection UI can show summaries and timestamps quickly. Backup rotation and compression are integrated to improve resilience and reduce storage cost.
-
-In practice, `lurek.save` gives one managed persistence layer: collect, persist, migrate and restore state predictably
+To optimize disk usage, the system integrates compression, auto-saves, and migrations. It applies LZ4 compression to minimize files, tracks modifications with a dirty flag, and schedules auto-save timers. Additionally, it enforces schema versioning and runs registered transformation callbacks to migrate old save files to current formats.
 
 ## Imports
 
@@ -52,7 +46,7 @@ In practice, `lurek.save` gives one managed persistence layer: collect, persist,
 
 ### Functions
 
-- `lurek.save.newSaveManager`: Create a new SaveManager instance for managing persistent game saves.
+- `lurek.save.newSaveManager() -> LSaveManager`: Create a new SaveManager instance for managing persistent game saves.
 
 ### Callbacks
 
@@ -78,33 +72,33 @@ In practice, `lurek.save` gives one managed persistence layer: collect, persist,
 
 ##### Methods
 
-- `LSaveManager:addMigration`: Register a migration function that transforms save data from one schema version to the next.
-- `LSaveManager:collect`: Invoke all registered collectors and return the assembled save-data table without writing to disk.
-- `LSaveManager:delete`: Permanently delete a save slot file from disk. This action cannot be undone.
-- `LSaveManager:disableAutoSave`: Disable the periodic auto-save timer. Manual saves via save() still work.
-- `LSaveManager:enableAutoSave`: Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
-- `LSaveManager:exists`: Check whether a save slot file exists on disk without reading its contents.
-- `LSaveManager:getSchemaVersion`: Return the current schema version number set for this save manager.
-- `LSaveManager:getSlotInfo`: Read metadata for a single save slot without loading its full game state.
-- `LSaveManager:getSlots`: List all save slots found on disk with their metadata (version, timestamp, summary).
-- `LSaveManager:getSummary`: Get the current summary string that will be embedded in the next save.
-- `LSaveManager:isCompressed`: Check whether save compression is currently enabled.
-- `LSaveManager:isDirty`: Check whether unsaved changes exist since the last save or load.
-- `LSaveManager:load`: Load game state from a named slot file. Decompresses if needed, applies migrations, calls restorers, then fires onAfterLoad.
-- `LSaveManager:markDirty`: Mark the save state as dirty, indicating unsaved changes exist.
-- `LSaveManager:onAfterLoad`: Set a hook function called immediately after a save file is successfully loaded and all restorers have run.
-- `LSaveManager:onBeforeSave`: Set a hook function called immediately before each save operation begins.
-- `LSaveManager:register`: Register a named data section with a collector and restorer function pair.
-- `LSaveManager:reset`: Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
-- `LSaveManager:restore`: Apply a previously collected save-data table back into game state by invoking all registered restorers.
-- `LSaveManager:save`: Persist all registered data sections to the named slot file on disk.
-- `LSaveManager:setCompress`: Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
-- `LSaveManager:setSchemaVersion`: Set the current schema version number for saves produced by this game build.
-- `LSaveManager:setSummary`: Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
-- `LSaveManager:type`: Return the type name string for this userdata object.
-- `LSaveManager:typeOf`: Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
-- `LSaveManager:unregister`: Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
-- `LSaveManager:update`: Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
+- `LSaveManager:addMigration(fromVersion, func) -> nil`: Register a migration function that transforms save data from one schema version to the next.
+- `LSaveManager:collect() -> table`: Invoke all registered collectors and return the assembled save-data table without writing to disk.
+- `LSaveManager:delete(slot) -> nil`: Permanently delete a save slot file from disk. This action cannot be undone.
+- `LSaveManager:disableAutoSave() -> nil`: Disable the periodic auto-save timer. Manual saves via save() still work.
+- `LSaveManager:enableAutoSave(interval, slot) -> nil`: Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
+- `LSaveManager:exists(slot) -> boolean`: Check whether a save slot file exists on disk without reading its contents.
+- `LSaveManager:getSchemaVersion() -> integer`: Return the current schema version number set for this save manager.
+- `LSaveManager:getSlotInfo(slot) -> table`: Read metadata for a single save slot without loading its full game state.
+- `LSaveManager:getSlots() -> table`: List all save slots found on disk with their metadata (version, timestamp, summary).
+- `LSaveManager:getSummary() -> string`: Get the current summary string that will be embedded in the next save.
+- `LSaveManager:isCompressed() -> boolean`: Check whether save compression is currently enabled.
+- `LSaveManager:isDirty() -> boolean`: Check whether unsaved changes exist since the last save or load.
+- `LSaveManager:load(slot) -> boolean`: Load game state from a named slot file. Decompresses if needed, applies migrations, calls restorers, then fires onAfterLoad.
+- `LSaveManager:markDirty() -> nil`: Mark the save state as dirty, indicating unsaved changes exist.
+- `LSaveManager:onAfterLoad(func?) -> nil`: Set a hook function called immediately after a save file is successfully loaded and all restorers have run.
+- `LSaveManager:onBeforeSave(func?) -> nil`: Set a hook function called immediately before each save operation begins.
+- `LSaveManager:register(name, collectFn, restoreFn) -> nil`: Register a named data section with a collector and restorer function pair.
+- `LSaveManager:reset() -> nil`: Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
+- `LSaveManager:restore(data) -> nil`: Apply a previously collected save-data table back into game state by invoking all registered restorers.
+- `LSaveManager:save(slot) -> nil`: Persist all registered data sections to the named slot file on disk.
+- `LSaveManager:setCompress(enabled) -> nil`: Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
+- `LSaveManager:setSchemaVersion(version) -> nil`: Set the current schema version number for saves produced by this game build.
+- `LSaveManager:setSummary(summary) -> nil`: Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
+- `LSaveManager:type() -> string`: Return the type name string for this userdata object.
+- `LSaveManager:typeOf(name) -> boolean`: Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
+- `LSaveManager:unregister(name) -> nil`: Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
+- `LSaveManager:update(dt) -> boolean`: Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
 
 #### LSaveManagerGetSlotInfoResult Type
 

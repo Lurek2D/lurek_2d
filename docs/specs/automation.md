@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `automation` module provides deterministic scripted input playback for tests, QA replay, and reproducible runtime scenarios.
+- Replays input steps and runs visual test assertions.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `automation` module gives one reliable way to simulate runtime interaction without manual input. It turns test intent into scripted steps and replays those steps in a controlled timeline. This helps teams verify behavior repeatedly with the same sequence and expected outcomes.
+The automation module delivers a deterministic input replay and scripted verification pipeline for Lurek2D. Its core purpose is to programmatically simulate human player interactions—including keyboard, mouse, and text inputs—to test gameplay behaviors. It parses ordered step sequences from TOML or Lua tables, expanding repeat directives and time intervals into concrete playback schedules.
 
-Its core value is deterministic playback. Scripts are stored as ordered actions, then executed by a simulator that advances time and dispatches events in strict order. Because runs are data-driven, results are less dependent on machine timing, device noise, or manual tester variance.
-
-The module supports practical workflow features for test authoring and reuse. Scripts can be loaded, started, paused, resumed, stopped, and limited by step count. Named macros and conditional gates allow larger scenarios to be built from smaller reusable pieces.
-
-Verification is part of the runtime flow, not an afterthought. The simulator can apply assertions, track failures, and expose status such as running, paused, complete, failed, and last error. This makes it useful for CI and regression checks where pass/fail signals must be explicit.
-
-Functionally, the module stays focused on sequencing and control logic. It does not replace device, rendering, or gameplay systems. Instead, it drives those systems through scripted input and observation, providing a stable automation layer for quality and debugging work.
+Simulation playback supports real-time pausing, resuming, speed scaling, and macro reuse. Scripts can wait for predicates, run conditional steps gated by boolean flags, and execute visual assertions with configurable error tolerances, enabling robust regression verification.
 
 ## Imports
 
@@ -74,38 +68,38 @@ Functionally, the module stays focused on sequencing and control logic. It does 
 
 ### Functions
 
-- `lurek.automation.getCondition`: Returns a named automation condition value.
-- `lurek.automation.getCurrentScript`: Returns the current script name when a script is active.
-- `lurek.automation.getCurrentStep`: Returns the current step index of the active script.
-- `lurek.automation.getElapsedTime`: Returns elapsed playback time for the current script.
-- `lurek.automation.getLastError`: Returns the last automation error message when one exists.
-- `lurek.automation.getPlaybackSpeed`: Returns automation playback speed multiplier.
-- `lurek.automation.getScripts`: Returns the names of loaded automation scripts.
-- `lurek.automation.getStepCount`: Returns the number of steps in the active script.
-- `lurek.automation.getStepLimit`: Returns the configured step limit for a loaded script.
-- `lurek.automation.hasMacro`: Returns whether a macro is saved. This function is exposed to Lua scripts.
-- `lurek.automation.hasScript`: Returns whether a script is loaded.
-- `lurek.automation.isComplete`: Returns whether the current automation script completed.
-- `lurek.automation.isFailed`: Returns whether the current automation script failed.
-- `lurek.automation.isHighlightMode`: Returns whether automation highlight mode is enabled.
-- `lurek.automation.isPaused`: Returns whether automation playback is paused.
-- `lurek.automation.isRunning`: Returns whether automation playback is running.
-- `lurek.automation.listMacros`: Returns the names of saved macros. This function is exposed to Lua scripts.
-- `lurek.automation.load`: Loads an automation script from a Lua table of steps and optional metadata.
-- `lurek.automation.loadFromToml`: Loads an automation script from TOML text.
-- `lurek.automation.pause`: Pauses automation playback. This function is exposed to Lua scripts.
-- `lurek.automation.playMacro`: Starts playback of a saved macro. This function is exposed to Lua scripts.
-- `lurek.automation.resume`: Resumes automation playback. This function is exposed to Lua scripts.
-- `lurek.automation.saveMacro`: Saves a loaded script as a named macro.
-- `lurek.automation.setCondition`: Sets a named boolean condition used by automation steps.
-- `lurek.automation.setHighlightMode`: Enables or disables automation highlight mode.
-- `lurek.automation.setPlaybackSpeed`: Sets automation playback speed multiplier.
-- `lurek.automation.setStepLimit`: Sets the maximum step count for a loaded script.
-- `lurek.automation.start`: Starts playback of a loaded automation script.
-- `lurek.automation.stop`: Stops the current automation script.
-- `lurek.automation.unload`: Unloads a named automation script.
-- `lurek.automation.update`: Advances automation playback and dispatches generated input events.
-- `lurek.automation.waitUntil`: Suspends automation updates until a predicate returns true or a timeout elapses.
+- `lurek.automation.getCondition(name) -> boolean`: Returns a named automation condition value.
+- `lurek.automation.getCurrentScript() -> string`: Returns the current script name when a script is active.
+- `lurek.automation.getCurrentStep() -> integer`: Returns the current step index of the active script.
+- `lurek.automation.getElapsedTime() -> number`: Returns elapsed playback time for the current script.
+- `lurek.automation.getLastError() -> string`: Returns the last automation error message when one exists.
+- `lurek.automation.getPlaybackSpeed() -> number`: Returns automation playback speed multiplier.
+- `lurek.automation.getScripts() -> string[]`: Returns the names of loaded automation scripts.
+- `lurek.automation.getStepCount() -> integer`: Returns the number of steps in the active script.
+- `lurek.automation.getStepLimit(name) -> integer`: Returns the configured step limit for a loaded script.
+- `lurek.automation.hasMacro(name) -> boolean`: Returns whether a macro is saved. This function is exposed to Lua scripts.
+- `lurek.automation.hasScript(name) -> boolean`: Returns whether a script is loaded.
+- `lurek.automation.isComplete() -> boolean`: Returns whether the current automation script completed.
+- `lurek.automation.isFailed() -> boolean`: Returns whether the current automation script failed.
+- `lurek.automation.isHighlightMode() -> boolean`: Returns whether automation highlight mode is enabled.
+- `lurek.automation.isPaused() -> boolean`: Returns whether automation playback is paused.
+- `lurek.automation.isRunning() -> boolean`: Returns whether automation playback is running.
+- `lurek.automation.listMacros() -> string[]`: Returns the names of saved macros. This function is exposed to Lua scripts.
+- `lurek.automation.load(name, data) -> nil`: Loads an automation script from a Lua table of steps and optional metadata.
+- `lurek.automation.loadFromToml(name, toml_str) -> nil`: Loads an automation script from TOML text.
+- `lurek.automation.pause() -> nil`: Pauses automation playback. This function is exposed to Lua scripts.
+- `lurek.automation.playMacro(name) -> nil`: Starts playback of a saved macro. This function is exposed to Lua scripts.
+- `lurek.automation.resume() -> nil`: Resumes automation playback. This function is exposed to Lua scripts.
+- `lurek.automation.saveMacro(macro_name, script_name) -> nil`: Saves a loaded script as a named macro.
+- `lurek.automation.setCondition(name, value) -> nil`: Sets a named boolean condition used by automation steps.
+- `lurek.automation.setHighlightMode(enable) -> nil`: Enables or disables automation highlight mode.
+- `lurek.automation.setPlaybackSpeed(factor) -> nil`: Sets automation playback speed multiplier.
+- `lurek.automation.setStepLimit(name, n) -> boolean`: Sets the maximum step count for a loaded script.
+- `lurek.automation.start(name) -> nil`: Starts playback of a loaded automation script.
+- `lurek.automation.stop() -> nil`: Stops the current automation script.
+- `lurek.automation.unload(name) -> boolean`: Unloads a named automation script.
+- `lurek.automation.update(dt) -> nil`: Advances automation playback and dispatches generated input events.
+- `lurek.automation.waitUntil(predicate, timeout) -> nil`: Suspends automation updates until a predicate returns true or a timeout elapses.
 
 ### Callbacks
 

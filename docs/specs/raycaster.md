@@ -2,7 +2,10 @@
 
 ## TL;DR
 
-- The `raycaster` module provides a grid-based first-person rendering runtime with DDA wall casting, floor/ceiling projection, sprites, doors, and lighting helpers.
+- Simulates pseudo-3D first-person views from 2D maps using DDA marching.
+- Supports transparent walls, variable heights, and multilevel storeys.
+- Manages sliding doors, discrete grid motion, and billboard sprites.
+- Renders textured space with point lights, depth buffers, and pickers.
 
 ## General Info
 
@@ -16,25 +19,19 @@
 
 ## Summary
 
-The `raycaster` module is the first-person projection system for tile-based worlds. It converts 2D map data into a camera-facing scene using deterministic DDA stepping, then feeds that scene into renderer-friendly outputs.
+This module provides a classic grid-based first-person raycasting subsystem, turning 2D maps into immersive pseudo-3D environments. At its computational core, a Digital Differential Analysis marcher shoots rays across the map grid to detect wall collisions, calculating corrected perpendicular distances to prevent perspective distortion. This allows developers to present textured first-person viewpoints while preserving the low-overhead structure of a 2D engine runtime.
 
-Core map representation includes per-cell wall/floor data, optional transparency, and height variation support. This allows classic corridor rendering as well as richer spaces with pits, layered surfaces, and mixed material boundaries.
+To support complex layouts, the subsystem extends beyond simple flat maps. The DDA marcher handles layered transparent walls, allowing players to peer through windows. Heightmaps define variable floor and ceiling offsets to model pits, raised steps, and tall chambers. Multilevel slices stack individual storeys horizontally, enabling multi-storey dungeons with vertical shafts, overhead walkways, and smooth transitions between vertical levels.
 
-The module supports full scene composition beyond walls: projected floors and ceilings, depth-tested billboards, animated doors, and optional model projection paths. Depth buffering and sorting are integrated so dynamic elements remain visually coherent.
+Moving boundaries and gameplay actors are integrated directly into the spatial model. Sliding doors are represented as stateful grid occupants that animate open or closed over time. This keeps movement and collision in sync without hardcoding transitions. For locomotion, the module provides a grid-motion controller that snaps travel cleanly from tile to tile, which fits classic dungeon exploration games and ensures predictable grid boundaries.
 
-Lighting and visibility helpers are part of the same runtime surface. Distance shading, point-light influence, and line-of-sight checks let gameplay and presentation share a common spatial interpretation.
+Dynamic props, pickups, and enemies are managed as billboard sprites that face the camera. The sprite manager registers world-space objects, projects them using the camera pose, and sorts them by distance. This depth-aware ordering prevents sprites from bleeding through solid walls, and ensures they blend with the environment, matching the perspective of adjacent wall columns and corridor depths.
 
-Debug and tooling outputs are also included through image and overlay helpers, making it easier to inspect hits, depth, and field-of-view behavior during development.
+The scene builder compiles these spatial hits into a textured 3D environment. It maps wall hits to screen quads and expands floor and ceiling rows into perspective-correct textured strips. A lighting engine applies ambient fill, distance falloff, and colored point lights that respect wall blockages. Half-pixel snapping is also applied to reduce texture shimmering along long wall seams, producing a stable visual space.
 
-Functionally, this module is more than a draw effect. It is a gameplay-facing spatial contract for first-person systems that need deterministic wall hits, visibility checks, and camera-consistent world sampling. Interaction logic and presentation logic can therefore rely on the same map interpretation.
+Rasterization is handled by both CPU and GPU paths. A per-column depth buffer tracks wall distances, enabling subsequent passes to reject hidden fragments. For GPU rendering, the system generates textured quad draw lists that are easily consumed by the main renderer. Alternatively, a CPU-side software draw pass rasterizes scenes directly into raw image buffers, facilitating offline image generation and tool-facing previews.
 
-The module also supports progressive complexity. Teams can start with classic walls and sprites, then add floor and ceiling projection, door dynamics, multi-level behavior, and custom scene injection without replacing the base pipeline. This helps projects evolve visual ambition while preserving stable control and map data flow.
-
-Because scene assembly and output paths are unified, the same runtime can feed real-time rendering and offline/debug rendering with similar semantics. That improves testability and helps diagnose geometric issues early.
-
-This consistency is valuable for teams that use the raycaster as both a player-facing view and a systems-facing visibility layer, because pathing, sensing, and visual feedback can stay aligned to one projection model.
-
-In practice, `lurek.raycaster` provides one complete first-person grid-view contract: cast rays, assemble visible geometry, apply light/depth policy, and emit render-ready scene data through scriptable APIs.
+Finally, the module provides interactive tile pickers and diagnostic tools. The picker casts rays from cursor clicks to select wall and floor cells, reporting which side was targeted. Line-of-sight and visibility fan utilities calculate field-of-view masks for fog-of-war systems. Software visualizers paint top-down overhead maps, camera sweeps, and depth previews, offering high visibility over the entire raycasting pipeline during development.
 
 ## Imports
 
@@ -222,15 +219,15 @@ In practice, `lurek.raycaster` provides one complete first-person grid-view cont
 
 ### Functions
 
-- `lurek.raycaster.applyLitShade`: Applies an RGB light color to a scalar shade value.
-- `lurek.raycaster.distanceShade`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
-- `lurek.raycaster.new`: Creates a new raycaster map with the given grid dimensions.
-- `lurek.raycaster.newDoorManager`: Creates a new door manager for tracking and animating sliding doors.
-- `lurek.raycaster.newHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
-- `lurek.raycaster.newMap`: Creates a new raycaster map (alias for `new`).
-- `lurek.raycaster.newPointLight`: Creates a new point light with position, color, radius, and intensity.
-- `lurek.raycaster.newSpriteManager`: Creates a new sprite manager for tracking and projecting billboard sprites.
-- `lurek.raycaster.projectColumn`: Computes the projected wall-column height for a given distance, FOV, and screen height.
+- `lurek.raycaster.applyLitShade(baseShade, r, g, b) -> number`: Applies an RGB light color to a scalar shade value.
+- `lurek.raycaster.distanceShade(distance, maxDistance) -> number`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
+- `lurek.raycaster.new(w, h) -> LRaycaster`: Creates a new raycaster map with the given grid dimensions.
+- `lurek.raycaster.newDoorManager() -> LDoorManager`: Creates a new door manager for tracking and animating sliding doors.
+- `lurek.raycaster.newHeightMap(w, h) -> LHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
+- `lurek.raycaster.newMap(w, h) -> LRaycaster`: Creates a new raycaster map (alias for `new`).
+- `lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity) -> LPointLight`: Creates a new point light with position, color, radius, and intensity.
+- `lurek.raycaster.newSpriteManager() -> LSpriteManager`: Creates a new sprite manager for tracking and projecting billboard sprites.
+- `lurek.raycaster.projectColumn(distance, fov, screenHeight) -> number`: Computes the projected wall-column height for a given distance, FOV, and screen height.
 
 ### Callbacks
 
@@ -252,14 +249,14 @@ In practice, `lurek.raycaster` provides one complete first-person grid-view cont
 
 ##### Methods
 
-- `LDoorManager:addDoor`: Registers a new sliding door at the given grid cell.
-- `LDoorManager:closeDoor`: Begins closing the door at the given index. The door animates over time via `update()`.
-- `LDoorManager:count`: Returns the total number of registered doors.
-- `LDoorManager:getDoor`: Returns a table describing the door at the given index, or nil if index is out of range.
-- `LDoorManager:openDoor`: Begins opening the door at the given index. The door animates over time via `update()`.
-- `LDoorManager:type`: Returns the type name of this object.
-- `LDoorManager:typeOf`: Checks whether this object matches the given type name.
-- `LDoorManager:update`: Advances all door animations by the given delta time. Call once per frame.
+- `LDoorManager:addDoor(x, y, direction, speed) -> integer`: Registers a new sliding door at the given grid cell.
+- `LDoorManager:closeDoor(index) -> nil`: Begins closing the door at the given index. The door animates over time via `update()`.
+- `LDoorManager:count() -> integer`: Returns the total number of registered doors.
+- `LDoorManager:getDoor(index) -> table`: Returns a table describing the door at the given index, or nil if index is out of range.
+- `LDoorManager:openDoor(index) -> nil`: Begins opening the door at the given index. The door animates over time via `update()`.
+- `LDoorManager:type() -> string`: Returns the type name of this object.
+- `LDoorManager:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LDoorManager:update(dt) -> nil`: Advances all door animations by the given delta time. Call once per frame.
 
 #### LDoorManagerGetDoorResult Type
 
@@ -286,12 +283,12 @@ In practice, `lurek.raycaster` provides one complete first-person grid-view cont
 
 ##### Methods
 
-- `LHeightMap:ceilingAt`: Returns the ceiling height offset at a given grid cell.
-- `LHeightMap:floorAt`: Returns the floor height offset at a given grid cell.
-- `LHeightMap:setCeiling`: Sets the ceiling height offset at a specific grid cell.
-- `LHeightMap:setFloor`: Sets the floor height offset at a specific grid cell.
-- `LHeightMap:type`: Returns the type name of this object.
-- `LHeightMap:typeOf`: Checks whether this object matches the given type name.
+- `LHeightMap:ceilingAt(x, y) -> number`: Returns the ceiling height offset at a given grid cell.
+- `LHeightMap:floorAt(x, y) -> number`: Returns the floor height offset at a given grid cell.
+- `LHeightMap:setCeiling(x, y, h) -> nil`: Sets the ceiling height offset at a specific grid cell.
+- `LHeightMap:setFloor(x, y, h) -> nil`: Sets the floor height offset at a specific grid cell.
+- `LHeightMap:type() -> string`: Returns the type name of this object.
+- `LHeightMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LPointLight Type
 
@@ -303,14 +300,14 @@ In practice, `lurek.raycaster` provides one complete first-person grid-view cont
 
 ##### Methods
 
-- `LPointLight:color`: Returns the RGB color components of this light.
-- `LPointLight:intensity`: Returns the brightness multiplier of this light.
-- `LPointLight:radius`: Returns the light's falloff radius in world units.
-- `LPointLight:set`: Overwrites all properties of this point light in a single call.
-- `LPointLight:type`: Returns the type name of this object ("LPointLight").
-- `LPointLight:typeOf`: Checks whether this object matches the given type name.
-- `LPointLight:x`: Returns the X world position of this light.
-- `LPointLight:y`: Returns the Y world position of this light.
+- `LPointLight:color() -> number`: Returns the RGB color components of this light.
+- `LPointLight:intensity() -> number`: Returns the brightness multiplier of this light.
+- `LPointLight:radius() -> number`: Returns the light's falloff radius in world units.
+- `LPointLight:set(x, y, r, g, b, radius, intensity) -> nil`: Overwrites all properties of this point light in a single call.
+- `LPointLight:type() -> string`: Returns the type name of this object ("LPointLight").
+- `LPointLight:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LPointLight:x() -> number`: Returns the X world position of this light.
+- `LPointLight:y() -> number`: Returns the Y world position of this light.
 
 #### LRaycaster Type
 
@@ -322,43 +319,43 @@ In practice, `lurek.raycaster` provides one complete first-person grid-view cont
 
 ##### Methods
 
-- `LRaycaster:buildMinimapWindow`: Generates a grid of minimap tile samples around a center point with lighting info.
-- `LRaycaster:buildScene`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
-- `LRaycaster:buildSceneWithModels`: Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
-- `LRaycaster:castFloorRow`: Computes floor/ceiling texture UV coordinates for a single scanline row.
-- `LRaycaster:castRay`: Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
-- `LRaycaster:castRayMulti`: Casts a single ray that passes through transparent walls, returning multiple hits.
-- `LRaycaster:castRays`: Casts multiple rays across a field of view and returns an array of hit tables.
-- `LRaycaster:castRaysFlat`: Casts multiple rays and returns only the corrected distances as a flat array.
-- `LRaycaster:computeTileLight`: Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
-- `LRaycaster:drawCameraSweep`: Renders multiple frames of a rotating camera sweep as a single combined image.
-- `LRaycaster:drawDepthMap`: Renders a grayscale depth map showing distance-to-wall for each column.
-- `LRaycaster:drawLineOfSight`: Renders a debug image showing the line-of-sight ray between two world points.
-- `LRaycaster:drawTopDown`: Renders a top-down debug view of the map with the player's position and direction.
-- `LRaycaster:drawView`: Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
-- `LRaycaster:extractMinimap`: Extracts a pixel minimap image centered on the player from this raycaster map.
-- `LRaycaster:getCeilingTextureCell`: Returns the raw texture id assigned to this ceiling cell, or nil if none.
-- `LRaycaster:getCell`: Returns the wall type value at a grid cell.
-- `LRaycaster:getFloorTextureCell`: Returns the raw texture id assigned to this floor cell, or nil if none.
-- `LRaycaster:getLoweredFloorCell`: Returns the lowered floor configuration at a cell, or nil if the cell is normal.
-- `LRaycaster:getWallAlpha`: Returns the current transparency value for a wall tile type.
-- `LRaycaster:gridMove`: Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
-- `LRaycaster:height`: Returns the map height in grid cells.
-- `LRaycaster:isBlocked`: Returns true if the grid cell is a solid wall (non-zero value).
-- `LRaycaster:isWalkBlocked`: Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
-- `LRaycaster:lineOfSight`: Tests whether there is a clear line of sight between two world points (no walls in between).
-- `LRaycaster:projectSprite`: Projects a world-space sprite to screen coordinates for billboard rendering.
-- `LRaycaster:revealCellsFromRays`: Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
-- `LRaycaster:setCeilingTextureCell`: Assigns a per-cell ceiling texture override. Pass nil to remove the override.
-- `LRaycaster:setCell`: Sets the wall type value at a grid cell. Non-zero values are solid walls.
-- `LRaycaster:setCells`: Replaces the entire map grid with a flat array of cell values (row-major order).
-- `LRaycaster:setFloorTextureCell`: Assigns a per-cell floor texture override. Pass nil to remove the override.
-- `LRaycaster:setLoweredFloorCell`: Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
-- `LRaycaster:setWallAlpha`: Sets the transparency for a specific wall tile type, enabling see-through walls.
-- `LRaycaster:tryMove`: Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
-- `LRaycaster:type`: Returns the type name of this object ("LRaycaster").
-- `LRaycaster:typeOf`: Checks whether this object matches the given type name.
-- `LRaycaster:width`: Returns the map width in grid cells.
+- `LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights?) -> table`: Generates a grid of minimap tile samples around a center point with lighting info.
+- `LRaycaster:buildScene(params, lights?, sprites?, wallTextures?) -> integer`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
+- `LRaycaster:buildSceneWithModels(params, lights?, sprites?, wallTextures?, models?) -> integer`: Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
+- `LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row) -> table`: Computes floor/ceiling texture UV coordinates for a single scanline row.
+- `LRaycaster:castRay(ox, oy, angle, maxDist) -> table`: Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
+- `LRaycaster:castRayMulti(ox, oy, angle, maxDist, maxHits?) -> table`: Casts a single ray that passes through transparent walls, returning multiple hits.
+- `LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) -> table`: Casts multiple rays across a field of view and returns an array of hit tables.
+- `LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) -> number[]`: Casts multiple rays and returns only the corrected distances as a flat array.
+- `LRaycaster:computeTileLight(x, y, ambient, lights?) -> number`: Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
+- `LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh) -> LImageData`: Renders multiple frames of a rotating camera sweep as a single combined image.
+- `LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist) -> LImageData`: Renders a grayscale depth map showing distance-to-wall for each column.
+- `LRaycaster:drawLineOfSight(ax, ay, bx, by, scale) -> LImageData`: Renders a debug image showing the line-of-sight ray between two world points.
+- `LRaycaster:drawTopDown(px, py, angle, scale) -> LImageData`: Renders a top-down debug view of the map with the player's position and direction.
+- `LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) -> LImageData`: Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
+- `LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize) -> LImageData`: Extracts a pixel minimap image centered on the player from this raycaster map.
+- `LRaycaster:getCeilingTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this ceiling cell, or nil if none.
+- `LRaycaster:getCell(x, y) -> integer`: Returns the wall type value at a grid cell.
+- `LRaycaster:getFloorTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this floor cell, or nil if none.
+- `LRaycaster:getLoweredFloorCell(x, y) -> table`: Returns the lowered floor configuration at a cell, or nil if the cell is normal.
+- `LRaycaster:getWallAlpha(tileType) -> number`: Returns the current transparency value for a wall tile type.
+- `LRaycaster:gridMove(px, py, dir, action, step) -> number`: Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
+- `LRaycaster:height() -> integer`: Returns the map height in grid cells.
+- `LRaycaster:isBlocked(x, y) -> boolean`: Returns true if the grid cell is a solid wall (non-zero value).
+- `LRaycaster:isWalkBlocked(x, y) -> boolean`: Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
+- `LRaycaster:lineOfSight(x1, y1, x2, y2) -> boolean`: Tests whether there is a clear line of sight between two world points (no walls in between).
+- `LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW) -> table`: Projects a world-space sprite to screen coordinates for billboard rendering.
+- `LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, step?) -> table`: Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
+- `LRaycaster:setCeilingTextureCell(x, y, texture?) -> nil`: Assigns a per-cell ceiling texture override. Pass nil to remove the override.
+- `LRaycaster:setCell(x, y, val) -> nil`: Sets the wall type value at a grid cell. Non-zero values are solid walls.
+- `LRaycaster:setCells(cells) -> nil`: Replaces the entire map grid with a flat array of cell values (row-major order).
+- `LRaycaster:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override. Pass nil to remove the override.
+- `LRaycaster:setLoweredFloorCell(x, y, opts?) -> nil`: Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+- `LRaycaster:setWallAlpha(tileType, alpha) -> nil`: Sets the transparency for a specific wall tile type, enabling see-through walls.
+- `LRaycaster:tryMove(px, py, dx, dy) -> number`: Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
+- `LRaycaster:type() -> string`: Returns the type name of this object ("LRaycaster").
+- `LRaycaster:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LRaycaster:width() -> integer`: Returns the map width in grid cells.
 
 #### LRaycasterBuildMinimapWindowResult Type
 
@@ -507,11 +504,11 @@ In practice, `lurek.raycaster` provides one complete first-person grid-view cont
 
 ##### Methods
 
-- `LSpriteManager:add`: Adds a new sprite to the manager at a world position with a texture name and optional scale.
-- `LSpriteManager:clear`: Removes all sprites from the manager.
-- `LSpriteManager:remove`: Removes a sprite by its id. This method is available to Lua scripts.
-- `LSpriteManager:setPosition`: Updates the world position of an existing sprite.
-- `LSpriteManager:setVisible`: Shows or hides a sprite without removing it.
-- `LSpriteManager:sortAndProject`: Sorts all visible sprites by distance from the camera and returns projection data.
-- `LSpriteManager:type`: Returns the type name of this object ("LSpriteManager").
-- `LSpriteManager:typeOf`: Checks whether this object matches the given type name.
+- `LSpriteManager:add(x, y, texture, scale?) -> integer`: Adds a new sprite to the manager at a world position with a texture name and optional scale.
+- `LSpriteManager:clear() -> nil`: Removes all sprites from the manager.
+- `LSpriteManager:remove(id) -> nil`: Removes a sprite by its id. This method is available to Lua scripts.
+- `LSpriteManager:setPosition(id, x, y) -> nil`: Updates the world position of an existing sprite.
+- `LSpriteManager:setVisible(id, visible) -> nil`: Shows or hides a sprite without removing it.
+- `LSpriteManager:sortAndProject(camX, camY, camAngle) -> integer[]`: Sorts all visible sprites by distance from the camera and returns projection data.
+- `LSpriteManager:type() -> string`: Returns the type name of this object ("LSpriteManager").
+- `LSpriteManager:typeOf(name) -> boolean`: Checks whether this object matches the given type name.

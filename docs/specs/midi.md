@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `midi` module provides MIDI playback with SoundFont synthesis, including transport controls and channel-level mix behavior.
+- Synthesizes MIDI files.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `midi` module is the runtime playback layer for MIDI content inside the engine audio stack. It separates song transport from instrument sample state, so playback flow and synthesis resources remain predictable.
+This module handles MIDI playback and software synthesis by managing SoundFont resources. It implements a stateful transport player to control files, seeking, and loops. Additionally, it exposes per-channel mix properties like instrument selection, volume, mute, and solo controls, routing audio to the mixer.
 
-Its core function is practical control over sequence playback. Scripts can create player instances, start and stop songs, pause and resume, seek position, and inspect duration or status without managing low-level audio thread details.
-
-SoundFont handling is part of the same module contract. Loading and clearing synthesis banks are explicit operations, which helps keep instrument state stable between tracks and avoids hidden setup behavior.
-
-Channel-level behavior can be adjusted for mix workflows, including per-channel volume and mute/solo style control paths. This allows game logic and tools to adapt playback for debugging, composition checks, and dynamic music behavior.
-
-In practice, `lurek.midi` provides one scriptable MIDI surface for sequencing, synthesis setup, and runtime transport control that integrates cleanly with the broader audio pipeline.
+This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -60,10 +54,10 @@ In practice, `lurek.midi` provides one scriptable MIDI surface for sequencing, s
 
 ### Functions
 
-- `lurek.midi.clearSoundFont`: Unloads the current SoundFont and frees its memory.
-- `lurek.midi.hasSoundFont`: Returns whether a SoundFont is currently loaded and ready for synthesis.
-- `lurek.midi.loadSoundFont`: Loads a SoundFont (SF2) file into the global MIDI state for synthesis.
-- `lurek.midi.newPlayer`: Creates a new MIDI player instance, optionally loading a file immediately.
+- `lurek.midi.clearSoundFont() -> nil`: Unloads the current SoundFont and frees its memory.
+- `lurek.midi.hasSoundFont() -> boolean`: Returns whether a SoundFont is currently loaded and ready for synthesis.
+- `lurek.midi.loadSoundFont(path) -> boolean`: Loads a SoundFont (SF2) file into the global MIDI state for synthesis.
+- `lurek.midi.newPlayer(path?) -> LMidiPlayer`: Creates a new MIDI player instance, optionally loading a file immediately.
 
 ### Callbacks
 

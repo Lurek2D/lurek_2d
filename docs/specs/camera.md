@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `camera` module provides full 2D camera control: follow behavior, viewport scaling, effects, scripted paths, and multi-camera rigs with consistent render integration.
+- Tracks targets smoothly via customizable presets, dead-zones, and bounds.
+- Controls screen shake, zoom pulses, sways, and multi-camera rigs.
 
 ## General Info
 
@@ -16,15 +17,11 @@
 
 ## Summary
 
-The `camera` module controls how the world is seen on screen in 2D runtime scenarios. It provides one consistent place to manage camera position, zoom, rotation, follow logic, and viewport mapping. Functionally, it separates view behavior from gameplay logic so systems can share the same camera rules.
+The camera module serves as the primary viewport projection layer for Lurek2D, mapping 2D world coordinates onto the user's screen. Its core purpose is to track gameplay targets smoothly using follow algorithms that apply dead-zone constraints, speed smoothing, easing modes, and look-ahead displacements. It supplies follow presets—aggressive, balanced, cinematic, and tight—to quickly capture common movement profiles while enforcing hard bounds to lock the view inside active maps.
 
-Its camera state tools support both direct control and guided motion. Scripts can move or target the camera, apply smoothing and easing, run path-based travel, and use zoom transitions. This makes the module useful for gameplay tracking, cutscene movement, and tool-driven inspection flows.
+To enhance the visual and kinetic feel of gameplay, the module layers a dynamic suite of transient camera effects on top of the base tracking transform. Scripts can programmatically trigger camera shake impulses, pulse-based zoom bursts, oscillatory sways with adjustable damping, and ambient breathing zoom modulations for low-action timing. The engine composes these layers with zoom, rotation, and dampening constraints to construct a stable, frame-accurate view matrix while providing pixel-to-world coordinate conversion tools.
 
-Visual motion quality is improved through effect primitives such as shake, sway, and pulse-like zoom. These effects layer on top of base camera behavior, so teams can add impact and feedback without rewriting core follow or transform code.
-
-Viewport handling is treated as its own concern. Scaling strategy and coordinate conversion are managed alongside camera transforms, which helps keep behavior stable across different window sizes and presentation modes. This reduces coupling between display policy and gameplay camera decisions.
-
-The module also supports multi-camera orchestration through named rigs and layout helpers. Split-screen, minimap, and picture-in-picture flows can be managed through one control surface while keeping render integration predictable. Overall, the module provides a complete and reusable view-control foundation for 2D projects.
+For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the module supplies multi-camera rig orchestrators. Rigs govern groups of named cameras, auto-calculating split-screen, minimap, and inset display layouts. Viewports are governed by scaling policies that resolve aspect-ratio adjustments into letterbox, stretched, or pixel-perfect projection dimensions, while waypoint-driven path systems interpolate guided cameras along authored waypoints.
 
 ## Imports
 
@@ -102,9 +99,9 @@ The module also supports multi-camera orchestration through named rigs and layou
 
 ### Functions
 
-- `lurek.camera.new`: Creates a 2D camera with optional virtual viewport size.
-- `lurek.camera.newCamera`: Creates a 2D camera with optional virtual viewport size.
-- `lurek.camera.newRig`: Creates an empty named camera rig. This function is exposed to Lua scripts.
+- `lurek.camera.new(vw?, vh?) -> LCamera`: Creates a 2D camera with optional virtual viewport size.
+- `lurek.camera.newCamera(vw?, vh?) -> LCamera`: Creates a 2D camera with optional virtual viewport size.
+- `lurek.camera.newRig() -> LCameraRig`: Creates an empty named camera rig. This function is exposed to Lua scripts.
 
 ### Callbacks
 
@@ -126,77 +123,77 @@ The module also supports multi-camera orchestration through named rigs and layou
 
 ##### Methods
 
-- `LCamera:apply`: Appends render commands that apply this camera transform.
-- `LCamera:attach`: Appends render commands that attach this camera transform.
-- `LCamera:clearParallaxFactors`: Clears all layer parallax factor overrides.
-- `LCamera:clearTarget`: Clears the follow target. This method is available to Lua scripts.
-- `LCamera:detach`: Appends a render command that detaches the active camera transform.
-- `LCamera:followPath`: Starts camera movement along an array of waypoint tables.
-- `LCamera:getBounds`: Returns camera bounds with a leading availability flag.
-- `LCamera:getDeadZone`: Returns follow dead-zone dimensions with a leading availability flag.
-- `LCamera:getEffectOffset`: Returns combined camera effect offset.
-- `LCamera:getEffectiveZoom`: Returns zoom after camera effects are applied.
-- `LCamera:getFollowEasing`: Returns target follow easing mode.
-- `LCamera:getFollowSmooth`: Returns follow smoothing speed. This method is available to Lua scripts.
-- `LCamera:getLookAhead`: Returns follow look-ahead multiplier.
-- `LCamera:getParallaxFactor`: Returns a parallax factor for a named layer.
-- `LCamera:getPosition`: Returns the camera world position.
-- `LCamera:getRenderOffset`: Returns current render offset after camera effects.
-- `LCamera:getRotation`: Returns the camera rotation. This method is available to Lua scripts.
-- `LCamera:getRotationConstraints`: Returns rotation constraints with availability flags.
-- `LCamera:getRotationDamping`: Returns rotation damping. This method is available to Lua scripts.
-- `LCamera:getShakeOffset`: Returns current camera shake offset.
-- `LCamera:getTarget`: Returns the follow target with a leading availability flag.
-- `LCamera:getViewport`: Returns the camera viewport rectangle.
-- `LCamera:getVisibleArea`: Returns the world-space area visible through this camera.
-- `LCamera:getZoom`: Returns the camera zoom factor. This method is available to Lua scripts.
-- `LCamera:getZoomConstraints`: Returns zoom constraints with availability flags.
-- `LCamera:getZoomDamping`: Returns zoom damping. This method is available to Lua scripts.
-- `LCamera:hasBounds`: Returns whether camera bounds are active.
-- `LCamera:isBreathing`: Returns whether breathing zoom animation is active.
-- `LCamera:isSway`: Returns whether camera sway is active.
-- `LCamera:lookAt`: Centers the camera on a world position.
-- `LCamera:move`: Moves the camera by a delta. This method is available to Lua scripts.
-- `LCamera:onWindowResize`: Updates camera viewport state after a window resize.
-- `LCamera:onWindowResizeScaled`: Updates camera viewport state using a virtual game size and scale mode.
-- `LCamera:pathProgress`: Returns active path progress. This method is available to Lua scripts.
-- `LCamera:presetAggressiveFollow`: Applies the aggressive follow camera preset.
-- `LCamera:presetBalancedFollow`: Applies the balanced follow camera preset.
-- `LCamera:presetCinematicFollow`: Applies the cinematic follow camera preset.
-- `LCamera:presetTightFollow`: Applies the tight follow camera preset.
-- `LCamera:removeBounds`: Removes active camera bounds. This method is available to Lua scripts.
-- `LCamera:reset`: Appends a render command that removes the active camera transform.
-- `LCamera:setBounds`: Sets camera world bounds. This method is available to Lua scripts.
-- `LCamera:setDeadZone`: Sets follow dead-zone dimensions.
-- `LCamera:setFollowEasing`: Sets target follow easing mode. This method is available to Lua scripts.
-- `LCamera:setFollowSmooth`: Sets follow smoothing speed. This method is available to Lua scripts.
-- `LCamera:setLookAhead`: Sets follow look-ahead multiplier.
-- `LCamera:setParallaxFactor`: Sets a parallax factor for a named layer.
-- `LCamera:setPosition`: Sets the camera world position. This method is available to Lua scripts.
-- `LCamera:setRotation`: Sets the camera rotation. This method is available to Lua scripts.
-- `LCamera:setRotationConstraints`: Sets optional minimum and maximum rotation constraints.
-- `LCamera:setRotationDamping`: Sets rotation damping. This method is available to Lua scripts.
-- `LCamera:setTarget`: Sets a world-space follow target. This method is available to Lua scripts.
-- `LCamera:setViewport`: Sets the camera viewport rectangle.
-- `LCamera:setZoom`: Sets the camera zoom factor. This method is available to Lua scripts.
-- `LCamera:setZoomConstraints`: Sets optional minimum and maximum zoom constraints.
-- `LCamera:setZoomDamping`: Sets zoom damping. This method is available to Lua scripts.
-- `LCamera:shake`: Starts a camera shake effect. This method is available to Lua scripts.
-- `LCamera:startBreathing`: Starts subtle breathing zoom animation.
-- `LCamera:startSway`: Starts camera sway offset animation.
-- `LCamera:stopBreathing`: Stops breathing zoom animation. This method is available to Lua scripts.
-- `LCamera:stopPath`: Stops the active camera path. This method is available to Lua scripts.
-- `LCamera:stopSway`: Stops camera sway offset animation.
-- `LCamera:stopZoom`: Stops the active zoom tween. This method is available to Lua scripts.
-- `LCamera:toScreen`: Converts world coordinates to screen coordinates.
-- `LCamera:toWorld`: Converts screen coordinates to world coordinates.
-- `LCamera:type`: Returns the Lua-visible type name for this camera handle.
-- `LCamera:typeOf`: Returns whether this camera handle matches a supported type name.
-- `LCamera:update`: Advances camera follow, shake, and effect state.
-- `LCamera:updatePath`: Advances the active camera path and applies its position.
-- `LCamera:updateZoom`: Advances the active zoom tween and applies its zoom value.
-- `LCamera:zoomPulse`: Triggers a temporary zoom pulse effect.
-- `LCamera:zoomTo`: Starts a zoom tween toward a target zoom factor.
+- `LCamera:apply() -> nil`: Appends render commands that apply this camera transform.
+- `LCamera:attach() -> nil`: Appends render commands that attach this camera transform.
+- `LCamera:clearParallaxFactors() -> nil`: Clears all layer parallax factor overrides.
+- `LCamera:clearTarget() -> nil`: Clears the follow target. This method is available to Lua scripts.
+- `LCamera:detach() -> nil`: Appends a render command that detaches the active camera transform.
+- `LCamera:followPath(points, duration) -> nil`: Starts camera movement along an array of waypoint tables.
+- `LCamera:getBounds() -> boolean, number, number, number, number`: Returns camera bounds with a leading availability flag.
+- `LCamera:getDeadZone() -> boolean, number, number`: Returns follow dead-zone dimensions with a leading availability flag.
+- `LCamera:getEffectOffset() -> number, number`: Returns combined camera effect offset.
+- `LCamera:getEffectiveZoom() -> number`: Returns zoom after camera effects are applied.
+- `LCamera:getFollowEasing() -> string`: Returns target follow easing mode.
+- `LCamera:getFollowSmooth() -> number`: Returns follow smoothing speed. This method is available to Lua scripts.
+- `LCamera:getLookAhead() -> number`: Returns follow look-ahead multiplier.
+- `LCamera:getParallaxFactor(layer) -> number`: Returns a parallax factor for a named layer.
+- `LCamera:getPosition() -> number, number`: Returns the camera world position.
+- `LCamera:getRenderOffset() -> number, number`: Returns current render offset after camera effects.
+- `LCamera:getRotation() -> number`: Returns the camera rotation. This method is available to Lua scripts.
+- `LCamera:getRotationConstraints() -> boolean, number, boolean, number`: Returns rotation constraints with availability flags.
+- `LCamera:getRotationDamping() -> number`: Returns rotation damping. This method is available to Lua scripts.
+- `LCamera:getShakeOffset() -> number, number`: Returns current camera shake offset.
+- `LCamera:getTarget() -> boolean, number, number`: Returns the follow target with a leading availability flag.
+- `LCamera:getViewport() -> number, number, number, number`: Returns the camera viewport rectangle.
+- `LCamera:getVisibleArea() -> number, number, number, number`: Returns the world-space area visible through this camera.
+- `LCamera:getZoom() -> number`: Returns the camera zoom factor. This method is available to Lua scripts.
+- `LCamera:getZoomConstraints() -> boolean, number, boolean, number`: Returns zoom constraints with availability flags.
+- `LCamera:getZoomDamping() -> number`: Returns zoom damping. This method is available to Lua scripts.
+- `LCamera:hasBounds() -> boolean`: Returns whether camera bounds are active.
+- `LCamera:isBreathing() -> boolean`: Returns whether breathing zoom animation is active.
+- `LCamera:isSway() -> boolean`: Returns whether camera sway is active.
+- `LCamera:lookAt(x, y) -> nil`: Centers the camera on a world position.
+- `LCamera:move(dx, dy) -> nil`: Moves the camera by a delta. This method is available to Lua scripts.
+- `LCamera:onWindowResize(window_w, window_h) -> nil`: Updates camera viewport state after a window resize.
+- `LCamera:onWindowResizeScaled(game_w, game_h, window_w, window_h, mode) -> nil`: Updates camera viewport state using a virtual game size and scale mode.
+- `LCamera:pathProgress() -> number`: Returns active path progress. This method is available to Lua scripts.
+- `LCamera:presetAggressiveFollow() -> nil`: Applies the aggressive follow camera preset.
+- `LCamera:presetBalancedFollow() -> nil`: Applies the balanced follow camera preset.
+- `LCamera:presetCinematicFollow() -> nil`: Applies the cinematic follow camera preset.
+- `LCamera:presetTightFollow() -> nil`: Applies the tight follow camera preset.
+- `LCamera:removeBounds() -> nil`: Removes active camera bounds. This method is available to Lua scripts.
+- `LCamera:reset() -> nil`: Appends a render command that removes the active camera transform.
+- `LCamera:setBounds(x, y, w, h) -> nil`: Sets camera world bounds. This method is available to Lua scripts.
+- `LCamera:setDeadZone(w, h) -> nil`: Sets follow dead-zone dimensions.
+- `LCamera:setFollowEasing(easing) -> nil`: Sets target follow easing mode. This method is available to Lua scripts.
+- `LCamera:setFollowSmooth(speed) -> nil`: Sets follow smoothing speed. This method is available to Lua scripts.
+- `LCamera:setLookAhead(mul) -> nil`: Sets follow look-ahead multiplier.
+- `LCamera:setParallaxFactor(layer, factor) -> nil`: Sets a parallax factor for a named layer.
+- `LCamera:setPosition(x, y) -> nil`: Sets the camera world position. This method is available to Lua scripts.
+- `LCamera:setRotation(r) -> nil`: Sets the camera rotation. This method is available to Lua scripts.
+- `LCamera:setRotationConstraints(min_rot?, max_rot?) -> nil`: Sets optional minimum and maximum rotation constraints.
+- `LCamera:setRotationDamping(damping) -> nil`: Sets rotation damping. This method is available to Lua scripts.
+- `LCamera:setTarget(x, y) -> nil`: Sets a world-space follow target. This method is available to Lua scripts.
+- `LCamera:setViewport(x, y, w, h) -> nil`: Sets the camera viewport rectangle.
+- `LCamera:setZoom(zoom) -> nil`: Sets the camera zoom factor. This method is available to Lua scripts.
+- `LCamera:setZoomConstraints(min_zoom?, max_zoom?) -> nil`: Sets optional minimum and maximum zoom constraints.
+- `LCamera:setZoomDamping(damping) -> nil`: Sets zoom damping. This method is available to Lua scripts.
+- `LCamera:shake(intensity, duration) -> nil`: Starts a camera shake effect. This method is available to Lua scripts.
+- `LCamera:startBreathing(amplitude?, rate?) -> nil`: Starts subtle breathing zoom animation.
+- `LCamera:startSway(amplitude_x, amplitude_y, frequency, decay?) -> nil`: Starts camera sway offset animation.
+- `LCamera:stopBreathing() -> nil`: Stops breathing zoom animation. This method is available to Lua scripts.
+- `LCamera:stopPath() -> nil`: Stops the active camera path. This method is available to Lua scripts.
+- `LCamera:stopSway() -> nil`: Stops camera sway offset animation.
+- `LCamera:stopZoom() -> nil`: Stops the active zoom tween. This method is available to Lua scripts.
+- `LCamera:toScreen(wx, wy) -> number, number`: Converts world coordinates to screen coordinates.
+- `LCamera:toWorld(sx, sy) -> number, number`: Converts screen coordinates to world coordinates.
+- `LCamera:type() -> string`: Returns the Lua-visible type name for this camera handle.
+- `LCamera:typeOf(name) -> boolean`: Returns whether this camera handle matches a supported type name.
+- `LCamera:update(dt) -> nil`: Advances camera follow, shake, and effect state.
+- `LCamera:updatePath(dt) -> boolean`: Advances the active camera path and applies its position.
+- `LCamera:updateZoom(dt) -> boolean`: Advances the active zoom tween and applies its zoom value.
+- `LCamera:zoomPulse(amplitude, duration) -> nil`: Triggers a temporary zoom pulse effect.
+- `LCamera:zoomTo(target_zoom, duration, easing?) -> nil`: Starts a zoom tween toward a target zoom factor.
 
 #### LCameraRig Type
 
@@ -208,17 +205,17 @@ The module also supports multi-camera orchestration through named rigs and layou
 
 ##### Methods
 
-- `LCameraRig:apply`: Appends render commands for a named camera in this rig.
-- `LCameraRig:getViewport`: Returns a named rig camera viewport with a leading availability flag.
-- `LCameraRig:has`: Returns whether this rig contains a named camera.
-- `LCameraRig:minimap`: Applies a minimap layout using the current window size and optional ratio.
-- `LCameraRig:names`: Returns all camera names in this rig.
-- `LCameraRig:pictureInPicture`: Applies a picture-in-picture layout using optional inset size.
-- `LCameraRig:remove`: Removes a named camera from this rig.
-- `LCameraRig:setPosition`: Sets the position of a named rig camera, creating it if needed.
-- `LCameraRig:setTarget`: Sets the follow target of a named rig camera, creating it if needed.
-- `LCameraRig:setZoom`: Sets the zoom of a named rig camera, creating it if needed.
-- `LCameraRig:splitScreen`: Applies a split-screen layout using the current window size.
-- `LCameraRig:type`: Returns the Lua-visible type name for this camera rig handle.
-- `LCameraRig:typeOf`: Returns whether this camera rig handle matches a supported type name.
-- `LCameraRig:updateAll`: Advances every camera in this rig. This method is available to Lua scripts.
+- `LCameraRig:apply(name) -> boolean`: Appends render commands for a named camera in this rig.
+- `LCameraRig:getViewport(name) -> boolean, number, number, number, number`: Returns a named rig camera viewport with a leading availability flag.
+- `LCameraRig:has(name) -> boolean`: Returns whether this rig contains a named camera.
+- `LCameraRig:minimap(window_w, window_h, ratio?) -> nil`: Applies a minimap layout using the current window size and optional ratio.
+- `LCameraRig:names() -> string[]`: Returns all camera names in this rig.
+- `LCameraRig:pictureInPicture(window_w, window_h, pip_w?, pip_h?) -> nil`: Applies a picture-in-picture layout using optional inset size.
+- `LCameraRig:remove(name) -> boolean`: Removes a named camera from this rig.
+- `LCameraRig:setPosition(name, x, y) -> nil`: Sets the position of a named rig camera, creating it if needed.
+- `LCameraRig:setTarget(name, x, y) -> nil`: Sets the follow target of a named rig camera, creating it if needed.
+- `LCameraRig:setZoom(name, zoom) -> nil`: Sets the zoom of a named rig camera, creating it if needed.
+- `LCameraRig:splitScreen(window_w, window_h) -> nil`: Applies a split-screen layout using the current window size.
+- `LCameraRig:type() -> string`: Returns the Lua-visible type name for this camera rig handle.
+- `LCameraRig:typeOf(name) -> boolean`: Returns whether this camera rig handle matches a supported type name.
+- `LCameraRig:updateAll(dt) -> nil`: Advances every camera in this rig. This method is available to Lua scripts.

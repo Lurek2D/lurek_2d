@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `font` module provides CPU-side font data services: bitmap font loading, glyph metrics, text measurement, shaping, wrapping, and registry-based font lookup.
+- Manages font loading, metrics caching, and text wrapping.
 
 ## General Info
 
@@ -16,13 +16,9 @@
 
 ## Summary
 
-The `font` module is the text-preparation layer for rendering and UI layout. It handles loading, glyph lookup, measurement, and shaping so text can be positioned correctly before draw commands are built.
+This module provides typography runtime services to load, resolve, and manage fonts. It operates a central registry caching styles and point sizes for TTF, OTF, and pre-rasterized bitmap fonts. This ensures that UI and render steps can query consistent font metrics on demand to size components.
 
-Its scope includes per-character metrics, line height, full-string measurement, alignment, and wrapping. This helps gameplay and UI systems place text consistently across HUDs, panels, and overlays.
-
-A central registry keeps named font handles and metadata in one place, which simplifies reuse.
-
-The module is CPU-side by design: it owns text data and layout behavior, while GPU upload and final rendering stay in rendering paths.
+For text layouts, the module handles kerning-aware measurements and shaping operations. It supports multiple wrapping strategies to fit text strings within pixel width limits, computing line placements and glyph advances to produce formatted, multi-line layouts for rendering.
 
 ## Imports
 
@@ -71,17 +67,17 @@ The module is CPU-side by design: it owns text data and layout behavior, while G
 
 ### Functions
 
-- `lurek.font.availableSizes`: Returns the array of built-in bitmap font point sizes available in the engine.
-- `lurek.font.charAdvance`: Returns the horizontal advance width in pixels of a single character using the given font.
-- `lurek.font.getDefault`: Returns the default engine font as an LFont userdata handle.
-- `lurek.font.lineHeight`: Returns the line height of the given font in pixels.
-- `lurek.font.list`: Lists all registered fonts with their name, size, and style metadata.
-- `lurek.font.load`: Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
-- `lurek.font.loadBitmap`: Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
-- `lurek.font.measure`: Measures the pixel dimensions of a text string using the given font handle and scale.
-- `lurek.font.measureLine`: Measures the pixel width and height of a single line of text with the given font.
-- `lurek.font.shapeText`: Shapes and aligns text into wrapped lines with x-offset data for rendering.
-- `lurek.font.wrapText`: Wraps a text string into lines that fit within the given maximum pixel width.
+- `lurek.font.availableSizes() -> table`: Returns the array of built-in bitmap font point sizes available in the engine.
+- `lurek.font.charAdvance(font, char, scale?) -> number`: Returns the horizontal advance width in pixels of a single character using the given font.
+- `lurek.font.getDefault() -> LFont`: Returns the default engine font as an LFont userdata handle.
+- `lurek.font.lineHeight(font) -> number`: Returns the line height of the given font in pixels.
+- `lurek.font.list() -> table`: Lists all registered fonts with their name, size, and style metadata.
+- `lurek.font.load(path, size) -> LFont`: Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
+- `lurek.font.loadBitmap(path, cellWidth, cellHeight) -> LFont`: Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
+- `lurek.font.measure(font, text, scale?) -> number`: Measures the pixel dimensions of a text string using the given font handle and scale.
+- `lurek.font.measureLine(font, text, scale?) -> number`: Measures the pixel width and height of a single line of text with the given font.
+- `lurek.font.shapeText(font, text, maxWidth, scale, align, wrap) -> table`: Shapes and aligns text into wrapped lines with x-offset data for rendering.
+- `lurek.font.wrapText(font, text, maxWidth, scale, mode) -> table`: Wraps a text string into lines that fit within the given maximum pixel width.
 
 ### Callbacks
 
@@ -103,11 +99,11 @@ The module is CPU-side by design: it owns text data and layout behavior, while G
 
 ##### Methods
 
-- `LFont:containsGlyph`: Returns whether the font contains a glyph for the given character. This method is available to Lua scripts.
-- `LFont:getName`: Returns the human-readable name of this font. This method is available to Lua scripts.
-- `LFont:getSize`: Returns the point size of this font. This method is available to Lua scripts.
-- `LFont:getStyle`: Returns the style string of this font. This method is available to Lua scripts.
-- `LFont:isBold`: Returns whether this font is the bold variant. This method is available to Lua scripts.
-- `LFont:lineHeight`: Returns the line height of this font in pixels. This method is available to Lua scripts.
-- `LFont:measure`: Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
-- `LFont:wrapText`: Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
+- `LFont:containsGlyph(char) -> boolean`: Returns whether the font contains a glyph for the given character. This method is available to Lua scripts.
+- `LFont:getName() -> string`: Returns the human-readable name of this font. This method is available to Lua scripts.
+- `LFont:getSize() -> number`: Returns the point size of this font. This method is available to Lua scripts.
+- `LFont:getStyle() -> string`: Returns the style string of this font. This method is available to Lua scripts.
+- `LFont:isBold() -> boolean`: Returns whether this font is the bold variant. This method is available to Lua scripts.
+- `LFont:lineHeight() -> number`: Returns the line height of this font in pixels. This method is available to Lua scripts.
+- `LFont:measure(text, scale?) -> number, number`: Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
+- `LFont:wrapText(text, maxWidth, scale?) -> table`: Wraps text into lines fitting within the given max width. This method is available to Lua scripts.

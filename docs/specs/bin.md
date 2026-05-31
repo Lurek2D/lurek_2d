@@ -2,8 +2,7 @@
 
 ## TL;DR
 
-- The `bin` module groups standalone executable entry points for headless tasks and normal app launch, with clear command behavior and process-level integration.
-
+- Boots CLI or game.
 
 ## General Info
 
@@ -17,13 +16,9 @@
 
 ## Summary
 
-The `bin` module is the executable entry layer for process-level tasks. It does not define gameplay features. Instead, it provides focused programs that start the engine in specific modes, such as normal interactive launch or headless automation workflows.
+The bin module defines the executable entrypoints for Lurek2D, providing a headless CLI for offline tool operations and a desktop launcher for standard interactive gameplay.
 
-Its functional goal is clear command behavior. Each binary maps user input to a concrete operation, runs that operation with predictable side effects, reports results, and exits with meaningful status codes. This makes the tooling usable both by humans and by CI scripts.
-
-The module is intentionally small and integration-focused. Heavy logic should stay in shared library modules, while binaries stay thin wrappers around those APIs. This keeps maintenance costs lower and avoids logic drift between tool paths and runtime paths.
-
-In practice, this module helps operational work stay stable: validation runs, packaging, screenshot pipelines, and standard launch flow can all be invoked through explicit entry points. That reliability is the main value of this module boundary.
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 

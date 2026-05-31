@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `light` module manages 2D light, occluder, and lighting-world state for dynamic illumination, while rendering remains in the render module.
+- Manages point, spot, and directional lights with custom decay falloffs and groups.
+- Coordinates convex polygon occluders, shadow masks, flicker, and transitions.
 
 ## General Info
 
@@ -16,17 +17,13 @@
 
 ## Summary
 
-The `light` module is the runtime state system for 2D illumination. It stores and updates light data, occluder data, and ambient terms so scenes can control visual mood and readability through one coherent lighting surface.
+This module represents the dynamic 2D illumination and shadow-casting subsystem, offering developers control over visual lighting environments. It operates a centralized light world container that manages active lights and structural occluders keyed by stable handles. By processing coordinates, global ambient colors, and light groupings, the system produces coordinated illumination layers that shape visual depth and gameplay moods in real-time.
 
-Its core model supports multiple light behaviors with configurable color, radius, intensity, direction, falloff, attenuation, and blending. This gives teams flexible control over how local and global lighting should behave during gameplay.
+At the heart of the light simulation are geometric models distinguishing point, spot-cone, and directional light types. Individual lights carry parameters for color, energy, and quadratic attenuation formulas that dictate how intensity decays over distance. Radial falloff profiles define custom decay curves between light centers and outer radii. These properties blend using additive or subtractive modes to compose complex, overlapping lighting maps.
 
-Scene-level coordination is handled by a light world container that owns active lights and occluders. It supports stable add, remove, lookup, and group operations, so large scenes can be managed predictably.
+To animate lighting layouts dynamically, the module includes temporal flicker modules and smooth transition helpers. Flicker units animate lights using sine-based oscillations that simulate torches, candles, or flickering neon bulbs over time. Transition systems interpolate values linearly across frame boundaries, stepping colors, intensities, and sizes toward target goals smoothly to create environmental changes.
 
-Dynamic effects are part of the same runtime contract. Flicker states, time-based transitions, and shadow-quality options allow lights to evolve over time without ad-hoc per-scene animation code.
-
-Group-level controls and world-level queries help teams coordinate many lights at once, which is important for larger scenes and for scripted global changes during events, weather, or time-of-day shifts.
-
-The boundary is explicit: this module owns lighting data and update policy, while actual GPU draw and shader execution stay in rendering modules. In practice, `lurek.light` provides one reliable control plane for scripted 2D lighting behavior.
+Shadow casting is supported by convex polygon occluders that block light dynamically. Occluders carry local coordinates, enabling developers to position collision shapes and modify their opacity in real-time. Inclusion and shadow receiver masks allow developers to control which lights interact with specific occluding objects. This system features hard-shadowing or soft-shadow PCF-based filters to control both visual styling and rendering costs.
 
 ## Imports
 
@@ -118,26 +115,26 @@ The boundary is explicit: this module owns lighting data and update policy, whil
 
 ### Functions
 
-- `lurek.light.advanceFlickers`: Advances flicker animation for all indexed flickering lights.
-- `lurek.light.clear`: Removes all lights and occluders from the light world.
-- `lurek.light.drawToImage`: Renders an approximate light-map preview of this world into an ImageData.
-- `lurek.light.getAmbient`: Returns global ambient light color.
-- `lurek.light.getGodRayHints`: Returns directional light hints for god-ray style effects.
-- `lurek.light.getGroupCount`: Returns the number of lights in a group.
-- `lurek.light.getLightCount`: Returns the number of live lights. This function is exposed to Lua scripts.
-- `lurek.light.getMaxLights`: Returns the maximum configured light count.
-- `lurek.light.getNormalMapHints`: Returns light hints that reference normal maps.
-- `lurek.light.getOccluderCount`: Returns the number of live occluders.
-- `lurek.light.isEnabled`: Returns whether the shared light world is enabled.
-- `lurek.light.newLight`: Creates a light and applies optional light settings.
-- `lurek.light.newOccluder`: Creates an occluder from a flat vertex coordinate table and optional settings.
-- `lurek.light.setAmbient`: Sets global ambient light color. This function is exposed to Lua scripts.
-- `lurek.light.setEnabled`: Enables or disables the shared light world.
-- `lurek.light.setGroupColor`: Sets color for all lights in a group.
-- `lurek.light.setGroupEnabled`: Enables or disables all lights in a group.
-- `lurek.light.setGroupIntensity`: Sets intensity for all lights in a group.
-- `lurek.light.setMaxLights`: Sets the maximum configured light count, clamped to 1 through 256.
-- `lurek.light.syncAmbient`: Returns the light world's ambient color hint.
+- `lurek.light.advanceFlickers(dt) -> nil`: Advances flicker animation for all indexed flickering lights.
+- `lurek.light.clear() -> nil`: Removes all lights and occluders from the light world.
+- `lurek.light.drawToImage(width, height) -> LImageData`: Renders an approximate light-map preview of this world into an ImageData.
+- `lurek.light.getAmbient() -> number`: Returns global ambient light color.
+- `lurek.light.getGodRayHints() -> table`: Returns directional light hints for god-ray style effects.
+- `lurek.light.getGroupCount(group_id) -> integer`: Returns the number of lights in a group.
+- `lurek.light.getLightCount() -> integer`: Returns the number of live lights. This function is exposed to Lua scripts.
+- `lurek.light.getMaxLights() -> integer`: Returns the maximum configured light count.
+- `lurek.light.getNormalMapHints() -> table`: Returns light hints that reference normal maps.
+- `lurek.light.getOccluderCount() -> integer`: Returns the number of live occluders.
+- `lurek.light.isEnabled() -> boolean`: Returns whether the shared light world is enabled.
+- `lurek.light.newLight(x, y, radius, opts?) -> LLight`: Creates a light and applies optional light settings.
+- `lurek.light.newOccluder(vtbl, opts?) -> LOccluder`: Creates an occluder from a flat vertex coordinate table and optional settings.
+- `lurek.light.setAmbient(r, g, b, a?) -> nil`: Sets global ambient light color. This function is exposed to Lua scripts.
+- `lurek.light.setEnabled(enabled) -> nil`: Enables or disables the shared light world.
+- `lurek.light.setGroupColor(group_id, r, g, b, a?) -> nil`: Sets color for all lights in a group.
+- `lurek.light.setGroupEnabled(group_id, enabled) -> nil`: Enables or disables all lights in a group.
+- `lurek.light.setGroupIntensity(group_id, intensity) -> nil`: Sets intensity for all lights in a group.
+- `lurek.light.setMaxLights(n) -> nil`: Sets the maximum configured light count, clamped to 1 through 256.
+- `lurek.light.syncAmbient() -> number`: Returns the light world's ambient color hint.
 
 ### Callbacks
 
@@ -159,71 +156,71 @@ The boundary is explicit: this module owns lighting data and update policy, whil
 
 ##### Methods
 
-- `LLight:addFlicker`: Adds flicker from min/max intensity range and frequency.
-- `LLight:clearCookie`: Clears the cookie texture path stored on this Lua light handle.
-- `LLight:clearNormalMap`: Clears the normal map path used by this light.
-- `LLight:getAttenuation`: Returns this light attenuation coefficients.
-- `LLight:getBlendMode`: Returns this light blend mode string.
-- `LLight:getColor`: Returns this light RGBA color. This method is available to Lua scripts.
-- `LLight:getCookie`: Returns the cookie texture path stored on this Lua light handle.
-- `LLight:getDirection`: Returns this light direction angle.
-- `LLight:getEnergy`: Returns this light energy value. This method is available to Lua scripts.
-- `LLight:getFalloff`: Returns this light falloff mode string.
-- `LLight:getFlicker`: Returns this light flicker speed and strength.
-- `LLight:getGroupId`: Returns this light group id. This method is available to Lua scripts.
-- `LLight:getInnerAngle`: Returns this spot light inner cone angle.
-- `LLight:getIntensity`: Returns this light intensity. This method is available to Lua scripts.
-- `LLight:getLightMask`: Returns this light's inclusion mask.
-- `LLight:getLightType`: Returns this light type string. This method is available to Lua scripts.
-- `LLight:getNormalMap`: Returns the normal map path used by this light.
-- `LLight:getNormalStrength`: Returns this light's normal map strength.
-- `LLight:getOuterAngle`: Returns this spot light outer cone angle.
-- `LLight:getPosition`: Returns this light position. This method is available to Lua scripts.
-- `LLight:getRadius`: Returns this light radius. This method is available to Lua scripts.
-- `LLight:getShadowColor`: Returns this light shadow RGBA color.
-- `LLight:getShadowFilter`: Returns this light shadow filter string.
-- `LLight:getShadowMask`: Returns this light's shadow receiver mask.
-- `LLight:getShadowSmooth`: Returns this light shadow smoothing value.
-- `LLight:getShadowSoftness`: Returns this light shadow softness value.
-- `LLight:isEnabled`: Returns whether this light is enabled.
-- `LLight:isFlickerEnabled`: Returns whether this light flicker is enabled.
-- `LLight:isShadowEnabled`: Returns whether this light casts shadows.
-- `LLight:isValid`: Returns whether this light handle still points to a live light.
-- `LLight:isVolumetric`: Returns whether this light is volumetric.
-- `LLight:remove`: Removes this light from the shared light world.
-- `LLight:setAttenuation`: Sets this light attenuation coefficients.
-- `LLight:setBlendMode`: Sets this light blend mode. This method is available to Lua scripts.
-- `LLight:setColor`: Sets this light RGBA color. This method is available to Lua scripts.
-- `LLight:setCookie`: Stores a cookie texture path on this Lua light handle.
-- `LLight:setDirection`: Sets this light direction angle. This method is available to Lua scripts.
-- `LLight:setEnabled`: Enables or disables this light. This method is available to Lua scripts.
-- `LLight:setEnergy`: Sets this light energy value. This method is available to Lua scripts.
-- `LLight:setFalloff`: Sets this light falloff mode. This method is available to Lua scripts.
-- `LLight:setFlicker`: Configures flicker speed and strength for this light.
-- `LLight:setFlickerEnabled`: Enables or disables this light flicker state.
-- `LLight:setGroupId`: Sets this light group id. This method is available to Lua scripts.
-- `LLight:setInnerAngle`: Sets this spot light inner cone angle.
-- `LLight:setIntensity`: Sets this light intensity. This method is available to Lua scripts.
-- `LLight:setLightMask`: Sets this light's inclusion mask. This method is available to Lua scripts.
-- `LLight:setLightType`: Sets this light type. This method is available to Lua scripts.
-- `LLight:setNormalMap`: Sets the normal map path used by this light.
-- `LLight:setNormalStrength`: Sets this light's normal map strength.
-- `LLight:setOuterAngle`: Sets this spot light outer cone angle.
-- `LLight:setPosition`: Sets this light position. This method is available to Lua scripts.
-- `LLight:setRadius`: Sets this light radius. This method is available to Lua scripts.
-- `LLight:setShadowColor`: Sets this light shadow RGBA color. This method is available to Lua scripts.
-- `LLight:setShadowEnabled`: Enables or disables shadow casting for this light.
-- `LLight:setShadowFilter`: Sets this light shadow filter. This method is available to Lua scripts.
-- `LLight:setShadowMask`: Sets this light's shadow receiver mask.
-- `LLight:setShadowSmooth`: Sets this light shadow smoothing value.
-- `LLight:setShadowSoftness`: Sets this light shadow softness value.
-- `LLight:setVolumetric`: Enables or disables volumetric behavior for this light.
-- `LLight:stopTransition`: Stops and clears this light's active transition.
-- `LLight:transitionProgress`: Returns active transition progress or 1.0 when no transition is active.
-- `LLight:transitionTo`: Starts a transition toward target color, intensity, and radius values.
-- `LLight:type`: Returns the Lua-visible type name for this light handle.
-- `LLight:typeOf`: Returns whether this light handle matches a supported type name.
-- `LLight:updateTransition`: Advances this light's active transition and applies interpolated values.
+- `LLight:addFlicker(min, max, hz) -> nil`: Adds flicker from min/max intensity range and frequency.
+- `LLight:clearCookie() -> nil`: Clears the cookie texture path stored on this Lua light handle.
+- `LLight:clearNormalMap() -> nil`: Clears the normal map path used by this light.
+- `LLight:getAttenuation() -> number`: Returns this light attenuation coefficients.
+- `LLight:getBlendMode() -> string`: Returns this light blend mode string.
+- `LLight:getColor() -> number`: Returns this light RGBA color. This method is available to Lua scripts.
+- `LLight:getCookie() -> string`: Returns the cookie texture path stored on this Lua light handle.
+- `LLight:getDirection() -> number`: Returns this light direction angle.
+- `LLight:getEnergy() -> number`: Returns this light energy value. This method is available to Lua scripts.
+- `LLight:getFalloff() -> string`: Returns this light falloff mode string.
+- `LLight:getFlicker() -> number`: Returns this light flicker speed and strength.
+- `LLight:getGroupId() -> integer`: Returns this light group id. This method is available to Lua scripts.
+- `LLight:getInnerAngle() -> number`: Returns this spot light inner cone angle.
+- `LLight:getIntensity() -> number`: Returns this light intensity. This method is available to Lua scripts.
+- `LLight:getLightMask() -> integer`: Returns this light's inclusion mask.
+- `LLight:getLightType() -> string`: Returns this light type string. This method is available to Lua scripts.
+- `LLight:getNormalMap() -> string`: Returns the normal map path used by this light.
+- `LLight:getNormalStrength() -> number`: Returns this light's normal map strength.
+- `LLight:getOuterAngle() -> number`: Returns this spot light outer cone angle.
+- `LLight:getPosition() -> number`: Returns this light position. This method is available to Lua scripts.
+- `LLight:getRadius() -> number`: Returns this light radius. This method is available to Lua scripts.
+- `LLight:getShadowColor() -> number`: Returns this light shadow RGBA color.
+- `LLight:getShadowFilter() -> string`: Returns this light shadow filter string.
+- `LLight:getShadowMask() -> integer`: Returns this light's shadow receiver mask.
+- `LLight:getShadowSmooth() -> number`: Returns this light shadow smoothing value.
+- `LLight:getShadowSoftness() -> number`: Returns this light shadow softness value.
+- `LLight:isEnabled() -> boolean`: Returns whether this light is enabled.
+- `LLight:isFlickerEnabled() -> boolean`: Returns whether this light flicker is enabled.
+- `LLight:isShadowEnabled() -> boolean`: Returns whether this light casts shadows.
+- `LLight:isValid() -> boolean`: Returns whether this light handle still points to a live light.
+- `LLight:isVolumetric() -> boolean`: Returns whether this light is volumetric.
+- `LLight:remove() -> nil`: Removes this light from the shared light world.
+- `LLight:setAttenuation(c, l, q) -> nil`: Sets this light attenuation coefficients.
+- `LLight:setBlendMode(mode) -> nil`: Sets this light blend mode. This method is available to Lua scripts.
+- `LLight:setColor(r, g, b, a?) -> nil`: Sets this light RGBA color. This method is available to Lua scripts.
+- `LLight:setCookie(path) -> nil`: Stores a cookie texture path on this Lua light handle.
+- `LLight:setDirection(dir) -> nil`: Sets this light direction angle. This method is available to Lua scripts.
+- `LLight:setEnabled(b) -> nil`: Enables or disables this light. This method is available to Lua scripts.
+- `LLight:setEnergy(e) -> nil`: Sets this light energy value. This method is available to Lua scripts.
+- `LLight:setFalloff(mode) -> nil`: Sets this light falloff mode. This method is available to Lua scripts.
+- `LLight:setFlicker(speed, strength) -> nil`: Configures flicker speed and strength for this light.
+- `LLight:setFlickerEnabled(b) -> nil`: Enables or disables this light flicker state.
+- `LLight:setGroupId(id) -> nil`: Sets this light group id. This method is available to Lua scripts.
+- `LLight:setInnerAngle(a) -> nil`: Sets this spot light inner cone angle.
+- `LLight:setIntensity(i) -> nil`: Sets this light intensity. This method is available to Lua scripts.
+- `LLight:setLightMask(mask) -> nil`: Sets this light's inclusion mask. This method is available to Lua scripts.
+- `LLight:setLightType(t) -> nil`: Sets this light type. This method is available to Lua scripts.
+- `LLight:setNormalMap(path) -> nil`: Sets the normal map path used by this light.
+- `LLight:setNormalStrength(strength) -> nil`: Sets this light's normal map strength.
+- `LLight:setOuterAngle(a) -> nil`: Sets this spot light outer cone angle.
+- `LLight:setPosition(x, y) -> nil`: Sets this light position. This method is available to Lua scripts.
+- `LLight:setRadius(r) -> nil`: Sets this light radius. This method is available to Lua scripts.
+- `LLight:setShadowColor(r, g, b, a?) -> nil`: Sets this light shadow RGBA color. This method is available to Lua scripts.
+- `LLight:setShadowEnabled(b) -> nil`: Enables or disables shadow casting for this light.
+- `LLight:setShadowFilter(filter) -> nil`: Sets this light shadow filter. This method is available to Lua scripts.
+- `LLight:setShadowMask(mask) -> nil`: Sets this light's shadow receiver mask.
+- `LLight:setShadowSmooth(s) -> nil`: Sets this light shadow smoothing value.
+- `LLight:setShadowSoftness(softness) -> nil`: Sets this light shadow softness value.
+- `LLight:setVolumetric(b) -> nil`: Enables or disables volumetric behavior for this light.
+- `LLight:stopTransition() -> nil`: Stops and clears this light's active transition.
+- `LLight:transitionProgress() -> number`: Returns active transition progress or 1.0 when no transition is active.
+- `LLight:transitionTo(target, duration) -> nil`: Starts a transition toward target color, intensity, and radius values.
+- `LLight:type() -> string`: Returns the Lua-visible type name for this light handle.
+- `LLight:typeOf(name) -> boolean`: Returns whether this light handle matches a supported type name.
+- `LLight:updateTransition(dt) -> boolean`: Advances this light's active transition and applies interpolated values.
 
 #### LLightGetGodRayHintsResult Type
 
@@ -267,17 +264,17 @@ The boundary is explicit: this module owns lighting data and update policy, whil
 
 ##### Methods
 
-- `LOccluder:getLightMask`: Returns this occluder's light mask.
-- `LOccluder:getOpacity`: Returns this occluder opacity. This method is available to Lua scripts.
-- `LOccluder:getPosition`: Returns this occluder position offset.
-- `LOccluder:getVertices`: Returns this occluder's flat vertex coordinate list.
-- `LOccluder:isEnabled`: Returns whether this occluder is enabled.
-- `LOccluder:isValid`: Returns whether this occluder handle still points to a live occluder.
-- `LOccluder:remove`: Removes this occluder from the shared light world.
-- `LOccluder:setEnabled`: Enables or disables this occluder.
-- `LOccluder:setLightMask`: Sets this occluder's light mask. This method is available to Lua scripts.
-- `LOccluder:setOpacity`: Sets this occluder opacity. This method is available to Lua scripts.
-- `LOccluder:setPosition`: Sets this occluder position offset.
-- `LOccluder:setVertices`: Replaces this occluder's flat vertex coordinate list.
-- `LOccluder:type`: Returns the Lua-visible type name for this occluder handle.
-- `LOccluder:typeOf`: Returns whether this occluder handle matches a supported type name.
+- `LOccluder:getLightMask() -> integer`: Returns this occluder's light mask.
+- `LOccluder:getOpacity() -> number`: Returns this occluder opacity. This method is available to Lua scripts.
+- `LOccluder:getPosition() -> number`: Returns this occluder position offset.
+- `LOccluder:getVertices() -> number[]`: Returns this occluder's flat vertex coordinate list.
+- `LOccluder:isEnabled() -> boolean`: Returns whether this occluder is enabled.
+- `LOccluder:isValid() -> boolean`: Returns whether this occluder handle still points to a live occluder.
+- `LOccluder:remove() -> nil`: Removes this occluder from the shared light world.
+- `LOccluder:setEnabled(b) -> nil`: Enables or disables this occluder.
+- `LOccluder:setLightMask(mask) -> nil`: Sets this occluder's light mask. This method is available to Lua scripts.
+- `LOccluder:setOpacity(o) -> nil`: Sets this occluder opacity. This method is available to Lua scripts.
+- `LOccluder:setPosition(x, y) -> nil`: Sets this occluder position offset.
+- `LOccluder:setVertices(tbl) -> nil`: Replaces this occluder's flat vertex coordinate list.
+- `LOccluder:type() -> string`: Returns the Lua-visible type name for this occluder handle.
+- `LOccluder:typeOf(name) -> boolean`: Returns whether this occluder handle matches a supported type name.

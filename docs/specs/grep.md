@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `grep` module is a parallel, multi-strategy text search engine for game content files, supporting literal, regex, glob, fuzzy, and multi-pattern matching alongside specialized JSON path and structured log search.
+- Provides parallel file scanning, fuzzy text matchers, and JSON/log searches.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `grep` module is the engine-side search toolkit for scripts and developer tools. It scans project files and returns structured matches with path, line content, and match spans.
+This module represents the high-performance content-search and text-scanning subsystem, supplying systems with tools to query files. It supports multiple search strategies including exact literals, regular expressions, shell globs, and edit-distance fuzzy matching. By checking search configurations, the scanning engine bounds processing loads by enforcing maximum file size limits, whole-word constraints, and case filters.
 
-It supports literal, regex, glob, fuzzy, and multi-pattern search in one runtime surface, so teams can switch search style without switching modules.
-
-Search scope is controlled by extension and path filters, and execution is performance-aware through buffered reads, memory-mapped access for large files, and optional parallel dispatch.
-
-The module also includes JSON path search and structured log search, which makes nested data and runtime logs searchable without custom parsers.
-
-In practice, `lurek.grep` provides one reliable contract for content discovery, diagnostics, and project-wide text analysis.
+To scan directory structures efficiently, the engine distributes matching tasks across a parallel thread pool. Small files are parsed using buffered streams, while large assets leverage zero-copy memory mapping for fast scanning. Path filters narrow scopes by excluding hidden directories or checking extensions. Special search workflows extract data from JSON files and structured logs.
 
 ## Imports
 
@@ -126,13 +120,13 @@ In practice, `lurek.grep` provides one reliable contract for content discovery, 
 
 ### Functions
 
-- `lurek.grep.jsonSearch`: Searches a JSON file for all values associated with a given key name at any depth.
-- `lurek.grep.logSearch`: Searches a structured log file by log level and regex pattern, returning matched entries.
-- `lurek.grep.luaFilter`: Creates a file filter preset that matches only Lua source files (.lua extension).
-- `lurek.grep.newEngine`: Creates a new grep engine with default configuration settings.
-- `lurek.grep.newEngineOpts`: Creates a new grep engine with custom search configuration options.
-- `lurek.grep.newFilter`: Creates a new empty file filter that can be configured to match specific file patterns.
-- `lurek.grep.search`: Searches a directory tree for files containing an exact literal pattern string.
+- `lurek.grep.jsonSearch(file, key) -> table`: Searches a JSON file for all values associated with a given key name at any depth.
+- `lurek.grep.logSearch(file, level, pattern) -> table`: Searches a structured log file by log level and regex pattern, returning matched entries.
+- `lurek.grep.luaFilter() -> LFileFilter`: Creates a file filter preset that matches only Lua source files (.lua extension).
+- `lurek.grep.newEngine() -> LGrepEngine`: Creates a new grep engine with default configuration settings.
+- `lurek.grep.newEngineOpts(opts) -> LGrepEngine`: Creates a new grep engine with custom search configuration options.
+- `lurek.grep.newFilter() -> LFileFilter`: Creates a new empty file filter that can be configured to match specific file patterns.
+- `lurek.grep.search(path, pattern) -> table`: Searches a directory tree for files containing an exact literal pattern string.
 
 ### Callbacks
 
@@ -154,10 +148,10 @@ In practice, `lurek.grep` provides one reliable contract for content discovery, 
 
 ##### Methods
 
-- `LFileFilter:addExtension`: Add allowed file extensions â€” Lua userdata object exposed by the engine.
-- `LFileFilter:excludeExtension`: Add excluded file extension for this object.
-- `LFileFilter:excludePattern`: Add path pattern to exclude for this object.
-- `LFileFilter:setIncludeHidden`: Set whether hidden files are included.
+- `LFileFilter:addExtension(ext) -> nil`: Add allowed file extensions â€” Lua userdata object exposed by the engine.
+- `LFileFilter:excludeExtension(ext) -> nil`: Add excluded file extension for this object.
+- `LFileFilter:excludePattern(pattern) -> nil`: Add path pattern to exclude for this object.
+- `LFileFilter:setIncludeHidden(include) -> nil`: Set whether hidden files are included.
 
 #### LGrepEngine Type
 
@@ -169,8 +163,8 @@ In practice, `lurek.grep` provides one reliable contract for content discovery, 
 
 ##### Methods
 
-- `LGrepEngine:count`: Count total matches without returning line details.
-- `LGrepEngine:multiSearch`: Search with multiple patterns simultaneously.
-- `LGrepEngine:search`: Search a directory for a literal pattern.
-- `LGrepEngine:searchExt`: Search with file extension filter.
-- `LGrepEngine:searchFiles`: Search a specific provided list of files for text matches.
+- `LGrepEngine:count(path, pattern) -> integer`: Count total matches without returning line details.
+- `LGrepEngine:multiSearch(path, patterns) -> table`: Search with multiple patterns simultaneously.
+- `LGrepEngine:search(path, pattern) -> table`: Search a directory for a literal pattern.
+- `LGrepEngine:searchExt(path, pattern, extensions) -> table`: Search with file extension filter.
+- `LGrepEngine:searchFiles(files, pattern) -> table`: Search a specific provided list of files for text matches.

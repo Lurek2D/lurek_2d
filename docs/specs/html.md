@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `html` module lets games build and run interactive HTML/CSS UI documents, then render them through engine commands.
+- Runs interactive HTML/CSS documents with input routing, selector queries, and element mutations.
 
 ## General Info
 
@@ -16,15 +16,13 @@
 
 ## Summary
 
-The `html` module is the engine runtime for HTML/CSS-driven interfaces. It lets teams define UI with familiar markup and style rules, then turns that content into a live document tree that scripts can query and update.
+This module provides the HTML/CSS user interface subsystem, letting developers build interactive menus and HUDs. It parses markup and CSS stylesheets into dynamic DOM trees. The layout engine computes bounds using a box model, resolving cascades into precise pixel coordinates for rendering.
 
-Its main value is one consistent document pipeline: parse HTML, apply CSS selectors, resolve computed styles, calculate layout, and produce draw commands. This makes complex menus and tool panels easier to build without custom layout logic for each screen.
+The document orchestrator manages the UI lifecycle, handling layout passes, styling cascades, and viewport resizes. It converts CSS declarations into normalized color vectors and size scales. Styles are resolved deterministically across elements, allowing developers to manage visuals through stylesheets.
 
-The module separates document behavior from renderer details. It does not draw pixels directly. Instead, it outputs stable command lists that downstream render code can consume, which keeps UI logic portable across runtime contexts.
+For user interactions, the module handles clicks, keyboard focus, and text inputs. Input events are dispatched down the element tree, triggering hover states or text changes. DOM elements can be mutated at runtime by toggling classes, editing attributes, or replacing inner HTML fragments.
 
-Input is integrated with the same document state. Mouse, keyboard, focus, and text events are routed to matching elements, so interactive widgets can react through bound Lua callbacks and event listeners.
-
-In practice, `lurek.html` provides a complete web-style UI contract inside the engine: author structure and style, run layout, handle events, mutate DOM state, and render through one scriptable module surface.
+Additionally, selector queries support class, ID, and ancestry matching to locate elements. The completed layout output compiles into draw command streams containing render rectangles and text blocks ready for GPU rendering.
 
 ## Imports
 
@@ -96,12 +94,12 @@ In practice, `lurek.html` provides a complete web-style UI contract inside the e
 
 ### Functions
 
-- `lurek.html.isDefaultPrevented`: Returns whether the default action was prevented.
-- `lurek.html.loadDocument`: Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
-- `lurek.html.newDocument`: Creates an HTML document from optional source and layout/style options.
-- `lurek.html.preventDefault`: Marks the event as having its default action prevented.
-- `lurek.html.stopPropagation`: Stops event propagation to remaining listeners.
-- `lurek.html.supports`: Returns whether the HTML engine supports a named feature.
+- `lurek.html.isDefaultPrevented() -> boolean`: Returns whether the default action was prevented.
+- `lurek.html.loadDocument(path, opts?) -> LHtmlDocument`: Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
+- `lurek.html.newDocument(source?, opts?) -> LHtmlDocument`: Creates an HTML document from optional source and layout/style options.
+- `lurek.html.preventDefault() -> nil`: Marks the event as having its default action prevented.
+- `lurek.html.stopPropagation() -> nil`: Stops event propagation to remaining listeners.
+- `lurek.html.supports(feature) -> boolean`: Returns whether the HTML engine supports a named feature.
 
 ### Callbacks
 
@@ -124,32 +122,32 @@ In practice, `lurek.html` provides a complete web-style UI contract inside the e
 
 ##### Methods
 
-- `LHtmlDocument:addCss`: Appends CSS source text to the document stylesheet.
-- `LHtmlDocument:clearCss`: Clears all CSS source text from the document.
-- `LHtmlDocument:draw`: Queues render commands for this document at an optional offset.
-- `LHtmlDocument:getElementById`: Looks up the first element with a matching id attribute.
-- `LHtmlDocument:getHtml`: Returns the current document markup string.
-- `LHtmlDocument:getRoot`: Returns the root DOM element handle.
-- `LHtmlDocument:getViewport`: Returns the document layout viewport size.
-- `LHtmlDocument:isDirty`: Returns whether the document layout is dirty.
-- `LHtmlDocument:keypressed`: Forwards a key press to the focused document element and dispatches `keydown`.
-- `LHtmlDocument:mousemoved`: Forwards mouse movement to the document.
-- `LHtmlDocument:mousepressed`: Forwards a mouse press to the document and dispatches a click event when an element is hit.
-- `LHtmlDocument:mousereleased`: Forwards a mouse release to the document.
-- `LHtmlDocument:off`: Removes a document-level event listener by handle.
-- `LHtmlDocument:on`: Registers a document-level event listener.
-- `LHtmlDocument:query`: Looks up the first element matching a selector.
-- `LHtmlDocument:queryAll`: Returns all elements matching a selector.
-- `LHtmlDocument:relayout`: Rebuilds document layout immediately.
-- `LHtmlDocument:render`: Queues render commands for this document at an optional offset.
-- `LHtmlDocument:setCss`: Replaces the document stylesheet text.
-- `LHtmlDocument:setHtml`: Replaces the document markup and invalidates existing element handles.
-- `LHtmlDocument:setViewport`: Sets the document layout viewport size.
-- `LHtmlDocument:textinput`: Forwards text input to the focused document element and dispatches `input`.
-- `LHtmlDocument:type`: Returns the Lua-visible type name for this HTML document handle.
-- `LHtmlDocument:typeOf`: Returns whether this document handle matches a supported type name.
-- `LHtmlDocument:update`: Advances document timers and animated state.
-- `LHtmlDocument:wheelmoved`: Forwards mouse wheel movement to the document.
+- `LHtmlDocument:addCss(css) -> nil`: Appends CSS source text to the document stylesheet.
+- `LHtmlDocument:clearCss() -> nil`: Clears all CSS source text from the document.
+- `LHtmlDocument:draw(x?, y?) -> nil`: Queues render commands for this document at an optional offset.
+- `LHtmlDocument:getElementById(id) -> LuaValue`: Looks up the first element with a matching id attribute.
+- `LHtmlDocument:getHtml() -> string`: Returns the current document markup string.
+- `LHtmlDocument:getRoot() -> LHtmlElement`: Returns the root DOM element handle.
+- `LHtmlDocument:getViewport() -> number`: Returns the document layout viewport size.
+- `LHtmlDocument:isDirty() -> boolean`: Returns whether the document layout is dirty.
+- `LHtmlDocument:keypressed(key) -> boolean`: Forwards a key press to the focused document element and dispatches `keydown`.
+- `LHtmlDocument:mousemoved(x, y) -> boolean`: Forwards mouse movement to the document.
+- `LHtmlDocument:mousepressed(x, y, button?) -> boolean`: Forwards a mouse press to the document and dispatches a click event when an element is hit.
+- `LHtmlDocument:mousereleased(x, y, button?) -> boolean`: Forwards a mouse release to the document.
+- `LHtmlDocument:off(handle) -> nil`: Removes a document-level event listener by handle.
+- `LHtmlDocument:on(event, func) -> integer`: Registers a document-level event listener.
+- `LHtmlDocument:query(selector) -> LuaValue`: Looks up the first element matching a selector.
+- `LHtmlDocument:queryAll(selector) -> LHtmlElement[]`: Returns all elements matching a selector.
+- `LHtmlDocument:relayout() -> nil`: Rebuilds document layout immediately.
+- `LHtmlDocument:render(x?, y?) -> nil`: Queues render commands for this document at an optional offset.
+- `LHtmlDocument:setCss(css) -> nil`: Replaces the document stylesheet text.
+- `LHtmlDocument:setHtml(html) -> nil`: Replaces the document markup and invalidates existing element handles.
+- `LHtmlDocument:setViewport(w, h) -> nil`: Sets the document layout viewport size.
+- `LHtmlDocument:textinput(text) -> boolean`: Forwards text input to the focused document element and dispatches `input`.
+- `LHtmlDocument:type() -> string`: Returns the Lua-visible type name for this HTML document handle.
+- `LHtmlDocument:typeOf(name) -> boolean`: Returns whether this document handle matches a supported type name.
+- `LHtmlDocument:update(dt) -> nil`: Advances document timers and animated state.
+- `LHtmlDocument:wheelmoved(dx, dy) -> boolean`: Forwards mouse wheel movement to the document.
 
 #### LHtmlElement Type
 
@@ -161,31 +159,31 @@ In practice, `lurek.html` provides a complete web-style UI contract inside the e
 
 ##### Methods
 
-- `LHtmlElement:addClass`: Adds a CSS class to this element's class list.
-- `LHtmlElement:appendHtml`: Appends HTML source to this element's inner HTML.
-- `LHtmlElement:blur`: Removes keyboard focus from this element when it is focused.
-- `LHtmlElement:focus`: Gives keyboard focus to this element.
-- `LHtmlElement:getAttribute`: Returns an attribute value from this element.
-- `LHtmlElement:getDocument`: Returns the document handle that owns this element.
-- `LHtmlElement:getHtml`: Returns this element's inner HTML.
-- `LHtmlElement:getId`: Returns this element's id attribute.
-- `LHtmlElement:getRect`: Returns this element's layout rectangle after relayout if needed.
-- `LHtmlElement:getStyle`: Returns an inline or computed style value for this element.
-- `LHtmlElement:getTagName`: Returns this element's HTML tag name.
-- `LHtmlElement:getText`: Returns this element's text content.
-- `LHtmlElement:hasClass`: Returns whether this element has a CSS class.
-- `LHtmlElement:off`: Removes an element-level event listener by handle.
-- `LHtmlElement:on`: Registers an element-level event listener.
-- `LHtmlElement:query`: Looks up the first descendant element matching a selector.
-- `LHtmlElement:queryAll`: Returns all descendant elements matching a selector.
-- `LHtmlElement:remove`: Removes this element from the document.
-- `LHtmlElement:removeAttribute`: Removes an attribute from this element.
-- `LHtmlElement:removeClass`: Removes a CSS class from this element.
-- `LHtmlElement:setAttribute`: Sets or clears an attribute on this element.
-- `LHtmlElement:setHtml`: Replaces this element's inner HTML and may invalidate descendant element handles.
-- `LHtmlElement:setId`: Sets or clears this element's id attribute.
-- `LHtmlElement:setStyle`: Sets or clears a style property on this element.
-- `LHtmlElement:setText`: Replaces this element's text content.
-- `LHtmlElement:toggleClass`: Toggles a CSS class on this element, optionally forcing the final state.
-- `LHtmlElement:type`: Returns the Lua-visible type name for this HTML element handle.
-- `LHtmlElement:typeOf`: Returns whether this element handle matches a supported type name.
+- `LHtmlElement:addClass(name) -> nil`: Adds a CSS class to this element's class list.
+- `LHtmlElement:appendHtml(html) -> nil`: Appends HTML source to this element's inner HTML.
+- `LHtmlElement:blur() -> nil`: Removes keyboard focus from this element when it is focused.
+- `LHtmlElement:focus() -> nil`: Gives keyboard focus to this element.
+- `LHtmlElement:getAttribute(name) -> LuaValue`: Returns an attribute value from this element.
+- `LHtmlElement:getDocument() -> LHtmlDocument`: Returns the document handle that owns this element.
+- `LHtmlElement:getHtml() -> string`: Returns this element's inner HTML.
+- `LHtmlElement:getId() -> LuaValue`: Returns this element's id attribute.
+- `LHtmlElement:getRect() -> number`: Returns this element's layout rectangle after relayout if needed.
+- `LHtmlElement:getStyle(name) -> LuaValue`: Returns an inline or computed style value for this element.
+- `LHtmlElement:getTagName() -> string`: Returns this element's HTML tag name.
+- `LHtmlElement:getText() -> string`: Returns this element's text content.
+- `LHtmlElement:hasClass(name) -> boolean`: Returns whether this element has a CSS class.
+- `LHtmlElement:off(handle) -> nil`: Removes an element-level event listener by handle.
+- `LHtmlElement:on(event, func) -> integer`: Registers an element-level event listener.
+- `LHtmlElement:query(selector) -> LuaValue`: Looks up the first descendant element matching a selector.
+- `LHtmlElement:queryAll(selector) -> LHtmlElement[]`: Returns all descendant elements matching a selector.
+- `LHtmlElement:remove() -> nil`: Removes this element from the document.
+- `LHtmlElement:removeAttribute(name) -> nil`: Removes an attribute from this element.
+- `LHtmlElement:removeClass(name) -> nil`: Removes a CSS class from this element.
+- `LHtmlElement:setAttribute(name, value?) -> nil`: Sets or clears an attribute on this element.
+- `LHtmlElement:setHtml(html) -> nil`: Replaces this element's inner HTML and may invalidate descendant element handles.
+- `LHtmlElement:setId(id?) -> nil`: Sets or clears this element's id attribute.
+- `LHtmlElement:setStyle(name, value?) -> nil`: Sets or clears a style property on this element.
+- `LHtmlElement:setText(text) -> nil`: Replaces this element's text content.
+- `LHtmlElement:toggleClass(name, force?) -> boolean`: Toggles a CSS class on this element, optionally forcing the final state.
+- `LHtmlElement:type() -> string`: Returns the Lua-visible type name for this HTML element handle.
+- `LHtmlElement:typeOf(name) -> boolean`: Returns whether this element handle matches a supported type name.

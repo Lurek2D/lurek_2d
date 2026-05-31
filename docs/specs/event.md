@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `event` module provides the central runtime queue and signal system for decoupled communication between engine subsystems and Lua scripts.
+- Runs a dual-priority event queue and wildcard signal registry.
 
 ## General Info
 
@@ -16,13 +16,9 @@
 
 ## Summary
 
-The `event` module is the central messaging layer for runtime coordination. Producers publish named events, and consumers poll, wait, or subscribe without tight coupling.
+This module serves as the runtime messaging hub, decoupling subsystems through asynchronous signaling. It implements a dual-priority queue ensuring critical tasks process ahead of standard events. The system handles data marshalling between Rust and Lua, supporting both immediate pushes and deferred buffering to coordinate events across frames.
 
-Queue behavior is explicit and deterministic. Events can be pushed with priority and consumed in stable order inside priority lanes, which helps timing-sensitive systems coordinate without hidden channels.
-
-Signal subscriptions support exact and wildcard matching, so teams can build specific callbacks and broad observers through one model.
-
-Payload conversion is built into the boundary, allowing safe Rust-Lua exchange without per-feature glue code. In practice, `lurek.event` provides one predictable communication contract for gameplay, runtime services, and tooling.
+Additionally, the system manages a signal registry supporting exact and wildcard subscriber patterns. Listeners connect to named signals with lifecycle controls. To aid diagnostics, the module retains a configurable history of pushed events, allowing developers to inspect past messages to trace game flows and simplify debugging.
 
 ## Imports
 
@@ -58,22 +54,22 @@ Payload conversion is built into the boundary, allowing safe Rust-Lua exchange w
 
 ### Functions
 
-- `lurek.event.clear`: Clears all pending events from the shared event queue.
-- `lurek.event.clearHistory`: Clears retained pushed event history.
-- `lurek.event.enableHistory`: Enables event push history with a maximum retained capacity.
-- `lurek.event.exit`: Requests engine shutdown with an optional process exit code.
-- `lurek.event.flushDeferred`: Moves all deferred events into the shared event queue and clears the deferred buffer.
-- `lurek.event.getHistory`: Returns retained pushed event history entries.
-- `lurek.event.newSignal`: Creates an isolated signal dispatcher for Lua callbacks.
-- `lurek.event.poll`: Creates a polling function that returns the next queued event each time it is called.
-- `lurek.event.pump`: Pumps the shared event queue without removing events for Lua.
-- `lurek.event.push`: Pushes a normal-priority event into the shared event queue and optional history.
-- `lurek.event.pushDeferred`: Adds a normal-priority event to the deferred buffer instead of the live queue.
-- `lurek.event.pushDeferredPriority`: Adds an event with explicit priority to the deferred buffer.
-- `lurek.event.pushPriority`: Pushes an event with explicit priority into the shared event queue and optional history.
-- `lurek.event.quit`: Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
-- `lurek.event.restart`: Requests a full engine restart cycle from the runtime.
-- `lurek.event.wait`: Waits for the next queued event and returns success, name, and argument table.
+- `lurek.event.clear() -> nil`: Clears all pending events from the shared event queue.
+- `lurek.event.clearHistory() -> nil`: Clears retained pushed event history.
+- `lurek.event.enableHistory(capacity) -> nil`: Enables event push history with a maximum retained capacity.
+- `lurek.event.exit(code?) -> nil`: Requests engine shutdown with an optional process exit code.
+- `lurek.event.flushDeferred() -> integer`: Moves all deferred events into the shared event queue and clears the deferred buffer.
+- `lurek.event.getHistory() -> table`: Returns retained pushed event history entries.
+- `lurek.event.newSignal() -> LSignal`: Creates an isolated signal dispatcher for Lua callbacks.
+- `lurek.event.poll() -> function`: Creates a polling function that returns the next queued event each time it is called.
+- `lurek.event.pump() -> nil`: Pumps the shared event queue without removing events for Lua.
+- `lurek.event.push(name, ...) -> nil`: Pushes a normal-priority event into the shared event queue and optional history.
+- `lurek.event.pushDeferred(name, ...) -> nil`: Adds a normal-priority event to the deferred buffer instead of the live queue.
+- `lurek.event.pushDeferredPriority(name, priority, ...) -> nil`: Adds an event with explicit priority to the deferred buffer.
+- `lurek.event.pushPriority(name, priority, ...) -> nil`: Pushes an event with explicit priority into the shared event queue and optional history.
+- `lurek.event.quit() -> nil`: Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
+- `lurek.event.restart() -> nil`: Requests a full engine restart cycle from the runtime.
+- `lurek.event.wait(timeout?) -> boolean`: Waits for the next queued event and returns success, name, and argument table.
 
 ### Callbacks
 
@@ -112,15 +108,15 @@ Payload conversion is built into the boundary, allowing safe Rust-Lua exchange w
 
 ##### Methods
 
-- `LSignal:clear`: Removes all callbacks registered for one exact signal event name.
-- `LSignal:clearAll`: Removes every callback from this signal object.
-- `LSignal:connect`: Registers a callback for an exact name or wildcard signal pattern.
-- `LSignal:emit`: Emits a signal event and invokes matching callbacks with the remaining arguments.
-- `LSignal:getCount`: Returns the callback count for one exact signal event name.
-- `LSignal:getTotalCount`: Returns the total callback count across all signal event names.
-- `LSignal:once`: Registers a callback that is removed after its next matching emission.
-- `LSignal:register`: Registers a callback for an exact signal event name.
-- `LSignal:registerWithFilter`: Registers a callback that runs only when a filter callback returns true.
-- `LSignal:remove`: Removes a signal callback by subscription handle.
-- `LSignal:type`: Returns the Lua-visible type name for this signal handle.
-- `LSignal:typeOf`: Returns whether this signal handle matches a supported type name.
+- `LSignal:clear(name) -> integer`: Removes all callbacks registered for one exact signal event name.
+- `LSignal:clearAll() -> integer`: Removes every callback from this signal object.
+- `LSignal:connect(name, func) -> integer`: Registers a callback for an exact name or wildcard signal pattern.
+- `LSignal:emit(name, ...) -> nil`: Emits a signal event and invokes matching callbacks with the remaining arguments.
+- `LSignal:getCount(name) -> integer`: Returns the callback count for one exact signal event name.
+- `LSignal:getTotalCount() -> integer`: Returns the total callback count across all signal event names.
+- `LSignal:once(name, callback) -> integer`: Registers a callback that is removed after its next matching emission.
+- `LSignal:register(name, callback) -> integer`: Registers a callback for an exact signal event name.
+- `LSignal:registerWithFilter(name, callback, filter) -> integer`: Registers a callback that runs only when a filter callback returns true.
+- `LSignal:remove(handle) -> boolean`: Removes a signal callback by subscription handle.
+- `LSignal:type() -> string`: Returns the Lua-visible type name for this signal handle.
+- `LSignal:typeOf(name) -> boolean`: Returns whether this signal handle matches a supported type name.

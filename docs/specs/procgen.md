@@ -2,7 +2,9 @@
 
 ## TL;DR
 
-- The `procgen` module provides deterministic world-generation algorithms for terrain, dungeons, graphs, names, tilings, and cellular simulations.
+- Orchestrates deterministic generation of terrain heightmaps, biomes, dungeons, and overworlds.
+- Implements Perlin/Simplex/Worley noise, cellular automata sandboxes, and Poisson disks.
+- Supports L-system branching trees, Wave Function Collapse tiling, and Markov name generation.
 
 ## General Info
 
@@ -16,23 +18,17 @@
 
 ## Summary
 
-The `procgen` module is the engine's deterministic content-generation toolbox. It combines low-level seeded randomness with higher-level generators so teams can create reproducible maps, structures, and patterns from data-driven rules.
+This module provides a deterministic procedural generation subsystem that powers the repeatable synthesis of terrain, layouts, names, and networks. All operations revolve around a compact, seeded linear congruential generator that provides dependable randomness. The core noise engines deliver multi-dimensional Perlin, Simplex, and cellular Worley noise. They support fractal octave combinators for rugged textures, domain warping, tileable loops, and multi-threaded parallel generation for massive maps.
 
-Terrain and field generation are core strengths. Noise families, fractal combinations, warping, and heightmap utilities provide continuous scalar worlds that can be eroded, classified into biomes, and converted into gameplay-usable surfaces.
+Terrain elevation and climate systems are built from these raw scalar fields. The heightmap generator stacks noise octaves and simulates simple hydraulic erosion to form realistic hills and river basins. These heightmaps feed into a stateless biome classifier, which maps temperature, elevation, and moisture thresholds onto geographical regions like forests, deserts, and oceans. The classifier supports palette color mappings to facilitate direct visual previews.
 
-Interior and dungeon generation are also first-class. BSP and room-based generators support layout construction, corridor linking, and prefab stamping, while cellular approaches produce cave-like structures from local rules.
+For indoor environments, the toolkit features structured dungeon layouts. The Binary Space Partitioning algorithm splits rectangular zones recursively, placing rooms inside qualifying leaves and carving connecting corridors. In contrast, the scatter dungeon generator arranges independent rooms randomly before connecting them. Both generators support seeded reproducibility and stamp handcrafted prefab templates into qualifying rooms.
 
-For region and structure synthesis, the module includes Voronoi partitioning, world-graph helpers, WFC-style constraint placement, Poisson sampling, and L-system generation. This lets projects mix geometric, probabilistic, and grammar-based methods in one workflow.
+Natural and emergent simulations are modeled using cellular systems. Organic cave-in rules use flat-grid cellular automata to refine noisy initial states into smooth caverns. Additionally, a stateful sandbox material simulator simulates falling sand, spreading fire, rising gas, and flowing liquids. This simulator uses alternating directional sweeps to avoid structural bias, and supports direct grid painting, byte serialization, and image exports.
 
-The module is useful both for runtime generation and offline content workflows. Teams can generate deterministic outputs for builds, previews, and tests, then reproduce the same world state later by seed and config. This reduces debugging friction and helps synchronize design discussion around stable outputs.
+Branching growth and spatial placements are handled by grammatical and sampling models. The L-system engine expands symbolic axioms through production rules, interpreting strings as turtle-graphics instructions to generate trees or rivers. Poisson disk sampling generates evenly spaced coordinate points to place foliage or loot without clustering. A Voronoi field generator partitions grids into regional cells based on nearest feature points, which is useful for political borders.
 
-It also supports layered generation pipelines. A project can start from broad terrain shape, then add biome semantics, then carve structures, then populate details such as points of interest and names. Because these stages live in one module family, outputs stay compatible and easy to pass forward.
-
-Another practical advantage is method diversity under one deterministic base. Teams can combine noise-driven terrain, rule-based tiling, graph-like region logic, and grammar-style generation in one workflow, then tune style by configuration instead of rewriting systems. This keeps experimentation fast while preserving repeatability.
-
-Supporting utilities such as naming generation, flood-fill extraction, and serializable grid outputs make the module practical for runtime systems, tooling, and offline build pipelines.
-
-In practice, `lurek.procgen` provides a complete procedural pipeline surface: seed generation, build spatial structure, classify and refine outputs, and export deterministic data for gameplay integration.
+Finally, the module provides constraint-based collapses, overworld graph synthesis, and name generators. The Wave Function Collapse engine generates intricate tile matrices based on adjacency constraints and tile frequencies. Overworld graphs map regional nodes, wire travel links, and calculate minimum spanning trees to organize quests. For narrative flavor, a Markov chain name generator learns character transitions from source corpora to invent novel, stable names.
 
 ## Imports
 
@@ -199,39 +195,39 @@ In practice, `lurek.procgen` provides a complete procedural pipeline surface: se
 
 ### Functions
 
-- `lurek.procgen.biomeColor`: Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
-- `lurek.procgen.bspDungeon`: Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.
-- `lurek.procgen.bspDungeonWithPrefabs`: Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefab placement info.
-- `lurek.procgen.cellularAutomata`: Generate a cave or organic map using cellular automata rules.
-- `lurek.procgen.fbm`: Samples stateless fractal Brownian motion noise.
-- `lurek.procgen.floodFill`: Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.
-- `lurek.procgen.generateName`: Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.
-- `lurek.procgen.generateNames`: Generate multiple random names in one call using Markov chains trained from sample data.
-- `lurek.procgen.heightmap`: Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
-- `lurek.procgen.heightmapFromCellular`: Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
-- `lurek.procgen.lsystem`: Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
-- `lurek.procgen.lsystemSegments`: Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
-- `lurek.procgen.newBiomeClassifier`: Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
-- `lurek.procgen.newCellular`: Performs the 'procgen' operation.
-- `lurek.procgen.newNoiseGenerator`: Creates a procedural noise generator with an optional seed.
-- `lurek.procgen.noiseMap`: Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
-- `lurek.procgen.noiseMapParallel`: Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
-- `lurek.procgen.noiseMapParallelSeeded`: Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
-- `lurek.procgen.perlin2d`: Samples stateless 2D Perlin noise.
-- `lurek.procgen.perlin3d`: Samples stateless 3D Perlin noise.
-- `lurek.procgen.perlin4d`: Samples stateless 4D Perlin noise.
-- `lurek.procgen.perlinNoise`: Sample periodic 2D Perlin noise at a given coordinate.
-- `lurek.procgen.poissonDisk`: Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
-- `lurek.procgen.roomsDungeon`: Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.
-- `lurek.procgen.roomsDungeonWithPrefabs`: Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
-- `lurek.procgen.setConstraintsFromLLM`: Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
-- `lurek.procgen.simplex2d`: Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
-- `lurek.procgen.simplex3d`: Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
-- `lurek.procgen.simplexNoise`: Sample a 2D or 3D simplex noise value at a given point.
-- `lurek.procgen.voronoi`: Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
-- `lurek.procgen.wfcFromPrompt`: Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
-- `lurek.procgen.wfcGenerate`: Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
-- `lurek.procgen.worldGraph`: Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
+- `lurek.procgen.biomeColor(name) -> number`: Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
+- `lurek.procgen.bspDungeon(opts?) -> table`: Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.
+- `lurek.procgen.bspDungeonWithPrefabs(opts?, prefabs) -> table`: Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefab placement info.
+- `lurek.procgen.cellularAutomata(width, height, opts?) -> integer[]`: Generate a cave or organic map using cellular automata rules.
+- `lurek.procgen.fbm(x, y, seed?, octaves?, lac?, gain?) -> number`: Samples stateless fractal Brownian motion noise.
+- `lurek.procgen.floodFill(data, width, height, startX, startY, threshold?, above?) -> integer[]`: Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.
+- `lurek.procgen.generateName(samples, minLen?, maxLen?, seed?) -> string`: Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.
+- `lurek.procgen.generateNames(samples, count, minLen?, maxLen?, seed?) -> string[]`: Generate multiple random names in one call using Markov chains trained from sample data.
+- `lurek.procgen.heightmap(opts?) -> table`: Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
+- `lurek.procgen.heightmapFromCellular(width, height, cells, floorValue?) -> table`: Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
+- `lurek.procgen.lsystem(opts) -> string`: Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
+- `lurek.procgen.lsystemSegments(opts, angle?, step?) -> table`: Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
+- `lurek.procgen.newBiomeClassifier(opts?) -> LBiomeClassifier`: Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
+- `lurek.procgen.newCellular(width, height) -> LCellular`: Performs the 'procgen' operation.
+- `lurek.procgen.newNoiseGenerator(seed?) -> LNoiseGenerator`: Creates a procedural noise generator with an optional seed.
+- `lurek.procgen.noiseMap(width, height, opts?) -> number[]`: Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
+- `lurek.procgen.noiseMapParallel(width, height, opts?) -> number[]`: Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
+- `lurek.procgen.noiseMapParallelSeeded(width, height, opts?) -> number[]`: Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
+- `lurek.procgen.perlin2d(x, y, seed?) -> number`: Samples stateless 2D Perlin noise.
+- `lurek.procgen.perlin3d(x, y, z, seed?) -> number`: Samples stateless 3D Perlin noise.
+- `lurek.procgen.perlin4d(x, y, z, w, seed?) -> number`: Samples stateless 4D Perlin noise.
+- `lurek.procgen.perlinNoise(x, y, periodX, periodY) -> number`: Sample periodic 2D Perlin noise at a given coordinate.
+- `lurek.procgen.poissonDisk(width, height, minDist, maxAttempts?, seed?) -> table`: Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
+- `lurek.procgen.roomsDungeon(opts?) -> table`: Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.
+- `lurek.procgen.roomsDungeonWithPrefabs(opts?, prefabs, stampValue?) -> table`: Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
+- `lurek.procgen.setConstraintsFromLLM(prompt) -> table`: Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
+- `lurek.procgen.simplex2d(x, y) -> number`: Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
+- `lurek.procgen.simplex3d(x, y, z) -> number`: Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
+- `lurek.procgen.simplexNoise(x, y, z?) -> number`: Sample a 2D or 3D simplex noise value at a given point.
+- `lurek.procgen.voronoi(width, height, points, opts?) -> integer[]`: Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
+- `lurek.procgen.wfcFromPrompt(prompt, config) -> table`: Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
+- `lurek.procgen.wfcGenerate(opts) -> table`: Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
+- `lurek.procgen.worldGraph(width, height, regionCount, seed?) -> table`: Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
 
 ### Callbacks
 
@@ -253,10 +249,10 @@ In practice, `lurek.procgen` provides a complete procedural pipeline surface: se
 
 ##### Methods
 
-- `LBiomeClassifier:classify`: Classify a single point into a biome type based on its environmental parameters.
-- `LBiomeClassifier:classifyMap`: Classify an entire grid of points into biome types in bulk.
-- `LBiomeClassifier:type`: Returns the type name of this object.
-- `LBiomeClassifier:typeOf`: Check whether this object matches a given type name.
+- `LBiomeClassifier:classify(height, moisture, temperature) -> string`: Classify a single point into a biome type based on its environmental parameters.
+- `LBiomeClassifier:classifyMap(width, height, heights, moisture, temperature?) -> string[]`: Classify an entire grid of points into biome types in bulk.
+- `LBiomeClassifier:type() -> string`: Returns the type name of this object.
+- `LBiomeClassifier:typeOf(name) -> boolean`: Check whether this object matches a given type name.
 
 #### LCellular Type
 
@@ -268,20 +264,20 @@ In practice, `lurek.procgen` provides a complete procedural pipeline surface: se
 
 ##### Methods
 
-- `LCellular:countCells`: Counts how many cells of a given material type exist in the grid.
-- `LCellular:fillCircle`: Fills a circular region of cells with a material type.
-- `LCellular:fillRect`: Fills a rectangular region of cells with a material type.
-- `LCellular:findCells`: Returns positions of all cells matching a material type.
-- `LCellular:getCell`: Returns the material type of a cell at the given grid position.
-- `LCellular:loadFromBytes`: Restores cellular grid state from binary data previously produced by toBytes.
-- `LCellular:setCell`: Sets a single cell in the cellular grid to a specific material type.
-- `LCellular:step`: Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
-- `LCellular:stepN`: Advances the cellular simulation by N ticks in a single call.
-- `LCellular:toBytes`: Serializes the cellular grid to a compact binary format for saving.
-- `LCellular:toImageData`: Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
-- `LCellular:toImageDataRegion`: Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
-- `LCellular:type`: Returns the type name of this object ("LCellular").
-- `LCellular:typeOf`: Checks if this object is of a given type name.
+- `LCellular:countCells(cellType) -> integer`: Counts how many cells of a given material type exist in the grid.
+- `LCellular:fillCircle(cx, cy, r, cellType) -> nil`: Fills a circular region of cells with a material type.
+- `LCellular:fillRect(cx0, cy0, cw, ch, cellType) -> nil`: Fills a rectangular region of cells with a material type.
+- `LCellular:findCells(cellType) -> table`: Returns positions of all cells matching a material type.
+- `LCellular:getCell(cx, cy) -> integer`: Returns the material type of a cell at the given grid position.
+- `LCellular:loadFromBytes(data) -> boolean`: Restores cellular grid state from binary data previously produced by toBytes.
+- `LCellular:setCell(cx, cy, cellType) -> nil`: Sets a single cell in the cellular grid to a specific material type.
+- `LCellular:step() -> nil`: Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
+- `LCellular:stepN(n) -> nil`: Advances the cellular simulation by N ticks in a single call.
+- `LCellular:toBytes() -> string`: Serializes the cellular grid to a compact binary format for saving.
+- `LCellular:toImageData() -> string`: Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
+- `LCellular:toImageDataRegion(cx0, cy0, cw, ch) -> string`: Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
+- `LCellular:type() -> string`: Returns the type name of this object ("LCellular").
+- `LCellular:typeOf(name) -> boolean`: Checks if this object is of a given type name.
 
 #### LCellularFindCellsResult Type
 
@@ -306,25 +302,25 @@ In practice, `lurek.procgen` provides a complete procedural pipeline surface: se
 
 ##### Methods
 
-- `LNoiseGenerator:fbm`: Samples fractal Brownian motion noise.
-- `LNoiseGenerator:generateMap`: Generates a noise map and returns it as a flat array table.
-- `LNoiseGenerator:generateMapCompute`: Generates a noise map through the compute backend and returns it as a flat array table.
-- `LNoiseGenerator:getSeed`: Returns this noise generator seed.
-- `LNoiseGenerator:perlin1d`: Samples 1D Perlin noise. This method is available to Lua scripts.
-- `LNoiseGenerator:perlin2d`: Samples 2D Perlin noise. This method is available to Lua scripts.
-- `LNoiseGenerator:perlin3d`: Samples 3D Perlin noise. This method is available to Lua scripts.
-- `LNoiseGenerator:perlin4d`: Samples 4D Perlin noise. This method is available to Lua scripts.
-- `LNoiseGenerator:ridged`: Samples ridged fractal noise. This method is available to Lua scripts.
-- `LNoiseGenerator:setSeed`: Sets this noise generator seed. This method is available to Lua scripts.
-- `LNoiseGenerator:simplex1d`: Samples 1D simplex noise. This method is available to Lua scripts.
-- `LNoiseGenerator:simplex2d`: Samples 2D simplex noise. This method is available to Lua scripts.
-- `LNoiseGenerator:simplex3d`: Samples 3D simplex noise. This method is available to Lua scripts.
-- `LNoiseGenerator:turbulence`: Samples turbulence fractal noise.
-- `LNoiseGenerator:type`: Returns the Lua-visible type name for this noise generator handle.
-- `LNoiseGenerator:typeOf`: Returns whether this noise generator handle matches a supported type name.
-- `LNoiseGenerator:warpDomain`: Samples domain-warped noise coordinates.
-- `LNoiseGenerator:worley2d`: Samples 2D Worley noise. This method is available to Lua scripts.
-- `LNoiseGenerator:worley3d`: Samples 3D Worley noise. This method is available to Lua scripts.
+- `LNoiseGenerator:fbm(x, y, octaves?, lac?, pers?, kind?) -> number`: Samples fractal Brownian motion noise.
+- `LNoiseGenerator:generateMap(w, h, opts?) -> number[]`: Generates a noise map and returns it as a flat array table.
+- `LNoiseGenerator:generateMapCompute(w, h, opts?) -> number[]`: Generates a noise map through the compute backend and returns it as a flat array table.
+- `LNoiseGenerator:getSeed() -> integer`: Returns this noise generator seed.
+- `LNoiseGenerator:perlin1d(x) -> number`: Samples 1D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin2d(x, y) -> number`: Samples 2D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin3d(x, y, z) -> number`: Samples 3D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:perlin4d(x, y, z, w) -> number`: Samples 4D Perlin noise. This method is available to Lua scripts.
+- `LNoiseGenerator:ridged(x, y, octaves?, lac?, pers?, kind?) -> number`: Samples ridged fractal noise. This method is available to Lua scripts.
+- `LNoiseGenerator:setSeed(seed) -> nil`: Sets this noise generator seed. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex1d(x) -> number`: Samples 1D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex2d(x, y) -> number`: Samples 2D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:simplex3d(x, y, z) -> number`: Samples 3D simplex noise. This method is available to Lua scripts.
+- `LNoiseGenerator:turbulence(x, y, octaves?, lac?, pers?, kind?) -> number`: Samples turbulence fractal noise.
+- `LNoiseGenerator:type() -> string`: Returns the Lua-visible type name for this noise generator handle.
+- `LNoiseGenerator:typeOf(name) -> boolean`: Returns whether this noise generator handle matches a supported type name.
+- `LNoiseGenerator:warpDomain(x, y, strength) -> number`: Samples domain-warped noise coordinates.
+- `LNoiseGenerator:worley2d(x, y, dist_name?, f2?) -> number`: Samples 2D Worley noise. This method is available to Lua scripts.
+- `LNoiseGenerator:worley3d(x, y, z, dist_name?, f2?) -> number`: Samples 3D Worley noise. This method is available to Lua scripts.
 
 #### LProcgenBspDungeonResult Type
 

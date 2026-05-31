@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `asset` module is a shared asset registry with ref counts, metadata, tags, and search helpers, so scripts can find and manage assets without owning decode logic.
+- Caches, tags, and queries reference-counted asset handles.
 
 ## General Info
 
@@ -16,15 +16,9 @@
 
 ## Summary
 
-The `asset` module provides one shared catalog for asset identity and lifetime. It lets the runtime load entries, keep reference counts, and expose stable handles to scripts. This gives projects a predictable way to track what is currently in use.
+The asset module provides the shared asset registry and cache management system for Lurek2D, coordinating the lifecycle of loaded media resources. Its purpose is to offer a central container where scripts load, query, and release resources using reference-counted handles. This ensures that assets are automatically evicted from the cache when active reference counts drop to zero. The module supports dynamic tagging, group categorization, batch preloading, and robust queries to locate assets by name, type, group, or tag, delivering efficient and stable runtime resource management.
 
-Its functional focus is discovery and metadata, not heavy decoding. The module tracks path, type, group, tags, display name, and reference state, then offers query helpers to search by those fields. This removes repeated ad-hoc indexing logic from gameplay scripts and tools.
-
-Because ref counts are first-class, asset ownership is easier to reason about. Systems can acquire and release handles without guessing when data should be removed. The cache can report stats and loaded state, which improves runtime visibility during development and debugging.
-
-The module is designed as a lightweight coordination layer. Type-specific decode and playback responsibilities stay in specialized modules, while `asset` remains the place for lookup contracts and lifecycle bookkeeping. This keeps integration clean and reduces coupling.
-
-In day-to-day use, the value is consistency: one way to load, label, group, tag, find, and unload assets across a project. That consistency helps both game code and tooling stay simpler as content size grows.
+This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -52,29 +46,29 @@ In day-to-day use, the value is consistency: one way to load, label, group, tag,
 
 ### Functions
 
-- `lurek.asset.addTag`: Adds a tag to the tag set of an asset handle.
-- `lurek.asset.clear`: Removes all entries from the cache immediately, regardless of ref counts.
-- `lurek.asset.findByGroup`: Returns an array of asset handles whose group label exactly matches `group`.
-- `lurek.asset.findByName`: Returns an array of asset handles whose display name contains the substring.
-- `lurek.asset.findByTag`: Returns an array of asset handles that have the given tag in their tag set.
-- `lurek.asset.findByType`: Returns an array of asset handles whose type exactly matches `type_str`.
-- `lurek.asset.get`: Returns the underlying asset value for a cached handle.
-- `lurek.asset.getGroup`: Returns the group label for an asset handle.
-- `lurek.asset.getInfo`: Returns a table containing all metadata for an asset handle.
-- `lurek.asset.getName`: Returns the display name of an asset handle.
-- `lurek.asset.getPath`: Returns the filesystem path for the asset associated with a handle.
-- `lurek.asset.getTags`: Returns an array of all tags for an asset handle.
-- `lurek.asset.getType`: Returns the type string for the asset associated with a handle.
-- `lurek.asset.hasTag`: Returns true when an asset handle has the given tag in its tag set.
-- `lurek.asset.isLoaded`: Returns true when the asset for the given handle is still in the cache.
-- `lurek.asset.load`: Loads and caches an asset by path and type, returning a ref-counted handle.
-- `lurek.asset.preload`: Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
-- `lurek.asset.refcount`: Returns the current ref count for a handle, or 0 when it is no longer loaded.
-- `lurek.asset.removeTag`: Removes a tag from the tag set of an asset handle.
-- `lurek.asset.setGroup`: Assigns an asset handle to a named group.
-- `lurek.asset.setName`: Sets the display name for an asset handle.
-- `lurek.asset.stats`: Returns a snapshot table describing the current cache state.
-- `lurek.asset.unload`: Decrements the ref count for a cached asset; removes the entry when it reaches zero.
+- `lurek.asset.addTag(handle, tag) -> nil`: Adds a tag to the tag set of an asset handle.
+- `lurek.asset.clear() -> nil`: Removes all entries from the cache immediately, regardless of ref counts.
+- `lurek.asset.findByGroup(group) -> table`: Returns an array of asset handles whose group label exactly matches `group`.
+- `lurek.asset.findByName(substr) -> table`: Returns an array of asset handles whose display name contains the substring.
+- `lurek.asset.findByTag(tag) -> table`: Returns an array of asset handles that have the given tag in their tag set.
+- `lurek.asset.findByType(type_str) -> table`: Returns an array of asset handles whose type exactly matches `type_str`.
+- `lurek.asset.get(handle) -> string`: Returns the underlying asset value for a cached handle.
+- `lurek.asset.getGroup(handle) -> string`: Returns the group label for an asset handle.
+- `lurek.asset.getInfo(handle) -> table`: Returns a table containing all metadata for an asset handle.
+- `lurek.asset.getName(handle) -> string`: Returns the display name of an asset handle.
+- `lurek.asset.getPath(handle) -> string`: Returns the filesystem path for the asset associated with a handle.
+- `lurek.asset.getTags(handle) -> table`: Returns an array of all tags for an asset handle.
+- `lurek.asset.getType(handle) -> string`: Returns the type string for the asset associated with a handle.
+- `lurek.asset.hasTag(handle, tag) -> boolean`: Returns true when an asset handle has the given tag in its tag set.
+- `lurek.asset.isLoaded(handle) -> boolean`: Returns true when the asset for the given handle is still in the cache.
+- `lurek.asset.load(path, asset_type, opts?) -> LAssetHandle`: Loads and caches an asset by path and type, returning a ref-counted handle.
+- `lurek.asset.preload(paths, callback) -> nil`: Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
+- `lurek.asset.refcount(handle) -> integer`: Returns the current ref count for a handle, or 0 when it is no longer loaded.
+- `lurek.asset.removeTag(handle, tag) -> boolean`: Removes a tag from the tag set of an asset handle.
+- `lurek.asset.setGroup(handle, group) -> nil`: Assigns an asset handle to a named group.
+- `lurek.asset.setName(handle, name) -> nil`: Sets the display name for an asset handle.
+- `lurek.asset.stats() -> table`: Returns a snapshot table describing the current cache state.
+- `lurek.asset.unload(handle) -> nil`: Decrements the ref count for a cached asset; removes the entry when it reaches zero.
 
 ### Callbacks
 
@@ -113,8 +107,8 @@ In day-to-day use, the value is consistency: one way to load, label, group, tag,
 
 ##### Methods
 
-- `LAssetHandle:type`: Returns the Lua-visible type name for this asset handle.
-- `LAssetHandle:typeOf`: Returns whether this handle matches a supported type name.
+- `LAssetHandle:type() -> string`: Returns the Lua-visible type name for this asset handle.
+- `LAssetHandle:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 
 #### LAssetStatsResult Type
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `debugbridge` module provides TCP-based runtime communication for external debug tools, with queued requests, responses, and bridge-safe state exchange.
+- Connects the game runtime to external editor panels.
 
 ## General Info
 
@@ -16,11 +16,9 @@
 
 ## Summary
 
-The `debugbridge` module is the live channel between the running engine and external debug clients.
+This module establishes a communication bridge between the active game session and external editing panels. By running a background network server, it allows developers to remotely inspect and control the engine's state without interrupting gameplay. It enables on-the-fly code updates, performance tracking, and screenshot captures.
 
-It provides queue-based, thread-safe exchange for requests, responses, and bridge events, so network and runtime sides stay coordinated during tool sessions.
-
-Its boundary is transport stability: `debugbridge` owns connection lifecycle and protocol-safe message flow, while feature-specific inspection policy stays in other modules.
+Additionally, the system manages session security and distributes console logs to all connected screens. This remote messaging streamlines session monitoring and facilitates diagnosing behaviors during development.
 
 ## Imports
 
@@ -57,22 +55,22 @@ Its boundary is transport stability: `debugbridge` owns connection lifecycle and
 
 ### Functions
 
-- `lurek.debugbridge.broadcast`: Queues a JSON string payload broadcast for debug bridge clients.
-- `lurek.debugbridge.capturePrint`: Captures a print message and broadcasts it to debug bridge clients.
-- `lurek.debugbridge.clearPrintHistory`: Clears all entries from the captured print history buffer.
-- `lurek.debugbridge.consumeHotReloadRequest`: Returns and clears the pending hot reload request flag.
-- `lurek.debugbridge.getClientCount`: Returns the number of connected debug bridge clients.
-- `lurek.debugbridge.getPerformance`: Returns debug bridge performance metrics.
-- `lurek.debugbridge.getPort`: Returns the configured TCP port for the debug bridge.
-- `lurek.debugbridge.getPrintHistory`: Returns captured print history entries.
-- `lurek.debugbridge.getProtocolInfo`: Returns debug bridge protocol version, capabilities, and handshake nonce.
-- `lurek.debugbridge.isRunning`: Returns whether the debug bridge server is currently running.
-- `lurek.debugbridge.isScreenshotRequested`: Returns whether a screenshot request is pending.
-- `lurek.debugbridge.poll`: Polls pending debugger requests, evaluates supported methods, and queues responses.
-- `lurek.debugbridge.requestScreenshot`: Requests a screenshot from the runtime.
-- `lurek.debugbridge.setMaxPrintHistory`: Sets the maximum retained print history entry count.
-- `lurek.debugbridge.start`: Starts the localhost debug bridge server on a port.
-- `lurek.debugbridge.stop`: Stops the debug bridge server and joins its server thread.
+- `lurek.debugbridge.broadcast(event, json_data) -> nil`: Queues a JSON string payload broadcast for debug bridge clients.
+- `lurek.debugbridge.capturePrint(msg, source?, line?) -> nil`: Captures a print message and broadcasts it to debug bridge clients.
+- `lurek.debugbridge.clearPrintHistory() -> nil`: Clears all entries from the captured print history buffer.
+- `lurek.debugbridge.consumeHotReloadRequest() -> boolean`: Returns and clears the pending hot reload request flag.
+- `lurek.debugbridge.getClientCount() -> integer`: Returns the number of connected debug bridge clients.
+- `lurek.debugbridge.getPerformance() -> table`: Returns debug bridge performance metrics.
+- `lurek.debugbridge.getPort() -> integer`: Returns the configured TCP port for the debug bridge.
+- `lurek.debugbridge.getPrintHistory(count?) -> table`: Returns captured print history entries.
+- `lurek.debugbridge.getProtocolInfo() -> table`: Returns debug bridge protocol version, capabilities, and handshake nonce.
+- `lurek.debugbridge.isRunning() -> boolean`: Returns whether the debug bridge server is currently running.
+- `lurek.debugbridge.isScreenshotRequested() -> boolean`: Returns whether a screenshot request is pending.
+- `lurek.debugbridge.poll() -> nil`: Polls pending debugger requests, evaluates supported methods, and queues responses.
+- `lurek.debugbridge.requestScreenshot(scale?) -> nil`: Requests a screenshot from the runtime.
+- `lurek.debugbridge.setMaxPrintHistory(max) -> nil`: Sets the maximum retained print history entry count.
+- `lurek.debugbridge.start(port?) -> boolean`: Starts the localhost debug bridge server on a port.
+- `lurek.debugbridge.stop() -> nil`: Stops the debug bridge server and joins its server thread.
 
 ### Callbacks
 

@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `particle` module provides emitter-driven 2D particle simulation with configurable spawn shapes, motion behavior, trails, and render output.
+- Simulates pooled particles with rich shapes, gravity forces, and collider bounces.
+- Supports keyframe curves, tapered ribbon trails, sub-emitters, and diagnostic images.
 
 ## General Info
 
@@ -16,17 +17,13 @@
 
 ## Summary
 
-The `particle` module is the engine's visual-effects simulation layer for high-frequency transient graphics. It gives teams one consistent way to spawn, update, and render large particle sets with deterministic behavior and bounded runtime costs.
+This module delivers a robust particle simulation subsystem designed to model dynamic visual effects like fire, smoke, rain, and explosions. At its core, the system utilizes high-performance pooling to recycle and manage thousands of active particles efficiently. Emitters control the lifecycle, spawning particles continuously or in sudden bursts, updating their positions, velocities, rotations, and lifetimes over each frame, and supporting warm-up cycles to start scenes in a fully settled state.
 
-Emitter configuration is broad and data-driven. Spawn geometry, emission rate, lifetime, velocity, acceleration, drag, turbulence, and shape settings can be tuned per system, which makes the same runtime suitable for smoke, sparks, weather, debris, and stylized magic effects.
+Visual behavior is highly configurable through detailed shape distributions and environmental forces. Emitters spawn particles from diverse spatial shapes, including circles, cones, spirals, and custom user callbacks, and direct their paths using linear, radial, and tangential acceleration. The simulation integrates physical forces such as gravity, drag, orbit, and wind turbulence, and can apply gravity-based attractors or axis-aligned bounce boundaries to steer particle trajectories.
 
-Visual evolution over lifetime is built in. Color, size, alpha, rotation, and other presentation channels can interpolate through keyframes, while textured or procedural shapes provide multiple art styles without changing simulation code.
+For advanced presentations, the module features color and size keyframe interpolation, ribbon trails, and nested hierarchies. Particles animate their size, opacity, and color over their lifespan, rendering as textured or untextured batches. Ribbon trails track motion paths with tapered widths and smooth color gradients. Emitters can also spawn nested sub-emitters on particle death, enabling complex chain reactions like exploding firework sparks.
 
-Advanced interaction features are included for richer behavior: attractors, bounce bounds, optional physics-world collision, sub-emitters on lifecycle events, and trail rendering for motion streaks. These tools let effects feel connected to gameplay space rather than purely decorative overlays.
-
-The module also supports practical authoring flow. Teams can start from presets, then override only the parts that matter for a specific effect. This shortens iteration loops and keeps effect logic reusable instead of cloning and mutating many ad hoc emitters.
-
-Preset constructors and debug visualization helpers improve iteration speed. In practice, `lurek.particle` provides a complete effect-runtime contract: configure emitters, run deterministic stepping, and emit render-ready output through one Lua API surface.
+The subsystem also integrates with physics colliders and offline visualization utilities. Particles can collide and bounce off solid shapes in the physics world, reflecting velocity with custom bounce parameters. Additionally, diagnostic tools let developers export particle snapshots and lifetime charts directly into CPU-side image buffers. This simplifies testing, tuning, and asset design processes without affecting the active simulation loops.
 
 ## Imports
 
@@ -137,11 +134,11 @@ Preset constructors and debug visualization helpers improve iteration speed. In 
 
 ### Functions
 
-- `lurek.particle.drawLifecycleToImage`: Draws a lifecycle chart image from `(step, count)` snapshot tables.
-- `lurek.particle.fromTOML`: Creates a particle system from a TOML config file.
-- `lurek.particle.newPreset`: Creates a particle system from a named preset.
-- `lurek.particle.newSystem`: Creates a particle system from an optional config table.
-- `lurek.particle.newTrail`: Creates a trail effect. This function is exposed to Lua scripts.
+- `lurek.particle.drawLifecycleToImage(snapshots, max_particles, w, h) -> LImageData`: Draws a lifecycle chart image from `(step, count)` snapshot tables.
+- `lurek.particle.fromTOML(path) -> LParticleSystem`: Creates a particle system from a TOML config file.
+- `lurek.particle.newPreset(name) -> LParticleSystem`: Creates a particle system from a named preset.
+- `lurek.particle.newSystem(config?) -> LParticleSystem`: Creates a particle system from an optional config table.
+- `lurek.particle.newTrail(lifetime, start_width) -> LTrail`: Creates a trail effect. This function is exposed to Lua scripts.
 
 ### Callbacks
 
@@ -164,97 +161,97 @@ Preset constructors and debug visualization helpers improve iteration speed. In 
 
 ##### Methods
 
-- `LParticleSystem:addAttractor`: Adds an attractor to the particle system.
-- `LParticleSystem:addSubEmitter`: Configures a death sub-emitter from a config table.
-- `LParticleSystem:addSubSystem`: Adds a particle sub-system from a config table.
-- `LParticleSystem:clearAttractors`: Clears all attractors on this object.
-- `LParticleSystem:clearBounds`: Clears collision bounds on this object.
-- `LParticleSystem:clearCollidesWithPhysics`: Disables particle collision against a physics world.
-- `LParticleSystem:clone`: Clones this particle system configuration into a new system handle.
-- `LParticleSystem:count`: Returns the current particle count.
-- `LParticleSystem:drawExplosionToImage`: Draws particles as an explosion preview image.
-- `LParticleSystem:drawOverImage`: Draws particles over an existing image and returns a composited copy.
-- `LParticleSystem:drawRainToImage`: Draws particles as a rain preview image.
-- `LParticleSystem:drawSparkTrailToImage`: Draws particles as a spark-trail preview image.
-- `LParticleSystem:drawToImage`: Draws particles to image data. This method is available to Lua scripts.
-- `LParticleSystem:emit`: Emits particles immediately. This method is available to Lua scripts.
-- `LParticleSystem:getAttractorCount`: Returns attractor count. This method is available to Lua scripts.
-- `LParticleSystem:getBufferSize`: Returns maximum particle buffer size.
-- `LParticleSystem:getColors`: Returns particle color keyframes.
-- `LParticleSystem:getCount`: Returns particle count and errors if the handle was released.
-- `LParticleSystem:getDirection`: Returns emission direction. This method is available to Lua scripts.
-- `LParticleSystem:getEmissionArea`: Returns emission area distribution and size.
-- `LParticleSystem:getEmissionRate`: Returns emission rate. This method is available to Lua scripts.
-- `LParticleSystem:getEmitterLifetime`: Returns emitter lifetime. This method is available to Lua scripts.
-- `LParticleSystem:getFlipbook`: Returns flipbook grid and frame rate when configured.
-- `LParticleSystem:getGravity`: Returns particle gravity. This method is available to Lua scripts.
-- `LParticleSystem:getInsertMode`: Returns particle insert mode. This method is available to Lua scripts.
-- `LParticleSystem:getLinearAcceleration`: Returns linear acceleration range.
-- `LParticleSystem:getLinearDamping`: Returns linear damping range. This method is available to Lua scripts.
-- `LParticleSystem:getOffset`: Returns particle spawn offset. This method is available to Lua scripts.
-- `LParticleSystem:getParticleLifetime`: Returns particle lifetime range. This method is available to Lua scripts.
-- `LParticleSystem:getPosition`: Returns emitter position. This method is available to Lua scripts.
-- `LParticleSystem:getRadialAcceleration`: Returns radial acceleration range.
-- `LParticleSystem:getRotation`: Returns particle rotation range. This method is available to Lua scripts.
-- `LParticleSystem:getShape`: Returns particle shape. This method is available to Lua scripts.
-- `LParticleSystem:getSizeVariation`: Returns size variation. This method is available to Lua scripts.
-- `LParticleSystem:getSizes`: Returns particle size keyframes. This method is available to Lua scripts.
-- `LParticleSystem:getSpeed`: Returns particle speed range. This method is available to Lua scripts.
-- `LParticleSystem:getSpin`: Returns particle spin range. This method is available to Lua scripts.
-- `LParticleSystem:getSpinVariation`: Returns spin variation. This method is available to Lua scripts.
-- `LParticleSystem:getSpread`: Returns emission spread. This method is available to Lua scripts.
-- `LParticleSystem:getTangentialAcceleration`: Returns tangential acceleration range.
-- `LParticleSystem:hasCollidesWithPhysics`: Returns whether particle physics collision is enabled.
-- `LParticleSystem:hasRelativeRotation`: Returns whether relative rotation is enabled.
-- `LParticleSystem:isActive`: Returns whether the particle system is active.
-- `LParticleSystem:isEmpty`: Returns whether the particle system has no particles or is missing.
-- `LParticleSystem:isFull`: Returns whether the particle system has reached capacity.
-- `LParticleSystem:isPaused`: Returns whether the particle system is paused.
-- `LParticleSystem:isStopped`: Returns whether the particle system is stopped or missing.
-- `LParticleSystem:moveTo`: Moves the particle emitter. This method is available to Lua scripts.
-- `LParticleSystem:paintOnto`: Paints live particles directly onto an existing image in place.
-- `LParticleSystem:pause`: Pauses particle emission and updates.
-- `LParticleSystem:release`: Releases the particle system from shared storage.
-- `LParticleSystem:render`: Enqueues particle render commands with an optional offset.
-- `LParticleSystem:reset`: Resets particles and emitter state.
-- `LParticleSystem:resume`: Resumes a paused particle system if it was previously paused.
-- `LParticleSystem:setBounds`: Sets collision bounds for particles.
-- `LParticleSystem:setBufferSize`: Sets maximum particle buffer size.
-- `LParticleSystem:setCollidesWithPhysics`: Enables particle collision against a physics world.
-- `LParticleSystem:setColors`: Sets particle color keyframes from one or more RGBA tables.
-- `LParticleSystem:setCustomEmissionShape`: Sets a Lua callback for custom emission positions.
-- `LParticleSystem:setDirection`: Sets emission direction. This method is available to Lua scripts.
-- `LParticleSystem:setEmissionArea`: Sets emission area distribution and size.
-- `LParticleSystem:setEmissionRate`: Sets emission rate. This method is available to Lua scripts.
-- `LParticleSystem:setEmitterLifetime`: Sets emitter lifetime. This method is available to Lua scripts.
-- `LParticleSystem:setFlipbook`: Sets flipbook grid and frame rate. This method is available to Lua scripts.
-- `LParticleSystem:setGravity`: Sets particle gravity. This method is available to Lua scripts.
-- `LParticleSystem:setInsertMode`: Sets particle insert mode. This method is available to Lua scripts.
-- `LParticleSystem:setLinearAcceleration`: Sets linear acceleration range. This method is available to Lua scripts.
-- `LParticleSystem:setLinearDamping`: Sets linear damping range. This method is available to Lua scripts.
-- `LParticleSystem:setOffset`: Sets particle spawn offset. This method is available to Lua scripts.
-- `LParticleSystem:setOnDeathBatch`: Sets a Lua callback invoked with batched particle death records.
-- `LParticleSystem:setParticleLifetime`: Sets particle lifetime range. This method is available to Lua scripts.
-- `LParticleSystem:setPosition`: Sets emitter position. This method is available to Lua scripts.
-- `LParticleSystem:setRadialAcceleration`: Sets radial acceleration range. This method is available to Lua scripts.
-- `LParticleSystem:setRelativeRotation`: Sets whether particle rotation is relative to movement.
-- `LParticleSystem:setRotation`: Sets particle rotation range. This method is available to Lua scripts.
-- `LParticleSystem:setShape`: Sets particle shape. This method is available to Lua scripts.
-- `LParticleSystem:setSizeVariation`: Sets size variation. This method is available to Lua scripts.
-- `LParticleSystem:setSizes`: Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
-- `LParticleSystem:setSpeed`: Sets particle speed range. This method is available to Lua scripts.
-- `LParticleSystem:setSpin`: Sets particle spin range. This method is available to Lua scripts.
-- `LParticleSystem:setSpinVariation`: Sets spin variation. This method is available to Lua scripts.
-- `LParticleSystem:setSpread`: Sets emission spread. This method is available to Lua scripts.
-- `LParticleSystem:setTangentialAcceleration`: Sets tangential acceleration range for emitted particles.
-- `LParticleSystem:start`: Starts particle emission on this object.
-- `LParticleSystem:stop`: Stops particle emission on this object.
-- `LParticleSystem:subSystemCount`: Returns particle sub-system count.
-- `LParticleSystem:toImage`: Draws particles to image data. This method is available to Lua scripts.
-- `LParticleSystem:type`: Returns the Lua-visible type name for this particle system handle.
-- `LParticleSystem:typeOf`: Returns whether this particle system handle matches a supported type name.
-- `LParticleSystem:update`: Updates the particle system, applies optional physics collision, and invokes pending callbacks.
-- `LParticleSystem:warmUp`: Advances the system by a warm-up duration.
+- `LParticleSystem:addAttractor(x, y, strength, radius) -> nil`: Adds an attractor to the particle system.
+- `LParticleSystem:addSubEmitter(config_tbl, burst_count?) -> nil`: Configures a death sub-emitter from a config table.
+- `LParticleSystem:addSubSystem(config_tbl) -> integer`: Adds a particle sub-system from a config table.
+- `LParticleSystem:clearAttractors() -> nil`: Clears all attractors on this object.
+- `LParticleSystem:clearBounds() -> nil`: Clears collision bounds on this object.
+- `LParticleSystem:clearCollidesWithPhysics() -> nil`: Disables particle collision against a physics world.
+- `LParticleSystem:clone() -> LParticleSystem`: Clones this particle system configuration into a new system handle.
+- `LParticleSystem:count() -> integer`: Returns the current particle count.
+- `LParticleSystem:drawExplosionToImage(w, h) -> LImageData`: Draws particles as an explosion preview image.
+- `LParticleSystem:drawOverImage(image) -> LImageData`: Draws particles over an existing image and returns a composited copy.
+- `LParticleSystem:drawRainToImage(w, h) -> LImageData`: Draws particles as a rain preview image.
+- `LParticleSystem:drawSparkTrailToImage(w, h) -> LImageData`: Draws particles as a spark-trail preview image.
+- `LParticleSystem:drawToImage(w, h) -> LImageData`: Draws particles to image data. This method is available to Lua scripts.
+- `LParticleSystem:emit(count) -> nil`: Emits particles immediately. This method is available to Lua scripts.
+- `LParticleSystem:getAttractorCount() -> integer`: Returns attractor count. This method is available to Lua scripts.
+- `LParticleSystem:getBufferSize() -> integer`: Returns maximum particle buffer size.
+- `LParticleSystem:getColors() -> table`: Returns particle color keyframes.
+- `LParticleSystem:getCount() -> integer`: Returns particle count and errors if the handle was released.
+- `LParticleSystem:getDirection() -> number`: Returns emission direction. This method is available to Lua scripts.
+- `LParticleSystem:getEmissionArea() -> string`: Returns emission area distribution and size.
+- `LParticleSystem:getEmissionRate() -> number`: Returns emission rate. This method is available to Lua scripts.
+- `LParticleSystem:getEmitterLifetime() -> number`: Returns emitter lifetime. This method is available to Lua scripts.
+- `LParticleSystem:getFlipbook() -> integer`: Returns flipbook grid and frame rate when configured.
+- `LParticleSystem:getGravity() -> number`: Returns particle gravity. This method is available to Lua scripts.
+- `LParticleSystem:getInsertMode() -> string`: Returns particle insert mode. This method is available to Lua scripts.
+- `LParticleSystem:getLinearAcceleration() -> number`: Returns linear acceleration range.
+- `LParticleSystem:getLinearDamping() -> number`: Returns linear damping range. This method is available to Lua scripts.
+- `LParticleSystem:getOffset() -> number`: Returns particle spawn offset. This method is available to Lua scripts.
+- `LParticleSystem:getParticleLifetime() -> number`: Returns particle lifetime range. This method is available to Lua scripts.
+- `LParticleSystem:getPosition() -> number`: Returns emitter position. This method is available to Lua scripts.
+- `LParticleSystem:getRadialAcceleration() -> number`: Returns radial acceleration range.
+- `LParticleSystem:getRotation() -> number`: Returns particle rotation range. This method is available to Lua scripts.
+- `LParticleSystem:getShape() -> string`: Returns particle shape. This method is available to Lua scripts.
+- `LParticleSystem:getSizeVariation() -> number`: Returns size variation. This method is available to Lua scripts.
+- `LParticleSystem:getSizes() -> number[]`: Returns particle size keyframes. This method is available to Lua scripts.
+- `LParticleSystem:getSpeed() -> number`: Returns particle speed range. This method is available to Lua scripts.
+- `LParticleSystem:getSpin() -> number`: Returns particle spin range. This method is available to Lua scripts.
+- `LParticleSystem:getSpinVariation() -> number`: Returns spin variation. This method is available to Lua scripts.
+- `LParticleSystem:getSpread() -> number`: Returns emission spread. This method is available to Lua scripts.
+- `LParticleSystem:getTangentialAcceleration() -> number`: Returns tangential acceleration range.
+- `LParticleSystem:hasCollidesWithPhysics() -> boolean`: Returns whether particle physics collision is enabled.
+- `LParticleSystem:hasRelativeRotation() -> boolean`: Returns whether relative rotation is enabled.
+- `LParticleSystem:isActive() -> boolean`: Returns whether the particle system is active.
+- `LParticleSystem:isEmpty() -> boolean`: Returns whether the particle system has no particles or is missing.
+- `LParticleSystem:isFull() -> boolean`: Returns whether the particle system has reached capacity.
+- `LParticleSystem:isPaused() -> boolean`: Returns whether the particle system is paused.
+- `LParticleSystem:isStopped() -> boolean`: Returns whether the particle system is stopped or missing.
+- `LParticleSystem:moveTo(x, y) -> nil`: Moves the particle emitter. This method is available to Lua scripts.
+- `LParticleSystem:paintOnto(image) -> nil`: Paints live particles directly onto an existing image in place.
+- `LParticleSystem:pause() -> nil`: Pauses particle emission and updates.
+- `LParticleSystem:release() -> boolean`: Releases the particle system from shared storage.
+- `LParticleSystem:render(ox?, oy?) -> nil`: Enqueues particle render commands with an optional offset.
+- `LParticleSystem:reset() -> nil`: Resets particles and emitter state.
+- `LParticleSystem:resume() -> nil`: Resumes a paused particle system if it was previously paused.
+- `LParticleSystem:setBounds(xmin, xmax, ymin, ymax, restitution) -> nil`: Sets collision bounds for particles.
+- `LParticleSystem:setBufferSize(n) -> nil`: Sets maximum particle buffer size.
+- `LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius?, restitution?) -> nil`: Enables particle collision against a physics world.
+- `LParticleSystem:setColors(...) -> nil`: Sets particle color keyframes from one or more RGBA tables.
+- `LParticleSystem:setCustomEmissionShape(cb) -> nil`: Sets a Lua callback for custom emission positions.
+- `LParticleSystem:setDirection(dir) -> nil`: Sets emission direction. This method is available to Lua scripts.
+- `LParticleSystem:setEmissionArea(dist, w, h, angle?, dir_rel?) -> nil`: Sets emission area distribution and size.
+- `LParticleSystem:setEmissionRate(rate) -> nil`: Sets emission rate. This method is available to Lua scripts.
+- `LParticleSystem:setEmitterLifetime(t) -> nil`: Sets emitter lifetime. This method is available to Lua scripts.
+- `LParticleSystem:setFlipbook(cols, rows, fps) -> nil`: Sets flipbook grid and frame rate. This method is available to Lua scripts.
+- `LParticleSystem:setGravity(gx, gy) -> nil`: Sets particle gravity. This method is available to Lua scripts.
+- `LParticleSystem:setInsertMode(mode) -> nil`: Sets particle insert mode. This method is available to Lua scripts.
+- `LParticleSystem:setLinearAcceleration(xmin, ymin, xmax, ymax) -> nil`: Sets linear acceleration range. This method is available to Lua scripts.
+- `LParticleSystem:setLinearDamping(min, max) -> nil`: Sets linear damping range. This method is available to Lua scripts.
+- `LParticleSystem:setOffset(ox, oy) -> nil`: Sets particle spawn offset. This method is available to Lua scripts.
+- `LParticleSystem:setOnDeathBatch(cb) -> nil`: Sets a Lua callback invoked with batched particle death records.
+- `LParticleSystem:setParticleLifetime(min, max) -> nil`: Sets particle lifetime range. This method is available to Lua scripts.
+- `LParticleSystem:setPosition(x, y) -> nil`: Sets emitter position. This method is available to Lua scripts.
+- `LParticleSystem:setRadialAcceleration(min, max) -> nil`: Sets radial acceleration range. This method is available to Lua scripts.
+- `LParticleSystem:setRelativeRotation(v) -> nil`: Sets whether particle rotation is relative to movement.
+- `LParticleSystem:setRotation(min, max) -> nil`: Sets particle rotation range. This method is available to Lua scripts.
+- `LParticleSystem:setShape(shape) -> nil`: Sets particle shape. This method is available to Lua scripts.
+- `LParticleSystem:setSizeVariation(v) -> nil`: Sets size variation. This method is available to Lua scripts.
+- `LParticleSystem:setSizes(...) -> nil`: Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
+- `LParticleSystem:setSpeed(min, max) -> nil`: Sets particle speed range. This method is available to Lua scripts.
+- `LParticleSystem:setSpin(min, max) -> nil`: Sets particle spin range. This method is available to Lua scripts.
+- `LParticleSystem:setSpinVariation(v) -> nil`: Sets spin variation. This method is available to Lua scripts.
+- `LParticleSystem:setSpread(spread) -> nil`: Sets emission spread. This method is available to Lua scripts.
+- `LParticleSystem:setTangentialAcceleration(min, max) -> nil`: Sets tangential acceleration range for emitted particles.
+- `LParticleSystem:start() -> nil`: Starts particle emission on this object.
+- `LParticleSystem:stop() -> nil`: Stops particle emission on this object.
+- `LParticleSystem:subSystemCount() -> integer`: Returns particle sub-system count.
+- `LParticleSystem:toImage(w, h) -> LImageData`: Draws particles to image data. This method is available to Lua scripts.
+- `LParticleSystem:type() -> string`: Returns the Lua-visible type name for this particle system handle.
+- `LParticleSystem:typeOf(name) -> boolean`: Returns whether this particle system handle matches a supported type name.
+- `LParticleSystem:update(dt) -> nil`: Updates the particle system, applies optional physics collision, and invokes pending callbacks.
+- `LParticleSystem:warmUp(seconds) -> nil`: Advances the system by a warm-up duration.
 
 #### LParticleSystemGetColorsResult Type
 
@@ -281,17 +278,17 @@ Preset constructors and debug visualization helpers improve iteration speed. In 
 
 ##### Methods
 
-- `LTrail:clear`: Clears all trail points on this object.
-- `LTrail:drawToImage`: Draws the trail to image data. This method is available to Lua scripts.
-- `LTrail:getLifetime`: Returns trail point lifetime. This method is available to Lua scripts.
-- `LTrail:getPointCount`: Returns trail point count. This method is available to Lua scripts.
-- `LTrail:getWidth`: Returns trail width settings from this object.
-- `LTrail:pushPoint`: Adds a point to the trail. This method is available to Lua scripts.
-- `LTrail:setHeadColor`: Sets the color of the leading edge of the trail.
-- `LTrail:setLifetime`: Sets trail point lifetime. This method is available to Lua scripts.
-- `LTrail:setMinDistance`: Sets minimum distance between trail points.
-- `LTrail:setTailColor`: Sets the color of the trailing edge of the trail.
-- `LTrail:setWidth`: Sets trail start and optional end width.
-- `LTrail:type`: Returns the Lua-visible type name for this trail handle.
-- `LTrail:typeOf`: Returns whether this trail handle matches a supported type name.
-- `LTrail:update`: Updates trail point lifetimes. This method is available to Lua scripts.
+- `LTrail:clear() -> nil`: Clears all trail points on this object.
+- `LTrail:drawToImage(w, h) -> LImageData`: Draws the trail to image data. This method is available to Lua scripts.
+- `LTrail:getLifetime() -> number`: Returns trail point lifetime. This method is available to Lua scripts.
+- `LTrail:getPointCount() -> integer`: Returns trail point count. This method is available to Lua scripts.
+- `LTrail:getWidth() -> number`: Returns trail width settings from this object.
+- `LTrail:pushPoint(x, y) -> nil`: Adds a point to the trail. This method is available to Lua scripts.
+- `LTrail:setHeadColor(r, g, b, a) -> nil`: Sets the color of the leading edge of the trail.
+- `LTrail:setLifetime(lifetime) -> nil`: Sets trail point lifetime. This method is available to Lua scripts.
+- `LTrail:setMinDistance(distance) -> nil`: Sets minimum distance between trail points.
+- `LTrail:setTailColor(r, g, b, a) -> nil`: Sets the color of the trailing edge of the trail.
+- `LTrail:setWidth(start, end?) -> nil`: Sets trail start and optional end width.
+- `LTrail:type() -> string`: Returns the Lua-visible type name for this trail handle.
+- `LTrail:typeOf(name) -> boolean`: Returns whether this trail handle matches a supported type name.
+- `LTrail:update(dt) -> nil`: Updates trail point lifetimes. This method is available to Lua scripts.

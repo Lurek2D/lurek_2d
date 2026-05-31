@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `cursor` module provides one runtime surface for pointer presentation: system and custom cursors, animation, context switching, trails, and zoom lens behavior.
+- Manages contextual custom cursors, motion trails, and magnifiers.
 
 ## General Info
 
@@ -16,13 +16,9 @@
 
 ## Summary
 
-The `cursor` module is the visual control layer for pointer behavior at runtime. It decides how the pointer is shown, hidden, locked, and switched between modes so interaction feedback stays consistent across gameplay and tools.
+The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. Its core purpose is to provide scripts with highly responsive, interactive cursor customizations that adapt to game states, UI contexts, and player actions. 
 
-It supports system cursors, custom pixel cursors, and animated variants in one flow. Context mapping lets teams apply explicit cursor rules per screen or tool state instead of maintaining ad-hoc logic.
-
-Optional trail and zoom-lens effects add readability and UX feedback without changing core input capture. Input modules report pointer state, and the cursor layer controls presentation policy.
-
-In practice, `lurek.cursor` provides one stable pointer contract: pick mode, map context, and keep visual behavior deterministic across runtime surfaces.
+It handles cross-platform platform-native system cursor shapes alongside fully custom cursors built from RGBA pixel buffers and coordinate hotspots. Cursors can be animated through time-stepped frame sequences and standalone scale pulse animations. Additionally, the cursor manager orchestrates context-sensitive style transitions, and applies aesthetic and functional trail feedback overlays (fading points, connected strokes) and cursor-following post-process zoom magnifiers.
 
 ## Imports
 
@@ -90,10 +86,10 @@ In practice, `lurek.cursor` provides one stable pointer contract: pick mode, map
 
 ### Functions
 
-- `lurek.cursor.newAnimated`: Creates a new animated cursor that can cycle through frames.
-- `lurek.cursor.newCustom`: Creates a new custom cursor with specified dimensions and hotspot position.
-- `lurek.cursor.newManager`: Creates a new cursor manager for handling cursor state and visibility.
-- `lurek.cursor.systemCursors`: Returns a list of all available system cursor names as a string array.
+- `lurek.cursor.newAnimated(looping) -> LAnimatedCursor`: Creates a new animated cursor that can cycle through frames.
+- `lurek.cursor.newCustom(w, h, hx, hy) -> LCustomCursor`: Creates a new custom cursor with specified dimensions and hotspot position.
+- `lurek.cursor.newManager() -> LCursorManager`: Creates a new cursor manager for handling cursor state and visibility.
+- `lurek.cursor.systemCursors() -> table`: Returns a list of all available system cursor names as a string array.
 
 ### Callbacks
 
@@ -115,14 +111,14 @@ In practice, `lurek.cursor` provides one stable pointer contract: pick mode, map
 
 ##### Methods
 
-- `LAnimatedCursor:addFrame`: Add a frame from a custom cursor image.
-- `LAnimatedCursor:clearPulse`: Disable pulse animation for this object.
-- `LAnimatedCursor:currentIndex`: Get current frame index for this object.
-- `LAnimatedCursor:currentScale`: Get current scale from pulse animation.
-- `LAnimatedCursor:frameCount`: Get total frame count for this object.
-- `LAnimatedCursor:reset`: Reset the cursor animation playback to the first frame.
-- `LAnimatedCursor:setPulse`: Set the pulse animation speed and scale factor parameters.
-- `LAnimatedCursor:update`: Update animation (call each frame).
+- `LAnimatedCursor:addFrame(cursor, duration_ms) -> nil`: Add a frame from a custom cursor image.
+- `LAnimatedCursor:clearPulse() -> nil`: Disable pulse animation for this object.
+- `LAnimatedCursor:currentIndex() -> integer`: Get current frame index for this object.
+- `LAnimatedCursor:currentScale() -> number`: Get current scale from pulse animation.
+- `LAnimatedCursor:frameCount() -> integer`: Get total frame count for this object.
+- `LAnimatedCursor:reset() -> nil`: Reset the cursor animation playback to the first frame.
+- `LAnimatedCursor:setPulse(min_scale, max_scale, speed) -> nil`: Set the pulse animation speed and scale factor parameters.
+- `LAnimatedCursor:update(dt) -> nil`: Update animation (call each frame).
 
 #### LCursorManager Type
 
@@ -134,24 +130,24 @@ In practice, `lurek.cursor` provides one stable pointer contract: pick mode, map
 
 ##### Methods
 
-- `LCursorManager:addRule`: Add a context rule that maps a context to a system cursor.
-- `LCursorManager:disableTrail`: Disable cursor trail for this object.
-- `LCursorManager:disableZoom`: Disable cursor zoom for this object.
-- `LCursorManager:enableLineTrail`: Enable cursor trail with line mode.
-- `LCursorManager:enableTrail`: Enable cursor trail with fade points mode.
-- `LCursorManager:enableZoom`: Enable zoom/magnifier at cursor position.
-- `LCursorManager:getContext`: Get current context name for this object.
-- `LCursorManager:getPosition`: Get cursor position for this object.
-- `LCursorManager:isLocked`: Get cursor lock state for this object.
-- `LCursorManager:isVisible`: Get cursor visibility for this object.
-- `LCursorManager:removeRule`: Remove a context rule for this object.
-- `LCursorManager:setAnimated`: Set the active cursor to an animated cursor.
-- `LCursorManager:setContext`: Set the current context for context-sensitive switching.
-- `LCursorManager:setCustom`: Set the active cursor to a custom image cursor.
-- `LCursorManager:setLocked`: Lock the cursor position using the system grab mode.
-- `LCursorManager:setSystem`: Set the active cursor to a system cursor by name.
-- `LCursorManager:setVisible`: Set cursor visibility for this object.
-- `LCursorManager:update`: Update cursor state (call each frame).
+- `LCursorManager:addRule(ctx, cursor_name) -> nil`: Add a context rule that maps a context to a system cursor.
+- `LCursorManager:disableTrail() -> nil`: Disable cursor trail for this object.
+- `LCursorManager:disableZoom() -> nil`: Disable cursor zoom for this object.
+- `LCursorManager:enableLineTrail(r, g, b, width) -> nil`: Enable cursor trail with line mode.
+- `LCursorManager:enableTrail(r, g, b, lifetime) -> nil`: Enable cursor trail with fade points mode.
+- `LCursorManager:enableZoom(magnification, radius) -> nil`: Enable zoom/magnifier at cursor position.
+- `LCursorManager:getContext() -> string`: Get current context name for this object.
+- `LCursorManager:getPosition() -> number`: Get cursor position for this object.
+- `LCursorManager:isLocked() -> boolean`: Get cursor lock state for this object.
+- `LCursorManager:isVisible() -> boolean`: Get cursor visibility for this object.
+- `LCursorManager:removeRule(ctx) -> nil`: Remove a context rule for this object.
+- `LCursorManager:setAnimated(cursor) -> nil`: Set the active cursor to an animated cursor.
+- `LCursorManager:setContext(ctx) -> nil`: Set the current context for context-sensitive switching.
+- `LCursorManager:setCustom(cursor) -> nil`: Set the active cursor to a custom image cursor.
+- `LCursorManager:setLocked(locked) -> nil`: Lock the cursor position using the system grab mode.
+- `LCursorManager:setSystem(name) -> nil`: Set the active cursor to a system cursor by name.
+- `LCursorManager:setVisible(visible) -> nil`: Set cursor visibility for this object.
+- `LCursorManager:update(x, y, dt) -> nil`: Update cursor state (call each frame).
 
 #### LCustomCursor Type
 
@@ -163,7 +159,7 @@ In practice, `lurek.cursor` provides one stable pointer contract: pick mode, map
 
 ##### Methods
 
-- `LCustomCursor:getHotspot`: Get hotspot position for this object.
-- `LCustomCursor:getPixel`: Get the pixel color at the specified cursor image position.
-- `LCustomCursor:getSize`: Get the pixel width and height of the cursor image.
-- `LCustomCursor:setPixel`: Set a pixel color â€” Lua userdata object exposed by the engine.
+- `LCustomCursor:getHotspot() -> integer`: Get hotspot position for this object.
+- `LCustomCursor:getPixel(x, y) -> integer`: Get the pixel color at the specified cursor image position.
+- `LCustomCursor:getSize() -> integer`: Get the pixel width and height of the cursor image.
+- `LCustomCursor:setPixel(x, y, r, g, b, a) -> nil`: Set a pixel color â€” Lua userdata object exposed by the engine.

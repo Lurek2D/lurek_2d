@@ -2,7 +2,9 @@
 
 ## TL;DR
 
-- The `tilemap` module is an expansive Feature Systems tier component that provides comprehensive support for multi-layer 2D tilemaps.
+- Supports orthogonal, isometric, and hex grids with sparse culling, LOD, and standard map imports.
+- Features autotiling, procedural generation, swept rect collisions, and pathfind navgrids.
+- Provides hex rings, polygon trigger zones, and event callbacks for entity transitions.
 
 ## General Info
 
@@ -16,11 +18,21 @@
 
 ## Summary
 
-Central to this module is the `TileMap` struct, which stores stacked `TileLayer` grids, managing per-cell tile IDs (GIDs), flip flags, collision data, and layer-specific properties like tint and parallax scroll factors. Maps can be populated dynamically or imported from standard industry formats; the module includes robust parsers for both TMX (Tiled) and LDtk map files, seamlessly transforming their XML or JSON data into engine-native structures while supporting orthogonal, staggered, hexagonal, and isometric orientations.
+This module serves as the primary system for building, simulating, and visualizing rich, grid-based game worlds. It unifies orthogonal, isometric, and hexagonal structures under a single set of spatial operations, enabling developers to map virtual grid coordinates directly into screen-space projections. The system manages conversions, diamond layout ordering, diagonal sorting, and hexadecimal neighborhood navigations for gameplay logic.
 
-To support massive, open-world environments, the module implements a sophisticated `ChunkMap` system alongside a `LargeMapRenderer`. These tools partition infinite sparse tile grids into fixed-size square chunks, facilitating on-demand loading, unloading, and view-frustum culling, which drastically reduces memory usage and GPU load for oversized maps. For complex terrain, the `AutoTileSheet` simplifies level design by using bitmask-based neighbor rules to automatically select the correct tile index for seamless terrain transitions (supporting 4-bit and 8-bit matching). Additionally, specialized components like `IsoMap` provide dedicated handling for multi-level isometric projection, ensuring proper depth sorting (painter's algorithm) across intricate 3D-like structures.
+For massive sandbox and role-playing worlds, the module employs sparse chunk-based storage to handle vast environments without overwhelming memory allocations. This representation connects to a chunk-oriented rendering engine that groups layers and tiles into blocks for camera-aware view culling. Viewport-scoped culling keeps frame rates high, while dirty-chunk tracking guarantees that modified tiles update immediately.
 
-The module also goes far beyond simple rendering. It features a robust procedural generation engine (`MapGen`) that constructs maps deterministically from reusable `MapBlock` prefabs and scripted operations (fill, scatter, path). For physics and gameplay logic, the map supports continuous AABB sweep-cast collision detection directly against solid tiles. `PolygonMap` enables the definition and spatial querying of named convex/concave regions (useful for zones or provinces), while `TileWalker` provides utilities for grid-based discrete movement and facing logic. Supported by the extensive `lurek.tilemap.*` Lua API, this module is a foundational pillar for building complex, optimized, and interactive 2D worlds.
+To accommodate mainstream workflows, the tilemap engine supports direct imports from industry-standard editor formats. It parses XML-based Tiled files and LDtk JSON documents on the fly, decoding base64-compressed layers and preserving custom properties. The importer strips auxiliary packaging flags to isolate native cell identities, reconstructing layers, object entities, and visual settings into engine-native structures.
+
+In addition to hand-crafted environments, the subsystem provides a procedural generation pipeline built on repeatable seed values. By combining reusable block templates with procedural scripts, developers can orchestrate operations like flood fills, path carving, and noise scattering. Seed-driven randomness guarantees identical world outputs across runs, making procedural layouts stable and testable.
+
+Terrain continuity is managed dynamically via an autotiling system that checks tile neighborhoods to select matching sprites automatically. Supporting both four-neighbor and eight-neighbor diagonal rules, this system maps structural bitmasks directly to tileset transitions. Developers can paint paths, organic borders, and water flows, letting the runtime patch corner seams and transition quads smoothly.
+
+Beyond visual representation, the tilemap forms the bedrock of spatial collision detection and pathfinding. Individual tiles convey solidity properties that feed swept bounding-box tests, giving platformers and top-down entities collision responses. The system also exports raw layers into navigation grids, making it simple for pathfinding algorithms to query obstacle placements and plan routes.
+
+Finally, the module provides specialized spatial tools for tactical strategy games, including hex ring traversals, spiral patterns, and line-of-sight traversals. It also manages arbitrary polygon regions layered on top of the grid to define zone semantics, ownership areas, and visual outlines. These regions support selection testing and compute bounds to coordinate dynamic camera positioning and trigger regions.
+
+Interactive elements are rounded out by event-driven callbacks triggered as entities step across tile boundaries. These hooks notify gameplay scripts during entries and exits, facilitating pressure plates, hazards, and portals. Supported by coordinate interpolations for smooth movement ticks, this complete framework bridges static world data with reactive, dynamic gameplay simulation.
 
 ## Imports
 
@@ -173,34 +185,34 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ### Functions
 
-- `lurek.tilemap.fromLDtk`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
-- `lurek.tilemap.fromScreenHex`: Converts screen-space pixel coordinates to axial hex coordinates.
-- `lurek.tilemap.fromScreenIso`: Converts screen-space coordinates back to tile coordinates for isometric projection.
-- `lurek.tilemap.hexArea`: Returns all hex cells within a filled area of a given radius.
-- `lurek.tilemap.hexDistance`: Computes the hex grid distance between two axial coordinates.
-- `lurek.tilemap.hexLine`: Returns all hex cells along a line between two axial coordinates.
-- `lurek.tilemap.hexNeighbors`: Returns the six neighboring hex cells of a given axial coordinate.
-- `lurek.tilemap.hexReflect`: Reflects a hex cell across an axis through a center point.
-- `lurek.tilemap.hexRing`: Returns all hex cells forming a ring at a given radius around a center.
-- `lurek.tilemap.hexRotate`: Rotates a hex cell around a center point by a number of 60-degree steps.
-- `lurek.tilemap.hexRound`: Rounds fractional axial hex coordinates to the nearest integer hex cell.
-- `lurek.tilemap.hexSpiral`: Returns all hex cells in a spiral pattern out to a given radius.
-- `lurek.tilemap.isoDirectionFromAngle`: Converts an angle in degrees to the nearest isometric direction index.
-- `lurek.tilemap.isoDirectionName`: Returns a human-readable name for an isometric direction index.
-- `lurek.tilemap.isoRotate`: Rotates an isometric direction index by a number of 90-degree steps.
-- `lurek.tilemap.loadTMX`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
-- `lurek.tilemap.newAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
-- `lurek.tilemap.newChunkMap`: Creates a new infinite chunk-based tile map.
-- `lurek.tilemap.newIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
-- `lurek.tilemap.newLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
-- `lurek.tilemap.newMapBlock`: Creates a new procedural map block with the given dimensions.
-- `lurek.tilemap.newMapGen`: Creates a procedural map generator from a group and either a size preset or explicit dimensions.
-- `lurek.tilemap.newMapGroup`: Creates a new map group to hold blocks and generation scripts.
-- `lurek.tilemap.newMapScript`: Creates a new empty map-generation script.
-- `lurek.tilemap.newTileMap`: Creates a new empty tilemap with the given tile dimensions.
-- `lurek.tilemap.newTileSet`: Creates a new tileset from atlas parameters.
-- `lurek.tilemap.toScreenHex`: Converts axial hex coordinates to screen-space pixel position.
-- `lurek.tilemap.toScreenIso`: Converts tile coordinates to screen-space position for isometric projection.
+- `lurek.tilemap.fromLDtk(jsonStr, levelName?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
+- `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
+- `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
+- `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
+- `lurek.tilemap.hexDistance(q1, r1, q2, r2) -> integer`: Computes the hex grid distance between two axial coordinates.
+- `lurek.tilemap.hexLine(q1, r1, q2, r2) -> table`: Returns all hex cells along a line between two axial coordinates.
+- `lurek.tilemap.hexNeighbors(q, r) -> table`: Returns the six neighboring hex cells of a given axial coordinate.
+- `lurek.tilemap.hexReflect(q, r, centerQ, centerR, axis) -> integer`: Reflects a hex cell across an axis through a center point.
+- `lurek.tilemap.hexRing(q, r, radius) -> table`: Returns all hex cells forming a ring at a given radius around a center.
+- `lurek.tilemap.hexRotate(q, r, centerQ, centerR, steps) -> integer`: Rotates a hex cell around a center point by a number of 60-degree steps.
+- `lurek.tilemap.hexRound(q, r) -> integer`: Rounds fractional axial hex coordinates to the nearest integer hex cell.
+- `lurek.tilemap.hexSpiral(q, r, radius) -> table`: Returns all hex cells in a spiral pattern out to a given radius.
+- `lurek.tilemap.isoDirectionFromAngle(angle) -> integer`: Converts an angle in degrees to the nearest isometric direction index.
+- `lurek.tilemap.isoDirectionName(direction) -> string`: Returns a human-readable name for an isometric direction index.
+- `lurek.tilemap.isoRotate(direction, steps) -> integer`: Rotates an isometric direction index by a number of 90-degree steps.
+- `lurek.tilemap.loadTMX(xml) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
+- `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
+- `lurek.tilemap.newChunkMap(chunkSize?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
+- `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
+- `lurek.tilemap.newLargeMapRenderer(tileW, tileH) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
+- `lurek.tilemap.newMapBlock(width, height, layers?, segmentSize?) -> LMapBlock`: Creates a new procedural map block with the given dimensions.
+- `lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize?) -> LMapGen`: Creates a procedural map generator from a group and either a size preset or explicit dimensions.
+- `lurek.tilemap.newMapGroup(name) -> LMapGroup`: Creates a new map group to hold blocks and generation scripts.
+- `lurek.tilemap.newMapScript() -> LMapScript`: Creates a new empty map-generation script.
+- `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
+- `lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing?, margin?) -> LTileSet`: Creates a new tileset from atlas parameters.
+- `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
+- `lurek.tilemap.toScreenIso(tx, ty, tw, th) -> number`: Converts tile coordinates to screen-space position for isometric projection.
 
 ### Callbacks
 
@@ -224,16 +236,16 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LAutoTileSheet:applyToTileSet`: Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
-- `LAutoTileSheet:getBitmaskForTile`: Returns the bitmask associated with a tile in this auto-tile sheet.
-- `LAutoTileSheet:getLayout`: Returns the auto-tile layout type as a string.
-- `LAutoTileSheet:getQuad`: Returns the source rectangle for a tile in the auto-tile sheet.
-- `LAutoTileSheet:getTileCount`: Returns the total number of tiles in this auto-tile sheet.
-- `LAutoTileSheet:getTileForBitmask`: Looks up which tile corresponds to a given bitmask value.
-- `LAutoTileSheet:getTileHeight`: Returns the height of each tile in the auto-tile sheet, in pixels.
-- `LAutoTileSheet:getTileWidth`: Returns the width of each tile in the auto-tile sheet, in pixels.
-- `LAutoTileSheet:type`: Returns the type name of this userdata.
-- `LAutoTileSheet:typeOf`: Checks whether this object matches the given type name.
+- `LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid?) -> nil`: Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
+- `LAutoTileSheet:getBitmaskForTile(tileId) -> integer`: Returns the bitmask associated with a tile in this auto-tile sheet.
+- `LAutoTileSheet:getLayout() -> string`: Returns the auto-tile layout type as a string.
+- `LAutoTileSheet:getQuad(tileId) -> integer`: Returns the source rectangle for a tile in the auto-tile sheet.
+- `LAutoTileSheet:getTileCount() -> integer`: Returns the total number of tiles in this auto-tile sheet.
+- `LAutoTileSheet:getTileForBitmask(bitmask) -> integer`: Looks up which tile corresponds to a given bitmask value.
+- `LAutoTileSheet:getTileHeight() -> integer`: Returns the height of each tile in the auto-tile sheet, in pixels.
+- `LAutoTileSheet:getTileWidth() -> integer`: Returns the width of each tile in the auto-tile sheet, in pixels.
+- `LAutoTileSheet:type() -> string`: Returns the type name of this userdata.
+- `LAutoTileSheet:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LChunkMap Type
 
@@ -245,18 +257,18 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LChunkMap:chunkTileRange`: Returns the tile-coordinate range covered by a specific chunk.
-- `LChunkMap:clearTile`: Removes the tile at the given world-tile coordinate.
-- `LChunkMap:fillRect`: Fills a rectangular region of tiles with a given GID.
-- `LChunkMap:getChunkSize`: Returns the size of each chunk in tiles per side.
-- `LChunkMap:getChunksInView`: Returns chunk coordinates that overlap a viewport region, given tile dimensions.
-- `LChunkMap:getLoadedChunks`: Returns a list of all currently loaded chunk coordinates.
-- `LChunkMap:getTile`: Returns the tile GID at the given world-tile coordinate.
-- `LChunkMap:loadChunk`: Loads a chunk into memory at the given chunk coordinates.
-- `LChunkMap:setTile`: Sets the tile GID at the given world-tile coordinate.
-- `LChunkMap:type`: Returns the type name of this userdata.
-- `LChunkMap:typeOf`: Checks whether this object matches the given type name.
-- `LChunkMap:unloadChunk`: Unloads a chunk from memory at the given chunk coordinates.
+- `LChunkMap:chunkTileRange(cx, cy) -> integer`: Returns the tile-coordinate range covered by a specific chunk.
+- `LChunkMap:clearTile(x, y) -> nil`: Removes the tile at the given world-tile coordinate.
+- `LChunkMap:fillRect(x0, y0, x1, y1, gid) -> nil`: Fills a rectangular region of tiles with a given GID.
+- `LChunkMap:getChunkSize() -> integer`: Returns the size of each chunk in tiles per side.
+- `LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th) -> table`: Returns chunk coordinates that overlap a viewport region, given tile dimensions.
+- `LChunkMap:getLoadedChunks() -> table`: Returns a list of all currently loaded chunk coordinates.
+- `LChunkMap:getTile(x, y) -> integer`: Returns the tile GID at the given world-tile coordinate.
+- `LChunkMap:loadChunk(cx, cy) -> nil`: Loads a chunk into memory at the given chunk coordinates.
+- `LChunkMap:setTile(x, y, gid) -> nil`: Sets the tile GID at the given world-tile coordinate.
+- `LChunkMap:type() -> string`: Returns the type name of this userdata.
+- `LChunkMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LChunkMap:unloadChunk(cx, cy) -> nil`: Unloads a chunk from memory at the given chunk coordinates.
 
 #### LChunkMapGetChunksInViewResult Type
 
@@ -294,26 +306,26 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LIsoMap:addLevel`: Adds a new vertical level to the isometric map and returns its index.
-- `LIsoMap:fillLevel`: Fills all tiles on a level for a given part with a single GID.
-- `LIsoMap:getHeight`: Returns the map height in tiles. This method is available to Lua scripts.
-- `LIsoMap:getLevelCount`: Returns the number of vertical levels in the isometric map.
-- `LIsoMap:getLevelHeight`: Returns the vertical pixel offset between levels.
-- `LIsoMap:getPartCount`: Returns the number of tile parts per cell.
-- `LIsoMap:getPartOrder`: Returns the rendering order of tile parts as an array of part indices.
-- `LIsoMap:getTileHeight`: Returns the height of an isometric tile in pixels.
-- `LIsoMap:getTilePart`: Returns the GID for a specific part of a tile at a given position and level.
-- `LIsoMap:getTileWidth`: Returns the width of an isometric tile in pixels.
-- `LIsoMap:getWidth`: Returns the map width in tiles. This method is available to Lua scripts.
-- `LIsoMap:isLevelVisible`: Returns whether a vertical level is currently visible.
-- `LIsoMap:screenToTile`: Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
-- `LIsoMap:setLevelVisible`: Sets whether a vertical level is drawn during rendering.
-- `LIsoMap:setOrigin`: Sets the screen-space origin (top-left anchor) for isometric rendering.
-- `LIsoMap:setPartOrder`: Overrides the rendering order of tile parts.
-- `LIsoMap:setTilePart`: Sets the GID for a specific part of a tile at a given position and level.
-- `LIsoMap:tileToScreen`: Converts tile-grid coordinates to screen-space pixel position.
-- `LIsoMap:type`: Returns the type name of this userdata.
-- `LIsoMap:typeOf`: Checks whether this object matches the given type name.
+- `LIsoMap:addLevel() -> integer`: Adds a new vertical level to the isometric map and returns its index.
+- `LIsoMap:fillLevel(z, part, gid) -> nil`: Fills all tiles on a level for a given part with a single GID.
+- `LIsoMap:getHeight() -> integer`: Returns the map height in tiles. This method is available to Lua scripts.
+- `LIsoMap:getLevelCount() -> integer`: Returns the number of vertical levels in the isometric map.
+- `LIsoMap:getLevelHeight() -> integer`: Returns the vertical pixel offset between levels.
+- `LIsoMap:getPartCount() -> integer`: Returns the number of tile parts per cell.
+- `LIsoMap:getPartOrder() -> integer[]`: Returns the rendering order of tile parts as an array of part indices.
+- `LIsoMap:getTileHeight() -> integer`: Returns the height of an isometric tile in pixels.
+- `LIsoMap:getTilePart(z, x, y, part) -> integer`: Returns the GID for a specific part of a tile at a given position and level.
+- `LIsoMap:getTileWidth() -> integer`: Returns the width of an isometric tile in pixels.
+- `LIsoMap:getWidth() -> integer`: Returns the map width in tiles. This method is available to Lua scripts.
+- `LIsoMap:isLevelVisible(z) -> boolean`: Returns whether a vertical level is currently visible.
+- `LIsoMap:screenToTile(sx, sy) -> number`: Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
+- `LIsoMap:setLevelVisible(z, visible) -> nil`: Sets whether a vertical level is drawn during rendering.
+- `LIsoMap:setOrigin(x, y) -> nil`: Sets the screen-space origin (top-left anchor) for isometric rendering.
+- `LIsoMap:setPartOrder(order) -> nil`: Overrides the rendering order of tile parts.
+- `LIsoMap:setTilePart(z, x, y, part, gid) -> nil`: Sets the GID for a specific part of a tile at a given position and level.
+- `LIsoMap:tileToScreen(tx, ty, tz) -> number`: Converts tile-grid coordinates to screen-space pixel position.
+- `LIsoMap:type() -> string`: Returns the type name of this userdata.
+- `LIsoMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LLargeMapRenderer Type
 
@@ -325,25 +337,25 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LLargeMapRenderer:getChunkSize`: Returns the current chunk size. This method is available to Lua scripts.
-- `LLargeMapRenderer:getMapSize`: Returns the map dimensions in tiles.
-- `LLargeMapRenderer:getTile`: Returns the tile GID at a given position.
-- `LLargeMapRenderer:getTilesetColumns`: Returns the tileset column count used for UV calculation.
-- `LLargeMapRenderer:getTotalChunks`: Returns the total number of chunks in the map.
-- `LLargeMapRenderer:getVisibleChunks`: Returns the number of chunks currently visible in the viewport.
-- `LLargeMapRenderer:invalidateAll`: Marks all chunks as dirty, forcing a full rebuild on the next render.
-- `LLargeMapRenderer:invalidateChunk`: Marks a specific chunk as dirty so it will be rebuilt on the next render.
-- `LLargeMapRenderer:isLodEnabled`: Returns whether LOD rendering is currently enabled.
-- `LLargeMapRenderer:setCamera`: Sets the camera position and zoom level for determining visible chunks.
-- `LLargeMapRenderer:setChunkSize`: Sets the chunk size used for rendering subdivision.
-- `LLargeMapRenderer:setLodEnabled`: Enables or disables level-of-detail rendering for distant chunks.
-- `LLargeMapRenderer:setLodThresholds`: Sets the zoom thresholds at which LOD levels change.
-- `LLargeMapRenderer:setMapData`: Replaces all tile data with a flat array of GIDs for the given dimensions.
-- `LLargeMapRenderer:setTile`: Sets a single tile GID at a given position.
-- `LLargeMapRenderer:setTilesetColumns`: Sets the column count of the associated tileset atlas for UV calculation.
-- `LLargeMapRenderer:setViewport`: Sets the viewport dimensions for visibility calculations.
-- `LLargeMapRenderer:type`: Returns the type name of this userdata.
-- `LLargeMapRenderer:typeOf`: Checks whether this object matches the given type name.
+- `LLargeMapRenderer:getChunkSize() -> integer`: Returns the current chunk size. This method is available to Lua scripts.
+- `LLargeMapRenderer:getMapSize() -> integer`: Returns the map dimensions in tiles.
+- `LLargeMapRenderer:getTile(x, y) -> integer`: Returns the tile GID at a given position.
+- `LLargeMapRenderer:getTilesetColumns() -> integer`: Returns the tileset column count used for UV calculation.
+- `LLargeMapRenderer:getTotalChunks() -> integer`: Returns the total number of chunks in the map.
+- `LLargeMapRenderer:getVisibleChunks() -> integer`: Returns the number of chunks currently visible in the viewport.
+- `LLargeMapRenderer:invalidateAll() -> nil`: Marks all chunks as dirty, forcing a full rebuild on the next render.
+- `LLargeMapRenderer:invalidateChunk(cx, cy) -> nil`: Marks a specific chunk as dirty so it will be rebuilt on the next render.
+- `LLargeMapRenderer:isLodEnabled() -> boolean`: Returns whether LOD rendering is currently enabled.
+- `LLargeMapRenderer:setCamera(x, y, zoom) -> nil`: Sets the camera position and zoom level for determining visible chunks.
+- `LLargeMapRenderer:setChunkSize(size) -> nil`: Sets the chunk size used for rendering subdivision.
+- `LLargeMapRenderer:setLodEnabled(enabled) -> nil`: Enables or disables level-of-detail rendering for distant chunks.
+- `LLargeMapRenderer:setLodThresholds(levels) -> nil`: Sets the zoom thresholds at which LOD levels change.
+- `LLargeMapRenderer:setMapData(data, width, height) -> nil`: Replaces all tile data with a flat array of GIDs for the given dimensions.
+- `LLargeMapRenderer:setTile(x, y, tileId) -> nil`: Sets a single tile GID at a given position.
+- `LLargeMapRenderer:setTilesetColumns(cols) -> nil`: Sets the column count of the associated tileset atlas for UV calculation.
+- `LLargeMapRenderer:setViewport(w, h) -> nil`: Sets the viewport dimensions for visibility calculations.
+- `LLargeMapRenderer:type() -> string`: Returns the type name of this userdata.
+- `LLargeMapRenderer:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LMapBlock Type
 
@@ -355,23 +367,23 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LMapBlock:getDimensions`: Returns both width and height of the block in tiles.
-- `LMapBlock:getHeight`: Returns the block height in tiles. This method is available to Lua scripts.
-- `LMapBlock:getHeightInSegments`: Returns the block height measured in segments.
-- `LMapBlock:getLayerCount`: Returns the number of tile layers in this block.
-- `LMapBlock:getName`: Returns the block's name. This method is available to Lua scripts.
-- `LMapBlock:getSegmentSize`: Returns the segment size used for edge matching.
-- `LMapBlock:getSide`: Returns the side ID for an edge segment.
-- `LMapBlock:getTile`: Returns the tile GID at a position within the block.
-- `LMapBlock:getWeight`: Returns the current selection weight.
-- `LMapBlock:getWidth`: Returns the block width in tiles. This method is available to Lua scripts.
-- `LMapBlock:getWidthInSegments`: Returns the block width measured in segments.
-- `LMapBlock:setName`: Sets the block's name for identification during map generation.
-- `LMapBlock:setSide`: Sets the side ID for an edge segment, used for edge matching in map generation.
-- `LMapBlock:setTile`: Sets a tile GID at a position within the block.
-- `LMapBlock:setWeight`: Sets the selection weight for this block during random placement.
-- `LMapBlock:type`: Returns the type name of this userdata.
-- `LMapBlock:typeOf`: Checks whether this object matches the given type name.
+- `LMapBlock:getDimensions() -> integer`: Returns both width and height of the block in tiles.
+- `LMapBlock:getHeight() -> integer`: Returns the block height in tiles. This method is available to Lua scripts.
+- `LMapBlock:getHeightInSegments() -> integer`: Returns the block height measured in segments.
+- `LMapBlock:getLayerCount() -> integer`: Returns the number of tile layers in this block.
+- `LMapBlock:getName() -> string`: Returns the block's name. This method is available to Lua scripts.
+- `LMapBlock:getSegmentSize() -> integer`: Returns the segment size used for edge matching.
+- `LMapBlock:getSide(edge, segment) -> integer`: Returns the side ID for an edge segment.
+- `LMapBlock:getTile(layer, x, y) -> integer`: Returns the tile GID at a position within the block.
+- `LMapBlock:getWeight() -> number`: Returns the current selection weight.
+- `LMapBlock:getWidth() -> integer`: Returns the block width in tiles. This method is available to Lua scripts.
+- `LMapBlock:getWidthInSegments() -> integer`: Returns the block width measured in segments.
+- `LMapBlock:setName(name) -> nil`: Sets the block's name for identification during map generation.
+- `LMapBlock:setSide(edge, segment, sideId) -> nil`: Sets the side ID for an edge segment, used for edge matching in map generation.
+- `LMapBlock:setTile(layer, x, y, gid) -> nil`: Sets a tile GID at a position within the block.
+- `LMapBlock:setWeight(weight) -> nil`: Sets the selection weight for this block during random placement.
+- `LMapBlock:type() -> string`: Returns the type name of this userdata.
+- `LMapBlock:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LMapGen Type
 
@@ -383,9 +395,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LMapGen:generate`: Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
-- `LMapGen:type`: Returns the type name of this userdata.
-- `LMapGen:typeOf`: Checks whether this object matches the given type name.
+- `LMapGen:generate(scriptIdx?, seed?, layerName?) -> LTileMap`: Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
+- `LMapGen:type() -> string`: Returns the type name of this userdata.
+- `LMapGen:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LMapGroup Type
 
@@ -397,14 +409,14 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LMapGroup:addBlock`: Adds a map block to this group for use in generation.
-- `LMapGroup:addScript`: Attaches a map-generation script to this group.
-- `LMapGroup:getBlockCount`: Returns how many blocks are in this group.
-- `LMapGroup:getName`: Returns the group name. This method is available to Lua scripts.
-- `LMapGroup:getScriptCount`: Returns how many scripts are attached to this group.
-- `LMapGroup:removeBlock`: Removes a block from the group by index.
-- `LMapGroup:type`: Returns the type name of this userdata.
-- `LMapGroup:typeOf`: Checks whether this object matches the given type name.
+- `LMapGroup:addBlock(block) -> nil`: Adds a map block to this group for use in generation.
+- `LMapGroup:addScript(script) -> nil`: Attaches a map-generation script to this group.
+- `LMapGroup:getBlockCount() -> integer`: Returns how many blocks are in this group.
+- `LMapGroup:getName() -> string`: Returns the group name. This method is available to Lua scripts.
+- `LMapGroup:getScriptCount() -> integer`: Returns how many scripts are attached to this group.
+- `LMapGroup:removeBlock(idx) -> nil`: Removes a block from the group by index.
+- `LMapGroup:type() -> string`: Returns the type name of this userdata.
+- `LMapGroup:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LMapScript Type
 
@@ -416,10 +428,10 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LMapScript:addStep`: Appends a generation step. The step table must have a `type` field and optional parameters.
-- `LMapScript:getStepCount`: Returns the number of generation steps in this script.
-- `LMapScript:type`: Returns the type name of this userdata.
-- `LMapScript:typeOf`: Checks whether this object matches the given type name.
+- `LMapScript:addStep(stepDef) -> nil`: Appends a generation step. The step table must have a `type` field and optional parameters.
+- `LMapScript:getStepCount() -> integer`: Returns the number of generation steps in this script.
+- `LMapScript:type() -> string`: Returns the type name of this userdata.
+- `LMapScript:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LTileMap Type
 
@@ -431,56 +443,56 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LTileMap:addLayer`: Creates a new tile layer with the given name and dimensions.
-- `LTileMap:addTileSet`: Attaches a tileset to this map for tile rendering.
-- `LTileMap:applyAutoTile`: Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
-- `LTileMap:applyAutoTile8`: Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
-- `LTileMap:applyAutoTile8At`: Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
-- `LTileMap:applyAutoTileAt`: Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
-- `LTileMap:checkEntities`: Checks a list of entities against registered tile-enter callbacks on a layer.
-- `LTileMap:clearTile`: Removes the tile at a specific grid position, setting it to empty (GID 0).
-- `LTileMap:drawToImage`: Rasterizes the map into an image using the given tile size, returning an image handle.
-- `LTileMap:fill`: Fills every cell of a layer with the given GID.
-- `LTileMap:findTilesByGid`: Returns all positions on a layer that contain a specific GID.
-- `LTileMap:fireTileExit`: Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-- `LTileMap:fireTileStep`: Manually fires the tile-step callback for a specific GID and entity at a tile position.
-- `LTileMap:getChunkSize`: Returns the chunk size used for internal tile storage.
-- `LTileMap:getLayerColor`: Returns the tint color of a layer as four RGBA components.
-- `LTileMap:getLayerCount`: Returns the total number of layers in this map.
-- `LTileMap:getLayerName`: Returns the name of a layer by index.
-- `LTileMap:getLayerOffset`: Returns the pixel offset of a layer.
-- `LTileMap:getLayerParallax`: Returns the parallax scroll factor of a layer.
-- `LTileMap:getLayerVisible`: Returns whether a layer is currently visible.
-- `LTileMap:getOrientation`: Returns the current map orientation as a string.
-- `LTileMap:getTile`: Returns the tile GID at a specific grid position on a layer.
-- `LTileMap:getTileDimensions`: Returns both tile width and height in pixels.
-- `LTileMap:getTileHeight`: Returns the height of a single tile in pixels for this map.
-- `LTileMap:getTileSet`: Returns the tileset at the given index.
-- `LTileMap:getTileSetCount`: Returns how many tilesets are attached to this map.
-- `LTileMap:getTileWidth`: Returns the width of a single tile in pixels for this map.
-- `LTileMap:getViewport`: Returns the current viewport rectangle, or nils if none is set.
-- `LTileMap:isSolid`: Checks whether the tile at a given position on a layer is solid.
-- `LTileMap:onTileEnter`: Registers a callback invoked when an entity enters a tile with the given GID.
-- `LTileMap:onTileExit`: Registers a callback invoked when an entity leaves a tile with the given GID.
-- `LTileMap:onTileStep`: Registers a callback invoked each frame an entity remains on a tile with the given GID.
-- `LTileMap:rectOverlapsSolid`: Tests whether a world-space rectangle overlaps any solid tile on a layer.
-- `LTileMap:render`: Submits render commands for all visible tiles, optionally offset by a scroll position.
-- `LTileMap:setLayerColor`: Sets the tint color for an entire layer.
-- `LTileMap:setLayerOffset`: Sets the pixel offset for a layer, shifting all tiles during rendering.
-- `LTileMap:setLayerParallax`: Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
-- `LTileMap:setLayerVisible`: Sets whether a layer is drawn during rendering.
-- `LTileMap:setOrientation`: Sets the map orientation, affecting coordinate transforms and rendering.
-- `LTileMap:setTile`: Sets the tile GID at a specific grid position on a layer.
-- `LTileMap:setTileTint`: Overrides the color tint for a single tile at a given position.
-- `LTileMap:setViewport`: Sets the visible area of the map for culling during rendering.
-- `LTileMap:sweepRect`: Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
-- `LTileMap:tileToWorld`: Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
-- `LTileMap:tileTypeIndex`: Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
-- `LTileMap:toNavGrid`: Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-- `LTileMap:type`: Returns the type name of this userdata.
-- `LTileMap:typeOf`: Checks whether this object matches the given type name.
-- `LTileMap:update`: Advances tile animations by the given delta time.
-- `LTileMap:worldToTile`: Converts world-space pixel coordinates to tile-grid coordinates.
+- `LTileMap:addLayer(name, w, h) -> integer`: Creates a new tile layer with the given name and dimensions.
+- `LTileMap:addTileSet(tileSet) -> nil`: Attaches a tileset to this map for tile rendering.
+- `LTileMap:applyAutoTile(layer, typeName) -> nil`: Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
+- `LTileMap:applyAutoTile8(layer, typeName) -> nil`: Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
+- `LTileMap:applyAutoTile8At(layer, x, y, typeName) -> nil`: Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
+- `LTileMap:applyAutoTileAt(layer, x, y, typeName) -> nil`: Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+- `LTileMap:checkEntities(layer, entities) -> nil`: Checks a list of entities against registered tile-enter callbacks on a layer.
+- `LTileMap:clearTile(layer, x, y) -> nil`: Removes the tile at a specific grid position, setting it to empty (GID 0).
+- `LTileMap:drawToImage(tileSize) -> LImage`: Rasterizes the map into an image using the given tile size, returning an image handle.
+- `LTileMap:fill(layer, gid) -> nil`: Fills every cell of a layer with the given GID.
+- `LTileMap:findTilesByGid(layer, gid) -> table`: Returns all positions on a layer that contain a specific GID.
+- `LTileMap:fireTileExit(gid, entity, tx, ty) -> nil`: Manually fires the tile-exit callback for a specific GID and entity at a tile position.
+- `LTileMap:fireTileStep(gid, entity, tx, ty) -> nil`: Manually fires the tile-step callback for a specific GID and entity at a tile position.
+- `LTileMap:getChunkSize() -> integer`: Returns the chunk size used for internal tile storage.
+- `LTileMap:getLayerColor(idx) -> number`: Returns the tint color of a layer as four RGBA components.
+- `LTileMap:getLayerCount() -> integer`: Returns the total number of layers in this map.
+- `LTileMap:getLayerName(idx) -> string`: Returns the name of a layer by index.
+- `LTileMap:getLayerOffset(idx) -> number`: Returns the pixel offset of a layer.
+- `LTileMap:getLayerParallax(idx) -> number`: Returns the parallax scroll factor of a layer.
+- `LTileMap:getLayerVisible(idx) -> boolean`: Returns whether a layer is currently visible.
+- `LTileMap:getOrientation() -> string`: Returns the current map orientation as a string.
+- `LTileMap:getTile(layer, x, y) -> integer`: Returns the tile GID at a specific grid position on a layer.
+- `LTileMap:getTileDimensions() -> integer`: Returns both tile width and height in pixels.
+- `LTileMap:getTileHeight() -> integer`: Returns the height of a single tile in pixels for this map.
+- `LTileMap:getTileSet(idx) -> LTileSet`: Returns the tileset at the given index.
+- `LTileMap:getTileSetCount() -> integer`: Returns how many tilesets are attached to this map.
+- `LTileMap:getTileWidth() -> integer`: Returns the width of a single tile in pixels for this map.
+- `LTileMap:getViewport() -> number`: Returns the current viewport rectangle, or nils if none is set.
+- `LTileMap:isSolid(layer, x, y) -> boolean`: Checks whether the tile at a given position on a layer is solid.
+- `LTileMap:onTileEnter(gid, func) -> nil`: Registers a callback invoked when an entity enters a tile with the given GID.
+- `LTileMap:onTileExit(gid, func) -> nil`: Registers a callback invoked when an entity leaves a tile with the given GID.
+- `LTileMap:onTileStep(gid, func) -> nil`: Registers a callback invoked each frame an entity remains on a tile with the given GID.
+- `LTileMap:rectOverlapsSolid(layer, x, y, w, h) -> boolean`: Tests whether a world-space rectangle overlaps any solid tile on a layer.
+- `LTileMap:render(ox?, oy?) -> nil`: Submits render commands for all visible tiles, optionally offset by a scroll position.
+- `LTileMap:setLayerColor(idx, r, g, b, a) -> nil`: Sets the tint color for an entire layer.
+- `LTileMap:setLayerOffset(idx, ox, oy) -> nil`: Sets the pixel offset for a layer, shifting all tiles during rendering.
+- `LTileMap:setLayerParallax(idx, px, py) -> nil`: Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+- `LTileMap:setLayerVisible(idx, visible) -> nil`: Sets whether a layer is drawn during rendering.
+- `LTileMap:setOrientation(orientation) -> nil`: Sets the map orientation, affecting coordinate transforms and rendering.
+- `LTileMap:setTile(layer, x, y, gid) -> nil`: Sets the tile GID at a specific grid position on a layer.
+- `LTileMap:setTileTint(layer, x, y, r, g, b, a) -> nil`: Overrides the color tint for a single tile at a given position.
+- `LTileMap:setViewport(x, y, w, h) -> nil`: Sets the visible area of the map for culling during rendering.
+- `LTileMap:sweepRect(layer, x, y, w, h, dx, dy) -> number`: Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
+- `LTileMap:tileToWorld(tx, ty) -> number`: Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
+- `LTileMap:tileTypeIndex(layer) -> table`: Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
+- `LTileMap:toNavGrid(layer, gids) -> boolean[]`: Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+- `LTileMap:type() -> string`: Returns the type name of this userdata.
+- `LTileMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LTileMap:update(dt) -> nil`: Advances tile animations by the given delta time.
+- `LTileMap:worldToTile(wx, wy) -> integer`: Converts world-space pixel coordinates to tile-grid coordinates.
 
 #### LTileMapFindTilesByGidResult Type
 
@@ -518,25 +530,25 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ##### Methods
 
-- `LTileSet:getAnimation`: Returns the animation frames for a tile, or nil if none are set.
-- `LTileSet:getAutoTileId`: Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
-- `LTileSet:getAutoTileId8`: Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
-- `LTileSet:getColumns`: Returns the number of columns in the tileset atlas image.
-- `LTileSet:getFirstGid`: Returns the first global tile ID (GID) of this tileset.
-- `LTileSet:getMargin`: Returns the margin around the edge of the atlas image, in pixels.
-- `LTileSet:getQuad`: Returns the source rectangle (UV quad) for a tile in the atlas.
-- `LTileSet:getSpacing`: Returns the spacing between tiles in the atlas image, in pixels.
-- `LTileSet:getTileCount`: Returns the total number of tiles defined in this tileset.
-- `LTileSet:getTileDimensions`: Returns both tile width and height in pixels.
-- `LTileSet:getTileHeight`: Returns the height of a single tile in pixels.
-- `LTileSet:getTileWidth`: Returns the width of a single tile in pixels.
-- `LTileSet:isSolid`: Checks whether a tile is marked as solid.
-- `LTileSet:setAnimation`: Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
-- `LTileSet:setAutoTileRule`: Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-- `LTileSet:setAutoTileRule8`: Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-- `LTileSet:setSolid`: Marks a tile as solid or non-solid for collision queries.
-- `LTileSet:type`: Returns the type name of this userdata.
-- `LTileSet:typeOf`: Checks whether this object matches the given type name.
+- `LTileSet:getAnimation(tileId) -> table`: Returns the animation frames for a tile, or nil if none are set.
+- `LTileSet:getAutoTileId(typeName, bitmask) -> integer`: Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
+- `LTileSet:getAutoTileId8(typeName, bitmask) -> integer`: Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
+- `LTileSet:getColumns() -> integer`: Returns the number of columns in the tileset atlas image.
+- `LTileSet:getFirstGid() -> integer`: Returns the first global tile ID (GID) of this tileset.
+- `LTileSet:getMargin() -> integer`: Returns the margin around the edge of the atlas image, in pixels.
+- `LTileSet:getQuad(tileId) -> table`: Returns the source rectangle (UV quad) for a tile in the atlas.
+- `LTileSet:getSpacing() -> integer`: Returns the spacing between tiles in the atlas image, in pixels.
+- `LTileSet:getTileCount() -> integer`: Returns the total number of tiles defined in this tileset.
+- `LTileSet:getTileDimensions() -> integer`: Returns both tile width and height in pixels.
+- `LTileSet:getTileHeight() -> integer`: Returns the height of a single tile in pixels.
+- `LTileSet:getTileWidth() -> integer`: Returns the width of a single tile in pixels.
+- `LTileSet:isSolid(tileId) -> boolean`: Checks whether a tile is marked as solid.
+- `LTileSet:setAnimation(tileId, frames) -> nil`: Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
+- `LTileSet:setAutoTileRule(typeName, bitmask, tileId) -> nil`: Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
+- `LTileSet:setAutoTileRule8(typeName, bitmask, tileId) -> nil`: Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
+- `LTileSet:setSolid(tileId, solid) -> nil`: Marks a tile as solid or non-solid for collision queries.
+- `LTileSet:type() -> string`: Returns the type name of this userdata.
+- `LTileSet:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LTileSetGetAnimationResult Type
 

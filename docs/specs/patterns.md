@@ -2,7 +2,10 @@
 
 ## TL;DR
 
-- The `patterns` module is a reusable architecture toolkit for gameplay logic, combining classic coordination patterns with practical runtime data structures.
+- Provides a comprehensive architectural toolkit for state, decision, and communication coordination.
+- Implements behavior trees, finite state machines, event buses, blackboards, and command stacks.
+- Controls execution cadences via throttles, debounces, and reusable object pools.
+- Supports graph structures, bidirectional maps, prefix tries, factories, and service locators.
 
 ## General Info
 
@@ -16,31 +19,25 @@
 
 ## Summary
 
-The `patterns` module is the architecture toolkit for script-driven systems that need structure without heavy framework overhead. It gives reusable coordination primitives so teams can compose behavior from clear building blocks instead of creating one-off control code in every feature.
+This module serves as a foundational gameplay-architecture toolkit, offering an array of reusable coordination, state-flow, and data-structure patterns. By packaging complex logic routing, decision architectures, and communication networks into lightweight primitives, the system enables highly decoupled game designs. These components bridge Lua scripting and Rust systems, ensuring that developers can coordinate state across distinct gameplay layers safely and deterministically.
 
-Its first role is decision flow. Behavior trees, finite-state control, simple state registries, and strategy switching provide multiple ways to express "what should happen next". This helps teams pick the right level of control: lightweight state toggles for simple loops, or explicit branch-and-tick models for richer AI and gameplay logic.
+For AI decision-making, the module provides a hierarchical behavior tree runtime. This allows developers to compose structured node networks using sequences, selectors, parallels, repeaters, and inverters. The tree ticks leaf actions in a predictable left-to-right order, storing execution progress and loop counts without relying on opaque callbacks. This results in highly legible branching behaviors that are simple to debug, expand, and reset at runtime.
 
-Its second role is communication. Event bus, observer, and mediator surfaces let systems publish and react through named channels instead of direct references. That keeps dependencies looser and makes larger gameplay stacks easier to evolve, because producers and consumers can change independently as long as event contracts stay stable.
+State tracking is supported through both simple mode switches and complete finite state machines. Simple trackers manage mutually exclusive phases, making them ideal for UI menus or basic actor states. In contrast, the full state machine runtime enforces transition rules and guards to prevent illegal mode switches. It also records a chronological history of state changes, providing crucial tracking data for complex game flows and chronological analytics.
 
-Shared context is handled through blackboard-style storage with revision-aware behavior. Systems can read common facts, react to updates, and layer local context over broader context without forcing global mutable tables. Functionally, this supports squad-style AI memory, UI state sharing, and feature coordination where many systems need the same facts at different times.
+To decouple system communications, the toolkit implements event buses and mediator registries. The event bus routes named signals to prioritised listeners, supporting wildcard patterns and one-shot triggers to simplify broad-spectrum notifications. The mediator registry facilitates channel-based messaging through central brokers. This prevents individual systems from referencing each other directly, ensuring modularity across systems.
 
-Workflow control is covered by command-history and pacing tools. Command stacks provide undo and redo behavior for reversible actions, while throttle, debounce, and funnel utilities shape noisy input into controlled execution cadence. This is useful not only for tools, but also for gameplay loops where timing and repeat suppression matter for fairness and readability.
+Shared memory and reactive state updates are coordinated through blackboards and observers. Blackboards act as common data registers with built-in revision tracking, enabling local boards to inherit from parent registers while overriding specific facts. The observer system watches named properties and broadcasts changes to key-specific or wildcard subscribers, driving reactive user interfaces and quest trackers with minimal wiring.
 
-Creation and lifecycle patterns are also first-class. Factory and service-locator helpers support named capability lookup and data-driven creation, while object pools provide low-churn reuse for short-lived runtime objects. Together, these tools reduce allocation pressure and centralize object discovery, which helps long sessions remain stable.
+Chronological history and player actions are managed via command stacks. The stack records a linear history of reversible operations, letting developers implement complex undo and redo systems with hard size limits and automatic pruning. Support for atomic batching groups multi-step operations together, ensuring that strategic transactions or editor modifications can be rolled back safely without leaving behind half-finished edits.
 
-The module complements those orchestration patterns with practical data structures used directly by gameplay logic: graph navigation structures, prefix tries, bidirectional maps, priority ordering queues, rolling ring buffers, and weighted random selection. This means teams can keep coordination logic and supporting containers inside one coherent module surface.
+Timing and input cadences are regulated using throttle and debounce utilities. Throttles enforce a minimum time interval between action triggers, while debounces delay firing until a specified period of silence has elapsed. Together, these pacing utilities smooth out noisy inputs, govern combat cooldowns, and prevent duplicate interface click events, ensuring that execution frequencies remain within expected boundaries.
 
-A major practical advantage is composability. These primitives share similar runtime semantics and Lua-facing expectations, so they can be layered into larger systems without adapter-heavy glue. For example, a behavior tree can consult blackboard values, emit bus events, enqueue commands, and route work through priority structures using one ecosystem of tools.
+For resource management and scheduling, the module provides object pools, priority queues, and ring buffers. Object pools recycle stable identities to minimize dynamic allocation overhead, which is useful for bullet or particle pools. Priority queues organize tasks using deterministic insertion order for matching scores. Ring buffers store rolling telemetry and history timelines, automatically discarding the oldest entries.
 
-Another practical gain is governance of project complexity. When teams adopt the same pattern set, code reviews become easier because control flow, event routing, and lifecycle choices use familiar shapes. New features can align with existing conventions faster, and refactors can replace internals without changing every caller contract.
+Dynamic instantiations and algorithm swapping are managed by factories, strategy registers, and service locators. Factories register constructor associations to spawn game objects from data-driven templates. Strategy containers hold hot-swappable algorithm implementations, letting systems alter processing modes at runtime. Service locators provide a central directory to locate shared capabilities across independent modules.
 
-In day-to-day production this reduces duplicate utility code and lowers maintenance cost. Instead of each feature team inventing custom signaling, state rules, and pacing helpers, projects can standardize on a common vocabulary that remains readable across modules and over time.
-
-It also improves onboarding and long-term maintainability. When architecture patterns are explicit and shared, new contributors can understand intent faster, and legacy systems remain easier to extend because their coordination model is familiar. This practical continuity is often the difference between fast iteration and feature slowdown in larger projects.
-
-With this shared toolkit, gameplay architecture decisions stay visible and repeatable instead of being hidden in feature-specific utility code.
-
-In practice, `lurek.patterns` is the reusable logic architecture layer for modular game systems: decide, communicate, coordinate, pace, and evolve behavior through one consistent toolkit.
+Finally, the toolkit includes relational data structures like graphs, bidirectional maps, and prefix tries. Graphs represent complex networks using integer-addressed nodes and weighted edges, supporting breadth-first and depth-first traversals. Bidirectional maps maintain mirrored forward and reverse entries to ensure rapid reversible indexing. Prefix tries index text keys, facilitating command palettes and search filters.
 
 ## Imports
 
@@ -216,30 +213,30 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ### Functions
 
-- `lurek.patterns.newBehaviorTree`: Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
-- `lurek.patterns.newBlackboard`: Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
-- `lurek.patterns.newCommandStack`: Create a new undo/redo command stack for recording and reversing player or editor actions.
-- `lurek.patterns.newDebounce`: Create a new debounce that delays firing until input stops for a specified wait period.
-- `lurek.patterns.newEventBus`: Create a new publish/subscribe event bus for decoupled communication between game systems.
-- `lurek.patterns.newFactory`: Create a new factory for producing typed game objects from registered constructor functions.
-- `lurek.patterns.newFunnel`: Create a new batching funnel that collects events over a time window and flushes them together.
-- `lurek.patterns.newGraph`: Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
-- `lurek.patterns.newList`: Create a new dynamic array list with indexed access, insertion, removal, and search.
-- `lurek.patterns.newMap`: Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.
-- `lurek.patterns.newMediator`: Create a new mediator for channel-based message passing between decoupled game systems.
-- `lurek.patterns.newObjectPool`: Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.
-- `lurek.patterns.newObserver`: Create a new reactive observer that stores values and notifies subscribers when they change.
-- `lurek.patterns.newPriorityQueue`: Create a new priority queue that orders elements by numeric priority (highest first).
-- `lurek.patterns.newQueue`: Create a new FIFO queue with optional capacity limit.
-- `lurek.patterns.newRelationshipManager`: Create a new relationship manager for tracking numeric values and named levels between entity pairs.
-- `lurek.patterns.newRing`: Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
-- `lurek.patterns.newServiceLocator`: Create a new service locator for registering and retrieving shared services by name at runtime.
-- `lurek.patterns.newSet`: Create a new string set with add/remove/has operations and set algebra (union, intersection).
-- `lurek.patterns.newSimpleState`: Create a new finite state machine with enter/exit/update callbacks per state.
-- `lurek.patterns.newStack`: Create a new LIFO stack with optional capacity limit.
-- `lurek.patterns.newStrategy`: Create a new strategy pattern container for hot-swappable algorithm implementations.
-- `lurek.patterns.newThrottle`: Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
-- `lurek.patterns.newWeightedRandom`: Create a new weighted random selection pool. Add items with weights and pick random selections.
+- `lurek.patterns.newBehaviorTree() -> LBehaviorTree`: Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
+- `lurek.patterns.newBlackboard(name?) -> LBlackboard`: Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
+- `lurek.patterns.newCommandStack(maxSize?) -> LCommandStack`: Create a new undo/redo command stack for recording and reversing player or editor actions.
+- `lurek.patterns.newDebounce(wait) -> LDebounce`: Create a new debounce that delays firing until input stops for a specified wait period.
+- `lurek.patterns.newEventBus(name?) -> LEventBus`: Create a new publish/subscribe event bus for decoupled communication between game systems.
+- `lurek.patterns.newFactory() -> LFactory`: Create a new factory for producing typed game objects from registered constructor functions.
+- `lurek.patterns.newFunnel(window, maxEntries?, name?) -> LFunnel`: Create a new batching funnel that collects events over a time window and flushes them together.
+- `lurek.patterns.newGraph(undirected?) -> LPatternGraph`: Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
+- `lurek.patterns.newList() -> LList`: Create a new dynamic array list with indexed access, insertion, removal, and search.
+- `lurek.patterns.newMap() -> LMap`: Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.
+- `lurek.patterns.newMediator() -> LMediator`: Create a new mediator for channel-based message passing between decoupled game systems.
+- `lurek.patterns.newObjectPool() -> LObjectPool`: Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.
+- `lurek.patterns.newObserver(name?) -> LObserver`: Create a new reactive observer that stores values and notifies subscribers when they change.
+- `lurek.patterns.newPriorityQueue(name?) -> LPriorityQueue`: Create a new priority queue that orders elements by numeric priority (highest first).
+- `lurek.patterns.newQueue(capacity?) -> LQueue`: Create a new FIFO queue with optional capacity limit.
+- `lurek.patterns.newRelationshipManager() -> LRelationshipManager`: Create a new relationship manager for tracking numeric values and named levels between entity pairs.
+- `lurek.patterns.newRing(capacity, name?) -> LRing`: Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
+- `lurek.patterns.newServiceLocator() -> LServiceLocator`: Create a new service locator for registering and retrieving shared services by name at runtime.
+- `lurek.patterns.newSet() -> LSet`: Create a new string set with add/remove/has operations and set algebra (union, intersection).
+- `lurek.patterns.newSimpleState() -> LSimpleState`: Create a new finite state machine with enter/exit/update callbacks per state.
+- `lurek.patterns.newStack(capacity?) -> LStack`: Create a new LIFO stack with optional capacity limit.
+- `lurek.patterns.newStrategy() -> LStrategy`: Create a new strategy pattern container for hot-swappable algorithm implementations.
+- `lurek.patterns.newThrottle(interval) -> LThrottle`: Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
+- `lurek.patterns.newWeightedRandom() -> LWeightedRandom`: Create a new weighted random selection pool. Add items with weights and pick random selections.
 
 ### Callbacks
 
@@ -272,19 +269,19 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LBehaviorTree:addChild`: Attach a child node to a parent composite or decorator node.
-- `LBehaviorTree:addInverter`: Create a decorator node that inverts its child's result (success â†” failure).
-- `LBehaviorTree:addLeaf`: Create a leaf (action) node that will invoke a named callback function on tick.
-- `LBehaviorTree:addParallel`: Create a parallel composite node that runs all children simultaneously.
-- `LBehaviorTree:addRepeat`: Create a decorator node that repeats its child a fixed number of times.
-- `LBehaviorTree:addSelector`: Create a selector (fallback) composite node. Succeeds if any child succeeds.
-- `LBehaviorTree:addSequence`: Create a sequence composite node. All children must succeed for this node to succeed.
-- `LBehaviorTree:clearAll`: Remove all nodes and leaf functions, resetting the tree to empty.
-- `LBehaviorTree:nodeCount`: Return the total number of nodes in the tree.
-- `LBehaviorTree:resetState`: Reset the tree's running state. Use between encounters or when restarting AI logic.
-- `LBehaviorTree:setLeaf`: Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
-- `LBehaviorTree:setRoot`: Designate a node as the tree's root. Tick evaluation starts here.
-- `LBehaviorTree:tick`: Execute one tick of the behavior tree from the root. Returns the root node's status.
+- `LBehaviorTree:addChild(parentId, childId) -> boolean`: Attach a child node to a parent composite or decorator node.
+- `LBehaviorTree:addInverter(label?) -> number`: Create a decorator node that inverts its child's result (success â†” failure).
+- `LBehaviorTree:addLeaf(name, label?) -> number`: Create a leaf (action) node that will invoke a named callback function on tick.
+- `LBehaviorTree:addParallel(minSuccess, label?) -> number`: Create a parallel composite node that runs all children simultaneously.
+- `LBehaviorTree:addRepeat(count, label?) -> number`: Create a decorator node that repeats its child a fixed number of times.
+- `LBehaviorTree:addSelector(label?) -> number`: Create a selector (fallback) composite node. Succeeds if any child succeeds.
+- `LBehaviorTree:addSequence(label?) -> number`: Create a sequence composite node. All children must succeed for this node to succeed.
+- `LBehaviorTree:clearAll() -> nil`: Remove all nodes and leaf functions, resetting the tree to empty.
+- `LBehaviorTree:nodeCount() -> number`: Return the total number of nodes in the tree.
+- `LBehaviorTree:resetState() -> nil`: Reset the tree's running state. Use between encounters or when restarting AI logic.
+- `LBehaviorTree:setLeaf(name, callback) -> nil`: Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
+- `LBehaviorTree:setRoot(id) -> boolean`: Designate a node as the tree's root. Tick evaluation starts here.
+- `LBehaviorTree:tick() -> string`: Execute one tick of the behavior tree from the root. Returns the root node's status.
 
 #### LBlackboard Type
 
@@ -296,16 +293,16 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LBlackboard:clear`: Remove a single key from the blackboard.
-- `LBlackboard:clearAll`: Remove all keys and values from the blackboard.
-- `LBlackboard:get`: Retrieve the value stored under a key. Returns nil if the key does not exist.
-- `LBlackboard:getRevision`: Return the current revision counter. Increments on every value change.
-- `LBlackboard:has`: Check whether a key exists on the blackboard.
-- `LBlackboard:keys`: Return an array of all keys currently stored on the blackboard.
-- `LBlackboard:set`: Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
-- `LBlackboard:snapshot`: Return a table containing all current key-value pairs as a snapshot. Useful for serialization or debug display.
-- `LBlackboard:unwatch`: Remove a previously registered watcher by its ID.
-- `LBlackboard:watch`: Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
+- `LBlackboard:clear(key) -> nil`: Remove a single key from the blackboard.
+- `LBlackboard:clearAll() -> nil`: Remove all keys and values from the blackboard.
+- `LBlackboard:get(key) -> boolean|number|string|nil`: Retrieve the value stored under a key. Returns nil if the key does not exist.
+- `LBlackboard:getRevision() -> number`: Return the current revision counter. Increments on every value change.
+- `LBlackboard:has(key) -> boolean`: Check whether a key exists on the blackboard.
+- `LBlackboard:keys() -> string[]`: Return an array of all keys currently stored on the blackboard.
+- `LBlackboard:set(key, value) -> nil`: Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
+- `LBlackboard:snapshot() -> table`: Return a table containing all current key-value pairs as a snapshot. Useful for serialization or debug display.
+- `LBlackboard:unwatch(id) -> nil`: Remove a previously registered watcher by its ID.
+- `LBlackboard:watch(key, callback) -> number`: Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
 
 #### LCommandStack Type
 
@@ -317,14 +314,14 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LCommandStack:canRedo`: Check whether a redo operation is possible (there are commands ahead of the pointer).
-- `LCommandStack:canUndo`: Check whether an undo operation is possible (there is a command with an undo function behind the pointer).
-- `LCommandStack:clearAll`: Discard all command history and free associated callbacks.
-- `LCommandStack:execute`: Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
-- `LCommandStack:getCurrentName`: Return the name of the most recently executed (or undone-to) command, or nil if history is empty.
-- `LCommandStack:getHistorySize`: Return the total number of commands in the history (both undone and available for redo).
-- `LCommandStack:redo`: Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
-- `LCommandStack:undo`: Undo the most recent command by calling its undo function. Moves the pointer back in history.
+- `LCommandStack:canRedo() -> boolean`: Check whether a redo operation is possible (there are commands ahead of the pointer).
+- `LCommandStack:canUndo() -> boolean`: Check whether an undo operation is possible (there is a command with an undo function behind the pointer).
+- `LCommandStack:clearAll() -> nil`: Discard all command history and free associated callbacks.
+- `LCommandStack:execute(name, execFn, undoFn?) -> nil`: Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
+- `LCommandStack:getCurrentName() -> string`: Return the name of the most recently executed (or undone-to) command, or nil if history is empty.
+- `LCommandStack:getHistorySize() -> number`: Return the total number of commands in the history (both undone and available for redo).
+- `LCommandStack:redo() -> boolean`: Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
+- `LCommandStack:undo() -> boolean`: Undo the most recent command by calling its undo function. Moves the pointer back in history.
 
 #### LDebounce Type
 
@@ -336,12 +333,12 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LDebounce:cancel`: Cancel any pending debounce without firing. The callback will not be called until triggered again.
-- `LDebounce:getFireCount`: Return the total number of times this debounce has fired since creation.
-- `LDebounce:isPending`: Check whether the debounce is currently waiting to fire (has been triggered but wait period not yet elapsed).
-- `LDebounce:onFire`: Set the callback function to invoke when the debounce fires after the wait period.
-- `LDebounce:trigger`: Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
-- `LDebounce:update`: Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
+- `LDebounce:cancel() -> nil`: Cancel any pending debounce without firing. The callback will not be called until triggered again.
+- `LDebounce:getFireCount() -> number`: Return the total number of times this debounce has fired since creation.
+- `LDebounce:isPending() -> boolean`: Check whether the debounce is currently waiting to fire (has been triggered but wait period not yet elapsed).
+- `LDebounce:onFire(f) -> nil`: Set the callback function to invoke when the debounce fires after the wait period.
+- `LDebounce:trigger() -> nil`: Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
+- `LDebounce:update(dt) -> boolean`: Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
 
 #### LEventBus Type
 
@@ -353,13 +350,13 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LEventBus:clear`: Remove all listeners subscribed to a specific event name.
-- `LEventBus:clearAll`: Remove all listeners from every event on this bus. Resets the bus to empty.
-- `LEventBus:emit`: Emit an event, invoking all subscribed listeners in priority order with optional payload arguments.
-- `LEventBus:getEvents`: Return an array of all event names that have at least one listener.
-- `LEventBus:getListenerCount`: Return the number of active listeners for a given event name.
-- `LEventBus:off`: Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
-- `LEventBus:on`: Subscribe a callback to a named event. Higher priority listeners fire first.
+- `LEventBus:clear(event) -> nil`: Remove all listeners subscribed to a specific event name.
+- `LEventBus:clearAll() -> nil`: Remove all listeners from every event on this bus. Resets the bus to empty.
+- `LEventBus:emit(event, ...) -> nil`: Emit an event, invoking all subscribed listeners in priority order with optional payload arguments.
+- `LEventBus:getEvents() -> string[]`: Return an array of all event names that have at least one listener.
+- `LEventBus:getListenerCount(event) -> number`: Return the number of active listeners for a given event name.
+- `LEventBus:off(id) -> nil`: Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
+- `LEventBus:on(event, callback, priority?) -> number`: Subscribe a callback to a named event. Higher priority listeners fire first.
 
 #### LFactory Type
 
@@ -371,13 +368,13 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LFactory:alias`: Create an alias that maps to an existing type name. `create(alias)` will use the canonical constructor.
-- `LFactory:clearAll`: Remove all registered types and constructors, resetting the factory.
-- `LFactory:create`: Create a new object by type name, passing additional arguments to the constructor.
-- `LFactory:getTypes`: Return an array of all registered type names.
-- `LFactory:has`: Check whether a constructor is registered for the given type name.
-- `LFactory:register`: Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
-- `LFactory:remove`: Unregister a type and discard its constructor function.
+- `LFactory:alias(alias, canonical) -> nil`: Create an alias that maps to an existing type name. `create(alias)` will use the canonical constructor.
+- `LFactory:clearAll() -> nil`: Remove all registered types and constructors, resetting the factory.
+- `LFactory:create(typeName, ...) -> table`: Create a new object by type name, passing additional arguments to the constructor.
+- `LFactory:getTypes() -> string[]`: Return an array of all registered type names.
+- `LFactory:has(typeName) -> boolean`: Check whether a constructor is registered for the given type name.
+- `LFactory:register(typeName, ctor) -> nil`: Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
+- `LFactory:remove(typeName) -> nil`: Unregister a type and discard its constructor function.
 
 #### LFunnel Type
 
@@ -389,13 +386,13 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LFunnel:discard`: Discard all pending entries without flushing or calling the callback.
-- `LFunnel:flush`: Force an immediate flush of all pending entries, invoking the callback.
-- `LFunnel:getFlushCount`: Return the total number of times this funnel has flushed since creation.
-- `LFunnel:onFlush`: Set the callback invoked when the funnel flushes. Receives an array of {tag, value} entries.
-- `LFunnel:pendingCount`: Return the number of entries waiting to be flushed.
-- `LFunnel:push`: Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
-- `LFunnel:update`: Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
+- `LFunnel:discard() -> nil`: Discard all pending entries without flushing or calling the callback.
+- `LFunnel:flush() -> nil`: Force an immediate flush of all pending entries, invoking the callback.
+- `LFunnel:getFlushCount() -> number`: Return the total number of times this funnel has flushed since creation.
+- `LFunnel:onFlush(f) -> nil`: Set the callback invoked when the funnel flushes. Receives an array of {tag, value} entries.
+- `LFunnel:pendingCount() -> number`: Return the number of entries waiting to be flushed.
+- `LFunnel:push(tag, value?) -> nil`: Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
+- `LFunnel:update(dt) -> boolean`: Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
 
 #### LList Type
 
@@ -407,22 +404,22 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LList:add`: Append a value to the end of the list.
-- `LList:clear`: Remove all items from the list. This method is available to Lua scripts.
-- `LList:contains`: Check whether the list contains a specific value.
-- `LList:get`: Get the value at a 1-based index. Returns nil if out of range.
-- `LList:indexOf`: Find the 1-based index of the first occurrence of a value. Returns nil if not found.
-- `LList:insert`: Insert a value at a 1-based index, shifting subsequent items right.
-- `LList:isEmpty`: Check whether the list is empty. This method is available to Lua scripts.
-- `LList:len`: Return the number of items in the list.
-- `LList:pop`: Remove and return the last value. Returns nil if empty.
-- `LList:push`: Append a value to the end of the list (alias for add).
-- `LList:remove`: Remove and return the value at a 1-based index. Returns nil if out of range.
-- `LList:reverse`: Reverse the order of all items in the list in-place.
-- `LList:set`: Replace the value at a 1-based index. Errors if index is 0 or out of range.
-- `LList:shift`: Remove and return the first value. Returns nil if empty.
-- `LList:toArray`: Return all items as an array table. This method is available to Lua scripts.
-- `LList:unshift`: Insert a value at the beginning of the list.
+- `LList:add(value) -> nil`: Append a value to the end of the list.
+- `LList:clear() -> nil`: Remove all items from the list. This method is available to Lua scripts.
+- `LList:contains(value) -> boolean`: Check whether the list contains a specific value.
+- `LList:get(index) -> string`: Get the value at a 1-based index. Returns nil if out of range.
+- `LList:indexOf(value) -> integer`: Find the 1-based index of the first occurrence of a value. Returns nil if not found.
+- `LList:insert(index, value) -> nil`: Insert a value at a 1-based index, shifting subsequent items right.
+- `LList:isEmpty() -> boolean`: Check whether the list is empty. This method is available to Lua scripts.
+- `LList:len() -> number`: Return the number of items in the list.
+- `LList:pop() -> string`: Remove and return the last value. Returns nil if empty.
+- `LList:push(value) -> nil`: Append a value to the end of the list (alias for add).
+- `LList:remove(index) -> string`: Remove and return the value at a 1-based index. Returns nil if out of range.
+- `LList:reverse() -> nil`: Reverse the order of all items in the list in-place.
+- `LList:set(index, value) -> nil`: Replace the value at a 1-based index. Errors if index is 0 or out of range.
+- `LList:shift() -> string`: Remove and return the first value. Returns nil if empty.
+- `LList:toArray() -> number[]`: Return all items as an array table. This method is available to Lua scripts.
+- `LList:unshift(value) -> nil`: Insert a value at the beginning of the list.
 
 #### LMap Type
 
@@ -434,17 +431,17 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LMap:clear`: Remove all entries from the map. This method is available to Lua scripts.
-- `LMap:entries`: Return an array of {key, value} tables for all entries.
-- `LMap:get`: Retrieve the value for a key. Returns nil if the key does not exist.
-- `LMap:has`: Check whether a key exists in the map.
-- `LMap:isEmpty`: Check whether the map has no entries.
-- `LMap:keys`: Return an array of all keys in the map.
-- `LMap:len`: Return the number of key-value pairs.
-- `LMap:merge`: Copy all entries from another LMap into this map. Existing keys are overwritten.
-- `LMap:remove`: Remove a key from the map. Returns true if it was present.
-- `LMap:set`: Set a key-value pair in the map. Replaces any existing value for the same key.
-- `LMap:values`: Return an array of all values in the map.
+- `LMap:clear() -> nil`: Remove all entries from the map. This method is available to Lua scripts.
+- `LMap:entries() -> table`: Return an array of {key, value} tables for all entries.
+- `LMap:get(key) -> string`: Retrieve the value for a key. Returns nil if the key does not exist.
+- `LMap:has(key) -> boolean`: Check whether a key exists in the map.
+- `LMap:isEmpty() -> boolean`: Check whether the map has no entries.
+- `LMap:keys() -> string[]`: Return an array of all keys in the map.
+- `LMap:len() -> number`: Return the number of key-value pairs.
+- `LMap:merge(other) -> nil`: Copy all entries from another LMap into this map. Existing keys are overwritten.
+- `LMap:remove(key) -> boolean`: Remove a key from the map. Returns true if it was present.
+- `LMap:set(key, value) -> nil`: Set a key-value pair in the map. Replaces any existing value for the same key.
+- `LMap:values() -> number[]`: Return an array of all values in the map.
 
 #### LMapEntriesResult Type
 
@@ -471,14 +468,14 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LMediator:broadcast`: Send a message to all handlers on all channels. Every registered handler receives the payload.
-- `LMediator:channels`: Return an array of all channel names that have at least one handler.
-- `LMediator:clear`: Remove all channels and handlers, resetting the mediator.
-- `LMediator:handlerCount`: Return the number of handlers registered on a specific channel.
-- `LMediator:off`: Unregister a handler from a channel by its ID.
-- `LMediator:on`: Register a handler callback on a named channel. Returns an ID for unregistration.
-- `LMediator:removeChannel`: Remove an entire channel and all its handlers.
-- `LMediator:send`: Send a message to all handlers on a specific channel with optional payload arguments.
+- `LMediator:broadcast(...) -> nil`: Send a message to all handlers on all channels. Every registered handler receives the payload.
+- `LMediator:channels() -> string[]`: Return an array of all channel names that have at least one handler.
+- `LMediator:clear() -> nil`: Remove all channels and handlers, resetting the mediator.
+- `LMediator:handlerCount(channel) -> number`: Return the number of handlers registered on a specific channel.
+- `LMediator:off(channel, id) -> nil`: Unregister a handler from a channel by its ID.
+- `LMediator:on(channel, callback) -> number`: Register a handler callback on a named channel. Returns an ID for unregistration.
+- `LMediator:removeChannel(channel) -> nil`: Remove an entire channel and all its handlers.
+- `LMediator:send(channel, ...) -> nil`: Send a message to all handlers on a specific channel with optional payload arguments.
 
 #### LObjectPool Type
 
@@ -490,13 +487,13 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LObjectPool:acquire`: Take an idle object from the pool and mark it active. Returns nil if the pool is empty.
-- `LObjectPool:add`: Add an object to the pool's idle set, making it available for future acquisition.
-- `LObjectPool:clearAll`: Destroy all objects (active and idle) and reset the pool to empty.
-- `LObjectPool:getActiveCount`: Return the number of objects currently checked out from the pool.
-- `LObjectPool:getAvailableCount`: Return the number of idle objects ready for acquisition.
-- `LObjectPool:getTotalCount`: Return the total number of objects managed by this pool (active + idle).
-- `LObjectPool:release`: Return an active object back to the pool's idle set so it can be reused.
+- `LObjectPool:acquire() -> table`: Take an idle object from the pool and mark it active. Returns nil if the pool is empty.
+- `LObjectPool:add(value) -> nil`: Add an object to the pool's idle set, making it available for future acquisition.
+- `LObjectPool:clearAll() -> nil`: Destroy all objects (active and idle) and reset the pool to empty.
+- `LObjectPool:getActiveCount() -> number`: Return the number of objects currently checked out from the pool.
+- `LObjectPool:getAvailableCount() -> number`: Return the number of idle objects ready for acquisition.
+- `LObjectPool:getTotalCount() -> number`: Return the total number of objects managed by this pool (active + idle).
+- `LObjectPool:release(value) -> nil`: Return an active object back to the pool's idle set so it can be reused.
 
 #### LObserver Type
 
@@ -508,11 +505,11 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LObserver:get`: Retrieve the current value for a key. Returns nil if not set.
-- `LObserver:getCount`: Return the total number of active subscriptions across all keys.
-- `LObserver:set`: Set a value by key and notify all subscribers watching that key.
-- `LObserver:subscribe`: Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
-- `LObserver:unsubscribe`: Remove a subscription by its ID. The callback will no longer fire.
+- `LObserver:get(key) -> number`: Retrieve the current value for a key. Returns nil if not set.
+- `LObserver:getCount() -> number`: Return the total number of active subscriptions across all keys.
+- `LObserver:set(key, value) -> nil`: Set a value by key and notify all subscribers watching that key.
+- `LObserver:subscribe(key, callback, once?) -> number`: Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
+- `LObserver:unsubscribe(id) -> nil`: Remove a subscription by its ID. The callback will no longer fire.
 
 #### LPatternGraph Type
 
@@ -524,19 +521,19 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LPatternGraph:addEdge`: Add a directed (or undirected) edge between two nodes with optional weight and label.
-- `LPatternGraph:addNode`: Add a node to the graph with an optional label and payload value.
-- `LPatternGraph:bfs`: Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
-- `LPatternGraph:clearAll`: Remove all nodes, edges, and payloads from the graph.
-- `LPatternGraph:dfs`: Perform a depth-first search from a node. Returns visited node IDs in DFS order.
-- `LPatternGraph:edgeCount`: Return the total number of edges in the graph.
-- `LPatternGraph:getNodeValue`: Retrieve the payload value stored on a node. Returns nil if no payload.
-- `LPatternGraph:hasNode`: Check whether a node with the given ID exists in the graph.
-- `LPatternGraph:isConnected`: Check whether there is any path from one node to another.
-- `LPatternGraph:neighbors`: Return an array of node IDs directly connected to the given node.
-- `LPatternGraph:nodeCount`: Return the total number of nodes in the graph.
-- `LPatternGraph:removeEdge`: Remove an edge by its ID. Returns true if it existed.
-- `LPatternGraph:removeNode`: Remove a node and all its connected edges. Returns true if the node existed.
+- `LPatternGraph:addEdge(from, to, weight?, label?) -> number`: Add a directed (or undirected) edge between two nodes with optional weight and label.
+- `LPatternGraph:addNode(label?, value?) -> number`: Add a node to the graph with an optional label and payload value.
+- `LPatternGraph:bfs(start) -> integer[]`: Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
+- `LPatternGraph:clearAll() -> nil`: Remove all nodes, edges, and payloads from the graph.
+- `LPatternGraph:dfs(start) -> integer[]`: Perform a depth-first search from a node. Returns visited node IDs in DFS order.
+- `LPatternGraph:edgeCount() -> number`: Return the total number of edges in the graph.
+- `LPatternGraph:getNodeValue(id) -> table`: Retrieve the payload value stored on a node. Returns nil if no payload.
+- `LPatternGraph:hasNode(id) -> boolean`: Check whether a node with the given ID exists in the graph.
+- `LPatternGraph:isConnected(from, to) -> boolean`: Check whether there is any path from one node to another.
+- `LPatternGraph:neighbors(id) -> integer[]`: Return an array of node IDs directly connected to the given node.
+- `LPatternGraph:nodeCount() -> number`: Return the total number of nodes in the graph.
+- `LPatternGraph:removeEdge(id) -> boolean`: Remove an edge by its ID. Returns true if it existed.
+- `LPatternGraph:removeNode(id) -> boolean`: Remove a node and all its connected edges. Returns true if the node existed.
 
 #### LPriorityQueue Type
 
@@ -548,12 +545,12 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LPriorityQueue:clearAll`: Remove all items from the queue. This method is available to Lua scripts.
-- `LPriorityQueue:isEmpty`: Check whether the queue contains no items.
-- `LPriorityQueue:len`: Return the number of items currently in the queue.
-- `LPriorityQueue:peek`: Return the highest-priority item without removing it. Returns nil if empty.
-- `LPriorityQueue:pop`: Remove and return the highest-priority item. Returns nil if the queue is empty.
-- `LPriorityQueue:push`: Add an item with a numeric priority. Higher priority items are dequeued first.
+- `LPriorityQueue:clearAll() -> nil`: Remove all items from the queue. This method is available to Lua scripts.
+- `LPriorityQueue:isEmpty() -> boolean`: Check whether the queue contains no items.
+- `LPriorityQueue:len() -> number`: Return the number of items currently in the queue.
+- `LPriorityQueue:peek() -> table`: Return the highest-priority item without removing it. Returns nil if empty.
+- `LPriorityQueue:pop() -> table`: Remove and return the highest-priority item. Returns nil if the queue is empty.
+- `LPriorityQueue:push(priority, value, label?) -> number`: Add an item with a numeric priority. Higher priority items are dequeued first.
 
 #### LQueue Type
 
@@ -565,20 +562,20 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LQueue:back`: Return the back value without removing it. Returns nil if empty.
-- `LQueue:clear`: Remove all items from the queue. This method is available to Lua scripts.
-- `LQueue:dequeue`: Remove and return the front value. Returns nil if empty.
-- `LQueue:dequeueBack`: Remove and return the back value. Returns nil if empty.
-- `LQueue:enqueue`: Add a value to the back of the queue. Returns false if at capacity.
-- `LQueue:enqueueFront`: Add a value to the front of the queue (priority insertion). Returns false if at capacity.
-- `LQueue:front`: Return the front value without removing it. Returns nil if empty.
-- `LQueue:insertAt`: Insert a value at a 1-based index in the queue. Returns false if at capacity.
-- `LQueue:isEmpty`: Check whether the queue is empty. This method is available to Lua scripts.
-- `LQueue:isFull`: Check whether the queue has reached its capacity limit.
-- `LQueue:len`: Return the current number of items in the queue.
-- `LQueue:peekAt`: Return the value at a 1-based index without removing it. Returns nil if out of range.
-- `LQueue:removeAt`: Remove and return the value at a 1-based index. Returns nil if out of range.
-- `LQueue:toArray`: Return all queue items as an array table (front to back).
+- `LQueue:back() -> string`: Return the back value without removing it. Returns nil if empty.
+- `LQueue:clear() -> nil`: Remove all items from the queue. This method is available to Lua scripts.
+- `LQueue:dequeue() -> string`: Remove and return the front value. Returns nil if empty.
+- `LQueue:dequeueBack() -> string`: Remove and return the back value. Returns nil if empty.
+- `LQueue:enqueue(value) -> boolean`: Add a value to the back of the queue. Returns false if at capacity.
+- `LQueue:enqueueFront(value) -> boolean`: Add a value to the front of the queue (priority insertion). Returns false if at capacity.
+- `LQueue:front() -> string`: Return the front value without removing it. Returns nil if empty.
+- `LQueue:insertAt(index, value) -> boolean`: Insert a value at a 1-based index in the queue. Returns false if at capacity.
+- `LQueue:isEmpty() -> boolean`: Check whether the queue is empty. This method is available to Lua scripts.
+- `LQueue:isFull() -> boolean`: Check whether the queue has reached its capacity limit.
+- `LQueue:len() -> number`: Return the current number of items in the queue.
+- `LQueue:peekAt(index) -> string`: Return the value at a 1-based index without removing it. Returns nil if out of range.
+- `LQueue:removeAt(index) -> string`: Remove and return the value at a 1-based index. Returns nil if out of range.
+- `LQueue:toArray() -> number[]`: Return all queue items as an array table (front to back).
 
 #### LRelationshipManager Type
 
@@ -590,16 +587,16 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LRelationshipManager:adjustValue`: Add a delta to the relationship value between two entities.
-- `LRelationshipManager:defineType`: Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
-- `LRelationshipManager:getLevel`: Get the named level for a relationship type between two entities.
-- `LRelationshipManager:getValue`: Get the numeric relationship value between two entity IDs.
-- `LRelationshipManager:pairCount`: Return the total number of tracked entity pairs.
-- `LRelationshipManager:removePair`: Remove all relationship data between two entities.
-- `LRelationshipManager:removeType`: Remove a relationship type definition.
-- `LRelationshipManager:setLevel`: Set the named level for a relationship type between two entities.
-- `LRelationshipManager:setValue`: Set the numeric relationship value between two entity IDs.
-- `LRelationshipManager:typeNames`: Return all defined relationship type names.
+- `LRelationshipManager:adjustValue(a, b, delta) -> nil`: Add a delta to the relationship value between two entities.
+- `LRelationshipManager:defineType(name, levels, defaultLevel?) -> nil`: Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
+- `LRelationshipManager:getLevel(a, b, typeName) -> string`: Get the named level for a relationship type between two entities.
+- `LRelationshipManager:getValue(a, b) -> number`: Get the numeric relationship value between two entity IDs.
+- `LRelationshipManager:pairCount() -> number`: Return the total number of tracked entity pairs.
+- `LRelationshipManager:removePair(a, b) -> nil`: Remove all relationship data between two entities.
+- `LRelationshipManager:removeType(name) -> nil`: Remove a relationship type definition.
+- `LRelationshipManager:setLevel(a, b, typeName, level) -> boolean`: Set the named level for a relationship type between two entities.
+- `LRelationshipManager:setValue(a, b, value) -> nil`: Set the numeric relationship value between two entity IDs.
+- `LRelationshipManager:typeNames() -> string[]`: Return all defined relationship type names.
 
 #### LRing Type
 
@@ -611,14 +608,14 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LRing:average`: Return the arithmetic mean of all numeric values in the ring.
-- `LRing:clear`: Remove all entries from the ring. This method is available to Lua scripts.
-- `LRing:isFull`: Check whether the ring has reached its maximum capacity.
-- `LRing:latest`: Return the most recently pushed entry as a table with id, tag, value, and text fields. Returns nil if empty.
-- `LRing:len`: Return the number of entries currently in the ring.
-- `LRing:push`: Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
-- `LRing:sum`: Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
-- `LRing:toArray`: Return all entries in the ring as an ordered array of tables (oldest to newest).
+- `LRing:average() -> number`: Return the arithmetic mean of all numeric values in the ring.
+- `LRing:clear() -> nil`: Remove all entries from the ring. This method is available to Lua scripts.
+- `LRing:isFull() -> boolean`: Check whether the ring has reached its maximum capacity.
+- `LRing:latest() -> table|nil`: Return the most recently pushed entry as a table with id, tag, value, and text fields. Returns nil if empty.
+- `LRing:len() -> number`: Return the number of entries currently in the ring.
+- `LRing:push(value, tag?) -> number`: Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
+- `LRing:sum() -> number`: Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
+- `LRing:toArray() -> table`: Return all entries in the ring as an ordered array of tables (oldest to newest).
 
 #### LRingLatestResult Type
 
@@ -660,12 +657,12 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LServiceLocator:clearAll`: Remove all registered services and reset the locator.
-- `LServiceLocator:getServices`: Return an array of all registered service names.
-- `LServiceLocator:has`: Check whether a service with the given name is currently registered.
-- `LServiceLocator:locate`: Retrieve a registered service by name. Returns nil if not found.
-- `LServiceLocator:provide`: Register a service instance under a given name. Replaces any previously registered service with the same name.
-- `LServiceLocator:remove`: Unregister and discard a service by name.
+- `LServiceLocator:clearAll() -> nil`: Remove all registered services and reset the locator.
+- `LServiceLocator:getServices() -> string[]`: Return an array of all registered service names.
+- `LServiceLocator:has(name) -> boolean`: Check whether a service with the given name is currently registered.
+- `LServiceLocator:locate(name) -> table`: Retrieve a registered service by name. Returns nil if not found.
+- `LServiceLocator:provide(name, value) -> nil`: Register a service instance under a given name. Replaces any previously registered service with the same name.
+- `LServiceLocator:remove(name) -> nil`: Unregister and discard a service by name.
 
 #### LSet Type
 
@@ -677,15 +674,15 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LSet:add`: Add a string to the set. Returns true if it was not already present.
-- `LSet:clear`: Remove all items from the set. This method is available to Lua scripts.
-- `LSet:has`: Check whether a string is in the set.
-- `LSet:intersection`: Return a new set containing only items present in both this set and another.
-- `LSet:isEmpty`: Check whether the set is empty. This method is available to Lua scripts.
-- `LSet:len`: Return the number of items in the set.
-- `LSet:remove`: Remove a string from the set. Returns true if it was present.
-- `LSet:toArray`: Return all set items as an array table.
-- `LSet:union`: Return a new set containing all items from both this set and another.
+- `LSet:add(key) -> boolean`: Add a string to the set. Returns true if it was not already present.
+- `LSet:clear() -> nil`: Remove all items from the set. This method is available to Lua scripts.
+- `LSet:has(key) -> boolean`: Check whether a string is in the set.
+- `LSet:intersection(other) -> LSet`: Return a new set containing only items present in both this set and another.
+- `LSet:isEmpty() -> boolean`: Check whether the set is empty. This method is available to Lua scripts.
+- `LSet:len() -> number`: Return the number of items in the set.
+- `LSet:remove(key) -> boolean`: Remove a string from the set. Returns true if it was present.
+- `LSet:toArray() -> string[]`: Return all set items as an array table.
+- `LSet:union(other) -> LSet`: Return a new set containing all items from both this set and another.
 
 #### LSimpleState Type
 
@@ -697,13 +694,13 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LSimpleState:addState`: Register a named state with optional enter, exit, and update callbacks.
-- `LSimpleState:clearAll`: Remove all states and their callbacks, resetting the state machine.
-- `LSimpleState:getCurrent`: Return the name of the currently active state, or nil if no state is set.
-- `LSimpleState:getStates`: Return an array of all registered state names.
-- `LSimpleState:hasState`: Check whether a state with the given name is registered.
-- `LSimpleState:transitionTo`: Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
-- `LSimpleState:update`: Call the current state's update callback with the frame delta time.
+- `LSimpleState:addState(name, callbacks?) -> nil`: Register a named state with optional enter, exit, and update callbacks.
+- `LSimpleState:clearAll() -> nil`: Remove all states and their callbacks, resetting the state machine.
+- `LSimpleState:getCurrent() -> string`: Return the name of the currently active state, or nil if no state is set.
+- `LSimpleState:getStates() -> string[]`: Return an array of all registered state names.
+- `LSimpleState:hasState(name) -> boolean`: Check whether a state with the given name is registered.
+- `LSimpleState:transitionTo(name) -> boolean`: Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
+- `LSimpleState:update(dt) -> nil`: Call the current state's update callback with the frame delta time.
 
 #### LStack Type
 
@@ -715,22 +712,22 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LStack:clear`: Remove all items from the stack. This method is available to Lua scripts.
-- `LStack:insertAt`: Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
-- `LStack:isEmpty`: Check whether the stack is empty. This method is available to Lua scripts.
-- `LStack:isFull`: Check whether the stack has reached its capacity limit (if one was set).
-- `LStack:len`: Return the current number of items in the stack.
-- `LStack:moveWithin`: Move an item from one 1-based index to another within the stack.
-- `LStack:peek`: Return the top value without removing it. Returns nil if empty.
-- `LStack:peekAt`: Return the value at a 1-based index without removing it. Returns nil if out of range.
-- `LStack:peekBottom`: Return the bottom value without removing it. Returns nil if empty.
-- `LStack:pop`: Remove and return the top value. Returns nil if the stack is empty.
-- `LStack:popBottom`: Remove and return the bottom value. Returns nil if empty.
-- `LStack:popMany`: Pop up to `count` values from the top and return them as an array table.
-- `LStack:push`: Push a value onto the top of the stack. Returns false if the stack is at capacity.
-- `LStack:pushBottom`: Push a value onto the bottom of the stack. Returns false if at capacity.
-- `LStack:removeAt`: Remove and return the value at a 1-based index. Returns nil if out of range.
-- `LStack:toArray`: Return all stack items as an array table (bottom to top).
+- `LStack:clear() -> nil`: Remove all items from the stack. This method is available to Lua scripts.
+- `LStack:insertAt(index, value) -> boolean`: Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
+- `LStack:isEmpty() -> boolean`: Check whether the stack is empty. This method is available to Lua scripts.
+- `LStack:isFull() -> boolean`: Check whether the stack has reached its capacity limit (if one was set).
+- `LStack:len() -> number`: Return the current number of items in the stack.
+- `LStack:moveWithin(from, to) -> boolean`: Move an item from one 1-based index to another within the stack.
+- `LStack:peek() -> string`: Return the top value without removing it. Returns nil if empty.
+- `LStack:peekAt(index) -> string`: Return the value at a 1-based index without removing it. Returns nil if out of range.
+- `LStack:peekBottom() -> string`: Return the bottom value without removing it. Returns nil if empty.
+- `LStack:pop() -> string`: Remove and return the top value. Returns nil if the stack is empty.
+- `LStack:popBottom() -> string`: Remove and return the bottom value. Returns nil if empty.
+- `LStack:popMany(count) -> integer[]`: Pop up to `count` values from the top and return them as an array table.
+- `LStack:push(value) -> boolean`: Push a value onto the top of the stack. Returns false if the stack is at capacity.
+- `LStack:pushBottom(value) -> boolean`: Push a value onto the bottom of the stack. Returns false if at capacity.
+- `LStack:removeAt(index) -> string`: Remove and return the value at a 1-based index. Returns nil if out of range.
+- `LStack:toArray() -> number[]`: Return all stack items as an array table (bottom to top).
 
 #### LStrategy Type
 
@@ -742,14 +739,14 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LStrategy:clear`: Remove all strategies and reset the selection.
-- `LStrategy:execute`: Execute the currently active strategy, passing through all arguments and returning its results.
-- `LStrategy:getCurrent`: Return the name of the currently active strategy, or nil if none set.
-- `LStrategy:has`: Check whether a strategy with the given name is registered.
-- `LStrategy:names`: Return an array of all registered strategy names.
-- `LStrategy:register`: Register a named strategy implementation function.
-- `LStrategy:remove`: Remove a named strategy. If it was the active strategy, no strategy will be selected.
-- `LStrategy:set`: Switch to a named strategy. Future `execute()` calls will use this implementation.
+- `LStrategy:clear() -> nil`: Remove all strategies and reset the selection.
+- `LStrategy:execute(...) -> table`: Execute the currently active strategy, passing through all arguments and returning its results.
+- `LStrategy:getCurrent() -> string`: Return the name of the currently active strategy, or nil if none set.
+- `LStrategy:has(name) -> boolean`: Check whether a strategy with the given name is registered.
+- `LStrategy:names() -> string[]`: Return an array of all registered strategy names.
+- `LStrategy:register(name, callback) -> nil`: Register a named strategy implementation function.
+- `LStrategy:remove(name) -> boolean`: Remove a named strategy. If it was the active strategy, no strategy will be selected.
+- `LStrategy:set(name) -> boolean`: Switch to a named strategy. Future `execute()` calls will use this implementation.
 
 #### LThrottle Type
 
@@ -761,12 +758,12 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LThrottle:getFireCount`: Return the total number of times this throttle has fired since creation.
-- `LThrottle:getProgress`: Return how far through the current interval the throttle is (0.0 to 1.0).
-- `LThrottle:onFire`: Set the callback function to invoke each time the throttle fires.
-- `LThrottle:reset`: Reset the throttle timer back to zero without firing.
-- `LThrottle:setEnabled`: Enable or disable the throttle. When disabled, update() will not accumulate time.
-- `LThrottle:update`: Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
+- `LThrottle:getFireCount() -> number`: Return the total number of times this throttle has fired since creation.
+- `LThrottle:getProgress() -> number`: Return how far through the current interval the throttle is (0.0 to 1.0).
+- `LThrottle:onFire(f) -> nil`: Set the callback function to invoke each time the throttle fires.
+- `LThrottle:reset() -> nil`: Reset the throttle timer back to zero without firing.
+- `LThrottle:setEnabled(enabled) -> nil`: Enable or disable the throttle. When disabled, update() will not accumulate time.
+- `LThrottle:update(dt) -> boolean`: Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
 
 #### LWeightedRandom Type
 
@@ -778,13 +775,13 @@ In practice, `lurek.patterns` is the reusable logic architecture layer for modul
 
 ##### Methods
 
-- `LWeightedRandom:add`: Add an item with a relative weight. Higher weight = higher selection probability.
-- `LWeightedRandom:clearAll`: Remove all entries from the pool. This method is available to Lua scripts.
-- `LWeightedRandom:getRevision`: Return the revision counter. Increments on any add/remove/weight change.
-- `LWeightedRandom:isEmpty`: Check whether the pool has no entries.
-- `LWeightedRandom:len`: Return the number of entries in the pool.
-- `LWeightedRandom:pick`: Pick one item using a random sample value in [0, 1). Returns its value or nil.
-- `LWeightedRandom:pickN`: Pick multiple unique items. Requires an array of random samples.
-- `LWeightedRandom:remove`: Remove an item by its ID. Returns true if it existed.
-- `LWeightedRandom:setWeight`: Change the weight of an existing entry.
-- `LWeightedRandom:totalWeight`: Return the sum of all entry weights.
+- `LWeightedRandom:add(weight, value, label?) -> number`: Add an item with a relative weight. Higher weight = higher selection probability.
+- `LWeightedRandom:clearAll() -> nil`: Remove all entries from the pool. This method is available to Lua scripts.
+- `LWeightedRandom:getRevision() -> number`: Return the revision counter. Increments on any add/remove/weight change.
+- `LWeightedRandom:isEmpty() -> boolean`: Check whether the pool has no entries.
+- `LWeightedRandom:len() -> number`: Return the number of entries in the pool.
+- `LWeightedRandom:pick(sample) -> string`: Pick one item using a random sample value in [0, 1). Returns its value or nil.
+- `LWeightedRandom:pickN(count, samples) -> number[]`: Pick multiple unique items. Requires an array of random samples.
+- `LWeightedRandom:remove(id) -> boolean`: Remove an item by its ID. Returns true if it existed.
+- `LWeightedRandom:setWeight(id, weight) -> boolean`: Change the weight of an existing entry.
+- `LWeightedRandom:totalWeight() -> number`: Return the sum of all entry weights.

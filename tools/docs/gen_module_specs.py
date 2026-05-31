@@ -520,6 +520,11 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
                         "lua_name": lua_name,
                         "description": fn.get("description") or "Lua-facing function documented in the binding source.",
                         "full_doc": fn.get("full_doc") or "",
+                        "typed_params": fn.get("typed_params") or [],
+                        "inferred_sig": fn.get("inferred_sig") or "",
+                        "inferred_return": fn.get("inferred_return") or "",
+                        "returns_doc": fn.get("returns_doc") or "",
+                        "return_description": fn.get("return_description") or "",
                     }
                 )
 
@@ -542,6 +547,11 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
                             "lua_name": method.get("lua_name") or f"{cls_name}:{method.get('name','')}",
                             "description": method.get("description") or "Lua-visible method.",
                             "full_doc": method.get("full_doc") or "",
+                            "typed_params": method.get("typed_params") or [],
+                            "inferred_sig": method.get("inferred_sig") or "",
+                            "inferred_return": method.get("inferred_return") or "",
+                            "returns_doc": method.get("returns_doc") or "",
+                            "return_description": method.get("return_description") or "",
                         }
                     )
 
@@ -595,6 +605,11 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
                 "name": fn.name,
                 "lua_name": fn.lua_name,
                 "description": fn.description or "Lua-facing function documented in the binding source.",
+                "typed_params": [],
+                "inferred_sig": "",
+                "inferred_return": "",
+                "returns_doc": "",
+                "return_description": "",
             }
             if fn.kind == "function":
                 module_functions.append(entry)
@@ -988,6 +1003,33 @@ def collect_lua_callbacks(lua_api: dict) -> list[dict[str, str]]:
     return deduped
 
 
+def format_lua_signature(entry: dict) -> str:
+    typed_params = entry.get("typed_params") or []
+    if typed_params:
+        parts: list[str] = []
+        for item in typed_params:
+            if isinstance(item, list) and len(item) >= 2:
+                pname = str(item[0]).strip() or "arg"
+                ptype = str(item[1]).strip() or ""
+                optional = bool(item[2]) if len(item) > 2 else ptype.endswith("?")
+                if optional and not pname.endswith("?"):
+                    pname = f"{pname}?"
+                parts.append(pname)
+        if parts:
+            return f"({', '.join(parts)})"
+
+    inferred_sig = (entry.get("inferred_sig") or "").strip()
+    if inferred_sig:
+        return inferred_sig
+
+    return "()"
+
+
+def format_lua_return(entry: dict) -> str:
+    return_type = (entry.get("inferred_return") or entry.get("returns_doc") or "").strip()
+    return return_type or "nil"
+
+
 def format_lua_api(lua_api: dict) -> str:
     if (
         not lua_api["namespace"]
@@ -1021,7 +1063,9 @@ def format_lua_api(lua_api: dict) -> str:
     if lua_api["module_functions"]:
         for fn in lua_api["module_functions"]:
             label = fn["lua_name"] or fn["name"]
-            lines.append(f"- `{label}`: {fn['description']}")
+            signature = format_lua_signature(fn)
+            return_info = format_lua_return(fn)
+            lines.append(f"- `{label}{signature} -> {return_info}`: {fn['description']}")
     else:
         lines.append("- No documented module-level functions.")
 
@@ -1076,7 +1120,11 @@ def format_lua_api(lua_api: dict) -> str:
             if methods:
                 for method in methods:
                     label = method.get("lua_name") or f"{class_name}:{method.get('name','')}"
-                    lines.append(f"- `{label}`: {method.get('description') or 'Lua-visible method.'}")
+                    signature = format_lua_signature(method)
+                    return_info = format_lua_return(method)
+                    lines.append(
+                        f"- `{label}{signature} -> {return_info}`: {method.get('description') or 'Lua-visible method.'}"
+                    )
             else:
                 lines.append("- No documented methods.")
             lines.append("")

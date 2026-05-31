@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `dsp` module is the signal-processing layer for audio: real-time effects, offline transforms, synthesis, analysis, and visualization helpers in one CPU-first toolkit.
+- Manages audio effect graphs, procedural synthesis, level detection, and visualizations.
 
 ## General Info
 
@@ -16,15 +16,13 @@
 
 ## Summary
 
-The `dsp` module is the engine's audio signal workbench. It focuses on transforming and analyzing sound data, while playback ownership and device scheduling stay in neighboring modules.
+This module handles audio signal processing and synthesis, offering control over sound generation and manipulation. It provides the runtime for real-time effects like filters, delays, and modulations. These effects use lock-free parameters to ensure low-latency safety, wrapping audio sources to apply clean transformations sample-by-sample during live playback.
 
-For live runtime use, it provides effect chains, graph-style processing, and safe parameter updates that can be changed during playback. This supports responsive sound design without forcing fragile ad-hoc processing code.
+To organize audio paths, the module features a digital signal processing graph where developers connect nodes to describe ordered signal flows. This supports both real-time streaming and offline processing, enabling users to batch render effect chains to files. This is ideal for asset baking, peak normalization, and preparing audio exports.
 
-For offline workflows, the same module can process stored audio deterministically. Teams can run batch transforms, normalization, and export-oriented effect passes for content preparation and repeatable pipelines.
+Procedural synthesis is supported by primitives generating waveforms and noise. These oscillators combine with envelopes that apply gain changes over attack, decay, sustain, and release phases. This makes it easy to generate dynamic sound effects and musical notes dynamically, without relying on pre-recorded files.
 
-Synthesis and inspection are included in the same surface. You can generate tones and noise, shape them with envelopes, measure RMS and peak behavior, inspect spectrum bins, and produce visual outputs such as waveform or spectrogram images.
-
-In practice, `lurek.dsp` provides one consistent signal core for runtime, tools, and QA: build effects, process buffers, inspect results, and visualize behavior with predictable outputs.
+Additionally, the system provides level detectors tracking peak, average amplitude, and clipping thresholds, alongside spectral analyzers. These feed visualization utilities that convert audio data into waveform plots and spectrogram images, helping developers inspect audio assets and verify sound behaviors.
 
 ## Imports
 
@@ -97,35 +95,35 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ### Functions
 
-- `lurek.dsp.addEffectToBus`: Adds an effect to a named audio bus and returns its effect ID.
-- `lurek.dsp.analyzeFft`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
-- `lurek.dsp.analyzeFft`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
-- `lurek.dsp.analyzePeak`: Analyzes the Peak volume of a `SoundData` buffer.
-- `lurek.dsp.analyzeRms`: Analyzes the RMS volume of a `SoundData` buffer.
-- `lurek.dsp.applyBandpass`: Applies a bandpass filter in-place to the sound data.
-- `lurek.dsp.applyGain`: Applies a gain multiplier in-place to the sound data.
-- `lurek.dsp.applyHighpass`: Applies a highpass filter in-place to the sound data.
-- `lurek.dsp.applyLowpass`: Applies a lowpass filter in-place to the sound data.
-- `lurek.dsp.newAdsrEnvelope`: Creates an ADSR envelope object for procedural synthesis and buffer shaping workflows.
-- `lurek.dsp.newEffectParams`: Creates an effect parameter descriptor table for use with offline processing.
-- `lurek.dsp.newGraph`: Creates an empty DSP graph object for connecting nodes and processing SoundData buffers.
-- `lurek.dsp.newLevelDetector`: Creates a level detector object that tracks RMS, peak, and clipping state over samples.
-- `lurek.dsp.newNode`: Creates a DSP graph node object with a node kind and optional initial options.
-- `lurek.dsp.newSawtoothWave`: Generates a sawtooth wave as a `SoundData` buffer.
-- `lurek.dsp.newSineWave`: Generates a sine wave as a `SoundData` buffer.
-- `lurek.dsp.newSpectrumAnalyzer`: Creates a spectrum analyzer object for bounded frequency-bin analysis on SoundData.
-- `lurek.dsp.newSquareWave`: Generates a square wave as a `SoundData` buffer.
-- `lurek.dsp.newSynthWave`: Generates a synthesized waveform with optional ADSR.
-- `lurek.dsp.newSynthesizer`: Creates a synthesizer object that combines waveform selection and optional ADSR shaping.
-- `lurek.dsp.newTriangleWave`: Generates a triangle wave as a `SoundData` buffer.
-- `lurek.dsp.newWaveform`: Creates a waveform descriptor object that can render repeated procedural tones.
-- `lurek.dsp.newWhiteNoise`: Generates deterministic white noise as a `SoundData` buffer.
-- `lurek.dsp.normalize`: Normalizes an audio file to a target peak amplitude and saves the result.
-- `lurek.dsp.processOffline`: Processes an audio file offline through a chain of effects and writes the result to an output file.
-- `lurek.dsp.removeEffectFromBus`: Removes an effect from a named audio bus by effect ID.
-- `lurek.dsp.setEffectParam`: Sets a parameter value on an effect attached to a named audio bus.
-- `lurek.dsp.spectrogramToPng`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
-- `lurek.dsp.waveformToPng`: Renders a waveform visualization of an audio file and saves it as a PNG image.
+- `lurek.dsp.addEffectToBus(bus_name, effect_type_str, params?) -> integer`: Adds an effect to a named audio bus and returns its effect ID.
+- `lurek.dsp.analyzeFft(sd, size) -> table`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+- `lurek.dsp.analyzeFft(sd, size) -> table`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+- `lurek.dsp.analyzePeak(sd) -> number`: Analyzes the Peak volume of a `SoundData` buffer.
+- `lurek.dsp.analyzeRms(sd) -> number`: Analyzes the RMS volume of a `SoundData` buffer.
+- `lurek.dsp.applyBandpass(sd_ud, low_hz, high_hz) -> nil`: Applies a bandpass filter in-place to the sound data.
+- `lurek.dsp.applyGain(sd_ud, gain) -> nil`: Applies a gain multiplier in-place to the sound data.
+- `lurek.dsp.applyHighpass(sd_ud, cutoff_hz) -> nil`: Applies a highpass filter in-place to the sound data.
+- `lurek.dsp.applyLowpass(sd_ud, cutoff_hz) -> nil`: Applies a lowpass filter in-place to the sound data.
+- `lurek.dsp.newAdsrEnvelope(attack, decay, sustain, release) -> LAdsrEnvelope`: Creates an ADSR envelope object for procedural synthesis and buffer shaping workflows.
+- `lurek.dsp.newEffectParams(effectType, p1, p2, p3) -> table`: Creates an effect parameter descriptor table for use with offline processing.
+- `lurek.dsp.newGraph() -> LDspGraph`: Creates an empty DSP graph object for connecting nodes and processing SoundData buffers.
+- `lurek.dsp.newLevelDetector(options?) -> LLevelDetector`: Creates a level detector object that tracks RMS, peak, and clipping state over samples.
+- `lurek.dsp.newNode(kind, options?) -> LDspNode`: Creates a DSP graph node object with a node kind and optional initial options.
+- `lurek.dsp.newSawtoothWave(freq, duration, sample_rate, amplitude) -> LSoundData`: Generates a sawtooth wave as a `SoundData` buffer.
+- `lurek.dsp.newSineWave(freq, duration, sample_rate, amplitude) -> LSoundData`: Generates a sine wave as a `SoundData` buffer.
+- `lurek.dsp.newSpectrumAnalyzer(options?) -> LSpectrumAnalyzer`: Creates a spectrum analyzer object for bounded frequency-bin analysis on SoundData.
+- `lurek.dsp.newSquareWave(freq, duration, sample_rate, amplitude) -> LSoundData`: Generates a square wave as a `SoundData` buffer.
+- `lurek.dsp.newSynthWave(waveform, freq, duration, sample_rate, amplitude, adsr?) -> LSoundData`: Generates a synthesized waveform with optional ADSR.
+- `lurek.dsp.newSynthesizer(options?) -> LSynthesizer`: Creates a synthesizer object that combines waveform selection and optional ADSR shaping.
+- `lurek.dsp.newTriangleWave(freq, duration, sample_rate, amplitude) -> LSoundData`: Generates a triangle wave as a `SoundData` buffer.
+- `lurek.dsp.newWaveform(kind, options?) -> LWaveform`: Creates a waveform descriptor object that can render repeated procedural tones.
+- `lurek.dsp.newWhiteNoise(duration, sample_rate, amplitude, seed) -> LSoundData`: Generates deterministic white noise as a `SoundData` buffer.
+- `lurek.dsp.normalize(input, output, target) -> boolean`: Normalizes an audio file to a target peak amplitude and saves the result.
+- `lurek.dsp.processOffline(input, output, effects) -> boolean`: Processes an audio file offline through a chain of effects and writes the result to an output file.
+- `lurek.dsp.removeEffectFromBus(bus_name, effect_id) -> boolean`: Removes an effect from a named audio bus by effect ID.
+- `lurek.dsp.setEffectParam(bus_name, effect_id, param_name, value) -> boolean`: Sets a parameter value on an effect attached to a named audio bus.
+- `lurek.dsp.spectrogramToPng(input, output, width, height) -> boolean`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+- `lurek.dsp.waveformToPng(input, output, width, height) -> boolean`: Renders a waveform visualization of an audio file and saves it as a PNG image.
 
 ### Callbacks
 
@@ -147,11 +145,11 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LAdsrEnvelope:apply`: Applies this ADSR envelope across an entire sound buffer in place.
-- `LAdsrEnvelope:is_idle`: Returns whether the envelope has fully completed and is idle.
-- `LAdsrEnvelope:next_sample`: Advances the envelope and returns the next gain sample.
-- `LAdsrEnvelope:trigger_off`: Starts the envelope release phase.
-- `LAdsrEnvelope:trigger_on`: Starts the envelope attack phase for this ADSR object.
+- `LAdsrEnvelope:apply(sound_data_ud) -> nil`: Applies this ADSR envelope across an entire sound buffer in place.
+- `LAdsrEnvelope:is_idle() -> boolean`: Returns whether the envelope has fully completed and is idle.
+- `LAdsrEnvelope:next_sample() -> number`: Advances the envelope and returns the next gain sample.
+- `LAdsrEnvelope:trigger_off() -> nil`: Starts the envelope release phase.
+- `LAdsrEnvelope:trigger_on() -> nil`: Starts the envelope attack phase for this ADSR object.
 
 #### LDspGraph Type
 
@@ -163,11 +161,11 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LDspGraph:addNode`: Adds a DSP node object to the graph and returns its stable node ID.
-- `LDspGraph:clear`: Clears all graph nodes and edges from this graph.
-- `LDspGraph:connect`: Connects two node IDs in this graph object.
-- `LDspGraph:disconnect`: Removes a connection between two node IDs.
-- `LDspGraph:process`: Processes a sound buffer through the graph and returns transformed data.
+- `LDspGraph:addNode(node_ud) -> integer`: Adds a DSP node object to the graph and returns its stable node ID.
+- `LDspGraph:clear() -> nil`: Clears all graph nodes and edges from this graph.
+- `LDspGraph:connect(from, to, options?) -> boolean`: Connects two node IDs in this graph object.
+- `LDspGraph:disconnect(from, to) -> boolean`: Removes a connection between two node IDs.
+- `LDspGraph:process(sound_data_ud) -> LSoundData`: Processes a sound buffer through the graph and returns transformed data.
 
 #### LDspNode Type
 
@@ -179,9 +177,9 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LDspNode:getParam`: Returns one named numeric parameter from the node.
-- `LDspNode:setParam`: Sets one named numeric parameter on the node.
-- `LDspNode:type`: Returns the node type string used by this node.
+- `LDspNode:getParam(name) -> number`: Returns one named numeric parameter from the node.
+- `LDspNode:setParam(name, value) -> nil`: Sets one named numeric parameter on the node.
+- `LDspNode:type() -> string`: Returns the node type string used by this node.
 
 #### LLevelDetector Type
 
@@ -193,12 +191,12 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LLevelDetector:get_peak`: Returns the current peak level accumulated by the detector.
-- `LLevelDetector:get_rms`: Returns the current RMS level accumulated by the detector.
-- `LLevelDetector:process`: Processes all samples in a sound buffer and returns aggregate level statistics.
-- `LLevelDetector:process_sample`: Processes one audio sample and updates detector statistics incrementally.
-- `LLevelDetector:reset`: Resets detector state so a new measurement window can begin.
-- `LLevelDetector:to_db`: Converts a linear amplitude value to decibels full scale.
+- `LLevelDetector:get_peak() -> number`: Returns the current peak level accumulated by the detector.
+- `LLevelDetector:get_rms() -> number`: Returns the current RMS level accumulated by the detector.
+- `LLevelDetector:process(sound_data_ud) -> table`: Processes all samples in a sound buffer and returns aggregate level statistics.
+- `LLevelDetector:process_sample(sample) -> nil`: Processes one audio sample and updates detector statistics incrementally.
+- `LLevelDetector:reset() -> nil`: Resets detector state so a new measurement window can begin.
+- `LLevelDetector:to_db(value) -> number`: Converts a linear amplitude value to decibels full scale.
 
 #### LSpectrumAnalyzer Type
 
@@ -210,8 +208,8 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LSpectrumAnalyzer:analyze`: Analyzes one sound buffer and returns `(frequency, magnitude)` rows.
-- `LSpectrumAnalyzer:setSize`: Sets the frequency-bin count used by subsequent spectrum analysis calls.
+- `LSpectrumAnalyzer:analyze(sound_data_ud) -> table`: Analyzes one sound buffer and returns `(frequency, magnitude)` rows.
+- `LSpectrumAnalyzer:setSize(size) -> nil`: Sets the frequency-bin count used by subsequent spectrum analysis calls.
 
 #### LSynthesizer Type
 
@@ -223,10 +221,10 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LSynthesizer:generate`: Generates a SoundData buffer; alias of `render` for compatibility.
-- `LSynthesizer:render`: Renders a SoundData buffer using current synthesizer settings.
-- `LSynthesizer:setEnvelope`: Attaches an ADSR envelope used by future render calls.
-- `LSynthesizer:setWaveform`: Sets the oscillator waveform using a kind string or waveform object.
+- `LSynthesizer:generate(freq, duration, sample_rate, amplitude) -> LSoundData`: Generates a SoundData buffer; alias of `render` for compatibility.
+- `LSynthesizer:render(freq, duration, sample_rate, amplitude) -> LSoundData`: Renders a SoundData buffer using current synthesizer settings.
+- `LSynthesizer:setEnvelope(envelope_ud) -> nil`: Attaches an ADSR envelope used by future render calls.
+- `LSynthesizer:setWaveform(value) -> nil`: Sets the oscillator waveform using a kind string or waveform object.
 
 #### LWaveform Type
 
@@ -238,6 +236,5 @@ In practice, `lurek.dsp` provides one consistent signal core for runtime, tools,
 
 ##### Methods
 
-- `LWaveform:render`: Renders this waveform to a new SoundData buffer.
-- `LWaveform:type`: Returns the waveform identifier string.
-
+- `LWaveform:render(freq, duration, sample_rate, amplitude) -> LSoundData`: Renders this waveform to a new SoundData buffer.
+- `LWaveform:type() -> string`: Returns the waveform identifier string.

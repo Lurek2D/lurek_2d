@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `docs` module is the documentation pipeline core: collect API entries, validate quality, and export editor-ready artifacts like completions, hover, and signatures.
+- Builds an API catalog to generate editor files and Markdown reference.
+- Analyzes documentation coverage and quality using live table reflection.
 
 ## General Info
 
@@ -16,17 +17,13 @@
 
 ## Summary
 
-The `docs` module is the internal documentation pipeline for engine-facing metadata. It transforms raw API records into validated outputs that editor tooling and reporting workflows can consume directly.
+This module acts as the documentation workflow and quality assurance core, managing the generation, validation, and export of the engine's public interface data. It handles the parsing of API metadata into a unified in-memory documentation catalog. This central catalog groups and organizes symbols across modules, maintaining their entry definitions to provide a single, consistent source of truth for the entire scripting framework.
 
-Its main value is one shared data model from start to finish. Catalog collection, schema checks, quality scoring, and export generation all operate on the same normalized entry shape. This keeps completions, hover content, signatures, and reports aligned instead of drifting between separate tools.
+To verify the accuracy and completeness of API references, the module supplies detailed reporting and validation tools. It cross-references the catalog against live runtime tables to identify undocumented, missing, or outdated symbols. Additionally, the quality analyzer scores individual documentation records based on detail, generating overall and per-module grades that highlight areas needing expansion or cleanup.
 
-Quality control is built into the workflow. The module can detect missing entries, thin descriptions, and catalog inconsistencies before artifacts are published. That gives maintainers a clear feedback loop and helps catch documentation debt early.
+For external tool integration, the system includes export builders that transform documentation entries into files. These builders output rich autocomplete catalogs, hover details, and signature definitions formatted specifically for text editors and development extensions. This bridges the runtime's documentation directly with the editor workspace, improving the developer experience.
 
-Export builders produce deterministic output structures for downstream consumers. Stable payload shapes improve reliability for extension integration, local development tasks, and CI validation because readers can depend on predictable contract formats.
-
-The module supports both full-catalog and scoped operations, so teams can process one module or the entire API surface as needed. This is useful for incremental updates, focused audits, and release preparation workflows.
-
-In practice, `lurek.docs` is the backbone that turns source metadata into consistent documentation assets: collect entries, validate quality, generate artifacts, and publish tooling-ready outputs through one coherent module boundary.
+Additionally, a schema validation layer provides structured data checks. It connects documentation workflows with unified type rules, allowing runtime systems to validate tables against schemas and generate detailed reports. This ensures all configuration and API data structures remain correct, providing reliable validation errors when data checks fail.
 
 ## Imports
 
@@ -80,32 +77,32 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 
 ### Functions
 
-- `lurek.docs.checkStaleness`: Lists source files in a directory for simple documentation staleness checks.
-- `lurek.docs.coverage`: Returns documented and live API counts for the full `lurek` table.
-- `lurek.docs.coverageModule`: Returns documented and live API counts for one module.
-- `lurek.docs.describe`: Adds or updates the description for one editable catalog entry.
-- `lurek.docs.exportAll`: Exports all editor documentation artifacts for a catalog into a directory.
-- `lurek.docs.exportCheatsheet`: Writes a compact text cheatsheet from catalog entries.
-- `lurek.docs.exportCompletions`: Exports catalog completion metadata to a file.
-- `lurek.docs.exportHover`: Exports catalog hover metadata to a file.
-- `lurek.docs.exportMarkdown`: Writes a Markdown API reference from catalog entries.
-- `lurek.docs.exportSignatures`: Exports catalog signature metadata to a file.
-- `lurek.docs.getCatalog`: Returns the editable in-memory documentation catalog.
-- `lurek.docs.loadAll`: Loads all TOML documentation catalog files from a directory and combines their entries.
-- `lurek.docs.loadToml`: Loads a TOML documentation catalog file and converts its entries into an API catalog.
-- `lurek.docs.quality`: Computes documentation quality for a supplied catalog or the editable in-memory catalog.
-- `lurek.docs.qualityModule`: Computes documentation quality for entries belonging to one module.
-- `lurek.docs.reflectLive`: Reflects live `lurek` module tables into plain name and type rows.
-- `lurek.docs.reflectTable`: Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
-- `lurek.docs.resetCatalog`: Clears the editable in-memory documentation catalog.
-- `lurek.docs.scan`: Reflects the live `lurek` table and builds a catalog of callable APIs.
-- `lurek.docs.scanModule`: Reflects one live `lurek.<module>` table and builds a catalog for that module.
-- `lurek.docs.schema`: Builds a schema validator from Lua table rules.
-- `lurek.docs.schemaFromToml`: Builds a schema validator from TOML schema text.
-- `lurek.docs.setParamInfo`: Replaces parameter metadata for one editable catalog entry.
-- `lurek.docs.setReturnInfo`: Replaces return-value metadata for one editable catalog entry.
-- `lurek.docs.validate`: Compares a documentation catalog with the live reflected `lurek` API table.
-- `lurek.docs.validateModule`: Compares one module's documentation catalog entries with the live reflected module table.
+- `lurek.docs.checkStaleness(catalog_ud, source_dir) -> table`: Lists source files in a directory for simple documentation staleness checks.
+- `lurek.docs.coverage(catalog_ud?) -> integer`: Returns documented and live API counts for the full `lurek` table.
+- `lurek.docs.coverageModule(module_name, catalog_ud?) -> integer`: Returns documented and live API counts for one module.
+- `lurek.docs.describe(qualified_name, description) -> nil`: Adds or updates the description for one editable catalog entry.
+- `lurek.docs.exportAll(catalog_ud, output_dir) -> nil`: Exports all editor documentation artifacts for a catalog into a directory.
+- `lurek.docs.exportCheatsheet(catalog_ud, path) -> nil`: Writes a compact text cheatsheet from catalog entries.
+- `lurek.docs.exportCompletions(catalog_ud, path) -> nil`: Exports catalog completion metadata to a file.
+- `lurek.docs.exportHover(catalog_ud, path) -> nil`: Exports catalog hover metadata to a file.
+- `lurek.docs.exportMarkdown(catalog_ud, path) -> nil`: Writes a Markdown API reference from catalog entries.
+- `lurek.docs.exportSignatures(catalog_ud, path) -> nil`: Exports catalog signature metadata to a file.
+- `lurek.docs.getCatalog() -> LApiCatalog`: Returns the editable in-memory documentation catalog.
+- `lurek.docs.loadAll(directory) -> LApiCatalog`: Loads all TOML documentation catalog files from a directory and combines their entries.
+- `lurek.docs.loadToml(path) -> LApiCatalog`: Loads a TOML documentation catalog file and converts its entries into an API catalog.
+- `lurek.docs.quality(catalog_ud?) -> LQualityReport`: Computes documentation quality for a supplied catalog or the editable in-memory catalog.
+- `lurek.docs.qualityModule(module_name, catalog_ud?) -> LQualityReport`: Computes documentation quality for entries belonging to one module.
+- `lurek.docs.reflectLive(ns?) -> table`: Reflects live `lurek` module tables into plain name and type rows.
+- `lurek.docs.reflectTable(tbl, name?) -> table`: Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
+- `lurek.docs.resetCatalog() -> nil`: Clears the editable in-memory documentation catalog.
+- `lurek.docs.scan(opts?) -> LApiCatalog`: Reflects the live `lurek` table and builds a catalog of callable APIs.
+- `lurek.docs.scanModule(module_name) -> LApiCatalog`: Reflects one live `lurek.<module>` table and builds a catalog for that module.
+- `lurek.docs.schema(rules, name?) -> LSchema`: Builds a schema validator from Lua table rules.
+- `lurek.docs.schemaFromToml(toml_text) -> LSchema`: Builds a schema validator from TOML schema text.
+- `lurek.docs.setParamInfo(qualified_name, params) -> nil`: Replaces parameter metadata for one editable catalog entry.
+- `lurek.docs.setReturnInfo(qualified_name, returns) -> nil`: Replaces return-value metadata for one editable catalog entry.
+- `lurek.docs.validate(catalog_ud?) -> LValidationReport`: Compares a documentation catalog with the live reflected `lurek` API table.
+- `lurek.docs.validateModule(module_name, catalog_ud?) -> LValidationReport`: Compares one module's documentation catalog entries with the live reflected module table.
 
 ### Callbacks
 
@@ -127,19 +124,19 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 
 ##### Methods
 
-- `LApiCatalog:entryCount`: Counts entries in the catalog, optionally for one module.
-- `LApiCatalog:filter`: Builds a new catalog containing entries accepted by a Lua predicate.
-- `LApiCatalog:getEntries`: Returns catalog entries, optionally limited to one module.
-- `LApiCatalog:getEntry`: Returns one catalog entry by qualified API name.
-- `LApiCatalog:getModules`: Returns every module represented in this catalog.
-- `LApiCatalog:getTypeMethods`: Returns method entries associated with a qualified type name.
-- `LApiCatalog:getTypes`: Returns type names documented for one module.
-- `LApiCatalog:merge`: Merges another catalog into this catalog and returns a new catalog value.
-- `LApiCatalog:search`: Searches names, qualified names, and descriptions with a case-insensitive substring query.
-- `LApiCatalog:toJSON`: Serializes this catalog to formatted JSON.
-- `LApiCatalog:toTable`: Converts this catalog into plain Lua tables for lightweight inspection.
-- `LApiCatalog:type`: Returns the Lua-visible type name for this API catalog handle.
-- `LApiCatalog:typeOf`: Returns whether this API catalog handle matches a supported type name.
+- `LApiCatalog:entryCount(module?) -> integer`: Counts entries in the catalog, optionally for one module.
+- `LApiCatalog:filter(predicate) -> LApiCatalog`: Builds a new catalog containing entries accepted by a Lua predicate.
+- `LApiCatalog:getEntries(module?) -> LDocEntry[]`: Returns catalog entries, optionally limited to one module.
+- `LApiCatalog:getEntry(qualified_name) -> LDocEntry`: Returns one catalog entry by qualified API name.
+- `LApiCatalog:getModules() -> string[]`: Returns every module represented in this catalog.
+- `LApiCatalog:getTypeMethods(qualified_name) -> LDocEntry[]`: Returns method entries associated with a qualified type name.
+- `LApiCatalog:getTypes(module_name) -> string[]`: Returns type names documented for one module.
+- `LApiCatalog:merge(other) -> LApiCatalog`: Merges another catalog into this catalog and returns a new catalog value.
+- `LApiCatalog:search(query) -> LDocEntry[]`: Searches names, qualified names, and descriptions with a case-insensitive substring query.
+- `LApiCatalog:toJSON() -> string`: Serializes this catalog to formatted JSON.
+- `LApiCatalog:toTable() -> table`: Converts this catalog into plain Lua tables for lightweight inspection.
+- `LApiCatalog:type() -> string`: Returns the Lua-visible type name for this API catalog handle.
+- `LApiCatalog:typeOf(name) -> boolean`: Returns whether this API catalog handle matches a supported type name.
 
 #### LApiCatalogToTableResult Type
 
@@ -168,23 +165,23 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 
 ##### Methods
 
-- `LDocEntry:getDeprecated`: Returns this entry's deprecation text when one was recorded.
-- `LDocEntry:getDescription`: Returns the prose description recorded for this entry.
-- `LDocEntry:getExample`: Returns this entry's example text when one was recorded.
-- `LDocEntry:getKind`: Returns the documentation kind recorded for this entry.
-- `LDocEntry:getModule`: Returns the module name associated with this documentation entry.
-- `LDocEntry:getName`: Returns the short API name stored by this documentation entry.
-- `LDocEntry:getParameters`: Returns parameter metadata recorded for this entry.
-- `LDocEntry:getQualifiedName`: Returns the full dotted API name stored by this documentation entry.
-- `LDocEntry:getReturns`: Returns return-value metadata recorded for this entry.
-- `LDocEntry:getScore`: Returns the documentation quality score calculated for this entry.
-- `LDocEntry:getSince`: Returns this entry's since-version text when one was recorded.
-- `LDocEntry:hasDescription`: Returns whether this entry has non-empty description text.
-- `LDocEntry:hasExample`: Returns whether this entry has example text.
-- `LDocEntry:hasParameters`: Returns whether this entry has parameter metadata.
-- `LDocEntry:hasReturnType`: Returns whether this entry has return-value metadata.
-- `LDocEntry:type`: Returns the Lua-visible type name for this documentation entry handle.
-- `LDocEntry:typeOf`: Returns whether this documentation entry handle matches a supported type name.
+- `LDocEntry:getDeprecated() -> LuaValue`: Returns this entry's deprecation text when one was recorded.
+- `LDocEntry:getDescription() -> string`: Returns the prose description recorded for this entry.
+- `LDocEntry:getExample() -> LuaValue`: Returns this entry's example text when one was recorded.
+- `LDocEntry:getKind() -> string`: Returns the documentation kind recorded for this entry.
+- `LDocEntry:getModule() -> string`: Returns the module name associated with this documentation entry.
+- `LDocEntry:getName() -> string`: Returns the short API name stored by this documentation entry.
+- `LDocEntry:getParameters() -> table`: Returns parameter metadata recorded for this entry.
+- `LDocEntry:getQualifiedName() -> string`: Returns the full dotted API name stored by this documentation entry.
+- `LDocEntry:getReturns() -> table`: Returns return-value metadata recorded for this entry.
+- `LDocEntry:getScore() -> number`: Returns the documentation quality score calculated for this entry.
+- `LDocEntry:getSince() -> LuaValue`: Returns this entry's since-version text when one was recorded.
+- `LDocEntry:hasDescription() -> boolean`: Returns whether this entry has non-empty description text.
+- `LDocEntry:hasExample() -> boolean`: Returns whether this entry has example text.
+- `LDocEntry:hasParameters() -> boolean`: Returns whether this entry has parameter metadata.
+- `LDocEntry:hasReturnType() -> boolean`: Returns whether this entry has return-value metadata.
+- `LDocEntry:type() -> string`: Returns the Lua-visible type name for this documentation entry handle.
+- `LDocEntry:typeOf(name) -> boolean`: Returns whether this documentation entry handle matches a supported type name.
 
 #### LDocEntryGetParametersResult Type
 
@@ -253,17 +250,17 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 
 ##### Methods
 
-- `LQualityReport:getBest`: Returns the highest-scoring documentation entries.
-- `LQualityReport:getByGrade`: Returns documentation entries whose calculated grade matches a grade string.
-- `LQualityReport:getGrade`: Returns the letter grade derived from the aggregate documentation score.
-- `LQualityReport:getModuleScores`: Returns per-module documentation quality scores.
-- `LQualityReport:getOverallScore`: Returns the aggregate documentation quality score.
-- `LQualityReport:getSummary`: Returns a human-readable summary of overall and per-module quality scores.
-- `LQualityReport:getWorst`: Returns the lowest-scoring documentation entries.
-- `LQualityReport:toJSON`: Serializes this quality report to formatted JSON.
-- `LQualityReport:toTable`: Converts this quality report into a plain Lua table.
-- `LQualityReport:type`: Returns the Lua-visible type name for this quality report handle.
-- `LQualityReport:typeOf`: Returns whether this quality report handle matches a supported type name.
+- `LQualityReport:getBest(count?) -> LDocEntry[]`: Returns the highest-scoring documentation entries.
+- `LQualityReport:getByGrade(grade) -> LDocEntry[]`: Returns documentation entries whose calculated grade matches a grade string.
+- `LQualityReport:getGrade() -> string`: Returns the letter grade derived from the aggregate documentation score.
+- `LQualityReport:getModuleScores() -> table`: Returns per-module documentation quality scores.
+- `LQualityReport:getOverallScore() -> number`: Returns the aggregate documentation quality score.
+- `LQualityReport:getSummary() -> string`: Returns a human-readable summary of overall and per-module quality scores.
+- `LQualityReport:getWorst(count?) -> LDocEntry[]`: Returns the lowest-scoring documentation entries.
+- `LQualityReport:toJSON() -> string`: Serializes this quality report to formatted JSON.
+- `LQualityReport:toTable() -> table`: Converts this quality report into a plain Lua table.
+- `LQualityReport:type() -> string`: Returns the Lua-visible type name for this quality report handle.
+- `LQualityReport:typeOf(name) -> boolean`: Returns whether this quality report handle matches a supported type name.
 
 #### LQualityReportToTableResult Type
 
@@ -289,13 +286,13 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 
 ##### Methods
 
-- `LSchema:assert`: Validates a Lua table and raises a Lua error when schema checks fail.
-- `LSchema:check`: Validates a Lua table and returns only the boolean result.
-- `LSchema:getFields`: Returns the field names declared by this schema.
-- `LSchema:getName`: Returns this schema's display name.
-- `LSchema:type`: Returns the Lua-visible type name for this schema handle.
-- `LSchema:typeOf`: Returns whether this schema handle matches a supported type name.
-- `LSchema:validate`: Validates a Lua table and returns a success flag plus structured error rows.
+- `LSchema:assert(data) -> nil`: Validates a Lua table and raises a Lua error when schema checks fail.
+- `LSchema:check(data) -> boolean`: Validates a Lua table and returns only the boolean result.
+- `LSchema:getFields() -> string[]`: Returns the field names declared by this schema.
+- `LSchema:getName() -> string`: Returns this schema's display name.
+- `LSchema:type() -> string`: Returns the Lua-visible type name for this schema handle.
+- `LSchema:typeOf(name) -> boolean`: Returns whether this schema handle matches a supported type name.
+- `LSchema:validate(data) -> boolean`: Validates a Lua table and returns a success flag plus structured error rows.
 
 #### LSchemaValidateResult Type
 
@@ -320,18 +317,18 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 
 ##### Methods
 
-- `LValidationReport:getIncomplete`: Returns catalog APIs whose documentation was incomplete.
-- `LValidationReport:getMissing`: Returns live APIs that were missing from the checked catalog.
-- `LValidationReport:getPhantom`: Returns catalog APIs that were not present in the live Lua table.
-- `LValidationReport:getSummary`: Returns a compact text summary of missing, phantom, and incomplete counts.
-- `LValidationReport:incompleteCount`: Returns the number of catalog APIs with incomplete documentation.
-- `LValidationReport:isValid`: Returns whether the validation report has no missing live APIs.
-- `LValidationReport:missingCount`: Returns the number of live APIs missing from the catalog.
-- `LValidationReport:phantomCount`: Returns the number of catalog APIs absent from live reflection.
-- `LValidationReport:toJSON`: Serializes this validation report to formatted JSON.
-- `LValidationReport:toTable`: Converts this validation report into a plain Lua table.
-- `LValidationReport:type`: Returns the Lua-visible type name for this validation report handle.
-- `LValidationReport:typeOf`: Returns whether this validation report handle matches a supported type name.
+- `LValidationReport:getIncomplete() -> string[]`: Returns catalog APIs whose documentation was incomplete.
+- `LValidationReport:getMissing() -> string[]`: Returns live APIs that were missing from the checked catalog.
+- `LValidationReport:getPhantom() -> string[]`: Returns catalog APIs that were not present in the live Lua table.
+- `LValidationReport:getSummary() -> string`: Returns a compact text summary of missing, phantom, and incomplete counts.
+- `LValidationReport:incompleteCount() -> integer`: Returns the number of catalog APIs with incomplete documentation.
+- `LValidationReport:isValid() -> boolean`: Returns whether the validation report has no missing live APIs.
+- `LValidationReport:missingCount() -> integer`: Returns the number of live APIs missing from the catalog.
+- `LValidationReport:phantomCount() -> integer`: Returns the number of catalog APIs absent from live reflection.
+- `LValidationReport:toJSON() -> string`: Serializes this validation report to formatted JSON.
+- `LValidationReport:toTable() -> table`: Converts this validation report into a plain Lua table.
+- `LValidationReport:type() -> string`: Returns the Lua-visible type name for this validation report handle.
+- `LValidationReport:typeOf(name) -> boolean`: Returns whether this validation report handle matches a supported type name.
 
 #### LValidationReportToTableResult Type
 
@@ -346,4 +343,3 @@ In practice, `lurek.docs` is the backbone that turns source metadata into consis
 ##### Methods
 
 - No documented methods.
-

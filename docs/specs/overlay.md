@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `overlay` module manages screen-space presentation effects in one controller: weather, atmosphere, flash, shake, fade, transitions, and water distortion.
+- Manages screen-space weather, fog, camera shakes, and screen flashes.
+- Supports wave distortion and transition wipes.
 
 ## General Info
 
@@ -16,17 +17,11 @@
 
 ## Summary
 
-The `overlay` module is the full-screen presentation layer that sits above world drawing and below final UI composition. It centralizes visual effect state so projects can apply atmosphere and feedback consistently without scattering effect logic across scenes.
+This module serves as the primary engine layer for screen-space presentation, offering a suite of visual techniques that enhance environmental storytelling and mood. It orchestrates long-lived atmospheric layers, including clouds, fog, and grain, and handles dynamic particle weather systems that respond to simulated wind direction and speed. This enables realistic settings such as falling snow or dust storms, giving developers precise artistic control over depth and visibility.
 
-Its core role is to manage multiple effect families through one runtime controller: weather particles, fog and cloud ambience, flash and shake reactions, fades, transition effects, and water-style distortion.
+To support dramatic gameplay cues, the system processes rapid camera and screen-wide interactions. It coordinates timed camera shake animations that utilize deterministic offsets, alongside colorized screen flashes, fades, and complex full-screen transitions. These transitions, including iris wipes, wipes, and dissolves, allow smooth phase changes between game states with configurable progress, duration, and color curves.
 
-Ambient color and time-driven mood control are integrated into the same surface. This helps teams align screen-space ambience with broader lighting context while keeping control in one place.
-
-Effects can be triggered as short reactions or sustained as long-lived environmental layers. Because updates are time-based and stateful, the same API can support gameplay feedback, cinematic transitions, and persistent scene mood.
-
-The module also supports practical output workflows. It can emit render commands for normal runtime composition and produce image-style previews for tooling and diagnostics.
-
-In practice, `lurek.overlay` provides one stable contract for dynamic presentation effects: schedule, update, and render screen-space ambience and feedback with predictable behavior.
+Environmental progression is achieved through ambient lighting curves and water simulation. A time-of-day system maps day phases to scene-wide tint adjustments, which can be shared with light world systems to ensure light and shadow harmony. The module also features water distortion effects, utilizing configurable wave dynamics, shallow tints, and depth shifts to create moving surface details.
 
 ## Imports
 
@@ -104,8 +99,8 @@ In practice, `lurek.overlay` provides one stable contract for dynamic presentati
 
 ### Functions
 
-- `lurek.overlay.new`: Creates an overlay controller for screen effects using optional dimensions.
-- `lurek.overlay.newTransition`: Creates a timed screen transition with optional kind, duration, and color.
+- `lurek.overlay.new(w?, h?) -> LOverlay`: Creates an overlay controller for screen effects using optional dimensions.
+- `lurek.overlay.newTransition(kind?, duration?, color_tbl?) -> LScreenTransition`: Creates a timed screen transition with optional kind, duration, and color.
 
 ### Callbacks
 
@@ -127,83 +122,83 @@ In practice, `lurek.overlay` provides one stable contract for dynamic presentati
 
 ##### Methods
 
-- `LOverlay:clear`: Clears active overlay effects and resets transient state.
-- `LOverlay:drawToImage`: Renders overlay state into an image object of the requested size.
-- `LOverlay:fade`: Starts a fade overlay with optional alpha and duration.
-- `LOverlay:flash`: Starts a short flash overlay with optional alpha and duration.
-- `LOverlay:getAmbientColor`: Returns overlay ambient RGBA color.
-- `LOverlay:getCloudCount`: Returns the overlay cloud shadow count.
-- `LOverlay:getCloudOpacity`: Returns cloud shadow opacity. This method is available to Lua scripts.
-- `LOverlay:getCloudScale`: Returns cloud shadow scale. This method is available to Lua scripts.
-- `LOverlay:getCloudSpeed`: Returns cloud shadow movement speed.
-- `LOverlay:getDimensions`: Returns the overlay dimensions. This method is available to Lua scripts.
-- `LOverlay:getFilmGrainIntensity`: Returns overlay film grain intensity.
-- `LOverlay:getFlashAlpha`: Returns the current flash alpha. This method is available to Lua scripts.
-- `LOverlay:getFogColor`: Returns overlay fog RGBA color. This method is available to Lua scripts.
-- `LOverlay:getFogDensity`: Returns overlay fog density. This method is available to Lua scripts.
-- `LOverlay:getHeatHazeIntensity`: Returns overlay heat haze intensity.
-- `LOverlay:getHeight`: Returns the overlay height. This method is available to Lua scripts.
-- `LOverlay:getLightningAlpha`: Returns the current lightning alpha.
-- `LOverlay:getLightningColor`: Returns overlay lightning RGBA color.
-- `LOverlay:getShakeOffset`: Returns the current screen shake offset.
-- `LOverlay:getTimeOfDay`: Returns the overlay time-of-day value.
-- `LOverlay:getVignetteStrength`: Returns overlay vignette strength.
-- `LOverlay:getWater`: Returns a table describing the current water effect settings.
-- `LOverlay:getWeather`: Returns the overlay weather type name.
-- `LOverlay:getWeatherIntensity`: Returns weather intensity for the current weather type.
-- `LOverlay:getWidth`: Returns the overlay width. This method is available to Lua scripts.
-- `LOverlay:getWindDirection`: Returns the overlay weather wind direction.
-- `LOverlay:getWindSpeed`: Returns the overlay weather wind speed.
-- `LOverlay:isActive`: Returns whether any overlay effect is currently active.
-- `LOverlay:isAmbientEnabled`: Returns whether overlay ambient color rendering is enabled.
-- `LOverlay:isCloudShadowsEnabled`: Returns whether overlay cloud shadow rendering is enabled.
-- `LOverlay:isFading`: Returns whether the fade overlay is active.
-- `LOverlay:isFilmGrainEnabled`: Returns whether overlay film grain rendering is enabled.
-- `LOverlay:isFlashing`: Returns whether the flash overlay is active.
-- `LOverlay:isFogEnabled`: Returns whether overlay fog rendering is enabled.
-- `LOverlay:isHeatHazeEnabled`: Returns whether overlay heat haze rendering is enabled.
-- `LOverlay:isShaking`: Returns whether the screen shake effect is active.
-- `LOverlay:isVignetteEnabled`: Returns whether overlay vignette rendering is enabled.
-- `LOverlay:isWeatherEnabled`: Returns whether overlay weather rendering is enabled.
-- `LOverlay:pullAmbientFromLight`: Copies ambient color from the shared light world into this overlay.
-- `LOverlay:pushAmbientToLight`: Copies this overlay ambient color into the shared light world.
-- `LOverlay:render`: Queues renderer commands for the overlay's current visual state.
-- `LOverlay:resize`: Resizes the overlay target dimensions.
-- `LOverlay:setAmbientColor`: Sets the overlay ambient color from RGBA channels.
-- `LOverlay:setAmbientEnabled`: Enables or disables overlay ambient color rendering.
-- `LOverlay:setCloudCount`: Sets the overlay cloud shadow count.
-- `LOverlay:setCloudOpacity`: Sets cloud shadow opacity. This method is available to Lua scripts.
-- `LOverlay:setCloudScale`: Sets cloud shadow scale. This method is available to Lua scripts.
-- `LOverlay:setCloudShadows`: Enables or disables overlay cloud shadow rendering.
-- `LOverlay:setCloudSpeed`: Sets cloud shadow movement speed. This method is available to Lua scripts.
-- `LOverlay:setCustomShader`: Sets or clears the custom overlay shader name.
-- `LOverlay:setFilmGrainEnabled`: Enables or disables overlay film grain rendering.
-- `LOverlay:setFilmGrainIntensity`: Sets overlay film grain intensity.
-- `LOverlay:setFogColor`: Sets the overlay fog color from RGBA channels.
-- `LOverlay:setFogDensity`: Sets overlay fog density. This method is available to Lua scripts.
-- `LOverlay:setFogEnabled`: Enables or disables overlay fog rendering.
-- `LOverlay:setHeatHazeEnabled`: Enables or disables overlay heat haze rendering.
-- `LOverlay:setHeatHazeIntensity`: Sets overlay heat haze intensity. This method is available to Lua scripts.
-- `LOverlay:setLightningColor`: Sets overlay lightning RGBA color.
-- `LOverlay:setTimeOfDay`: Sets the overlay time-of-day value used by ambient effects.
-- `LOverlay:setVignetteEnabled`: Enables or disables overlay vignette rendering.
-- `LOverlay:setVignetteStrength`: Sets overlay vignette strength. This method is available to Lua scripts.
-- `LOverlay:setWater`: Enables water distortion and sets wave amplitude, frequency, and speed.
-- `LOverlay:setWaterTint`: Sets the water tint color and strength.
-- `LOverlay:setWeather`: Sets the overlay weather type by name.
-- `LOverlay:setWeatherEnabled`: Enables or disables overlay weather rendering.
-- `LOverlay:setWeatherIntensity`: Sets weather intensity for the current weather type.
-- `LOverlay:setWindDirection`: Sets the overlay weather wind direction.
-- `LOverlay:setWindSpeed`: Sets the overlay weather wind speed.
-- `LOverlay:shake`: Starts a screen shake with optional duration.
-- `LOverlay:syncAmbientWithLight`: Resolves overlay and light ambient colors using a named mode and writes both stores.
-- `LOverlay:triggerFade`: Starts a fade overlay toward a target alpha.
-- `LOverlay:triggerFlash`: Starts a screen flash with explicit RGBA color and duration.
-- `LOverlay:triggerLightning`: Starts a lightning flash using the overlay lightning state.
-- `LOverlay:triggerShake`: Starts a screen shake effect. This method is available to Lua scripts.
-- `LOverlay:type`: Returns the Lua-visible type name for this overlay handle.
-- `LOverlay:typeOf`: Returns whether this overlay handle matches a supported type name.
-- `LOverlay:update`: Advances overlay timers and animated effect state.
+- `LOverlay:clear() -> nil`: Clears active overlay effects and resets transient state.
+- `LOverlay:drawToImage(w, h) -> Image`: Renders overlay state into an image object of the requested size.
+- `LOverlay:fade(r, g, b, a?, dur?) -> nil`: Starts a fade overlay with optional alpha and duration.
+- `LOverlay:flash(r, g, b, a?, dur?) -> nil`: Starts a short flash overlay with optional alpha and duration.
+- `LOverlay:getAmbientColor() -> number`: Returns overlay ambient RGBA color.
+- `LOverlay:getCloudCount() -> integer`: Returns the overlay cloud shadow count.
+- `LOverlay:getCloudOpacity() -> number`: Returns cloud shadow opacity. This method is available to Lua scripts.
+- `LOverlay:getCloudScale() -> number`: Returns cloud shadow scale. This method is available to Lua scripts.
+- `LOverlay:getCloudSpeed() -> number`: Returns cloud shadow movement speed.
+- `LOverlay:getDimensions() -> integer`: Returns the overlay dimensions. This method is available to Lua scripts.
+- `LOverlay:getFilmGrainIntensity() -> number`: Returns overlay film grain intensity.
+- `LOverlay:getFlashAlpha() -> number`: Returns the current flash alpha. This method is available to Lua scripts.
+- `LOverlay:getFogColor() -> number`: Returns overlay fog RGBA color. This method is available to Lua scripts.
+- `LOverlay:getFogDensity() -> number`: Returns overlay fog density. This method is available to Lua scripts.
+- `LOverlay:getHeatHazeIntensity() -> number`: Returns overlay heat haze intensity.
+- `LOverlay:getHeight() -> integer`: Returns the overlay height. This method is available to Lua scripts.
+- `LOverlay:getLightningAlpha() -> number`: Returns the current lightning alpha.
+- `LOverlay:getLightningColor() -> number`: Returns overlay lightning RGBA color.
+- `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
+- `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
+- `LOverlay:getVignetteStrength() -> number`: Returns overlay vignette strength.
+- `LOverlay:getWater() -> table`: Returns a table describing the current water effect settings.
+- `LOverlay:getWeather() -> string`: Returns the overlay weather type name.
+- `LOverlay:getWeatherIntensity() -> number`: Returns weather intensity for the current weather type.
+- `LOverlay:getWidth() -> integer`: Returns the overlay width. This method is available to Lua scripts.
+- `LOverlay:getWindDirection() -> number`: Returns the overlay weather wind direction.
+- `LOverlay:getWindSpeed() -> number`: Returns the overlay weather wind speed.
+- `LOverlay:isActive() -> boolean`: Returns whether any overlay effect is currently active.
+- `LOverlay:isAmbientEnabled() -> boolean`: Returns whether overlay ambient color rendering is enabled.
+- `LOverlay:isCloudShadowsEnabled() -> boolean`: Returns whether overlay cloud shadow rendering is enabled.
+- `LOverlay:isFading() -> boolean`: Returns whether the fade overlay is active.
+- `LOverlay:isFilmGrainEnabled() -> boolean`: Returns whether overlay film grain rendering is enabled.
+- `LOverlay:isFlashing() -> boolean`: Returns whether the flash overlay is active.
+- `LOverlay:isFogEnabled() -> boolean`: Returns whether overlay fog rendering is enabled.
+- `LOverlay:isHeatHazeEnabled() -> boolean`: Returns whether overlay heat haze rendering is enabled.
+- `LOverlay:isShaking() -> boolean`: Returns whether the screen shake effect is active.
+- `LOverlay:isVignetteEnabled() -> boolean`: Returns whether overlay vignette rendering is enabled.
+- `LOverlay:isWeatherEnabled() -> boolean`: Returns whether overlay weather rendering is enabled.
+- `LOverlay:pullAmbientFromLight() -> nil`: Copies ambient color from the shared light world into this overlay.
+- `LOverlay:pushAmbientToLight() -> nil`: Copies this overlay ambient color into the shared light world.
+- `LOverlay:render() -> nil`: Queues renderer commands for the overlay's current visual state.
+- `LOverlay:resize(w, h) -> nil`: Resizes the overlay target dimensions.
+- `LOverlay:setAmbientColor(r, g, b, a?) -> nil`: Sets the overlay ambient color from RGBA channels.
+- `LOverlay:setAmbientEnabled(v) -> nil`: Enables or disables overlay ambient color rendering.
+- `LOverlay:setCloudCount(v) -> nil`: Sets the overlay cloud shadow count.
+- `LOverlay:setCloudOpacity(v) -> nil`: Sets cloud shadow opacity. This method is available to Lua scripts.
+- `LOverlay:setCloudScale(v) -> nil`: Sets cloud shadow scale. This method is available to Lua scripts.
+- `LOverlay:setCloudShadows(v) -> nil`: Enables or disables overlay cloud shadow rendering.
+- `LOverlay:setCloudSpeed(v) -> nil`: Sets cloud shadow movement speed. This method is available to Lua scripts.
+- `LOverlay:setCustomShader(name?) -> nil`: Sets or clears the custom overlay shader name.
+- `LOverlay:setFilmGrainEnabled(v) -> nil`: Enables or disables overlay film grain rendering.
+- `LOverlay:setFilmGrainIntensity(v) -> nil`: Sets overlay film grain intensity.
+- `LOverlay:setFogColor(r, g, b, a?) -> nil`: Sets the overlay fog color from RGBA channels.
+- `LOverlay:setFogDensity(v) -> nil`: Sets overlay fog density. This method is available to Lua scripts.
+- `LOverlay:setFogEnabled(v) -> nil`: Enables or disables overlay fog rendering.
+- `LOverlay:setHeatHazeEnabled(v) -> nil`: Enables or disables overlay heat haze rendering.
+- `LOverlay:setHeatHazeIntensity(v) -> nil`: Sets overlay heat haze intensity. This method is available to Lua scripts.
+- `LOverlay:setLightningColor(r, g, b, a?) -> nil`: Sets overlay lightning RGBA color.
+- `LOverlay:setTimeOfDay(v) -> nil`: Sets the overlay time-of-day value used by ambient effects.
+- `LOverlay:setVignetteEnabled(v) -> nil`: Enables or disables overlay vignette rendering.
+- `LOverlay:setVignetteStrength(v) -> nil`: Sets overlay vignette strength. This method is available to Lua scripts.
+- `LOverlay:setWater(amplitude, frequency, speed) -> nil`: Enables water distortion and sets wave amplitude, frequency, and speed.
+- `LOverlay:setWaterTint(r, g, b, strength) -> nil`: Sets the water tint color and strength.
+- `LOverlay:setWeather(name) -> nil`: Sets the overlay weather type by name.
+- `LOverlay:setWeatherEnabled(v) -> nil`: Enables or disables overlay weather rendering.
+- `LOverlay:setWeatherIntensity(v) -> nil`: Sets weather intensity for the current weather type.
+- `LOverlay:setWindDirection(v) -> nil`: Sets the overlay weather wind direction.
+- `LOverlay:setWindSpeed(v) -> nil`: Sets the overlay weather wind speed.
+- `LOverlay:shake(intensity, dur?) -> nil`: Starts a screen shake with optional duration.
+- `LOverlay:syncAmbientWithLight(mode) -> nil`: Resolves overlay and light ambient colors using a named mode and writes both stores.
+- `LOverlay:triggerFade(r, g, b, target_alpha, duration) -> nil`: Starts a fade overlay toward a target alpha.
+- `LOverlay:triggerFlash(r, g, b, a, duration) -> nil`: Starts a screen flash with explicit RGBA color and duration.
+- `LOverlay:triggerLightning() -> nil`: Starts a lightning flash using the overlay lightning state.
+- `LOverlay:triggerShake(intensity, duration) -> nil`: Starts a screen shake effect. This method is available to Lua scripts.
+- `LOverlay:type() -> string`: Returns the Lua-visible type name for this overlay handle.
+- `LOverlay:typeOf(name) -> boolean`: Returns whether this overlay handle matches a supported type name.
+- `LOverlay:update(dt) -> nil`: Advances overlay timers and animated effect state.
 
 #### LOverlayGetWaterResult Type
 
@@ -239,14 +234,14 @@ In practice, `lurek.overlay` provides one stable contract for dynamic presentati
 
 ##### Methods
 
-- `LScreenTransition:color`: Returns the transition RGBA color.
-- `LScreenTransition:isActive`: Returns whether the transition is currently active.
-- `LScreenTransition:isDone`: Returns whether the transition has finished.
-- `LScreenTransition:kind`: Returns the transition kind name. This method is available to Lua scripts.
-- `LScreenTransition:play`: Starts this screen transition forward from its current state.
-- `LScreenTransition:progress`: Returns normalized transition progress.
-- `LScreenTransition:reverse`: Starts this screen transition in reverse from its current state.
-- `LScreenTransition:setColor`: Sets the transition RGBA color from a numeric array table.
-- `LScreenTransition:type`: Returns the Lua-visible type name for this transition handle.
-- `LScreenTransition:typeOf`: Returns whether this transition handle matches a supported type name.
-- `LScreenTransition:update`: Advances this transition timer and returns whether it remains active.
+- `LScreenTransition:color() -> number`: Returns the transition RGBA color.
+- `LScreenTransition:isActive() -> boolean`: Returns whether the transition is currently active.
+- `LScreenTransition:isDone() -> boolean`: Returns whether the transition has finished.
+- `LScreenTransition:kind() -> string`: Returns the transition kind name. This method is available to Lua scripts.
+- `LScreenTransition:play() -> nil`: Starts this screen transition forward from its current state.
+- `LScreenTransition:progress() -> number`: Returns normalized transition progress.
+- `LScreenTransition:reverse() -> nil`: Starts this screen transition in reverse from its current state.
+- `LScreenTransition:setColor(color) -> nil`: Sets the transition RGBA color from a numeric array table.
+- `LScreenTransition:type() -> string`: Returns the Lua-visible type name for this transition handle.
+- `LScreenTransition:typeOf(name) -> boolean`: Returns whether this transition handle matches a supported type name.
+- `LScreenTransition:update(dt) -> boolean`: Advances this transition timer and returns whether it remains active.

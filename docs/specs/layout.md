@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `layout` module computes 2D node positions for trees and graphs using deterministic tree, DAG, and force-directed strategies.
+- Computes graph layouts with grid snapping.
 
 ## General Info
 
@@ -16,11 +16,9 @@
 
 ## Summary
 
-The `layout` module computes deterministic 2D coordinates for graph-style UI data.
+This module provides graph and hierarchy layouts to compute 2D coordinates for nodes. It offers layered placement for directed graphs to reduce crossings, recursive allocations for compact trees, and force-directed simulations that arrange relation webs organically.
 
-It supports tree, layered DAG, and force-directed strategies, so each data shape can use a matching layout method.
-
-Grid snapping and area-centering helpers normalize output for editor and HUD presentation. In practice, `lurek.layout` gives one reusable positioning contract for node graphs.
+For visual polish, the system features grid snapping and centering. These snap coordinates to consistent grids and center diagrams inside view targets without altering topology, ensuring clean, readable node arrangements.
 
 ## Imports
 
@@ -76,11 +74,11 @@ Grid snapping and area-centering helpers normalize output for editor and HUD pre
 
 ### Functions
 
-- `lurek.layout.centerInArea`: Centers the layout within a given area.
-- `lurek.layout.dag`: Lays out a DAG using the Sugiyama layered algorithm.
-- `lurek.layout.force`: Lays out a graph using force-directed Fruchterman-Reingold simulation.
-- `lurek.layout.snapToGrid`: Snaps all node positions to the nearest grid point.
-- `lurek.layout.tree`: Lays out a tree using the Reingold-Tilford algorithm.
+- `lurek.layout.centerInArea(result, width, height) -> table`: Centers the layout within a given area.
+- `lurek.layout.dag(nodes, edges, config?) -> table`: Lays out a DAG using the Sugiyama layered algorithm.
+- `lurek.layout.force(nodes, edges, config?) -> table`: Lays out a graph using force-directed Fruchterman-Reingold simulation.
+- `lurek.layout.snapToGrid(result, gridSize) -> table`: Snaps all node positions to the nearest grid point.
+- `lurek.layout.tree(nodes, children, root, config) -> table`: Lays out a tree using the Reingold-Tilford algorithm.
 
 ### Callbacks
 

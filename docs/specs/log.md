@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `log` module is the structured logging backbone for runtime diagnostics, with level gating and pluggable sinks.
+- Runs structured logs with level-filtered sinks.
 
 ## General Info
 
@@ -16,11 +16,9 @@
 
 ## Summary
 
-The `log` module is the shared diagnostics pipeline for engine and Lua messages.
+This module provides structured logging, letting developers filter and route runtime messages. It hosts a logging facade that dispatches level-tagged entries and key-value fields. Enforcing severity gates early minimizes performance overhead, keeping diagnostics highly efficient.
 
-It applies level-gated filtering before costly formatting, then routes accepted entries to configured sinks such as memory buffers, rotating files, or callbacks.
-
-Structured fields and tags are supported, so logs stay useful for both live debugging and machine analysis. In practice, `lurek.log` provides one stable surface for emitting, filtering, and inspecting runtime diagnostics.
+To direct outputs, the system manages a sink registry. Logs can target console streams, memory buffers, or rotating files in plain text, JSON, or NDJSON formats, serving both human inspectors and automated analysis tools.
 
 ## Imports
 
@@ -58,24 +56,24 @@ Structured fields and tags are supported, so logs stay useful for both live debu
 
 ### Functions
 
-- `lurek.log.addSink`: Adds a memory, file, rotating, or callback sink from a config table.
-- `lurek.log.clearSinks`: Removes all sinks and releases callback registry keys.
-- `lurek.log.debug`: Logs a debug message with an optional tag.
-- `lurek.log.debug_fields`: Logs a debug message with structured fields.
-- `lurek.log.error`: Logs an error message with an optional tag.
-- `lurek.log.error_fields`: Logs an error message with structured fields.
-- `lurek.log.flushFile`: Flushes a file-backed sink by id when it exists.
-- `lurek.log.getLevel`: Returns the global log level string.
-- `lurek.log.info`: Logs an info message with an optional tag.
-- `lurek.log.info_fields`: Logs an info message with structured fields.
-- `lurek.log.listSinks`: Returns metadata for all registered sinks.
-- `lurek.log.print`: Logs a message at a runtime-selected level with an optional tag.
-- `lurek.log.readMemory`: Reads entries from a memory sink and optionally drains them.
-- `lurek.log.removeSink`: Removes a sink by id and releases any callback registry key.
-- `lurek.log.setLevel`: Sets the global log level. This function is exposed to Lua scripts.
-- `lurek.log.struct`: Logs a structured message at a runtime-selected level.
-- `lurek.log.warn`: Logs a warning message with an optional tag.
-- `lurek.log.warn_fields`: Logs a warning message with structured fields.
+- `lurek.log.addSink(config) -> integer`: Adds a memory, file, rotating, or callback sink from a config table.
+- `lurek.log.clearSinks() -> nil`: Removes all sinks and releases callback registry keys.
+- `lurek.log.debug(message, tag?) -> nil`: Logs a debug message with an optional tag.
+- `lurek.log.debug_fields(message, fields_tbl) -> nil`: Logs a debug message with structured fields.
+- `lurek.log.error(message, tag?) -> nil`: Logs an error message with an optional tag.
+- `lurek.log.error_fields(message, fields_tbl) -> nil`: Logs an error message with structured fields.
+- `lurek.log.flushFile(id) -> nil`: Flushes a file-backed sink by id when it exists.
+- `lurek.log.getLevel() -> string`: Returns the global log level string.
+- `lurek.log.info(message, tag?) -> nil`: Logs an info message with an optional tag.
+- `lurek.log.info_fields(message, fields_tbl) -> nil`: Logs an info message with structured fields.
+- `lurek.log.listSinks() -> table`: Returns metadata for all registered sinks.
+- `lurek.log.print(level, message, tag?) -> nil`: Logs a message at a runtime-selected level with an optional tag.
+- `lurek.log.readMemory(id, drain?) -> table`: Reads entries from a memory sink and optionally drains them.
+- `lurek.log.removeSink(id) -> boolean`: Removes a sink by id and releases any callback registry key.
+- `lurek.log.setLevel(level) -> nil`: Sets the global log level. This function is exposed to Lua scripts.
+- `lurek.log.struct(level_str, message, fields_tbl) -> nil`: Logs a structured message at a runtime-selected level.
+- `lurek.log.warn(message, tag?) -> nil`: Logs a warning message with an optional tag.
+- `lurek.log.warn_fields(message, fields_tbl) -> nil`: Logs a warning message with structured fields.
 
 ### Callbacks
 

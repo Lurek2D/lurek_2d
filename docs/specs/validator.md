@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `validator` module is a parallel, rule-based static analysis engine for Lua game scripts with built-in checks for asset existence, import resolution, and API compliance.
+- Static validator verifying APIs, assets, and imports.
 
 ## General Info
 
@@ -16,11 +16,9 @@
 
 ## Summary
 
-The `validator` module equips developers and CI pipelines with a structured static analysis engine for Lua game scripts. The central `ValidationEngine` is configured via `ValidatorConfig` (deserialized from a `[validator]` TOML block) and orchestrates a set of `ValidationRule` implementations over a file tree in parallel using a Rayon worker pool. Thread count defaults to the configured value; 0 forces synchronous single-threaded mode.
+This module provides a static analysis engine designed to inspect Lua projects before runtime. By scanning source files statically, it identifies API compliance issues, broken module imports, and missing asset references early. The validation orchestrator lets teams enforce clean code standards by combining built-in checks with customizable rules.
 
-Three built-in rule types cover the most common correctness checks. The `ApiComplianceRule` inspects each `lurek.*` call site against an `ApiRegistry` loaded at startup, flagging unknown function names as `Severity::Error` and wrong argument counts as `Severity::Warning`. The `AssetExistenceRule` pattern-matches `lurek.asset.load("path")` calls and verifies each path via `GameFS::exists` without decoding the asset — missing files produce errors, likely typos produce warnings. The `ImportResolutionRule` scans for `require("path")` calls via regex, resolving each against the game's configured `lua_paths` to catch missing module files before runtime.
-
-Beyond built-in rules, the engine supports extensibility in two directions. TOML rule files (loaded via `load_rules_from_file`) specify `[[rule]]` arrays with pattern, severity, message, and optional file-extension filter — ideal for project-specific naming conventions or forbidden API patterns. Lua callbacks registered via `lurek.validator.add_rule` inject `LuaPatternRule` adapters, letting game teams write script-side rules without recompiling. Results are collected into a `ValidationReport` containing `Vec<Violation>` with file path, line number, severity, and an optional suggestion string. The `lurek.validator.*` API exposes engine creation, rule registration, single-file and tree-wide validation runs, and report display.
+To handle large projects, the system runs checks across parallel threads and aggregates findings into structured diagnostic reports. These reports capture the location, severity, and context of each violation, feeding directly into local workflows and automated quality pipelines. Extensible rules can be loaded from TOML files or custom scripts.
 
 ## Imports
 
@@ -110,9 +108,9 @@ Beyond built-in rules, the engine supports extensibility in two directions. TOML
 
 ### Functions
 
-- `lurek.validator.newEngine`: Creates a new validation engine rooted at the given filesystem path.
-- `lurek.validator.validate`: Runs all validation rules against a project root directory and returns a report table.
-- `lurek.validator.validateFile`: Runs API validation rules against a single Lua file and returns a report table.
+- `lurek.validator.newEngine(root) -> LValidationEngine`: Creates a new validation engine rooted at the given filesystem path.
+- `lurek.validator.validate(path) -> table`: Runs all validation rules against a project root directory and returns a report table.
+- `lurek.validator.validateFile(path) -> table`: Runs API validation rules against a single Lua file and returns a report table.
 
 ### Callbacks
 
@@ -134,12 +132,12 @@ Beyond built-in rules, the engine supports extensibility in two directions. TOML
 
 ##### Methods
 
-- `LValidationEngine:addApiRule`: Add the built-in API compliance rule.
-- `LValidationEngine:addAssetRule`: Add the built-in asset existence rule.
-- `LValidationEngine:addImportRule`: Add the built-in import resolution rule.
-- `LValidationEngine:addPatternRule`: Add a custom regex pattern rule to the validation engine.
-- `LValidationEngine:addRequiredRule`: Add a required pattern rule (violation if pattern NOT found).
-- `LValidationEngine:loadTomlRules`: Load validation rules from a TOML-formatted rule file.
-- `LValidationEngine:ruleCount`: Get number of loaded rules for this object.
-- `LValidationEngine:run`: Run validation against all Lua files under root.
-- `LValidationEngine:runFile`: Run validation against a single file.
+- `LValidationEngine:addApiRule() -> nil`: Add the built-in API compliance rule.
+- `LValidationEngine:addAssetRule(asset_root) -> nil`: Add the built-in asset existence rule.
+- `LValidationEngine:addImportRule(paths) -> nil`: Add the built-in import resolution rule.
+- `LValidationEngine:addPatternRule(id, pattern, message, severity) -> nil`: Add a custom regex pattern rule to the validation engine.
+- `LValidationEngine:addRequiredRule(id, pattern, message) -> nil`: Add a required pattern rule (violation if pattern NOT found).
+- `LValidationEngine:loadTomlRules(path) -> nil`: Load validation rules from a TOML-formatted rule file.
+- `LValidationEngine:ruleCount() -> integer`: Get number of loaded rules for this object.
+- `LValidationEngine:run() -> table`: Run validation against all Lua files under root.
+- `LValidationEngine:runFile(path) -> table`: Run validation against a single file.

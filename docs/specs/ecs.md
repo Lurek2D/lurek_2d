@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `ecs` module provides a Lua-first Entity-Component-System runtime with safe entity IDs, component storage, relationships, and universe-level query and lifecycle tools.
+- Manages an Entity-Component-System database with generational IDs.
+- Supports hierarchies, relationships, phase-aware systems, and snapshots.
 
 ## General Info
 
@@ -16,15 +17,13 @@
 
 ## Summary
 
-The `ecs` module is the structured world-state layer for entity-driven gameplay. It keeps entities, components, tags, hierarchy, and relationship data in one runtime model so systems can read and update state consistently.
+This module provides the Entity-Component-System framework, serving as the central database and simulation coordinator for the game world. It tracks entity lifecycles using generational IDs, which prevent dangling references when slots are reused. Component data is stored in flexible tables, exposing optimized methods to set, query, and remove components dynamically during runtime updates.
 
-Its identity model is built for safety and long sessions. Generational entity IDs reduce stale-handle errors, while component storage stays script-friendly through Lua-table payloads and predictable lookup behavior.
+To organize the game world, the module supports hierarchical parent-child nesting, layers, and tag-based grouping. Entities can be grouped using fast bitmap tags for low-cost queries, while a relation tracking system maps directed or unordered connections between entities. This allows gameplay systems to reason about structured ownership and network routing directly within the world model.
 
-At universe level, the module supports full lifecycle operations: spawn, remove, set and get components, assign tags and layers, manage parent-child links, and run component-based queries. Blueprint and bulk-spawn utilities help scale content creation without duplicating setup code.
+Data processing is optimized through advanced queries with inclusion and exclusion filters, allowing systems to locate entities efficiently. The module orchestrates systems using a phase-aware scheduler. Systems are registered with custom priorities, and the engine executes them in a topologically sorted order across update and render cycles to guarantee deterministic behaviors.
 
-It also provides relationship and system-ordering helpers so projects can represent links between entities and execute system phases in deterministic order. Snapshot and diff utilities make debugging and tooling integration easier.
-
-In practice, `lurek.ecs` gives one dependable contract for simulation state: structured data ownership, deterministic queries, and controlled mutation over time.
+To support data-driven workflows, the system implements blueprints, bulk-spawning routines, and snapshot serialization. Blueprints act as templates supporting overrides, letting developers instantiate large batches of entities easily. Finally, the snapshot manager captures incremental diffs and serialized states, making it simple to save, restore, or synchronize world states.
 
 ## Imports
 
@@ -101,7 +100,7 @@ In practice, `lurek.ecs` gives one dependable contract for simulation state: str
 
 ### Functions
 
-- `lurek.ecs.newUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
+- `lurek.ecs.newUniverse() -> LUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
 
 ### Callbacks
 
@@ -126,74 +125,74 @@ In practice, `lurek.ecs` gives one dependable contract for simulation state: str
 
 ##### Methods
 
-- `LUniverse:addRelation`: Adds a named directed relation from one entity to another.
-- `LUniverse:addSystem`: Registers a Lua system table with optional phase, priority, name, and dependency metadata.
-- `LUniverse:addTag`: Assigns a string tag name to an entity in this universe.
-- `LUniverse:applySnapshot`: Replaces this universe state from a Lua table snapshot.
-- `LUniverse:bitmapTag`: Adds a bitmap tag to an entity, defining the tag if needed.
-- `LUniverse:bitmapUntag`: Removes a bitmap tag from an entity.
-- `LUniverse:clear`: Clears all entities, components, systems, and ECS state from this universe.
-- `LUniverse:clearRelations`: Removes every target for one named relation from an entity.
-- `LUniverse:defineBlueprint`: Defines a named entity blueprint from a component table.
-- `LUniverse:defineTag`: Defines a bitmap tag name and assigns it a bit slot.
-- `LUniverse:deserialize`: Replaces this universe state from a serialized Lua snapshot.
-- `LUniverse:each`: Iterates entities with one component and calls a Lua callback for each match.
-- `LUniverse:emit`: Calls matching event-named functions on registered systems.
-- `LUniverse:extendBlueprint`: Defines a blueprint that inherits from a parent blueprint and applies overrides.
-- `LUniverse:flushObservers`: Delivers queued component add and remove events to registered observer callbacks.
-- `LUniverse:get`: Returns a component value from an entity.
-- `LUniverse:getBitmapTagBit`: Returns the bit index assigned to a bitmap tag name.
-- `LUniverse:getBlueprintComponents`: Returns the component table stored for a blueprint.
-- `LUniverse:getChildren`: Returns child entity ids for a parent entity.
-- `LUniverse:getComponents`: Returns component names currently stored on an entity.
-- `LUniverse:getDirtyEntities`: Returns entities marked dirty by recent ECS mutations.
-- `LUniverse:getEntities`: Returns all live entity ids in this universe.
-- `LUniverse:getEntitiesByLayer`: Returns entities assigned to a numeric layer.
-- `LUniverse:getEntitiesByTag`: Returns entities that have a string tag.
-- `LUniverse:getEntitiesSorted`: Returns live entities sorted by ECS layer and stable entity ordering.
-- `LUniverse:getEntityCount`: Returns the number of live entities in this universe.
-- `LUniverse:getLayer`: Returns the numeric layer assigned to an entity.
-- `LUniverse:getParent`: Returns the parent entity id for a child entity.
-- `LUniverse:getRelated`: Returns targets linked from an entity by a named relation.
-- `LUniverse:getSystemCount`: Returns the number of registered systems.
-- `LUniverse:getTags`: Returns string tags assigned to an entity.
-- `LUniverse:has`: Returns whether an entity has a named component.
-- `LUniverse:hasBitmapTag`: Returns whether an entity has a bitmap tag.
-- `LUniverse:hasBlueprint`: Returns whether a named blueprint exists.
-- `LUniverse:hasRelation`: Returns whether a named directed relation exists between two entities.
-- `LUniverse:hasTag`: Returns whether an entity has a string tag.
-- `LUniverse:isAlive`: Returns whether an entity id currently exists in this universe.
-- `LUniverse:kill`: Deletes an entity and removes its components from this universe.
-- `LUniverse:killRecursive`: Deletes an entity and all descendant entities in its hierarchy.
-- `LUniverse:listBlueprints`: Returns names of all registered blueprints.
-- `LUniverse:onComponentAdded`: Registers a callback for queued component-add events with a given component name.
-- `LUniverse:onComponentRemoved`: Registers a callback for queued component-remove events with a given component name.
-- `LUniverse:query`: Returns entities that have all component names passed as varargs.
-- `LUniverse:queryBitmapAll`: Returns entities that have every bitmap tag from a list.
-- `LUniverse:queryBitmapAny`: Returns entities with at least one bitmap tag from a list.
-- `LUniverse:queryBitmapTag`: Returns entities with one bitmap tag.
-- `LUniverse:queryMulti`: Iterates entities that have all component names from a table.
-- `LUniverse:queryNot`: Returns entities that include one component set and exclude another component set.
-- `LUniverse:release`: Releases universe contents by clearing all ECS state.
-- `LUniverse:remove`: Removes a named component from an entity.
-- `LUniverse:removeBlueprint`: Removes a named blueprint from this universe.
-- `LUniverse:removeRelation`: Removes a named directed relation between two entities.
-- `LUniverse:removeSystem`: Removes a previously registered Lua system table.
-- `LUniverse:removeTag`: Removes a string tag from an entity.
-- `LUniverse:render`: Runs registered render-phase systems using their render or draw callbacks.
-- `LUniverse:serialize`: Serializes this universe into a Lua table snapshot.
-- `LUniverse:set`: Stores or replaces a component value on an entity.
-- `LUniverse:setLayer`: Assigns a numeric layer to an entity.
-- `LUniverse:setParent`: Sets or clears the parent entity for a child entity.
-- `LUniverse:snapshot`: Serializes this universe into a Lua table snapshot.
-- `LUniverse:spawn`: Creates a new entity in this universe.
-- `LUniverse:spawnBlueprint`: Spawns an entity from a named blueprint with optional component overrides.
-- `LUniverse:spawnBulk`: Spawns multiple entities from a blueprint using shared optional overrides.
-- `LUniverse:takeSnapshotDiff`: Returns and clears accumulated ECS snapshot diff data.
-- `LUniverse:type`: Returns the Lua-visible type name for this universe handle.
-- `LUniverse:typeOf`: Returns whether this universe handle matches a supported type name.
-- `LUniverse:update`: Runs registered update-phase systems with a frame delta.
-- `LUniverse:updatePhase`: Runs registered systems assigned to a named phase.
+- `LUniverse:addRelation(from, name, to) -> nil`: Adds a named directed relation from one entity to another.
+- `LUniverse:addSystem(system, opts?) -> nil`: Registers a Lua system table with optional phase, priority, name, and dependency metadata.
+- `LUniverse:addTag(id, tag) -> nil`: Assigns a string tag name to an entity in this universe.
+- `LUniverse:applySnapshot(snapshot) -> nil`: Replaces this universe state from a Lua table snapshot.
+- `LUniverse:bitmapTag(id, name) -> integer`: Adds a bitmap tag to an entity, defining the tag if needed.
+- `LUniverse:bitmapUntag(id, name) -> nil`: Removes a bitmap tag from an entity.
+- `LUniverse:clear() -> nil`: Clears all entities, components, systems, and ECS state from this universe.
+- `LUniverse:clearRelations(from, name) -> nil`: Removes every target for one named relation from an entity.
+- `LUniverse:defineBlueprint(name, components) -> nil`: Defines a named entity blueprint from a component table.
+- `LUniverse:defineTag(name) -> integer`: Defines a bitmap tag name and assigns it a bit slot.
+- `LUniverse:deserialize(snapshot) -> nil`: Replaces this universe state from a serialized Lua snapshot.
+- `LUniverse:each(name, callback) -> nil`: Iterates entities with one component and calls a Lua callback for each match.
+- `LUniverse:emit(event, ...) -> nil`: Calls matching event-named functions on registered systems.
+- `LUniverse:extendBlueprint(name, parent, overrides) -> nil`: Defines a blueprint that inherits from a parent blueprint and applies overrides.
+- `LUniverse:flushObservers() -> nil`: Delivers queued component add and remove events to registered observer callbacks.
+- `LUniverse:get(id, name) -> table|number|string|boolean|nil`: Returns a component value from an entity.
+- `LUniverse:getBitmapTagBit(name) -> integer`: Returns the bit index assigned to a bitmap tag name.
+- `LUniverse:getBlueprintComponents(name) -> table`: Returns the component table stored for a blueprint.
+- `LUniverse:getChildren(parent_id) -> integer[]`: Returns child entity ids for a parent entity.
+- `LUniverse:getComponents(id) -> string[]`: Returns component names currently stored on an entity.
+- `LUniverse:getDirtyEntities() -> integer[]`: Returns entities marked dirty by recent ECS mutations.
+- `LUniverse:getEntities() -> integer[]`: Returns all live entity ids in this universe.
+- `LUniverse:getEntitiesByLayer(layer) -> integer[]`: Returns entities assigned to a numeric layer.
+- `LUniverse:getEntitiesByTag(tag) -> integer[]`: Returns entities that have a string tag.
+- `LUniverse:getEntitiesSorted() -> integer[]`: Returns live entities sorted by ECS layer and stable entity ordering.
+- `LUniverse:getEntityCount() -> integer`: Returns the number of live entities in this universe.
+- `LUniverse:getLayer(id) -> integer`: Returns the numeric layer assigned to an entity.
+- `LUniverse:getParent(child_id) -> integer`: Returns the parent entity id for a child entity.
+- `LUniverse:getRelated(from, name) -> integer[]`: Returns targets linked from an entity by a named relation.
+- `LUniverse:getSystemCount() -> integer`: Returns the number of registered systems.
+- `LUniverse:getTags(id) -> string[]`: Returns string tags assigned to an entity.
+- `LUniverse:has(id, name) -> boolean`: Returns whether an entity has a named component.
+- `LUniverse:hasBitmapTag(id, name) -> boolean`: Returns whether an entity has a bitmap tag.
+- `LUniverse:hasBlueprint(name) -> boolean`: Returns whether a named blueprint exists.
+- `LUniverse:hasRelation(from, name, to) -> boolean`: Returns whether a named directed relation exists between two entities.
+- `LUniverse:hasTag(id, tag) -> boolean`: Returns whether an entity has a string tag.
+- `LUniverse:isAlive(id) -> boolean`: Returns whether an entity id currently exists in this universe.
+- `LUniverse:kill(id) -> nil`: Deletes an entity and removes its components from this universe.
+- `LUniverse:killRecursive(id) -> nil`: Deletes an entity and all descendant entities in its hierarchy.
+- `LUniverse:listBlueprints() -> string[]`: Returns names of all registered blueprints.
+- `LUniverse:onComponentAdded(name, cb) -> nil`: Registers a callback for queued component-add events with a given component name.
+- `LUniverse:onComponentRemoved(name, cb) -> nil`: Registers a callback for queued component-remove events with a given component name.
+- `LUniverse:query(...) -> integer[]`: Returns entities that have all component names passed as varargs.
+- `LUniverse:queryBitmapAll(names) -> integer[]`: Returns entities that have every bitmap tag from a list.
+- `LUniverse:queryBitmapAny(names) -> integer[]`: Returns entities with at least one bitmap tag from a list.
+- `LUniverse:queryBitmapTag(name) -> integer[]`: Returns entities with one bitmap tag.
+- `LUniverse:queryMulti(names_table, callback) -> nil`: Iterates entities that have all component names from a table.
+- `LUniverse:queryNot(with_tbl, without_tbl) -> integer[]`: Returns entities that include one component set and exclude another component set.
+- `LUniverse:release() -> nil`: Releases universe contents by clearing all ECS state.
+- `LUniverse:remove(id, name) -> nil`: Removes a named component from an entity.
+- `LUniverse:removeBlueprint(name) -> boolean`: Removes a named blueprint from this universe.
+- `LUniverse:removeRelation(from, name, to) -> nil`: Removes a named directed relation between two entities.
+- `LUniverse:removeSystem(system) -> nil`: Removes a previously registered Lua system table.
+- `LUniverse:removeTag(id, tag) -> nil`: Removes a string tag from an entity.
+- `LUniverse:render() -> nil`: Runs registered render-phase systems using their render or draw callbacks.
+- `LUniverse:serialize() -> table`: Serializes this universe into a Lua table snapshot.
+- `LUniverse:set(id, name, value) -> nil`: Stores or replaces a component value on an entity.
+- `LUniverse:setLayer(id, layer) -> nil`: Assigns a numeric layer to an entity.
+- `LUniverse:setParent(child_id, parent_id?) -> nil`: Sets or clears the parent entity for a child entity.
+- `LUniverse:snapshot() -> table`: Serializes this universe into a Lua table snapshot.
+- `LUniverse:spawn() -> integer`: Creates a new entity in this universe.
+- `LUniverse:spawnBlueprint(name, overrides?) -> integer`: Spawns an entity from a named blueprint with optional component overrides.
+- `LUniverse:spawnBulk(name, count, overrides?) -> integer[]`: Spawns multiple entities from a blueprint using shared optional overrides.
+- `LUniverse:takeSnapshotDiff() -> table`: Returns and clears accumulated ECS snapshot diff data.
+- `LUniverse:type() -> string`: Returns the Lua-visible type name for this universe handle.
+- `LUniverse:typeOf(name) -> boolean`: Returns whether this universe handle matches a supported type name.
+- `LUniverse:update(dt) -> nil`: Runs registered update-phase systems with a frame delta.
+- `LUniverse:updatePhase(phase, dt) -> nil`: Runs registered systems assigned to a named phase.
 
 #### LUniverseSerializeResult Type
 
@@ -237,4 +236,3 @@ In practice, `lurek.ecs` gives one dependable contract for simulation state: str
 ##### Methods
 
 - No documented methods.
-

@@ -2,7 +2,8 @@
 
 ## TL;DR
 
-- The `network` module provides multiplayer host networking and service communication in one stack: session transport, HTTP/WebSocket/SSE, relay tools, and sync helpers.
+- Manages ENet UDP hosts, TCP/WebSocket pools, and ureq-backed HTTP/SSE channels.
+- Coordinates MessagePack messaging, linear predictions, and snapshot syncs.
 
 ## General Info
 
@@ -16,19 +17,13 @@
 
 ## Summary
 
-The `network` module is the communication backbone for connected gameplay and remote services. It combines multiplayer session transport and service-facing protocols in one runtime surface, so scripts do not need separate networking stacks for each use case.
+This module represents the network communication and multiplayer transport subsystem, enabling real-time game coordination across host sessions. It wraps ENet bindings to handle low-level UDP sockets, connection lifecycles, and multi-channel packet delivery. By abstracting host behaviors into server, client, or combined host configurations, the engine manages connection slotting, disconnect sequences, and round-trip statistics seamlessly.
 
-Its practical design keeps blocking I/O off the frame-critical path. Background networking components handle transport work and return structured responses through channel-based flows, which helps maintain stable frame timing under real network latency.
+To isolate network latency from main-loop timings, the module operates on a background network thread. MPSC queues isolate message transfers, ensuring the game loop remains responsive during socket blockages. This thread drives non-blocking TCP connections and WebSocket pools, managing secure handshakes and frame exchanges. Additionally, ureq-backed HTTP agents handle synchronous queries and Server-Sent Event push streams in parallel.
 
-For multiplayer sessions, the module provides host/client behavior, peer events, and message routing with consistent lifecycle signals. This gives gameplay code one predictable model for connection, disconnection, and payload handling.
+Multiplayer states are synchronized using authoritative entity snapshots and client reconciliation. The system captures object positions, stepping simulations forward using linear dead-reckoning prediction between ticks. It resolves differences using configurable blending factors, keeping replicated entities aligned across clients. MessagePack serialization provides packed, zero-allocation sizing estimates before transport.
 
-Connectivity support extends beyond raw sockets. Discovery and relay helpers cover LAN lobby finding and NAT traversal signals, reducing friction when peers need to locate each other and establish playable connections.
-
-State-sync helpers are included for replicated gameplay entities. Prediction and reconciliation utilities help keep local control responsive while still converging to authoritative state in networked play.
-
-The same module also serves external integration needs through HTTP, WebSocket, and SSE workflows. This supports account services, telemetry streams, live control channels, and tool-side integrations without leaving the network namespace.
-
-In practice, `lurek.network` provides one complete communication contract: host sessions, exchange messages, discover peers, sync state, and interact with remote services through a unified script-facing API.
+Lobby discovery and NAT traversal facilitate session-matching workflows. Discovered games are advertised on local networks using UDP broadcasts, and the room registry handles creation, listing, and membership. Dynamic UDP hole punching and ticket generation support NAT traversal, allowing clients to establish direct connections through relay boundaries without manual port configurations or server-side setups.
 
 ## Imports
 
@@ -140,27 +135,27 @@ In practice, `lurek.network` provides one complete communication contract: host 
 
 ### Functions
 
-- `lurek.network.createLobby`: Broadcasts lobby information and returns it as a table.
-- `lurek.network.createRoom`: Creates a local room record. This function is exposed to Lua scripts.
-- `lurek.network.discoverLobbies`: Discovers broadcast lobbies. This function is exposed to Lua scripts.
-- `lurek.network.joinRoom`: Joins a room by id when available. This function is exposed to Lua scripts.
-- `lurek.network.leaveRoom`: Leaves a room by id when available. This function is exposed to Lua scripts.
-- `lurek.network.listRooms`: Lists known local room records. This function is exposed to Lua scripts.
-- `lurek.network.makePunchProbe`: Creates a relay punch probe payload for a peer id.
-- `lurek.network.newClient`: Creates a client host and connects to an address.
-- `lurek.network.newHost`: Creates a network host from an options table.
-- `lurek.network.newRelayTicket`: Creates an encoded relay ticket. This function is exposed to Lua scripts.
-- `lurek.network.newRuntime`: Creates a background network runtime.
-- `lurek.network.newServer`: Creates a server host from an options table.
-- `lurek.network.pack`: Packs a supported Lua value into a binary network message string.
-- `lurek.network.parsePunchProbe`: Parses a relay punch probe payload.
-- `lurek.network.parseRelayTicket`: Parses an encoded relay ticket. This function is exposed to Lua scripts.
-- `lurek.network.predictLinear`: Predicts an entity snapshot forward by linear velocity.
-- `lurek.network.reconcileSnapshot`: Reconciles a predicted snapshot toward an authoritative snapshot.
-- `lurek.network.sseCollect`: Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
-- `lurek.network.sseConnect`: Opens an SSE stream to `url` and returns an `LSseStream` handle.
-- `lurek.network.syncEntity`: Broadcasts a packed entity sync payload through a network host.
-- `lurek.network.unpack`: Unpacks a binary network message string into a Lua value.
+- `lurek.network.createLobby(name, port, player_count?, max_players?) -> table`: Broadcasts lobby information and returns it as a table.
+- `lurek.network.createRoom(name, host, max_players?) -> table`: Creates a local room record. This function is exposed to Lua scripts.
+- `lurek.network.discoverLobbies(timeout_ms?) -> table`: Discovers broadcast lobbies. This function is exposed to Lua scripts.
+- `lurek.network.joinRoom(id) -> table`: Joins a room by id when available. This function is exposed to Lua scripts.
+- `lurek.network.leaveRoom(id) -> table`: Leaves a room by id when available. This function is exposed to Lua scripts.
+- `lurek.network.listRooms() -> table`: Lists known local room records. This function is exposed to Lua scripts.
+- `lurek.network.makePunchProbe(peer_id) -> string`: Creates a relay punch probe payload for a peer id.
+- `lurek.network.newClient(opts) -> LNetworkHost`: Creates a client host and connects to an address.
+- `lurek.network.newHost(opts) -> LNetworkHost`: Creates a network host from an options table.
+- `lurek.network.newRelayTicket(room_id, peer_id) -> string`: Creates an encoded relay ticket. This function is exposed to Lua scripts.
+- `lurek.network.newRuntime() -> LNetworkRuntime`: Creates a background network runtime.
+- `lurek.network.newServer(opts) -> LNetworkHost`: Creates a server host from an options table.
+- `lurek.network.pack(value) -> string`: Packs a supported Lua value into a binary network message string.
+- `lurek.network.parsePunchProbe(payload) -> string`: Parses a relay punch probe payload.
+- `lurek.network.parseRelayTicket(token) -> table`: Parses an encoded relay ticket. This function is exposed to Lua scripts.
+- `lurek.network.predictLinear(snapshot, dt) -> table`: Predicts an entity snapshot forward by linear velocity.
+- `lurek.network.reconcileSnapshot(pred, auth, alpha) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot.
+- `lurek.network.sseCollect(url, n, timeout_secs?) -> table`: Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
+- `lurek.network.sseConnect(url, callback) -> LSseStream`: Opens an SSE stream to `url` and returns an `LSseStream` handle.
+- `lurek.network.syncEntity(host_ud, entity_id, data_tbl, channel?, reliable?) -> nil`: Broadcasts a packed entity sync payload through a network host.
+- `lurek.network.unpack(data) -> table`: Unpacks a binary network message string into a Lua value.
 
 ### Callbacks
 
@@ -230,35 +225,35 @@ In practice, `lurek.network` provides one complete communication contract: host 
 
 ##### Methods
 
-- `LNetworkHost:broadcast`: Broadcasts bytes to all connected peers on a channel.
-- `LNetworkHost:connect`: Connects to a remote address. This method is available to Lua scripts.
-- `LNetworkHost:destroy`: Destroys the network host and releases resources.
-- `LNetworkHost:disconnect`: Requests a graceful peer disconnect.
-- `LNetworkHost:disconnectLater`: Schedules a peer disconnect after pending packets.
-- `LNetworkHost:disconnectNow`: Disconnects a peer immediately. This method is available to Lua scripts.
-- `LNetworkHost:flush`: Flushes queued outgoing network packets.
-- `LNetworkHost:getAddress`: Returns local host socket address.
-- `LNetworkHost:getBandwidthLimit`: Returns incoming and outgoing bandwidth limits.
-- `LNetworkHost:getChannelLimit`: Returns configured channel limit.
-- `LNetworkHost:getConnectedPeerCount`: Returns the number of currently connected peers.
-- `LNetworkHost:getConnectedPeerIds`: Returns an array of ids for all connected peers.
-- `LNetworkHost:getPeerAddress`: Returns peer socket address when available.
-- `LNetworkHost:getPeerLimit`: Returns configured peer limit. This method is available to Lua scripts.
-- `LNetworkHost:getPeerState`: Returns peer connection state. This method is available to Lua scripts.
-- `LNetworkHost:getPeerStats`: Returns statistics for a peer. This method is available to Lua scripts.
-- `LNetworkHost:getRole`: Returns host role string. This method is available to Lua scripts.
-- `LNetworkHost:getRoundTripTime`: Returns peer round trip time in milliseconds.
-- `LNetworkHost:isClient`: Returns whether this host has client role.
-- `LNetworkHost:isDestroyed`: Returns whether the network host is destroyed.
-- `LNetworkHost:isServer`: Returns whether this host has server role.
-- `LNetworkHost:ping`: Sends a ping to a peer. This method is available to Lua scripts.
-- `LNetworkHost:resetPeer`: Resets a peer connection. This method is available to Lua scripts.
-- `LNetworkHost:send`: Sends bytes to a peer on a channel. This method is available to Lua scripts.
-- `LNetworkHost:service`: Polls the host for one network event.
-- `LNetworkHost:setBandwidthLimit`: Sets incoming and outgoing bandwidth limits.
-- `LNetworkHost:setChannelLimit`: Sets channel limit. This method is available to Lua scripts.
-- `LNetworkHost:type`: Returns the Lua-visible type name for this network host handle.
-- `LNetworkHost:typeOf`: Returns whether this network host handle matches a supported type name.
+- `LNetworkHost:broadcast(channel_id, data, reliable?) -> nil`: Broadcasts bytes to all connected peers on a channel.
+- `LNetworkHost:connect(addr_str, channels?, data?) -> integer`: Connects to a remote address. This method is available to Lua scripts.
+- `LNetworkHost:destroy() -> nil`: Destroys the network host and releases resources.
+- `LNetworkHost:disconnect(peer_id, data?) -> nil`: Requests a graceful peer disconnect.
+- `LNetworkHost:disconnectLater(peer_id, data?) -> nil`: Schedules a peer disconnect after pending packets.
+- `LNetworkHost:disconnectNow(peer_id, data?) -> nil`: Disconnects a peer immediately. This method is available to Lua scripts.
+- `LNetworkHost:flush() -> nil`: Flushes queued outgoing network packets.
+- `LNetworkHost:getAddress() -> string`: Returns local host socket address.
+- `LNetworkHost:getBandwidthLimit() -> table`: Returns incoming and outgoing bandwidth limits.
+- `LNetworkHost:getChannelLimit() -> integer`: Returns configured channel limit.
+- `LNetworkHost:getConnectedPeerCount() -> integer`: Returns the number of currently connected peers.
+- `LNetworkHost:getConnectedPeerIds() -> integer[]`: Returns an array of ids for all connected peers.
+- `LNetworkHost:getPeerAddress(peer_id) -> string`: Returns peer socket address when available.
+- `LNetworkHost:getPeerLimit() -> integer`: Returns configured peer limit. This method is available to Lua scripts.
+- `LNetworkHost:getPeerState(peer_id) -> string`: Returns peer connection state. This method is available to Lua scripts.
+- `LNetworkHost:getPeerStats(peer_id) -> table`: Returns statistics for a peer. This method is available to Lua scripts.
+- `LNetworkHost:getRole() -> string`: Returns host role string. This method is available to Lua scripts.
+- `LNetworkHost:getRoundTripTime(peer_id) -> number`: Returns peer round trip time in milliseconds.
+- `LNetworkHost:isClient() -> boolean`: Returns whether this host has client role.
+- `LNetworkHost:isDestroyed() -> boolean`: Returns whether the network host is destroyed.
+- `LNetworkHost:isServer() -> boolean`: Returns whether this host has server role.
+- `LNetworkHost:ping(peer_id) -> nil`: Sends a ping to a peer. This method is available to Lua scripts.
+- `LNetworkHost:resetPeer(peer_id) -> nil`: Resets a peer connection. This method is available to Lua scripts.
+- `LNetworkHost:send(peer_id, channel_id, data, reliable?) -> nil`: Sends bytes to a peer on a channel. This method is available to Lua scripts.
+- `LNetworkHost:service() -> table`: Polls the host for one network event.
+- `LNetworkHost:setBandwidthLimit(incoming?, outgoing?) -> nil`: Sets incoming and outgoing bandwidth limits.
+- `LNetworkHost:setChannelLimit(limit) -> nil`: Sets channel limit. This method is available to Lua scripts.
+- `LNetworkHost:type() -> string`: Returns the Lua-visible type name for this network host handle.
+- `LNetworkHost:typeOf(name) -> boolean`: Returns whether this network host handle matches a supported type name.
 
 #### LNetworkHostGetBandwidthLimitResult Type
 
@@ -414,21 +409,21 @@ In practice, `lurek.network` provides one complete communication contract: host 
 
 ##### Methods
 
-- `LNetworkRuntime:httpGet`: Starts an HTTP GET request. This method is available to Lua scripts.
-- `LNetworkRuntime:httpJson`: Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
-- `LNetworkRuntime:httpPost`: Starts an HTTP POST request. This method is available to Lua scripts.
-- `LNetworkRuntime:httpRequest`: Starts an HTTP request from an options table and returns its request id.
-- `LNetworkRuntime:httpStream`: Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
-- `LNetworkRuntime:poll`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
-- `LNetworkRuntime:shutdown`: Shuts down the network runtime and cancels pending requests.
-- `LNetworkRuntime:tcpClose`: Closes a TCP connection. This method is available to Lua scripts.
-- `LNetworkRuntime:tcpConnect`: Opens a TCP connection. This method is available to Lua scripts.
-- `LNetworkRuntime:tcpSend`: Sends bytes over a TCP connection. This method is available to Lua scripts.
-- `LNetworkRuntime:type`: Returns the Lua-visible type name for this network runtime handle.
-- `LNetworkRuntime:typeOf`: Returns whether this network runtime handle matches a supported type name.
-- `LNetworkRuntime:wsClose`: Closes a WebSocket connection. This method is available to Lua scripts.
-- `LNetworkRuntime:wsConnect`: Opens a WebSocket connection. This method is available to Lua scripts.
-- `LNetworkRuntime:wsSend`: Sends text over a WebSocket connection.
+- `LNetworkRuntime:httpGet(url, headers?) -> integer`: Starts an HTTP GET request. This method is available to Lua scripts.
+- `LNetworkRuntime:httpJson(url, body, headers?) -> integer`: Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
+- `LNetworkRuntime:httpPost(url, body, headers?) -> integer`: Starts an HTTP POST request. This method is available to Lua scripts.
+- `LNetworkRuntime:httpRequest(opts) -> integer`: Starts an HTTP request from an options table and returns its request id.
+- `LNetworkRuntime:httpStream(url, headers?, timeout_secs?) -> integer`: Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
+- `LNetworkRuntime:poll() -> table`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
+- `LNetworkRuntime:shutdown() -> nil`: Shuts down the network runtime and cancels pending requests.
+- `LNetworkRuntime:tcpClose(id) -> nil`: Closes a TCP connection. This method is available to Lua scripts.
+- `LNetworkRuntime:tcpConnect(addr) -> integer`: Opens a TCP connection. This method is available to Lua scripts.
+- `LNetworkRuntime:tcpSend(id, data) -> nil`: Sends bytes over a TCP connection. This method is available to Lua scripts.
+- `LNetworkRuntime:type() -> string`: Returns the Lua-visible type name for this network runtime handle.
+- `LNetworkRuntime:typeOf(name) -> boolean`: Returns whether this network runtime handle matches a supported type name.
+- `LNetworkRuntime:wsClose(id) -> nil`: Closes a WebSocket connection. This method is available to Lua scripts.
+- `LNetworkRuntime:wsConnect(url) -> integer`: Opens a WebSocket connection. This method is available to Lua scripts.
+- `LNetworkRuntime:wsSend(id, data) -> nil`: Sends text over a WebSocket connection.
 
 #### LNetworkRuntimePollResult Type
 
@@ -473,8 +468,8 @@ In practice, `lurek.network` provides one complete communication contract: host 
 
 ##### Methods
 
-- `LSseStream:close`: Signals the background reader thread to stop and closes the stream.
-- `LSseStream:isOpen`: Returns true if the background reader thread is still connected and reading.
-- `LSseStream:next`: Polls for the next available event from the SSE stream (non-blocking).
-- `LSseStream:type`: Returns the Lua-visible type name for this SSE stream handle.
-- `LSseStream:typeOf`: Returns whether this SSE stream handle matches a supported type name.
+- `LSseStream:close() -> nil`: Signals the background reader thread to stop and closes the stream.
+- `LSseStream:isOpen() -> boolean`: Returns true if the background reader thread is still connected and reading.
+- `LSseStream:next() -> table`: Polls for the next available event from the SSE stream (non-blocking).
+- `LSseStream:type() -> string`: Returns the Lua-visible type name for this SSE stream handle.
+- `LSseStream:typeOf(name) -> boolean`: Returns whether this SSE stream handle matches a supported type name.
