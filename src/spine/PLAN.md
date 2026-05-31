@@ -1,10 +1,24 @@
 # Plan Implementacji — src/spine
 
-Ten plik przedstawia plan rozwoju modułu `spine` na podstawie pomysłów zebranych w pliku `IDEA.md`, po analizie istniejącego kodu źródłowego.
+Ten plik przedstawia plan rozwoju modułu `spine` po analizie istniejącego kodu źródłowego i zrealizowanych zmian.
 
-## Stan obecny vs IDEA.md
+## Status realizacji (DONE / TODO)
 
-Zgodnie z plikiem `IDEA.md`, w module wprowadzono już następujące zaawansowane mechanizmy:
+### DONE
+
+* MUST: importer formatów Spine/DragonBones JSON — zrealizowane.
+* MUST: usunięcie klonowania animacji/constraints w hot-path — zrealizowane.
+
+### TODO
+
+* SHOULD: testy integracyjne pełnego potoku (Animacja -> IK -> Render).
+* SHOULD: benchmark `update_world_transforms`.
+* SHOULD: feature-gating modułu Spine.
+* COULD: deformacja siatki i wagi wierzchołków.
+
+## Stan obecny
+
+W module wprowadzono już następujące zaawansowane mechanizmy:
 * **Maszyna stanów i blending animacji**: Dodano funkcję `animation_blended()` obsługującą parametr wagowy `blend_weight` (w zakresie 0.0 - 1.0) bezpośrednio w `timeline.rs`, co pozwala płynnie mieszać klatki kluczowe sąsiadujących animacji.
 * **Pomocniki Lua do animacji**: Zaimplementowano w `timeline.rs` oraz wystawiono do mostka Lua metody `poseAt`, `reverse` oraz `animationFromJson`.
 
@@ -19,7 +33,7 @@ Pozostałe pomysły zostały uszeregowane pod kątem relacji wartości do skompl
 * **Importer standardowych formatów szkieletów (Spine / DragonBones JSON)**
   * **Wartość**: Niezwykle wysoka. Bez parsera JSON z zewnętrznych narzędzi projektant gry musiałby ręcznie tworzyć struktury szkieletów w kodzie, co jest nierealne. Jest to absolutny warunek konieczny, by moduł `spine` stał się przydatnym narzędziem produkcyjnym.
   * **Koszt**: Wysoki. Wymaga opracowania solidnego, odpornego na błędy parsera JSON odczytującego hierarchię kości, sloty, constraints, załączniki (attachments) oraz klatki kluczowe i mapującego je na wewnętrzne struktury silnika.
-  
+
 * **Usunięcie klonowania animacji i ograniczeń (constraints) w hot-path**
   * **Wartość**: Bardzo wysoka (krytyczna dla wydajności). Aktualizacje szkieletu (`update_world_transforms`) zachodzą w każdej klatce dla każdej postaci na ekranie. Klonowanie struktur danych wewnątrz tej pętli generuje ogromną presję na stertę i niszczy wydajność. Przejście na dostęp indeksowany w tablicach to kluczowa optymalizacja.
   * **Koszt**: Średnio-wysoki. Wymaga przebudowania wewnętrznych referencji do struktur kości i constraints na bazie indeksów (`usize`) zamiast wskaźników czy klonowanych kopii.
@@ -31,11 +45,11 @@ Pozostałe pomysły zostały uszeregowane pod kątem relacji wartości do skompl
 * **Testy integracyjne pełnego potoku (Animacja -> IK -> Render)**
   * **Wartość**: Wysoka. Gwarantuje, że zmiany w matematyce kości, działaniu solvera IK (`ik.rs`) lub potoku renderowania nie popsują końcowego ułożenia szkieletu na ekranie.
   * **Koszt**: Umiarkowany. Napisanie testu wczytującego prosty rig, nakładającego animację oraz solver IK, a następnie sprawdzającego wyjściowe pozycje wierzchołków.
-  
+
 * **Benchmark wydajnościowy `update_world_transforms`**
   * **Wartość**: Średnia. Umożliwi określenie maksymalnego budżetu wydajnościowego (np. ile rigów zawierających 100+ kości silnik potrafi przetworzyć w 16ms).
   * **Koszt**: Niski. Napisanie prostego benchmarku `criterion` w Rust.
-  
+
 * **Feature-gating modułu Spine jako TIER-2-PLUGIN**
   * **Wartość**: Średnia. Animacje szkieletowe to ciężka funkcjonalność. Gry jej nieużywające powinny mieć możliwość wyłączenia modułu w celu zmniejszenia rozmiaru pliku binarnego.
   * **Koszt**: Niski. Standardowe użycie flag kompilacji Cargo.

@@ -1,10 +1,12 @@
 //! File: src/lua_api/sprite_api.rs
 
 use super::SharedState;
+use crate::image::{NineSliceInsets, TextureAtlas};
 use crate::math::Rect;
 use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
 use crate::sprite::sprite_sheet::SpriteSheet;
 use mlua::prelude::*;
+use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -48,7 +50,7 @@ impl LuaUserData for LuaSpriteSheet {
         /// @field | h | number | H.
         methods.add_method("getRow", |lua, this, row: u32| {
             let frames = this.inner.get_row(row);
-            frames_to_table(lua, &frames)
+            frames_to_table(lua, frames)
         });
         // -- getColumn --
         /// Returns all frame quads in the given column of the sprite sheet grid.
@@ -59,8 +61,7 @@ impl LuaUserData for LuaSpriteSheet {
         /// @field | w | number | W.
         /// @field | h | number | H.
         methods.add_method("getColumn", |lua, this, col: u32| {
-            let frames = this.inner.get_column(col);
-            frames_to_table(lua, &frames)
+            frames_iter_to_table(lua, this.inner.get_column(col))
         });
         // -- getGroupFrames --
         /// Returns the frame quads for a named animation group.
@@ -285,6 +286,106 @@ impl LuaUserData for LuaSpriteAtlas {
     }
 }
 
+/// Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
+pub struct LuaAtlasPacker {
+    inner: TextureAtlas,
+}
+impl LuaUserData for LuaAtlasPacker {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- pack --
+        /// Packs a named region into this atlas and returns whether allocation succeeded.
+        /// @param | name | string | Region key used for later lookups.
+        /// @param | w | integer | Region width in pixels.
+        /// @param | h | integer | Region height in pixels.
+        /// @return | boolean | True when the region was packed.
+        methods.add_method_mut("pack", |_, this, (name, w, h): (String, u32, u32)| {
+            Ok(this.inner.pack(&name, w, h))
+        });
+        // -- setNineSlice --
+        /// Sets nine-slice insets for a previously packed region.
+        /// @param | name | string | Packed region key.
+        /// @param | left | integer | Left inset in pixels.
+        /// @param | right | integer | Right inset in pixels.
+        /// @param | top | integer | Top inset in pixels.
+        /// @param | bottom | integer | Bottom inset in pixels.
+        /// @return | boolean | True when insets were applied.
+        methods.add_method_mut(
+            "setNineSlice",
+            |_, this, (name, left, right, top, bottom): (String, u32, u32, u32, u32)| {
+                Ok(this.inner.set_nine_slice(
+                    &name,
+                    Some(NineSliceInsets {
+                        left,
+                        right,
+                        top,
+                        bottom,
+                    }),
+                ))
+            },
+        );
+        // -- getRegion --
+        /// Returns the named packed atlas region, or nil if not found.
+        /// @param | name | string | Region key to fetch.
+        /// @return | table | Region table `{name, x, y, w, h, nine_slice}` or nil when missing.
+        /// @field | name | string | Region key.
+        /// @field | x | integer | Left coordinate in atlas pixels.
+        /// @field | y | integer | Top coordinate in atlas pixels.
+        /// @field | w | integer | Region width in pixels.
+        /// @field | h | integer | Region height in pixels.
+        /// @field | nine_slice | table? | Optional nine-slice inset table `{left, right, top, bottom}`.
+        methods.add_method("getRegion", |lua, this, name: String| {
+            match this.inner.get_region(&name) {
+                Some(region) => {
+                    let t = lua.create_table()?;
+                    t.set("name", region.name.as_str())?;
+                    t.set("x", region.x)?;
+                    t.set("y", region.y)?;
+                    t.set("w", region.w)?;
+                    t.set("h", region.h)?;
+                    if let Some(insets) = region.nine_slice {
+                        let ns = lua.create_table()?;
+                        ns.set("left", insets.left)?;
+                        ns.set("right", insets.right)?;
+                        ns.set("top", insets.top)?;
+                        ns.set("bottom", insets.bottom)?;
+                        t.set("nine_slice", ns)?;
+                    } else {
+                        t.set("nine_slice", LuaValue::Nil)?;
+                    }
+                    Ok(LuaValue::Table(t))
+                }
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- regionCount --
+        /// Returns the number of currently packed regions.
+        /// @return | integer | Region count.
+        methods.add_method("regionCount", |_, this, ()| Ok(this.inner.get_region_count()));
+        // -- getDimensions --
+        /// Returns the current width and height of this atlas packer.
+        /// @return | integer | Atlas width in pixels.
+        /// @return | integer | Atlas height in pixels.
+        methods.add_method("getDimensions", |_, this, ()| Ok(this.inner.get_dimensions()));
+        // -- clear --
+        /// Removes all packed regions and resets packing shelves.
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.inner.clear();
+            Ok(())
+        });
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return | string | Always `"LAtlasPacker"`.
+        methods.add_method("type", |_, _, ()| Ok("LAtlasPacker"));
+        // -- typeOf --
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check (e.g. `"LAtlasPacker"` or `"Object"`).
+        /// @return | boolean | True if the object is the given type.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LAtlasPacker" || name == "LObject")
+        });
+    }
+}
+
 /// Registers the `lurek.sprite` module, exposing sprite sheet and texture atlas constructors.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -348,6 +449,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
+    // -- newAtlasPacker --
+    /// Creates a runtime atlas packer for dynamically allocating named sprite regions.
+    /// @param | width | integer | Atlas width in pixels.
+    /// @param | height | integer | Atlas height in pixels.
+    /// @param | padding | integer | Padding in pixels inserted around each packed region.
+    /// @return | LAtlasPacker | A new runtime atlas packer.
+    tbl.set(
+        "newAtlasPacker",
+        lua.create_function(|lua, (width, height, padding): (u32, u32, u32)| {
+            lua.create_userdata(LuaAtlasPacker {
+                inner: TextureAtlas::new(width, height, padding),
+            })
+        })?,
+    )?;
     // -- parseAsepriteAtlas --
     /// Parses an Aseprite JSON atlas string and returns a sprite atlas object.
     /// @param | json_str | string | Raw JSON content of the Aseprite export atlas file.
@@ -381,6 +496,19 @@ fn frames_to_table<'lua>(lua: &'lua Lua, frames: &[Rect]) -> LuaResult<LuaTable<
     let t = lua.create_table()?;
     for (i, r) in frames.iter().enumerate() {
         t.set(i + 1, quad_table(lua, *r)?)?;
+    }
+    Ok(t)
+}
+
+/// Converts an iterator of sprite rectangles into an array-style Lua table.
+fn frames_iter_to_table<'lua, I>(lua: &'lua Lua, frames: I) -> LuaResult<LuaTable<'lua>>
+where
+    I: IntoIterator,
+    I::Item: Borrow<Rect>,
+{
+    let t = lua.create_table()?;
+    for (i, r) in frames.into_iter().enumerate() {
+        t.set(i + 1, quad_table(lua, *r.borrow())?)?;
     }
     Ok(t)
 }

@@ -137,6 +137,10 @@ mod sprite_batch_tests {
 mod sprite_sheet_tests {
     use super::*;
 
+    fn rect_xy(rect: &lurek2d::math::Rect) -> (i32, i32) {
+        (rect.x as i32, rect.y as i32)
+    }
+
     #[test]
     fn get_frame_out_of_range_returns_none() {
         let sheet = SpriteSheet::new(32, 32, 32, 32);
@@ -148,6 +152,39 @@ mod sprite_sheet_tests {
         let sheet = SpriteSheet::new(64, 32, 32, 32);
         let range = sheet.get_range(1, 100);
         assert_eq!(range.len(), 1); // only frame index 1 exists
+    }
+
+    #[test]
+    fn get_row_returns_expected_slice() {
+        let sheet = SpriteSheet::new(96, 64, 32, 32);
+        let row = sheet.get_row(1);
+        assert_eq!(row.len(), 3);
+        assert_eq!(rect_xy(&row[0]), (0, 32));
+        assert_eq!(rect_xy(&row[1]), (32, 32));
+        assert_eq!(rect_xy(&row[2]), (64, 32));
+    }
+
+    #[test]
+    fn get_row_out_of_range_is_empty_slice() {
+        let sheet = SpriteSheet::new(96, 64, 32, 32);
+        let row = sheet.get_row(10);
+        assert!(row.is_empty());
+    }
+
+    #[test]
+    fn get_column_iterator_returns_expected_frames() {
+        let sheet = SpriteSheet::new(96, 64, 32, 32);
+        let col: Vec<_> = sheet.get_column(1).collect();
+        assert_eq!(col.len(), 2);
+        assert_eq!(rect_xy(col[0]), (32, 0));
+        assert_eq!(rect_xy(col[1]), (32, 32));
+    }
+
+    #[test]
+    fn get_column_out_of_range_is_empty_iterator() {
+        let sheet = SpriteSheet::new(96, 64, 32, 32);
+        let col: Vec<_> = sheet.get_column(10).collect();
+        assert!(col.is_empty());
     }
 
     #[test]
@@ -205,6 +242,7 @@ mod nine_slice_tests {
 
 mod atlas_tests {
     use super::*;
+    use lurek2d::image::{NineSliceInsets, TextureAtlas};
 
     #[test]
     fn atlas_hash_format_parses_correctly() {
@@ -231,5 +269,59 @@ mod atlas_tests {
     fn atlas_missing_frames_key_returns_error() {
         let json = r#"{"meta":{}}"#;
         assert!(parse_texturepacker_json(json).is_err());
+    }
+
+    #[test]
+    fn runtime_texture_atlas_pack_lookup_and_clear() {
+        let mut atlas = TextureAtlas::new(64, 64, 1);
+        assert!(atlas.pack("hero", 16, 16));
+
+        let region = atlas.get_region("hero").expect("region should exist");
+        assert_eq!(region.name, "hero");
+        assert_eq!(region.w, 16);
+        assert_eq!(region.h, 16);
+        assert_eq!(atlas.get_region_count(), 1);
+
+        atlas.clear();
+        assert_eq!(atlas.get_region_count(), 0);
+        assert!(atlas.get_region("hero").is_none());
+    }
+
+    #[test]
+    fn runtime_texture_atlas_rejects_unfittable_region() {
+        let mut atlas = TextureAtlas::new(16, 16, 1);
+        assert!(!atlas.pack("too_big", 32, 4));
+        assert_eq!(atlas.get_region_count(), 0);
+    }
+
+    #[test]
+    fn runtime_texture_atlas_set_nine_slice_validates_insets() {
+        let mut atlas = TextureAtlas::new(64, 64, 1);
+        assert!(atlas.pack("panel", 20, 20));
+
+        assert!(atlas.set_nine_slice(
+            "panel",
+            Some(NineSliceInsets {
+                left: 2,
+                right: 2,
+                top: 3,
+                bottom: 3,
+            })
+        ));
+
+        let region = atlas.get_region("panel").expect("panel should exist");
+        let insets = region.nine_slice.expect("insets should be set");
+        assert_eq!(insets.left, 2);
+        assert_eq!(insets.top, 3);
+
+        assert!(!atlas.set_nine_slice(
+            "panel",
+            Some(NineSliceInsets {
+                left: 50,
+                right: 50,
+                top: 0,
+                bottom: 0,
+            })
+        ));
     }
 }

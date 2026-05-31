@@ -423,6 +423,24 @@ mod skeleton_tests {
     }
 
     #[test]
+    fn update_animation_applies_timeline_value_to_bone() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+
+        let mut anim = SkeletonAnimation::new("slide", 1.0);
+        let mut tl = BoneTimeline::new(0, BoneProperty::X);
+        tl.add_key(0.0, 0.0, EasingType::Linear);
+        tl.add_key(1.0, 10.0, EasingType::Linear);
+        anim.add_timeline(tl);
+
+        skel.add_animation(anim);
+        assert!(skel.play_animation("slide", true));
+        skel.update_animation(0.5);
+
+        assert!((skel.bones[0].local_x - 5.0).abs() < 0.01);
+    }
+
+    #[test]
     fn animation_loops_wraps_time() {
         let mut skel = Skeleton::new("test");
         skel.add_bone(Bone::new("root"));
@@ -464,6 +482,26 @@ mod skeleton_tests {
     fn set_ik_target_not_found() {
         let mut skel = Skeleton::new("test");
         assert!(!skel.set_ik_target("missing", 0.0, 0.0));
+    }
+
+    #[test]
+    fn apply_ik_constraints_updates_chain_rotations() {
+        let mut skel = Skeleton::new("ik_apply");
+        let root = skel.add_bone(Bone::new("root"));
+        let upper = skel.add_bone(Bone::with_parent("upper", root, 10.0, 0.0));
+        let lower = skel.add_bone(Bone::with_parent("lower", upper, 10.0, 0.0));
+        skel.update_world_transforms();
+
+        skel.add_ik_constraint(IKConstraint::new("arm", vec![upper, lower], true));
+        assert!(skel.set_ik_target("arm", 15.0, 8.0));
+
+        let before_upper = skel.bones[upper].local_rotation;
+        let before_lower = skel.bones[lower].local_rotation;
+        skel.apply_ik_constraints();
+
+        let upper_changed = (skel.bones[upper].local_rotation - before_upper).abs() > 0.0001;
+        let lower_changed = (skel.bones[lower].local_rotation - before_lower).abs() > 0.0001;
+        assert!(upper_changed || lower_changed);
     }
 
     #[test]
@@ -586,5 +624,139 @@ mod render_tests {
             (x1 - x0 - 100.0).abs() < 0.01,
             "offset x should shift circle x by 100, got {x0} Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬Ă‚Â Ä‚ËĂ˘â€šÂ¬Ă˘â€žË {x1}"
         );
+    }
+}
+
+mod importer_tests {
+    use super::*;
+
+    #[test]
+    fn spine_json_import_builds_skeleton_and_animation() {
+        let json = r#"
+        {
+            "skeleton": {"name": "hero"},
+            "bones": [
+                {"name": "root"},
+                {"name": "hip", "parent": "root", "x": 12.0, "y": 3.0, "rotation": 90.0}
+            ],
+            "slots": [
+                {"name": "body", "bone": "hip", "attachment": "body_idle"}
+            ],
+            "skins": {
+                "default": {
+                    "body": {
+                        "body_idle": {}
+                    }
+                }
+            },
+            "animations": {
+                "walk": {
+                    "bones": {
+                        "hip": {
+                            "translate": [
+                                {"time": 0.0, "x": 0.0, "y": 0.0},
+                                {"time": 1.0, "x": 10.0, "y": 0.0}
+                            ],
+                            "rotate": [
+                                {"time": 0.0, "angle": 0.0},
+                                {"time": 1.0, "angle": 45.0}
+                            ]
+                        }
+                    },
+                    "events": {
+                        "step": [
+                            {"time": 0.5, "int": 1}
+                        ]
+                    }
+                }
+            }
+        }
+        "#;
+
+        let mut skel = skeleton_from_json_str(json).expect("spine import should succeed");
+        assert_eq!(skel.name, "hero");
+        assert_eq!(skel.bone_count(), 2);
+        assert_eq!(skel.slot_count(), 1);
+        assert_eq!(skel.find_bone("hip"), Some(1));
+        assert_eq!(skel.find_slot("body"), Some(0));
+
+        assert!(skel.set_skin("default"));
+        assert_eq!(skel.get_slot_attachment(0), Some("body_idle"));
+
+        assert!(skel.play_animation("walk", false));
+        skel.update_animation(0.5);
+        assert!(!skel.animations.is_empty());
+        assert!(skel.animations[0].duration >= 1.0);
+    }
+
+    #[test]
+    fn dragonbones_json_import_builds_skeleton_and_animation() {
+        let json = r#"
+        {
+            "frameRate": 24,
+            "armature": [
+                {
+                    "name": "db_hero",
+                    "bone": [
+                        {"name": "root"},
+                        {"name": "chest", "parent": "root", "transform": {"x": 4.0, "y": 8.0, "skX": 30.0}}
+                    ],
+                    "slot": [
+                        {"name": "body_slot", "parent": "chest"}
+                    ],
+                    "skin": [
+                        {
+                            "name": "default",
+                            "slot": [
+                                {"name": "body_slot", "display": [{"name": "body_tex"}]}
+                            ]
+                        }
+                    ],
+                    "animation": [
+                        {
+                            "name": "idle",
+                            "duration": 24,
+                            "bone": [
+                                {
+                                    "name": "chest",
+                                    "translateFrame": [
+                                        {"duration": 12, "x": 0.0, "y": 0.0},
+                                        {"duration": 12, "x": 2.0, "y": 0.0}
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        "#;
+
+        let skel = skeleton_from_json_str(json).expect("dragonbones import should succeed");
+        assert_eq!(skel.name, "db_hero");
+        assert_eq!(skel.bone_count(), 2);
+        assert_eq!(skel.slot_count(), 1);
+        assert_eq!(skel.find_animation("idle"), Some(0));
+        assert!(skel.animations[0].duration > 0.9);
+    }
+
+    #[test]
+    fn importer_rejects_unknown_format() {
+        let err = skeleton_from_json_str("{\"foo\":1}").expect_err("should fail");
+        assert!(matches!(err, SpineImportError::UnsupportedFormat));
+    }
+
+    #[test]
+    fn importer_rejects_unknown_parent_bone() {
+        let json = r#"
+        {
+            "bones": [
+                {"name": "child", "parent": "missing"}
+            ]
+        }
+        "#;
+
+        let err = skeleton_from_json_str(json).expect_err("should fail");
+        assert!(matches!(err, SpineImportError::UnknownParent { .. }));
     }
 }

@@ -24,6 +24,90 @@ describe("module interface", function()
     it("exposes newAtlasSheet factory", function()
         expect_type("function", lurek.sprite.newAtlasSheet)
     end)
+
+    -- @covers lurek.sprite.newAtlasPacker
+    it("exposes newAtlasPacker factory", function()
+        expect_type("function", lurek.sprite.newAtlasPacker)
+    end)
+end)
+
+-- newAtlasPacker
+
+-- @describe newAtlasPacker()
+describe("newAtlasPacker()", function()
+    -- @covers lurek.sprite.newAtlasPacker
+    it("returns a userdata", function()
+        local p = lurek.sprite.newAtlasPacker(64, 64, 1)
+        expect_type("userdata", p)
+    end)
+
+    -- @covers LAtlasPacker:pack
+    -- @covers LAtlasPacker:getRegion
+    -- @covers lurek.sprite.newAtlasPacker
+    it("packs and returns a named region", function()
+        local p = lurek.sprite.newAtlasPacker(64, 64, 1)
+        expect_true(p:pack("hero", 16, 16), "expected hero to pack")
+
+        local r = p:getRegion("hero")
+        expect_type("table", r)
+        expect_equal("hero", r.name)
+        expect_equal(16, r.w)
+        expect_equal(16, r.h)
+    end)
+
+    -- @covers LAtlasPacker:regionCount
+    -- @covers lurek.sprite.newAtlasPacker
+    it("regionCount tracks successful packs", function()
+        local p = lurek.sprite.newAtlasPacker(64, 64, 1)
+        expect_equal(0, p:regionCount())
+        expect_true(p:pack("a", 8, 8), "expected a to pack")
+        expect_true(p:pack("b", 8, 8), "expected b to pack")
+        expect_equal(2, p:regionCount())
+    end)
+
+    -- @covers LAtlasPacker:getDimensions
+    -- @covers lurek.sprite.newAtlasPacker
+    it("getDimensions returns constructor dimensions", function()
+        local p = lurek.sprite.newAtlasPacker(128, 96, 2)
+        local w, h = p:getDimensions()
+        expect_equal(128, w)
+        expect_equal(96, h)
+    end)
+
+    -- @covers LAtlasPacker:setNineSlice
+    -- @covers LAtlasPacker:getRegion
+    -- @covers lurek.sprite.newAtlasPacker
+    it("setNineSlice stores optional insets", function()
+        local p = lurek.sprite.newAtlasPacker(64, 64, 1)
+        expect_true(p:pack("panel", 20, 20), "expected panel to pack")
+        expect_true(p:setNineSlice("panel", 2, 2, 3, 3), "expected insets to apply")
+
+        local r = p:getRegion("panel")
+        expect_type("table", r.nine_slice)
+        expect_equal(2, r.nine_slice.left)
+        expect_equal(3, r.nine_slice.top)
+    end)
+
+    -- @covers LAtlasPacker:clear
+    -- @covers LAtlasPacker:regionCount
+    -- @covers lurek.sprite.newAtlasPacker
+    it("clear removes all packed regions", function()
+        local p = lurek.sprite.newAtlasPacker(64, 64, 1)
+        expect_true(p:pack("hero", 16, 16), "expected hero to pack")
+        expect_equal(1, p:regionCount())
+        p:clear()
+        expect_equal(0, p:regionCount())
+    end)
+
+    -- @covers LAtlasPacker:type
+    -- @covers LAtlasPacker:typeOf
+    -- @covers lurek.sprite.newAtlasPacker
+    it("type helpers are callable", function()
+        local p = lurek.sprite.newAtlasPacker(32, 32, 0)
+        expect_equal("LAtlasPacker", p:type())
+        expect_equal(true, p:typeOf("LAtlasPacker"))
+        expect_equal(false, p:typeOf("LSpriteSheet"))
+    end)
 end)
 
 -- newSheet
@@ -481,6 +565,10 @@ describe("lurek.sprite regression coverage", function()
         expect_equal(32, frame.y)
         expect_equal(3, #row)
         expect_equal(2, #column)
+        expect_equal(0, row[1].x)
+        expect_equal(32, row[1].y)
+        expect_equal(32, column[1].x)
+        expect_equal(32, column[2].y)
         expect_equal(32, frame_w)
         expect_equal(32, frame_h)
         expect_equal(3, cols)

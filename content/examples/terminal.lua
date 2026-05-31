@@ -250,6 +250,13 @@ do
     print("textinput consumed = " .. tostring(consumed))
     consumed = term:keypressed("backspace")
     print("keypressed consumed = " .. tostring(consumed))
+    term:textinput("alpha beta")
+    term:keypressed("ctrl+a")
+    term:keypressed("ctrl+c")
+    term:keypressed("ctrl+x")
+    term:keypressed("ctrl+v")
+    term:keypressed("ctrl+backspace")
+    term:keypressed("ctrl+delete")
     term:mousepressed(50, 10, 1)
     print("mousepressed sent")
 end

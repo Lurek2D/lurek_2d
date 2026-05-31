@@ -39,19 +39,33 @@ impl PipelineScheduler {
 
     /// Advance timers by `dt` seconds and return names of steps whose delay has expired and are still `Waiting`.
     pub fn update(&mut self, dt: f32, pipeline: &Pipeline) -> Vec<String> {
+        self.update_ready_refs(dt, pipeline)
+            .into_iter()
+            .map(str::to_owned)
+            .collect()
+    }
+
+    /// Advance timers by `dt` seconds and return borrowed names of steps whose delay has expired and are still `Waiting`.
+    pub fn update_ready_refs<'a>(&mut self, dt: f32, pipeline: &'a Pipeline) -> Vec<&'a str> {
         if !self.is_running {
             return Vec::new();
         }
         self.elapsed += dt;
-        let mut ready: Vec<String> = Vec::new();
+        let mut ready: Vec<&str> = Vec::new();
         for step in pipeline.get_steps() {
             if step.status != StepStatus::Waiting {
                 continue;
             }
-            let timer = self.delay_timers.entry(step.name.clone()).or_insert(0.0);
+            if !self.delay_timers.contains_key(step.name.as_str()) {
+                self.delay_timers.insert(step.name.clone(), step.delay);
+            }
+            let timer = self
+                .delay_timers
+                .get_mut(step.name.as_str())
+                .unwrap_or_else(|| unreachable!("delay timer missing for waiting step"));
             *timer -= dt;
             if *timer <= 0.0 {
-                ready.push(step.name.clone());
+                ready.push(step.name.as_str());
             }
         }
         ready

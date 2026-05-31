@@ -27,6 +27,23 @@ fn one_based_u32(name: &str, val: u32) -> LuaResult<u32> {
     val.checked_sub(1)
         .ok_or_else(|| mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})")))
 }
+
+fn tilemap_import_error_table<'lua>(
+    lua: &'lua Lua,
+    format_name: &str,
+    code: &str,
+    message: &str,
+    line: Option<u32>,
+    column: Option<u32>,
+) -> LuaResult<LuaTable<'lua>> {
+    let err = lua.create_table()?;
+    err.set("format", format_name)?;
+    err.set("code", code)?;
+    err.set("message", message)?;
+    err.set("line", line)?;
+    err.set("column", column)?;
+    Ok(err)
+}
 /// Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
 #[derive(Clone)]
 pub struct LuaTileSet {
@@ -2407,7 +2424,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- loadTMX --
     /// Parses a TMX (Tiled XML) string and returns a table describing the map structure.
     /// @param | xml | string | Raw TMX XML content.
-    /// @return | table | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`.
+    /// @return | table | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`, or nil on parse failure.
+    /// @return | table | Structured import error table on parse failure, or nil on success.
+    /// @field | format | string | Source format identifier (`"tmx"`).
+    /// @field | code | string | Stable machine-readable error code.
+    /// @field | message | string | Human-readable parser message.
+    /// @field | line | integer? | 1-based source line when available.
+    /// @field | column | integer? | 1-based source column when available.
     /// @field | width | number | Width.
     /// @field | height | number | Height.
     /// @field | tileWidth | integer | Tile width in pixels.
@@ -2417,7 +2440,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "loadTMX",
         lua.create_function(|lua, xml: String| {
-            let tmx = crate::tilemap::tmx::load_tmx(&xml).map_err(LuaError::RuntimeError)?;
+            let tmx = match crate::tilemap::tmx::load_tmx(&xml) {
+                Ok(tmx) => tmx,
+                Err(err) => {
+                    let err_tbl = tilemap_import_error_table(
+                        lua,
+                        "tmx",
+                        err.code,
+                        &err.message,
+                        err.line,
+                        err.column,
+                    )?;
+                    return Ok((LuaValue::Nil, LuaValue::Table(err_tbl)));
+                }
+            };
             let result = lua.create_table()?;
             /// Performs the 'width' operation.
             result.set("width", tmx.width)?;
@@ -2462,14 +2498,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             }
             /// Performs the 'layers' operation.
             result.set("layers", layers_tbl)?;
-            Ok(result)
+            Ok((LuaValue::Table(result), LuaValue::Nil))
         })?,
     )?;
     // -- fromLDtk --
     /// Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
     /// @param | jsonStr | string | Raw LDtk JSON content.
     /// @param | levelName | string? | Level name to load, or nil for the first level.
-    /// @return | LTileMap | Loaded tilemap.
+    /// @return | LTileMap | Loaded tilemap, or nil when import fails.
+    /// @return | table | Structured import error table on import failure, or nil on success.
+    /// @field | format | string | Source format identifier (`"ldtk"`).
+    /// @field | code | string | Stable machine-readable error code.
+    /// @field | message | string | Human-readable parser message.
+    /// @field | line | integer? | Always nil for LDtk parser errors.
+    /// @field | column | integer? | Always nil for LDtk parser errors.
     tbl.set(
         "fromLDtk",
         lua.create_function({
@@ -2486,9 +2528,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         tile_step_callbacks: Rc::new(RefCell::new(HashMap::new())),
                         tile_exit_callbacks: Rc::new(RefCell::new(HashMap::new())),
                     })?;
-                    Ok(LuaValue::UserData(ud))
+                    Ok((LuaValue::UserData(ud), LuaValue::Nil))
                 }
-                Err(e) => Err(LuaError::RuntimeError(format!("fromLDtk: {}", e))),
+                Err(err) => {
+                    let err_tbl = tilemap_import_error_table(
+                        lua,
+                        "ldtk",
+                        err.code,
+                        &err.message,
+                        None,
+                        None,
+                    )?;
+                    Ok((LuaValue::Nil, LuaValue::Table(err_tbl)))
+                }
             }
         })?,
     )?;

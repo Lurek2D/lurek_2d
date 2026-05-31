@@ -27,7 +27,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 - Harness or Cargo target registration when new tests require it.
 - Coverage note for the behavior now protected.
 - Findings: category, severity, repro, expected vs actual for adversarial probes.
-- Small main.lua repro per finding under work/{session}/scripts/.
+- Small main.lua repro per finding under work/ when needed.
 - Probe notes: what did not reproduce; suggested next audit angle for Manager.
 
 ## Workflow
@@ -46,17 +46,16 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 - **Adversarial probing**:
   - Read src/lua_api/ and nearby examples to understand the callable surface.
   - Load error-handling; group attacks by type: wrong types, wrong order, empty, exhaustion, sandbox escape.
-  - Write one short probe per attack hypothesis under work/{session}/scripts/.
+  - Write one short probe per attack hypothesis under work/ when needed.
   - Run probes on a debug build; keep environment stable between runs.
   - Use tools/audit/lua_evidence_golden_contract_audit.py if evidence or golden tests are touched.
   - Record expected vs. actual for every interesting result, including safe failures.
   - Keep each finding deterministic, reproducible, and small enough to rerun.
 - **All modes**:
-  - Check work/{session}/reports/ for an existing coverage report before running tools/audit/test_coverage.py from scratch.
+  - Check work/ for an existing coverage report before running tools/audit/test_coverage.py from scratch.
   - Run the narrowest test command first; widen only after the target slice is green.
   - Finish with the required final validation command.
   - Return what now guards the regression and any findings to Manager.
-  - Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

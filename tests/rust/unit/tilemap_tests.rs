@@ -3,6 +3,7 @@
 use lurek2d::color::Color;
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::tilemap::ldtk::load_ldtk;
+use lurek2d::tilemap::tmx::load_tmx;
 use lurek2d::tilemap::polygon_map::PolygonMap;
 use lurek2d::tilemap::tile_walker::{Facing, TileWalker};
 use lurek2d::tilemap::tilemap::TileMap;
@@ -413,13 +414,56 @@ mod ldtk_tests {
     #[test]
     fn ldtk_missing_level_returns_error() {
         let result = load_ldtk(MINIMAL_LDTK, Some("Missing_Level"));
-        assert!(result.is_err());
+        let err = result.err().expect("missing level should error");
+        assert_eq!(err.code, "ldtk_level_not_found");
+        assert!(err.message.contains("Missing_Level"));
     }
 
     #[test]
     fn ldtk_invalid_json_returns_error() {
         let result = load_ldtk("not json", None);
-        assert!(result.is_err());
+        let err = result.err().expect("invalid json should error");
+        assert_eq!(err.code, "ldtk_json_parse");
+        assert!(err.message.contains("LDtk JSON parse error"));
+    }
+
+    #[test]
+    fn ldtk_missing_levels_array_returns_structured_error() {
+        let result = load_ldtk("{}", None);
+        let err = result.err().expect("missing levels should error");
+        assert_eq!(err.code, "ldtk_missing_levels");
+        assert!(err.message.contains("levels"));
+    }
+}
+
+mod tmx_tests {
+    use super::*;
+
+    #[test]
+    fn tmx_invalid_xml_returns_line_and_column() {
+        let err = load_tmx("<map>").err().expect("invalid xml should error");
+        assert_eq!(err.code, "tmx_xml_parse");
+        assert!(err.line.is_some());
+        assert!(err.column.is_some());
+    }
+
+    #[test]
+    fn tmx_missing_map_root_returns_structured_error() {
+        let err = load_tmx("<tileset></tileset>")
+            .err()
+            .expect("missing map root should error");
+        assert_eq!(err.code, "tmx_missing_map_root");
+    }
+
+    #[test]
+    fn tmx_missing_required_attribute_returns_structured_error() {
+        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+    <map version="1.10" orientation="orthogonal" width="2" height="2" tilewidth="16"></map>"#;
+        let err = load_tmx(xml)
+            .err()
+            .expect("missing tileheight should error");
+        assert_eq!(err.code, "tmx_invalid_content");
+        assert!(err.message.contains("tileheight"));
     }
 }
 

@@ -210,14 +210,18 @@ impl SkeletonAnimation {
             .map(|e| (e.name.clone(), e.value))
             .collect()
     }
-    /// Apply all bone timelines at the given time to the target skeleton by setting local properties directly.
-    pub fn apply_to_skeleton(&self, skeleton: &mut super::skeleton::Skeleton, time: f32) {
+    /// Apply all bone timelines at the given time to a raw bone slice by setting local properties directly.
+    pub fn apply_to_bones(&self, bones: &mut [Bone], time: f32) {
         for tl in &self.timelines {
             let value = tl.evaluate(time);
-            if let Some(bone) = skeleton.bones.get_mut(tl.bone_idx) {
+            if let Some(bone) = bones.get_mut(tl.bone_idx) {
                 apply_bone_property(bone, &tl.property, value);
             }
         }
+    }
+    /// Apply all bone timelines at the given time to the target skeleton by setting local properties directly.
+    pub fn apply_to_skeleton(&self, skeleton: &mut super::skeleton::Skeleton, time: f32) {
+        self.apply_to_bones(&mut skeleton.bones, time);
     }
     /// Apply all bone timelines blended with blend_weight in [0, 1]; weight=1 is full override, weight=0 is no-op.
     pub fn apply_to_skeleton_blended(

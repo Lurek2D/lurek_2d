@@ -44,7 +44,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 - Update docs/specs/<module>.md when contract changes.
 - Keep the API shape implementation-free; write docstrings in src/lua_api/ but do not write Rust binding or domain logic.
 - Return the approved API surface, updated examples, and migration note to Manager.
-- Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

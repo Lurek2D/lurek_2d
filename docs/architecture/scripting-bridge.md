@@ -262,6 +262,178 @@ These are planned improvements, not current state:
 
 ## Code & Documentation Standards
 
+## Engine Coding Standards
+
+### Pinned Crate Policy
+The Lurek2D engine relies on strictly defined versions of base libraries. Any attempts to update without Architect approval are rejected:
+- **Rust**: `stable >= 1.78` (enforced via rust-toolchain.toml)
+- **mlua**: `0.9` with features `["luajit", "vendored"]`
+- **wgpu**: `22`
+- **winit**: `0.30`
+- **rapier2d**: `0.32`
+- **rodio**: `0.17`
+- **fontdue**: `0.9`
+
+### File Structure & `mod.rs` Strictness
+Each `mod.rs` file in the engine must be a pure re-export point. It is strictly forbidden to place any business logic, functions, structs, or unit tests (`#[cfg(test)]`) in `mod.rs` files.
+Allowed contents:
+- `pub mod <name>;`
+- `pub use <path>;`
+- Module attributes (e.g. `#[allow(...)]`)
+- Doc comments (`///` or `//!`)
+
+### Safe State Borrowing
+When calling Lua callbacks from the Rust engine, there is a critical risk of panicking (`RefCell::borrow_mut() already borrowed`). The coding standard strictly enforces dropping the `borrow_mut()` lock before entering the virtual machine boundary:
+
+```rust
+// CORRECT: Borrow lock is dropped before Lua callback
+let value_to_pass = {
+    let guard = state.borrow();
+    guard.some_field.clone()
+};
+lua_callback(value_to_pass)?; // Safe call
+
+// INCORRECT: The guard lives on the same stack as the Lua callback.
+// If the Lua script re-entrantly calls an engine function trying to mutably borrow state -> PANIC.
+let guard = state.borrow();
+lua_callback(guard.some_field.clone())?;
+```
+
+### Error Propagation on Environment Boundaries
+Every error passed across the Lua-Rust boundary must include clear context indicating the call site. Errors cannot be passed in their raw form:
+
+**Error Format:** `lurek.<module>.<function>: <error description>`
+
+Example:
+```rust
+methods.add_method("load", |_, this, path: String| {
+    this.inner.load(&path).map_err(|e| {
+        LuaError::RuntimeError(format!("lurek.audio.load: failed to load file from path '{}': {}", path, e))
+    })
+});
+```
+
+### Type Naming and Validation
+- Lua-exposed types are prefixed with `Lua` in Rust (e.g., `LuaVec2`) and are visible to Lua as `L` (e.g., `LVec2`).
+- Boundary validation must happen before casting (e.g., checking integer ranges before casting `i64 -> u32` or clamping floats to logical boundaries).
+
+## Lua Scripting Standards
+
+### `lurek.*` Exclusivity
+Absolute rule: all engine API calls must use `lurek.*`. No bare globals, no `engine.*` tables, and no alternative namespaces.
+
+### Lifecycle Separation (on_process vs on_render)
+State mutation and logic must happen in `on_process(dt)`. Pure drawing without mutation must happen in `on_render()`. Mixing these callbacks causes undefined behavior.
+
+### Multiply by `dt`
+Every movement, physics simulation, timer, or tween must be multiplied by `dt`.
+
+### Local State (No Scene-Surviving Upvalues)
+State should be kept in `local` variables or explicit state tables. Module-level upvalues that survive scene transitions are forbidden.
+
+### Relative Resource Paths
+Paths must be relative to the game's content root (the folder with `conf.lua`). Use `/`, never `..`.
+
+## Appendix: Complete LuaUserData Example
+
+```rust
+//! `lurek.shape` — Shape creation and collision query bindings.
+
+use super::SharedState;
+use crate::shape::{Circle, Rect};
+use mlua::prelude::*;
+
+// ── LuaCircle ────────────────────────────────────────────────────────────────
+
+/// Lua-visible handle for a circle shape used in queries and collision checks.
+pub struct LuaCircle {
+    /// Wrapped circle data: center and radius in world units.
+    pub inner: Circle,
+}
+
+/// Provides Lua fields and methods for circle shape operations.
+impl LuaUserData for LuaCircle {
+    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(fields: &mut F) {
+        /// X coordinate of the circle center in world units.
+        fields.add_field_method_get("x", |_, this| Ok(this.inner.x as f64));
+        fields.add_field_method_set("x", |_, this, v: f64| {
+            this.inner.x = v as f32;
+            Ok(())
+        });
+        /// Y coordinate of the circle center in world units.
+        fields.add_field_method_get("y", |_, this| Ok(this.inner.y as f64));
+        fields.add_field_method_set("y", |_, this, v: f64| {
+            this.inner.y = v as f32;
+            Ok(())
+        });
+        /// Radius of the circle in world units; must be positive.
+        fields.add_field_method_get("radius", |_, this| Ok(this.inner.radius as f64));
+        fields.add_field_method_set("radius", |_, this, v: f64| {
+            this.inner.radius = (v as f32).max(0.0);
+            Ok(())
+        });
+    }
+
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- contains --
+        /// Returns whether a point is inside this circle.
+        /// @param | px | number | Point x coordinate in world units.
+        /// @param | py | number | Point y coordinate in world units.
+        /// @return | boolean | True when the point is within or on the circle boundary.
+        methods.add_method("contains", |_, this, (px, py): (f64, f64)| {
+            Ok(this.inner.contains(px as f32, py as f32))
+        });
+
+        // -- overlaps --
+        /// Returns whether this circle overlaps another circle.
+        /// @param | other | LCircle | Other circle handle.
+        /// @return | boolean | True when the circles intersect or touch.
+        methods.add_method("overlaps", |_, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaCircle>()?;
+            Ok(this.inner.overlaps(o.inner))
+        });
+
+        // -- area --
+        /// Returns the area of this circle.
+        /// @return | number | Area in square world units.
+        methods.add_method("area", |_, this, ()| {
+            Ok(this.inner.area() as f64)
+        });
+
+        // -- type --
+        /// Returns the Lua-visible type name for this circle handle.
+        /// @return | string | The string `LCircle`.
+        methods.add_method("type", |_, _, ()| Ok("LCircle"));
+
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LCircle` and `Object`.
+        /// @return | boolean | True when the supplied name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LCircle" || name == "LObject")
+        });
+    }
+}
+
+// ── Registration ─────────────────────────────────────────────────────────────
+
+/// Registers the `lurek.shape` table and all its constructor functions into the Lua VM.
+pub fn register(lua: &Lua, _state: &SharedState) -> mlua::Result<()> {
+    let shape = lua.create_table()?;
+
+    // -- newCircle --
+    shape.set("newCircle", lua.create_function(|lua, (x, y, r): (f64, f64, f64)| {
+        let radius = (r as f32).max(0.0);
+        lua.create_userdata(LuaCircle {
+            inner: Circle { x: x as f32, y: y as f32, radius },
+        })
+    })?)?;
+
+    lua.globals().get::<_, mlua::Table>("lurek")?.set("shape", shape)?;
+    Ok(())
+}
+```
+
 # Lua API File Standard
 
 ## TL;DR

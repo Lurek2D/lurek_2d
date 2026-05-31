@@ -43,9 +43,8 @@ Update all linked artifacts in the same commit:
 - Add, rename, or remove `lurek.*` API → update `content/examples/`, affected `content/games/`, and dependent `library/` modules.
 - Create a new module → add `docs/specs/<module>.md` and update `docs/specs/README.md`.
 - Change `library/<name>/init.lua` → update its `example.lua`, tests, harness registration, and regenerate library docs.
-- Change onboarding, build steps, or quality gates → update `docs/handbook.md` and `CONTRIBUTING.md`.
+- Change onboarding, build steps, or quality gates → update `docs/architecture/developer-workflow.md` and `CONTRIBUTING.md`.
 - Add a demo in `content/games/` → update the matching test, smoke test, and harness registration.
-- Any change → update `docs/CHANGELOG.md`.
 
 ## Discovery Directives
 
@@ -65,17 +64,10 @@ Update all linked artifacts in the same commit:
 - `docs/architecture/quality-assurance.md` — test placement rules and Lua-vs-Rust decision tree.
 - `docs/specs/README.md` — module-spec catalog: where to add or rename specs.
 - `tools/README.md` — tool inventory: generators, validators, audits.
-- `docs/handbook.md` — contributor workflow, setup, and quality expectations.
+- `docs/architecture/developer-workflow.md` — contributor workflow, setup, and quality expectations.
 
 ## Work Session
-Every agent uses `work/<session-name>/` as a temporary workspace. This keeps in-progress artifacts out of source history.
-
-Standard layout: `plans/` (task breakdown) · `briefs/` (research, repros) · `reports/` (findings, audit results) · `logs/` (agent_log.jsonl).
-
-Rules:
-- Any agent may write session artifacts; scope limits only product-source ownership.
-- Append one JSONL line per completed phase to `logs/agent_log.jsonl`.
-- Move finished sessions to `work/archive/`.
+Use `work/` as a flat scratch space for temp artifacts (scripts, reports, briefs). No sub-folders required. Files there are never committed to main history.
 
 ## Quality Gates
 Run before every commit:
@@ -89,7 +81,6 @@ Run before every commit:
 - Do not stop work because of unrelated or pre-existing worktree changes. Continue the requested task and ignore files outside your scope unless the user explicitly asks for investigation.
 - Stage only touched files. Never use `git add .`.
 - Commit format: `type(scope): description`. Allowed types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`. One logical change per commit.
-- Every commit must add or extend the current version entry in `docs/CHANGELOG.md`. MAJOR/MINOR changes also update `Cargo.toml`.
 
 ## Repository Layout
 - `src/` — Rust engine modules; `src/lua_api/` = bindings only, business logic stays in `src/<module>/`.
@@ -97,5 +88,5 @@ Run before every commit:
 - `docs/` — specs, architecture, API references; `docs/api/` is generated — never edit by hand.
 - `content/` — examples, game demos, UI layouts, plugins. `library/` — reusable Lua game-logic modules.
 - `.github/` — CAG layer: agents, skills, prompts, and this file. `tools/` — generators, validators, audit scripts.
-- `work/` — agent session workspaces (temp; not committed to main history). `logs/` — runtime logs, validate output.
+- `work/` — flat scratch space for temp artifacts (not committed to main history). `logs/` — runtime logs, validate output.
 

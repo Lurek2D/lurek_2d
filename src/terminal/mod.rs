@@ -11,6 +11,9 @@ pub mod highlighter;
 /// Render helpers that convert terminal state to `RenderCommand` sequences.
 pub mod render;
 
+/// Shared UTF-8-safe text helpers used across terminal internals.
+pub(crate) mod text_utils;
+
 mod cell;
 mod terminal_state;
 mod widget;

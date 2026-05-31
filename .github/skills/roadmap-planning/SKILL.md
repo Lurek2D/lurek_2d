@@ -29,8 +29,8 @@ Own the phase file format, dependency graph rules, acceptance gate authoring, st
 - Scope-creep guard: every phase description must include a one-line statement of what is explicitly NOT in scope. This forces the planner to articulate the boundary and prevents adjacent work from silently accreting.
 - Quality gate alignment: the Done When criterion for any phase touching `src/` must include `cargo test` and `cargo clippy -- -D warnings`. Done When for any phase touching `docs/` must include `python tools/gen_all_docs.py` with clean diff. Don't invent new acceptance criteria — use what developers already run.
 - Ideas-to-phases pipeline: `ideas/` items are triaged to either WONTDO (add a rejection note), INVESTIGATE (goes to Planner or Architect for discovery), or PHASE (ready to add to roadmap). Do not move an idea directly to a phase without a brief investigation note.
-- When a phase changes a public API, it must include a sub-step for migration notes in `docs/specs/<module>.md` and an update to `docs/CHANGELOG.md`. These are not optional follow-up tasks — they are part of the phase.
-- Roadmap artifacts live in `work/{session}/plan.md` during planning and may be promoted to a docs location only when finalized and reviewed. Do not commit in-progress plans to `docs/`.
+- When a phase changes a public API, it must include a sub-step for migration notes in `docs/specs/<module>.md`. These are not optional follow-up tasks — they are part of the phase.
+- Roadmap artifacts live in `work/` during planning and may be promoted to a docs location only when finalized and reviewed. Do not commit in-progress plans to `docs/`.
 ## Companion File Index
 
 None - all guidance is inline.

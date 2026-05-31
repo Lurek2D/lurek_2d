@@ -6,27 +6,59 @@
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
+use std::fmt;
+
+/// Structured LDtk import error used by Rust callers and Lua bindings.
+#[derive(Debug, Clone)]
+pub struct LdtkImportError {
+    pub code: &'static str,
+    pub message: String,
+}
+
+impl LdtkImportError {
+    fn new(code: &'static str, message: impl Into<String>) -> Self {
+        Self {
+            code,
+            message: message.into(),
+        }
+    }
+}
+
+impl fmt::Display for LdtkImportError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", self.code, self.message)
+    }
+}
+
+impl std::error::Error for LdtkImportError {}
 
 /// Parse `json_str` as an LDtk project, import the level named `level_name` (or the first level when `None`), and return a `TileMap`.
-pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, String> {
-    let root: serde_json::Value =
-        serde_json::from_str(json_str).map_err(|e| format!("LDtk JSON parse error: {}", e))?;
+pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, LdtkImportError> {
+    let root: serde_json::Value = serde_json::from_str(json_str).map_err(|e| {
+        LdtkImportError::new("ldtk_json_parse", format!("LDtk JSON parse error: {e}"))
+    })?;
     let levels = root
         .get("levels")
         .and_then(|v| v.as_array())
-        .ok_or("LDtk JSON missing 'levels' array")?;
+        .ok_or_else(|| LdtkImportError::new("ldtk_missing_levels", "LDtk JSON missing 'levels' array"))?;
     let level = if let Some(name) = level_name {
         levels
             .iter()
             .find(|l| l.get("identifier").and_then(|v| v.as_str()) == Some(name))
-            .ok_or_else(|| format!("LDtk level '{}' not found", name))?
+            .ok_or_else(|| {
+                LdtkImportError::new("ldtk_level_not_found", format!("LDtk level '{name}' not found"))
+            })?
     } else {
-        levels.first().ok_or("LDtk project has no levels")?
+        levels
+            .first()
+            .ok_or_else(|| LdtkImportError::new("ldtk_no_levels", "LDtk project has no levels"))?
     };
     let layer_instances = level
         .get("layerInstances")
         .and_then(|v| v.as_array())
-        .ok_or("LDtk level missing 'layerInstances'")?;
+        .ok_or_else(|| {
+            LdtkImportError::new("ldtk_missing_layer_instances", "LDtk level missing 'layerInstances'")
+        })?;
     let tile_layer = layer_instances.iter().rev().find(|l| is_tile_layer(l));
     let (grid_size, map_width, map_height) = if let Some(tl) = tile_layer {
         (
@@ -35,7 +67,10 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, St
             tl.get("__cHei").and_then(|v| v.as_u64()).unwrap_or(0) as u32,
         )
     } else {
-        return Err("LDtk level contains no tile or auto-layer layers".into());
+        return Err(LdtkImportError::new(
+            "ldtk_no_tile_layers",
+            "LDtk level contains no tile or auto-layer layers",
+        ));
     };
     let mut map = TileMap::new(grid_size, grid_size, 16);
     for layer in layer_instances.iter().rev() {

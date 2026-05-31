@@ -16,7 +16,7 @@
 
 ## Summary
 
-The charts module provides a CPU-rasterized data-visualization rendering engine for Lurek2D. Its functional purpose is to generate static chart images directly from raw data series, Lua tables, or column-driven tabular DataFrames. This enables the creation of debug telemetry panels, player statistics HUDs, and diagnostic data overlays at runtime without external dependencies. 
+The charts module provides a CPU-rasterized data-visualization rendering engine for Lurek2D. Its functional purpose is to generate static chart images directly from raw data series, Lua tables, or column-driven tabular DataFrames. This enables the creation of debug telemetry panels, player statistics HUDs, and diagnostic data overlays at runtime without external dependencies.
 
 The rasterization engine supports several standard chart formats: line charts for continuous trends, vertical or horizontal bar charts for categorical comparisons, stacked area charts for compositional trends, scatter plots for sample distributions, and proportional pie charts with optional donut-hole ring designs. It translates numerical data arrays into 32-bit RGBA pixel buffers, managing coordinate transformations, automatic axis domain estimation, title margins, and multi-color palette mappings.
 

@@ -33,8 +33,8 @@ use crate::log_msg;
 use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
-    BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, ParticleRenderShape,
-    PathSegment, RenderCommand, TextAlign, TextureData,
+    adaptive_circle_ellipse_segments, BevelStyle, BlendMode, DrawMode, GradientDirection,
+    HexOrientation, ParticleRenderShape, PathSegment, RenderCommand, TextAlign, TextureData,
 };
 use crate::render::shader::{Shader, ShaderFragmentInput, UniformValue};
 use crate::runtime::log_messages::{
@@ -1923,6 +1923,7 @@ impl GpuRenderer {
                     }
                     let mut verts = Vec::new();
                     let mut idxs = Vec::new();
+                    let segments = adaptive_circle_ellipse_segments(*r, *r);
                     self.tess_ellipse(
                         &mut verts,
                         &mut idxs,
@@ -1933,7 +1934,7 @@ impl GpuRenderer {
                         *y,
                         *r,
                         *r,
-                        32,
+                        segments,
                         line_width,
                     );
                     let (target_width, target_height) =
@@ -1972,6 +1973,7 @@ impl GpuRenderer {
                     }
                     let mut verts = Vec::new();
                     let mut idxs = Vec::new();
+                    let segments = adaptive_circle_ellipse_segments(*rx, *ry);
                     self.tess_ellipse(
                         &mut verts,
                         &mut idxs,
@@ -1982,7 +1984,7 @@ impl GpuRenderer {
                         *y,
                         *rx,
                         *ry,
-                        32,
+                        segments,
                         line_width,
                     );
                     let (target_width, target_height) =

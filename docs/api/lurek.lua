@@ -219,6 +219,15 @@ LAssetGetInfoResult = {}
 ---@field types table Per-type entry counts keyed by type string.
 LAssetStatsResult = {}
 
+---@class LAtlasPackerGetRegionResult
+---@field h number Region height in pixels.
+---@field name string Region key.
+---@field nine_slice table? Optional nine-slice inset table `{left, right, top, bottom}`.
+---@field w number Region width in pixels.
+---@field x number Left coordinate in atlas pixels.
+---@field y number Top coordinate in atlas pixels.
+LAtlasPackerGetRegionResult = {}
+
 ---@class LBehaviorTreeGetDebugStateResult
 ---@field last_status string Last status.
 ---@field node_count number Node count.
@@ -1290,6 +1299,14 @@ LTileSetGetAnimationResult = {}
 ---@field y number Y.
 LTileSetGetQuadResult = {}
 
+---@class LTilemapFromLDtkResult
+---@field code string Stable machine-readable error code.
+---@field column number? Always nil for LDtk parser errors.
+---@field format string Source format identifier (`"ldtk"`).
+---@field line number? Always nil for LDtk parser errors.
+---@field message string Human-readable parser message.
+LTilemapFromLDtkResult = {}
+
 ---@class LTilemapHexAreaResult
 ---@field q number Q.
 ---@field r number R.
@@ -1316,8 +1333,13 @@ LTilemapHexRingResult = {}
 LTilemapHexSpiralResult = {}
 
 ---@class LTilemapLoadTMXResult
+---@field code string Stable machine-readable error code.
+---@field column number? 1-based source column when available.
+---@field format string Source format identifier (`"tmx"`).
 ---@field height number Height.
 ---@field layers table Layers array.
+---@field line number? 1-based source line when available.
+---@field message string Human-readable parser message.
 ---@field orientation string Map orientation.
 ---@field tileHeight number Tile height in pixels.
 ---@field tileWidth number Tile width in pixels.
@@ -2659,6 +2681,10 @@ LSkeleton = {}
 --- Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
 ---@class LSkeletonAnimation
 LSkeletonAnimation = {}
+
+--- Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
+---@class LAtlasPacker
+LAtlasPacker = {}
 
 --- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 ---@class LSpriteAtlas
@@ -22291,18 +22317,18 @@ function LPipelineStep:typeOf(name) end
 --- Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.
 ---@param definition table A table with optional name, errorMode, and a steps array.
 ---@return LPipeline The constructed pipeline.
-lurek.pipeline.fromTable = function(definition) end
+lurek.task_graph.fromTable = function(definition) end
 
 --- Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
 ---@param name? string Pipeline name (defaults to "pipeline").
 ---@return LPipeline The new pipeline object.
-lurek.pipeline.newPipeline = function(name) end
+lurek.task_graph.newPipeline = function(name) end
 
 --- Creates a new pipeline step with the given name and an optional callback function.
 ---@param name string Unique step name.
 ---@param callback? function Optional callback executed when this step runs.
 ---@return LPipelineStep The new step object.
-lurek.pipeline.newStep = function(name, callback) end
+lurek.task_graph.newStep = function(name, callback) end
 
 --- Classify a single point into a biome type based on its environmental parameters.
 ---@param height number Elevation value (0.0â€“1.0) of the terrain point.
@@ -25580,6 +25606,53 @@ lurek.spine.newSkeleton = function(name) end
 ---@return LSkeletonAnimation A new animation userdata.
 lurek.spine.newSkeletonAnimation = function(name, duration) end
 
+--- Parses a Spine or DragonBones JSON string into a full runtime skeleton.
+---@param json string JSON string in standard Spine (bones/slots/animations) or DragonBones (armature) shape.
+---@return LSkeleton Parsed skeleton userdata.
+lurek.spine.skeletonFromJson = function(json) end
+
+--- Removes all packed regions and resets packing shelves.
+function LAtlasPacker:clear() end
+
+--- Returns the current width and height of this atlas packer.
+---@return number Atlas width in pixels.
+---@return number Atlas height in pixels.
+function LAtlasPacker:getDimensions() end
+
+--- Returns the named packed atlas region, or nil if not found.
+---@param name string Region key to fetch.
+---@return LAtlasPackerGetRegionResult Region table `{name, x, y, w, h, nine_slice}` or nil when missing.
+function LAtlasPacker:getRegion(name) end
+
+--- Packs a named region into this atlas and returns whether allocation succeeded.
+---@param name string Region key used for later lookups.
+---@param w number Region width in pixels.
+---@param h number Region height in pixels.
+---@return boolean True when the region was packed.
+function LAtlasPacker:pack(name, w, h) end
+
+--- Returns the number of currently packed regions.
+---@return number Region count.
+function LAtlasPacker:regionCount() end
+
+--- Sets nine-slice insets for a previously packed region.
+---@param name string Packed region key.
+---@param left number Left inset in pixels.
+---@param right number Right inset in pixels.
+---@param top number Top inset in pixels.
+---@param bottom number Bottom inset in pixels.
+---@return boolean True when insets were applied.
+function LAtlasPacker:setNineSlice(name, left, right, top, bottom) end
+
+--- Returns the type name of this object.
+---@return string Always `"LAtlasPacker"`.
+function LAtlasPacker:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. `"LAtlasPacker"` or `"Object"`).
+---@return boolean True if the object is the given type.
+function LAtlasPacker:typeOf(name) end
+
 --- Returns the total number of entries (sprite regions) in the atlas.
 ---@return number Entry count.
 function LSpriteAtlas:entryCount() end
@@ -25672,6 +25745,13 @@ function LSpriteSheet:type() end
 ---@param name string Type name to check (e.g. `"LSpriteSheet"` or `"Object"`).
 ---@return boolean True if the object is the given type.
 function LSpriteSheet:typeOf(name) end
+
+--- Creates a runtime atlas packer for dynamically allocating named sprite regions.
+---@param width number Atlas width in pixels.
+---@param height number Atlas height in pixels.
+---@param padding number Padding in pixels inserted around each packed region.
+---@return LAtlasPacker A new runtime atlas packer.
+lurek.sprite.newAtlasPacker = function(width, height, padding) end
 
 --- Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
 ---@param atlas LSpriteAtlas A previously parsed sprite atlas.
@@ -27295,7 +27375,8 @@ function LTileSet:typeOf(name) end
 --- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 ---@param jsonStr string Raw LDtk JSON content.
 ---@param levelName? string Level name to load, or nil for the first level.
----@return LTileMap Loaded tilemap.
+---@return LTileMap Loaded tilemap; or nil when import fails.
+---@return LTilemapFromLDtkResult Structured import error table on import failure; or nil on success.
 lurek.tilemap.fromLDtk = function(jsonStr, levelName) end
 
 --- Converts screen-space pixel coordinates to axial hex coordinates.
@@ -27403,7 +27484,8 @@ lurek.tilemap.isoRotate = function(direction, steps) end
 
 --- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 ---@param xml string Raw TMX XML content.
----@return LTilemapLoadTMXResult Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`.
+---@return LTilemapLoadTMXResult Parsed map with `width`; `height`; `tileWidth`; `tileHeight`; `orientation`; and `layers`; or nil on parse failure.
+---@return LTilemapLoadTMXResult Structured import error table on parse failure; or nil on success.
 lurek.tilemap.loadTMX = function(xml) end
 
 --- Creates an auto-tile sheet with a given tile size and layout.

@@ -118,6 +118,8 @@ pub mod patterns;
 pub mod physics;
 /// Exposes the pipeline subsystem module.
 pub mod pipeline;
+/// Exposes the preferred task-graph naming path for the pipeline subsystem.
+pub mod task_graph;
 /// Exposes the procedural generation subsystem module.
 pub mod procgen;
 /// Exposes the province subsystem module.

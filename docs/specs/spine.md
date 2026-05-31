@@ -10,9 +10,9 @@
 - Source path: `src/spine/`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
-- Lua API surface: `3` functions, `5` types, `34` methods
+- Lua API surface: `4` functions, `5` types, `34` methods
 - Rust test path(s): tests/rust/unit/spine_tests.rs
-- Lua test path(s): tests/lua/unit/test_spine.lua
+- Lua test path(s): tests/lua/unit/test_spine_core_unit.lua
 
 ## Summary
 
@@ -20,7 +20,9 @@ This module provides a skeletal animation runtime for 2D assets, offering pose-d
 
 Skins and slots isolate visual assets from bone hierarchies. Slots are attached directly to bones to manage layering and draw order, letting sprites swap dynamically. Skins group slot mappings to switch visual variants on a single skeletal rig. Playback advances through sampled timelines, interpolating values with smooth or stepped curves while triggering timeline event markers.
 
-The module also integrates rendering and diagnostic layers. It flattens rig poses into generic draw commands, letting the renderer paint attachments without skeleton awareness. The system parses JSON rig files and provides software visualizers that render skeleton linkages to CPU images for debug inspection.
+Per-frame pose updates are designed to avoid cloning full animation or IK constraint objects in runtime hot paths. Animation sampling and IK solving operate on borrowed indexed data, so update loops scale with rig size without extra heap churn from repeated structural clones.
+
+The module also integrates rendering and diagnostic layers. It flattens rig poses into generic draw commands, letting the renderer paint attachments without skeleton awareness. The system parses standard Spine and DragonBones JSON rig files (bones, slots, skins, and basic timelines) and provides software visualizers that render skeleton linkages to CPU images for debug inspection.
 
 ## Imports
 
@@ -92,6 +94,7 @@ The module also integrates rendering and diagnostic layers. It flattens rig pose
 - `lurek.spine.animationFromJson(json) -> LSkeletonAnimation`: Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
 - `lurek.spine.newSkeleton(name) -> LSkeleton`: Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
 - `lurek.spine.newSkeletonAnimation(name, duration) -> LSkeletonAnimation`: Creates a new empty animation with the given name and duration. Add keyframes to define motion.
+- `lurek.spine.skeletonFromJson(json) -> LSkeleton`: Parses Spine or DragonBones JSON into a runtime skeleton with bones, slots, skins, and animations.
 
 ### Callbacks
 

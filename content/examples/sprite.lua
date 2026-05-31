@@ -26,6 +26,7 @@ do
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
     local row0 = sheet:getRow(0)
     print("row 0 frames = " .. #row0)
+    print("row 0 first frame = " .. row0[1].x .. "," .. row0[1].y)
 end
 
 --@api-stub: LSpriteSheet:getColumn
@@ -34,6 +35,7 @@ do
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
     local col0 = sheet:getColumn(0)
     print("col 0 frames = " .. #col0)
+    print("col 0 second frame = " .. col0[2].x .. "," .. col0[2].y)
 end
 
 --@api-stub: LSpriteSheet:nameGroup
@@ -131,6 +133,72 @@ do
     local sheet = lurek.sprite.newAtlasSheet(atlas, 128, 32)
     print("frame count = " .. sheet:getFrameCount())
     print("atlas sheet type = " .. sheet:type())
+end
+
+--@api-stub: lurek.sprite.newAtlasPacker
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    print("atlas packer type = " .. packer:type())
+end
+
+--@api-stub: LAtlasPacker:pack
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    local ok = packer:pack("hero", 24, 24)
+    print("packed hero = " .. tostring(ok))
+end
+
+--@api-stub: LAtlasPacker:getRegion
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    local region = packer:getRegion("hero")
+    print("region x = " .. (region and region.x or -1))
+end
+
+--@api-stub: LAtlasPacker:regionCount
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    print("region count = " .. packer:regionCount())
+end
+
+--@api-stub: LAtlasPacker:getDimensions
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    local w, h = packer:getDimensions()
+    print("dimensions = " .. w .. "x" .. h)
+end
+
+--@api-stub: LAtlasPacker:setNineSlice
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    local ok = packer:setNineSlice("hero", 4, 4, 4, 4)
+    print("set nine-slice = " .. tostring(ok))
+end
+
+--@api-stub: LAtlasPacker:clear
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    if packer:getRegion("hero") ~= nil and packer:getRegion("hero").nine_slice ~= nil then
+        print("hero nine-slice left = " .. packer:getRegion("hero").nine_slice.left)
+    end
+    packer:clear()
+    print("after clear count = " .. packer:regionCount())
+end
+
+--@api-stub: LAtlasPacker:type
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    print("type = " .. packer:type())
+end
+
+--@api-stub: LAtlasPacker:typeOf
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    print("typeOf LAtlasPacker = " .. tostring(packer:typeOf("LAtlasPacker")))
 end
 
 --- Sprite Module Part 1: LSpriteSheet advanced, newAtlasSheet, newRPGMakerSheet, parseAsepriteAtlas, parseAtlas

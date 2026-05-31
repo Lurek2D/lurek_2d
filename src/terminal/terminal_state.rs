@@ -15,6 +15,7 @@
 //! It is where a passive grid becomes a usable terminal environment.
 
 use super::cell::{TCell, DEFAULT_FG};
+use super::text_utils::{byte_index, char_count, truncate_chars};
 use super::widget::{BorderStyle, Widget, WidgetKind};
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::FontKey;
@@ -54,24 +55,6 @@ pub(crate) enum TerminalEvent {
     TextChanged { index: usize },
     /// A list widget selection changed.
     SelectionChanged { index: usize },
-}
-
-/// Return the number of Unicode scalar values in `text`.
-fn char_count(text: &str) -> usize {
-    text.chars().count()
-}
-
-/// Return the byte offset in `text` corresponding to `char_index`; returns `text.len()` when out of range.
-fn byte_index(text: &str, char_index: usize) -> usize {
-    text.char_indices()
-        .nth(char_index)
-        .map(|(idx, _)| idx)
-        .unwrap_or(text.len())
-}
-
-/// Return a new `String` containing at most `max_chars` Unicode chars from `text`.
-fn truncate_chars(text: &str, max_chars: usize) -> String {
-    text.chars().take(max_chars).collect()
 }
 
 /// Write a single character cell at `(col, row)` in `cells`; silently ignored when out of bounds.
@@ -235,6 +218,55 @@ fn write_render_text(
         set_render_cell(cells, cols, rows, x + offset, y, ch, fg);
     }
 }
+
+/// Return `true` when `ch` is treated as a word character for Ctrl+Backspace/Delete editing.
+fn is_word_char(ch: char) -> bool {
+    ch.is_alphanumeric() || ch == '_'
+}
+
+/// Find the previous word boundary before `cursor` for Ctrl+Backspace behavior.
+fn prev_word_boundary(text: &str, cursor: usize) -> usize {
+    let chars: Vec<char> = text.chars().collect();
+    let mut index = cursor.min(chars.len());
+    while index > 0 && !is_word_char(chars[index - 1]) {
+        index -= 1;
+    }
+    while index > 0 && is_word_char(chars[index - 1]) {
+        index -= 1;
+    }
+    index
+}
+
+/// Find the next word boundary after `cursor` for Ctrl+Delete behavior.
+fn next_word_boundary(text: &str, cursor: usize) -> usize {
+    let chars: Vec<char> = text.chars().collect();
+    let mut index = cursor.min(chars.len());
+    while index < chars.len() && !is_word_char(chars[index]) {
+        index += 1;
+    }
+    while index < chars.len() && is_word_char(chars[index]) {
+        index += 1;
+    }
+    index
+}
+
+/// Insert `insert_text` at `cursor_pos`, enforcing `max_length` when it is non-zero.
+fn insert_with_limit(
+    text: &mut String,
+    cursor_pos: &mut usize,
+    max_length: usize,
+    insert_text: &str,
+) -> bool {
+    let insert_len = char_count(insert_text);
+    if max_length > 0 && char_count(text) + insert_len > max_length {
+        return false;
+    }
+    let insert_at = byte_index(text, *cursor_pos);
+    text.insert_str(insert_at, insert_text);
+    *cursor_pos += insert_len;
+    true
+}
+
 /// Main terminal state machine: grid, widgets, scrollback, command history, and focus tracking.
 #[derive(Debug, Clone)]
 pub struct Terminal {
@@ -262,6 +294,10 @@ pub struct Terminal {
     cmd_history: Vec<String>,
     /// Navigation cursor into `cmd_history`; 0 means no active navigation.
     cmd_cursor: usize,
+    /// Internal clipboard used by terminal text shortcuts.
+    clipboard: String,
+    /// Focused textbox index when Ctrl+A "select all" state is active.
+    select_all_textbox: Option<usize>,
     /// Optional per-terminal cell width override in pixels.
     cell_width_override: Option<f32>,
     /// Optional per-terminal cell height override in pixels.
@@ -285,6 +321,8 @@ impl Terminal {
             scrollback_offset: 0,
             cmd_history: Vec::new(),
             cmd_cursor: 0,
+            clipboard: String::new(),
+            select_all_textbox: None,
             cell_width_override: None,
             cell_height_override: None,
         }
@@ -437,6 +475,7 @@ impl Terminal {
             Some(index) if index < self.widgets.len() => Some(index),
             _ => None,
         };
+        self.select_all_textbox = None;
     }
 
     /// Return the index of the focused widget, or `None` when nothing is focused.
@@ -472,11 +511,68 @@ impl Terminal {
         match &mut widget.kind {
             WidgetKind::TextBox {
                 text,
-                max_length: _,
+                max_length,
                 cursor_pos,
             } => {
                 let mut changed = false;
+                let mut select_all = self.select_all_textbox == Some(focused_index);
                 let consumed = match key {
+                    "ctrl+a" => {
+                        *cursor_pos = char_count(text);
+                        select_all = true;
+                        true
+                    }
+                    "ctrl+c" => {
+                        self.clipboard = text.clone();
+                        true
+                    }
+                    "ctrl+x" => {
+                        if !text.is_empty() {
+                            self.clipboard = text.clone();
+                            text.clear();
+                            *cursor_pos = 0;
+                            changed = true;
+                        }
+                        select_all = false;
+                        true
+                    }
+                    "ctrl+v" => {
+                        if select_all {
+                            text.clear();
+                            *cursor_pos = 0;
+                            select_all = false;
+                        }
+                        if !self.clipboard.is_empty()
+                            && insert_with_limit(text, cursor_pos, *max_length, &self.clipboard)
+                        {
+                            changed = true;
+                        }
+                        true
+                    }
+                    "ctrl+backspace" => {
+                        if *cursor_pos > 0 {
+                            let start_char = prev_word_boundary(text, *cursor_pos);
+                            let start = byte_index(text, start_char);
+                            let end = byte_index(text, *cursor_pos);
+                            text.replace_range(start..end, "");
+                            *cursor_pos = start_char;
+                            changed = true;
+                        }
+                        select_all = false;
+                        true
+                    }
+                    "ctrl+delete" => {
+                        let len = char_count(text);
+                        if *cursor_pos < len {
+                            let end_char = next_word_boundary(text, *cursor_pos);
+                            let start = byte_index(text, *cursor_pos);
+                            let end = byte_index(text, end_char);
+                            text.replace_range(start..end, "");
+                            changed = true;
+                        }
+                        select_all = false;
+                        true
+                    }
                     "backspace" => {
                         if *cursor_pos > 0 {
                             let end = byte_index(text, *cursor_pos);
@@ -485,6 +581,7 @@ impl Terminal {
                             *cursor_pos -= 1;
                             changed = true;
                         }
+                        select_all = false;
                         true
                     }
                     "delete" => {
@@ -494,26 +591,32 @@ impl Terminal {
                             text.replace_range(start..end, "");
                             changed = true;
                         }
+                        select_all = false;
                         true
                     }
                     "left" => {
                         *cursor_pos = cursor_pos.saturating_sub(1);
+                        select_all = false;
                         true
                     }
                     "right" => {
                         *cursor_pos = (*cursor_pos + 1).min(char_count(text));
+                        select_all = false;
                         true
                     }
                     "home" => {
                         *cursor_pos = 0;
+                        select_all = false;
                         true
                     }
                     "end" => {
                         *cursor_pos = char_count(text);
+                        select_all = false;
                         true
                     }
                     _ => false,
                 };
+                self.select_all_textbox = if select_all { Some(focused_index) } else { None };
                 if changed {
                     events.push(TerminalEvent::TextChanged {
                         index: focused_index,
@@ -526,6 +629,7 @@ impl Terminal {
                 selected,
                 scroll_offset,
             } => {
+                self.select_all_textbox = None;
                 let previous = *selected;
                 let visible_rows = widget.base.height.max(1);
                 let consumed = match key {
@@ -570,6 +674,7 @@ impl Terminal {
                 (consumed, events)
             }
             WidgetKind::Button { .. } => {
+                self.select_all_textbox = None;
                 if matches!(key, "return" | "space") {
                     events.push(TerminalEvent::ButtonClicked {
                         index: focused_index,
@@ -598,13 +703,14 @@ impl Terminal {
                 max_length,
                 cursor_pos,
             } => {
-                let input_len = char_count(text_input);
-                if *max_length > 0 && char_count(text) + input_len > *max_length {
+                if self.select_all_textbox == Some(focused_index) {
+                    text.clear();
+                    *cursor_pos = 0;
+                }
+                self.select_all_textbox = None;
+                if !insert_with_limit(text, cursor_pos, *max_length, text_input) {
                     return (false, Vec::new());
                 }
-                let insert_at = byte_index(text, *cursor_pos);
-                text.insert_str(insert_at, text_input);
-                *cursor_pos += input_len;
                 (
                     true,
                     vec![TerminalEvent::TextChanged {
@@ -622,6 +728,7 @@ impl Terminal {
         grid_row: usize,
         _button: usize,
     ) -> (bool, Vec<TerminalEvent>) {
+        self.select_all_textbox = None;
         let col = grid_col.saturating_sub(1);
         let row = grid_row.saturating_sub(1);
         for index in (0..self.widgets.len()).rev() {

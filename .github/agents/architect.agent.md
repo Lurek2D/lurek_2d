@@ -44,7 +44,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
   - Note contract or docs/specs updates when public surface or ownership changes.
 - **Solver mode** (right path is unclear):
   - Load solution-options first.
-  - Check work/{session}/ for prior attempts and rejected options before forming new ones.
+  - Check work/ for prior attempts and rejected options before forming new ones.
   - Rewrite the ask as a decision that can be accepted or rejected.
   - If the symptom is not yet understood, return the gap to Manager instead of guessing.
   - Read the smallest code slice controlling the decision.
@@ -57,7 +57,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
   - When the best option still needs a human call, surface the trade-off explicitly.
 - **All modes**:
   - Return the design or decision to Manager with a clear acceptance condition.
-  - Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

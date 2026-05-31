@@ -3,7 +3,7 @@
 use super::SharedState;
 use crate::spine::ik::IKConstraint;
 use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
-use crate::spine::{BoneParams, Skeleton};
+use crate::spine::{skeleton_from_json_str, BoneParams, Skeleton};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -483,6 +483,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 )),
                 None => Ok(LuaValue::Nil),
             }
+        })?,
+    )?;
+    // -- skeletonFromJson --
+    /// Parses a Spine or DragonBones JSON string into a full runtime skeleton.
+    /// @param | json | string | JSON string in standard Spine (bones/slots/animations) or DragonBones (armature) shape.
+    /// @return | LSkeleton | Parsed skeleton userdata.
+    tbl.set(
+        "skeletonFromJson",
+        lua.create_function(|lua, json: String| {
+            let skeleton = skeleton_from_json_str(&json)
+                .map_err(|e| LuaError::RuntimeError(format!("skeletonFromJson: {e}")))?;
+            lua.create_userdata(LuaSkeleton { inner: skeleton })
         })?,
     )?;
     /// Performs the 'spine' operation.

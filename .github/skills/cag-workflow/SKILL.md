@@ -28,7 +28,7 @@ description: "Load this skill when editing .github agents, skills, prompts, or t
 - Before creating a new skill, check if an existing skill can absorb the domain knowledge. A new skill is justified when: (1) its When To Load triggers are unique and non-overlapping, (2) its domain knowledge is not duplicated elsewhere, (3) at least one agent lists it in their bundle.
 - Token cost rule: every line added to `copilot-instructions.md` is loaded on every request. Anything that is not always-relevant belongs in a skill or agent, not in the system prompt. Prune regularly.
 - Validation is mandatory before any CAG commit. Run `python tools/validate/cag_validate.py` for schema compliance, `python tools/audit/cag_link_check.py --strict` for file reference integrity. Both must pass.
-- Workflow: baseline validate → minimal change → validate again → run `cag_link_check.py --strict` → update `docs/CHANGELOG.md` → commit. Never commit a CAG change without a green validator run.
+- Workflow: baseline validate → minimal change → validate again → run `cag_link_check.py --strict` → commit. Never commit a CAG change without a green validator run.
 ## Companion File Index
 - None.
 

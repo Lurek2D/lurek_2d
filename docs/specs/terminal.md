@@ -75,6 +75,12 @@ Finally, the terminal integrates a powerful render path that projects the active
 - Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
 - The file is therefore the terminal subsystem's final visual export layer.
 
+### text_utils.rs
+
+- This file centralizes UTF-8-safe text helpers shared across terminal internals.
+- It provides character counting, character-to-byte indexing, truncation, and leading-byte UTF-8 length decoding.
+- The file reduces duplicate text logic between ANSI parsing, widget operations, and terminal state input/render paths.
+
 ### terminal_state.rs
 
 - This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
@@ -171,7 +177,7 @@ Finally, the terminal integrates a powerful render path that projects the active
 - `LTerminal:getDimensions() -> integer, integer`: Returns the number of columns and rows in the terminal grid.
 - `LTerminal:getFocused() -> LWidget`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
 - `LTerminal:getWidgetCount() -> integer`: Returns the number of widgets currently attached to this terminal.
-- `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing.
+- `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing, including TextBox shortcuts like `ctrl+a`, `ctrl+c`, `ctrl+x`, `ctrl+v`, `ctrl+backspace`, and `ctrl+delete`.
 - `LTerminal:mousepressed(px, py, button?) -> nil`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
 - `LTerminal:print(col, row, text) -> nil`: Writes text to the terminal grid starting at a specific cell.
 - `LTerminal:removeWidget(widget) -> nil`: Detaches a widget from this terminal, removing it from rendering and input handling.

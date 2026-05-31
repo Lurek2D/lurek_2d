@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-05-30",
+  "generated": "2026-05-31",
   "modules": [
     {
       "name": "agent",
@@ -19304,7 +19304,7 @@
       "functions": [
         {
           "name": "newStep",
-          "fullPath": "lurek.pipeline.newStep",
+          "fullPath": "lurek.task_graph.newStep",
           "signature": "(name, [callback])",
           "description": "Creates a new pipeline step with the given name and an optional callback function.",
           "parameters": [
@@ -19328,7 +19328,7 @@
         },
         {
           "name": "newPipeline",
-          "fullPath": "lurek.pipeline.newPipeline",
+          "fullPath": "lurek.task_graph.newPipeline",
           "signature": "([name])",
           "description": "Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().",
           "parameters": [
@@ -19346,7 +19346,7 @@
         },
         {
           "name": "fromTable",
-          "fullPath": "lurek.pipeline.fromTable",
+          "fullPath": "lurek.task_graph.fromTable",
           "signature": "(def)",
           "description": "Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.",
           "parameters": [
@@ -25862,6 +25862,24 @@
           "returnType": "LSkeletonAnimation",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "skeletonFromJson",
+          "fullPath": "lurek.spine.skeletonFromJson",
+          "signature": "(json)",
+          "description": "Parses a Spine or DragonBones JSON string into a full runtime skeleton.",
+          "parameters": [
+            {
+              "name": "json",
+              "type": "string",
+              "description": "JSON string in standard Spine (bones/slots/animations) or DragonBones (armature) shape.",
+              "optional": false
+            }
+          ],
+          "returns": "LSkeleton",
+          "returnType": "LSkeleton",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -25975,6 +25993,36 @@
           ],
           "returns": "LSpriteSheet",
           "returnType": "LSpriteSheet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newAtlasPacker",
+          "fullPath": "lurek.sprite.newAtlasPacker",
+          "signature": "(width, height, padding)",
+          "description": "Creates a runtime atlas packer for dynamically allocating named sprite regions.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Atlas width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Atlas height in pixels.",
+              "optional": false
+            },
+            {
+              "name": "padding",
+              "type": "integer",
+              "description": "Padding in pixels inserted around each packed region.",
+              "optional": false
+            }
+          ],
+          "returns": "LAtlasPacker",
+          "returnType": "LAtlasPacker",
           "isMethod": false,
           "objectType": null
         },
@@ -37737,6 +37785,164 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LAssetHandle"
+        }
+      ]
+    },
+    {
+      "name": "LAtlasPacker",
+      "description": "Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.",
+      "methods": [
+        {
+          "name": "pack",
+          "fullPath": "LAtlasPacker:pack",
+          "signature": "(name, w, h)",
+          "description": "Packs a named region into this atlas and returns whether allocation succeeded.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Region key used for later lookups.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "integer",
+              "description": "Region width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "integer",
+              "description": "Region height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "setNineSlice",
+          "fullPath": "LAtlasPacker:setNineSlice",
+          "signature": "(name, left, right, top, bottom)",
+          "description": "Sets nine-slice insets for a previously packed region.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Packed region key.",
+              "optional": false
+            },
+            {
+              "name": "left",
+              "type": "integer",
+              "description": "Left inset in pixels.",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "integer",
+              "description": "Right inset in pixels.",
+              "optional": false
+            },
+            {
+              "name": "top",
+              "type": "integer",
+              "description": "Top inset in pixels.",
+              "optional": false
+            },
+            {
+              "name": "bottom",
+              "type": "integer",
+              "description": "Bottom inset in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "getRegion",
+          "fullPath": "LAtlasPacker:getRegion",
+          "signature": "(name)",
+          "description": "Returns the named packed atlas region, or nil if not found.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Region key to fetch.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "regionCount",
+          "fullPath": "LAtlasPacker:regionCount",
+          "signature": "()",
+          "description": "Returns the number of currently packed regions.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "getDimensions",
+          "fullPath": "LAtlasPacker:getDimensions",
+          "signature": "()",
+          "description": "Returns the current width and height of this atlas packer.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LAtlasPacker:clear",
+          "signature": "()",
+          "description": "Removes all packed regions and resets packing shelves.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "type",
+          "fullPath": "LAtlasPacker:type",
+          "signature": "()",
+          "description": "Returns the type name of this object.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LAtlasPacker:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this object matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check (e.g. `\"LAtlasPacker\"` or `\"Object\"`).",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAtlasPacker"
         }
       ]
     },

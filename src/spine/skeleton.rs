@@ -203,9 +203,9 @@ impl Skeleton {
             self.anim_time = duration;
             self.anim_playing = false;
         }
-        let anim = self.animations[anim_idx].clone();
         let time = self.anim_time;
-        anim.apply_to_skeleton(self, time);
+        let (bones, animations) = (&mut self.bones, &self.animations);
+        animations[anim_idx].apply_to_bones(bones, time);
     }
     /// Return current animation time in seconds.
     pub fn get_animation_time(&self) -> f32 {
@@ -228,9 +228,9 @@ impl Skeleton {
     }
     /// Solve all registered IK constraints against the current bone poses in registration order.
     pub fn apply_ik_constraints(&mut self) {
-        for i in 0..self.ik_constraints.len() {
-            let constraint = self.ik_constraints[i].clone();
-            constraint.solve(&mut self.bones);
+        let (bones, constraints) = (&mut self.bones, &self.ik_constraints);
+        for constraint in constraints {
+            constraint.solve(bones);
         }
     }
     /// Register an empty skin by name; no-op when the skin already exists.

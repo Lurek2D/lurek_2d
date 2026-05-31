@@ -52,11 +52,10 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
   - Recommend the highest-ROI option that does not change public behavior.
   - Block the phase when a regression exceeds the stated limit.
 - **All modes**:
-  - Check work/{session}/reports/ for a fresh audit report before running a full audit script.
+  - Check work/ for a fresh audit report before running a full audit script.
   - Apply the tightest-scope review first; widen only when a finding requires it.
   - Tie every finding to a file and line.
   - Return the decision and full finding list to Manager.
-  - Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

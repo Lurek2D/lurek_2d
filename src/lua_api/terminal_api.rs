@@ -543,11 +543,12 @@ impl LuaUserData for LuaTerminal {
         /// @param | key | string | The key name (e.g. "return", "backspace", "left").
         /// @return | boolean | True if the terminal consumed the key event.
         methods.add_method("keypressed", |lua, this, key: String| {
+            let normalized_key = key.to_ascii_lowercase();
             let (consumed, events) = this
                 .binding
                 .terminal
                 .borrow_mut()
-                .keypressed_with_events(&key);
+                .keypressed_with_events(&normalized_key);
             dispatch_terminal_events(lua, &this.binding, &events)?;
             Ok(consumed)
         });

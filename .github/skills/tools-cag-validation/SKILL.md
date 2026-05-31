@@ -23,11 +23,10 @@ description: "Load this skill when validating, debugging, or maintaining CAG fil
 - `python tools/audit/cag_link_check.py --strict` verifies that every `.md` file path referenced in any CAG file actually exists. Run after any file rename, move, or deletion in `.github/` or `docs/`. Dead links in CAG files silently degrade routing quality.
 - `python tools/audit/cag_coverage.py` reports which agent roles lack associated skill bundles and which skills have no agent owner. An unowned skill is a candidate for removal; a role without primary skills is a routing gap.
 - `python tools/audit/cag_persona_matrix.py` outputs the persona coverage matrix. Run it after any agent addition or removal to confirm no persona lost all its serving agents.
-- Distinguishing content vs. validator defects: when validation fails, first confirm the rule exists in `cag_validate.py` source code. If the rule is correct and the file is wrong, fix the file. If the rule is outdated (removed agent name, old field), update the rule — but treat rule changes as a separate commit with a changelog entry.
+- Distinguishing content vs. validator defects: when validation fails, first confirm the rule exists in `cag_validate.py` source code. If the rule is correct and the file is wrong, fix the file. If the rule is outdated (removed agent name, old field), update the rule.
 - `--baseline` flag produces a baseline snapshot for comparison. Use it when starting a large CAG sweep: baseline at start, validate again at end, diff to confirm only intended changes.
 - Common validator failures and their fixes: `unknown_agent_name` → agent file was deleted or renamed without updating references; `description_phrasing` → description does not start with "Load this skill when"; `section_missing` → one of the four required sections is absent or has the wrong heading.
 - SKILL.md files must not contain triple-backtick code fences. Single backticks are allowed for short inline command or path references when they improve clarity.
-- After the validator passes, update `docs/CHANGELOG.md` with a `docs` or `chore` entry describing the CAG change. CAG changes without a changelog entry fail the commit hygiene check.
 ## Companion File Index
 - None.
 

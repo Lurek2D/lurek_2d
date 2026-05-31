@@ -10,8 +10,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/pipeline/`
+- Compatibility source path: `src/task_graph/` (incremental naming alias)
 - Binding: `src/lua_api/pipeline_api.rs`
-- Namespace: `lurek.pipeline`
+- Namespace: `lurek.pipeline` (compat) and `lurek.task_graph` (preferred naming)
 - Lua API surface: `3` functions, `5` types, `63` methods
 - Rust test path(s): tests/rust/unit/pipeline_tests.rs
 - Lua test path(s): tests/lua/unit/test_pipeline_core_unit.lua
@@ -25,6 +26,10 @@ Before execution, the system validates the graph using topological sorting and c
 Individual steps carry granular configuration rules that govern their execution lifetime. Each task can define timing parameters such as pre-execution delays, timeouts, and automatic retry counts with separate intervals. Steps can also carry custom metadata, select optional or critical status, and evaluate predicate conditions dynamically. This lets pipelines skip unnecessary steps or recover from transient failures without aborting the entire sequence.
 
 Finally, the module supports both synchronous blocking execution and frame-driven asynchronous scheduling. Asynchronous pipelines run as lightweight coroutines that yield control, advancing step by step via update ticks. Execution tracks chronological progress, recording step durations, retry attempts, and detailed errors. Developers can customize the error mode to either abort on first failure or continue executing unaffected tasks.
+
+Internal runtime note: hot-path dependency checks and async scheduler readiness now use borrowed step-name paths (`&str`) to reduce transient `String` cloning during per-frame updates. Lua and public pipeline behavior remain unchanged.
+
+Naming note: this phase introduces an incremental naming path under `task_graph` in Rust (`crate::task_graph`) and Lua (`lurek.task_graph`) while keeping existing `pipeline` paths fully compatible.
 
 ## Imports
 

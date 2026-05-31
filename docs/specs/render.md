@@ -92,6 +92,7 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - Screenshot readback and statistics gathering also happen here because this file has the authoritative picture of what the GPU just processed.
 - Font atlas uploads, texture writes, and canvas surface reuse are coordinated in one place so resource churn stays observable and bounded.
 - Visibility pruning happens before expensive draw expansion where possible, which helps large scenes skip obviously off-camera work.
+- Circle and ellipse draw commands use deterministic adaptive tessellation based on visual extent, clamped to stable minimum and maximum segment counts.
 - Blend, stencil, and depth modes are translated here into the exact pipeline variants the backend needs for compositing correctness.
 - The file also contains the glue that keeps meshes, particles, Spine output, and generic primitives flowing through one renderer abstraction.
 - Low-level vertex formats live here because they are backend contracts rather than reusable engine-domain types.
@@ -147,6 +148,7 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 ### postfx_pipeline.rs
 
 - This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
+- Pipeline-layout and render-pipeline construction are centralized in shared helpers so built-in and custom effects use one consistent GPU setup path.
 - Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
 - Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
 - Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.

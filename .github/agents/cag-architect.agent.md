@@ -26,8 +26,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 - Edited .github files and CAG tools when needed.
 - Clean CAG validator result for touched scope and a final full pass.
 - Updated agent graph note in agent-routing SKILL.md when routing policy changed.
-- docs/CHANGELOG.md entry when policy requires it.
-- Phase JSONL log entry for a CAG sweep.
 - Retrieval corpus change proposal: source list, chunking rules, coverage target.
 - Evaluation report: metrics, flagged stale or missing chunks.
 
@@ -41,7 +39,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
   - Update agent-routing/SKILL.md ownership matrix when the routing graph or handoff contract changes.
   - Run cag_link_check.py --strict, cag_coverage.py, and cag_persona_matrix.py when the touched scope makes them relevant.
   - Re-run the focused validator first, then the full python tools/validate/cag_validate.py pass; fix new issues immediately.
-  - Update docs/CHANGELOG.md when policy requires it; record the phase in work/{session}/logs/agent_log.jsonl.
   - In the final sweep: confirm frontmatter, section order, agent graph coherence, and token-economy wording.
 - **Retrieval mode**:
   - Load retrieval-architecture first.
@@ -50,10 +47,9 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
   - Apply the smallest corpus change: add a source, change a chunking rule, or update a freshness trigger.
   - Update the source priority table and explain the change.
   - Run a small evaluation query set to confirm precision improved.
-  - Record stale-chunk rate, coverage delta, and query latency baseline in work/{session}/reports/.
+  - Record stale-chunk rate, coverage delta, and query latency baseline in work/ when relevant.
 - **All modes**:
   - Return changed files and validation proof to Manager.
-  - Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

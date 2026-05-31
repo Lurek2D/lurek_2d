@@ -5,6 +5,8 @@
 //! Low-level parsing helpers stay close to the decoder because escape handling is sensitive to byte structure and malformed fragments.
 //! The file is therefore the compatibility layer between external terminal-style output and the engine's own grid renderer.
 
+use super::text_utils::utf8_char_len;
+
 /// RGB color produced by ANSI color codes or xterm-256 palette lookup.
 #[derive(Debug, Clone, PartialEq)]
 pub struct AnsiColor {
@@ -284,15 +286,3 @@ fn color256(n: u8) -> AnsiColor {
     }
 }
 
-/// Return the byte length of a UTF-8 character given its leading byte.
-fn utf8_char_len(byte: u8) -> usize {
-    if byte < 0x80 {
-        1
-    } else if byte < 0xE0 {
-        2
-    } else if byte < 0xF0 {
-        3
-    } else {
-        4
-    }
-}

@@ -122,16 +122,6 @@ do
     print("stopped at time = " .. skel:getAnimationTime())
 end
 
---@api-stub: LSkeleton:updateAnimation
-do
-    local skel = lurek.spine.newSkeleton("animated")
-    skel:addBone("root")
-    skel:addAnimation(lurek.spine.newSkeletonAnimation("idle", 1.0))
-    skel:playAnimation("idle", true)
-    skel:updateAnimation(0.5)
-    print("time = " .. string.format("%.1f", skel:getAnimationTime()))
-end
-
 --@api-stub: LSkeleton:getAnimationTime
 do
     local skel = lurek.spine.newSkeleton("animated")
@@ -195,6 +185,22 @@ do
     print("world transforms updated")
 end
 
+--@api-stub: LSkeleton:updateAnimation
+do
+    local skel = lurek.spine.newSkeleton("frame_loop")
+    skel:addBone("root")
+    local anim = lurek.spine.newSkeletonAnimation("walk", 1.0)
+    anim:addKeyframe(0, "x", 0.0, 0.0)
+    anim:addKeyframe(0, "x", 1.0, 10.0)
+    skel:addAnimation(anim)
+    skel:playAnimation("walk", true)
+    for _ = 1, 60 do
+        skel:updateAnimation(1.0 / 60.0)
+        skel:updateWorldTransforms()
+    end
+    print("frame loop time = " .. string.format("%.3f", skel:getAnimationTime()))
+end
+
 --@api-stub: LSkeleton:drawToImage
 do
     local skel = lurek.spine.newSkeleton("render_test")
@@ -251,6 +257,38 @@ do
     local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
     local anim = lurek.spine.animationFromJson(jsonData)
     print("timelines = " .. (anim and tostring(anim:getTimelineCount()) or "nil"))
+end
+
+--@api-stub: lurek.spine.skeletonFromJson
+do
+        local jsonData = [[
+        {
+            "skeleton": {"name": "example_import"},
+            "bones": [
+                {"name": "root"},
+                {"name": "torso", "parent": "root", "x": 4.0, "y": -6.0}
+            ],
+            "slots": [
+                {"name": "body", "bone": "torso", "attachment": "body_idle"}
+            ],
+            "animations": {
+                "idle": {
+                    "bones": {
+                        "torso": {
+                            "translate": [
+                                {"time": 0.0, "x": 0.0, "y": 0.0},
+                                {"time": 1.0, "x": 1.0, "y": 0.0}
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        ]]
+        local importer = rawget(lurek.spine, "skeletonFromJson")
+        local imported = importer and importer(jsonData)
+        print("imported bones = " .. imported:boneCount())
+        print("imported slots = " .. imported:slotCount())
 end
 
 --- Spine Module Part 1: LSkeleton, LSkeletonAnimation, animationFromJson, newSkeleton, newSkeletonAnimation

@@ -226,6 +226,7 @@ do
 
     local overlap = map:rectOverlapsSolid(layer, 80, 80, 40, 40)
     print("rect overlaps solid = " .. tostring(overlap))
+    print("note: rectOverlapsSolid is a tile query pre-check; physics bodies need explicit lurek.physics colliders")
 end
 
 --@api-stub: LTileMap:setViewport
@@ -776,21 +777,41 @@ end
 --@api-stub: lurek.tilemap.loadTMX
 do
     local tmxData = [[<?xml version="1.0" encoding="UTF-8"?> <map version="1.10" orientation="orthogonal" width="4" height="4" tilewidth="32" tileheight="32"> <layer name="ground" width="4" height="4"> <data encoding="csv">1,1,1,1,1,2,2,1,1,2,2,1,1,1,1,1</data> </layer> </map>]]
-    local result = lurek.tilemap.loadTMX(tmxData)
-    print("TMX width = " .. result.width)
-    print("TMX height = " .. result.height)
-    print("TMX tile size = " .. result.tileWidth .. "x" .. result.tileHeight)
-    print("TMX orientation = " .. result.orientation)
-    print("TMX layers = " .. #result.layers)
+    local result, err = lurek.tilemap.loadTMX(tmxData)
+    if result then
+        print("TMX width = " .. result.width)
+        print("TMX height = " .. result.height)
+        print("TMX tile size = " .. result.tileWidth .. "x" .. result.tileHeight)
+        print("TMX orientation = " .. result.orientation)
+        print("TMX layers = " .. #result.layers)
+    else
+        local err_tbl = err or {}
+        local code = err_tbl["code"] or "unknown"
+        local message = err_tbl["message"] or "unknown"
+        print("TMX import error: " .. code .. " - " .. message)
+    end
 end
 
 --@api-stub: lurek.tilemap.fromLDtk
 do
     local ldtkJson = '{"levels":[{"identifier":"Level_0","layerInstances":[]}]}'
-    local map = lurek.tilemap.fromLDtk(ldtkJson)
-    print("LDtk map type = " .. map:type())
-    local named = lurek.tilemap.fromLDtk(ldtkJson, "Level_0")
-    print("named level loaded")
+    local map, err = lurek.tilemap.fromLDtk(ldtkJson)
+    if map then
+        print("LDtk map type = " .. map:type())
+    else
+        local err_tbl = err or {}
+        local code = err_tbl["code"] or "unknown"
+        local message = err_tbl["message"] or "unknown"
+        print("LDtk import error: " .. code .. " - " .. message)
+    end
+    local named, named_err = lurek.tilemap.fromLDtk(ldtkJson, "Level_0")
+    if named then
+        print("named level loaded")
+    else
+        local err_tbl = named_err or {}
+        local code = err_tbl["code"] or "unknown"
+        print("named level import error: " .. code)
+    end
 end
 
 --@api-stub: lurek.tilemap.FLOOR

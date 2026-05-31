@@ -1429,6 +1429,11 @@ fn lua_library_camera_follow() {
 }
 
 #[test]
+fn lua_library_camera_follow_walker() {
+    run_lua_test("library/test_library_camera_follow_walker.lua");
+}
+
+#[test]
 fn lua_library_cardgame() {
     run_lua_test("library/test_library_cardgame.lua");
 }
@@ -1556,6 +1561,11 @@ fn lua_library_scene_objects() {
 #[test]
 fn lua_library_sprite() {
     run_lua_test("library/test_library_sprite.lua");
+}
+
+#[test]
+fn lua_library_tilemap_minimap() {
+    run_lua_test("library/test_library_tilemap_minimap.lua");
 }
 
 #[test]

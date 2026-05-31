@@ -561,6 +561,55 @@ pub struct PostFxPipeline {
     pong: Option<CachedPostFxTexture>,
 }
 impl PostFxPipeline {
+    fn create_pipeline_layout(
+        device: &wgpu::Device,
+        label: &str,
+        bind_group_layout: &wgpu::BindGroupLayout,
+    ) -> wgpu::PipelineLayout {
+        device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+            label: Some(label),
+            bind_group_layouts: &[bind_group_layout],
+            push_constant_ranges: &[],
+        })
+    }
+
+    fn create_render_pipeline(
+        device: &wgpu::Device,
+        label: &str,
+        layout: &wgpu::PipelineLayout,
+        shader_module: &wgpu::ShaderModule,
+        surface_format: wgpu::TextureFormat,
+    ) -> wgpu::RenderPipeline {
+        device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some(label),
+            layout: Some(layout),
+            vertex: wgpu::VertexState {
+                module: shader_module,
+                entry_point: "vs_main",
+                buffers: &[],
+                compilation_options: Default::default(),
+            },
+            fragment: Some(wgpu::FragmentState {
+                module: shader_module,
+                entry_point: "fs_main",
+                targets: &[Some(wgpu::ColorTargetState {
+                    format: surface_format,
+                    blend: Some(wgpu::BlendState::REPLACE),
+                    write_mask: wgpu::ColorWrites::ALL,
+                })],
+                compilation_options: Default::default(),
+            }),
+            primitive: wgpu::PrimitiveState {
+                topology: wgpu::PrimitiveTopology::TriangleList,
+                ..Default::default()
+            },
+            depth_stencil: None,
+            multisample: wgpu::MultisampleState::default(),
+            multiview: None,
+            cache: None,
+        })
+    }
+
     /// Build all built-in effect pipelines and shared GPU resources for `surface_format`.
     pub fn new(device: &wgpu::Device, surface_format: wgpu::TextureFormat) -> Self {
         let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
@@ -594,11 +643,7 @@ impl PostFxPipeline {
                 },
             ],
         });
-        let layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-            label: Some("postfx_layout"),
-            bind_group_layouts: &[&bind_group_layout],
-            push_constant_ranges: &[],
-        });
+        let layout = Self::create_pipeline_layout(device, "postfx_layout", &bind_group_layout);
         let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
             label: Some("postfx_sampler"),
             address_mode_u: wgpu::AddressMode::ClampToEdge,
@@ -624,34 +669,7 @@ impl PostFxPipeline {
                 label: Some(name),
                 source: wgpu::ShaderSource::Wgsl(full_src.into()),
             });
-            device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-                label: Some(name),
-                layout: Some(&layout),
-                vertex: wgpu::VertexState {
-                    module: &module,
-                    entry_point: "vs_main",
-                    buffers: &[],
-                    compilation_options: Default::default(),
-                },
-                fragment: Some(wgpu::FragmentState {
-                    module: &module,
-                    entry_point: "fs_main",
-                    targets: &[Some(wgpu::ColorTargetState {
-                        format: surface_format,
-                        blend: Some(wgpu::BlendState::REPLACE),
-                        write_mask: wgpu::ColorWrites::ALL,
-                    })],
-                    compilation_options: Default::default(),
-                }),
-                primitive: wgpu::PrimitiveState {
-                    topology: wgpu::PrimitiveTopology::TriangleList,
-                    ..Default::default()
-                },
-                depth_stencil: None,
-                multisample: wgpu::MultisampleState::default(),
-                multiview: None,
-                cache: None,
-            })
+            Self::create_render_pipeline(device, name, &layout, &module, surface_format)
         };
         let _ = vs_module;
         let mut pipelines = HashMap::new();
@@ -713,43 +731,18 @@ impl PostFxPipeline {
     pub fn register_custom(&mut self, device: &wgpu::Device, name: &str, fs_src: &str) {
         let full_src = format!("{POSTFX_VERTEX}\n{fs_src}");
         let label = format!("postfx_custom_{name}");
-        let layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-            label: Some(&label),
-            bind_group_layouts: &[&self.bind_group_layout],
-            push_constant_ranges: &[],
-        });
+        let layout = Self::create_pipeline_layout(device, &label, &self.bind_group_layout);
         let module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some(&label),
             source: wgpu::ShaderSource::Wgsl(full_src.into()),
         });
-        let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-            label: Some(&label),
-            layout: Some(&layout),
-            vertex: wgpu::VertexState {
-                module: &module,
-                entry_point: "vs_main",
-                buffers: &[],
-                compilation_options: Default::default(),
-            },
-            fragment: Some(wgpu::FragmentState {
-                module: &module,
-                entry_point: "fs_main",
-                targets: &[Some(wgpu::ColorTargetState {
-                    format: self.surface_format,
-                    blend: Some(wgpu::BlendState::REPLACE),
-                    write_mask: wgpu::ColorWrites::ALL,
-                })],
-                compilation_options: Default::default(),
-            }),
-            primitive: wgpu::PrimitiveState {
-                topology: wgpu::PrimitiveTopology::TriangleList,
-                ..Default::default()
-            },
-            depth_stencil: None,
-            multisample: wgpu::MultisampleState::default(),
-            multiview: None,
-            cache: None,
-        });
+        let pipeline = Self::create_render_pipeline(
+            device,
+            &label,
+            &layout,
+            &module,
+            self.surface_format,
+        );
         self.pipelines.insert(name.to_string(), pipeline);
     }
     fn create_bind_group(

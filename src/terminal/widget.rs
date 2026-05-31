@@ -11,11 +11,7 @@
 
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};
-
-/// Return the display width in characters for `text`, always at least 1.
-fn text_width(text: &str) -> usize {
-    text.chars().count().max(1)
-}
+use super::text_utils::{char_count, text_width_at_least_one, truncate_chars};
 
 /// Border drawing style used by `WidgetKind::Border`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -153,7 +149,7 @@ impl Widget {
             base: WidgetBase::new(
                 col.saturating_sub(1),
                 row.saturating_sub(1),
-                text_width(&text),
+                text_width_at_least_one(&text),
                 1,
             ),
             kind: WidgetKind::Label {
@@ -247,7 +243,7 @@ impl Widget {
         match &mut self.kind {
             WidgetKind::Label { text, .. } => {
                 *text = new_text;
-                self.base.width = text_width(text);
+                self.base.width = text_width_at_least_one(text);
                 Ok(false)
             }
             WidgetKind::Button { text } => {
@@ -260,13 +256,13 @@ impl Widget {
                 cursor_pos,
             } => {
                 let final_text = if *max_length > 0 {
-                    new_text.chars().take(*max_length).collect()
+                    truncate_chars(&new_text, *max_length)
                 } else {
                     new_text
                 };
                 let changed = *text != final_text;
                 *text = final_text;
-                *cursor_pos = text.chars().count();
+                *cursor_pos = char_count(text);
                 Ok(changed)
             }
             _ => Err("expected label, button, or text box"),
@@ -306,11 +302,11 @@ impl Widget {
                 max_length,
                 cursor_pos,
             } => {
-                *max_length = max;
-                if *max_length > 0 && text.chars().count() > *max_length {
-                    *text = text.chars().take(*max_length).collect();
+                if max > 0 && char_count(text) > max {
+                    *text = truncate_chars(text, max);
                 }
-                *cursor_pos = (*cursor_pos).min(text.chars().count());
+                *max_length = max;
+                *cursor_pos = (*cursor_pos).min(char_count(text));
                 Ok(())
             }
             _ => Err("expected text box"),

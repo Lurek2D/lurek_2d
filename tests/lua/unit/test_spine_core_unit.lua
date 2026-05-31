@@ -289,6 +289,34 @@ describe("skeleton animation playback", function()
         local sk = lurek.spine.newSkeleton("new")
         expect_near(0.0, sk:getAnimationTime(), 0.001)
     end)
+
+    -- @covers LSkeleton:addAnimation
+    -- @covers LSkeleton:addBone
+    -- @covers LSkeleton:getAnimationTime
+    -- @covers LSkeleton:playAnimation
+    -- @covers LSkeleton:updateAnimation
+    -- @covers LSkeleton:updateWorldTransforms
+    -- @covers LSkeletonAnimation:addKeyframe
+    -- @covers lurek.spine.newSkeleton
+    -- @covers lurek.spine.newSkeletonAnimation
+    it("repeated per-frame updateAnimation and updateWorldTransforms stay stable", function()
+        local sk = lurek.spine.newSkeleton("perf_loop")
+        sk:addBone("root")
+        local anim = lurek.spine.newSkeletonAnimation("walk", 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", 1.0, 10.0)
+        sk:addAnimation(anim)
+        expect_true(sk:playAnimation("walk", true))
+
+        for _ = 1, 120 do
+            sk:updateAnimation(1.0 / 60.0)
+            sk:updateWorldTransforms()
+        end
+
+        local t = sk:getAnimationTime()
+        expect_type("number", t)
+        expect_true(t >= 0.0 and t < 1.0)
+    end)
 end)
 
 -- SkeletonAnimation (timeline)
@@ -605,6 +633,103 @@ describe("animationFromJson(json)", function()
                 ]]
                 local anim = lurek.spine.animationFromJson(json)
                 expect_type("userdata", anim)
+        end)
+end)
+
+-- @describe skeletonFromJson(json)
+describe("skeletonFromJson(json)", function()
+        -- @covers lurek.spine.skeletonFromJson
+        -- @covers LSkeleton:boneCount
+        -- @covers LSkeleton:slotCount
+        -- @covers LSkeleton:findBone
+        -- @covers LSkeleton:findSlot
+        it("imports a minimal Spine skeleton payload", function()
+            local importer = rawget(lurek.spine, "skeletonFromJson")
+            expect_type("function", importer)
+
+                local json = [[
+                {
+                    "skeleton": {"name": "lua_spine"},
+                    "bones": [
+                        {"name": "root"},
+                        {"name": "hip", "parent": "root", "x": 3.0, "y": 2.0}
+                    ],
+                    "slots": [
+                        {"name": "body", "bone": "hip", "attachment": "body_idle"}
+                    ],
+                    "animations": {
+                        "idle": {
+                            "bones": {
+                                "hip": {
+                                    "translate": [
+                                        {"time": 0.0, "x": 0.0, "y": 0.0},
+                                        {"time": 1.0, "x": 1.0, "y": 0.0}
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+                ]]
+
+                local sk = importer(json)
+                expect_type("userdata", sk)
+                expect_equal(2, sk:boneCount())
+                expect_equal(1, sk:slotCount())
+                expect_equal(1, sk:findBone("hip"))
+                expect_equal(0, sk:findSlot("body"))
+        end)
+
+        -- @covers lurek.spine.skeletonFromJson
+        -- @covers LSkeleton:boneCount
+        -- @covers LSkeleton:slotCount
+        -- @covers LSkeleton:findBone
+        -- @covers LSkeleton:findSlot
+        it("imports a minimal DragonBones skeleton payload", function()
+            local importer = rawget(lurek.spine, "skeletonFromJson")
+            expect_type("function", importer)
+
+                local json = [[
+                {
+                    "frameRate": 24,
+                    "armature": [
+                        {
+                            "name": "lua_db",
+                            "bone": [
+                                {"name": "root"},
+                                {"name": "torso", "parent": "root", "transform": {"x": 2.0, "y": 1.0, "skX": 10.0}}
+                            ],
+                            "slot": [
+                                {"name": "body_slot", "parent": "torso"}
+                            ],
+                            "animation": [
+                                {"name": "idle", "duration": 24}
+                            ]
+                        }
+                    ]
+                }
+                ]]
+
+                local sk = importer(json)
+                expect_type("userdata", sk)
+                expect_equal(2, sk:boneCount())
+                expect_equal(1, sk:slotCount())
+                expect_equal(1, sk:findBone("torso"))
+                expect_equal(0, sk:findSlot("body_slot"))
+        end)
+
+        -- @covers lurek.spine.skeletonFromJson
+        it("returns runtime error for unsupported payload shape", function()
+            local importer = rawget(lurek.spine, "skeletonFromJson")
+            expect_type("function", importer)
+
+                local ok, err = pcall(function()
+                importer('{"invalid":true}')
+                end)
+
+                expect_false(ok)
+            local err_msg = tostring(err or "")
+            expect_true(string.find(err_msg, "skeletonFromJson", 1, true) ~= nil)
         end)
 end)
 

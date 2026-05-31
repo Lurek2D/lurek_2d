@@ -13,7 +13,55 @@ use crate::log_msg;
 use crate::runtime::log_messages::{TL01, TL02};
 use base64::Engine as _;
 use flate2::read::{GzDecoder, ZlibDecoder};
+use std::fmt;
 use std::io::Read;
+
+/// Structured TMX import error used by Rust callers and Lua bindings.
+#[derive(Debug, Clone)]
+pub struct TmxImportError {
+    pub code: &'static str,
+    pub message: String,
+    pub line: Option<u32>,
+    pub column: Option<u32>,
+}
+
+impl TmxImportError {
+    fn xml_parse(err: roxmltree::Error) -> Self {
+        let pos = err.pos();
+        Self {
+            code: "tmx_xml_parse",
+            message: format!("TMX XML parse error: {err}"),
+            line: Some(pos.row),
+            column: Some(pos.col),
+        }
+    }
+
+    fn missing_map_root() -> Self {
+        Self {
+            code: "tmx_missing_map_root",
+            message: "TMX: missing <map> root element".to_string(),
+            line: None,
+            column: None,
+        }
+    }
+
+    fn invalid_content(message: String) -> Self {
+        Self {
+            code: "tmx_invalid_content",
+            message,
+            line: None,
+            column: None,
+        }
+    }
+}
+
+impl fmt::Display for TmxImportError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", self.code, self.message)
+    }
+}
+
+impl std::error::Error for TmxImportError {}
 
 /// Map projection type as declared in the TMX `<map orientation="...">` attribute.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -174,19 +222,20 @@ impl TmxMap {
         })
     }
 }
-/// Parse an XML-encoded TMX map string; returns a `TmxMap` or an error string describing the first failure.
-pub fn load_tmx(xml: &str) -> Result<TmxMap, String> {
+/// Parse an XML-encoded TMX map string; returns a `TmxMap` or a structured parse error.
+pub fn load_tmx(xml: &str) -> Result<TmxMap, TmxImportError> {
     log_msg!(debug, TL01, "{} bytes", xml.len());
-    let doc = roxmltree::Document::parse(xml).map_err(|e| format!("TMX XML parse error: {e}"))?;
+    let doc = roxmltree::Document::parse(xml).map_err(TmxImportError::xml_parse)?;
     let map_node = doc
         .root()
         .children()
         .find(|n| n.has_tag_name("map"))
-        .ok_or("TMX: missing <map> root element")?;
-    let width = attr_u32(&map_node, "width")?;
-    let height = attr_u32(&map_node, "height")?;
-    let tile_width = attr_u32(&map_node, "tilewidth")?;
-    let tile_height = attr_u32(&map_node, "tileheight")?;
+        .ok_or_else(TmxImportError::missing_map_root)?;
+    let width = attr_u32(&map_node, "width").map_err(TmxImportError::invalid_content)?;
+    let height = attr_u32(&map_node, "height").map_err(TmxImportError::invalid_content)?;
+    let tile_width = attr_u32(&map_node, "tilewidth").map_err(TmxImportError::invalid_content)?;
+    let tile_height =
+        attr_u32(&map_node, "tileheight").map_err(TmxImportError::invalid_content)?;
     let orientation =
         TmxOrientation::from_str(map_node.attribute("orientation").unwrap_or("orthogonal"));
     let stagger_axis = map_node.attribute("staggeraxis").map(|s| match s {
@@ -203,16 +252,17 @@ pub fn load_tmx(xml: &str) -> Result<TmxMap, String> {
     let mut tilesets = Vec::new();
     for child in map_node.children() {
         if child.has_tag_name("tileset") {
-            tilesets.push(parse_tileset(&child)?);
+            tilesets.push(parse_tileset(&child).map_err(TmxImportError::invalid_content)?);
         }
     }
     let mut layers = Vec::new();
     for child in map_node.children() {
         if child.has_tag_name("layer") {
-            let layer = parse_tile_layer(&child, width, height)?;
+            let layer = parse_tile_layer(&child, width, height)
+                .map_err(TmxImportError::invalid_content)?;
             layers.push(TmxLayer::Tile(layer));
         } else if child.has_tag_name("objectgroup") {
-            let ol = parse_object_layer(&child)?;
+            let ol = parse_object_layer(&child).map_err(TmxImportError::invalid_content)?;
             layers.push(TmxLayer::Object(ol));
         }
     }

@@ -27,6 +27,37 @@ pub enum DirectionLayout {
     /// Each direction occupies a vertical column.
     Columns,
 }
+
+/// Zero-allocation column iterator over frame rects in a SpriteSheet.
+pub struct ColumnFrames<'a> {
+    frames: &'a [Rect],
+    columns: u32,
+    rows: u32,
+    col: u32,
+    next_row: u32,
+}
+
+impl<'a> Iterator for ColumnFrames<'a> {
+    type Item = &'a Rect;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.next_row >= self.rows {
+            return None;
+        }
+
+        let row = self.next_row;
+        self.next_row += 1;
+        let idx = (row * self.columns + self.col) as usize;
+        self.frames.get(idx)
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let remaining = (self.rows - self.next_row) as usize;
+        (remaining, Some(remaining))
+    }
+}
+
+impl ExactSizeIterator for ColumnFrames<'_> {}
 /// Uniform grid frame extractor for a single texture with optional named groups and directional layout.
 pub struct SpriteSheet {
     /// Width of each frame in pixels.
@@ -111,26 +142,24 @@ impl SpriteSheet {
     pub fn get_grid_size(&self) -> (u32, u32) {
         (self.columns, self.rows)
     }
-    /// Return all frame Rects on the given row index; empty vec when row >= rows.
-    pub fn get_row(&self, row: u32) -> Vec<Rect> {
+    /// Return all frame Rects on the given row index as a borrowed slice; empty slice when row >= rows.
+    pub fn get_row(&self, row: u32) -> &[Rect] {
         if row >= self.rows {
-            return Vec::new();
+            return &[];
         }
         let start = (row * self.columns) as usize;
         let end = start + self.columns as usize;
-        self.frames[start..end.min(self.frames.len())].to_vec()
+        &self.frames[start..end.min(self.frames.len())]
     }
-    /// Return all frame Rects in the given column index; empty vec when col >= columns.
-    pub fn get_column(&self, col: u32) -> Vec<Rect> {
-        if col >= self.columns {
-            return Vec::new();
+    /// Return a zero-allocation iterator of frame Rects in the given column index.
+    pub fn get_column(&self, col: u32) -> ColumnFrames<'_> {
+        ColumnFrames {
+            frames: &self.frames,
+            columns: self.columns,
+            rows: if col < self.columns { self.rows } else { 0 },
+            col,
+            next_row: 0,
         }
-        (0..self.rows)
-            .filter_map(|r| {
-                let idx = (r * self.columns + col) as usize;
-                self.frames.get(idx).copied()
-            })
-            .collect()
     }
     /// Return up to count frames starting at start; empty vec when start >= frame count.
     pub fn get_range(&self, start: usize, count: usize) -> Vec<Rect> {
@@ -178,13 +207,13 @@ impl SpriteSheet {
                 if direction >= self.rows {
                     return None;
                 }
-                Some(self.get_row(direction))
+                Some(self.get_row(direction).to_vec())
             }
             DirectionLayout::Columns => {
                 if direction >= self.columns {
                     return None;
                 }
-                Some(self.get_column(direction))
+                Some(self.get_column(direction).copied().collect())
             }
         }
     }

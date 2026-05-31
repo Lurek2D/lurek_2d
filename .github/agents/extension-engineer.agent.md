@@ -37,7 +37,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
 - Validate the narrowest extension build or test flow first; widen only to the required gate.
 - Keep command labels, sidebar entries, and editor actions explicit rather than hidden behind broad automation.
 - Return changed files, validation proof, and any remaining engine-side dependency to Manager.
-- Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

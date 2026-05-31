@@ -16,7 +16,7 @@
 
 ## Summary
 
-The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. Its core purpose is to provide scripts with highly responsive, interactive cursor customizations that adapt to game states, UI contexts, and player actions. 
+The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. Its core purpose is to provide scripts with highly responsive, interactive cursor customizations that adapt to game states, UI contexts, and player actions.
 
 It handles cross-platform platform-native system cursor shapes alongside fully custom cursors built from RGBA pixel buffers and coordinate hotspots. Cursors can be animated through time-stepped frame sequences and standalone scale pulse animations. Additionally, the cursor manager orchestrates context-sensitive style transitions, and applies aesthetic and functional trail feedback overlays (fading points, connected strokes) and cursor-following post-process zoom magnifiers.
 

@@ -119,6 +119,23 @@ pub enum DrawMode {
     /// Draw as an outline only.
     Line,
 }
+
+const MIN_CIRCLE_ELLIPSE_SEGMENTS: u32 = 12;
+const MAX_CIRCLE_ELLIPSE_SEGMENTS: u32 = 96;
+const PIXELS_PER_CIRCLE_ELLIPSE_SEGMENT: f32 = 4.0;
+
+/// Compute deterministic tessellation density for circles/ellipses from visual extent.
+pub fn adaptive_circle_ellipse_segments(radius_x: f32, radius_y: f32) -> u32 {
+    let extent = radius_x.abs().max(radius_y.abs());
+    if !extent.is_finite() {
+        return MIN_CIRCLE_ELLIPSE_SEGMENTS;
+    }
+
+    let raw_segments =
+        ((std::f32::consts::TAU * extent) / PIXELS_PER_CIRCLE_ELLIPSE_SEGMENT).ceil() as u32;
+    raw_segments.clamp(MIN_CIRCLE_ELLIPSE_SEGMENTS, MAX_CIRCLE_ELLIPSE_SEGMENTS)
+}
+
 /// Compositing blend mode applied when drawing to the current render target.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum BlendMode {

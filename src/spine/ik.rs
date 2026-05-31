@@ -39,8 +39,7 @@ impl IKConstraint {
         self.target_y = y;
     }
     /// Solve root and elbow local_rotation angles using law-of-cosines 2-bone IK; no-op when chain length < 2 or indices out of bounds.
-    #[allow(clippy::ptr_arg)]
-    pub fn solve(&self, bones: &mut Vec<Bone>) {
+    pub fn solve(&self, bones: &mut [Bone]) {
         if self.bone_chain.len() < 2 {
             return;
         }

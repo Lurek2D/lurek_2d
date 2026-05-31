@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+ - test(terminal): migrate focus-layer scenario tests from Rust to Lua — remove `mouse_focus_respects_topmost_and_visibility_enabled_state` and `remove_widget_reindexes_focus_and_clears_when_focused_removed` from `tests/rust/unit/terminal_tests.rs` (Lua-reachable behavior, TST-01) and add equivalent `describe("focus behaviour: mouse and widget removal")` block in `tests/lua/unit/test_terminal_core_unit.lua` covering `LTerminal:mousepressed`/`getFocused` with z-order/visibility/enabled filtering, and `LTerminal:removeWidget` focus-clear semantics.
+
+ - fix(sprite): split stacked `LAtlasPacker` example stubs in `content/examples/sprite.lua` into individual `--@api-stub: / do...end` blocks (E3 lint), add missing `LAtlasPacker:type` and `LAtlasPacker:typeOf` stubs (MISS), and extend `LAtlasPacker:getRegion`/`getDimensions` summary descriptions to meet minimum length in `src/lua_api/sprite_api.rs`; regenerated Lua API docs.
+
+ - fix(spine): remove duplicate `LSkeleton:updateAnimation` stub marker from `content/examples/spine.lua` and resolve stacked `LSkeleton:updateAnimation`+`LSkeleton:updateWorldTransforms` E3 lint violation by keeping only the comprehensive frame-loop block.
+
+ - refactor(render): deduplicate post-processing pipeline setup in `src/render/postfx_pipeline.rs` by extracting shared pipeline-layout and render-pipeline builders used by both built-in effects and `register_custom`, reducing duplicated blend/primitive/target configuration paths.
+
+ - feat(pipeline): introduce incremental `task_graph` naming path with full compatibility preservation — add Rust module alias `crate::task_graph` (re-exporting existing `pipeline` internals/types) and Lua namespace alias `lurek.task_graph` pointing to the same runtime table as `lurek.pipeline`; add Rust/Lua regression tests and sync pipeline spec/example notes.
+
+ - feat(spine): add Spine/DragonBones JSON skeleton importer with explicit typed errors in `src/spine/importer.rs` and Lua entrypoint `lurek.spine.skeletonFromJson`; importer covers standard bones, slots, skins, and basic animation timelines/events. Added Rust success/error tests in `tests/rust/unit/spine_tests.rs`, Lua-facing coverage in `tests/lua/unit/test_spine_core_unit.lua`, and synced spine usage docs/examples.
+
+ - perf(spine): remove per-frame cloning from the skeleton hot path by applying active animation timelines directly to borrowed bone slices and solving IK constraints over borrowed collections in `update_animation`/`apply_ik_constraints`; add Rust/Lua regression coverage for repeated frame-loop updates and IK application, plus synced spine spec/example notes.
+
+ - perf(pipeline): reduce hot-path string cloning in DAG/scheduler execution by adding borrowed-name readiness/dependency checks (`&str`) in Rust internals and wiring async pipeline updates to the borrowed path; Lua-facing pipeline API and behavior remain unchanged.
+
+ - feat(tilemap,library): add MUST helper libraries `library/camera_follow_walker` and `library/tilemap_minimap` with Lua examples and harness-backed library tests; document tilemap/physics overlap boundary for `LTileMap:rectOverlapsSolid` as a tile query pre-check (not collider sync) in tilemap spec and example notes.
+
+ - feat(terminal): add TextBox keyboard shortcut support for clipboard/editing flows in `LTerminal:keypressed` (`ctrl+a`, `ctrl+c`, `ctrl+x`, `ctrl+v`, `ctrl+backspace`, `ctrl+delete`) with Rust and Lua regression coverage updates.
+
+ - perf(sprite): reduce hot-path allocations in `SpriteSheet` row/column extraction by switching to borrowed row slices and zero-allocation column iteration in core Rust, while preserving unchanged Lua behavior for `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`; add Rust/Lua regression assertions and sync sprite spec/example notes.
+
+ - feat(tilemap): add structured TMX/LDtk import errors for Lua loaders — `lurek.tilemap.loadTMX` and `lurek.tilemap.fromLDtk` now return `(result, nil)` on success or `(nil, err)` on import failure, where `err` exposes stable fields (`format`, `code`, `message`, `line`, `column`); TMX/LDtk Rust importers now return typed error structs with machine-readable codes; synced Rust/Lua tilemap tests, tilemap spec, and tilemap example usage.
+
+ - fix(render): replace fixed 32-segment tessellation for `RenderCommand::Circle` and `RenderCommand::Ellipse` with deterministic adaptive LOD based on visual extent, clamped to stable min/max segment counts to reduce tiny-shape CPU cost while preserving large-shape quality.
+
+ - refactor(terminal): extract shared UTF-8-safe text helpers into `src/terminal/text_utils.rs` and wire `terminal_state`, `widget`, and `ansi` to use the shared path; add Rust regression coverage for Unicode-safe textbox editing and widget text truncation in `tests/rust/unit/terminal_tests.rs`.
+
+ - feat(sprite): add runtime atlas packing API in `lurek.sprite` via `newAtlasPacker(width, height, padding)` with `LAtlasPacker` methods (`pack`, `getRegion`, `regionCount`, `getDimensions`, `setNineSlice`, `clear`, `type`, `typeOf`) backed by `image::TextureAtlas`; add Lua coverage in `tests/lua/unit/test_sprite_core_unit.lua`, Rust coverage in `tests/rust/unit/sprite_tests.rs`, and sync usage docs in `docs/specs/sprite.md` plus runnable stubs in `content/examples/sprite.lua`.
+
  - test(lua): normalize Lua test marker hygiene by adding missing per-case markers in `tests/lua/library/test_library_*.lua`, remove remaining UTF-8 BOM issues in Lua test files, and restore missing trailing `test_summary()` in pathfind/visibility suites; relocate crafting library assertions out of unit by removing `tests/lua/unit/test_crafting_core_unit.lua`, folding namespace-boundary coverage into `tests/lua/library/test_library_crafting.lua`, and deleting obsolete `lua_unit_crafting_unit` harness registration.
 
  - docs(ideas): add comprehensive MMO support rollout plan in `ideas/mmo_support_detailed_plan.md` covering hybrid architecture, phased roadmap (F0-F12), engineering backlog, SLO metrics, testing strategy, risk controls, and production release gates for 1000-player lobby + 64 rooms + 15v15 battles.

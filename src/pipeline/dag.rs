@@ -240,13 +240,21 @@ impl Pipeline {
         step_name: &str,
         statuses: &HashMap<String, StepStatus>,
     ) -> Result<bool, String> {
+        self.are_deps_satisfied_with(step_name, |dep_name| statuses.get(dep_name).copied())
+    }
+
+    /// Return whether all dependencies of `step_name` are complete using a caller-provided status lookup.
+    pub fn are_deps_satisfied_with<F>(&self, step_name: &str, mut status_of: F) -> Result<bool, String>
+    where
+        F: FnMut(&str) -> Option<StepStatus>,
+    {
         let step = match self.get_step(step_name) {
             Some(s) => s,
             None => return Err(format!("step '{}' not found", step_name)),
         };
         for dep_name in &step.deps {
-            let dep_status = match statuses.get(dep_name) {
-                Some(s) => s.clone(),
+            let dep_status = match status_of(dep_name) {
+                Some(s) => s,
                 None => return Ok(false),
             };
             match dep_status {

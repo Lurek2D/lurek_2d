@@ -466,7 +466,7 @@ pub(crate) fn fire_step_callbacks<'lua>(
     ctx: &LuaTable<'lua>,
     wrapper: &LuaStep,
 ) -> LuaResult<()> {
-    let step_status = wrapper.inner.borrow().status.clone();
+    let step_status = wrapper.inner.borrow().status;
     if step_status == StepStatus::Completed {
         if let Some(key) = this.on_step_complete_key.borrow().as_ref() {
             let f: LuaFunction = lua.registry_value(key)?;
@@ -655,7 +655,7 @@ pub(crate) fn finalize_pipeline_result<'lua>(
         .iter()
         .map(|(k, v)| {
             let inner = v.inner.borrow();
-            (k.clone(), (inner.status.clone(), inner.error_msg.clone()))
+            (k.clone(), (inner.status, inner.error_msg.clone()))
         })
         .collect();
     let result = this.inner.borrow().collect_result(&step_statuses, elapsed);
@@ -827,13 +827,16 @@ impl LuaUserData for LuaPipeline {
                     Some(w) => w,
                     None => continue,
                 };
-                let statuses: HashMap<String, StepStatus> = this
-                    .step_wrappers
+                let wrappers = this.step_wrappers.borrow();
+                match this
+                    .inner
                     .borrow()
-                    .iter()
-                    .map(|(k, v)| (k.clone(), v.inner.borrow().status.clone()))
-                    .collect();
-                match this.inner.borrow().are_deps_satisfied(step_name, &statuses) {
+                    .are_deps_satisfied_with(step_name, |dep_name| {
+                        wrappers
+                            .get(dep_name)
+                            .map(|dep_wrapper| dep_wrapper.inner.borrow().status)
+                    })
+                {
                     Ok(true) => {}
                     Ok(false) => {
                         if abort_on_fail {
@@ -934,7 +937,7 @@ impl LuaUserData for LuaPipeline {
                     fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
                     if wrapper.inner.borrow().status == StepStatus::Failed && abort_on_fail {
                         this.step_wrappers.borrow().values().for_each(|w| {
-                            let s = w.inner.borrow().status.clone();
+                            let s = w.inner.borrow().status;
                             if s == StepStatus::Pending || s == StepStatus::Waiting {
                                 w.inner.borrow_mut().status = StepStatus::Cancelled;
                             }
@@ -950,12 +953,10 @@ impl LuaUserData for LuaPipeline {
                     }
                 }
             }
-            let ready_names: Vec<String> = {
-                let pipeline = this.inner.borrow();
-                this.scheduler.borrow_mut().update(dt, &pipeline)
-            };
+            let pipeline = this.inner.borrow();
+            let ready_names = this.scheduler.borrow_mut().update_ready_refs(dt, &pipeline);
             for step_name in ready_names {
-                let wrapper = match this.step_wrappers.borrow().get(&step_name).cloned() {
+                let wrapper = match this.step_wrappers.borrow().get(step_name).cloned() {
                     Some(w) => w,
                     None => continue,
                 };
@@ -963,24 +964,24 @@ impl LuaUserData for LuaPipeline {
                     lua,
                     this,
                     "step_started",
-                    &step_name,
+                    step_name,
                     StepStatus::Running.as_str(),
                     LuaValue::Nil,
                 )?;
                 let succeeded = if wrapper.is_async_enabled() {
-                    let done = execute_async_coroutine_step(lua, this, &step_name, &wrapper, &ctx)?;
+                    let done = execute_async_coroutine_step(lua, this, step_name, &wrapper, &ctx)?;
                     if done {
-                        fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
+                        fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                     }
                     done || wrapper.inner.borrow().status != StepStatus::Failed
                 } else {
                     let ok = wrapper.execute_sync(lua, &ctx, abort_on_fail)?;
-                    fire_step_callbacks(lua, this, &step_name, &ctx, &wrapper)?;
+                    fire_step_callbacks(lua, this, step_name, &ctx, &wrapper)?;
                     ok
                 };
                 if !succeeded {
                     this.step_wrappers.borrow().values().for_each(|w| {
-                        let s = w.inner.borrow().status.clone();
+                        let s = w.inner.borrow().status;
                         if s == StepStatus::Pending || s == StepStatus::Waiting {
                             w.inner.borrow_mut().status = StepStatus::Cancelled;
                         }
@@ -990,23 +991,25 @@ impl LuaUserData for LuaPipeline {
                     return finalize_pipeline_result(lua, this, this.scheduler.borrow().elapsed)
                         .map(|_| true);
                 }
-                let statuses: HashMap<String, StepStatus> = this
-                    .step_wrappers
-                    .borrow()
-                    .iter()
-                    .map(|(k, v)| (k.clone(), v.inner.borrow().status.clone()))
-                    .collect();
-                for (name, w) in this.step_wrappers.borrow().iter() {
+                let wrappers = this.step_wrappers.borrow();
+                for (name, w) in wrappers.iter() {
                     if w.inner.borrow().status != StepStatus::Pending {
                         continue;
                     }
-                    let pipeline = this.inner.borrow();
-                    if let Ok(true) = pipeline.are_deps_satisfied(name, &statuses) {
+                    if let Ok(true) = pipeline.are_deps_satisfied_with(name, |dep_name| {
+                        wrappers
+                            .get(dep_name)
+                            .map(|dep_wrapper| dep_wrapper.inner.borrow().status)
+                    }) {
                         w.inner.borrow_mut().status = StepStatus::Waiting;
                         this.scheduler
                             .borrow_mut()
                             .mark_step_waiting(name, &pipeline);
-                    } else if let Ok(false) = pipeline.are_deps_satisfied(name, &statuses) {
+                    } else if let Ok(false) = pipeline.are_deps_satisfied_with(name, |dep_name| {
+                        wrappers
+                            .get(dep_name)
+                            .map(|dep_wrapper| dep_wrapper.inner.borrow().status)
+                    }) {
                         w.inner.borrow_mut().status = StepStatus::Skipped;
                         fire_step_callbacks(lua, this, name, &ctx, w)?;
                     }
@@ -1035,7 +1038,7 @@ impl LuaUserData for LuaPipeline {
         methods.add_method("cancel", |_, this, ()| {
             let wrappers = this.step_wrappers.borrow();
             for w in wrappers.values() {
-                let s = w.inner.borrow().status.clone();
+                let s = w.inner.borrow().status;
                 if s == StepStatus::Pending || s == StepStatus::Waiting {
                     w.inner.borrow_mut().status = StepStatus::Cancelled;
                 }
@@ -1119,7 +1122,7 @@ impl LuaUserData for LuaPipeline {
                 .iter()
                 .map(|(k, v)| {
                     let i = v.inner.borrow();
-                    (k.clone(), (i.status.clone(), i.error_msg.clone()))
+                    (k.clone(), (i.status, i.error_msg.clone()))
                 })
                 .collect();
             let result = this.inner.borrow().collect_result(&step_statuses, elapsed);
@@ -1453,7 +1456,7 @@ impl LuaUserData for LuaPipeline {
         });
     }
 }
-/// Registers the `lurek.pipeline` module into the Lua runtime.
+/// Registers the `lurek.pipeline` module and compatibility alias `lurek.task_graph` into the Lua runtime.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
@@ -1548,7 +1551,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaPipeline::from_parts(pipeline_rc, wrappers_rc))
         })?,
     )?;
-    /// Performs the 'pipeline' operation.
-    lurek.set("pipeline", tbl)?;
+    // Keep the existing namespace and expose the new naming path as an alias.
+    lurek.set("pipeline", tbl.clone())?;
+    lurek.set("task_graph", tbl)?;
     Ok(())
 }

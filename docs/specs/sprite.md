@@ -11,9 +11,9 @@
 - Source path: `src/sprite/`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `5` functions, `9` types, `19` methods
-- Rust test path(s): none found in the workspace
-- Lua test path(s): none found in the workspace
+- Lua API surface: `6` functions, `11` types, `27` methods
+- Rust test path(s): `tests/rust/unit/sprite_tests.rs`
+- Lua test path(s): `tests/lua/unit/test_sprite_core_unit.lua`
 
 ## Summary
 
@@ -21,7 +21,11 @@ This module turns raw textures into reusable sprites, sheets, and UI panels. It 
 
 For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
 
+Row and column extraction on `SpriteSheet` are implemented with allocation-light internal paths (row slices and column iterators), while Lua still receives the same table-shaped frame arrays via `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`.
+
 To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
+
+The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
 
 ## Imports
 
@@ -81,6 +85,7 @@ To optimize drawing, the module provides lightweight sprite records and instance
 ### Functions
 
 - `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
+- `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 - `lurek.sprite.parseAsepriteAtlas(json_str) -> LSpriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
@@ -95,6 +100,42 @@ To optimize drawing, the module provides lightweight sprite records and instance
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LAtlasPacker Type
+
+- Lua-visible wrapper around a runtime texture atlas allocator.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LAtlasPacker:clear() -> nil`: Removes all packed regions and resets packing shelves.
+- `LAtlasPacker:getDimensions() -> integer`: Returns atlas dimensions.
+- `LAtlasPacker:getRegion(name) -> table`: Returns a packed region by name.
+- `LAtlasPacker:pack(name, w, h) -> boolean`: Packs a named region into this atlas and returns whether allocation succeeded.
+- `LAtlasPacker:regionCount() -> integer`: Returns the number of currently packed regions.
+- `LAtlasPacker:setNineSlice(name, left, right, top, bottom) -> boolean`: Sets nine-slice insets for a previously packed region.
+- `LAtlasPacker:type() -> string`: Returns the type name of this object.
+- `LAtlasPacker:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LAtlasPackerGetRegionResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`integer`): Region height in pixels.
+- `name` (`string`): Region key.
+- `nine_slice` (`table?`): Optional nine-slice inset table `{left, right, top, bottom}`.
+- `w` (`integer`): Region width in pixels.
+- `x` (`integer`): Left coordinate in atlas pixels.
+- `y` (`integer`): Top coordinate in atlas pixels.
+
+##### Methods
+
+- No documented methods.
 
 #### LSpriteAtlas Type
 

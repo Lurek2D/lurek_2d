@@ -65,18 +65,17 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
   - Trace from user-visible edge inward.
   - Check SharedState borrows, callback timing, RunState transitions, and boundary conversions.
   - Use tools/audit/parse_test_log.py for test-log failures.
-  - Build the smallest repro that fails consistently; write to work/{session}/scripts/.
+  - Build the smallest repro that fails consistently; write to work/ if needed.
 - **All modes**:
   - Validate immediately after the first meaningful edit with the narrowest cargo check or test.
-  - Update docs/specs/<module>.md and docs/CHANGELOG.md when contract or sync rules changed.
+  - Update docs/specs/<module>.md when contract or sync rules changed.
   - Return changed files, command proof, and remaining risk to Manager.
-  - Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.
 - Change stays in its claimed ownership boundary.
 - First narrow check and final gate both pass.
-- Tests, specs, and changelog synced when needed.
+- Tests and specs synced when needed.
 - For debugging: repro is small and stable; cause ties to a real control path; confidence is honest.
 - No docs/specs drift left open after a contract change.
 - Repro script is under 50 lines and runs with a single command.

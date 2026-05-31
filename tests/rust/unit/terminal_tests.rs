@@ -88,6 +88,7 @@ mod ansi_tests {
 
 mod widget_tests {
     use lurek2d::terminal::{BorderStyle, WidgetBase};
+    use lurek2d::terminal::Widget;
 
     #[test]
     fn border_style_roundtrip() {
@@ -110,11 +111,74 @@ mod widget_tests {
         assert_eq!(base.x, 2);
         assert_eq!(base.y, 6);
     }
+
+    #[test]
+    fn label_width_and_textbox_max_length_handle_unicode_chars() {
+        let label = Widget::new_label(1, 1, "🙂");
+        assert_eq!(label.base.width, 1);
+
+        let mut textbox = Widget::new_text_box(1, 1, 8);
+        textbox.set_text("ą🙂żx".to_string()).unwrap();
+        textbox.set_max_length(3).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "ą🙂ż");
+    }
 }
 
 // â”€â”€ terminal_state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-mod terminal_state_tests {}
+mod terminal_state_tests {
+    use lurek2d::terminal::{Terminal, Widget};
+
+    #[test]
+    fn textbox_backspace_removes_whole_unicode_character() {
+        let mut terminal = Terminal::new(20, 4);
+        let textbox_index = terminal.add_widget(Widget::new_text_box(1, 1, 12));
+        terminal.set_focus(Some(textbox_index));
+
+        assert!(terminal.textinput("A🙂B"));
+        assert!(terminal.keypressed("left"));
+        assert!(terminal.keypressed("backspace"));
+
+        let textbox = terminal.get_widget(textbox_index).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "AB");
+    }
+
+    #[test]
+    fn textbox_ctrl_clipboard_shortcuts_copy_cut_and_paste() {
+        let mut terminal = Terminal::new(20, 4);
+        let textbox_index = terminal.add_widget(Widget::new_text_box(1, 1, 20));
+        terminal.set_focus(Some(textbox_index));
+
+        assert!(terminal.textinput("alpha beta"));
+        assert!(terminal.keypressed("ctrl+a"));
+        assert!(terminal.keypressed("ctrl+c"));
+        assert!(terminal.keypressed("ctrl+x"));
+
+        let textbox = terminal.get_widget(textbox_index).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "");
+
+        assert!(terminal.keypressed("ctrl+v"));
+        let textbox = terminal.get_widget(textbox_index).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "alpha beta");
+    }
+
+    #[test]
+    fn textbox_ctrl_word_shortcuts_delete_word_chunks() {
+        let mut terminal = Terminal::new(20, 4);
+        let textbox_index = terminal.add_widget(Widget::new_text_box(1, 1, 20));
+        terminal.set_focus(Some(textbox_index));
+
+        assert!(terminal.textinput("alpha beta gamma"));
+        assert!(terminal.keypressed("ctrl+backspace"));
+        let textbox = terminal.get_widget(textbox_index).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "alpha beta ");
+
+        assert!(terminal.keypressed("home"));
+        assert!(terminal.keypressed("ctrl+delete"));
+        let textbox = terminal.get_widget(textbox_index).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), " beta ");
+    }
+}
 
 // â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -171,7 +235,7 @@ mod render_tests {
             .iter()
             .any(|cmd| matches!(cmd, RenderCommand::Print { text, .. } if text.contains("OK")));
         let has_frame = cmds.iter().any(|cmd| {
-            matches!(cmd, RenderCommand::Print { text, .. } if text.contains('â”Ś') || text.contains('â””'))
+            matches!(cmd, RenderCommand::Print { text, .. } if text.contains('\u{2524}') || text.contains('\u{2514}'))
         });
         assert!(has_background, "button should emit a visible background");
         assert!(has_label, "button should emit its label");

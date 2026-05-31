@@ -62,7 +62,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
   - Rank by impact, leverage, user value, and implementation uncertainty.
 - **All modes**:
   - Load skills matching the active mode only.
-  - Save work/{session} artifacts and one log entry.
   - Return first-pass result to Manager.
 
 ## Success Metrics

@@ -218,6 +218,12 @@ All Lua tests use the custom BDD framework in `tests/lua/init.lua`, loaded autom
 | Config | `tests/lua/config/` | Configuration loading | â€” |
 | Demos | `tests/lua/demos/` | One per `content/games/` demo | `test_<name>.lua` |
 
+### Assertion Rules (BDD Layer)
+
+1. **No bare asserts**: Bare `assert()` is strictly forbidden because it does not provide diagnostic context. All tests must use the framework helpers (`expect_equal`, `expect_near`, etc.).
+2. **Float comparisons**: Any floating-point comparison must use `expect_near` with a declared tolerance (default 1e-5). Direct equality checks (`expect_equal`) for floats are a critical test defect.
+3. **Single-Failure Point (Isolation)**: One test (`it()`) should check exactly one condition. Combining multiple independent assertions inside one test makes failure attribution difficult.
+
 ### Framework Functions
 
 | Function | Purpose |
@@ -473,3 +479,28 @@ cargo test --test demo_smoke_tests demo_smoke_globe_demo -- --include-ignored
 | Catches crash at frame 180? | No | Yes |
 | Verifies rendered output? | No | Yes (PNG magic + size) |
 
+
+---
+
+## Appendix: Complete BDD Test Example
+
+```lua
+-- Lurek2D Shape API Tests
+-- @describe Validation of the shape module and LCircle container.
+describe("lurek.shape", function()
+    -- @covers lurek.shape.newCircle
+    it("newCircle stores correct coordinates and radius", function()
+        local c = lurek.shape.newCircle(10, 20, 5)
+        expect_near(10, c.x)
+        expect_near(20, c.y)
+        expect_near(5, c.radius)
+    end)
+
+    -- @covers LCircle:contains
+    it("contains returns true for internal point", function()
+        local c = lurek.shape.newCircle(0, 0, 10)
+        expect_true(c:contains(5, 5))
+    end)
+end)
+test_summary()
+```

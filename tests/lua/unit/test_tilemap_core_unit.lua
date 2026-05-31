@@ -1668,10 +1668,16 @@ describe("lurek.tilemap.loadTMX", function()
     end)
 
     -- @covers lurek.tilemap.loadTMX
-    it("loadTMX throws an error for invalid XML", function()
-        expect_error(function()
-            lurek.tilemap.loadTMX("not xml at all")
-        end)
+    it("loadTMX returns structured error for invalid XML", function()
+        local result, err = lurek.tilemap.loadTMX("not xml at all")
+        expect_nil(result)
+        expect_type("table", err)
+        local err_tbl = err or {}
+        expect_equal("tmx", err_tbl["format"])
+        expect_equal("tmx_xml_parse", err_tbl["code"])
+        expect_type("string", err_tbl["message"])
+        expect_true(err_tbl["line"] ~= nil)
+        expect_true(err_tbl["column"] ~= nil)
     end)
 
     -- @covers lurek.tilemap.loadTMX
@@ -1767,28 +1773,41 @@ describe("fromLDtk()", function()
 
     -- @covers lurek.tilemap.fromLDtk
     it("returns userdata for valid LDtk JSON", function()
-        local tm = lurek.tilemap.fromLDtk(LDTK_JSON)
+        local tm, err = lurek.tilemap.fromLDtk(LDTK_JSON)
         expect_type("userdata", tm)
+        expect_nil(err)
     end)
 
     -- @covers lurek.tilemap.fromLDtk
-    it("errors on invalid JSON", function()
-        expect_error(function()
-            lurek.tilemap.fromLDtk("not json")
-        end)
+    it("returns structured error on invalid JSON", function()
+        local tm, err = lurek.tilemap.fromLDtk("not json")
+        expect_nil(tm)
+        expect_type("table", err)
+        local err_tbl = err or {}
+        expect_equal("ldtk", err_tbl["format"])
+        expect_equal("ldtk_json_parse", err_tbl["code"])
+        expect_type("string", err_tbl["message"])
+        expect_nil(err_tbl["line"])
+        expect_nil(err_tbl["column"])
     end)
 
     -- @covers lurek.tilemap.fromLDtk
     it("loads named level without error", function()
-        local tm = lurek.tilemap.fromLDtk(LDTK_JSON, "Level_0")
+        local tm, err = lurek.tilemap.fromLDtk(LDTK_JSON, "Level_0")
         expect_type("userdata", tm)
+        expect_nil(err)
     end)
 
     -- @covers lurek.tilemap.fromLDtk
-    it("errors for unknown level name", function()
-        expect_error(function()
-            lurek.tilemap.fromLDtk(LDTK_JSON, "NoSuchLevel")
-        end)
+    it("returns structured error for unknown level name", function()
+        local tm, err = lurek.tilemap.fromLDtk(LDTK_JSON, "NoSuchLevel")
+        expect_nil(tm)
+        expect_type("table", err)
+        local err_tbl = err or {}
+        expect_equal("ldtk", err_tbl["format"])
+        expect_equal("ldtk_level_not_found", err_tbl["code"])
+        local msg = err_tbl["message"] or ""
+        expect_true(string.find(msg, "NoSuchLevel") ~= nil)
     end)
 
     -- @describe toNavGrid()

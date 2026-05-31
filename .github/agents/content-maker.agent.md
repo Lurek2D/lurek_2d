@@ -30,7 +30,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
 - Engine-side gap note blocking better content.
 - Per-persona verdict: top friction points + good moments.
 - Valid conf.lua/conf.toml with field map to runtime config.
-- Feature notes for non-default builds; docs/CHANGELOG.md entry when defaults change.
+- Feature notes for non-default builds.
 
 ## Workflow
 - **Content mode**:
@@ -59,7 +59,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
 - **All modes**:
   - Run the narrowest validation first.
   - Return changed files, validation proof, and remaining engine-side blockers to Manager.
-  - Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.

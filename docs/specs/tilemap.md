@@ -5,6 +5,7 @@
 - Supports orthogonal, isometric, and hex grids with sparse culling, LOD, and standard map imports.
 - Features autotiling, procedural generation, swept rect collisions, and pathfind navgrids.
 - Provides hex rings, polygon trigger zones, and event callbacks for entity transitions.
+- Treats `rectOverlapsSolid`/`sweepRect` as tile-grid collision queries; physics bodies still require their own `lurek.physics` colliders and sync flow.
 
 ## General Info
 
@@ -185,7 +186,7 @@ Interactive elements are rounded out by event-driven callbacks triggered as enti
 
 ### Functions
 
-- `lurek.tilemap.fromLDtk(jsonStr, levelName?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
+- `lurek.tilemap.fromLDtk(jsonStr, levelName?) -> LTileMap, table?`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level. On import failure it returns `nil, err` where `err` contains `format`, `code`, and `message` (`line`/`column` are nil for LDtk).
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
 - `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
@@ -200,7 +201,7 @@ Interactive elements are rounded out by event-driven callbacks triggered as enti
 - `lurek.tilemap.isoDirectionFromAngle(angle) -> integer`: Converts an angle in degrees to the nearest isometric direction index.
 - `lurek.tilemap.isoDirectionName(direction) -> string`: Returns a human-readable name for an isometric direction index.
 - `lurek.tilemap.isoRotate(direction, steps) -> integer`: Rotates an isometric direction index by a number of 90-degree steps.
-- `lurek.tilemap.loadTMX(xml) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
+- `lurek.tilemap.loadTMX(xml) -> table?, table?`: Parses a TMX (Tiled XML) string. On success returns `map, nil`; on parse failure returns `nil, err` where `err` contains `format`, `code`, `message`, and optional `line`/`column`.
 - `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
 - `lurek.tilemap.newChunkMap(chunkSize?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
 - `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
@@ -475,7 +476,7 @@ Interactive elements are rounded out by event-driven callbacks triggered as enti
 - `LTileMap:onTileEnter(gid, func) -> nil`: Registers a callback invoked when an entity enters a tile with the given GID.
 - `LTileMap:onTileExit(gid, func) -> nil`: Registers a callback invoked when an entity leaves a tile with the given GID.
 - `LTileMap:onTileStep(gid, func) -> nil`: Registers a callback invoked each frame an entity remains on a tile with the given GID.
-- `LTileMap:rectOverlapsSolid(layer, x, y, w, h) -> boolean`: Tests whether a world-space rectangle overlaps any solid tile on a layer.
+- `LTileMap:rectOverlapsSolid(layer, x, y, w, h) -> boolean`: Tests whether a world-space rectangle overlaps any solid tile on a layer. This is a tilemap query only and does not create or update `lurek.physics` colliders.
 - `LTileMap:render(ox?, oy?) -> nil`: Submits render commands for all visible tiles, optionally offset by a scroll position.
 - `LTileMap:setLayerColor(idx, r, g, b, a) -> nil`: Sets the tint color for an entire layer.
 - `LTileMap:setLayerOffset(idx, ox, oy) -> nil`: Sets the pixel offset for a layer, shifting all tiles during rendering.

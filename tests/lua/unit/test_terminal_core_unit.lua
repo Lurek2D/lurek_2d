@@ -515,6 +515,37 @@ describe("text box callbacks", function()
         expect_equal("bc", input:getText())
         expect_equal(4, changes)
     end)
+
+    -- @covers LTerminal:keypressed
+    -- @covers LTerminal:setFocus
+    -- @covers LTerminal:textinput
+    -- @covers LWidget:getText
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newTextBox
+    it("supports ctrl clipboard and word editing shortcuts in text boxes", function()
+        ---@type any
+        local term = lurek.terminal.newTerminal(30, 10)
+        local input = lurek.terminal.newTextBox(1, 1, 24)
+
+        term:addWidget(input)
+        term:setFocus(input)
+
+        expect_equal(true, term:textinput("alpha beta gamma"))
+        expect_equal(true, term:keypressed("ctrl+a"))
+        expect_equal(true, term:keypressed("ctrl+c"))
+        expect_equal(true, term:keypressed("ctrl+x"))
+        expect_equal("", input:getText())
+
+        expect_equal(true, term:keypressed("ctrl+v"))
+        expect_equal("alpha beta gamma", input:getText())
+
+        expect_equal(true, term:keypressed("ctrl+backspace"))
+        expect_equal("alpha beta ", input:getText())
+
+        expect_equal(true, term:keypressed("home"))
+        expect_equal(true, term:keypressed("ctrl+delete"))
+        expect_equal(" beta ", input:getText())
+    end)
 end)
 
 -- @describe list callbacks
@@ -1385,6 +1416,65 @@ describe("grid limits", function()
         local max_rows = lurek.terminal.getMaxRows()
         expect_true(type(max_cols) == "number" and max_cols > 0)
         expect_true(type(max_rows) == "number" and max_rows > 0)
+    end)
+end)
+
+-- @describe focus behaviour: mouse and widget removal
+describe("focus behaviour: mouse and widget removal", function()
+    -- @covers LTerminal:mousepressed
+    -- @covers LTerminal:getFocused
+    -- @covers LWidget:setVisible
+    -- @covers LWidget:setEnabled
+    it("mousepressed focuses topmost overlapping widget, respects visibility and enabled", function()
+        local term   = lurek.terminal.newTerminal(20, 6)
+        local bottom = lurek.terminal.newButton(2, 2, 8, 2, "Bottom")
+        local top    = lurek.terminal.newButton(2, 2, 8, 2, "Top")
+        term:addWidget(bottom)
+        term:addWidget(top)
+
+        -- topmost (last added) gets focus when both overlap
+        click_cell(term, 2, 2)
+        expect_true(term:getFocused() ~= nil)
+
+        -- hiding the top widget exposes the one below
+        top:setVisible(false)
+        click_cell(term, 2, 2)
+        local focused_after_hide = term:getFocused()
+        expect_true(focused_after_hide ~= nil)
+        -- the remaining focused widget must be visible
+        if focused_after_hide then
+            expect_true(focused_after_hide:isVisible())
+        end
+
+        -- disabling the remaining widget: clicking clears focus
+        bottom:setEnabled(false)
+        click_cell(term, 2, 2)
+        expect_true(term:getFocused() == nil)
+    end)
+
+    -- @covers LTerminal:removeWidget
+    -- @covers LTerminal:getFocused
+    -- @covers LTerminal:setFocus
+    it("removeWidget clears focus when the focused widget is removed", function()
+        local term   = lurek.terminal.newTerminal(20, 4)
+        local first  = lurek.terminal.newTextBox(1, 1, 8)
+        local second = lurek.terminal.newTextBox(1, 2, 8)
+        local third  = lurek.terminal.newTextBox(1, 3, 8)
+        term:addWidget(first)
+        term:addWidget(second)
+        term:addWidget(third)
+
+        term:setFocus(third)
+        expect_true(term:getFocused() ~= nil)
+
+        -- removing a non-focused widget keeps focus non-nil
+        term:removeWidget(first)
+        expect_true(term:getFocused() ~= nil)
+
+        -- removing the currently focused widget clears focus
+        local currently_focused = term:getFocused()
+        term:removeWidget(currently_focused)
+        expect_true(term:getFocused() == nil)
     end)
 end)
 

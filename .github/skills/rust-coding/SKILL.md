@@ -27,7 +27,7 @@ description: "Load this skill when writing or reviewing Rust engine code. It own
 - SharedState access rule: `{ let guard = state.borrow(); let val = guard.field.clone(); } /* borrow released */ call_lua(val)`. The guard must be dropped before any call that might re-enter Rust.
 - Pinned library versions: mlua 0.9, wgpu 22, winit 0.30, rapier2d 0.32, rodio 0.17, fontdue 0.9. Do not bump without explicit authorization; each bump needs wgpu/winit API adjustments.
 - When a Rust change touches public types or functions visible through `lurek.*`, run `python tools/validate/validate_lua_api.py` to catch shape drift in generated docs.
-- Public changes (new API, removed method, changed signature) must update `docs/specs/<module>.md` and `docs/CHANGELOG.md` in the same commit. Compiler green does not mean the task is done.
+- Public changes (new API, removed method, changed signature) must update `docs/specs/<module>.md` in the same commit. Compiler green does not mean the task is done.
 - Use `?` for propagation but never let it cross a callback boundary silently. Closures passed to mlua must return `mlua::Result`; inner `?` should map errors before they reach Lua with a clear message.
 - Keep `unsafe` blocks small, one-purpose, and accompanied by a `// SAFETY:` comment that explains the invariant. No `unsafe` for convenience when a safe alternative exists.
 - Prefer explicit module imports over glob imports (`use module::*`). Glob imports make it impossible to grep what the file actually depends on during refactors.

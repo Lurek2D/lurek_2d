@@ -21,9 +21,25 @@ describe("lurek.pipeline module exists", function()
         expect_type("table", lurek.pipeline)
     end)
 
+    -- @covers lurek.task_graph
+    it("lurek.task_graph is a table", function()
+        expect_type("table", lurek.task_graph)
+    end)
+
+    -- @covers lurek.task_graph
+    -- @covers lurek.pipeline
+    it("task_graph namespace aliases pipeline table", function()
+        expect_true(lurek.task_graph == lurek.pipeline)
+    end)
+
     -- @covers lurek.pipeline.newStep
     it("has newStep factory", function()
         expect_type("function", lurek.pipeline.newStep)
+    end)
+
+    -- @covers lurek.task_graph.newStep
+    it("task_graph has newStep factory", function()
+        expect_type("function", lurek.task_graph.newStep)
     end)
 
     -- @covers lurek.pipeline.newPipeline
@@ -31,9 +47,19 @@ describe("lurek.pipeline module exists", function()
         expect_type("function", lurek.pipeline.newPipeline)
     end)
 
+    -- @covers lurek.task_graph.newPipeline
+    it("task_graph has newPipeline factory", function()
+        expect_type("function", lurek.task_graph.newPipeline)
+    end)
+
     -- @covers lurek.pipeline.fromTable
     it("has fromTable factory", function()
         expect_type("function", lurek.pipeline.fromTable)
+    end)
+
+    -- @covers lurek.task_graph.fromTable
+    it("task_graph has fromTable factory", function()
+        expect_type("function", lurek.task_graph.fromTable)
     end)
 end)
 
@@ -789,6 +815,41 @@ describe("pipeline regression coverage", function()
         expect_true(pipeline:isRunning())
         expect_equal(21, pipeline:getContext().seed)
         expect_type("boolean", pipeline:update(0.01))
+    end)
+
+    -- @covers LPipeline:addStep
+    -- @covers LPipeline:isRunning
+    -- @covers LPipeline:runAsync
+    -- @covers LPipeline:update
+    -- @covers LPipelineStep:dependsOn
+    -- @covers lurek.pipeline.newPipeline
+    -- @covers lurek.pipeline.newStep
+    it("runAsync preserves dependency order for waiting-ready transitions", function()
+        local seen = {}
+        local first = lurek.pipeline.newStep("first", function(ctx)
+            table.insert(seen, "first")
+            return 1
+        end)
+        local second = lurek.pipeline.newStep("second", function(ctx)
+            table.insert(seen, "second")
+            return 2
+        end)
+        second:dependsOn("first")
+
+        local pipeline = lurek.pipeline.newPipeline("async_order")
+        pipeline:addStep(first)
+        pipeline:addStep(second)
+        pipeline:runAsync({})
+
+        local ticks = 0
+        while pipeline:isRunning() and ticks < 8 do
+            pipeline:update(0.016)
+            ticks = ticks + 1
+        end
+
+        expect_false(pipeline:isRunning())
+        expect_equal("first", seen[1])
+        expect_equal("second", seen[2])
     end)
 
     -- @covers LPipeline:addStep

@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 
 /// Execution lifecycle state of a single pipeline step.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StepStatus {
     /// Created but not yet enqueued for execution.
     Pending,

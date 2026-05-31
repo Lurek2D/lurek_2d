@@ -10,7 +10,8 @@ use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use lurek2d::render::postfx_pipeline::params_to_uniform;
 use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
-    BlendMode, DepthMode, PhysicsDebugConfig, StencilAction, StencilMode, TextSpan, TextureData,
+    adaptive_circle_ellipse_segments, BlendMode, DepthMode, PhysicsDebugConfig, StencilAction,
+    StencilMode, TextSpan, TextureData,
 };
 use lurek2d::render::shape::{CompoundShape, ShapeCommand};
 use lurek2d::render::DrawMode;
@@ -476,6 +477,31 @@ mod renderer_tests {
     fn blend_mode_default_is_alpha() {
         let bm = BlendMode::default();
         assert_eq!(bm, BlendMode::Alpha);
+    }
+
+    #[test]
+    fn adaptive_circle_ellipse_segments_is_monotonic_by_extent() {
+        let small = adaptive_circle_ellipse_segments(2.0, 2.0);
+        let medium = adaptive_circle_ellipse_segments(8.0, 8.0);
+        let large = adaptive_circle_ellipse_segments(32.0, 32.0);
+        assert!(small <= medium, "expected non-decreasing segments");
+        assert!(medium <= large, "expected non-decreasing segments");
+    }
+
+    #[test]
+    fn adaptive_circle_ellipse_segments_clamps_tiny_and_huge_extents() {
+        assert_eq!(adaptive_circle_ellipse_segments(0.0, 0.0), 12);
+        assert_eq!(adaptive_circle_ellipse_segments(0.01, 0.02), 12);
+        assert_eq!(adaptive_circle_ellipse_segments(10_000.0, 5_000.0), 96);
+    }
+
+    #[test]
+    fn adaptive_circle_ellipse_segments_uses_max_axis_and_abs_values() {
+        let by_x = adaptive_circle_ellipse_segments(40.0, 8.0);
+        let by_y = adaptive_circle_ellipse_segments(8.0, 40.0);
+        let negative = adaptive_circle_ellipse_segments(-40.0, -8.0);
+        assert_eq!(by_x, by_y);
+        assert_eq!(by_x, negative);
     }
 
     #[test]

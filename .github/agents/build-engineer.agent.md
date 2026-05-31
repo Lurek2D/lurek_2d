@@ -23,7 +23,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
 ## Outputs
 - Build or automation diff.
 - Validation results for the touched build, dist, or CI path.
-- Updated docs or changelog when sync rules require it.
+- Updated docs when sync rules require it.
 - Artifact/workflow caveats: platform or cache assumptions.
 - Recommended next owner if the task is blocked by engine behavior.
 
@@ -36,9 +36,8 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
 - For .vscode/ changes: keep settings.json free of warning suppressions; align launch.json with the developer debugging workflow.
 - Validate the narrowest affected build or packaging command first; widen to the required gate.
 - Call out artifact path, cache, toolchain, or platform assumptions explicitly.
-- Update docs/CHANGELOG.md and supporting docs when release or automation behavior changes user-facing workflow.
+- Update supporting docs when release or automation behavior changes user-facing workflow.
 - Return changed files, command proof, and any remaining automation risk to Manager.
-- Save work/{session} artifacts and one log entry.
 
 ## Success Metrics
 Score the work from 1 to 10 stars against these checks.
