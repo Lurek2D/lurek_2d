@@ -17,7 +17,7 @@ agent: "Manager"
 1. Load [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read the accepted phase artifact first and restate the goal, boundaries, dependencies, and binary finish gate before routing work.
 3. Split the phase into the smallest valid owner slices and route only when the current gate and proof are clear.
-4. Keep docs, tests, and changelog sync tied to the slices that actually changed instead of treating them as one late catch-all step.
+4. Keep docs and tests sync tied to the slices that actually changed instead of treating them as one late catch-all step.
 5. Close the phase only after the owning validations passed and the phase artifact reflects the current state.
 
 ## Success Criteria

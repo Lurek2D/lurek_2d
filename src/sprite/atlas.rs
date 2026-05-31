@@ -5,6 +5,7 @@
 //! Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
 //! The file is the naming and region-mapping layer for packed sprite content.
 
+use crate::animation::aseprite::load_aseprite_json;
 use std::collections::HashMap;
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.
 #[derive(Debug, Clone)]
@@ -174,63 +175,25 @@ fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntr
 }
 /// Parse an Aseprite JSON string (array or object frames format) into a SpriteAtlas; returns Err on malformed input.
 pub fn parse_aseprite_json(json_str: &str) -> Result<SpriteAtlas, String> {
-    let value: serde_json::Value =
-        serde_json::from_str(json_str).map_err(|e| format!("Aseprite JSON parse error: {}", e))?;
-    let frames = value
-        .get("frames")
-        .ok_or("Missing 'frames' key in Aseprite JSON")?;
     let mut atlas = SpriteAtlas::new();
-    match frames {
-        serde_json::Value::Array(arr) => {
-            for item in arr {
-                let name = item
-                    .get("filename")
-                    .and_then(|v| v.as_str())
-                    .ok_or("Aseprite array frame missing 'filename'")?
-                    .to_owned();
-                let entry = parse_aseprite_frame(name, item)?;
-                atlas.add_entry(entry);
-            }
+    let parsed = load_aseprite_json(json_str).map_err(|e| match e.strip_prefix("aseprite: ") {
+        Some(msg) => format!("Aseprite {}", msg),
+        None => e,
+    })?;
+    for frame in parsed.frames {
+        if frame.name.is_empty() {
+            return Err("Aseprite array frame missing 'filename'".into());
         }
-        serde_json::Value::Object(map) => {
-            for (name, item) in map {
-                let entry = parse_aseprite_frame(name.clone(), item)?;
-                atlas.add_entry(entry);
-            }
-        }
-        _ => return Err("Aseprite 'frames' must be an object or array".into()),
+        atlas.add_entry(AtlasEntry {
+            name: frame.name,
+            x: frame.x,
+            y: frame.y,
+            w: frame.w,
+            h: frame.h,
+            rotated: false,
+            flip_x: false,
+            flip_y: false,
+        });
     }
     Ok(atlas)
-}
-/// Extract a single AtlasEntry from an Aseprite JSON frame value using the given name.
-fn parse_aseprite_frame(name: String, item: &serde_json::Value) -> Result<AtlasEntry, String> {
-    let frame = item
-        .get("frame")
-        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame' rect object", name))?;
-    let x = frame
-        .get("x")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.x'", name))? as u32;
-    let y = frame
-        .get("y")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.y'", name))? as u32;
-    let w = frame
-        .get("w")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.w'", name))? as u32;
-    let h = frame
-        .get("h")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.h'", name))? as u32;
-    Ok(AtlasEntry {
-        name,
-        x,
-        y,
-        w,
-        h,
-        rotated: false,
-        flip_x: false,
-        flip_y: false,
-    })
 }

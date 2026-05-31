@@ -1,4 +1,4 @@
-﻿---
+---
 name: Build-Engineer
 description: "Own build scripts, Cargo profiles, packaging, CI automation, all tools/ scripts, and .vscode/ workspace configuration for Lurek2D."
 

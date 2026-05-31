@@ -9,7 +9,7 @@ readme = "README.md"
 
 [features]
 # LuaJIT — default scripting backend; JIT compilation for x86_64 desktop (Windows/Linux/macOS).
-default = ["lua-jit", "automation-plugin", "devtools-plugin", "ui-charts", "ui-layout-loader", "flownet", "flownet-parallel", "obj-loader"]
+default = ["lua-jit", "automation-plugin", "devtools-plugin", "ui-charts", "ui-layout-loader", "flownet", "flownet-parallel", "pipeline", "spine", "obj-loader"]
 # OBJ model loader for 2D projection (raycaster, globe). Disable to reduce binary size.
 obj-loader = []
 lua-jit = ["mlua/luajit", "mlua/vendored"]
@@ -30,6 +30,10 @@ ui-layout-loader = []
 flownet = []
 # Enables rayon-backed flownet simulation update_parallel phase.
 flownet-parallel = ["flownet"]
+# Optional pipeline subsystem gate.
+pipeline = ["lua-jit", "ui-charts", "ui-layout-loader"]
+# Optional Spine subsystem gate.
+spine = ["lua-jit", "ui-charts", "ui-layout-loader"]
 
 [dependencies]
 # GPU-accelerated rendering — platform-split; see [target.'cfg(...)'.dependencies] sections near the end.
@@ -253,6 +257,11 @@ path = "tests/lua/harness.rs"
 [[test]]
 name = "scene_tests"
 path = "tests/rust/unit/scene_tests.rs"
+
+[[bench]]
+name = "spine_update_world_transforms"
+harness = false
+required-features = ["spine"]
 
 [[test]]
 name = "patterns_tests"

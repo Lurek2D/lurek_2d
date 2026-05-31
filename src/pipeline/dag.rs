@@ -10,7 +10,7 @@ use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};
 use crate::pipeline::step::{PipelineStep, StepStatus};
 use crate::runtime::log_messages::{PL01_PIPELINE_INIT, PL02_STEP_ADD};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 /// Controls pipeline behavior when a step fails.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -143,6 +143,9 @@ impl Pipeline {
     }
 
     /// Compute topological order over `&str` keys using Kahn's algorithm; return cycle error if needed.
+    ///
+    /// Independent ready steps are emitted in deterministic lexical order so parallel tiers
+    /// are stable across runs.
     fn get_execution_order_refs(&self) -> Result<Vec<&str>, String> {
         let mut in_degree: HashMap<&str, usize> = HashMap::new();
         let mut dependents: HashMap<&str, Vec<&str>> = HashMap::new();
@@ -161,13 +164,13 @@ impl Pipeline {
                 }
             }
         }
-        let mut queue: VecDeque<&str> = in_degree
+        let mut ready: BTreeSet<&str> = in_degree
             .iter()
             .filter(|(_, &deg)| deg == 0)
             .map(|(&name, _)| name)
             .collect();
         let mut order: Vec<&str> = Vec::with_capacity(self.steps.len());
-        while let Some(current) = queue.pop_front() {
+        while let Some(current) = ready.pop_first() {
             order.push(current);
             if let Some(deps_of) = dependents.get(current) {
                 for &dependent in deps_of {
@@ -176,7 +179,7 @@ impl Pipeline {
                         .unwrap_or_else(|| unreachable!("dependent key missing from in_degree"));
                     *deg -= 1;
                     if *deg == 0 {
-                        queue.push_back(dependent);
+                        ready.insert(dependent);
                     }
                 }
             }

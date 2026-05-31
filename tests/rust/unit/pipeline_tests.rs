@@ -4,29 +4,6 @@ use lurek2d::pipeline::dag::Pipeline;
 use lurek2d::pipeline::scheduler::PipelineScheduler;
 use lurek2d::pipeline::step::{PipelineStep, StepStatus};
 
-mod task_graph_compat_tests {
-    #[test]
-    fn task_graph_path_exposes_pipeline_types() {
-        let mut p = lurek2d::task_graph::Pipeline::new("compat");
-        p.add_step(lurek2d::task_graph::PipelineStep::new("a"))
-            .unwrap();
-        assert_eq!(p.get_step_count(), 1);
-    }
-
-    #[test]
-    fn task_graph_nested_modules_compile_and_work() {
-        let mut p = lurek2d::task_graph::dag::Pipeline::new("compat_nested");
-        let mut step = lurek2d::task_graph::step::PipelineStep::new("a");
-        step.status = lurek2d::task_graph::step::StepStatus::Waiting;
-        p.add_step(step).unwrap();
-
-        let mut scheduler = lurek2d::task_graph::scheduler::PipelineScheduler::new();
-        scheduler.start(&p);
-        let ready = scheduler.update_ready_refs(0.0, &p);
-        assert_eq!(ready, vec!["a"]);
-    }
-}
-
 // â”€â”€ scheduler tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod scheduler_tests {

@@ -809,6 +809,40 @@ describe("TileMap viewport and coordinate conversion", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_no_error(function() tm:update(0.016) end)
     end)
+
+    -- @covers LTileMap:getOrientation
+    -- @covers LTileMap:setOrientation
+    -- @covers lurek.tilemap.newTileMap
+    it("hex renderer orientation round-trips through the hexmap API", function()
+        local tm = lurek.tilemap.newTileMap(32, 32)
+        tm:setOrientation("hexagonal")
+        expect_equal("hexagonal", tm:getOrientation())
+    end)
+
+    -- @covers LTileMap:addLayer
+    -- @covers LTileMap:render
+    -- @covers LTileMap:setOrientation
+    -- @covers LTileMap:setTile
+    -- @covers lurek.tilemap.newTileMap
+    it("hex renderer path renders through the tilemap API", function()
+        local tm = lurek.tilemap.newTileMap(32, 32)
+        local layer = tm:addLayer("hex", 4, 4)
+        tm:setOrientation("hexagonal")
+        tm:setTile(layer, 2, 2, 1)
+        expect_no_error(function() tm:render() end)
+    end)
+
+    -- @covers LTileMap:setViewport
+    -- @covers LTileMap:update
+    -- @covers lurek.tilemap.newTileMap
+    it("animated tile dirty viewport update keeps viewport state stable", function()
+        local tm = lurek.tilemap.newTileMap(32, 32)
+        tm:setViewport(0, 0, 64, 64)
+        tm:update(0.016)
+        local x, y, w, h = tm:getViewport()
+        expect_near(64, w, 0.001)
+        expect_near(64, h, 0.001)
+    end)
 end)
 
 -- @describe TileMap collision

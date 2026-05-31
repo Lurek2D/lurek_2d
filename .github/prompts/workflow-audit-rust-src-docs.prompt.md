@@ -1,5 +1,6 @@
 ---
 description: "Audit and fix Rust docs across src/ excluding src/lua_api by reading each file fully, editing one file at a time, and writing feature-based file headers."
+agent: "Doc-Writer"
 ---
 # Workflow: Audit Rust Src Docs
 

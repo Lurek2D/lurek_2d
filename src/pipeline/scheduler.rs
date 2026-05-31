@@ -1,5 +1,6 @@
 //! Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
 //! The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
+//! Waiting membership is tracked explicitly in scheduler-owned timers, so async readiness does not depend on mutating pipeline definition structs at runtime.
 //! Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
 //! Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 
@@ -27,14 +28,14 @@ impl PipelineScheduler {
         }
     }
 
-    /// Initialize delay timers from `pipeline` step definitions and begin execution.
-    pub fn start(&mut self, pipeline: &Pipeline) {
+    /// Clear prior timers and begin execution.
+    ///
+    /// Waiting steps already present on the pipeline at start are seeded into
+    /// internal timers so borrowed ready refs work for status-driven call sites.
+    pub fn start(&mut self, _pipeline: &Pipeline) {
         self.delay_timers.clear();
         self.elapsed = 0.0;
         self.is_running = true;
-        for step in pipeline.get_steps() {
-            self.delay_timers.insert(step.name.clone(), step.delay);
-        }
     }
 
     /// Advance timers by `dt` seconds and return names of steps whose delay has expired and are still `Waiting`.
@@ -45,26 +46,39 @@ impl PipelineScheduler {
             .collect()
     }
 
-    /// Advance timers by `dt` seconds and return borrowed names of steps whose delay has expired and are still `Waiting`.
+    /// Advance timers by `dt` seconds and return borrowed names of steps whose delay has expired.
+    ///
+    /// The waiting set is represented by `delay_timers` keys. It is fed by
+    /// `mark_step_waiting` and also auto-synced from pipeline steps currently in
+    /// `StepStatus::Waiting` for compatibility with status-driven call sites.
+    /// Once a step is ready it is removed so it is emitted at most once per
+    /// waiting transition.
     pub fn update_ready_refs<'a>(&mut self, dt: f32, pipeline: &'a Pipeline) -> Vec<&'a str> {
         if !self.is_running {
             return Vec::new();
         }
         self.elapsed += dt;
-        let mut ready: Vec<&str> = Vec::new();
+
+        // Keep scheduler-owned timers in sync with status-driven waiting steps.
         for step in pipeline.get_steps() {
-            if step.status != StepStatus::Waiting {
-                continue;
+            if step.status == StepStatus::Waiting {
+                self.delay_timers
+                    .entry(step.name.clone())
+                    .or_insert(step.delay);
             }
-            if !self.delay_timers.contains_key(step.name.as_str()) {
-                self.delay_timers.insert(step.name.clone(), step.delay);
-            }
-            let timer = self
-                .delay_timers
-                .get_mut(step.name.as_str())
-                .unwrap_or_else(|| unreachable!("delay timer missing for waiting step"));
+        }
+
+        let mut ready_names: Vec<String> = Vec::new();
+        for (name, timer) in &mut self.delay_timers {
             *timer -= dt;
             if *timer <= 0.0 {
+                ready_names.push(name.clone());
+            }
+        }
+        let mut ready: Vec<&str> = Vec::new();
+        for name in ready_names {
+            self.delay_timers.remove(name.as_str());
+            if let Some(step) = pipeline.get_step(name.as_str()) {
                 ready.push(step.name.as_str());
             }
         }

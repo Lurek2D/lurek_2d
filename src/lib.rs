@@ -116,10 +116,9 @@ pub mod pathfind;
 pub mod patterns;
 /// Exposes the physics subsystem module.
 pub mod physics;
+#[cfg(feature = "pipeline")]
 /// Exposes the pipeline subsystem module.
 pub mod pipeline;
-/// Exposes the preferred task-graph naming path for the pipeline subsystem.
-pub mod task_graph;
 /// Exposes the procedural generation subsystem module.
 pub mod procgen;
 /// Exposes the province subsystem module.
@@ -140,6 +139,7 @@ pub mod scene;
 pub mod serialize;
 /// Backward-compatibility alias for the `serialize` module.
 pub use serialize as serial;
+#[cfg(feature = "spine")]
 /// Exposes the spine animation subsystem module.
 pub mod spine;
 /// Exposes the sprite subsystem module.

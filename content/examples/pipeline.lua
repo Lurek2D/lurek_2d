@@ -2,12 +2,6 @@
 -- Auto-generated from content/examples2/pipeline_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/pipeline.lua
 -- Note: scheduler/dependency clone reductions are internal; Lua usage in this example is unchanged.
--- Naming: `lurek.task_graph` is a compatibility alias of `lurek.pipeline`.
-
-do
-    local graph = lurek.task_graph.newPipeline("task-graph-alias")
-    print("task_graph alias works = " .. tostring(graph ~= nil))
-end
 
 --- Pipeline Module Part 1: creating pipelines, steps, dependencies, running, results
 

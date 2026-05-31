@@ -5,6 +5,11 @@
 
 -- @describe module interface
 describe("module interface", function()
+    -- @covers lurek.sprite.newSprite
+    it("exposes newSprite for lit sprite normal map workflows", function()
+        expect_type("function", lurek.sprite.newSprite)
+    end)
+
     -- @covers lurek.sprite.newSheet
     it("exposes newSheet factory", function()
         expect_type("function", lurek.sprite.newSheet)
@@ -28,6 +33,38 @@ describe("module interface", function()
     -- @covers lurek.sprite.newAtlasPacker
     it("exposes newAtlasPacker factory", function()
         expect_type("function", lurek.sprite.newAtlasPacker)
+    end)
+end)
+
+-- @describe sprite lit sprite normal map support
+describe("sprite lit sprite normal map support", function()
+    -- @covers LSprite:getNormalIntensity
+    -- @covers LSprite:getNormalMap
+    -- @covers LSprite:hasNormalMap
+    -- @covers LSprite:setNormalIntensity
+    -- @covers LSprite:setNormalMap
+    -- @covers lurek.sprite.newSprite
+    it("stores and exposes normal map data for a lit sprite", function()
+        local sprite = lurek.sprite.newSprite(7, 10, 20)
+
+        expect_false(sprite:hasNormalMap())
+        sprite:setNormalMap(11)
+        sprite:setNormalIntensity(2.5)
+
+        expect_true(sprite:hasNormalMap())
+        expect_equal(11, sprite:getNormalMap())
+        expect_near(2.5, sprite:getNormalIntensity(), 0.001)
+    end)
+
+    -- @covers LSprite:clearNormalMap
+    -- @covers LSprite:hasNormalMap
+    -- @covers LSprite:setNormalMap
+    -- @covers lurek.sprite.newSprite
+    it("clears the normal map from a lit sprite", function()
+        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        sprite:setNormalMap(3)
+        sprite:clearNormalMap()
+        expect_false(sprite:hasNormalMap())
     end)
 end)
 
@@ -334,6 +371,13 @@ describe("parseAtlas()", function()
         end)
     end)
 
+    -- @covers lurek.sprite.parseAtlas
+    it("errors on malformed TexturePacker frame payload", function()
+        expect_error(function()
+            lurek.sprite.parseAtlas('{"frames":{"broken":{"rotated":false}}}')
+        end)
+    end)
+
 -- newAtlasSheet
 
     -- @describe newAtlasSheet()
@@ -459,6 +503,20 @@ describe("sprite.parseAsepriteAtlas", function()
     it("raises error for JSON missing 'frames' key", function()
         expect_error(function()
             lurek.sprite.parseAsepriteAtlas('{"meta":{}}')
+        end)
+    end)
+
+    -- @covers lurek.sprite.parseAsepriteAtlas
+    it("raises error for malformed Aseprite frame rect", function()
+        expect_error(function()
+            lurek.sprite.parseAsepriteAtlas('{"frames":{"hero.png":{"duration":100}},"meta":{"size":{"w":32,"h":32}}}')
+        end)
+    end)
+
+    -- @covers lurek.sprite.parseAsepriteAtlas
+    it("raises error for array frames missing filename on the error path", function()
+        expect_error(function()
+            lurek.sprite.parseAsepriteAtlas('{"frames":[{"frame":{"x":0,"y":0,"w":16,"h":16}}],"meta":{"size":{"w":16,"h":16}}}')
         end)
     end)
 

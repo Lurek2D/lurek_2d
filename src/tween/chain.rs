@@ -66,7 +66,7 @@ pub struct ChainEvent {
     pub value: f64,
 }
 
-/// Sequential tween chain.
+/// Stateful sequence of tween steps with pause, loop, and per-step completion event support.
 pub struct TweenChain {
     /// Ordered steps.
     steps: Vec<ChainStep>,

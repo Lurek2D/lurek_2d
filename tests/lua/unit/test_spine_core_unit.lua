@@ -548,6 +548,38 @@ describe("lurek.spine regression coverage", function()
         expect_near(0.5, stopped_at, 0.001)
         expect_near(stopped_at, sk:getAnimationTime(), 0.001)
     end)
+
+    -- @covers LSkeleton:addAnimation
+    -- @covers LSkeleton:addBone
+    -- @covers LSkeleton:addChildBone
+    -- @covers LSkeleton:addIKConstraint
+    -- @covers LSkeleton:drawToImage
+    -- @covers LSkeleton:playAnimation
+    -- @covers LSkeleton:setIKTarget
+    -- @covers LSkeleton:updateAnimation
+    -- @covers LSkeleton:updateWorldTransforms
+    -- @covers LSkeletonAnimation:addKeyframe
+    -- @covers lurek.spine.newSkeleton
+    -- @covers lurek.spine.newSkeletonAnimation
+    it("animation ik render pipeline stays stable end to end", function()
+        local sk = lurek.spine.newSkeleton("pipeline")
+        local root = sk:addBone("root", { x = 0, y = 0 })
+        sk:addChildBone("arm", root, { x = 8, y = 0 })
+        sk:addIKConstraint("arm_ik", { root, 1 }, true)
+        sk:setIKTarget("arm_ik", 20, 12)
+
+        local anim = lurek.spine.newSkeletonAnimation("reach", 1.0)
+        anim:addKeyframe(root, "x", 0.0, 0.0)
+        anim:addKeyframe(root, "x", 1.0, 6.0)
+        sk:addAnimation(anim)
+
+        expect_true(sk:playAnimation("reach", true))
+        sk:updateAnimation(0.25)
+        sk:updateWorldTransforms()
+
+        local image = sk:drawToImage(32, 32)
+        expect_type("userdata", image)
+    end)
 end)
 
 -- =========================================================================

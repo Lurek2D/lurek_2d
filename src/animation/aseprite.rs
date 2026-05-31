@@ -8,6 +8,8 @@ use serde_json::Value;
 /// One frame rectangle parsed from an Aseprite sheet.
 #[derive(Debug, Clone)]
 pub struct AsepriteFrameData {
+    /// Source frame name, usually the exported filename.
+    pub name: String,
     /// Frame X coordinate in the sheet.
     pub x: u32,
     /// Frame Y coordinate in the sheet.
@@ -48,9 +50,9 @@ pub struct AsepriteParsed {
     pub frames: Vec<AsepriteFrameData>,
     /// All parsed frame tags.
     pub tags: Vec<AsepriteTagData>,
-    /// Sheet width in pixels.
+    /// Sheet width in pixels, derived from frame bounds when the export omits meta.size.
     pub sheet_width: u32,
-    /// Sheet height in pixels.
+    /// Sheet height in pixels, derived from frame bounds when the export omits meta.size.
     pub sheet_height: u32,
 }
 /// Parse an Aseprite JSON string into frame and tag metadata.
@@ -61,7 +63,12 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
     let mut frames: Vec<AsepriteFrameData> = Vec::new();
     if let Some(arr) = frames_val.as_array() {
         for entry in arr {
-            frames.push(parse_frame_entry(entry)?);
+            let name = entry
+                .get("filename")
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .to_string();
+            frames.push(parse_frame_entry(entry, name)?);
         }
     } else if let Some(obj) = frames_val.as_object() {
         let mut entries: Vec<(&String, &Value)> = obj.iter().collect();
@@ -72,24 +79,39 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
                 .and_then(|(_, s)| s.parse::<u64>().ok())
                 .unwrap_or(0)
         });
-        for (_, entry) in entries {
-            frames.push(parse_frame_entry(entry)?);
+        for (name, entry) in entries {
+            frames.push(parse_frame_entry(entry, name.clone())?);
         }
     } else {
         return Err("aseprite: 'frames' must be an array or object".to_string());
     }
-    let meta = root.get("meta").ok_or("aseprite: missing 'meta' key")?;
-    let size = meta.get("size").ok_or("aseprite: missing 'meta.size'")?;
+    let derived_sheet_width = frames
+        .iter()
+        .map(|frame| frame.x.saturating_add(frame.w))
+        .max()
+        .unwrap_or(0);
+    let derived_sheet_height = frames
+        .iter()
+        .map(|frame| frame.y.saturating_add(frame.h))
+        .max()
+        .unwrap_or(0);
+    let meta = root.get("meta");
+    let size = meta.and_then(|meta| meta.get("size"));
     let sheet_width = size
-        .get("w")
+        .and_then(|size| size.get("w"))
         .and_then(Value::as_u64)
-        .ok_or("aseprite: missing 'meta.size.w'")? as u32;
+        .map(|value| value as u32)
+        .unwrap_or(derived_sheet_width);
     let sheet_height = size
-        .get("h")
+        .and_then(|size| size.get("h"))
         .and_then(Value::as_u64)
-        .ok_or("aseprite: missing 'meta.size.h'")? as u32;
+        .map(|value| value as u32)
+        .unwrap_or(derived_sheet_height);
     let mut tags: Vec<AsepriteTagData> = Vec::new();
-    if let Some(tag_arr) = meta.get("frameTags").and_then(Value::as_array) {
+    if let Some(tag_arr) = meta
+        .and_then(|meta| meta.get("frameTags"))
+        .and_then(Value::as_array)
+    {
         for tag_val in tag_arr {
             let name = tag_val
                 .get("name")
@@ -129,7 +151,7 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
     })
 }
 /// Parse one frame entry object into `AsepriteFrameData`.
-fn parse_frame_entry(entry: &Value) -> Result<AsepriteFrameData, String> {
+fn parse_frame_entry(entry: &Value, name: String) -> Result<AsepriteFrameData, String> {
     let frame_obj = entry
         .get("frame")
         .ok_or("aseprite: frame entry missing 'frame' object")?;
@@ -151,6 +173,7 @@ fn parse_frame_entry(entry: &Value) -> Result<AsepriteFrameData, String> {
         .ok_or("aseprite: frame missing 'h'")? as u32;
     let duration_ms = entry.get("duration").and_then(Value::as_u64).unwrap_or(100) as u32;
     Ok(AsepriteFrameData {
+        name,
         x,
         y,
         w,

@@ -1,4 +1,4 @@
-﻿---
+---
 name: CAG-Architect
 description: "Own the .github CAG layer and its validation rules, plus retrieval corpus shape, chunking, and source ranking. Keep wording short, scopes distinct, and routing coherent."
 

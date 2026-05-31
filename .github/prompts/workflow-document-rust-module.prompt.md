@@ -1,5 +1,6 @@
 ---
 description: "Audit and complete Rust docs in src/<module>/ by following rust-coding skill rules as the single source of truth, then verify with quality checks."
+agent: "Doc-Writer"
 ---
 # Workflow: Document Rust Module
 

@@ -1,5 +1,6 @@
 ---
 description: "Deliver scoped feature slices with Lua-first tests, thin lua_api wrappers, full API/example/Lua-unit/spec coverage, and synced Rust docstrings."
+agent: "Manager"
 ---
 # Workflow Feature Development
 
@@ -15,7 +16,7 @@ description: "Deliver scoped feature slices with Lua-first tests, thin lua_api w
 ## Steps
 1. Load [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), [skill: testing-rust](../skills/testing-rust/SKILL.md), and [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md) before acting.
 2. Normalize the feature into goal, constraints, out-of-scope items, and the proof needed to call it done.
-3. Split the work into the smallest valid owner slices and keep docs, tests, and changelog sync attached to the slices that actually move.
+3. Split the work into the smallest valid owner slices and keep docs and tests sync attached to the slices that actually move.
 4. Enforce test-layer placement under TST-01: behavior reachable through `lurek.*` must be covered in `tests/lua/unit/` first; Rust tests must not duplicate Lua-reachable behavior.
 5. Enforce thin-wrapper-only `src/lua_api/*_api.rs`: bindings, registration, and conversion only; business logic must live in `src/<module>/`.
 6. For every touched module, update and regenerate its spec artifact in `docs/specs/<module>.md` before final close.

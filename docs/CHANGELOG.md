@@ -10,8 +10,6 @@
 
  - refactor(render): deduplicate post-processing pipeline setup in `src/render/postfx_pipeline.rs` by extracting shared pipeline-layout and render-pipeline builders used by both built-in effects and `register_custom`, reducing duplicated blend/primitive/target configuration paths.
 
- - feat(pipeline): introduce incremental `task_graph` naming path with full compatibility preservation — add Rust module alias `crate::task_graph` (re-exporting existing `pipeline` internals/types) and Lua namespace alias `lurek.task_graph` pointing to the same runtime table as `lurek.pipeline`; add Rust/Lua regression tests and sync pipeline spec/example notes.
-
  - feat(spine): add Spine/DragonBones JSON skeleton importer with explicit typed errors in `src/spine/importer.rs` and Lua entrypoint `lurek.spine.skeletonFromJson`; importer covers standard bones, slots, skins, and basic animation timelines/events. Added Rust success/error tests in `tests/rust/unit/spine_tests.rs`, Lua-facing coverage in `tests/lua/unit/test_spine_core_unit.lua`, and synced spine usage docs/examples.
 
  - perf(spine): remove per-frame cloning from the skeleton hot path by applying active animation timelines directly to borrowed bone slices and solving IK constraints over borrowed collections in `update_animation`/`apply_ik_constraints`; add Rust/Lua regression coverage for repeated frame-loop updates and IK application, plus synced spine spec/example notes.

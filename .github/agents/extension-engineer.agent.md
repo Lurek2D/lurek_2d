@@ -1,4 +1,4 @@
-﻿---
+---
 name: Extension-Engineer
 description: "Own the VS Code extension in extension/vscode/. Keep it thin: commands and panels orchestrate tools/ scripts and consume generated artifacts. Do not work on engine Rust code or maintain tools/ scripts."
 tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, read/problems, read/readFile, read/skill, read/terminalLastCommand, read/getTaskOutput, edit/createDirectory, edit/createFile, edit/editFiles, edit/rename, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, todo]

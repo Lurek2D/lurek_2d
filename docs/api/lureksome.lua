@@ -30,6 +30,9 @@ CombatBattle = {}
 ---@class CameraFollow
 CameraFollow = {}
 
+---@class WalkerCamera
+WalkerCamera = {}
+
 ---@class Card
 Card = {}
 
@@ -242,6 +245,9 @@ LevelThresholds = {}
 
 ---@class Sheet
 Sheet = {}
+
+---@class TilemapMinimap
+TilemapMinimap = {}
 
 ---@class ParallelGroup
 ParallelGroup = {}
@@ -908,6 +914,55 @@ function CameraFollow:getBounds() end
 ---@param maxY number
 ---@return nil
 function CameraFollow:setBounds(minX, minY, maxX, maxY) end
+
+---@class library.camera_follow_walker
+library.camera_follow_walker = {}
+
+--- Create a walker+camera helper.
+---@param opts table
+---@return any
+function library.camera_follow_walker.new(opts) end
+
+--- Set walker world-space center position.
+---@param x number
+---@param y number
+---@return nil
+function WalkerCamera:setPosition(x, y) end
+
+--- Get walker world-space center position.
+---@return any
+function WalkerCamera:getPosition() end
+
+--- Place walker using 1-based tile coordinates.
+---@param tx integer
+---@param ty integer
+---@return nil
+function WalkerCamera:setTilePosition(tx, ty) end
+
+--- Get current walker tile coordinates (1-based).
+---@return any
+function WalkerCamera:getTilePosition() end
+
+--- Attempt movement in world space. Returns true if any axis moved.
+---@param dx number
+---@param dy number
+---@param dt number|nil
+---@return any
+function WalkerCamera:move(dx, dy, dt) end
+
+--- Update internal camera controller and optionally apply to lurek.camera.
+---@param dt number|nil
+---@param apply_camera boolean|nil
+---@return nil
+function WalkerCamera:update(dt, apply_camera) end
+
+--- Return current camera position from camera_follow.
+---@return any
+function WalkerCamera:getCameraPosition() end
+
+--- Expose underlying camera_follow controller.
+---@return any
+function WalkerCamera:getCameraController() end
 
 ---@class library.cardgame
 library.cardgame = {}
@@ -7507,6 +7562,40 @@ function library.stats.snapshotToJson(snap) end
 ---@param str string
 ---@return table
 function library.stats.snapshotFromJson(str) end
+
+---@class library.tilemap_minimap
+library.tilemap_minimap = {}
+
+--- Create a tilemap->minimap sync helper.
+---@param opts table
+---@return any
+function library.tilemap_minimap.new(opts) end
+
+--- Sync tile solidity from tilemap layer into minimap terrain.
+---@return nil
+function TilemapMinimap:syncTerrain() end
+
+--- Center minimap from world-space coordinates.
+---@param wx number
+---@param wy number
+---@return any
+function TilemapMinimap:setCenterFromWorld(wx, wy) end
+
+--- Set minimap viewport from a world-space rectangle.
+---@param vx number
+---@param vy number
+---@param vw number
+---@param vh number
+---@return nil
+function TilemapMinimap:setViewportFromWorld(vx, vy, vw, vh) end
+
+--- Clear minimap viewport overlay if supported.
+---@return nil
+function TilemapMinimap:clearViewport() end
+
+--- Expose underlying minimap handle.
+---@return any
+function TilemapMinimap:getMinimap() end
 
 ---@class library.tween_chain
 library.tween_chain = {}

@@ -264,3 +264,80 @@ do
     local atlas = lurek.sprite.parseAsepriteAtlas(json)
     print("typeOf = " .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
+
+--@api-stub: lurek.sprite.newSprite
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("sprite created = " .. tostring(sprite ~= nil))
+end
+
+--@api-stub: LSprite:setNormalMap
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(11)
+    print("normal map set = " .. tostring(sprite:getNormalMap() == 11))
+end
+
+--@api-stub: LSprite:getNormalMap
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(11)
+    print("normal map = " .. tostring(sprite:getNormalMap()))
+end
+
+--@api-stub: LSprite:hasNormalMap
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("has normal before = " .. tostring(sprite:hasNormalMap()))
+    sprite:setNormalMap(3)
+    print("has normal after = " .. tostring(sprite:hasNormalMap()))
+end
+
+--@api-stub: LSprite:clearNormalMap
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(3)
+    sprite:clearNormalMap()
+    print("has normal after clear = " .. tostring(sprite:hasNormalMap()))
+end
+
+--@api-stub: LSprite:setNormalIntensity
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalIntensity(2.5)
+    print("normal intensity set")
+end
+
+--@api-stub: LSprite:getNormalIntensity
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalIntensity(2.5)
+    print("normal intensity = " .. tostring(sprite:getNormalIntensity()))
+end
+
+--@api-stub: LSprite:setPosition
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setPosition(32, 48)
+    local x, y = sprite:getPosition()
+    print("position = " .. x .. "," .. y)
+end
+
+--@api-stub: LSprite:getPosition
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local x, y = sprite:getPosition()
+    print("position = " .. x .. "," .. y)
+end
+
+--@api-stub: LSprite:type
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("type = " .. sprite:type())
+end
+
+--@api-stub: LSprite:typeOf
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("typeOf LSprite = " .. tostring(sprite:typeOf("LSprite")))
+end

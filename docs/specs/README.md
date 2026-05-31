@@ -59,7 +59,7 @@ Regen workflow:
 
 ## Module index
 
-56 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md Â§ Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
+57 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md Â§ Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
 
 **Plugin tier** column reflects the P1 evaluation matrix in `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` Â§ 5. Values:
 
@@ -170,7 +170,7 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG â�
 | `devtools`    | [devtools.md](devtools.md)       | In-process logger, frame profiler, rolling stats, hot-reload file watcher (`lurek.devtools.*`). | â€”           |
 | `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | â€”           |
 
-> Total module specs: **56** â€” one row per `*.md` file in `docs/specs/` excluding `README.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
+> Total module specs: **57** â€” one row per `*.md` file in `docs/specs/` excluding `README.md`.
 
 ---
 

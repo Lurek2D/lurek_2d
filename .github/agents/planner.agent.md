@@ -1,4 +1,4 @@
-﻿---
+---
 name: Planner
 description: "Build concrete execution plans, roadmaps, and backlogs. Research facts, analyze telemetry data, and discover new opportunities. Turn large requests into ordered phase graphs. Do not implement work."
 

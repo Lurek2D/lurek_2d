@@ -294,6 +294,37 @@ mod render_tests {
             );
         }
     }
+
+    #[test]
+    fn repeated_render_helpers_keep_composed_output_stable() {
+        let mut terminal = Terminal::new(6, 3);
+        terminal.set(
+            1,
+            1,
+            b'Z' as u32,
+            [0.8, 0.7, 0.2, 1.0],
+            [0.1, 0.1, 0.1, 1.0],
+        );
+        terminal.add_widget(Widget::new_panel(1, 1, 6, 3));
+        terminal.add_widget(Widget::new_button(2, 2, 3, 1, "OK"));
+
+        let first_commands = terminal.generate_render_commands(dummy_font(), 8.0, 16.0, 1.0);
+        let second_commands = terminal.generate_render_commands(dummy_font(), 8.0, 16.0, 1.0);
+        let first_debug: Vec<String> = first_commands.iter().map(|cmd| format!("{:?}", cmd)).collect();
+        let second_debug: Vec<String> = second_commands
+            .iter()
+            .map(|cmd| format!("{:?}", cmd))
+            .collect();
+        assert_eq!(first_debug, second_debug);
+
+        let first_image = terminal.draw_to_image(60, 30);
+        let second_image = terminal.draw_to_image(60, 30);
+        for y in [0, 15, 29] {
+            for x in [0, 20, 59] {
+                assert_eq!(first_image.get_pixel(x, y), second_image.get_pixel(x, y));
+            }
+        }
+    }
 }
 
 // â”€â”€ completion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

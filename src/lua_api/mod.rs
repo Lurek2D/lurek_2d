@@ -12,6 +12,7 @@ pub mod asset_api;
 /// Exposes the `lurek.audio` binding module.
 pub mod audio_api;
 /// Exposes the `lurek.automation` binding module.
+#[cfg(feature = "automation-plugin")]
 pub mod automation_api;
 /// Exposes shared callback registry helpers for Lua bindings.
 pub mod callback_registry;
@@ -33,6 +34,7 @@ pub mod dataframe_api;
 /// Exposes the `lurek.debugbridge` binding module.
 pub mod debugbridge_api;
 /// Exposes the `lurek.devtools` binding module.
+#[cfg(feature = "devtools-plugin")]
 pub mod devtools_api;
 /// Exposes the `lurek.dialog` binding module.
 pub mod dialog_api;
@@ -57,6 +59,7 @@ pub mod globe_api;
 /// Exposes the `lurek.grep` binding module.
 pub mod grep_api;
 /// Exposes the `lurek.flownet` binding module.
+#[cfg(feature = "flownet")]
 pub mod flownet_api;
 /// Exposes the `lurek.html` binding module.
 pub mod html_api;
@@ -103,6 +106,7 @@ pub mod patterns_api;
 /// Exposes the `lurek.physics` binding module.
 pub mod physics_api;
 /// Exposes the `lurek.pipeline` binding module.
+#[cfg(feature = "pipeline")]
 pub mod pipeline_api;
 /// Exposes the `lurek.procgen` binding module.
 pub mod procgen_api;
@@ -123,6 +127,7 @@ pub mod scene_api;
 /// Exposes the `lurek.serialize` binding module.
 pub mod serialize_api;
 /// Exposes the `lurek.spine` binding module.
+#[cfg(feature = "spine")]
 pub mod spine_api;
 /// Exposes the `lurek.sprite` binding module.
 pub mod sprite_api;

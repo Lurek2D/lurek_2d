@@ -17,6 +17,8 @@ pub mod large_map_renderer;
 pub mod ldtk;
 /// Procedural map generator using zones, groups, and scripted steps.
 pub mod mapgen;
+/// Shared map-generation model types extracted from `mapgen.rs`.
+pub mod mapgen_model;
 /// Polygon-region map for zone-based game maps.
 pub mod polygon_map;
 /// Render helpers converting tilemap data to `RenderCommand` sequences.
@@ -26,6 +28,10 @@ pub mod tile_walker;
 /// Core `TileMap` and `TileLayer` types.
 #[allow(clippy::module_inception)]
 pub mod tilemap;
+/// Tilemap collision helpers extracted from `tilemap.rs`.
+pub mod tilemap_collision;
+/// Tilemap reverse-index cache helpers extracted from `tilemap.rs`.
+pub mod tilemap_index;
 /// Tileset metadata and animation frame types.
 pub mod tileset;
 /// Tiled TMX XML format import. This module is publicly re-exported.

@@ -105,12 +105,12 @@ def _bound_functions(api_rs: Path) -> List[str]:
 
 
 def _spec_api_names(spec_path: Path) -> set[str]:
-    """Return function names appearing in the ## Lua API Reference section of a spec file."""
+    """Return function names appearing in the Lua API section of a spec file."""
     if not spec_path.exists():
         return set()
     text = spec_path.read_text(encoding="utf-8", errors="replace")
-    # Extract the Lua API Reference section only
-    m = re.search(r"## Lua API Reference(.*?)(?=\n## |\Z)", text, re.DOTALL)
+    # Extract the Lua API section only. Support both current and legacy heading names.
+    m = re.search(r"## Lua API Ref(?:erence)?(.*?)(?=\n## |\Z)", text, re.DOTALL)
     if not m:
         return set()
     section = m.group(1)
@@ -134,9 +134,10 @@ def _spec_api_names(spec_path: Path) -> set[str]:
             names.add(label.rsplit(".", 1)[1])
             continue
 
-        # Fallback: plain function label.
-        if label:
-            names.add(label)
+        # Ignore plain labels (for example type fields like `x`, `name`, `width`).
+        # Specs in this repository document callable API items as dotted functions
+        # (`lurek.module.fn`) or method labels (`Type:method`).
+        continue
 
     return names
 

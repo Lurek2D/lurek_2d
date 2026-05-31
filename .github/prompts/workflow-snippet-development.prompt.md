@@ -1,5 +1,6 @@
 ---
 description: "Run a full snippet-development workflow with module-level coverage gates and VS Code output generation."
+agent: "Content-Maker"
 ---
 # Workflow Snippet Development
 
@@ -28,7 +29,7 @@ description: "Run a full snippet-development workflow with module-level coverage
 5. Regenerate VS Code output with `python tools/snippets/gen_vscode_snippets.py`.
 6. Validate structure with `python tools/validate/validate_snippets.py`.
 7. Measure module-level coverage with `python tools/audit/snippet_coverage.py`.
-8. Update docs/changelog sync artifacts for touched scope.
+8. Update docs sync artifacts for touched scope.
 
 ## Success Criteria
 - [ ] The workflow outcome is complete: Drive one snippet batch from scoped request to validated completion.

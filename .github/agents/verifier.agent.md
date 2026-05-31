@@ -1,4 +1,4 @@
-﻿---
+---
 name: Verifier
 description: "Final quality gate. Review diffs, specs, CAG, and architecture for correctness, risk, and test coverage. Profile performance, detect regressions, and accept or reject a completed phase."
 

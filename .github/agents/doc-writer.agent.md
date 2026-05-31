@@ -1,4 +1,4 @@
-﻿---
+---
 name: Doc-Writer
 description: "Write and maintain all Lurek2D docs including user guides, specs, API reference, and wiki. Detect and fix docs-spec drift. Do not implement engine code."
 

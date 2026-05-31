@@ -12,11 +12,13 @@
 //! It anchors gameplay-critical map behavior in one consistent and testable runtime surface.
 
 use super::mapgen::MapOrientation;
+use super::tilemap_collision::sweep_aabb_vs_aabb;
+use super::tilemap_index::remove_pos_from_gid;
 use super::tileset::TileSet;
 use crate::log_msg;
 use crate::math::{Rect, Vec2};
 use crate::runtime::log_messages::{TM01_TILEMAP_INIT, TM02_TILESET_ADD, TM03_LAYER_ADD};
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 /// A single tile layer with per-tile GID and optional per-tile tint data.
 #[derive(Debug, Clone)]
@@ -100,6 +102,10 @@ pub struct TileMap {
     viewport: Option<Rect>,
     /// Per-GID animation state `(frame_index, elapsed_ms)`.
     anim_timers: HashMap<u32, (usize, f32)>,
+    /// Visible animated GIDs tracked for viewport/dirty-driven updates.
+    visible_animated_gids: Vec<u32>,
+    /// Marks whether visible animated GIDs must be rebuilt before the next update.
+    anim_visibility_dirty: bool,
 }
 impl TileMap {
     /// Create an empty `TileMap` with the given tile dimensions and chunk size.
@@ -122,12 +128,20 @@ impl TileMap {
             tile_type_index_cache: Vec::new(),
             viewport: None,
             anim_timers: HashMap::new(),
+            visible_animated_gids: Vec::new(),
+            anim_visibility_dirty: true,
         }
     }
+
+    fn mark_anim_visibility_dirty(&mut self) {
+        self.anim_visibility_dirty = true;
+    }
+
     /// Append a tileset and take ownership; called during map load or runtime attachment.
     pub fn add_tileset(&mut self, ts: TileSet) {
         log_msg!(debug, TM02_TILESET_ADD);
         self.tilesets.push(ts);
+        self.mark_anim_visibility_dirty();
     }
     /// Return the tileset at `index`, or `None` when out of range.
     pub fn get_tileset(&self, index: usize) -> Option<&TileSet> {
@@ -142,6 +156,7 @@ impl TileMap {
         log_msg!(debug, TM03_LAYER_ADD, "{}", name);
         self.layers.push(TileLayer::new(name, width, height));
         self.tile_type_index_cache.push(HashMap::new());
+        self.mark_anim_visibility_dirty();
         self.layers.len() - 1
     }
     /// Return the total number of layers.
@@ -156,6 +171,7 @@ impl TileMap {
     pub fn set_layer_visible(&mut self, idx: usize, visible: bool) {
         if let Some(layer) = self.layers.get_mut(idx) {
             layer.visible = visible;
+            self.mark_anim_visibility_dirty();
         }
     }
     /// Return `true` when layer `idx` is visible; returns `false` when out of range.
@@ -172,6 +188,16 @@ impl TileMap {
     pub fn get_layer_color(&self, idx: usize) -> [f32; 4] {
         self.layers.get(idx).map_or([0.0; 4], |l| l.tint)
     }
+
+    /// Return the effective tint for a tile by combining layer tint with optional per-tile tint override.
+    /// Returns transparent black when layer or tile coordinates are out of range.
+    pub(crate) fn effective_tile_tint(&self, layer: usize, x: u32, y: u32) -> [f32; 4] {
+        self.layers
+            .get(layer)
+            .and_then(|l| l.index(x, y).map(|idx| l.tile_tints[idx].unwrap_or(l.tint)))
+            .unwrap_or([0.0, 0.0, 0.0, 0.0])
+    }
+
     /// Set the world-space draw offset `(ox, oy)` of layer `idx`; no-op when out of range.
     pub fn set_layer_offset(&mut self, idx: usize, ox: f32, oy: f32) {
         if let Some(layer) = self.layers.get_mut(idx) {
@@ -212,6 +238,7 @@ impl TileMap {
                         layer_index.entry(gid).or_default().push((x, y));
                     }
                 }
+                self.mark_anim_visibility_dirty();
             }
         }
     }
@@ -255,6 +282,7 @@ impl TileMap {
                     layer_index.insert(gid, positions);
                 }
             }
+            self.mark_anim_visibility_dirty();
         }
     }
     /// Return a copy of the GID-to-positions index for `layer`; empty map when out of range.
@@ -274,6 +302,7 @@ impl TileMap {
     /// Set the active camera viewport rect; enables culled render-command generation.
     pub fn set_viewport(&mut self, x: f32, y: f32, w: f32, h: f32) {
         self.viewport = Some(Rect::new(x, y, w, h));
+        self.mark_anim_visibility_dirty();
     }
     /// Return the viewport as `(x, y, w, h)`, or `None` when not set.
     pub fn get_viewport(&self) -> Option<(f32, f32, f32, f32)> {
@@ -281,22 +310,23 @@ impl TileMap {
     }
     /// Advance all GID animation timers by `dt` seconds; updates frame indices for each animated tileset.
     pub fn update(&mut self, dt: f32) {
+        if self.anim_visibility_dirty {
+            self.rebuild_visible_animated_gids();
+        }
         let dt_ms = dt * 1000.0;
-        for ts in &self.tilesets {
-            let first_gid = ts.get_first_gid();
-            let count = ts.get_tile_count();
-            for local_id in 0..count {
-                if let Some(frames) = ts.get_animation(local_id) {
-                    if frames.is_empty() {
-                        continue;
-                    }
-                    let gid = first_gid + local_id;
-                    let (frame_idx, elapsed) = self.anim_timers.entry(gid).or_insert((0, 0.0));
-                    *elapsed += dt_ms;
-                    while *elapsed >= frames[*frame_idx].duration_ms {
-                        *elapsed -= frames[*frame_idx].duration_ms;
-                        *frame_idx = (*frame_idx + 1) % frames.len();
-                    }
+        for &gid in &self.visible_animated_gids {
+            if let Some((ts_idx, local_id)) = self.resolve_gid(gid) {
+                let Some(frames) = self.tilesets[ts_idx].get_animation(local_id) else {
+                    continue;
+                };
+                if frames.is_empty() {
+                    continue;
+                }
+                let (frame_idx, elapsed) = self.anim_timers.entry(gid).or_insert((0, 0.0));
+                *elapsed += dt_ms;
+                if *elapsed >= frames[*frame_idx].duration_ms {
+                    *elapsed -= frames[*frame_idx].duration_ms;
+                    *frame_idx = (*frame_idx + 1) % frames.len();
                 }
             }
         }
@@ -345,6 +375,78 @@ impl TileMap {
     /// Set the map orientation. This function is part of the public API.
     pub fn set_orientation(&mut self, orientation: MapOrientation) {
         self.orientation = orientation;
+        self.mark_anim_visibility_dirty();
+    }
+
+    fn tile_origin_for_visibility(&self, tx: u32, ty: u32) -> (f32, f32) {
+        match self.orientation {
+            MapOrientation::TopDown | MapOrientation::SideView => self.tile_to_world(tx, ty),
+            MapOrientation::Isometric => {
+                let pos = super::coords::to_screen_iso(
+                    tx as f32,
+                    ty as f32,
+                    self.tile_width as f32,
+                    self.tile_height as f32,
+                );
+                (pos.x, pos.y)
+            }
+            MapOrientation::Hexagonal => {
+                let pos = super::coords::to_screen_hex(tx as i32, ty as i32, self.tile_height as f32 * 0.5);
+                (pos.x, pos.y)
+            }
+        }
+    }
+
+    fn tile_visible_in_viewport(&self, tx: u32, ty: u32) -> bool {
+        let Some(viewport) = self.viewport else {
+            return true;
+        };
+        let (x, y) = self.tile_origin_for_visibility(tx, ty);
+        x + self.tile_width as f32 >= viewport.x
+            && x <= viewport.x + viewport.width
+            && y + self.tile_height as f32 >= viewport.y
+            && y <= viewport.y + viewport.height
+    }
+
+    fn rebuild_visible_animated_gids(&mut self) {
+        let mut visible = BTreeSet::new();
+        for (layer_idx, layer) in self.layers.iter().enumerate() {
+            if !layer.visible {
+                continue;
+            }
+            for y in 0..layer.height {
+                for x in 0..layer.width {
+                    let gid = self.get_tile(layer_idx, x, y);
+                    if gid == 0 || !self.tile_visible_in_viewport(x, y) {
+                        continue;
+                    }
+                    let Some((ts_idx, local_id)) = self.resolve_gid(gid) else {
+                        continue;
+                    };
+                    if self.tilesets[ts_idx].get_animation(local_id).is_some() {
+                        visible.insert(gid);
+                    }
+                }
+            }
+        }
+        self.visible_animated_gids = visible.into_iter().collect();
+        self.anim_visibility_dirty = false;
+    }
+
+    /// Resolve animated tiles to the currently active frame GID used for rendering.
+    /// Returns the original GID when the tile is static, unknown, or has no animation frames.
+    pub(crate) fn render_gid(&self, gid: u32) -> u32 {
+        let Some((ts_idx, local_id)) = self.resolve_gid(gid) else {
+            return gid;
+        };
+        let Some(frames) = self.tilesets[ts_idx].get_animation(local_id) else {
+            return gid;
+        };
+        if frames.is_empty() {
+            return gid;
+        }
+        let frame_idx = self.anim_timers.get(&gid).map(|(idx, _)| *idx).unwrap_or(0);
+        self.tilesets[ts_idx].get_first_gid() + frames[frame_idx % frames.len()].tile_id
     }
     /// Resolve global GID `gid` to a `(tileset_index, local_id)` pair; returns `None` for GID `0` or unknown GIDs.
     fn resolve_gid(&self, gid: u32) -> Option<(usize, u32)> {
@@ -631,78 +733,6 @@ impl TileMap {
         }
         img
     }
-    /// Build a flat `RenderCommand` list for all visible layers using the debug color palette and `offset`.
-    pub fn build_render_commands(
-        &self,
-        offset_x: f32,
-        offset_y: f32,
-    ) -> Vec<crate::render::renderer::RenderCommand> {
-        use crate::render::renderer::{DrawMode, RenderCommand};
-        let mut cmds: Vec<RenderCommand> = Vec::new();
-        if self.layers.is_empty() {
-            return cmds;
-        }
-        let lw = self.layers[0].width;
-        let lh = self.layers[0].height;
-        let tw = self.tile_width as f32;
-        let th = self.tile_height as f32;
-        for (li, layer) in self.layers.iter().enumerate() {
-            if !layer.visible {
-                continue;
-            }
-            let w = layer.width.min(lw);
-            let h = layer.height.min(lh);
-            for y in 0..h {
-                for x in 0..w {
-                    let idx = layer.index(x, y).unwrap_or(0);
-                    let gid = layer.tiles[idx];
-                    if gid == 0 && li > 0 {
-                        continue;
-                    }
-                    let (r, g, b): (f32, f32, f32) = if gid >= 10 {
-                        match gid {
-                            10 => (200.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0),
-                            11 => (50.0 / 255.0, 50.0 / 255.0, 200.0 / 255.0),
-                            12 => (200.0 / 255.0, 200.0 / 255.0, 50.0 / 255.0),
-                            _ => (1.0, 1.0, 1.0),
-                        }
-                    } else {
-                        match gid {
-                            1 => (80.0 / 255.0, 160.0 / 255.0, 80.0 / 255.0),
-                            2 => (60.0 / 255.0, 120.0 / 255.0, 60.0 / 255.0),
-                            _ => (40.0 / 255.0, 40.0 / 255.0, 40.0 / 255.0),
-                        }
-                    };
-                    let tint = layer.tile_tints[idx].unwrap_or(layer.tint);
-                    cmds.push(RenderCommand::SetColor(
-                        r * tint[0],
-                        g * tint[1],
-                        b * tint[2],
-                        tint[3],
-                    ));
-                    if gid >= 10 {
-                        let cx = offset_x + x as f32 * tw + tw * 0.5;
-                        let cy = offset_y + y as f32 * th + th * 0.5;
-                        cmds.push(RenderCommand::Circle {
-                            mode: DrawMode::Fill,
-                            x: cx,
-                            y: cy,
-                            r: 6.0,
-                        });
-                    } else {
-                        cmds.push(RenderCommand::Rectangle {
-                            mode: DrawMode::Fill,
-                            x: offset_x + x as f32 * tw,
-                            y: offset_y + y as f32 * th,
-                            w: tw,
-                            h: th,
-                        });
-                    }
-                }
-            }
-        }
-        cmds
-    }
     /// Render world-space highlight points and a grid overlay into an `ImageData` of `img_width × img_height`.
     pub fn draw_with_highlight_to_image(
         &self,
@@ -814,82 +844,4 @@ impl TileMap {
         }
         grid
     }
-}
-/// Remove position `(x, y)` from the GID entry in `layer_index`; removes the key entirely when the list becomes empty.
-fn remove_pos_from_gid(layer_index: &mut HashMap<u32, Vec<(u32, u32)>>, gid: u32, x: u32, y: u32) {
-    if let Some(list) = layer_index.get_mut(&gid) {
-        if let Some(pos_idx) = list.iter().position(|&(px, py)| px == x && py == y) {
-            list.swap_remove(pos_idx);
-        }
-        if list.is_empty() {
-            layer_index.remove(&gid);
-        }
-    }
-}
-/// Swept AABB-vs-AABB narrow-phase test; returns a `SweepResult` when the expanded target is hit in `[0, 1)`, or `None`.
-fn sweep_aabb_vs_aabb(
-    mover: Rect,
-    dx: f32,
-    dy: f32,
-    target: Rect,
-    tile_x: u32,
-    tile_y: u32,
-) -> Option<SweepResult> {
-    let ex = Rect::new(
-        target.x - mover.width,
-        target.y - mover.height,
-        target.width + mover.width,
-        target.height + mover.height,
-    );
-    let origin_x = mover.x;
-    let origin_y = mover.y;
-    let (t_near_x, t_far_x) = if dx != 0.0 {
-        let inv = 1.0 / dx;
-        let t1 = (ex.x - origin_x) * inv;
-        let t2 = (ex.x + ex.width - origin_x) * inv;
-        if t1 < t2 {
-            (t1, t2)
-        } else {
-            (t2, t1)
-        }
-    } else {
-        if origin_x < ex.x || origin_x >= ex.x + ex.width {
-            return None;
-        }
-        (f32::NEG_INFINITY, f32::INFINITY)
-    };
-    let (t_near_y, t_far_y) = if dy != 0.0 {
-        let inv = 1.0 / dy;
-        let t1 = (ex.y - origin_y) * inv;
-        let t2 = (ex.y + ex.height - origin_y) * inv;
-        if t1 < t2 {
-            (t1, t2)
-        } else {
-            (t2, t1)
-        }
-    } else {
-        if origin_y < ex.y || origin_y >= ex.y + ex.height {
-            return None;
-        }
-        (f32::NEG_INFINITY, f32::INFINITY)
-    };
-    let t_near = t_near_x.max(t_near_y);
-    let t_far = t_far_x.min(t_far_y);
-    if t_near >= t_far || t_far <= 0.0 || t_near >= 1.0 {
-        return None;
-    }
-    let t = t_near.max(0.0);
-    let normal = if t_near_x > t_near_y {
-        Vec2::new(if dx > 0.0 { -1.0 } else { 1.0 }, 0.0)
-    } else {
-        Vec2::new(0.0, if dy > 0.0 { -1.0 } else { 1.0 })
-    };
-    let contact = Vec2::new(origin_x + dx * t, origin_y + dy * t);
-    Some(SweepResult {
-        contact_point: contact,
-        normal,
-        tile_x,
-        tile_y,
-        t,
-    })
 }

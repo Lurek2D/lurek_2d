@@ -52,6 +52,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Set, Tuple
 
+
+def _configure_stdout_utf8() -> None:
+    """Avoid Windows cp125x encode failures for Unicode report output."""
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        # Keep default streams when reconfigure is unavailable.
+        pass
+
 # ── Paths ─────────────────────────────────────────────────────────────────────
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -661,6 +671,7 @@ def format_suggest(data: dict) -> str:
 
 
 def main() -> int:
+    _configure_stdout_utf8()
     parser = argparse.ArgumentParser(
         description="Lurek2D unit-test API coverage analyser.",
         formatter_class=argparse.RawDescriptionHelpFormatter,

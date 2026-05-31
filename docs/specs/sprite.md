@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Manages 2D sprites, JSON atlases, animation sheets, and nine-slice panels.
+- Manages 2D sprites, JSON atlases, animation sheets, nine-slice panels, and lit-sprite normal-map state.
 - Supports sprite batching.
 
 ## General Info
@@ -19,11 +19,15 @@
 
 This module turns raw textures into reusable sprites, sheets, and UI panels. It supports named texture atlases parsed from TexturePacker and Aseprite JSON data, mapping semantic names to specific regions while handling rotation and flip flags. This allows scripts to query packed sprites by name instead of raw coordinates.
 
+Atlas parsing now shares the engine's common Aseprite loader with the animation module. This keeps frame-shape validation and malformed-export error behavior aligned across sprite-atlas import and Aseprite animation ingest, instead of maintaining separate parsers for the same source format.
+
 For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
 
 Row and column extraction on `SpriteSheet` are implemented with allocation-light internal paths (row slices and column iterators), while Lua still receives the same table-shaped frame arrays via `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`.
 
 To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
+
+Individual sprites can also carry optional normal-map texture state and a strength scalar for lit-sprite workflows. This extends the sprite data model without changing atlas, sheet, or batch APIs for unlit content.
 
 The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
 
@@ -41,6 +45,7 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 - This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
 - It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
 - Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
+- Aseprite atlas parsing delegates to the shared loader in `src/animation/aseprite.rs`, keeping frame validation and error paths consistent with the animation subsystem.
 - Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
 - Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
 - The file is the naming and region-mapping layer for packed sprite content.
@@ -61,6 +66,7 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 ### sprite.rs
 
 - This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
+- It also stores optional normal-map texture identity and intensity for lit-sprite rendering paths.
 - It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
 - The type is the simplest textured presentation unit in the sprite subsystem.
 
@@ -88,6 +94,7 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 - `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
+- `lurek.sprite.newSprite(x, y, w, h) -> LSprite`: Creates a sprite instance with position and source-rect values.
 - `lurek.sprite.parseAsepriteAtlas(json_str) -> LSpriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 - `lurek.sprite.parseAtlas(json_str) -> LSpriteAtlas`: Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
 
@@ -292,3 +299,22 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 ##### Methods
 
 - No documented methods.
+
+#### LSprite Type
+
+- Lua-visible sprite wrapper for per-instance transform and optional normal-map state.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSprite:clearNormalMap() -> nil`: Clears any normal map assignment from this sprite.
+- `LSprite:getNormalIntensity() -> number`: Returns the current normal-map lighting intensity scalar.
+- `LSprite:getNormalMap() -> integer`: Returns the normal-map texture id, or nil if unset.
+- `LSprite:getPosition() -> table`: Returns the sprite position as a table with x/y values.
+- `LSprite:hasNormalMap() -> boolean`: Returns true when a normal map is assigned.
+- `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map lighting intensity scalar.
+- `LSprite:setNormalMap(texture_id) -> nil`: Assigns a normal-map texture id for lit-sprite workflows.
+- `LSprite:setPosition(x, y) -> nil`: Sets the sprite world position.

@@ -8,6 +8,10 @@ use super::charts_api;
 use super::devtools_api;
 #[cfg(feature = "flownet")]
 use super::flownet_api;
+#[cfg(feature = "pipeline")]
+use super::pipeline_api;
+#[cfg(feature = "spine")]
+use super::spine_api;
 use super::lua_module::ModuleEntry;
 use super::{
     agent_api, ai_api, animation_api, asset_api, audio_api, binary_api, camera_api, color_api, compute_api, cursor_api,
@@ -15,8 +19,8 @@ use super::{
     event_api, filesystem_api, font_api, globe_api, grep_api, html_api, i18n_api, image_api,
     input_api, layout_api, learning_api, light_api, log_api, mapblock_api, math_api, midi_api,
     minimap_api, mods_api, network_api, overlay_api, parallax_api, particle_api, pathfind_api,
-    patterns_api, physics_api, pipeline_api, procgen_api, province_api, raycaster_api, render_api,
-    repl_api, save_api, scene_api, serialize_api, spine_api, sprite_api, system_api, terminal_api,
+    patterns_api, physics_api, procgen_api, province_api, raycaster_api, render_api,
+    repl_api, save_api, scene_api, serialize_api, sprite_api, system_api, terminal_api,
     thread_api, tilemap_api, timer_api, tween_api, ui_api, validator_api, visibility_api,
     window_api,
 };
@@ -89,6 +93,7 @@ static MODULES: &[ModuleEntry] = &[
     gated!(scene_api, scene),
     gated!(compute_api, compute),
     gated!(raycaster_api, raycaster),
+    #[cfg(feature = "spine")]
     gated!(spine_api, spine),
     gated!(procgen_api, procgen),
     gated!(network_api, network),
@@ -97,6 +102,7 @@ static MODULES: &[ModuleEntry] = &[
     gated!(pathfind_api, pathfind),
     gated!(layout_api, layout),
     gated!(terminal_api, terminal),
+    #[cfg(feature = "pipeline")]
     gated!(pipeline_api, pipeline),
     always!(patterns_api),
     gated!(globe_api, globe),

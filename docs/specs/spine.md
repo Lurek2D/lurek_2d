@@ -8,11 +8,13 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/spine/`
+- Feature gate: `spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
 - Lua API surface: `4` functions, `5` types, `34` methods
 - Rust test path(s): tests/rust/unit/spine_tests.rs
 - Lua test path(s): tests/lua/unit/test_spine_core_unit.lua
+- Bench path(s): benches/spine_update_world_transforms.rs
 
 ## Summary
 
@@ -22,7 +24,11 @@ Skins and slots isolate visual assets from bone hierarchies. Slots are attached 
 
 Per-frame pose updates are designed to avoid cloning full animation or IK constraint objects in runtime hot paths. Animation sampling and IK solving operate on borrowed indexed data, so update loops scale with rig size without extra heap churn from repeated structural clones.
 
+The module is available only when the `spine` feature is enabled. That feature gate applies to the Rust module, Lua bindings, and the dedicated `spine_update_world_transforms` benchmark that tracks hierarchy-update cost for the public `updateWorldTransforms` path.
+
 The module also integrates rendering and diagnostic layers. It flattens rig poses into generic draw commands, letting the renderer paint attachments without skeleton awareness. The system parses standard Spine and DragonBones JSON rig files (bones, slots, skins, and basic timelines) and provides software visualizers that render skeleton linkages to CPU images for debug inspection.
+
+Current public behavior is covered through the Lua-facing spine test suite, including construction, hierarchy updates, animation playback helpers, and render-adjacent debug outputs, while the benchmark focuses specifically on steady-state world-transform recomputation.
 
 ## Imports
 
@@ -51,6 +57,7 @@ The module also integrates rendering and diagnostic layers. It flattens rig pose
 
 - This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
 - It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
+- The module is compiled only behind the `spine` feature gate, matching the optional nature of skeletal runtime support.
 - At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
 
 ### render.rs
@@ -67,6 +74,7 @@ The module also integrates rendering and diagnostic layers. It flattens rig pose
 - Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
 - Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
 - World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
+- A dedicated no-harness benchmark measures repeated `update_world_transforms` runs against this hierarchy-update path.
 - Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
 - The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
 - It is where skeletal state becomes animated pose over time.

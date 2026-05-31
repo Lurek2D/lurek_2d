@@ -31,6 +31,16 @@ import re
 import sys
 from pathlib import Path
 
+
+def _configure_stdout_utf8() -> None:
+    """Avoid Windows cp125x encode failures when reports print Unicode glyphs."""
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        # Keep default streams when reconfigure is unavailable.
+        pass
+
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 RUST_INPUT = WORKSPACE_ROOT / "logs" / "data" / "rust_api_data.json"
 LUA_INPUT = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
@@ -635,6 +645,7 @@ def generate_report(rust_data: dict, lua_data: dict) -> str:
 
 
 def main() -> int:
+    _configure_stdout_utf8()
     from argparse import RawDescriptionHelpFormatter
     epilog = """
 Examples:

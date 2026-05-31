@@ -1,4 +1,4 @@
-﻿---
+---
 name: Manager
 description: "Orchestrator of the workflow. The *only* agent that has subagents. Manager does not do the work itself, but routes it to specialists."
 

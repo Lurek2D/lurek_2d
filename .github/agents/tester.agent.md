@@ -1,4 +1,4 @@
-﻿---
+---
 name: Tester
 description: "Write and run Lurek2D tests across Lua and Rust layers under Lua-first rules. Write adversarial negative tests and security test cases. Do not fix production code."
 

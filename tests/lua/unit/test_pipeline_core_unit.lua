@@ -21,25 +21,9 @@ describe("lurek.pipeline module exists", function()
         expect_type("table", lurek.pipeline)
     end)
 
-    -- @covers lurek.task_graph
-    it("lurek.task_graph is a table", function()
-        expect_type("table", lurek.task_graph)
-    end)
-
-    -- @covers lurek.task_graph
-    -- @covers lurek.pipeline
-    it("task_graph namespace aliases pipeline table", function()
-        expect_true(lurek.task_graph == lurek.pipeline)
-    end)
-
     -- @covers lurek.pipeline.newStep
     it("has newStep factory", function()
         expect_type("function", lurek.pipeline.newStep)
-    end)
-
-    -- @covers lurek.task_graph.newStep
-    it("task_graph has newStep factory", function()
-        expect_type("function", lurek.task_graph.newStep)
     end)
 
     -- @covers lurek.pipeline.newPipeline
@@ -47,19 +31,9 @@ describe("lurek.pipeline module exists", function()
         expect_type("function", lurek.pipeline.newPipeline)
     end)
 
-    -- @covers lurek.task_graph.newPipeline
-    it("task_graph has newPipeline factory", function()
-        expect_type("function", lurek.task_graph.newPipeline)
-    end)
-
     -- @covers lurek.pipeline.fromTable
     it("has fromTable factory", function()
         expect_type("function", lurek.pipeline.fromTable)
-    end)
-
-    -- @covers lurek.task_graph.fromTable
-    it("task_graph has fromTable factory", function()
-        expect_type("function", lurek.task_graph.fromTable)
     end)
 end)
 
@@ -850,6 +824,48 @@ describe("pipeline regression coverage", function()
         expect_false(pipeline:isRunning())
         expect_equal("first", seen[1])
         expect_equal("second", seen[2])
+    end)
+
+    -- @covers LPipeline:addStep
+    -- @covers LPipeline:isRunning
+    -- @covers LPipeline:runAsync
+    -- @covers LPipeline:update
+    -- @covers LPipelineStep:dependsOn
+    -- @covers lurek.pipeline.newPipeline
+    -- @covers lurek.pipeline.newStep
+    it("runAsync schedules independent_branches before a joined dependent step", function()
+        local seen = {}
+        local left = lurek.pipeline.newStep("left", function(ctx)
+            table.insert(seen, "left")
+            return 1
+        end)
+        local right = lurek.pipeline.newStep("right", function(ctx)
+            table.insert(seen, "right")
+            return 2
+        end)
+        local join = lurek.pipeline.newStep("join", function(ctx)
+            table.insert(seen, "join")
+            return 3
+        end)
+        join:dependsOn("left")
+        join:dependsOn("right")
+
+        local pipeline = lurek.pipeline.newPipeline("parallel_dag")
+        pipeline:addStep(left)
+        pipeline:addStep(right)
+        pipeline:addStep(join)
+        pipeline:runAsync({})
+
+        local ticks = 0
+        while pipeline:isRunning() and ticks < 10 do
+            pipeline:update(0.016)
+            ticks = ticks + 1
+        end
+
+        expect_false(pipeline:isRunning())
+        expect_true(table_contains(seen, "left"))
+        expect_true(table_contains(seen, "right"))
+        expect_equal("join", seen[#seen])
     end)
 
     -- @covers LPipeline:addStep

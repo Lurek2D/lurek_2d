@@ -5,6 +5,7 @@ description: >-
   skill guidelines and architecture, run structure + coverage audits, execute tests,
   fix problems without asking, and move to next file until entire folder is validated.
   100% real test coverage required — no placeholders or stubs.
+agent: "Tester"
 ---
 
 # Lua Test Validation Pipeline (Complete)
@@ -14,7 +15,7 @@ description: >-
 
 ## Inputs
 - Target path: entire `tests/lua/` or a scoped subdirectory/file.
-- Applicable architecture constraints from `docs/architecture/test-framework.md`.
+- Applicable architecture constraints from `docs/architecture/quality-assurance.md`.
 - Current tester skill marker and integration rules.
 
 ## Steps
@@ -46,7 +47,7 @@ For each test file:
 
 1. **Read & Understand**
    - Determine test type: feature test, adversarial probe, negative case, or integration test
-   - Cross-check file against [docs/specs](../../docs/architecture/test-framework.md) test-layer rules
+  - Cross-check file against [docs/specs](../../docs/architecture/quality-assurance.md) test-layer rules
    - Verify test location matches Lua-first policy: lurek.*-reachable behavior lives here, Rust-only internals belong in tests/rust/
 
 2. **Validate Structure (First Audit)**

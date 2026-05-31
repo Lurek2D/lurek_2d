@@ -1,4 +1,4 @@
-﻿---
+---
 name: Lua-Designer
 description: "Full owner of the lurek.* API: src/lua_api/ docstrings, content/examples/ API coverage files, generator pipeline, and the generated docs/api/lurek.lua artifact."
 

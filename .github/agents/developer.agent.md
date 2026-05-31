@@ -1,4 +1,4 @@
-﻿---
+---
 name: Developer
 description: "Write and fix Rust engine code across all subsystems: general runtime, renderer, physics, audio, and assets. Find runtime root causes. Do not own lurek.* API design."
 
@@ -26,7 +26,6 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/k
 - Rust source diff.
 - Test/validation updates for the touched behavior.
 - docs/specs/<module>.md update if contract changes.
-- docs/CHANGELOG.md entry when policy requires it.
 - Command results proving the gate passed.
 - Symptom summary: root cause, file, line evidence.
 - Deterministic repro + next-fix direction when diagnosing.

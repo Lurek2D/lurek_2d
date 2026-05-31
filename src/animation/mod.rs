@@ -20,6 +20,7 @@ pub mod frame;
 /// Conversion from frames to render commands.
 pub mod render;
 /// Optional Spine integration bridge.
+#[cfg(feature = "spine")]
 pub mod spine_bridge;
 /// Animation state machine and transition rules.
 pub mod state_machine;
@@ -45,6 +46,7 @@ pub use frame::{AnimFrame, AnimationFrame};
 /// Rendering parameters for animation draw commands.
 pub use render::AnimRenderParams;
 /// Spine integration entry point.
+#[cfg(feature = "spine")]
 pub use spine_bridge::SpineAnimBridge;
 /// State machine configuration, conditions, and transitions.
 pub use state_machine::{

@@ -19,6 +19,7 @@ use super::text_utils::{byte_index, char_count, truncate_chars};
 use super::widget::{BorderStyle, Widget, WidgetKind};
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::FontKey;
+use std::cell::RefCell;
 
 /// Maximum column count accepted by `Terminal::new` and `resize`.
 pub(crate) const MAX_COLS: usize = 512;
@@ -268,7 +269,7 @@ fn insert_with_limit(
 }
 
 /// Main terminal state machine: grid, widgets, scrollback, command history, and focus tracking.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Terminal {
     /// Number of columns in the active grid, clamped to `MAX_COLS`.
     cols: usize,
@@ -302,7 +303,34 @@ pub struct Terminal {
     cell_width_override: Option<f32>,
     /// Optional per-terminal cell height override in pixels.
     cell_height_override: Option<f32>,
+    /// Reusable composition buffer that reduces grid buffer clone churn across render paths.
+    render_scratch: RefCell<Vec<TCell>>,
 }
+
+impl Clone for Terminal {
+    fn clone(&self) -> Self {
+        Self {
+            cols: self.cols,
+            rows: self.rows,
+            grid: self.grid.clone(),
+            cursor_col: self.cursor_col,
+            cursor_row: self.cursor_row,
+            widgets: self.widgets.clone(),
+            focused: self.focused,
+            scrollback: self.scrollback.clone(),
+            scrollback_cap: self.scrollback_cap,
+            scrollback_offset: self.scrollback_offset,
+            cmd_history: self.cmd_history.clone(),
+            cmd_cursor: self.cmd_cursor,
+            clipboard: self.clipboard.clone(),
+            select_all_textbox: self.select_all_textbox,
+            cell_width_override: self.cell_width_override,
+            cell_height_override: self.cell_height_override,
+            render_scratch: RefCell::new(Vec::new()),
+        }
+    }
+}
+
 impl Terminal {
     /// Create a new `Terminal` with a blank grid of `cols`×`rows` cells, clamped to `MAX_COLS`/`MAX_ROWS`.
     pub fn new(cols: usize, rows: usize) -> Self {
@@ -325,6 +353,7 @@ impl Terminal {
             select_all_textbox: None,
             cell_width_override: None,
             cell_height_override: None,
+            render_scratch: RefCell::new(Vec::new()),
         }
     }
     /// Set cell at 1-based `(col, row)` to `ch` with `fg` and `bg` colors; silently ignored when out of bounds.
@@ -772,9 +801,8 @@ impl Terminal {
         self.focused = None;
         (false, Vec::new())
     }
-    /// Produce a flat cell buffer with all widgets composited on top of the raw grid.
-    pub(crate) fn render_cells(&self) -> Vec<TCell> {
-        let mut cells = self.grid.clone();
+    /// Compose widgets into `cells` on top of the base grid.
+    fn compose_widgets_into(&self, mut cells: &mut [TCell]) {
         for (index, widget) in self.widgets.iter().enumerate() {
             if !widget.base.visible {
                 continue;
@@ -972,8 +1000,16 @@ impl Terminal {
                 }
             }
         }
-        cells
     }
+
+    /// Run a closure against a reusable composed cell buffer to reduce grid buffer clone churn.
+    pub(crate) fn with_render_cells<R>(&self, f: impl FnOnce(&[TCell]) -> R) -> R {
+        let mut scratch = self.render_scratch.borrow_mut();
+        scratch.clone_from(&self.grid);
+        self.compose_widgets_into(scratch.as_mut_slice());
+        f(&scratch)
+    }
+
     /// Draw a `BorderStyle` frame with optional `title` into `cells` for `widget`.
     fn render_border(
         &self,
@@ -1167,84 +1203,85 @@ impl Terminal {
         cell_h: f32,
         font_key: FontKey,
     ) -> Vec<RenderCommand> {
-        let cells = self.render_cells();
-        let mut commands = Vec::new();
-        for row in 0..self.rows {
-            let row_cells = &cells[row * self.cols..(row + 1) * self.cols];
-            if row_cells.is_empty() {
-                continue;
+        self.with_render_cells(|cells| {
+            let mut commands = Vec::new();
+            for row in 0..self.rows {
+                let row_cells = &cells[row * self.cols..(row + 1) * self.cols];
+                if row_cells.is_empty() {
+                    continue;
+                }
+                let flush_bg_run = |commands: &mut Vec<RenderCommand>,
+                                    run_start: usize,
+                                    run_len: usize,
+                                    run_color: [f32; 4]| {
+                    if run_len > 0 && run_color[3] > 0.0 {
+                        commands.push(RenderCommand::SetColor(
+                            run_color[0],
+                            run_color[1],
+                            run_color[2],
+                            run_color[3],
+                        ));
+                        commands.push(RenderCommand::Rectangle {
+                            mode: crate::render::renderer::DrawMode::Fill,
+                            x: ox + run_start as f32 * cell_w,
+                            y: oy + row as f32 * cell_h,
+                            w: run_len as f32 * cell_w,
+                            h: cell_h,
+                        });
+                    }
+                };
+                let mut bg_start = 0usize;
+                let mut bg_color = row_cells[0].bg;
+                let mut bg_len = 0usize;
+                for (col, cell) in row_cells.iter().enumerate() {
+                    if col > 0 && cell.bg != bg_color {
+                        flush_bg_run(&mut commands, bg_start, bg_len, bg_color);
+                        bg_start = col;
+                        bg_color = cell.bg;
+                        bg_len = 0;
+                    }
+                    bg_len += 1;
+                }
+                flush_bg_run(&mut commands, bg_start, bg_len, bg_color);
+                let mut run_start = 0usize;
+                let mut run_color = row_cells[0].fg;
+                let mut run_text = String::new();
+                let flush_run = |commands: &mut Vec<RenderCommand>,
+                                 run_start: usize,
+                                 run_color: [f32; 4],
+                                 run_text: &mut String| {
+                    if !run_text.trim().is_empty() {
+                        commands.push(RenderCommand::SetColor(
+                            run_color[0],
+                            run_color[1],
+                            run_color[2],
+                            run_color[3],
+                        ));
+                        commands.push(RenderCommand::Print {
+                            font_key,
+                            text: run_text.clone(),
+                            x: ox + run_start as f32 * cell_w,
+                            y: oy + row as f32 * cell_h,
+                            scale: 1.0,
+                        });
+                    }
+                    run_text.clear();
+                };
+                for (col, cell) in row_cells.iter().enumerate() {
+                    if col > 0 && cell.fg != run_color {
+                        flush_run(&mut commands, run_start, run_color, &mut run_text);
+                        run_start = col;
+                        run_color = cell.fg;
+                    }
+                    run_text.push(char::from_u32(cell.ch).unwrap_or(' '));
+                }
+                flush_run(&mut commands, run_start, run_color, &mut run_text);
             }
-            let flush_bg_run = |commands: &mut Vec<RenderCommand>,
-                                run_start: usize,
-                                run_len: usize,
-                                run_color: [f32; 4]| {
-                if run_len > 0 && run_color[3] > 0.0 {
-                    commands.push(RenderCommand::SetColor(
-                        run_color[0],
-                        run_color[1],
-                        run_color[2],
-                        run_color[3],
-                    ));
-                    commands.push(RenderCommand::Rectangle {
-                        mode: crate::render::renderer::DrawMode::Fill,
-                        x: ox + run_start as f32 * cell_w,
-                        y: oy + row as f32 * cell_h,
-                        w: run_len as f32 * cell_w,
-                        h: cell_h,
-                    });
-                }
-            };
-            let mut bg_start = 0usize;
-            let mut bg_color = row_cells[0].bg;
-            let mut bg_len = 0usize;
-            for (col, cell) in row_cells.iter().enumerate() {
-                if col > 0 && cell.bg != bg_color {
-                    flush_bg_run(&mut commands, bg_start, bg_len, bg_color);
-                    bg_start = col;
-                    bg_color = cell.bg;
-                    bg_len = 0;
-                }
-                bg_len += 1;
+            if !commands.is_empty() {
+                commands.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
             }
-            flush_bg_run(&mut commands, bg_start, bg_len, bg_color);
-            let mut run_start = 0usize;
-            let mut run_color = row_cells[0].fg;
-            let mut run_text = String::new();
-            let flush_run = |commands: &mut Vec<RenderCommand>,
-                             run_start: usize,
-                             run_color: [f32; 4],
-                             run_text: &mut String| {
-                if !run_text.trim().is_empty() {
-                    commands.push(RenderCommand::SetColor(
-                        run_color[0],
-                        run_color[1],
-                        run_color[2],
-                        run_color[3],
-                    ));
-                    commands.push(RenderCommand::Print {
-                        font_key,
-                        text: run_text.clone(),
-                        x: ox + run_start as f32 * cell_w,
-                        y: oy + row as f32 * cell_h,
-                        scale: 1.0,
-                    });
-                }
-                run_text.clear();
-            };
-            for (col, cell) in row_cells.iter().enumerate() {
-                if col > 0 && cell.fg != run_color {
-                    flush_run(&mut commands, run_start, run_color, &mut run_text);
-                    run_start = col;
-                    run_color = cell.fg;
-                }
-                run_text.push(char::from_u32(cell.ch).unwrap_or(' '));
-            }
-            flush_run(&mut commands, run_start, run_color, &mut run_text);
-        }
-        if !commands.is_empty() {
-            commands.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
-        }
-        commands
+            commands
+        })
     }
     /// Apply `fg` and `bg` to every cell in the grid without changing character codepoints.
     pub fn set_default_colors(&mut self, fg: [f32; 4], bg: [f32; 4]) {

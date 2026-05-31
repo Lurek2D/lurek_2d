@@ -2,13 +2,83 @@
 
 use super::SharedState;
 use crate::image::{NineSliceInsets, TextureAtlas};
-use crate::math::Rect;
+use crate::math::{Rect, Vec2};
 use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
+use crate::sprite::sprite::Sprite;
 use crate::sprite::sprite_sheet::SpriteSheet;
 use mlua::prelude::*;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+/// Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
+pub struct LuaSprite {
+    inner: Sprite,
+}
+impl LuaUserData for LuaSprite {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setPosition --
+        /// Sets the sprite anchor position in pixels.
+        /// @param | x | number | World X position.
+        /// @param | y | number | World Y position.
+        methods.add_method_mut("setPosition", |_, this, (x, y): (f32, f32)| {
+            this.inner.set_position(x, y);
+            Ok(())
+        });
+        // -- getPosition --
+        /// Returns the sprite anchor position in pixels.
+        /// @return | number | World X position.
+        /// @return | number | World Y position.
+        methods.add_method("getPosition", |_, this, ()| {
+            Ok((this.inner.position.x, this.inner.position.y))
+        });
+        // -- setNormalMap --
+        /// Assigns the texture used as this sprite's normal map for lit sprite workflows.
+        /// @param | texture_id | integer | Texture handle used as the normal-map source.
+        methods.add_method_mut("setNormalMap", |_, this, texture_id: usize| {
+            this.inner.set_normal_map(texture_id);
+            Ok(())
+        });
+        // -- clearNormalMap --
+        /// Removes the assigned normal map from this sprite.
+        methods.add_method_mut("clearNormalMap", |_, this, ()| {
+            this.inner.clear_normal_map();
+            Ok(())
+        });
+        // -- hasNormalMap --
+        /// Returns whether the sprite currently has a normal map.
+        /// @return | boolean | True when a normal map is assigned.
+        methods.add_method("hasNormalMap", |_, this, ()| Ok(this.inner.has_normal_map()));
+        // -- getNormalMap --
+        /// Returns the assigned normal-map texture handle, or nil when absent.
+        /// @return | integer | Texture handle for the normal map.
+        methods.add_method("getNormalMap", |_, this, ()| Ok(this.inner.get_normal_map()));
+        // -- setNormalIntensity --
+        /// Sets the normal-map intensity used by lit sprite workflows.
+        /// @param | intensity | number | Non-negative intensity multiplier.
+        methods.add_method_mut("setNormalIntensity", |_, this, intensity: f32| {
+            this.inner.set_normal_intensity(intensity);
+            Ok(())
+        });
+        // -- getNormalIntensity --
+        /// Returns the normal-map intensity multiplier.
+        /// @return | number | Current non-negative intensity multiplier.
+        methods.add_method("getNormalIntensity", |_, this, ()| {
+            Ok(this.inner.get_normal_intensity())
+        });
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return | string | Always `"LSprite"`.
+        methods.add_method("type", |_, _, ()| Ok("LSprite"));
+        // -- typeOf --
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True if the object is the given type.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LSprite" || name == "LObject")
+        });
+    }
+}
 
 /// Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 /// named animation groups, and row/column slicing for sprite sheet textures.
@@ -389,6 +459,21 @@ impl LuaUserData for LuaAtlasPacker {
 /// Registers the `lurek.sprite` module, exposing sprite sheet and texture atlas constructors.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+
+    // -- newSprite --
+    /// Creates a lightweight sprite record with transform and optional normal-map metadata.
+    /// @param | texture_id | integer | Texture handle used by the sprite.
+    /// @param | x | number | Initial world X position.
+    /// @param | y | number | Initial world Y position.
+    /// @return | LSprite | A new sprite object.
+    tbl.set(
+        "newSprite",
+        lua.create_function(|lua, (texture_id, x, y): (usize, f32, f32)| {
+            lua.create_userdata(LuaSprite {
+                inner: Sprite::new(texture_id, Vec2::new(x, y)),
+            })
+        })?,
+    )?;
 
     // -- newSheet --
     /// Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.

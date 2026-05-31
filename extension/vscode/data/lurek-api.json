@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-05-31",
+  "generated": "2026-06-01",
   "modules": [
     {
       "name": "agent",
@@ -19304,7 +19304,7 @@
       "functions": [
         {
           "name": "newStep",
-          "fullPath": "lurek.task_graph.newStep",
+          "fullPath": "lurek.pipeline.newStep",
           "signature": "(name, [callback])",
           "description": "Creates a new pipeline step with the given name and an optional callback function.",
           "parameters": [
@@ -19328,7 +19328,7 @@
         },
         {
           "name": "newPipeline",
-          "fullPath": "lurek.task_graph.newPipeline",
+          "fullPath": "lurek.pipeline.newPipeline",
           "signature": "([name])",
           "description": "Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().",
           "parameters": [
@@ -19346,7 +19346,7 @@
         },
         {
           "name": "fromTable",
-          "fullPath": "lurek.task_graph.fromTable",
+          "fullPath": "lurek.pipeline.fromTable",
           "signature": "(def)",
           "description": "Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.",
           "parameters": [
@@ -25888,6 +25888,36 @@
       "name": "sprite",
       "description": "File: src/lua_api/sprite_api.rs",
       "functions": [
+        {
+          "name": "newSprite",
+          "fullPath": "lurek.sprite.newSprite",
+          "signature": "(texture_id, x, y)",
+          "description": "Creates a lightweight sprite record with transform and optional normal-map metadata.",
+          "parameters": [
+            {
+              "name": "texture_id",
+              "type": "integer",
+              "description": "Texture handle used by the sprite.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Initial world X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Initial world Y position.",
+              "optional": false
+            }
+          ],
+          "returns": "LSprite",
+          "returnType": "LSprite",
+          "isMethod": false,
+          "objectType": null
+        },
         {
           "name": "newSheet",
           "fullPath": "lurek.sprite.newSheet",
@@ -125273,6 +125303,156 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LSpring"
+        }
+      ]
+    },
+    {
+      "name": "LSprite",
+      "description": "Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.",
+      "methods": [
+        {
+          "name": "setPosition",
+          "fullPath": "LSprite:setPosition",
+          "signature": "(x, y)",
+          "description": "Sets the sprite anchor position in pixels.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y position.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "getPosition",
+          "fullPath": "LSprite:getPosition",
+          "signature": "()",
+          "description": "Returns the sprite anchor position in pixels.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "setNormalMap",
+          "fullPath": "LSprite:setNormalMap",
+          "signature": "(texture_id)",
+          "description": "Assigns the texture used as this sprite's normal map for lit sprite workflows.",
+          "parameters": [
+            {
+              "name": "texture_id",
+              "type": "integer",
+              "description": "Texture handle used as the normal-map source.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "clearNormalMap",
+          "fullPath": "LSprite:clearNormalMap",
+          "signature": "()",
+          "description": "Removes the assigned normal map from this sprite.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "hasNormalMap",
+          "fullPath": "LSprite:hasNormalMap",
+          "signature": "()",
+          "description": "Returns whether the sprite currently has a normal map.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "getNormalMap",
+          "fullPath": "LSprite:getNormalMap",
+          "signature": "()",
+          "description": "Returns the assigned normal-map texture handle, or nil when absent.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "setNormalIntensity",
+          "fullPath": "LSprite:setNormalIntensity",
+          "signature": "(intensity)",
+          "description": "Sets the normal-map intensity used by lit sprite workflows.",
+          "parameters": [
+            {
+              "name": "intensity",
+              "type": "number",
+              "description": "Non-negative intensity multiplier.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "getNormalIntensity",
+          "fullPath": "LSprite:getNormalIntensity",
+          "signature": "()",
+          "description": "Returns the normal-map intensity multiplier.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "type",
+          "fullPath": "LSprite:type",
+          "signature": "()",
+          "description": "Returns the type name of this object.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSprite"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LSprite:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this object matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSprite"
         }
       ]
     },

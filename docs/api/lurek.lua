@@ -2686,6 +2686,10 @@ LSkeletonAnimation = {}
 ---@class LAtlasPacker
 LAtlasPacker = {}
 
+--- Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
+---@class LSprite
+LSprite = {}
+
 --- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 ---@class LSpriteAtlas
 LSpriteAtlas = {}
@@ -22317,18 +22321,18 @@ function LPipelineStep:typeOf(name) end
 --- Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.
 ---@param definition table A table with optional name, errorMode, and a steps array.
 ---@return LPipeline The constructed pipeline.
-lurek.task_graph.fromTable = function(definition) end
+lurek.pipeline.fromTable = function(definition) end
 
 --- Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
 ---@param name? string Pipeline name (defaults to "pipeline").
 ---@return LPipeline The new pipeline object.
-lurek.task_graph.newPipeline = function(name) end
+lurek.pipeline.newPipeline = function(name) end
 
 --- Creates a new pipeline step with the given name and an optional callback function.
 ---@param name string Unique step name.
 ---@param callback? function Optional callback executed when this step runs.
 ---@return LPipelineStep The new step object.
-lurek.task_graph.newStep = function(name, callback) end
+lurek.pipeline.newStep = function(name, callback) end
 
 --- Classify a single point into a biome type based on its environmental parameters.
 ---@param height number Elevation value (0.0â€“1.0) of the terrain point.
@@ -25653,6 +25657,48 @@ function LAtlasPacker:type() end
 ---@return boolean True if the object is the given type.
 function LAtlasPacker:typeOf(name) end
 
+--- Removes the assigned normal map from this sprite.
+function LSprite:clearNormalMap() end
+
+--- Returns the normal-map intensity multiplier.
+---@return number Current non-negative intensity multiplier.
+function LSprite:getNormalIntensity() end
+
+--- Returns the assigned normal-map texture handle, or nil when absent.
+---@return number Texture handle for the normal map.
+function LSprite:getNormalMap() end
+
+--- Returns the sprite anchor position in pixels.
+---@return number World X position.
+---@return number World Y position.
+function LSprite:getPosition() end
+
+--- Returns whether the sprite currently has a normal map.
+---@return boolean True when a normal map is assigned.
+function LSprite:hasNormalMap() end
+
+--- Sets the normal-map intensity used by lit sprite workflows.
+---@param intensity number Non-negative intensity multiplier.
+function LSprite:setNormalIntensity(intensity) end
+
+--- Assigns the texture used as this sprite's normal map for lit sprite workflows.
+---@param texture_id number Texture handle used as the normal-map source.
+function LSprite:setNormalMap(texture_id) end
+
+--- Sets the sprite anchor position in pixels.
+---@param x number World X position.
+---@param y number World Y position.
+function LSprite:setPosition(x, y) end
+
+--- Returns the type name of this object.
+---@return string Always `"LSprite"`.
+function LSprite:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check.
+---@return boolean True if the object is the given type.
+function LSprite:typeOf(name) end
+
 --- Returns the total number of entries (sprite regions) in the atlas.
 ---@return number Entry count.
 function LSpriteAtlas:entryCount() end
@@ -25773,6 +25819,13 @@ lurek.sprite.newRPGMakerSheet = function(tw, th) end
 ---@param fh number Single frame height in pixels.
 ---@return LSpriteSheet A new sprite sheet object.
 lurek.sprite.newSheet = function(tw, th, fw, fh) end
+
+--- Creates a lightweight sprite record with transform and optional normal-map metadata.
+---@param texture_id number Texture handle used by the sprite.
+---@param x number Initial world X position.
+---@param y number Initial world Y position.
+---@return LSprite A new sprite object.
+lurek.sprite.newSprite = function(texture_id, x, y) end
 
 --- Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 ---@param json_str string Raw JSON content of the Aseprite export atlas file.

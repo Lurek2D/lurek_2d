@@ -10,9 +10,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/pipeline/`
-- Compatibility source path: `src/task_graph/` (incremental naming alias)
+- Feature gate: `pipeline`
 - Binding: `src/lua_api/pipeline_api.rs`
-- Namespace: `lurek.pipeline` (compat) and `lurek.task_graph` (preferred naming)
+- Namespace: `lurek.pipeline`
 - Lua API surface: `3` functions, `5` types, `63` methods
 - Rust test path(s): tests/rust/unit/pipeline_tests.rs
 - Lua test path(s): tests/lua/unit/test_pipeline_core_unit.lua
@@ -27,9 +27,11 @@ Individual steps carry granular configuration rules that govern their execution 
 
 Finally, the module supports both synchronous blocking execution and frame-driven asynchronous scheduling. Asynchronous pipelines run as lightweight coroutines that yield control, advancing step by step via update ticks. Execution tracks chronological progress, recording step durations, retry attempts, and detailed errors. Developers can customize the error mode to either abort on first failure or continue executing unaffected tasks.
 
-Internal runtime note: hot-path dependency checks and async scheduler readiness now use borrowed step-name paths (`&str`) to reduce transient `String` cloning during per-frame updates. Lua and public pipeline behavior remain unchanged.
+The runtime surface is feature-gated behind `pipeline`.
 
-Naming note: this phase introduces an incremental naming path under `task_graph` in Rust (`crate::task_graph`) and Lua (`lurek.task_graph`) while keeping existing `pipeline` paths fully compatible.
+Integration note: overlap with `automation` remains intentionally limited to composition at a higher level. This module still owns dependency-graph orchestration, while automation sequences remain a separate concern rather than being merged into the pipeline contract.
+
+Internal runtime note: hot-path dependency checks and async scheduler readiness now use borrowed step-name paths (`&str`) to reduce transient `String` cloning during per-frame updates. The public contract for parallel grouping and delayed-step readiness remains unchanged.
 
 ## Imports
 
@@ -51,6 +53,7 @@ Naming note: this phase introduces an incremental naming path under `task_graph`
 
 - Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
 - It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
+- The entry points are compiled only when the `pipeline` feature is enabled, matching the opt-in nature of the orchestration stack.
 - Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
 
 ### result.rs
@@ -64,6 +67,7 @@ Naming note: this phase introduces an incremental naming path under `task_graph`
 
 - Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
 - The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
+- Readiness reporting uses borrowed step-name references internally so async updates keep compatibility with existing scheduling semantics without cloning step identifiers each frame.
 - Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
 - Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 

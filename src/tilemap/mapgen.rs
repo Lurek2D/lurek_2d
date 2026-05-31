@@ -13,44 +13,10 @@
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
+pub use super::mapgen_model::Edge;
 use crate::log_msg;
 use crate::runtime::log_messages::{MG01, MG02, MG03};
 use std::collections::HashMap;
-
-/// Cardinal edge of a `MapBlock`, used as a side-matching key.
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
-pub enum Edge {
-    /// Top edge of the block.
-    North,
-    /// Right edge of the block.
-    East,
-    /// Bottom edge of the block.
-    South,
-    /// Left edge of the block.
-    West,
-}
-impl Edge {
-    /// Parse `s` ("north", "east", "south", "west") into an `Edge`; returns `None` for unknown strings.
-    #[allow(clippy::should_implement_trait)]
-    pub fn from_str(s: &str) -> Option<Edge> {
-        match s {
-            "north" => Some(Edge::North),
-            "east" => Some(Edge::East),
-            "south" => Some(Edge::South),
-            "west" => Some(Edge::West),
-            _ => None,
-        }
-    }
-    /// Return the lowercase string representation of this edge.
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Edge::North => "north",
-            Edge::East => "east",
-            Edge::South => "south",
-            Edge::West => "west",
-        }
-    }
-}
 /// A reusable tile stamp: a rectangular grid of tile GIDs with edge side-IDs for matching.
 #[derive(Clone)]
 pub struct MapBlock {

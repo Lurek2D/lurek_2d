@@ -17,7 +17,7 @@ agent: "Developer"
 1. Load [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read src/, docs/specs/, docs/specs/README.md, nearby module layouts, and the testing rules before editing.
 3. Follow the mod.rs thin-file rule, place business logic in sibling files, add the matching spec, and keep dependencies pointed inward.
-4. Run the narrowest build or test check that exercises the new module, then update required docs and changelog entries.
+4. Run the narrowest build or test check that exercises the new module, then update required docs entries.
 
 ## Success Criteria
 - [ ] The prompt goal was completed: Add one new engine module that matches repo structure rules.

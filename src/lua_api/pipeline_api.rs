@@ -1456,7 +1456,7 @@ impl LuaUserData for LuaPipeline {
         });
     }
 }
-/// Registers the `lurek.pipeline` module and compatibility alias `lurek.task_graph` into the Lua runtime.
+/// Registers the `lurek.pipeline` module into the Lua runtime.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
@@ -1551,8 +1551,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaPipeline::from_parts(pipeline_rc, wrappers_rc))
         })?,
     )?;
-    // Keep the existing namespace and expose the new naming path as an alias.
-    lurek.set("pipeline", tbl.clone())?;
-    lurek.set("task_graph", tbl)?;
+    lurek.set("pipeline", tbl)?;
     Ok(())
 }

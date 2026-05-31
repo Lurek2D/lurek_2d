@@ -25,6 +25,10 @@ Beyond simple character output, the module features an interactive widget framew
 
 Finally, the terminal integrates a powerful render path that projects the active cells and widget compositions directly onto the screen. This system also handles software image snapshots and exports terminal content to static files. When cell metrics or display scales shift, the engine refits the main window to maintain crisp, pixel-perfect text presentation, completing the module's role as a self-contained environment.
 
+Recent runtime work keeps that composition path cheaper by reusing a scratch buffer instead of cloning the full grid for each render-oriented export. Public behavior is unchanged, but the module now does less transient allocation while flattening widgets onto the cell surface.
+
+The widget interaction contract is also locked down more explicitly by regression coverage around focus changes, overlapping widgets, widget removal, and nested panel composition. The module still treats focus and nesting rules as first-class terminal behavior rather than incidental UI details.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.
@@ -91,6 +95,7 @@ Finally, the terminal integrates a powerful render path that projects the active
 - Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
 - Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
 - Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
+- A reusable composition buffer lives here so render-oriented code can flatten widgets over the grid without repeatedly cloning the backing cell buffer.
 - Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
 - The file is intentionally large because it is not one helper.
 - It is the living behavior model of the entire terminal subsystem.

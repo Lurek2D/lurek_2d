@@ -1,5 +1,6 @@
 ---
 description: "Create a runnable demo in content/games/ with the required registration and smoke coverage."
+agent: "Content-Maker"
 ---
 # Create Demo
 
