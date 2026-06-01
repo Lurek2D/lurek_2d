@@ -18,19 +18,19 @@ description: "Load this skill when writing or reviewing Rust engine code. It own
 - Docs-only work.
 
 ## Domain Knowledge
-- mod.rs in src/ must contain only `pub mod`, `pub use`, doc comments, and `#[allow]` attributes. Definitions belong in sibling files. If a mod.rs has function or struct bodies, that is a defect to fix.
-- No `#[cfg(test)]` blocks in src/. Unit tests for private code go in `tests/rust/unit/<module>_tests.rs`, named `<module>_tests.rs` not `<module>_test.rs`. If you see `#[cfg(test)]` in src/, move it.
+- mod.rs in src/ must contain only `pub mod`, `pub use`, doc comments, and `#[allow]` attributes. Definitions belong in sibling files.
+- No `#[cfg(test)]` blocks in src/. Unit tests for private code go in `tests/rust/unit/<module>_tests.rs`, named `<module>_tests.rs` not `<module>_test.rs`.
 - When external tests need a private seam, prefer `pub(crate)` over `pub` and keep the exposed item narrow. Treat it as a testability boundary, not a public API expansion.
 - If a `pub(crate)` seam exists only for tests, keep its doc comment explicit about that intent so future refactors do not promote it accidentally.
-- `src/lua_api/*_api.rs` must stay thin: `LuaUserData` impls, `add_methods`, registration, and type conversions only. Business logic belongs in `src/<module>/`. A binding file that starts accumulating `if/match/for` logic is drifting.
-- Never hold `borrow_mut()` or `RefCell::borrow_mut()` across a Lua callback invocation. The pattern is: extract all needed values while holding the borrow, release it, then invoke Lua. Re-entry during borrow causes a runtime panic.
+- `src/lua_api/*_api.rs` must stay thin: `LuaUserData` impls, `add_methods`, registration, and type conversions only. Business logic belongs in `src/<module>/`.
+- Never hold `borrow_mut()` or `RefCell::borrow_mut()` across a Lua callback invocation. The pattern is: extract all needed values while holding the borrow, release it, then invoke Lua.
 - SharedState access rule: `{ let guard = state.borrow(); let val = guard.field.clone(); } /* borrow released */ call_lua(val)`. The guard must be dropped before any call that might re-enter Rust.
 - Pinned library versions: mlua 0.9, wgpu 22, winit 0.30, rapier2d 0.32, rodio 0.17, fontdue 0.9. Do not bump without explicit authorization; each bump needs wgpu/winit API adjustments.
 - When a Rust change touches public types or functions visible through `lurek.*`, run `python tools/validate/validate_lua_api.py` to catch shape drift in generated docs.
-- Public changes (new API, removed method, changed signature) must update `docs/specs/<module>.md` in the same commit. Compiler green does not mean the task is done.
+- Public changes must update `docs/specs/<module>.md` in the same commit. Compiler green does not mean the task is done.
 - Use `?` for propagation but never let it cross a callback boundary silently. Closures passed to mlua must return `mlua::Result`; inner `?` should map errors before they reach Lua with a clear message.
 - Keep `unsafe` blocks small, one-purpose, and accompanied by a `// SAFETY:` comment that explains the invariant. No `unsafe` for convenience when a safe alternative exists.
-- Prefer explicit module imports over glob imports (`use module::*`). Glob imports make it impossible to grep what the file actually depends on during refactors.
+- Prefer explicit module imports over glob imports. Glob imports make it impossible to grep what the file actually depends on during refactors.
 - Tests in `tests/rust/unit/` name their test functions `test_<behavior>_<condition>`. Keep each test assertion to one failure mode so failing tests name the problem immediately.
 
 ## Rustdoc Comment Standards — AI-First, Compact
@@ -57,9 +57,9 @@ Plain `impl Type { }` (inherent impl): keep existing `///` comments and improve 
 
 **File level (`//!`)**
 Use bullet-point format: each line starts with `//! - `. Proportional to file size:
-- Small file (<3000 chars source): ~300 characters, 3-4 bullets.
-- Medium file (3000–10000 chars): ~600 characters, 5-7 bullets.
-- Large file (>10000 chars): ~1200 characters, 8-12 bullets.
+- Small file: ~300 characters, 3-4 bullets.
+- Medium file: ~600 characters, 5-7 bullets.
+- Large file: ~1200 characters, 8-12 bullets.
 
 Content of bullets — describe in order:
 1. What the file provides (capability groups, not individual symbol names).
@@ -97,13 +97,13 @@ Single compact example (only one):
 **Forbidden Phrases in Rustdoc**
 - No AI-generated prose: "returns a fully initialised instance", "the insertion is O(1) amortised", "this accessor incurs no allocation", "call it freely in hot paths".
 - No synonym inflation: "alias for `foo()`", "alias of `foo()`", "shorthand for", "convenience wrapper".
-- No placeholders: "placeholder", "empty placeholder", "tombstone", "replacement value" (if it has a real purpose, name that purpose instead).
+- No placeholders: "placeholder", "empty placeholder", "tombstone", "replacement value".
 - No `incurs no allocation`, `O(1)`, `amortised` — these are implementation details, not user-facing docs.
 - No `returns` when opening a function doc. Use imperative: "Return" or "Read" or "Parse" instead of "Returns".
 
 **Rules (tool-aligned)**
-- Enforced by tools: every `.rs` file has `//!` module doc (see `tools/audit/audit_module.py`, check D-01).
-- Enforced by tools: every `pub` item has `///` doc (see `tools/audit/audit_module.py`, check D-02).
+- Enforced by tools: every `.rs` file has `//!` module doc.
+- Enforced by tools: every `pub` item has `///` doc.
 - Tooling parses plain `///` and `//!` text; no structured rustdoc sections are required by scanners.
 - Keep comments compact one-liners when possible to minimize token cost for AI agents.
 - For regular files, avoid `# Arguments` / `# Returns` / `# Errors` sections unless a prompt explicitly requires them.
@@ -134,7 +134,7 @@ Only methods/functions actually registered to Lua (`methods.add_method`, `method
 - One summary `///` line.
 - Zero or more `@param` lines when method takes Lua args.
 - At least one `@return` line always.
-- Example (text form): ``/// Sets playback volume.`` + ``/// @param | vol | number | Volume multiplier, clamped to >= 0.0.`` + ``/// @return | nil | No value is returned.``
+- Example: ``/// Sets playback volume.`` + ``/// @param | vol | number | Volume multiplier, clamped to >= 0.0.`` + ``/// @return | nil | No value is returned.``
 
 
 **Marker format (required)**
@@ -153,7 +153,7 @@ Only methods/functions actually registered to Lua (`methods.add_method`, `method
     - `/// @param | name | type | description`
     - `/// @return | type | description`
 - No `@return | any | ...`.
-- No optional/union return types (`?`, `, nil`, `|nil`).
+- No optional/union return types.
 
 **Forbidden in `src/lua_api/`**
 - `/// # Parameters`

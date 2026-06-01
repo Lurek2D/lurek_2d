@@ -38,12 +38,15 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:isVisible
     it("manager default visibility is true", function()
         local mgr = lurek.cursor.newManager()
         expect_true(mgr:isVisible())
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:setVisible
+    -- @covers LCursorManager:isVisible
     it("setVisible toggles visibility", function()
         local mgr = lurek.cursor.newManager()
         mgr:setVisible(false)
@@ -53,6 +56,8 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:setLocked
+    -- @covers LCursorManager:isLocked
     it("setLocked and isLocked", function()
         local mgr = lurek.cursor.newManager()
         expect_equal(false, mgr:isLocked())
@@ -61,6 +66,7 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:getPosition
     it("getPosition returns x, y", function()
         local mgr = lurek.cursor.newManager()
         local x, y = mgr:getPosition()
@@ -69,6 +75,7 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:setSystem
     it("setSystem accepts cursor name", function()
         local mgr = lurek.cursor.newManager()
         mgr:setSystem("arrow")
@@ -77,6 +84,8 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:setContext
+    -- @covers LCursorManager:getContext
     it("setContext and getContext roundtrip", function()
         local mgr = lurek.cursor.newManager()
         mgr:setContext("combat")
@@ -84,6 +93,8 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:addRule
+    -- @covers LCursorManager:removeRule
     it("addRule and removeRule manage context rules", function()
         local mgr = lurek.cursor.newManager()
         mgr:addRule("hover", "hand")
@@ -93,6 +104,8 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:update
+    -- @covers LCursorManager:getPosition
     it("update advances state without crash", function()
         local mgr = lurek.cursor.newManager()
         mgr:update(100, 200, 1/60)
@@ -102,6 +115,8 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:enableTrail
+    -- @covers LCursorManager:disableTrail
     it("enableTrail and disableTrail", function()
         local mgr = lurek.cursor.newManager()
         mgr:enableTrail(255, 0, 0, 0.5)
@@ -110,6 +125,8 @@ describe("CursorManager", function()
     end)
 
     -- @covers lurek.cursor.newManager
+    -- @covers LCursorManager:enableZoom
+    -- @covers LCursorManager:disableZoom
     it("enableZoom and disableZoom", function()
         local mgr = lurek.cursor.newManager()
         mgr:enableZoom(2.0, 50)
@@ -150,6 +167,7 @@ end)
 -- @describe CustomCursor
 describe("CustomCursor", function()
     -- @covers lurek.cursor.newCustom
+    -- @covers LCustomCursor:getSize
     it("newCustom creates cursor with size", function()
         local cursor = lurek.cursor.newCustom(32, 32, 0, 0)
         expect_type("userdata", cursor)
@@ -159,6 +177,7 @@ describe("CustomCursor", function()
     end)
 
     -- @covers lurek.cursor.newCustom
+    -- @covers LCustomCursor:getHotspot
     it("getHotspot returns hotspot position", function()
         local cursor = lurek.cursor.newCustom(16, 16, 8, 4)
         local hx, hy = cursor:getHotspot()
@@ -167,6 +186,8 @@ describe("CustomCursor", function()
     end)
 
     -- @covers lurek.cursor.newCustom
+    -- @covers LCustomCursor:setPixel
+    -- @covers LCustomCursor:getPixel
     it("setPixel and getPixel roundtrip", function()
         local cursor = lurek.cursor.newCustom(4, 4, 0, 0)
         cursor:setPixel(1, 2, 255, 128, 64, 200)
@@ -191,6 +212,8 @@ describe("AnimatedCursor", function()
     end)
 
     -- @covers lurek.cursor.newAnimated
+    -- @covers LAnimatedCursor:addFrame
+    -- @covers LAnimatedCursor:frameCount
     it("addFrame increases frame count", function()
         local anim = lurek.cursor.newAnimated(true)
         local frame = lurek.cursor.newCustom(8, 8, 0, 0)
@@ -199,6 +222,8 @@ describe("AnimatedCursor", function()
     end)
 
     -- @covers lurek.cursor.newAnimated
+    -- @covers LAnimatedCursor:addFrame
+    -- @covers LAnimatedCursor:currentIndex
     it("currentIndex starts at 0", function()
         local anim = lurek.cursor.newAnimated(true)
         local frame = lurek.cursor.newCustom(8, 8, 0, 0)
@@ -207,6 +232,9 @@ describe("AnimatedCursor", function()
     end)
 
     -- @covers lurek.cursor.newAnimated
+    -- @covers LAnimatedCursor:addFrame
+    -- @covers LAnimatedCursor:update
+    -- @covers LAnimatedCursor:currentIndex
     it("update advances animation", function()
         local anim = lurek.cursor.newAnimated(true)
         local f1 = lurek.cursor.newCustom(8, 8, 0, 0)
@@ -218,6 +246,10 @@ describe("AnimatedCursor", function()
     end)
 
     -- @covers lurek.cursor.newAnimated
+    -- @covers LAnimatedCursor:addFrame
+    -- @covers LAnimatedCursor:update
+    -- @covers LAnimatedCursor:reset
+    -- @covers LAnimatedCursor:currentIndex
     it("reset returns to first frame", function()
         local anim = lurek.cursor.newAnimated(true)
         local f1 = lurek.cursor.newCustom(8, 8, 0, 0)
@@ -230,6 +262,9 @@ describe("AnimatedCursor", function()
     end)
 
     -- @covers lurek.cursor.newAnimated
+    -- @covers LAnimatedCursor:addFrame
+    -- @covers LAnimatedCursor:setPulse
+    -- @covers LAnimatedCursor:currentScale
     it("setPulse and currentScale", function()
         local anim = lurek.cursor.newAnimated(true)
         local frame = lurek.cursor.newCustom(8, 8, 0, 0)
@@ -241,6 +276,8 @@ describe("AnimatedCursor", function()
     end)
 
     -- @covers LAnimatedCursor:clearPulse
+    -- @covers LAnimatedCursor:addFrame
+    -- @covers LAnimatedCursor:setPulse
     it("clearPulse removes pulse configuration", function()
         local anim = lurek.cursor.newAnimated(true)
         local frame = lurek.cursor.newCustom(8, 8, 0, 0)
@@ -257,6 +294,14 @@ end)
 
 -- @describe CursorManager setAnimated and enableLineTrail
 describe("CursorManager setAnimated and enableLineTrail", function()
+    -- @covers LCursorManager:setCustom
+    it("setCustom applies custom cursor without crash", function()
+        local mgr = lurek.cursor.newManager()
+        local custom = lurek.cursor.newCustom(8, 8, 0, 0)
+        mgr:setCustom(custom)
+        expect_true(true)
+    end)
+
     -- @covers LCursorManager:setAnimated
     it("setAnimated applies animated cursor without crash", function()
         local mgr = lurek.cursor.newManager()
@@ -271,6 +316,7 @@ describe("CursorManager setAnimated and enableLineTrail", function()
         mgr:enableLineTrail(1.0, 0.0, 0.0, 2.0)
         expect_true(true)
     end)
+
 end)
 
 test_summary()
