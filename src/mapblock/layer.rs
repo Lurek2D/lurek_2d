@@ -61,14 +61,7 @@ impl BlockLayer {
     }
 
     /// Set a specific slot on a tile at (x, y).
-    pub fn set_tile_slot(
-        &mut self,
-        x: u32,
-        y: u32,
-        slot_index: usize,
-        tileset_id: u32,
-        gid: u32,
-    ) {
+    pub fn set_tile_slot(&mut self, x: u32, y: u32, slot_index: usize, tileset_id: u32, gid: u32) {
         if let Some(tile) = self.get_tile_mut(x, y) {
             tile.set_slot(slot_index, tileset_id, gid);
         }

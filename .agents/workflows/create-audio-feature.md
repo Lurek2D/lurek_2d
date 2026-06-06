@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one bounded audio feature in the engine and sync the exposed contract."
 expected_agent: "Manager"
 ---
-
 # Create Audio Feature
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation path.
 
 ## Steps
-1. Load [skill: lua-api-design](../rules/skill_lua-api-design.md), [skill: rust-coding](../rules/skill_rust-coding.md), [skill: asset-pipeline](../rules/skill_asset-pipeline.md), and [skill: error-handling](../rules/skill_error-handling.md) before acting.
+1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: asset-pipeline](../skills/asset-pipeline/SKILL.md), and [skill: error-handling](../skills/error-handling/SKILL.md) before acting.
 2. Read src/audio/, any matching src/lua_api/audio_api.rs code, docs/specs/audio.md, and nearby tests or examples before editing.
 3. Keep loading, mixer, and playback responsibilities clear, surface errors cleanly, and sync the Lua-facing contract only where the feature actually changes it.
 4. Run the narrowest audio-focused test or build check first, then regenerate docs or run broader gates only if the public contract changed.

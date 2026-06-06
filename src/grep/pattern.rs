@@ -15,7 +15,10 @@ pub enum PatternKind {
     /// Glob pattern (e.g., "*.lua").
     Glob(String),
     /// Fuzzy approximate match with max edit distance.
-    Fuzzy { pattern: String, max_distance: usize },
+    Fuzzy {
+        pattern: String,
+        max_distance: usize,
+    },
     /// Multiple literal patterns (Aho-Corasick style).
     MultiLiteral(Vec<String>),
 }
@@ -38,7 +41,10 @@ impl PatternKind {
 
     /// Create a fuzzy approximate-match pattern with a maximum edit distance.
     pub fn fuzzy(s: impl Into<String>, max_distance: usize) -> Self {
-        Self::Fuzzy { pattern: s.into(), max_distance }
+        Self::Fuzzy {
+            pattern: s.into(),
+            max_distance,
+        }
     }
 
     /// Create a multi-literal OR pattern that matches if any of the given strings is found.

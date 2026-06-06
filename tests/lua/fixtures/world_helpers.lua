@@ -1,6 +1,9 @@
 -- Shared test fixtures for physics/world setup (load via dofile in unit/integration tests).
 
 --- Create a headless physics world with optional gravity (default 9.81).
+-- @covers lurek.physics.newBody
+-- @covers lurek.physics.newWorld
+
 function make_test_world(gravity_y)
     gravity_y = gravity_y or 9.81
     return lurek.physics.newWorld(0, gravity_y)

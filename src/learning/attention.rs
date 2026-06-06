@@ -84,7 +84,9 @@ impl MultiHeadAttention {
     /// Create a zero-initialized MHA block.
     pub fn new(d_model: usize, num_heads: usize) -> Result<Self, String> {
         if num_heads == 0 || !d_model.is_multiple_of(num_heads) {
-            return Err("MultiHeadAttention::new requires d_model divisible by num_heads".to_string());
+            return Err(
+                "MultiHeadAttention::new requires d_model divisible by num_heads".to_string(),
+            );
         }
         let d2 = d_model * d_model;
         Ok(Self {

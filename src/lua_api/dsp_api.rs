@@ -4,11 +4,11 @@ use super::SharedState;
 use crate::audio::sound_data::SoundData;
 use crate::dsp::analysis::{LevelDetector, SpectrumAnalyzer};
 use crate::dsp::graph::{DspGraph, DspNode, NodeId};
+use crate::dsp::synthesis::{AdsrEnvelope, Synthesizer, Waveform};
 use crate::dsp::{
     add_effect_to_shared_chain, remove_effect_from_shared_chain, set_shared_chain_effect_param,
     EffectType,
 };
-use crate::dsp::synthesis::{AdsrEnvelope, Synthesizer, Waveform};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -283,7 +283,13 @@ fn helper_set_effect_param(
         .map(|_| true)
 }
 
-fn helper_new_wave(kind: &str, freq: f32, duration: f32, sample_rate: u32, amplitude: f32) -> LuaResult<SoundData> {
+fn helper_new_wave(
+    kind: &str,
+    freq: f32,
+    duration: f32,
+    sample_rate: u32,
+    amplitude: f32,
+) -> LuaResult<SoundData> {
     let waveform = Waveform::parse(kind).map_err(LuaError::RuntimeError)?;
     Ok(waveform.render(freq, duration, sample_rate, amplitude))
 }
@@ -327,7 +333,9 @@ impl LuaUserData for LuaLevelDetector {
         /// @return | table | Table with `rms`, `peak`, and `clipping` fields.
         methods.add_method_mut("process", |lua, this, sound_data_ud: LuaAnyUserData| {
             let sound_data = sound_data_ud.borrow::<SoundData>().map_err(|_| {
-                LuaError::RuntimeError("lurek.dsp.LLevelDetector:process: argument must be LSoundData".into())
+                LuaError::RuntimeError(
+                    "lurek.dsp.LLevelDetector:process: argument must be LSoundData".into(),
+                )
             })?;
             let (rms, peak, clipping) = this.inner.borrow_mut().process_sound_data(&sound_data);
             let result = lua.create_table()?;
@@ -374,7 +382,9 @@ impl LuaUserData for LuaSpectrumAnalyzer {
         /// @return | table | Array with `frequency` and `magnitude` fields per bin.
         methods.add_method("analyze", |lua, this, sound_data_ud: LuaAnyUserData| {
             let sound_data = sound_data_ud.borrow::<SoundData>().map_err(|_| {
-                LuaError::RuntimeError("lurek.dsp.LSpectrumAnalyzer:analyze: argument must be LSoundData".into())
+                LuaError::RuntimeError(
+                    "lurek.dsp.LSpectrumAnalyzer:analyze: argument must be LSoundData".into(),
+                )
             })?;
             let bins = this.inner.borrow().analyze(&sound_data);
             let result = lua.create_table()?;
@@ -399,9 +409,12 @@ impl LuaUserData for LuaWaveform {
         /// @param | sample_rate | integer | Sample rate in Hertz.
         /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
         /// @return | LSoundData | Generated mono sound buffer.
-        methods.add_method("render", |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            Ok(this.inner.render(freq, duration, sample_rate, amplitude))
-        });
+        methods.add_method(
+            "render",
+            |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                Ok(this.inner.render(freq, duration, sample_rate, amplitude))
+            },
+        );
         // -- type --
         /// Returns the waveform identifier string.
         /// @return | string | One of `sine`, `square`, `sawtooth`, `triangle`, or `white_noise`.
@@ -427,7 +440,9 @@ impl LuaUserData for LuaAdsrEnvelope {
         // -- next_sample --
         /// Advances the envelope and returns the next gain sample.
         /// @return | number | Current envelope gain after stepping.
-        methods.add_method_mut("next_sample", |_, this, ()| Ok(this.inner.borrow_mut().next_sample()));
+        methods.add_method_mut("next_sample", |_, this, ()| {
+            Ok(this.inner.borrow_mut().next_sample())
+        });
         // -- is_idle --
         /// Returns whether the envelope has fully completed and is idle.
         /// @return | boolean | True when the envelope is idle.
@@ -437,7 +452,9 @@ impl LuaUserData for LuaAdsrEnvelope {
         /// @param | sound_data_ud | LSoundData | Sound buffer to shape in-place.
         methods.add_method("apply", |_, this, sound_data_ud: LuaAnyUserData| {
             let mut sound_data = sound_data_ud.borrow_mut::<SoundData>().map_err(|_| {
-                LuaError::RuntimeError("lurek.dsp.LAdsrEnvelope:apply: argument must be LSoundData".into())
+                LuaError::RuntimeError(
+                    "lurek.dsp.LAdsrEnvelope:apply: argument must be LSoundData".into(),
+                )
             })?;
             this.inner.borrow().apply(&mut sound_data);
             Ok(())
@@ -457,10 +474,15 @@ impl LuaUserData for LuaSynthesizer {
                     let kind = s.to_str().map_err(LuaError::external)?;
                     Waveform::parse(kind).map_err(LuaError::RuntimeError)?
                 }
-                LuaValue::UserData(ud) => ud
-                    .borrow::<LuaWaveform>()
-                    .map_err(|_| LuaError::RuntimeError("setWaveform expects waveform string or LWaveform".into()))?
-                    .inner,
+                LuaValue::UserData(ud) => {
+                    ud.borrow::<LuaWaveform>()
+                        .map_err(|_| {
+                            LuaError::RuntimeError(
+                                "setWaveform expects waveform string or LWaveform".into(),
+                            )
+                        })?
+                        .inner
+                }
                 _ => {
                     return Err(LuaError::RuntimeError(
                         "setWaveform expects waveform string or LWaveform".into(),
@@ -490,9 +512,15 @@ impl LuaUserData for LuaSynthesizer {
         /// @param | sample_rate | integer | Sample rate in Hertz.
         /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
         /// @return | LSoundData | Generated sound buffer.
-        methods.add_method("render", |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            Ok(this.inner.borrow().generate(freq, duration, sample_rate, amplitude))
-        });
+        methods.add_method(
+            "render",
+            |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                Ok(this
+                    .inner
+                    .borrow()
+                    .generate(freq, duration, sample_rate, amplitude))
+            },
+        );
         // -- generate --
         /// Generates a SoundData buffer; alias of `render` for compatibility.
         /// @param | freq | number | Frequency in Hertz.
@@ -500,9 +528,15 @@ impl LuaUserData for LuaSynthesizer {
         /// @param | sample_rate | integer | Sample rate in Hertz.
         /// @param | amplitude | number | Peak amplitude in the range [0.0, 1.0].
         /// @return | LSoundData | Generated sound buffer.
-        methods.add_method("generate", |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            Ok(this.inner.borrow().generate(freq, duration, sample_rate, amplitude))
-        });
+        methods.add_method(
+            "generate",
+            |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                Ok(this
+                    .inner
+                    .borrow()
+                    .generate(freq, duration, sample_rate, amplitude))
+            },
+        );
     }
 }
 
@@ -532,7 +566,9 @@ impl LuaUserData for LuaDspNode {
         // -- type --
         /// Returns the node type string used by this node.
         /// @return | string | Node kind used by this DSP node.
-        methods.add_method("type", |_, this, ()| Ok(this.inner.borrow().node_type().as_str()));
+        methods.add_method("type", |_, this, ()| {
+            Ok(this.inner.borrow().node_type().as_str())
+        });
     }
 }
 
@@ -558,9 +594,12 @@ impl LuaUserData for LuaDspGraph {
         /// @param | to | integer | Destination node ID.
         /// @param | options | table? | Reserved connection options for future graph routing.
         /// @return | boolean | True when the connection is valid and stored.
-        methods.add_method_mut("connect", |_, this, (from, to, _options): (NodeId, NodeId, Option<LuaTable>)| {
-            Ok(this.inner.borrow_mut().connect(from, to))
-        });
+        methods.add_method_mut(
+            "connect",
+            |_, this, (from, to, _options): (NodeId, NodeId, Option<LuaTable>)| {
+                Ok(this.inner.borrow_mut().connect(from, to))
+            },
+        );
         // -- disconnect --
         /// Removes a connection between two node IDs.
         /// @param | from | integer | Source node ID.
@@ -741,9 +780,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSoundData | Generated audio buffer.
     tbl.set(
         "newSineWave",
-        lua.create_function(|_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            helper_new_wave("sine", freq, duration, sample_rate, amplitude)
-        })?,
+        lua.create_function(
+            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                helper_new_wave("sine", freq, duration, sample_rate, amplitude)
+            },
+        )?,
     )?;
     /// Generates a square wave as a `SoundData` buffer.
     /// @param | freq | number | Frequency in Hz.
@@ -753,9 +794,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSoundData | Generated audio buffer.
     tbl.set(
         "newSquareWave",
-        lua.create_function(|_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            helper_new_wave("square", freq, duration, sample_rate, amplitude)
-        })?,
+        lua.create_function(
+            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                helper_new_wave("square", freq, duration, sample_rate, amplitude)
+            },
+        )?,
     )?;
     /// Generates a sawtooth wave as a `SoundData` buffer.
     /// @param | freq | number | Frequency in Hz.
@@ -765,9 +808,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSoundData | Generated audio buffer.
     tbl.set(
         "newSawtoothWave",
-        lua.create_function(|_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            helper_new_wave("sawtooth", freq, duration, sample_rate, amplitude)
-        })?,
+        lua.create_function(
+            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                helper_new_wave("sawtooth", freq, duration, sample_rate, amplitude)
+            },
+        )?,
     )?;
     /// Generates a triangle wave as a `SoundData` buffer.
     /// @param | freq | number | Frequency in Hz.
@@ -777,9 +822,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSoundData | Generated audio buffer.
     tbl.set(
         "newTriangleWave",
-        lua.create_function(|_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
-            helper_new_wave("triangle", freq, duration, sample_rate, amplitude)
-        })?,
+        lua.create_function(
+            |_, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
+                helper_new_wave("triangle", freq, duration, sample_rate, amplitude)
+            },
+        )?,
     )?;
     /// Generates deterministic white noise as a `SoundData` buffer.
     /// @param | duration | number | Duration in seconds.
@@ -789,9 +836,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LSoundData | Generated noise buffer.
     tbl.set(
         "newWhiteNoise",
-        lua.create_function(|_, (duration, sample_rate, amplitude, seed): (f32, u32, f32, u32)| {
-            Ok(SoundData::white_noise(duration, sample_rate, amplitude, seed))
-        })?,
+        lua.create_function(
+            |_, (duration, sample_rate, amplitude, seed): (f32, u32, f32, u32)| {
+                Ok(SoundData::white_noise(
+                    duration,
+                    sample_rate,
+                    amplitude,
+                    seed,
+                ))
+            },
+        )?,
     )?;
     /// Generates a synthesized waveform with optional ADSR.
     /// @param | waveform | string | Waveform kind: `sine`, `square`, `sawtooth`, or `triangle`.
@@ -855,11 +909,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LAdsrEnvelope | New ADSR envelope instance.
     tbl.set(
         "newAdsrEnvelope",
-        lua.create_function(|_, (attack, decay, sustain, release): (f32, f32, f32, f32)| {
-            Ok(LuaAdsrEnvelope {
-                inner: Rc::new(RefCell::new(AdsrEnvelope::new(attack, decay, sustain, release))),
-            })
-        })?,
+        lua.create_function(
+            |_, (attack, decay, sustain, release): (f32, f32, f32, f32)| {
+                Ok(LuaAdsrEnvelope {
+                    inner: Rc::new(RefCell::new(AdsrEnvelope::new(
+                        attack, decay, sustain, release,
+                    ))),
+                })
+            },
+        )?,
     )?;
     /// Creates a synthesizer object that combines waveform selection and optional ADSR shaping.
     /// @param | options | table? | Reserved options table for future synthesizer defaults.

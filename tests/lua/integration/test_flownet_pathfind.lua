@@ -2,6 +2,9 @@
 
 -- Graph MST (Minimum Spanning Tree)
 -- @describe graph.mst
+-- @covers lurek.graph.newGraph
+-- @covers lurek.procgen.worldGraph
+
 
 describe("graph.mst", function()
 

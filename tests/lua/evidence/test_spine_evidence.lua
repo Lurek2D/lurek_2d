@@ -1,5 +1,8 @@
 -- Evidence tests: spine module
 -- Artifacts are generated from lurek.spine APIs.
+-- @covers lurek.image.savePNG
+-- @covers lurek.spine.newSkeleton
+
 
 
 local OUT = "tests/output/spine/"

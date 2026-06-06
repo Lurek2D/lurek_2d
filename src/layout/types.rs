@@ -114,14 +114,8 @@ pub struct LayoutResult {
 impl LayoutResult {
     /// Creates a result and computes bounding dimensions from node positions.
     pub fn new(nodes: Vec<LayoutNode>) -> Self {
-        let width = nodes
-            .iter()
-            .map(|n| n.x + n.width)
-            .fold(0.0f64, f64::max);
-        let height = nodes
-            .iter()
-            .map(|n| n.y + n.height)
-            .fold(0.0f64, f64::max);
+        let width = nodes.iter().map(|n| n.x + n.width).fold(0.0f64, f64::max);
+        let height = nodes.iter().map(|n| n.y + n.height).fold(0.0f64, f64::max);
         Self {
             nodes,
             width,

@@ -108,7 +108,12 @@ impl GraphRenderer {
 
     /// Return the current viewport as `(x, y, w, h)`.
     pub fn get_viewport(&self) -> (f32, f32, f32, f32) {
-        (self.viewport_x, self.viewport_y, self.viewport_w, self.viewport_h)
+        (
+            self.viewport_x,
+            self.viewport_y,
+            self.viewport_w,
+            self.viewport_h,
+        )
     }
 
     // ── range ─────────────────────────────────────────────────────────────────
@@ -189,8 +194,7 @@ impl GraphRenderer {
         let range_h = self.y_max - self.y_min;
         let sx = self.viewport_x + (wx - self.x_min) / range_w * self.viewport_w;
         // y-axis is flipped: world y=y_min maps to bottom of viewport
-        let sy = self.viewport_y + self.viewport_h
-            - (wy - self.y_min) / range_h * self.viewport_h;
+        let sy = self.viewport_y + self.viewport_h - (wy - self.y_min) / range_h * self.viewport_h;
         (sx, sy)
     }
 
@@ -199,8 +203,7 @@ impl GraphRenderer {
         let range_w = self.x_max - self.x_min;
         let range_h = self.y_max - self.y_min;
         let wx = self.x_min + (sx - self.viewport_x) / self.viewport_w * range_w;
-        let wy = self.y_min
-            + (self.viewport_y + self.viewport_h - sy) / self.viewport_h * range_h;
+        let wy = self.y_min + (self.viewport_y + self.viewport_h - sy) / self.viewport_h * range_h;
         (wx, wy)
     }
 

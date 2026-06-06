@@ -151,7 +151,9 @@ impl ModSandbox {
         if self.allowed_read_paths.is_empty() {
             return true;
         }
-        self.allowed_read_paths.iter().any(|prefix| path.starts_with(prefix))
+        self.allowed_read_paths
+            .iter()
+            .any(|prefix| path.starts_with(prefix))
     }
 }
 

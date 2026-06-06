@@ -17,7 +17,11 @@ pub struct Matcher {
 impl Matcher {
     /// Create a `Matcher` from a `PatternKind` with case-sensitivity and whole-word options.
     pub fn new(pattern: PatternKind, case_sensitive: bool, whole_word: bool) -> Self {
-        Self { kind: pattern, case_sensitive, whole_word }
+        Self {
+            kind: pattern,
+            case_sensitive,
+            whole_word,
+        }
     }
 
     /// Test if a line matches the pattern.
@@ -26,7 +30,10 @@ impl Matcher {
             PatternKind::Literal(pat) => self.literal_match(line, pat),
             PatternKind::Regex(pat) => self.regex_match(line, pat),
             PatternKind::Glob(pat) => self.glob_match(line, pat),
-            PatternKind::Fuzzy { pattern, max_distance } => self.fuzzy_match(line, pattern, *max_distance),
+            PatternKind::Fuzzy {
+                pattern,
+                max_distance,
+            } => self.fuzzy_match(line, pattern, *max_distance),
             PatternKind::MultiLiteral(pats) => pats.iter().any(|p| self.literal_match(line, p)),
         }
     }
@@ -88,20 +95,44 @@ impl Matcher {
     fn regex_match(&self, line: &str, pattern: &str) -> bool {
         // Simple regex: check if pattern chars appear in sequence
         // Full regex would require the regex crate; here we do basic wildcard matching
-        let line_lower = if self.case_sensitive { line.to_string() } else { line.to_lowercase() };
-        let pat_lower = if self.case_sensitive { pattern.to_string() } else { pattern.to_lowercase() };
+        let line_lower = if self.case_sensitive {
+            line.to_string()
+        } else {
+            line.to_lowercase()
+        };
+        let pat_lower = if self.case_sensitive {
+            pattern.to_string()
+        } else {
+            pattern.to_lowercase()
+        };
         simple_regex_match(&line_lower, &pat_lower)
     }
 
     fn glob_match(&self, line: &str, pattern: &str) -> bool {
-        let line_lower = if self.case_sensitive { line.to_string() } else { line.to_lowercase() };
-        let pat_lower = if self.case_sensitive { pattern.to_string() } else { pattern.to_lowercase() };
+        let line_lower = if self.case_sensitive {
+            line.to_string()
+        } else {
+            line.to_lowercase()
+        };
+        let pat_lower = if self.case_sensitive {
+            pattern.to_string()
+        } else {
+            pattern.to_lowercase()
+        };
         glob_matches(&line_lower, &pat_lower)
     }
 
     fn fuzzy_match(&self, line: &str, pattern: &str, max_distance: usize) -> bool {
-        let line_lower = if self.case_sensitive { line.to_string() } else { line.to_lowercase() };
-        let pat_lower = if self.case_sensitive { pattern.to_string() } else { pattern.to_lowercase() };
+        let line_lower = if self.case_sensitive {
+            line.to_string()
+        } else {
+            line.to_lowercase()
+        };
+        let pat_lower = if self.case_sensitive {
+            pattern.to_string()
+        } else {
+            pattern.to_lowercase()
+        };
         // Check if any substring of line is within edit distance
         if pat_lower.len() > line_lower.len() + max_distance {
             return false;
@@ -113,7 +144,10 @@ impl Matcher {
         if chars.is_empty() || pat_chars.is_empty() {
             return false;
         }
-        for window_start in 0..=chars.len().saturating_sub(pat_len.saturating_sub(max_distance)) {
+        for window_start in 0..=chars
+            .len()
+            .saturating_sub(pat_len.saturating_sub(max_distance))
+        {
             let window_end = (window_start + pat_len + max_distance).min(chars.len());
             let window: String = chars[window_start..window_end].iter().collect();
             if edit_distance(&window, &pat_lower) <= max_distance {
@@ -193,11 +227,19 @@ fn edit_distance(a: &str, b: &str) -> usize {
     let m = a_chars.len();
     let n = b_chars.len();
     let mut dp = vec![vec![0usize; n + 1]; m + 1];
-    for (i, row) in dp.iter_mut().enumerate().take(m + 1) { row[0] = i; }
-    for (j, cell) in dp[0].iter_mut().enumerate().take(n + 1) { *cell = j; }
+    for (i, row) in dp.iter_mut().enumerate().take(m + 1) {
+        row[0] = i;
+    }
+    for (j, cell) in dp[0].iter_mut().enumerate().take(n + 1) {
+        *cell = j;
+    }
     for i in 1..=m {
         for j in 1..=n {
-            let cost = if a_chars[i - 1] == b_chars[j - 1] { 0 } else { 1 };
+            let cost = if a_chars[i - 1] == b_chars[j - 1] {
+                0
+            } else {
+                1
+            };
             dp[i][j] = (dp[i - 1][j] + 1)
                 .min(dp[i][j - 1] + 1)
                 .min(dp[i - 1][j - 1] + cost);

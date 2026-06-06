@@ -247,7 +247,11 @@ impl Pipeline {
     }
 
     /// Return whether all dependencies of `step_name` are complete using a caller-provided status lookup.
-    pub fn are_deps_satisfied_with<F>(&self, step_name: &str, mut status_of: F) -> Result<bool, String>
+    pub fn are_deps_satisfied_with<F>(
+        &self,
+        step_name: &str,
+        mut status_of: F,
+    ) -> Result<bool, String>
     where
         F: FnMut(&str) -> Option<StepStatus>,
     {

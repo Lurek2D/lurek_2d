@@ -234,8 +234,7 @@ pub fn load_tmx(xml: &str) -> Result<TmxMap, TmxImportError> {
     let width = attr_u32(&map_node, "width").map_err(TmxImportError::invalid_content)?;
     let height = attr_u32(&map_node, "height").map_err(TmxImportError::invalid_content)?;
     let tile_width = attr_u32(&map_node, "tilewidth").map_err(TmxImportError::invalid_content)?;
-    let tile_height =
-        attr_u32(&map_node, "tileheight").map_err(TmxImportError::invalid_content)?;
+    let tile_height = attr_u32(&map_node, "tileheight").map_err(TmxImportError::invalid_content)?;
     let orientation =
         TmxOrientation::from_str(map_node.attribute("orientation").unwrap_or("orthogonal"));
     let stagger_axis = map_node.attribute("staggeraxis").map(|s| match s {
@@ -258,8 +257,8 @@ pub fn load_tmx(xml: &str) -> Result<TmxMap, TmxImportError> {
     let mut layers = Vec::new();
     for child in map_node.children() {
         if child.has_tag_name("layer") {
-            let layer = parse_tile_layer(&child, width, height)
-                .map_err(TmxImportError::invalid_content)?;
+            let layer =
+                parse_tile_layer(&child, width, height).map_err(TmxImportError::invalid_content)?;
             layers.push(TmxLayer::Tile(layer));
         } else if child.has_tag_name("objectgroup") {
             let ol = parse_object_layer(&child).map_err(TmxImportError::invalid_content)?;

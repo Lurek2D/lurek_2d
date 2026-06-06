@@ -71,10 +71,7 @@ fn assign_pair_id(
 /// Build border index map from raw province id grid.
 pub fn build_border_index(grid: &[u32], width: u32, height: u32) -> ProvinceBorderIndex {
     let expected_len = (width as usize).saturating_mul(height as usize);
-    assert_eq!(
-        grid.len(), expected_len,
-        "grid length must be width*height"
-    );
+    assert_eq!(grid.len(), expected_len, "grid length must be width*height");
 
     let mut data = vec![0_u16; expected_len];
     let mut pair_to_id: HashMap<(ProvinceId, ProvinceId), u16> = HashMap::new();

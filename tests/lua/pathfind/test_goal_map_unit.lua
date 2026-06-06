@@ -1,5 +1,7 @@
 -- tests/lua/pathfind/test_goal_map_unit.lua
 -- Unit tests for lurek.pathfind.newGoalMap
+-- @covers lurek.pathfind.newGoalMap
+
 
 local t = require("test_harness")
 

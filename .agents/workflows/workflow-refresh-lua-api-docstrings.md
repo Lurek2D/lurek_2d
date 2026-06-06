@@ -3,7 +3,6 @@ trigger: manual
 description: "Refresh Lua API docstrings at the source and regenerate the derived reference artifacts."
 expected_agent: "Manager"
 ---
-
 # Workflow Refresh Lua API Docstrings
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Required generation scope.
 
 ## Steps
-1. Load [skill: documentation](../rules/skill_documentation.md) and [skill: lua-api-design](../rules/skill_lua-api-design.md) before acting.
+1. Load [skill: documentation](../skills/documentation/SKILL.md) and [skill: lua-api-design](../skills/lua-api-design/SKILL.md) before acting.
 2. Read the owning src/lua_api/*_api.rs file, the matching spec, and the current generated output before editing text.
 3. Fix the source doc comments only, keeping Lua-facing wording concrete and consistent with the shipped API.
 4. Regenerate the Lua API data and generated docs after the source edit, and copy extension-facing artifacts only if that flow is part of the current contract.

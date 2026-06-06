@@ -2,13 +2,13 @@
 //!
 //! Public `lurek.learning.*` behaviour remains covered by Lua tests.
 
+use lurek2d::learning::tensor::{gemm, LurekTensor};
 use lurek2d::learning::{Activation, EvolutionaryLayer, NeuralLayer};
 use lurek2d::learning::{Conv2D, GruLayer, LstmLayer, MaxPool2D};
 use lurek2d::learning::{
     LayerNorm, LurekNeuralEngine, MultiHeadAttention, NeuralBlock, PositionalEncoding,
     TransformerDecoderBlock, TransformerEncoderBlock,
 };
-use lurek2d::learning::tensor::{gemm, LurekTensor};
 
 mod tensor_tests {
     use super::*;
@@ -97,10 +97,7 @@ mod conv_tests {
         let input = LurekTensor::new(
             vec![1, 4, 4],
             vec![
-                1.0, 5.0, 2.0, 3.0,
-                7.0, 4.0, 0.0, 6.0,
-                9.0, 1.0, 8.0, 2.0,
-                3.0, 2.0, 4.0, 1.0,
+                1.0, 5.0, 2.0, 3.0, 7.0, 4.0, 0.0, 6.0, 9.0, 1.0, 8.0, 2.0, 3.0, 2.0, 4.0, 1.0,
             ],
         );
         let out = pool.forward(&input).expect("pool forward should succeed");
@@ -202,8 +199,18 @@ mod engine_tests {
     #[test]
     fn engine_roundtrip_flat_weights() {
         let mut engine = LurekNeuralEngine::new();
-        engine.add_block(NeuralBlock::Dense(NeuralLayer::new(2, 2, Activation::Linear)));
-        engine.add_block(NeuralBlock::Conv2D(Conv2D::new(1, 1, (2, 2), (1, 1), (0, 0))));
+        engine.add_block(NeuralBlock::Dense(NeuralLayer::new(
+            2,
+            2,
+            Activation::Linear,
+        )));
+        engine.add_block(NeuralBlock::Conv2D(Conv2D::new(
+            1,
+            1,
+            (2, 2),
+            (1, 1),
+            (0, 0),
+        )));
         engine.add_block(NeuralBlock::MaxPool2D(MaxPool2D::new((2, 2), (2, 2))));
         engine.add_block(NeuralBlock::Lstm(LstmLayer::new(2, 2)));
         engine.add_block(NeuralBlock::Gru(GruLayer::new(2, 2)));

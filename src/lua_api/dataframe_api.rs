@@ -1032,7 +1032,9 @@ impl LuaUserData for LuaDataFrame {
                 let cr = lua_to_col_ref(col)?;
                 let cv = lua_to_cell(val);
                 let df = this.inner.borrow();
-                let result = df.par_filter(cr, &op, &cv).map_err(LuaError::RuntimeError)?;
+                let result = df
+                    .par_filter(cr, &op, &cv)
+                    .map_err(LuaError::RuntimeError)?;
                 Ok(this.wrap(result))
             },
         );

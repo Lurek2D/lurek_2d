@@ -4,6 +4,7 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/pipeline/`
+- Feature gate: `pipeline`
 - Binding: `src/lua_api/pipeline_api.rs`
 - Namespace: `lurek.pipeline`
 - Lua API surface: `3` functions, `5` types, `63` methods
@@ -12,11 +13,19 @@
 
 ## Summary
 
-It is designed to sequence complex, multi-step operations—such as asset processing, test orchestration, analytics batching, or mod build workflows—by strictly enforcing dependency ordering. At the core of the module is the `Pipeline` struct, which stores named `PipelineStep`s and their dependencies. Using Kahn's algorithm, it performs topological sorting to determine the correct execution order and detects cycles before a workflow can run. It also groups independent steps into parallel execution tiers, allowing unrelated tasks to be scheduled concurrently.
+This module provides a dependency-aware workflow orchestration system that manages execution flows as directed acyclic graphs. Rather than using rigid call sequences, work is modeled as distinct steps linked by explicit prerequisites. This dependency-oriented design ensures that complex tasks execute in a safe and logical order, keeping code modular and allowing developers to assemble dynamic workflows from scripts and data-driven configuration tables.
 
-Each `PipelineStep` is highly configurable, acting as a discrete unit of work. Steps support conditional execution (via run-if predicates), configurable delayed starts, and maximum timeout limits. To handle transient failures robustly, steps can be configured with automatic retries and custom retry-delay backoffs. A step's error policy (`ErrorMode`) can be explicitly set to either abort the entire pipeline upon failure or allow execution to continue (treating the failure as optional). Pipelines themselves can be nested, with `add_sub_pipeline` allowing complex workflows to be merged under namespace prefixes while automatically wiring outer dependencies into the sub-pipeline's entry points.
+Before execution, the system validates the graph using topological sorting and cycle detection, automatically catching invalid or circular arrangements. It groups independent steps into concurrent bands so unrelated tasks can run in parallel without sacrificing safety. Callers can also fold smaller pipelines into larger ones using namespaced aliases, and output readable ASCII diagrams to visualize the entire dependency structure for easy debugging.
 
-Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven async engine that tracks elapsed wall-clock time, manages countdown timers for delayed steps, and seamlessly handles step progression (from `Pending` to `Waiting`, `Running`, and finally `Completed`, `Failed`, or `Skipped`). The scheduler supports both synchronous blocking runs and asynchronous, coroutine-based execution that yields between frames, ensuring the game loop is never stalled by long-running background pipelines. Upon completion or cancellation, the module generates a detailed `PipelineResult` object, summarizing the outcomes, durations, and error messages for all steps. The entire workflow definition and execution API is cleanly exposed to Lua via the `lurek.pipeline.*` namespace, offering script developers a powerful tool for asynchronous task orchestration.
+Individual steps carry granular configuration rules that govern their execution lifetime. Each task can define timing parameters such as pre-execution delays, timeouts, and automatic retry counts with separate intervals. Steps can also carry custom metadata, select optional or critical status, and evaluate predicate conditions dynamically. This lets pipelines skip unnecessary steps or recover from transient failures without aborting the entire sequence.
+
+Finally, the module supports both synchronous blocking execution and frame-driven asynchronous scheduling. Asynchronous pipelines run as lightweight coroutines that yield control, advancing step by step via update ticks. Execution tracks chronological progress, recording step durations, retry attempts, and detailed errors. Developers can customize the error mode to either abort on first failure or continue executing unaffected tasks.
+
+The runtime surface is feature-gated behind `pipeline`.
+
+Integration note: overlap with `automation` remains intentionally limited to composition at a higher level. This module still owns dependency-graph orchestration, while automation sequences remain a separate concern rather than being merged into the pipeline contract.
+
+Internal runtime note: hot-path dependency checks and async scheduler readiness now use borrowed step-name paths (`&str`) to reduce transient `String` cloning during per-frame updates. The public contract for parallel grouping and delayed-step readiness remains unchanged.
 
 ## Files
 
@@ -34,6 +43,7 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 
 - Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
 - It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
+- The entry points are compiled only when the `pipeline` feature is enabled, matching the opt-in nature of the orchestration stack.
 - Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
 
 ### [result.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/pipeline/result.rs)
@@ -47,6 +57,7 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 
 - Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
 - The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
+- Readiness reporting uses borrowed step-name references internally so async updates keep compatibility with existing scheduling semantics without cloning step identifiers each frame.
 - Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
 - Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 

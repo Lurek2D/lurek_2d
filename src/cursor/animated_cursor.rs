@@ -19,7 +19,11 @@ pub struct PulseConfig {
 
 impl Default for PulseConfig {
     fn default() -> Self {
-        Self { min_scale: 0.8, max_scale: 1.2, speed: 2.0 }
+        Self {
+            min_scale: 0.8,
+            max_scale: 1.2,
+            speed: 2.0,
+        }
     }
 }
 

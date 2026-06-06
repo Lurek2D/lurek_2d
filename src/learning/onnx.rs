@@ -7,8 +7,7 @@ use crate::learning::tensor::LurekTensor;
 use tract_onnx::prelude::*;
 
 /// Type alias for a runnable optimised tract ONNX plan.
-type TractPlan =
-    SimplePlan<TypedFact, Box<dyn TypedOp>, Graph<TypedFact, Box<dyn TypedOp>>>;
+type TractPlan = SimplePlan<TypedFact, Box<dyn TypedOp>, Graph<TypedFact, Box<dyn TypedOp>>>;
 
 /// Loaded and optimised ONNX model wrapped around a tract runnable plan.
 pub struct OnnxModel {

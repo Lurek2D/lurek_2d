@@ -339,7 +339,8 @@ impl LuaUserData for LuaSkeletonAnimation {
                         )))
                     }
                 };
-                this.inner.add_keyframe(bone_idx, property, time, value, easing);
+                this.inner
+                    .add_keyframe(bone_idx, property, time, value, easing);
                 Ok(())
             },
         );

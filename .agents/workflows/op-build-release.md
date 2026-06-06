@@ -3,7 +3,6 @@ trigger: manual
 description: "Run or repair the release build and packaging flow for one target artifact."
 expected_agent: "Manager"
 ---
-
 # Op Build Release
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Observed failure or goal.
 
 ## Steps
-1. Load [skill: build-system](../rules/skill_build-system.md), [skill: cross-platform](../rules/skill_cross-platform.md), and [skill: quality-pipeline](../rules/skill_quality-pipeline.md) before acting.
+1. Load [skill: build-system](../skills/build-system/SKILL.md), [skill: cross-platform](../skills/cross-platform/SKILL.md), and [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md) before acting.
 2. Read the owning build task, Cargo profile, and packaging script before changing anything.
 3. Align the local build path, release packaging path, and any install or dist assumptions so the same artifact story is consistent end to end.
 4. Run the narrowest failing build or package step first, fix only that layer, then rerun the same step before moving to the broader release gate.

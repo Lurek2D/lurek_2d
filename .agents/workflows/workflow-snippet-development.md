@@ -1,9 +1,3 @@
-﻿---
-trigger: manual
-description: "Run a full snippet-development workflow with module-level coverage gates and VS Code output generation."
-expected_agent: "Manager"
----
-
 # Workflow Snippet Development
 
 ## Goal
@@ -16,7 +10,7 @@ expected_agent: "Manager"
 - Required final gate.
 
 ## Steps
-1. Load [skill: examples-management](../rules/skill_examples-management.md), [skill: documentation](../rules/skill_documentation.md), and [skill: vscode-extension](../rules/skill_vscode-extension.md) before acting.
+1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: vscode-extension](../skills/vscode-extension/SKILL.md) before acting.
 2. Normalize the request into goal, constraints, out-of-scope items, and proof needed to call it done.
 3. Author handcrafted snippets in `content/snippets/<module>.lua` using strict marker blocks:
    - `-- @snippet <symbol>`
@@ -31,7 +25,7 @@ expected_agent: "Manager"
 5. Regenerate VS Code output with `python tools/snippets/gen_vscode_snippets.py`.
 6. Validate structure with `python tools/validate/validate_snippets.py`.
 7. Measure module-level coverage with `python tools/audit/snippet_coverage.py`.
-8. Update docs/changelog sync artifacts for touched scope.
+8. Update docs sync artifacts for touched scope.
 
 ## Success Criteria
 - [ ] The workflow outcome is complete: Drive one snippet batch from scoped request to validated completion.
@@ -53,4 +47,3 @@ expected_agent: "Manager"
 Mode: agent
 Loads skills: examples-management, documentation, vscode-extension
 Inputs required: Snippet goal., Target modules., Coverage expectation (module-level)., Required final gate.
-

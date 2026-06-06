@@ -6,6 +6,7 @@
 //! Supports layered heat and style effects so thematic map signals remain legible.
 //! Delivers the end-to-end draw pipeline for globe visualization in runtime frames.
 
+use super::sphere::great_circle_path;
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
@@ -14,7 +15,6 @@ use crate::globe::marker::MarkerStore;
 use crate::globe::projection::{build_view_matrix, project_point, project_region, OrbitCamera};
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{Arc as GlobeArc, FogState, GlobeSpec, HeatLayer, LodTier, Region};
-use super::sphere::great_circle_path;
 use crate::math::Vec2;
 use crate::render::renderer::{BlendMode, DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;

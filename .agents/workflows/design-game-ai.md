@@ -3,7 +3,6 @@ trigger: manual
 description: "Design one gameplay AI pattern using the existing lurek.ai surface."
 expected_agent: "Manager"
 ---
-
 # Design Game AI
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Constraints or realism target.
 
 ## Steps
-1. Load [skill: game-ai](../rules/skill_game-ai.md) and [skill: lua-scripting](../rules/skill_lua-scripting.md) before acting.
+1. Load [skill: game-ai](../skills/game-ai/SKILL.md) and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
 2. Read existing lurek.ai usage, nearby content, the relevant API docs, and any scenario constraints before editing.
 3. Keep the design inside the shipped AI primitives, make the control loop readable for content authors, and note any engine gap instead of silently inventing new hooks.
 4. Check the design against current examples and content patterns, then list any missing API or test support needed before implementation.

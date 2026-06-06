@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tools/scripts/test_fix_loop.py — Agent-friendly test-run / fix / re-run loop.
+Agent-friendly test-run / fix / re-run loop for cargo test.
 
 Designed to be called by AI agents or developers iterating on test fixes.
 Runs `cargo test`, parses the output, shows the most actionable failures,
@@ -8,19 +8,19 @@ saves a log, and optionally loops until clean.
 
 Usage:
     # Run all Lua tests once and print summary
-    python tools/scripts/test_fix_loop.py
+    python tools/dev/test_fix_loop.py
 
     # Run a specific test binary and filter
-    python tools/scripts/test_fix_loop.py --test lua_tests --filter library
+    python tools/dev/test_fix_loop.py --test lua_tests --filter library
 
     # Run in loop mode (re-runs until all pass or max iterations reached)
-    python tools/scripts/test_fix_loop.py --test lua_tests --loop --max-iterations 5
+    python tools/dev/test_fix_loop.py --test lua_tests --loop --max-iterations 5
 
     # Change thread count (default is cargo's default)
-    python tools/scripts/test_fix_loop.py --threads 4
+    python tools/dev/test_fix_loop.py --threads 4
 
     # Run a quick cargo check before testing
-    python tools/scripts/test_fix_loop.py --check-first
+    python tools/dev/test_fix_loop.py --check-first
 
 Exit codes:
     0 — all tests pass

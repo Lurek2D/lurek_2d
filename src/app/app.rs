@@ -1598,9 +1598,8 @@ impl LurekApp {
         if let Some(state_rc) = self.state.as_ref().cloned() {
             let mut st = state_rc.borrow_mut();
             if let Some(body_key) = st.active_font.or(st.default_font) {
-                let heading_slot = crate::render::Font::nearest_point_size(
-                    st.default_font_size.saturating_add(6),
-                );
+                let heading_slot =
+                    crate::render::Font::nearest_point_size(st.default_font_size.saturating_add(6));
                 let heading_key = if st.active_bold {
                     Some(body_key)
                 } else {
@@ -1792,7 +1791,8 @@ impl LurekApp {
             log::warn!("conf.toml hot-reload failed: {}", err);
             return;
         }
-        let font_config_changed = self.config.render.default_font_size != new_config.render.default_font_size
+        let font_config_changed = self.config.render.default_font_size
+            != new_config.render.default_font_size
             || self.config.render.default_font_bold != new_config.render.default_font_bold;
         self.config = new_config;
         self.window_vsync_mode = if self.config.window.vsync { 1 } else { 0 };
@@ -2863,7 +2863,13 @@ impl ApplicationHandler for LurekApp {
                                     self.restart_game();
                                 }
                                 Err(e) => {
-                                    log_msg!(warn, L084_DROP_ARCHIVE_FAIL, "{}: {}", path.display(), e);
+                                    log_msg!(
+                                        warn,
+                                        L084_DROP_ARCHIVE_FAIL,
+                                        "{}: {}",
+                                        path.display(),
+                                        e
+                                    );
                                 }
                             }
                         }
@@ -2879,7 +2885,12 @@ impl ApplicationHandler for LurekApp {
                         }
                         DropStartupTarget::Unsupported => {
                             if path.is_dir() {
-                                log_msg!(warn, L007_NO_MAIN_LUA, "no main.lua in: {}", path.display());
+                                log_msg!(
+                                    warn,
+                                    L007_NO_MAIN_LUA,
+                                    "no main.lua in: {}",
+                                    path.display()
+                                );
                             }
                         }
                     }

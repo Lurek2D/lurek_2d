@@ -4,10 +4,10 @@
 //! Retries transient transport failures with bounded backoff to improve completion reliability.
 //! Bridges worker-thread execution and runtime polling with consistent response delivery semantics.
 
+use crate::agent::types::{AgentError, AgentRequest, AgentResponse};
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
-use crate::agent::types::{AgentError, AgentRequest, AgentResponse};
 
 /// Background HTTP client used by [`LuaAgentRuntime`] and [`LuaAISystemRuntime`] to dispatch prompts.
 pub struct AgentClient {
@@ -52,7 +52,10 @@ impl AgentClient {
                 return;
             }
 
-            let response = AgentResponse { callback_id, body: result };
+            let response = AgentResponse {
+                callback_id,
+                body: result,
+            };
             if let Ok(mut guard) = pending.lock() {
                 guard.push(response);
             }
@@ -119,10 +122,14 @@ fn execute_request(req: &AgentRequest) -> Result<String, AgentError> {
     });
 
     let body_bytes = body.to_string().into_bytes();
-    let headers = vec![
-        ("Content-Type".to_string(), "application/json".to_string()),
-    ];
-    let resp = http_execute("POST", &req.url, &headers, Some(&body_bytes), req.timeout_secs);
+    let headers = vec![("Content-Type".to_string(), "application/json".to_string())];
+    let resp = http_execute(
+        "POST",
+        &req.url,
+        &headers,
+        Some(&body_bytes),
+        req.timeout_secs,
+    );
     if let Some(err) = resp.error {
         return Err(AgentError::Network(err));
     }

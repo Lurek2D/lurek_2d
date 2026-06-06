@@ -8,19 +8,19 @@ pub mod chat;
 pub mod client;
 /// Working, episodic, and semantic memory primitives for agents.
 pub mod memory;
-/// Agent orchestration logic shared between runtime entrypoints.
-pub mod orchestration;
 /// Ollama server lifecycle and model-management helpers.
 pub mod ollama;
+/// Agent orchestration logic shared between runtime entrypoints.
+pub mod orchestration;
 /// Agent and AI-system configuration/state model structures.
 pub mod state;
 /// Shared request and response types for LLM transport.
 pub mod types;
 
-pub use chat::{GlobalLlmConfig, LlmChat, LlmTemplate, read_global_config, write_global_config};
+pub use chat::{read_global_config, write_global_config, GlobalLlmConfig, LlmChat, LlmTemplate};
 pub use client::AgentClient;
 pub use memory::{AgentMemory, EpisodicMemory, SemanticMemory, WorkingMemory};
-pub use orchestration::AgentBatchTask;
 pub use ollama::{ModelInfo, OllamaManager, OllamaPullResult};
-pub use state::{AgentState, AISystemState, SystemSkill};
+pub use orchestration::AgentBatchTask;
+pub use state::{AISystemState, AgentState, SystemSkill};
 pub use types::{AgentError, AgentRequest, AgentResponse};

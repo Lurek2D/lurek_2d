@@ -3,7 +3,6 @@ trigger: manual
 description: "Review a bounded code slice for defects, risks, and missing validation."
 expected_agent: "Manager"
 ---
-
 # Review Code Quality
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any expected acceptance bar.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md), [skill: module-architecture](../rules/skill_module-architecture.md), and [skill: error-handling](../rules/skill_error-handling.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), and [skill: error-handling](../skills/error-handling/SKILL.md) before acting.
 2. Read the named diff or files, nearby tests, and the owning contract source if one exists.
 3. Prioritize correctness, control-flow risk, error handling, and architecture leakage over style commentary.
 4. End with residual risk and validation gaps after the findings list.

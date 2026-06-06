@@ -3,7 +3,6 @@
 //! Encodes retry semantics and error categories so runtime behavior is consistent across entry points.
 //! Serves as the canonical contract layer that keeps agent submodules interoperable and predictable.
 
-
 /// Error variants for LLM agent requests; used by [`AgentClient`] and [`AgentState`].
 #[derive(Debug, thiserror::Error)]
 pub enum AgentError {

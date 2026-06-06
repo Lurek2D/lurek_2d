@@ -8,15 +8,29 @@
 - Namespace: `lurek.tilemap`
 - Lua API surface: `28` functions, `22` types, `162` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
-- Lua test path(s): tests/lua/unit/test_tilemap.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
+- Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
 
 ## Summary
 
-Central to this module is the `TileMap` struct, which stores stacked `TileLayer` grids, managing per-cell tile IDs (GIDs), flip flags, collision data, and layer-specific properties like tint and parallax scroll factors. Maps can be populated dynamically or imported from standard industry formats; the module includes robust parsers for both TMX (Tiled) and LDtk map files, seamlessly transforming their XML or JSON data into engine-native structures while supporting orthogonal, staggered, hexagonal, and isometric orientations.
+This module serves as the primary system for building, simulating, and visualizing rich, grid-based game worlds. It unifies orthogonal, isometric, and hexagonal structures under a single set of spatial operations, enabling developers to map virtual grid coordinates directly into screen-space projections. The system manages conversions, diamond layout ordering, diagonal sorting, and hexadecimal neighborhood navigations for gameplay logic.
 
-To support massive, open-world environments, the module implements a sophisticated `ChunkMap` system alongside a `LargeMapRenderer`. These tools partition infinite sparse tile grids into fixed-size square chunks, facilitating on-demand loading, unloading, and view-frustum culling, which drastically reduces memory usage and GPU load for oversized maps. For complex terrain, the `AutoTileSheet` simplifies level design by using bitmask-based neighbor rules to automatically select the correct tile index for seamless terrain transitions (supporting 4-bit and 8-bit matching). Additionally, specialized components like `IsoMap` provide dedicated handling for multi-level isometric projection, ensuring proper depth sorting (painter's algorithm) across intricate 3D-like structures.
+For massive sandbox and role-playing worlds, the module employs sparse chunk-based storage to handle vast environments without overwhelming memory allocations. This representation connects to a chunk-oriented rendering engine that groups layers and tiles into blocks for camera-aware view culling. Viewport-scoped culling keeps frame rates high, while dirty-chunk tracking guarantees that modified tiles update immediately.
 
-The module also goes far beyond simple rendering. It features a robust procedural generation engine (`MapGen`) that constructs maps deterministically from reusable `MapBlock` prefabs and scripted operations (fill, scatter, path). For physics and gameplay logic, the map supports continuous AABB sweep-cast collision detection directly against solid tiles. `PolygonMap` enables the definition and spatial querying of named convex/concave regions (useful for zones or provinces), while `TileWalker` provides utilities for grid-based discrete movement and facing logic. Supported by the extensive `lurek.tilemap.*` Lua API, this module is a foundational pillar for building complex, optimized, and interactive 2D worlds.
+To accommodate mainstream workflows, the tilemap engine supports direct imports from industry-standard editor formats. It parses XML-based Tiled files and LDtk JSON documents on the fly, decoding base64-compressed layers and preserving custom properties. The importer strips auxiliary packaging flags to isolate native cell identities, reconstructing layers, object entities, and visual settings into engine-native structures.
+
+In addition to hand-crafted environments, the subsystem provides a procedural generation pipeline built on repeatable seed values. By combining reusable block templates with procedural scripts, developers can orchestrate operations like flood fills, path carving, and noise scattering. Seed-driven randomness guarantees identical world outputs across runs, making procedural layouts stable and testable.
+
+Terrain continuity is managed dynamically via an autotiling system that checks tile neighborhoods to select matching sprites automatically. Supporting both four-neighbor and eight-neighbor diagonal rules, this system maps structural bitmasks directly to tileset transitions. Developers can paint paths, organic borders, and water flows, letting the runtime patch corner seams and transition quads smoothly.
+
+Beyond visual representation, the tilemap forms the bedrock of spatial collision detection and pathfinding. Individual tiles convey solidity properties that feed swept bounding-box tests, giving platformers and top-down entities collision responses. The system also exports raw layers into navigation grids, making it simple for pathfinding algorithms to query obstacle placements and plan routes.
+
+Finally, the module provides specialized spatial tools for tactical strategy games, including hex ring traversals, spiral patterns, and line-of-sight traversals. Hexagonal maps now travel through the same render-command path as other orientations, so hex coordinate helpers and tilemap drawing stay aligned. It also manages arbitrary polygon regions layered on top of the grid to define zone semantics, ownership areas, and visual outlines. These regions support selection testing and compute bounds to coordinate dynamic camera positioning and trigger regions.
+
+Interactive elements are rounded out by event-driven callbacks triggered as entities step across tile boundaries. These hooks notify gameplay scripts during entries and exits, facilitating pressure plates, hazards, and portals. Supported by coordinate interpolations for smooth movement ticks, this complete framework bridges static world data with reactive, dynamic gameplay simulation.
+
+Internal layout note: the module surface is now split more explicitly by concern. Procedural-generation model types live in `mapgen_model.rs`, collision helpers in `tilemap_collision.rs`, and reverse-index maintenance in `tilemap_index.rs`, while the public `tilemap` API remains unchanged.
+
+Animation update note: animated tile advancement is now tied to visible GIDs and viewport invalidation state, so on-screen animated cells refresh through the dirty/visible path without disturbing the active viewport configuration.
 
 ## Files
 
@@ -88,6 +102,12 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - It enables data-driven map variety without requiring hand-authored full layouts for every scene.
 - It anchors procedural authoring in predictable structures that can be debugged and replayed.
 
+### [mapgen_model.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/tilemap/mapgen_model.rs)
+
+- This file holds shared procedural-generation model types extracted from `mapgen.rs` so generation data structures can evolve without keeping every concern in one source file.
+- It keeps orientation, zone, edge, and script-shape metadata reusable across generator logic and callers.
+- The split is structural only; the public map-generation contract stays under `lurek.tilemap`.
+
 ### [mod.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/tilemap/mod.rs)
 
 - This module delivers the high-level tile world stack for storage, generation, import, and rendering.
@@ -109,6 +129,7 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - This file provides tilemap render-command emission with camera-aware culling across map layers.
 - It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling.
 - It applies per-layer visibility and tint state when composing command output for the renderer.
+- It respects orthogonal, isometric, and hexagonal map orientation so debug rendering matches the map's coordinate system.
 - It keeps draw generation predictable so map visualization remains stable during updates.
 - It provides a stable debug visualization path when textured rendering is unavailable.
 
@@ -131,10 +152,21 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - It advances tile animation timelines from tileset frame data during runtime updates.
 - It converts world and tile coordinates in both directions using map geometry settings.
 - It emits culled draw commands for viewport-scoped visualization and debug rendering.
+- It tracks visible animated GIDs and dirty viewport state so animated tiles update only where the current view requires it.
 - It exports walkability structures so pathfinding systems can consume map topology directly.
 - It maintains reverse lookup caches from tile IDs to positions for fast spatial queries.
 - It supports image-based debug outputs for inspection, tooling, and regression validation.
 - It anchors gameplay-critical map behavior in one consistent and testable runtime surface.
+
+### [tilemap_collision.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/tilemap/tilemap_collision.rs)
+
+- This file contains tilemap collision helpers extracted from `tilemap.rs` so sweep and overlap math can stay isolated from storage concerns.
+- It keeps the tile-grid collision query path explicit without changing the public `TileMap` collision surface.
+
+### [tilemap_index.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/tilemap/tilemap_index.rs)
+
+- This file contains reverse-index cache helpers extracted from `tilemap.rs`.
+- It centralizes GID-to-position cache maintenance so lookup performance stays predictable while the core map type remains easier to navigate.
 
 ### [tileset.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/tilemap/tileset.rs)
 

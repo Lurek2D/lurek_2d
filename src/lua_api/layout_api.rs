@@ -2,8 +2,8 @@
 
 use super::SharedState;
 use crate::layout::{
-    center_in_area, layout_dag, layout_force, layout_tree, snap_to_grid, ForceConfig,
-    LayoutConfig, LayoutEdge, LayoutNode, LayoutResult, NodeId,
+    center_in_area, layout_dag, layout_force, layout_tree, snap_to_grid, ForceConfig, LayoutConfig,
+    LayoutEdge, LayoutNode, LayoutResult, NodeId,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -114,8 +114,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                         LuaValue::Number(n) => n as NodeId,
                         _ => continue,
                     };
-                    let kids: Vec<NodeId> =
-                        val.sequence_values::<usize>().filter_map(|v| v.ok()).collect();
+                    let kids: Vec<NodeId> = val
+                        .sequence_values::<usize>()
+                        .filter_map(|v| v.ok())
+                        .collect();
                     children.insert(parent_id, kids);
                 }
 

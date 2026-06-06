@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one Lua or game example that demonstrates a concrete lurek.* API, pattern, or gameplay concept."
 expected_agent: "Manager"
 ---
-
 # Create Example
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Required assets or setup.
 
 ## Steps
-1. Load [skill: examples-management](../rules/skill_examples-management.md), [skill: lua-scripting](../rules/skill_lua-scripting.md), and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: lua-scripting](../skills/lua-scripting/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Read `content/examples/`, nearby examples, the matching API docs or spec (`docs/specs/`), and any asset constraints before writing anything.
 3. Choose scope: if `target=` was given, the example shows exactly one API call or pattern; if `concept=` was given, the example shows one gameplay mechanic using the minimum set of `lurek.*` systems it actually needs. One example, one teaching goal.
 4. Use the real API exactly as shipped, keep the file small, and add only the README text needed for discovery and running. Do not scaffold toward a library or demo — use `/create-demo` for that.

@@ -35,4 +35,3 @@ pub fn set_level(level: &str) {
 pub fn get_level() -> String {
     log_messages::get_log_level().to_string()
 }
-

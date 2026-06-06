@@ -1,9 +1,9 @@
 //! File: tests/rust/unit/camera_tests.rs
 
 use lurek2d::camera::types::{Camera, Camera2D};
-use lurek2d::camera::CameraFollowEasing;
 use lurek2d::camera::viewport::{ScaleMode, Viewport};
 use lurek2d::camera::viewport_scale::ViewportScale;
+use lurek2d::camera::CameraFollowEasing;
 use lurek2d::camera::CameraRig2D;
 use lurek2d::math::Vec2;
 use lurek2d::render::renderer::RenderCommand;
@@ -210,7 +210,6 @@ mod viewport_scale_tests {
         assert!((oy).abs() < f32::EPSILON);
     }
 }
-
 
 mod rig_tests {
     use super::*;

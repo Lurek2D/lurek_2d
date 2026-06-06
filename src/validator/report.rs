@@ -59,7 +59,12 @@ pub struct Violation {
 
 impl Violation {
     /// Create a new `Violation` for the given rule, severity, file, and message.
-    pub fn new(rule_id: impl Into<String>, severity: Severity, file: PathBuf, message: impl Into<String>) -> Self {
+    pub fn new(
+        rule_id: impl Into<String>,
+        severity: Severity,
+        file: PathBuf,
+        message: impl Into<String>,
+    ) -> Self {
         Self {
             rule_id: rule_id.into(),
             severity,
@@ -104,22 +109,34 @@ pub struct ValidationReport {
 impl ValidationReport {
     /// Create an empty report with no violations and zero counters.
     pub fn empty() -> Self {
-        Self { violations: Vec::new(), files_checked: 0, duration_ms: 0 }
+        Self {
+            violations: Vec::new(),
+            files_checked: 0,
+            duration_ms: 0,
+        }
     }
 
     /// Return the count of violations at `Error` severity or higher.
     pub fn error_count(&self) -> usize {
-        self.violations.iter().filter(|v| v.severity >= Severity::Error).count()
+        self.violations
+            .iter()
+            .filter(|v| v.severity >= Severity::Error)
+            .count()
     }
 
     /// Return the count of violations at exactly `Warning` severity.
     pub fn warning_count(&self) -> usize {
-        self.violations.iter().filter(|v| v.severity == Severity::Warning).count()
+        self.violations
+            .iter()
+            .filter(|v| v.severity == Severity::Warning)
+            .count()
     }
 
     /// Return `true` if any violation is at `Error` or `Critical` severity.
     pub fn has_errors(&self) -> bool {
-        self.violations.iter().any(|v| v.severity >= Severity::Error)
+        self.violations
+            .iter()
+            .any(|v| v.severity >= Severity::Error)
     }
 
     /// Return `true` if the report contains no violations at any severity.
@@ -129,7 +146,10 @@ impl ValidationReport {
 
     /// Return all violations that match the given severity level.
     pub fn by_severity(&self, sev: Severity) -> Vec<&Violation> {
-        self.violations.iter().filter(|v| v.severity == sev).collect()
+        self.violations
+            .iter()
+            .filter(|v| v.severity == sev)
+            .collect()
     }
 
     /// Return all violations that were raised against the given file path.

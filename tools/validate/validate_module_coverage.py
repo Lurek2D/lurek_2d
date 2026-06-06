@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-validate_module_coverage.py
-============================
-Validates that every top-level src/<module>/ directory has a matching
+Validate top-level module/spec coverage.
+
+Checks that every top-level src/<module>/ directory has a matching
 docs/specs/<module>.md file.
 
 Also reports:

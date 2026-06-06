@@ -20,15 +20,9 @@ pub enum SpineImportError {
     /// A required field has invalid type or value.
     InvalidField(&'static str),
     /// A bone references a missing parent by name.
-    UnknownParent {
-        child: String,
-        parent: String,
-    },
+    UnknownParent { child: String, parent: String },
     /// A slot references an unknown bone by name.
-    UnknownBoneForSlot {
-        slot: String,
-        bone: String,
-    },
+    UnknownBoneForSlot { slot: String, bone: String },
     /// An animation channel references an unknown bone by name.
     UnknownAnimationBone(String),
 }
@@ -93,17 +87,16 @@ fn parse_spine(root: &Value) -> Result<Skeleton, SpineImportError> {
         .ok_or(SpineImportError::MissingField("bones"))?;
     for bone in bones {
         let name = req_str(bone, "name")?.to_string();
-        let parent_idx = match bone.get("parent").and_then(Value::as_str) {
-            Some(parent_name) => Some(
-                *bone_map
-                    .get(parent_name)
-                    .ok_or_else(|| SpineImportError::UnknownParent {
+        let parent_idx =
+            match bone.get("parent").and_then(Value::as_str) {
+                Some(parent_name) => Some(*bone_map.get(parent_name).ok_or_else(|| {
+                    SpineImportError::UnknownParent {
                         child: name.clone(),
                         parent: parent_name.to_string(),
-                    })?,
-            ),
-            None => None,
-        };
+                    }
+                })?),
+                None => None,
+            };
 
         let idx = skeleton.add_bone_full(BoneParams {
             name: name.clone(),
@@ -121,12 +114,13 @@ fn parse_spine(root: &Value) -> Result<Skeleton, SpineImportError> {
         for slot in slots {
             let slot_name = req_str(slot, "name")?;
             let bone_name = req_str(slot, "bone")?;
-            let bone_idx = *bone_map
-                .get(bone_name)
-                .ok_or_else(|| SpineImportError::UnknownBoneForSlot {
-                    slot: slot_name.to_string(),
-                    bone: bone_name.to_string(),
-                })?;
+            let bone_idx =
+                *bone_map
+                    .get(bone_name)
+                    .ok_or_else(|| SpineImportError::UnknownBoneForSlot {
+                        slot: slot_name.to_string(),
+                        bone: bone_name.to_string(),
+                    })?;
             let attachment = slot
                 .get("attachment")
                 .and_then(Value::as_str)
@@ -283,10 +277,22 @@ fn parse_spine_scale_channel(
     for key in keys {
         let t = num_any(key, &["time"]).unwrap_or(0.0);
         if let Some(x) = num_any(key, &["x"]) {
-            anim.add_keyframe(bone_idx, BoneProperty::ScaleX, t, x, parse_spine_easing(key));
+            anim.add_keyframe(
+                bone_idx,
+                BoneProperty::ScaleX,
+                t,
+                x,
+                parse_spine_easing(key),
+            );
         }
         if let Some(y) = num_any(key, &["y"]) {
-            anim.add_keyframe(bone_idx, BoneProperty::ScaleY, t, y, parse_spine_easing(key));
+            anim.add_keyframe(
+                bone_idx,
+                BoneProperty::ScaleY,
+                t,
+                y,
+                parse_spine_easing(key),
+            );
         }
         *max_time = (*max_time).max(t);
     }
@@ -318,9 +324,11 @@ fn parse_dragonbones(root: &Value) -> Result<Skeleton, SpineImportError> {
             let name = req_str(bone, "name")?.to_string();
             let transform = bone.get("transform");
 
-            let x = num_nested(transform, &["x"]).or_else(|| num_any(bone, &["x"]))
+            let x = num_nested(transform, &["x"])
+                .or_else(|| num_any(bone, &["x"]))
                 .unwrap_or(0.0);
-            let y = num_nested(transform, &["y"]).or_else(|| num_any(bone, &["y"]))
+            let y = num_nested(transform, &["y"])
+                .or_else(|| num_any(bone, &["y"]))
                 .unwrap_or(0.0);
             let rot_deg = num_nested(transform, &["skX", "rotate"])
                 .or_else(|| num_any(bone, &["rotation"]))
@@ -329,14 +337,12 @@ fn parse_dragonbones(root: &Value) -> Result<Skeleton, SpineImportError> {
             let sy = num_nested(transform, &["scY", "scaleY"]).unwrap_or(1.0);
 
             let parent_idx = match bone.get("parent").and_then(Value::as_str) {
-                Some(parent_name) => Some(
-                    *bone_map
-                        .get(parent_name)
-                        .ok_or_else(|| SpineImportError::UnknownParent {
-                            child: name.clone(),
-                            parent: parent_name.to_string(),
-                        })?,
-                ),
+                Some(parent_name) => Some(*bone_map.get(parent_name).ok_or_else(|| {
+                    SpineImportError::UnknownParent {
+                        child: name.clone(),
+                        parent: parent_name.to_string(),
+                    }
+                })?),
                 None => None,
             };
 
@@ -361,12 +367,13 @@ fn parse_dragonbones(root: &Value) -> Result<Skeleton, SpineImportError> {
                 .and_then(Value::as_str)
                 .or_else(|| slot.get("bone").and_then(Value::as_str))
                 .ok_or(SpineImportError::MissingField("slot.parent"))?;
-            let bone_idx = *bone_map
-                .get(bone_name)
-                .ok_or_else(|| SpineImportError::UnknownBoneForSlot {
-                    slot: slot_name.to_string(),
-                    bone: bone_name.to_string(),
-                })?;
+            let bone_idx =
+                *bone_map
+                    .get(bone_name)
+                    .ok_or_else(|| SpineImportError::UnknownBoneForSlot {
+                        slot: slot_name.to_string(),
+                        bone: bone_name.to_string(),
+                    })?;
             let attachment = slot
                 .get("displayName")
                 .and_then(Value::as_str)
@@ -447,10 +454,22 @@ fn parse_dragonbones_animations(
                     frame_rate,
                     |entry, time, anim| {
                         if let Some(x) = num_any(entry, &["x"]) {
-                            anim.add_keyframe(bone_idx, BoneProperty::X, time, x, EasingType::Linear);
+                            anim.add_keyframe(
+                                bone_idx,
+                                BoneProperty::X,
+                                time,
+                                x,
+                                EasingType::Linear,
+                            );
                         }
                         if let Some(y) = num_any(entry, &["y"]) {
-                            anim.add_keyframe(bone_idx, BoneProperty::Y, time, y, EasingType::Linear);
+                            anim.add_keyframe(
+                                bone_idx,
+                                BoneProperty::Y,
+                                time,
+                                y,
+                                EasingType::Linear,
+                            );
                         }
                     },
                     &mut anim,

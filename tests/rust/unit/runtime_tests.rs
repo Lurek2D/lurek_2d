@@ -216,7 +216,11 @@ mod error_tests {
         // JSON should escape newline as \\n and tab as \\t
         assert!(json.contains("\\n"), "newline should be escaped: {}", json);
         assert!(json.contains("\\t"), "tab should be escaped: {}", json);
-        assert!(!json.contains("\n"), "raw newline should not appear: {}", json);
+        assert!(
+            !json.contains("\n"),
+            "raw newline should not appear: {}",
+            json
+        );
     }
 
     #[test]
@@ -225,8 +229,16 @@ mod error_tests {
         let snapshot = err.snapshot();
         let json = snapshot.to_json();
         // Field should be serialized as "hint" due to #[serde(rename = "hint")]
-        assert!(json.contains("\"hint\""), "JSON should have 'hint' field: {}", json);
-        assert!(!json.contains("\"recovery_hint\""), "JSON should not have 'recovery_hint': {}", json);
+        assert!(
+            json.contains("\"hint\""),
+            "JSON should have 'hint' field: {}",
+            json
+        );
+        assert!(
+            !json.contains("\"recovery_hint\""),
+            "JSON should not have 'recovery_hint': {}",
+            json
+        );
     }
 }
 
@@ -480,7 +492,9 @@ default_font_bold = true
         assert!(script.contains("local function is_complete_input(text)"));
         assert!(script.contains("elseif ch == \"{\" then"));
         assert!(script.contains("elseif ch == \"}\" then"));
-        assert!(script.contains("if key == \"return\" or key == \"kpenter\" then submit(); return end"));
+        assert!(
+            script.contains("if key == \"return\" or key == \"kpenter\" then submit(); return end")
+        );
         assert!(script.contains("prompt_prefix() .. input:gsub(\"\\n\", \"\\\\n\")"));
     }
 
@@ -678,7 +692,11 @@ mod physics_run_config_tests {
 
     #[test]
     fn mutated_cfg_does_not_affect_new_default() {
-        let _cfg = PhysicsRunConfig { debug_draw: true, max_steps: 64, ..Default::default() };
+        let _cfg = PhysicsRunConfig {
+            debug_draw: true,
+            max_steps: 64,
+            ..Default::default()
+        };
         let fresh = PhysicsRunConfig::default();
         assert!(!fresh.debug_draw);
         assert_eq!(fresh.max_steps, 8);

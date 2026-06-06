@@ -3,7 +3,6 @@ trigger: manual
 description: "Set up or update CI automation for the current repo build and test reality."
 expected_agent: "Manager"
 ---
-
 # Setup CI Pipeline
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Artifact or release expectation.
 
 ## Steps
-1. Load [skill: ci-cd-pipeline](../rules/skill_ci-cd-pipeline.md), [skill: build-system](../rules/skill_build-system.md), and [skill: github-workflow](../rules/skill_github-workflow.md) before acting.
+1. Load [skill: ci-cd-pipeline](../skills/ci-cd-pipeline/SKILL.md), [skill: build-system](../skills/build-system/SKILL.md), and [skill: github-workflow](../skills/github-workflow/SKILL.md) before acting.
 2. Read the current tasks, build scripts, test entry points, and any existing workflow files before editing automation.
 3. Prefer checked-in scripts and task entry points over long workflow-only shell logic so CI and local behavior stay aligned.
 4. Wire only the required checks, caches, and artifacts for the named pipeline goal, and keep platform assumptions explicit.

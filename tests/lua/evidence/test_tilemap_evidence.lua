@@ -1,6 +1,10 @@
 -- test_evidence_tilemap.lua
 -- Evidence test: lurek.tilemap API + renders tile grid to PNG
 -- Produces: tilemap_grid.png, tilemap_checkerboard.png
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.tilemap.newTileMap
+
 
 
 local OUT = "tests/output/tilemap/"

@@ -3,7 +3,6 @@ trigger: manual
 description: "Execute one accepted roadmap phase through the smallest valid owner set."
 expected_agent: "Manager"
 ---
-
 # Implement Roadmap Phase
 
 ## Goal
@@ -16,10 +15,10 @@ expected_agent: "Manager"
 - Known blockers.
 
 ## Steps
-1. Load [skill: roadmap-planning](../rules/skill_roadmap-planning.md), [skill: module-architecture](../rules/skill_module-architecture.md), [skill: documentation](../rules/skill_documentation.md), and [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read the accepted phase artifact first and restate the goal, boundaries, dependencies, and binary finish gate before routing work.
 3. Split the phase into the smallest valid owner slices and route only when the current gate and proof are clear.
-4. Keep docs, tests, and changelog sync tied to the slices that actually changed instead of treating them as one late catch-all step.
+4. Keep docs and tests sync tied to the slices that actually changed instead of treating them as one late catch-all step.
 5. Close the phase only after the owning validations passed and the phase artifact reflects the current state.
 
 ## Success Criteria

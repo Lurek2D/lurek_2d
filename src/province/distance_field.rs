@@ -59,10 +59,7 @@ pub fn compute_distance_field(
     use std::collections::VecDeque;
 
     let expected_len = (width as usize).saturating_mul(height as usize);
-    assert_eq!(
-        grid.len(), expected_len,
-        "grid length must be width*height"
-    );
+    assert_eq!(grid.len(), expected_len, "grid length must be width*height");
 
     let mut out = vec![u8::MAX; expected_len];
     let mut queue: VecDeque<(u32, u32)> = VecDeque::new();

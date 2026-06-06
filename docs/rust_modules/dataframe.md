@@ -12,17 +12,15 @@
 
 ## Summary
 
-The `dataframe` module is the structured table workspace for runtime and tooling data. It gives one place to store rows and columns, keep typed values, and run predictable data operations.
+The dataframe module delivers a complete tabular data workspace and in-memory relational database framework for Lurek2D. Its core purpose is to provide scripts and engine subsystems with high-performance table management, enabling tabular gameplay data, analytics, and diagnostic reporting. It centers around a dual model: DataFrames storing structured columns and typed cell values, and Databases grouping multiple tables under one logical schema boundary for relational queries and frame joins.
 
-Its functional scope covers everyday table work and deeper analytics. You can filter, sort, group, aggregate, reshape, and profile data, then compose these steps into repeatable pipelines.
+To retrieve and transform tabular datasets efficiently, the module supports declarative and pipeline-based query designs. It incorporates a SQL-style parsing engine that executes structured query text—including table joins, multi-column filters, having clauses, projection arithmetic with aliasing, and aggregate groupings—over database tables. Alternatively, developers can chain sorting, slicing, and column selections into lazy query pipelines that defer execution, optimizing resources by only materializing data when collected.
 
-The module supports both immediate and deferred query styles. Teams can run direct operations for simple flows or build lazy pipelines and materialize results only when needed.
+For heavy statistical calculations over large tables, the module integrates a vectorized column storage layer. It stores raw column vectors with validity masks, executing mathematical reductions and binary operations in parallel using a Rayon thread pool. To keep gameplay loops responsive and frame rates stable, it provides background task managers that run file parsing and complex SQL queries on asynchronous worker threads, returning results through pollable handles and thread-safe snapshots.
 
-SQL-style access and table transforms live in the same surface. This helps developers move between scripted query logic and text-based query workflows without changing data contracts.
+Tabular analysis is bolstered by advanced statistical windowing and reshaping operations. The engine computes rolling aggregates like rolling means, sums, minimums, and maximums across chronological rows, along with dense rankings, cumulative running totals, and percentage changes for trend analysis. This is complemented by pivot-table reshaping, min-max normalizations, z-score transformations, Pearson correlation matrices, and duplicate-row diagnostic reports for data validation.
 
-Serialization and file I/O support keep data portable. CSV, JSON, and binary paths make it practical to load, save, exchange, and test tabular payloads across tools and runtime sessions.
-
-In practice, `lurek.dataframe` provides a stable foundation: ingest data, shape it, analyze it, and export it through one consistent API.
+Data persistence and interchange are handled through a robust serialization system. The module parses and encodes tables across multiple standard formats, offering CSV file loading with automatic type inference, JSON data mapping for nested database structures, and a compact proprietary binary format (LVDF) for optimized storage on disk. It also includes automatic text-table formatting utilities that render data tables into highly legible diagnostic logs for session debugging.
 
 ## Files
 

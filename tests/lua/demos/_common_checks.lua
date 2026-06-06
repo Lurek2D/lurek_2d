@@ -1,5 +1,7 @@
 -- Shared headless checks for content/games demos (tests/lua/demos/).
 -- Loaded via dofile() from each test_<name>.lua file.
+-- @covers lurek.window.present
+
 
 local function main_path(demo_dir)
     if demo_dir:sub(-1) == "/" or demo_dir:sub(-1) == "\\" then

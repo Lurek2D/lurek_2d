@@ -69,7 +69,11 @@ pub struct ModInstance {
 
 impl ModInstance {
     /// Create a new `ModInstance` with the given mod ID, type name, and instance ID.
-    pub fn new(mod_id: impl Into<String>, type_name: impl Into<String>, instance_id: impl Into<String>) -> Self {
+    pub fn new(
+        mod_id: impl Into<String>,
+        type_name: impl Into<String>,
+        instance_id: impl Into<String>,
+    ) -> Self {
         Self {
             mod_id: mod_id.into(),
             type_name: type_name.into(),
@@ -91,16 +95,19 @@ impl ModInstance {
 
     /// Return all fields as a flat `String → String` map for validation against a type schema.
     pub fn field_as_string_map(&self) -> HashMap<String, String> {
-        self.fields.iter().map(|(k, v)| {
-            let s = match v {
-                FieldValue::String(s) => s.clone(),
-                FieldValue::Integer(n) => n.to_string(),
-                FieldValue::Float(f) => f.to_string(),
-                FieldValue::Boolean(b) => b.to_string(),
-                _ => "<complex>".to_string(),
-            };
-            (k.clone(), s)
-        }).collect()
+        self.fields
+            .iter()
+            .map(|(k, v)| {
+                let s = match v {
+                    FieldValue::String(s) => s.clone(),
+                    FieldValue::Integer(n) => n.to_string(),
+                    FieldValue::Float(f) => f.to_string(),
+                    FieldValue::Boolean(b) => b.to_string(),
+                    _ => "<complex>".to_string(),
+                };
+                (k.clone(), s)
+            })
+            .collect()
     }
 }
 
@@ -113,7 +120,11 @@ impl ModInstance {
 /// name = "Iron Sword"
 /// damage = 10
 /// ```
-pub fn load_instances_from_toml(mod_id: &str, content: &str, source_file: &Path) -> Vec<ModInstance> {
+pub fn load_instances_from_toml(
+    mod_id: &str,
+    content: &str,
+    source_file: &Path,
+) -> Vec<ModInstance> {
     let mut instances = Vec::new();
     let mut current_type = String::new();
     let mut current_id = String::new();
@@ -169,8 +180,12 @@ pub fn load_instances_from_toml(mod_id: &str, content: &str, source_file: &Path)
 
 fn parse_toml_value(s: &str) -> FieldValue {
     // Boolean
-    if s == "true" { return FieldValue::Boolean(true); }
-    if s == "false" { return FieldValue::Boolean(false); }
+    if s == "true" {
+        return FieldValue::Boolean(true);
+    }
+    if s == "false" {
+        return FieldValue::Boolean(false);
+    }
 
     // String
     if s.starts_with('"') && s.ends_with('"') && s.len() >= 2 {

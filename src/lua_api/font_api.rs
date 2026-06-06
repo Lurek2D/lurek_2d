@@ -1,7 +1,7 @@
 //! File: src/lua_api/font_api.rs
 
 use super::SharedState;
-use crate::render::font::{AVAILABLE_POINT_SIZES, Font};
+use crate::render::font::{Font, AVAILABLE_POINT_SIZES};
 use crate::runtime::resource_keys::FontKey;
 use mlua::prelude::*;
 use slotmap::Key;
@@ -62,16 +62,19 @@ impl LuaUserData for LuaFont {
         /// @param | text | string | Text to measure.
         /// @param | scale | number | Scale factor applied to dimensions.
         /// @return | number, number | Width and height in pixels.
-        methods.add_method("measure", |_, this, (text, scale): (String, Option<f32>)| {
-            let scale = scale.unwrap_or(1.0);
-            let st = this.state.borrow();
-            let font = st.fonts.get(this.handle_id).ok_or_else(|| {
-                LuaError::RuntimeError("Font handle is not valid or was released".into())
-            })?;
-            let width = font.text_width(&text) * scale;
-            let height = font.line_height() * scale;
-            Ok((width, height))
-        });
+        methods.add_method(
+            "measure",
+            |_, this, (text, scale): (String, Option<f32>)| {
+                let scale = scale.unwrap_or(1.0);
+                let st = this.state.borrow();
+                let font = st.fonts.get(this.handle_id).ok_or_else(|| {
+                    LuaError::RuntimeError("Font handle is not valid or was released".into())
+                })?;
+                let width = font.text_width(&text) * scale;
+                let height = font.line_height() * scale;
+                Ok((width, height))
+            },
+        );
 
         // -- wrapText --
         /// Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
@@ -251,9 +254,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
                             Font::from_png_bytes(&data, bitmap_cell_w, bitmap_cell_h, false)
                         }),
                     }
-                    .map_err(|e| {
-                        LuaError::RuntimeError(format!("lurek.font.load: {}", e))
-                    })?;
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.font.load: {}", e)))?;
                     st.fonts.insert(loaded)
                 };
                 let lua_font = {
@@ -309,14 +310,10 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
                                 path, e
                             ))
                         })?;
-                        let loaded =
-                            Font::from_png_bytes(&data, cell_width, cell_height, false)
-                                .map_err(|e| {
-                                    LuaError::RuntimeError(format!(
-                                        "lurek.font.loadBitmap: {}",
-                                        e
-                                    ))
-                                })?;
+                        let loaded = Font::from_png_bytes(&data, cell_width, cell_height, false)
+                            .map_err(|e| {
+                                LuaError::RuntimeError(format!("lurek.font.loadBitmap: {}", e))
+                            })?;
                         st.fonts.insert(loaded)
                     };
                     let lua_font = {
@@ -593,10 +590,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
                                 let mut current = String::new();
                                 let mut current_width = 0.0f32;
                                 for ch in paragraph.chars() {
-                                    let adv = f
-                                        .glyph(ch)
-                                        .map(|g| g.advance_width)
-                                        .unwrap_or(0.0);
+                                    let adv = f.glyph(ch).map(|g| g.advance_width).unwrap_or(0.0);
                                     if current_width + adv > limit && !current.is_empty() {
                                         lines.push(current);
                                         current = String::new();

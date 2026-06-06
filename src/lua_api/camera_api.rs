@@ -1,9 +1,7 @@
 //! File: src/lua_api/camera_api.rs
 
 use super::SharedState;
-use crate::camera::{
-    Camera2D, CameraEasing, CameraPath, CameraRig2D, ZoomTween,
-};
+use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, ZoomTween};
 use crate::render::renderer::RenderCommand;
 use mlua::prelude::*;
 use std::cell::RefCell;

@@ -83,7 +83,11 @@ impl PieChart {
                 _ => continue,
             };
             let color = PALETTE[count % PALETTE.len()];
-            self.slices.push(PieSlice { label, value, color });
+            self.slices.push(PieSlice {
+                label,
+                value,
+                color,
+            });
             count += 1;
         }
         Ok(count)
@@ -157,8 +161,8 @@ impl PieChart {
                 }
 
                 // Angle from top (clockwise), mapped to [0, TAU).
-                let angle = (dy.atan2(dx) + std::f32::consts::FRAC_PI_2)
-                    .rem_euclid(std::f32::consts::TAU);
+                let angle =
+                    (dy.atan2(dx) + std::f32::consts::FRAC_PI_2).rem_euclid(std::f32::consts::TAU);
 
                 // Find which slice this pixel belongs to.
                 for (i, slice) in self.slices.iter().enumerate() {

@@ -3,7 +3,6 @@ trigger: manual
 description: "Fix a build dependency, feature-flag, or packaging dependency problem."
 expected_agent: "Manager"
 ---
-
 # Fix Dependency Issue
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected build or package flow.
 
 ## Steps
-1. Load [skill: build-system](../rules/skill_build-system.md) and [skill: cross-platform](../rules/skill_cross-platform.md) before acting.
+1. Load [skill: build-system](../skills/build-system/SKILL.md) and [skill: cross-platform](../skills/cross-platform/SKILL.md) before acting.
 2. Reproduce the failure from Cargo.toml, build scripts, profile settings, lockfiles, tasks, and any platform-specific packaging script involved in the failure.
 3. Correct the dependency declaration, feature selection, or packaging assumption in the build layer instead of hacking around it in product code.
 4. Rerun the narrowest failing build or package command first, then confirm the wider flow if the targeted fix passed.

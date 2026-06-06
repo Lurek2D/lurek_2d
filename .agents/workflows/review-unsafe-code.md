@@ -3,7 +3,6 @@ trigger: manual
 description: "Review unsafe Rust blocks for soundness, documented invariants, and containment."
 expected_agent: "Manager"
 ---
-
 # Review Unsafe Code
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any suspected invariant issue.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md) and [skill: error-handling](../rules/skill_error-handling.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: error-handling](../skills/error-handling/SKILL.md) before acting.
 2. Read the unsafe blocks, surrounding ownership code, and any comments or tests that state the invariants.
 3. Report missing SAFETY reasoning, invariant leaks, aliasing or lifetime risks, and cases where safe Rust should replace unsafe.
 4. Summarize the highest-severity unsafe finding and the proof still missing if the block remains.

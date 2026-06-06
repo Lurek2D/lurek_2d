@@ -137,7 +137,11 @@ impl AgentState {
 
     /// Resolves the effective timeout: uses the configured value, defaulting to 60 s.
     fn effective_timeout(&self) -> u64 {
-        if self.timeout_secs == 0 { 60 } else { self.timeout_secs }
+        if self.timeout_secs == 0 {
+            60
+        } else {
+            self.timeout_secs
+        }
     }
 
     /// Builds one outbound request using the current agent configuration.
@@ -230,7 +234,11 @@ impl AISystemState {
             entry.keywords = keywords;
             entry.prompt = prompt;
         } else {
-            self.system_skills.push(SystemSkill { name, keywords, prompt });
+            self.system_skills.push(SystemSkill {
+                name,
+                keywords,
+                prompt,
+            });
         }
     }
 

@@ -69,7 +69,9 @@ impl ScatterPlot {
         for row_idx in 0..df.nrows().min(max) {
             let xv = df.get_value(row_idx, ColRef::Name(x_col.to_string()))?;
             let yv = df.get_value(row_idx, ColRef::Name(y_col.to_string()))?;
-            if let (CellValue::Number(x), CellValue::Number(y)) = (xv, yv) { pts.push((x as f32, y as f32)) }
+            if let (CellValue::Number(x), CellValue::Number(y)) = (xv, yv) {
+                pts.push((x as f32, y as f32))
+            }
         }
         let n = pts.len();
         self.series.push(ChartSeries {

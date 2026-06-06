@@ -3,10 +3,10 @@
 //! Connects lightweight CPU learning primitives with optional ONNX inference capabilities.
 //! Defines the integration layer for experimentation-oriented training and decision systems.
 
-/// Multi-armed bandit strategies and statistics.
-pub mod bandit;
 /// Attention primitives for sequence models.
 pub mod attention;
+/// Multi-armed bandit strategies and statistics.
+pub mod bandit;
 /// Convolution and pooling learning layers.
 pub mod conv;
 /// Heterogeneous neural engine with flat genome packing.
@@ -23,17 +23,17 @@ pub mod neural_net;
 pub mod neuroevolution;
 /// ONNX model loading and inference.
 pub mod onnx;
+/// Reinforcement learning with a tabular Q-learner.
+pub mod qlearner;
 /// Recurrent learning layers.
 pub mod recurrent;
 /// Lightweight tensor helpers.
 pub mod tensor;
 /// Transformer encoder and decoder blocks.
 pub mod transformer;
-/// Reinforcement learning with a tabular Q-learner.
-pub mod qlearner;
 
-pub use bandit::{Bandit, BanditArm, BanditStrategy};
 pub use attention::{MultiHeadAttention, PositionalEncoding};
+pub use bandit::{Bandit, BanditArm, BanditStrategy};
 pub use conv::{Conv2D, MaxPool2D};
 pub use engine::{LurekNeuralEngine, NeuralBlock};
 pub use env::{FrameStack, SpaceSpec};

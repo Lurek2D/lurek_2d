@@ -12,21 +12,9 @@
 
 ## Summary
 
-The `midi` module encapsulates MIDI file parsing, event sequencing, and PCM synthesis using loaded SoundFont (.sf2) instrument data. It was extracted from `src/audio/` to isolate the MIDI-specific logic from the core playback and mixing pipeline.
+This module handles MIDI playback and software synthesis by managing SoundFont resources. It implements a stateful transport player to control files, seeking, and loops. Additionally, it exposes per-channel mix properties like instrument selection, volume, mute, and solo controls, routing audio to the mixer.
 
-The `MidiPlayer` struct manages:
-- File loading and parsing of Standard MIDI Files.
-- Transport controls: play, pause, stop, seek, tell, loop toggle.
-- Tempo scaling for adjustable playback speed.
-- Per-channel volume, mute, and instrument (program) assignment across 16 MIDI channels.
-- Bus assignment via `BusKey` for routing MIDI output through the audio bus hierarchy.
-
-The `MidiState` struct manages global SoundFont state:
-- Loading and validating SoundFont files (RIFF + sfbk header check).
-- Querying whether a SoundFont is currently loaded.
-- Clearing loaded SoundFont data.
-
-Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `SharedState` holds a `midi_state: MidiState` field accessible to both the audio and midi API modules.
+This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
 ## Files
 

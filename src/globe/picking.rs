@@ -3,10 +3,10 @@
 //! Chooses the front-most valid candidate using camera-facing depth information.
 //! Delivers interaction picking results consumed by UI and gameplay selection flows.
 
+use super::sphere::lat_lon_to_unit;
 use crate::globe::projection::{build_view_matrix, OrbitCamera};
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{GlobeSpec, RegionId};
-use super::sphere::lat_lon_to_unit;
 use crate::math::Vec2;
 /// Region selection result returned by globe picking.
 #[derive(Debug, Clone)]

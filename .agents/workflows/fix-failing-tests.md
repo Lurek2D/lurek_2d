@@ -3,7 +3,6 @@ trigger: manual
 description: "Drive one failing test cluster back to green with the smallest valid owner set."
 expected_agent: "Manager"
 ---
-
 # Fix Failing Tests
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any blocked owner.
 
 ## Steps
-1. Load [skill: testing-rust](../rules/skill_testing-rust.md), [skill: quality-pipeline](../rules/skill_quality-pipeline.md), and [skill: module-architecture](../rules/skill_module-architecture.md) before acting.
+1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md), [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
 2. Run or read the smallest failing test target first and cluster failures by owning subsystem instead of treating every failure as separate.
 3. Choose the smallest valid owner for each cluster, keep one binary gate per cluster, and avoid parallel work when one root cause is more likely.
 4. After each fix, rerun the same failing target before broadening to the next gate or owner.

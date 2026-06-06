@@ -1173,15 +1173,34 @@ impl Theme {
             ),
         );
         // Semantic design tokens
-        t.tokens.insert("spacing_sm".to_string(), ThemeToken::Float(4.0));
-        t.tokens.insert("spacing_md".to_string(), ThemeToken::Float(8.0));
-        t.tokens.insert("spacing_lg".to_string(), ThemeToken::Float(16.0));
-        t.tokens.insert("color_primary".to_string(), ThemeToken::Color([0.2, 0.5, 1.0, 1.0]));
-        t.tokens.insert("color_danger".to_string(), ThemeToken::Color([0.9, 0.2, 0.2, 1.0]));
-        t.tokens.insert("color_warning".to_string(), ThemeToken::Color([1.0, 0.7, 0.1, 1.0]));
-        t.tokens.insert("color_success".to_string(), ThemeToken::Color([0.2, 0.8, 0.3, 1.0]));
-        t.tokens.insert("focus_ring_color".to_string(), ThemeToken::Color([0.3, 0.6, 1.0, 0.8]));
-        t.tokens.insert("disabled_opacity".to_string(), ThemeToken::Float(0.4));
+        t.tokens
+            .insert("spacing_sm".to_string(), ThemeToken::Float(4.0));
+        t.tokens
+            .insert("spacing_md".to_string(), ThemeToken::Float(8.0));
+        t.tokens
+            .insert("spacing_lg".to_string(), ThemeToken::Float(16.0));
+        t.tokens.insert(
+            "color_primary".to_string(),
+            ThemeToken::Color([0.2, 0.5, 1.0, 1.0]),
+        );
+        t.tokens.insert(
+            "color_danger".to_string(),
+            ThemeToken::Color([0.9, 0.2, 0.2, 1.0]),
+        );
+        t.tokens.insert(
+            "color_warning".to_string(),
+            ThemeToken::Color([1.0, 0.7, 0.1, 1.0]),
+        );
+        t.tokens.insert(
+            "color_success".to_string(),
+            ThemeToken::Color([0.2, 0.8, 0.3, 1.0]),
+        );
+        t.tokens.insert(
+            "focus_ring_color".to_string(),
+            ThemeToken::Color([0.3, 0.6, 1.0, 0.8]),
+        );
+        t.tokens
+            .insert("disabled_opacity".to_string(), ThemeToken::Float(0.4));
         t
     }
 }

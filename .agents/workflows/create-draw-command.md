@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one new render draw command and wire it through the owning render path."
 expected_agent: "Manager"
 ---
-
 # Create Draw Command
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected test or demo path.
 
 ## Steps
-1. Load [skill: gpu-programming](../rules/skill_gpu-programming.md), [skill: rust-coding](../rules/skill_rust-coding.md), and [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: gpu-programming](../skills/gpu-programming/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read the render command types, the owning encoder or pass, nearby tests, and the contract docs before editing.
 3. Keep the command shape minimal, follow the current render-command flow, and avoid slipping unrelated scene or gameplay logic into the renderer.
 4. Run the narrowest render test or build check that covers the new command before broadening validation.

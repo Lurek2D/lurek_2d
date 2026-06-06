@@ -209,7 +209,11 @@ impl LuaUserData for LuaDialogueState {
         /// @param | key | string | Variable name.
         /// @return | string | Variable value, or nil when the variable is not set.
         methods.add_method("getVariable", |_, this, key: String| {
-            Ok(this.inner.borrow().get_variable(&key).map(|s| s.to_string()))
+            Ok(this
+                .inner
+                .borrow()
+                .get_variable(&key)
+                .map(|s| s.to_string()))
         });
         // -- reset --
         /// Reset all conversation progress, history, and visited flags.
@@ -276,9 +280,7 @@ impl LuaUserData for LuaSpeakerRegistry {
         // -- count --
         /// Returns the number of registered speakers.
         /// @return | integer | Speaker count.
-        methods.add_method("count", |_, this, ()| {
-            Ok(this.inner.borrow().count())
-        });
+        methods.add_method("count", |_, this, ()| Ok(this.inner.borrow().count()));
         // -- contains --
         /// Checks if a speaker exists in the registry.
         /// @param | id | string | Speaker identifier.

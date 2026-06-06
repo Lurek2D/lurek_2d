@@ -5,11 +5,11 @@
 //! Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates.
 //! Provides debug preview rasterization to inspect approximate light-map outcomes.
 
+use crate::color::Color;
 use crate::light::light2d::Light2D;
 use crate::light::light_type::LightType;
 use crate::light::occluder::Occluder;
 use crate::log_msg;
-use crate::color::Color;
 use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use slotmap::SlotMap;

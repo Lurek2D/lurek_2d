@@ -1360,14 +1360,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | Array of event tables `{ id?, event?, data }`.
     tbl.set(
         "sseCollect",
-        lua.create_function(|lua, (url, n, timeout_secs): (String, usize, Option<f64>)| {
-            let events = SseStream::collect(&url, n, timeout_secs.unwrap_or(5.0));
-            let arr = lua.create_table()?;
-            for (i, ev) in events.iter().enumerate() {
-                arr.set(i + 1, sse_event_to_table(lua, ev)?)?;
-            }
-            Ok(arr)
-        })?,
+        lua.create_function(
+            |lua, (url, n, timeout_secs): (String, usize, Option<f64>)| {
+                let events = SseStream::collect(&url, n, timeout_secs.unwrap_or(5.0));
+                let arr = lua.create_table()?;
+                for (i, ev) in events.iter().enumerate() {
+                    arr.set(i + 1, sse_event_to_table(lua, ev)?)?;
+                }
+                Ok(arr)
+            },
+        )?,
     )?;
     /// Performs the 'network' operation.
     lurek.set("network", tbl)?;

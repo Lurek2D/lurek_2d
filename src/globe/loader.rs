@@ -7,8 +7,8 @@
 //! Delivers the map-ingestion layer that seeds topology and rendering state for globe runtime use.
 
 use crate::globe::types::{Region, RegionId};
-use crate::province::province_grid::ProvinceGrid;
 use crate::math::voronoi::voronoi_from_points;
+use crate::province::province_grid::ProvinceGrid;
 use std::collections::HashMap;
 /// Parsed TOML region record before conversion into the shared region type.
 #[derive(Debug, Clone)]

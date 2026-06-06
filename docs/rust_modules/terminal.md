@@ -12,11 +12,17 @@
 
 ## Summary
 
-Originally designed to host the in-game developer console, it functions as a highly versatile UI surface capable of rendering classic ASCII interfaces, roguelike displays, and complex debugging tools. At its foundation, the `Terminal` struct manages a fixed-size grid of cells (`TCell`), each storing a character codepoint alongside independent foreground and background colors. The module implements a robust ANSI escape sequence parser (`ansi.rs`), capable of decoding standard 8-color palettes, 256-color xterm indexes, and 24-bit true-color RGB combinations, enabling seamless integration with existing terminal-based output streams and logging tools.
+This module introduces a highly interactive, character-grid emulator that maps text-based layouts directly into the visual window. By translating virtual screen positions into structured cell matrices, it allows developers to build classic console-like displays and terminal environments within the game runtime. The system stores detailed cell attributes including glyphs, foreground and background colors, and custom styles, serving as the foundational layer for text-mode graphics.
 
-Beyond raw text rendering, the terminal provides a surprisingly capable immediate-mode widget framework (`widget.rs`). Developers can compose interactive interfaces directly on the character grid using pre-built elements like Buttons, Labels, TextBoxes, Lists, and Panels. These widgets handle their own bounds checking, input routing, and rendering (complete with ASCII border drawing and shaded backgrounds). To support command-line workflows, the module includes a `CompletionEngine` for context-aware tab completion, a persistent command history buffer for quick recall, and a scrollback buffer that gracefully evicts the oldest lines when capacity is reached. For specialized display needs—such as the interactive Lua REPL (`lurek.repl`)—the module integrates a regex-driven `highlighter.rs` that applies token-based syntax coloring to code inputs in real-time.
+To drive dynamic interactions, the terminal incorporates an advanced ANSI parser that extracts rich styling flags, bold formatting, and full RGB colors from incoming byte streams. This parser coexists with a lightweight syntax highlighter that applies regex-based rules to colorize text on the fly. Furthermore, an intelligent completion engine processes command histories and cycles candidates, offering console navigation and text-entry assistance.
 
-The rendering pipeline bridges the gap between the character grid and the engine's graphical backend. The terminal state is efficiently composited and flattened into batched `RenderCommand` sequences, mapped directly to loaded bitmap fonts for pixel-perfect display. The terminal can also software-rasterize its grid directly into an `ImageData` buffer, useful for generating preview thumbnails or headless output. Fully accessible via the `lurek.terminal.*` API, this module is an invaluable tool for building in-game developer tools, specialized text-based mini-games, and deeply interactive console environments.
+Beyond simple character output, the module features an interactive widget framework built specifically for cell-bound layouts. Standard components include labels, action buttons, scrollable lists, text input fields, and decorative border panels drawn with box characters. These widgets share a unified event model and input dispatcher that maps raw mouse coordinates and key presses to the active widget layout, keeping keyboard focus and mouse interactions intuitive.
+
+Finally, the terminal integrates a powerful render path that projects the active cells and widget compositions directly onto the screen. This system also handles software image snapshots and exports terminal content to static files. When cell metrics or display scales shift, the engine refits the main window to maintain crisp, pixel-perfect text presentation, completing the module's role as a self-contained environment.
+
+Recent runtime work keeps that composition path cheaper by reusing a scratch buffer instead of cloning the full grid for each render-oriented export. Public behavior is unchanged, but the module now does less transient allocation while flattening widgets onto the cell surface.
+
+The widget interaction contract is also locked down more explicitly by regression coverage around focus changes, overlapping widgets, widget removal, and nested panel composition. The module still treats focus and nesting rules as first-class terminal behavior rather than incidental UI details.
 
 ## Files
 
@@ -62,6 +68,12 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
 - The file is therefore the terminal subsystem's final visual export layer.
 
+### [text_utils.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/terminal/text_utils.rs)
+
+- This file centralizes UTF-8-safe text helpers shared across terminal internals.
+- It provides character counting, character-to-byte indexing, truncation, and leading-byte UTF-8 length decoding.
+- The file reduces duplicate text logic between ANSI parsing, widget operations, and terminal state input/render paths.
+
 ### [terminal_state.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/terminal/terminal_state.rs)
 
 - This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
@@ -72,6 +84,7 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
 - Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
 - Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
+- A reusable composition buffer lives here so render-oriented code can flatten widgets over the grid without repeatedly cloning the backing cell buffer.
 - Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
 - The file is intentionally large because it is not one helper.
 - It is the living behavior model of the entire terminal subsystem.

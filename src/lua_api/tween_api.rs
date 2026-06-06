@@ -7,8 +7,8 @@ use crate::tween::{
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::collections::HashSet;
+use std::rc::Rc;
 use std::sync::{Mutex, OnceLock};
 
 static PENDING_TWEEN_CHAIN_STOPS: OnceLock<Mutex<HashSet<usize>>> = OnceLock::new();
@@ -929,9 +929,7 @@ impl LuaUserData for LuaTweenChain {
             "wait",
             |lua, (ud, seconds, callback): (LuaAnyUserData, f64, Option<LuaFunction>)| {
                 let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
-                let callback = callback
-                    .map(|f| lua.create_registry_value(f))
-                    .transpose()?;
+                let callback = callback.map(|f| lua.create_registry_value(f)).transpose()?;
                 ch.steps.push(FluentChainStep::Wait {
                     duration: seconds.max(0.0),
                     elapsed: 0.0,
@@ -993,15 +991,18 @@ impl LuaUserData for LuaTweenChain {
         /// @param | self | LTweenChain | Chain instance.
         /// @param | fn | function | Completion callback.
         /// @return | LTweenChain | This chain.
-        methods.add_function("onComplete", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
-            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
-            if let Some(old) = ch.on_complete.take() {
-                lua.remove_registry_value(old)?;
-            }
-            ch.on_complete = Some(lua.create_registry_value(f)?);
-            drop(ch);
-            Ok(ud)
-        });
+        methods.add_function(
+            "onComplete",
+            |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+                let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                if let Some(old) = ch.on_complete.take() {
+                    lua.remove_registry_value(old)?;
+                }
+                ch.on_complete = Some(lua.create_registry_value(f)?);
+                drop(ch);
+                Ok(ud)
+            },
+        );
 
         // -- start --
         /// Starts fluent chain playback and registers this chain in the update queue.
@@ -1153,7 +1154,9 @@ impl LuaUserData for LuaTweenChain {
         // -- isFinished --
         /// Returns whether legacy playback reached completion for the active pass.
         /// @return | boolean | Finished flag.
-        methods.add_method("isFinished", |_, this, ()| Ok(this.inner.borrow().is_finished()));
+        methods.add_method("isFinished", |_, this, ()| {
+            Ok(this.inner.borrow().is_finished())
+        });
 
         // -- clear --
         /// Clears all fluent and legacy steps.

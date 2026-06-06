@@ -106,7 +106,10 @@ pub fn find_route_dijkstra(
     let mut heap = BinaryHeap::new();
 
     dist.insert(from, 0.0);
-    heap.push(QueueNode { cost: 0.0, id: from });
+    heap.push(QueueNode {
+        cost: 0.0,
+        id: from,
+    });
 
     while let Some(QueueNode { cost, id }) = heap.pop() {
         if id == to {

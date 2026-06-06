@@ -1,26 +1,26 @@
 //! File: src/lua_api/procgen_api.rs
 
 use super::SharedState;
+use crate::agent::chat::{ollama_generate_json, read_global_config};
 use crate::procgen::biome::{BiomeClassifier, BiomeRules, BiomeType};
+use crate::procgen::cellular_world::default_palette as cellular_default_palette;
 use crate::procgen::heightmap::Heightmap;
 use crate::procgen::lsystem::LSystem;
 use crate::procgen::namegen::NameGen;
-use crate::procgen::noise::{simplex_noise_2d, simplex_noise_3d};
 use crate::procgen::noise::{
     fbm as noise_fbm, perlin2d as noise_perlin2d, perlin3d as noise_perlin3d,
     perlin4d as noise_perlin4d,
 };
+use crate::procgen::noise::{simplex_noise_2d, simplex_noise_3d};
 use crate::procgen::world_graph::generate_world_graph;
 use crate::procgen::{
     bsp_dungeon, bsp_dungeon_with_prefabs, cellular_automata, flood_fill,
     generate_noise_map_parallel, perlin_noise_periodic, poisson_disk, rooms_dungeon,
-    rooms_dungeon_with_prefabs, voronoi_diagram, BspOpts, BspPrefabStamp, CellularOpts,
-    CellType, CellularWorld, DistType, FractalType, HeightmapOpts, MapGenOptions, NoiseGenerator,
-    NoiseKind, RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
+    rooms_dungeon_with_prefabs, voronoi_diagram, BspOpts, BspPrefabStamp, CellType, CellularOpts,
+    CellularWorld, DistType, FractalType, HeightmapOpts, MapGenOptions, NoiseGenerator, NoiseKind,
+    RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
 };
-use crate::procgen::cellular_world::default_palette as cellular_default_palette;
 use crate::procgen::{parse_llm_constraints, parse_llm_wfc_response, wfc_generate};
-use crate::agent::chat::{ollama_generate_json, read_global_config};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -198,7 +198,9 @@ impl LuaUserData for LuaNoiseGenerator {
         /// Samples 1D simplex noise. This method is available to Lua scripts.
         /// @param | x | number | X coordinate.
         /// @return | number | Noise value.
-        methods.add_method("simplex1d", |_, this, x: f64| Ok(this.inner.simplex_2d(x, 0.0)));
+        methods.add_method("simplex1d", |_, this, x: f64| {
+            Ok(this.inner.simplex_2d(x, 0.0))
+        });
         // -- simplex2d --
         /// Samples 2D simplex noise. This method is available to Lua scripts.
         /// @param | x | number | X coordinate.
@@ -546,10 +548,7 @@ impl LuaUserData for LuaCellular {
         /// Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
         /// @return | string | Raw RGBA pixel bytes (width * height * 4).
         methods.add_method("toImageData", |lua, this, ()| {
-            let buf = this
-                .sim
-                .borrow()
-                .to_image_data(cellular_default_palette);
+            let buf = this.sim.borrow().to_image_data(cellular_default_palette);
             lua.create_string(&buf)
         });
         // -- toImageDataRegion --

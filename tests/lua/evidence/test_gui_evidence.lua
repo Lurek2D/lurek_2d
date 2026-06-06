@@ -1,5 +1,12 @@
 -- Evidence tests: gui module
 -- Produces PNG artifacts from content/layouts/*.toml via engine UI rendering.
+-- @covers lurek.binary.parseToml
+-- @covers lurek.filesystem.listRecursive
+-- @covers lurek.filesystem.read
+-- @covers lurek.ui.clear
+-- @covers lurek.ui.loadLayoutFile
+-- @covers lurek.ui.renderToImage
+
 
 
 local function layout_output_name(layout_path)

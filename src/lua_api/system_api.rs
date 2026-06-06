@@ -3,15 +3,13 @@
 use super::SharedState;
 use crate::log_msg;
 use crate::runtime::log_messages::{
-    self, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL,
-    LA06_CLIPBOARD_READ_FAIL,
+    self, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL, LA06_CLIPBOARD_READ_FAIL,
 };
 use crate::runtime::messages;
 use crate::runtime::os::*;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-
 
 /// Registers all `lurek.system` functions into the Lua runtime table.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
@@ -20,12 +18,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getOS --
     /// Returns the name of the host operating system as a string.
     /// @return | string | Operating system name: `"Windows"`, `"Linux"`, `"macOS"`, `"Android"`, `"iOS"`, or `"Unknown"`.
-    system.set(
-        "getOS",
-        lua.create_function(|_, ()| {
-            Ok(get_os_name())
-        })?,
-    )?;
+    system.set("getOS", lua.create_function(|_, ()| Ok(get_os_name()))?)?;
 
     // -- getVersion --
     /// Returns the semantic version string of the Lurek2D engine.

@@ -2,103 +2,70 @@
 trigger: model_decision
 description: "Write and run Lurek2D tests across Lua and Rust layers under Lua-first rules. Write adversarial negative tests and security test cases. Do not fix production code."
 ---
-
 # Tester
 
 ## Mission
-- Own test authoring and test execution.
-- Enforce the Lua-first testing rules.
-- Write adversarial negative cases and security test probes that prove behavioral resistance.
+- Write and run tests: Lua-first, negatives, security probes.
+- Enforce test placement rules.
 - Do not fix production code.
 
 ## Scope
-- Lua-facing behavior tests in tests/lua/.
-- Rust-only internal tests in tests/rust/unit/ and related test targets.
-- Harness registration, test scaffolding, and test naming rules.
-- Coverage checks tied to the touched behavior.
-- Test-layer placement decisions under the Lua-first policy.
-- Repro-to-test translation after a bug is understood.
-- Negative cases, fixtures, and determinism checks for the touched contract.
-- Adversarial Lua scripts for misuse of lurek.*: wrong-order, nil, empty, overflow, and bad-type probes.
-- Sandbox escape, path traversal, and resource exhaustion probes.
-- Deterministic crash or bad-state reproduction from hostile input; severity framing for live exploitability.
-- One script per probe so the result stays attributable.
-
-## Inputs
-- Module or feature under test.
-- Expected behavior, invariants, and failure mode.
-- Preferred test layer or evidence that layer choice is still open.
-- Bug repro or regression report when relevant.
-- Performance or determinism limits for the test run.
-- Target API area or sandbox surface for adversarial probing.
-- Severity threshold and time box for security probes.
+- Lua-facing tests in tests/lua/.
+- Rust internal tests in tests/rust/unit/.
+- Harness registration and naming rules.
+- Test-layer placement under Lua-first policy.
+- Negative cases and fixture determinism.
+- Adversarial probes: types, order, sandbox.
+- Security severity framing.
 
 ## Outputs
 - Test files with clear names and correct placement.
-- Passing scoped test run and final validation run.
-- Harness or Cargo target registration when new tests require it.
-- Coverage note for the behavior now protected.
-- Named findings with category, severity, repro, and expected vs actual for adversarial probes.
-- Small main.lua repro per finding under work/{session}/scripts/.
-- Probe notes for what did not reproduce; suggested next audit angle for Manager.
+- Passing scoped test runs.
+- Harness or Cargo registration.
+- Findings: expected vs actual for probes.
 
 ## Workflow
 - **Standard tests**:
-  - Read the spec, nearby tests, and docs/specs/<module>.md before choosing the layer.
-  - Load testing-rust; add a secondary skill only if the module demands it.
-  - Put lurek.*-reachable behavior in tests/lua/; Rust-only internals in tests/rust/unit/<module>_tests.rs.
-  - Reject shortcuts: no #[cfg(test)] blocks in src/, no product logic in src/lua_api/ for easier tests.
-  - Translate expected behavior into a small set of assertions that fail for one reason at a time.
-  - End each Lua file with test_summary(); use folder-specific markers above each it(): unit -> @covers, security -> @security, integration -> @integration, stress -> @stress, evidence -> @evidence; register new Lua tests in harness.rs.
-  - Marker rules: indent the marker to the same level as the it() it precedes; list only symbols called inside that it(); never use -- @tests (forbidden marker); never group markers above describe() — place them above each individual it() only.
-  - Existing-suite cleanup process: edit at most 3 Lua files per batch; read each file fully; apply manual marker fixes; validate only those 3 files before continuing.
-  - Run python tools/audit/lua_test_structure_audit.py to enforce: missing suite marker, wrong indentation, @tests markers, describe-block grouping, test_summary placement.
-  - Register new Rust test binaries in Cargo.toml only when the target truly needs a new binary.
-  - Use tools/audit/test_coverage.py and related Lua audits to catch uncovered public behavior.
+  - Read spec, tests, docs/specs/<module>.md before choosing layer.
+  - Load testing-rust.
+  - Put lurek.* behavior in tests/lua/; Rust internals in tests/rust/unit/.
+  - No #[cfg(test)] in src/, no logic in src/lua_api/.
+  - Small assertions, one failure reason.
+  - test_summary() and markers: unit (@covers), security (@security), integration (@integration), stress (@stress), evidence (@evidence).
+  - Indent markers to it(), list only called symbols, no -- @tests, place above it() only.
+  - Clean: max 3 Lua files per batch, read fully, apply markers, validate.
+  - Run tools/audit/lua_test_structure_audit.py.
+  - Register Rust test binaries in Cargo.toml.
+  - Use test_coverage.py to catch gaps.
 - **Adversarial probing**:
-  - Read src/lua_api/ and nearby examples to understand the callable surface.
-  - Load error-handling; group attacks by type: wrong types, wrong order, empty, exhaustion, sandbox escape.
-  - Write one short probe per attack hypothesis under work/{session}/scripts/.
-  - Run probes on a debug build; keep environment stable between runs.
-  - Use tools/audit/lua_evidence_golden_contract_audit.py if evidence or golden tests are touched.
-  - Record expected vs. actual for every interesting result, including safe failures.
-  - Keep each finding deterministic, reproducible, and small enough to rerun.
+  - Read src/lua_api/ and examples.
+  - Load error-handling. Classify: types, order, empty, exhaust, escape.
+  - Write one short probe under work/.
+  - Run on debug build, stable environment.
+  - Use lua_evidence_golden_contract_audit.py if golden touched.
+  - Record inputs, expected, actual.
 - **All modes**:
-  - Run the narrowest test command first; widen only after the target slice is green.
-  - Finish with the required final validation command.
-  - Return what now guards the regression and any findings to Manager.
-  - Save work/{session} artifacts and one log entry.
+  - Check work/ for coverage report before running test_coverage.py.
+  - Run narrowest first, then validation.
+  - Return guard regression and findings to Manager.
 
 ## Success Metrics
-Score the work from 1 to 10 stars against these checks.
+Score work from 1 to 10 stars:
 - Test layer matches Lua-first rules.
-- New assertions guard a real regression or invariant.
-- Harness or target wiring is updated where needed.
-- Scoped and final test runs both pass.
-- Each adversarial finding has a small deterministic script.
-- One probe maps to one attack class; severity hints stay credible.
+- Scoped and final test runs pass.
+- Probes have small deterministic scripts.
+- Findings list exact inputs and actual outputs.
 
 ## Anti-patterns
 - Create windowed or non-headless tests.
-- Write test and product fix in one phase.
-- Use float equality.
-- Depend on test order or ambient filesystem state.
-- Cover lurek.* behavior only in Rust.
-- Put tests inside src/.
-- Put business logic into src/lua_api/*_api.rs to make tests easier.
-- Report a crash with no deterministic script.
-- Fix the bug yourself.
-- Inflate severity to raise finding counts.
-- Poke at random with no attack model.
-- Mix many attack classes into one probe and lose attribution.
-- Use -- @tests marker (removed; use suite markers only: @covers/@security/@integration/@stress/@evidence).
-- Place suite marker at a different indentation than the it() it annotates.
-- Add marker symbols for functions not called inside the it() body.
-- Group markers above describe() instead of above each specific it().
-- Run a blind repo-wide marker rewrite without per-file review.
+- Write test and fix in one phase.
+- Use float equality in tests.
+- Cover lurek.* behavior in Rust only.
+- Put tests inside src/ folder.
+- Use -- @tests marker.
+- Place suite marker at wrong indent.
 
 ## CAG Metadata
-Communication: simple, direct, low-token, test-first
 Personas: EngDev, GameDev, GameTest, EngTest
-Primary skills: skill_testing-rust, skill_quality-pipeline
-Secondary skills: skill_lua-rust-bridge, skill_lua-api-design, skill_asset-pipeline, skill_error-handling
+Primary skills: testing-rust, quality-pipeline
+Secondary skills: lua-rust-bridge, lua-api-design, asset-pipeline, error-handling

@@ -6,12 +6,12 @@
 pub mod bitmap_font;
 /// Glyph metrics and text measurement.
 pub mod metrics;
-/// Text shaping: word wrapping, line breaking, alignment.
-pub mod shaping;
 /// Font registry and handle management.
 pub mod registry;
+/// Text shaping: word wrapping, line breaking, alignment.
+pub mod shaping;
 
 pub use bitmap_font::{BitmapFont, BitmapFontAtlas, AVAILABLE_SIZES};
 pub use metrics::{GlyphMetrics, TextMetrics};
-pub use shaping::{LineBreak, ShapedText, TextAlign, WordWrap, shape_text};
 pub use registry::{FontHandle, FontRegistry, FontStyle};
+pub use shaping::{shape_text, LineBreak, ShapedText, TextAlign, WordWrap};

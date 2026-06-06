@@ -3,7 +3,6 @@ trigger: manual
 description: "Audit one module for architecture, docs, tests, and contract drift."
 expected_agent: "Manager"
 ---
-
 # Audit Module
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any source of truth to honor.
 
 ## Steps
-1. Load [skill: module-audit](../rules/skill_module-audit.md), [skill: module-architecture](../rules/skill_module-architecture.md), [skill: documentation](../rules/skill_documentation.md), and [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: module-audit](../skills/module-audit/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read src/<module>/, docs/specs/<module>.md, related tests, and any linked docs or examples.
 3. List findings first in severity order, with emphasis on behavior regressions, ownership leaks, stale docs, and missing tests.
 4. Call out the highest-risk drift, the missing validation, and whether the module is ready for more feature work.

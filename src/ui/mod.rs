@@ -2,14 +2,14 @@
 //! It combines context, widgets, containers, rendering, and theming into one coherent surface.
 //! It keeps interface construction flexible through code-first and data-driven layout paths.
 
-/// Multi-series data graph renderer with viewport and coordinate mapping.
-pub mod data_graph_renderer;
 /// Container widgets: panels, docks, scroll areas, split views.
 pub mod containers;
 /// GUI context, event dispatch, and data-binding values.
 pub mod context;
 /// Interactive control widgets: buttons, sliders, inputs, combo boxes.
 pub mod controls;
+/// Multi-series data graph renderer with viewport and coordinate mapping.
+pub mod data_graph_renderer;
 /// Extended widgets: dialogs, menus, trees, tables, toasts, toolbars.
 pub mod extras;
 /// UI render helpers and draw-command generation.
@@ -33,7 +33,10 @@ pub use extras::{
     TooltipPanel, TreeNode, TreeView,
 };
 pub use theme::{Theme, WidgetStyle};
-pub use widget::{EasingFunction, MouseFilter, WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind, WidgetType, TextVAlign};
+pub use widget::{
+    EasingFunction, MouseFilter, TextVAlign, WidgetBase, WidgetState, WidgetTransition,
+    WidgetTransitionKind, WidgetType,
+};
 /// TOML-based declarative layout loader and image renderer.
 #[cfg(feature = "ui-layout-loader")]
 pub mod layout_loader;

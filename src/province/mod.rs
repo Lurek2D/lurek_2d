@@ -7,8 +7,6 @@
 pub mod border_index;
 /// Binary-format geometry cache for province spans and border segments.
 pub mod cache;
-/// Generic per-province property store for game-defined key-value data.
-pub mod properties;
 /// Distance-to-border field precompute for province shading.
 pub mod distance_field;
 /// Change and event enums emitted by ProvinceRegistry mutations.
@@ -23,6 +21,8 @@ pub mod import;
 pub mod labels;
 /// Config-driven map mode registry and per-mode colour resolver.
 pub mod map_modes;
+/// Generic per-province property store for game-defined key-value data.
+pub mod properties;
 /// Authoritative store for all province state, geometry, and change history.
 pub mod registry;
 /// RenderCommand generation for fills, borders, capitals, and text labels.
@@ -42,11 +42,11 @@ pub mod province_grid;
 pub use province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};
 
 pub use events::{ProvinceChange, ProvinceEvent};
-pub use properties::ProvinceProperties;
 pub use import::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary,
     ProvinceMetadataImportOptions, ProvinceMetadataImportSummary,
 };
+pub use properties::ProvinceProperties;
 pub use registry::ProvinceRegistry;
 pub use types::{
     BorderPairFlags, BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot,

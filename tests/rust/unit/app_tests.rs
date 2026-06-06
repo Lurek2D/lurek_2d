@@ -1,8 +1,7 @@
 //! File: tests/rust/unit/app_tests.rs
 
 use lurek2d::app::app::{
-    classify_drop_startup_target, fit_contain_size, recompute_viewport, DropStartupTarget,
-    LurekApp,
+    classify_drop_startup_target, fit_contain_size, recompute_viewport, DropStartupTarget, LurekApp,
 };
 use lurek2d::app::debug_overlay::DebugOverlay;
 use lurek2d::app::error_screen::{format_traceback, wrap_text, ErrorScreen};

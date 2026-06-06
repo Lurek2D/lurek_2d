@@ -36,7 +36,11 @@ impl LuaUserData for LuaAssetHandle {
     }
 }
 
-fn load_text_content(path: &str, asset_type: &AssetType, context: &str) -> LuaResult<Option<String>> {
+fn load_text_content(
+    path: &str,
+    asset_type: &AssetType,
+    context: &str,
+) -> LuaResult<Option<String>> {
     if asset_type.is_text_like() {
         let content = std::fs::read_to_string(path).map_err(|e| {
             LuaError::RuntimeError(format!(
@@ -52,15 +56,18 @@ fn load_text_content(path: &str, asset_type: &AssetType, context: &str) -> LuaRe
         if !std::path::Path::new(path).exists() {
             return Err(LuaError::RuntimeError(format!(
                 "{}: file not found: \"{}\"",
-                context,
-                path
+                context, path
             )));
         }
         Ok(None)
     }
 }
 
-fn apply_load_opts(cache: &Rc<RefCell<AssetCache>>, id: u64, opts: Option<LuaTable>) -> LuaResult<()> {
+fn apply_load_opts(
+    cache: &Rc<RefCell<AssetCache>>,
+    id: u64,
+    opts: Option<LuaTable>,
+) -> LuaResult<()> {
     if let Some(opts) = opts {
         if let Ok(name) = opts.get::<_, String>("name") {
             cache.borrow_mut().set_name(id, name);
@@ -87,12 +94,22 @@ fn ids_to_handles_table<'lua>(
 ) -> LuaResult<LuaTable<'lua>> {
     let out = lua.create_table()?;
     for (i, id) in ids.iter().enumerate() {
-        out.set(i + 1, LuaAssetHandle { id: *id, cache: cache.clone() })?;
+        out.set(
+            i + 1,
+            LuaAssetHandle {
+                id: *id,
+                cache: cache.clone(),
+            },
+        )?;
     }
     Ok(out)
 }
 
-fn get_handle_entry(cache: &Rc<RefCell<AssetCache>>, id: u64, context: &str) -> LuaResult<crate::asset::AssetEntry> {
+fn get_handle_entry(
+    cache: &Rc<RefCell<AssetCache>>,
+    id: u64,
+    context: &str,
+) -> LuaResult<crate::asset::AssetEntry> {
     let borrow = cache.borrow();
     let entry = borrow
         .get(id)
@@ -138,7 +155,11 @@ fn resolve_asset_value(lua: &Lua, entry: crate::asset::AssetEntry) -> LuaResult<
     }
 }
 
-fn preload_assets(cache: &Rc<RefCell<AssetCache>>, paths: LuaTable, callback: LuaFunction) -> LuaResult<()> {
+fn preload_assets(
+    cache: &Rc<RefCell<AssetCache>>,
+    paths: LuaTable,
+    callback: LuaFunction,
+) -> LuaResult<()> {
     let count = paths.raw_len() as i64;
     for i in 1..=count {
         let row: LuaTable = paths.get(i)?;
@@ -147,18 +168,14 @@ fn preload_assets(cache: &Rc<RefCell<AssetCache>>, paths: LuaTable, callback: Lu
             .get::<_, Option<String>>(1)?
             .or_else(|| row.get::<_, Option<String>>("path").ok().flatten())
             .ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "lurek.asset.preload: each entry must have a path".into(),
-                )
+                LuaError::RuntimeError("lurek.asset.preload: each entry must have a path".into())
             })?;
 
         let type_str: String = row
             .get::<_, Option<String>>(2)?
             .or_else(|| row.get::<_, Option<String>>("type").ok().flatten())
             .ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "lurek.asset.preload: each entry must have a type".into(),
-                )
+                LuaError::RuntimeError("lurek.asset.preload: each entry must have a type".into())
             })?;
 
         let asset_type = AssetType::from_type_str(&type_str);
@@ -174,11 +191,7 @@ fn preload_assets(cache: &Rc<RefCell<AssetCache>>, paths: LuaTable, callback: Lu
 // â”€â”€â”€ register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Registers `lurek.asset.*` functions into the `lurek` table.
-pub fn register(
-    lua: &Lua,
-    lurek: &LuaTable,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let cache: Rc<RefCell<AssetCache>> = Rc::new(RefCell::new(AssetCache::new()));
 
     let asset_tbl = lua.create_table()?;
@@ -202,7 +215,9 @@ pub fn register(
             move |_lua, (path, type_str, opts): (String, String, Option<LuaTable>)| {
                 let asset_type = AssetType::from_type_str(&type_str);
                 let text_content = load_text_content(&path, &asset_type, "lurek.asset.load")?;
-                let id = load_cache.borrow_mut().register(path, asset_type, text_content);
+                let id = load_cache
+                    .borrow_mut()
+                    .register(path, asset_type, text_content);
                 apply_load_opts(&load_cache, id, opts)?;
                 Ok(LuaAssetHandle {
                     id,
@@ -314,7 +329,12 @@ pub fn register(
                         .entry(entry.asset_type.as_str().to_string())
                         .or_insert(0) += 1;
                 }
-                (borrow.loaded_count(), borrow.total_refs(), counts, borrow.unique_groups())
+                (
+                    borrow.loaded_count(),
+                    borrow.total_refs(),
+                    counts,
+                    borrow.unique_groups(),
+                )
             };
 
             let out = lua.create_table()?;

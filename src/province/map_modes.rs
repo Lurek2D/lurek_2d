@@ -97,7 +97,9 @@ impl MapModeRegistry {
     /// Get the active map mode config.
     pub fn active_config(&self) -> &MapModeConfig {
         self.modes.get(&self.active).unwrap_or_else(|| {
-            self.modes.get("political").expect("political mode must exist")
+            self.modes
+                .get("political")
+                .expect("political mode must exist")
         })
     }
 

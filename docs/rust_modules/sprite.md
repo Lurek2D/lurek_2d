@@ -6,17 +6,25 @@
 - Source path: `src/sprite/`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `5` functions, `9` types, `19` methods
-- Rust test path(s): none found in the workspace
-- Lua test path(s): none found in the workspace
+- Lua API surface: `6` functions, `11` types, `27` methods
+- Rust test path(s): `tests/rust/unit/sprite_tests.rs`
+- Lua test path(s): `tests/lua/unit/test_sprite_core_unit.lua`
 
 ## Summary
 
-It provides the essential building blocks for 2D game visuals, encompassing sprite sheets, texture atlases, scalable UI panels, and high-performance batch rendering. At its most basic level, the `Sprite` struct defines a single textured unit with properties for position, scale, rotation, and color tint. To manage animation frames, the `SpriteSheet` divides a single texture into a uniform grid. It supports precomputed frame rectangles, named frame groups for animation sequences, and specific layouts for directional character sprites (such as the standard RPG Maker 3x4 layout). 
+This module turns raw textures into reusable sprites, sheets, and UI panels. It supports named texture atlases parsed from TexturePacker and Aseprite JSON data, mapping semantic names to specific regions while handling rotation and flip flags. This allows scripts to query packed sprites by name instead of raw coordinates.
 
-For more complex texture packing, the module features a comprehensive `SpriteAtlas` system. It parses standard texture atlas formats, specifically supporting JSON exports from popular tools like TexturePacker and Aseprite. The atlas stores named regions (`AtlasEntry`) complete with pixel rectangles and flags for rotation or flipping, allowing for O(1) name lookups and seamless integration with existing art pipelines. The module also includes `NineSlice`, a specialized struct that generates 9-patch geometry. This enables the creation of scalable UI elements—such as dialog boxes, health bars, or menu panels—that preserve their corner and edge pixel ratios while stretching to fit target dimensions.
+Atlas parsing now shares the engine's common Aseprite loader with the animation module. This keeps frame-shape validation and malformed-export error behavior aligned across sprite-atlas import and Aseprite animation ingest, instead of maintaining separate parsers for the same source format.
 
-To ensure optimal rendering performance, the module provides the `SpriteBatch` mechanism. A `SpriteBatch` acts as a deferred draw-call collector bound to a single texture atlas. Instead of submitting individual sprites to the GPU one by one, developers can accumulate hundreds of positioned, rotated, and scaled sprite entries into a single batch. This approach drastically reduces state changes and GPU draw calls, making it highly efficient for rendering dense tile layers, complex UI screens, or large swarms of characters. Fully accessible via the `lurek.sprite.*` Lua API, this module is indispensable for performant 2D game development in Lurek2D.
+For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
+
+Row and column extraction on `SpriteSheet` are implemented with allocation-light internal paths (row slices and column iterators), while Lua still receives the same table-shaped frame arrays via `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`.
+
+To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
+
+Individual sprites can also carry optional normal-map texture state and a strength scalar for lit-sprite workflows. This extends the sprite data model without changing atlas, sheet, or batch APIs for unlit content.
+
+The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
 
 ## Files
 
@@ -25,6 +33,7 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 - This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
 - It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
 - Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
+- Aseprite atlas parsing delegates to the shared loader in `src/animation/aseprite.rs`, keeping frame validation and error paths consistent with the animation subsystem.
 - Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
 - Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
 - The file is the naming and region-mapping layer for packed sprite content.
@@ -45,6 +54,7 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 ### [sprite.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/sprite/sprite.rs)
 
 - This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
+- It also stores optional normal-map texture identity and intensity for lit-sprite rendering paths.
 - It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
 - The type is the simplest textured presentation unit in the sprite subsystem.
 

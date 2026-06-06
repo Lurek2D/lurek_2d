@@ -3,7 +3,6 @@ trigger: manual
 description: "Triage issue input into clusters, priorities, and next actions."
 expected_agent: "Manager"
 ---
-
 # Triage Github Issues
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any existing labels.
 
 ## Steps
-1. Load [skill: github-workflow](../rules/skill_github-workflow.md) and [skill: opportunity-discovery](../rules/skill_opportunity-discovery.md) before acting.
+1. Load [skill: github-workflow](../skills/github-workflow/SKILL.md) and [skill: opportunity-discovery](../skills/opportunity-discovery/SKILL.md) before acting.
 2. Read the issue set, current labels or milestones, and any linked idea or roadmap notes before clustering.
 3. Group duplicates and related pain points into shared themes so priority is set on real opportunity size rather than issue count.
 4. Separate bugs, backlog candidates, content gaps, and tooling pain, and recommend the smallest next routing or labeling step for each cluster.

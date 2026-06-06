@@ -12,15 +12,11 @@
 
 ## Summary
 
-The `compute` module is the engine's general-purpose numeric workspace. It gives scripts and systems one place to create typed arrays and run deterministic math over them, from simple element-wise operations to heavier analytical and transform workflows.
+The compute module serves as the primary high-performance numeric processing engine for Lurek2D. Its core purpose is to provide scripts with dense, multi-dimensional array structures, enabling heavy mathematical calculations directly within game loops. It centers around a robust NdArray model that stores typed scalar buffers with explicit shape strides, supporting initializations for zeros, ones, or custom ranges. It manages sub-regions and supports parallel multithreaded calculation thresholds for massive array blocks.
 
-Its functional coverage is broad but coherent. The same array model supports arithmetic, reductions, reshaping, comparisons, and in-place updates, then extends into matrix math, FFT-based spectral analysis, neighborhood filtering, and statistical post-processing.
+For scientific computing and complex transformations, the module exposes rich algebraic, geometric, and spectral operations. It provides linear-algebra tools including vector cross products, unit normalizations, Gaussian solvers with pivoting, LU matrix decompositions, and eigenpair estimators. It also includes radix-2 fast Fourier transforms and inverse transforms, allowing scripts to map real-valued waveforms into complex frequency spectra and back for audio or signal-processing tasks.
 
-Because these capabilities share one data contract, teams can build end-to-end numeric pipelines without jumping between incompatible formats. This helps with simulation logic, data preparation, tool-side analysis, and runtime feature code that depends on reliable numerical behavior.
-
-The module is designed to stay CPU-first and predictable. It exposes shape and type constraints clearly, reports mismatch errors early, and keeps parallelism controls explicit so callers can choose between throughput and strict repeatability.
-
-In practice, `lurek.compute` acts as a reusable math foundation for the rest of the project: load numeric data, transform it, analyze it, and pass results forward through one stable API surface.
+Spatial data processing and statistical analysis are supported through spatial grid and analytics layers. The spatial engine delivers zero-padded convolutions, Sobel gradient calculations, flood-fill propagation, and morphological dilation or erosion filters over coordinate grids. In parallel, the analytics layer computes cumulative sums, percentile distributions, histogram binning, range scaling, and Pearson correlations, supplying comprehensive telemetry capabilities.
 
 ## Files
 

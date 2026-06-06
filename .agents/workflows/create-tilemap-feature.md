@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one bounded tilemap feature with synced docs and tests."
 expected_agent: "Manager"
 ---
-
 # Create Tilemap Feature
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation path.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md) and [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read src/tilemap/, the matching spec, any Lua bridge touchpoints, and nearby tests or examples before editing.
 3. Keep the feature inside the tilemap domain, update only the necessary contracts, and avoid spreading scene or render logic into the wrong layer.
 4. Run the narrowest tilemap-focused test or build check first, then sync docs or examples when the contract actually changed.

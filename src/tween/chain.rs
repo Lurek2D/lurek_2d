@@ -25,13 +25,7 @@ pub struct ChainStep {
 
 impl ChainStep {
     /// Create a new step.
-    pub fn new(
-        from: f64,
-        to: f64,
-        duration: f64,
-        easing: &str,
-        label: Option<String>,
-    ) -> Self {
+    pub fn new(from: f64, to: f64, duration: f64, easing: &str, label: Option<String>) -> Self {
         Self {
             label,
             duration: duration.max(f64::EPSILON),
@@ -187,7 +181,10 @@ impl TweenChain {
         if self.finished || self.steps.is_empty() {
             return self.steps.last().map(|s| s.to).unwrap_or(0.0);
         }
-        self.steps.get(self.cursor).map(|s| s.value()).unwrap_or(0.0)
+        self.steps
+            .get(self.cursor)
+            .map(|s| s.value())
+            .unwrap_or(0.0)
     }
 
     /// Current step index.
@@ -249,7 +246,9 @@ impl TweenChain {
         let mut remaining = dt;
 
         while remaining > 0.0 && !self.finished {
-            let Some(step) = self.steps.get_mut(self.cursor) else { break };
+            let Some(step) = self.steps.get_mut(self.cursor) else {
+                break;
+            };
 
             let leftover = (step.duration - step.elapsed).max(0.0);
             if remaining >= leftover {

@@ -1,5 +1,6 @@
 //! File: src/lua_api/render_api.rs
 
+use super::scene_api::LuaDepthSorter;
 use super::SharedState;
 use crate::image::ImageData;
 use crate::image::Texture;
@@ -15,7 +16,6 @@ use crate::runtime::resource_keys::*;
 use crate::runtime::ScreenshotRequest;
 use crate::sprite::sprite_batch::BatchEntry;
 use crate::sprite::SpriteBatch;
-use super::scene_api::LuaDepthSorter;
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;

@@ -12,15 +12,13 @@
 
 ## Summary
 
-The `devtools` module is the main diagnostics toolkit for development-time runtime inspection. It gathers useful signals while the game is running, so teams can understand behavior, detect problems, and iterate faster.
+This module provides a comprehensive diagnostics toolkit built directly into the engine, giving developers visibility and control over active session behavior. The system constantly gathers frame-timing statistics for both processing unit and graphics hardware workflows. This supports real-time calculations of performance indicators, such as render rates, average durations, and percentile profiles, helping to quickly identify performance drops.
 
-Its capabilities are practical and complementary: structured logs for event history, frame statistics for timing trends, hierarchical profiling for hotspot analysis, and REPL evaluation for quick debugging loops.
+To pinpoint bottlenecks within code pathways, the module supplies a hierarchical zone profiler operating on stack semantics. Developers can instrument execution paths with named blocks, and the engine computes both the total and exclusive durations spent in each. These measurements are compiled into tree structures that can be projected as diagnostic overlays or exported as structured optimization reports.
 
-File-watch support and watch-style value inspection help with rapid iteration when scripts and data change often. This reduces turnaround time for testing fixes and tuning systems.
+For interactive analysis, the module integrates a structured log filtering subsystem covering severity ranks from trace events to critical failures. Log outputs are mirrored to files or console streams based on settings. This features a dynamic evaluation environment for executing code on the fly, alongside a registry that watches specific variables for real-time inspection.
 
-The module is operational, not gameplay-facing. It provides instrumentation surfaces that other systems can call, while feature logic stays in dedicated runtime modules.
-
-In practice, `lurek.devtools` gives one consistent interface for diagnostics across local runs, test workflows, and integration debugging.
+A major utility is the built-in file watching mechanism. It tracks specified directory paths, checking modification timestamps and organizing change notifications. This allows live asset loading systems to instantly react to updated source files or graphics without resetting active gameplay, which drastically reduces iteration times and speeds up the overall test cycle.
 
 ## Files
 

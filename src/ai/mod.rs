@@ -26,7 +26,6 @@ pub mod utility_ai;
 /// Abstract world view consumed by AI logic.
 pub mod world;
 
-
 /// Context-steering behavior composition.
 pub mod context_steering;
 /// Dialogue state, branches, and topic selection (re-exported from dialog module).
@@ -56,20 +55,20 @@ pub mod strategy;
 /// Personality traits and archetype presets.
 pub mod traits;
 
+/// Tabular reinforcement learner (re-exported from learning module).
+pub use crate::learning::QLearner;
+/// Blackboard storage shared by AI systems, re-exported from `crate::patterns`.
+pub use crate::patterns::{Blackboard, BlackboardValue};
 /// Base agent type and decision-model enum.
 pub use agent::{Agent, DecisionModel};
 /// Behavior tree nodes, statuses, and policies.
 pub use behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy};
-/// Blackboard storage shared by AI systems, re-exported from `crate::patterns`.
-pub use crate::patterns::{Blackboard, BlackboardValue};
 /// Deferred command queue and command variants.
 pub use command_queue::{Command, CommandQueue};
 /// Finite-state machine building blocks.
 pub use fsm::{StateCallbacks, StateMachine, Transition};
 /// GOAP planner inputs and planner type.
 pub use goap::{GOAPAction, GOAPGoal, GOAPPlanner};
-/// Tabular reinforcement learner (re-exported from learning module).
-pub use crate::learning::QLearner;
 /// Squad container and formation mode.
 pub use squad::{FormationType, Squad};
 /// Steering behavior primitives and helpers.
@@ -79,8 +78,14 @@ pub use utility_ai::{Consideration, ResponseCurve, UAAction, UtilityAI};
 /// AI-facing world abstraction.
 pub use world::AIWorld;
 
+/// Neuroevolution entry point (re-exported from learning module).
+pub use crate::learning::Neuroevolution;
+/// Neural-network layer and activation types (re-exported from learning module).
+pub use crate::learning::{Activation, NeuralLayer, NeuralNet};
 /// Multi-armed bandit policies and arm stats (re-exported from learning module).
 pub use crate::learning::{Bandit, BanditArm, BanditStrategy};
+/// Genetic algorithm public types (re-exported from learning module).
+pub use crate::learning::{Chromosome, GeneticAlgorithm};
 /// Context-steering behaviors and runtime type.
 pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
 /// Dialogue decision types.
@@ -89,8 +94,6 @@ pub use dialogue::{DialogueAI, DialogueBranch, DialogueTopic};
 pub use director::{AIDirector, DirectorConfig, DirectorPhase};
 /// Emotion model types.
 pub use emotion::{Emotion, EmotionModel};
-/// Genetic algorithm public types (re-exported from learning module).
-pub use crate::learning::{Chromosome, GeneticAlgorithm};
 /// HTN planner domain and task types.
 pub use htn::{HTNDomain, HTNMethod, HTNPlanner, HTNTask, WorldState};
 /// AI level-of-detail types.
@@ -99,10 +102,6 @@ pub use lod::{AILod, LodTier};
 pub use mcts::{MCTSConfig, MCTSEngine};
 /// Need system state and advertisements.
 pub use needs::{Need, NeedAdvertisement, NeedSystem};
-/// Neural-network layer and activation types (re-exported from learning module).
-pub use crate::learning::{Activation, NeuralLayer, NeuralNet};
-/// Neuroevolution entry point (re-exported from learning module).
-pub use crate::learning::Neuroevolution;
 /// ORCA avoidance solver types.
 pub use orca::{ORCAAgent, ORCASolver};
 /// Perception events, sensors, and stimulus world.

@@ -115,50 +115,50 @@ pub mod retro {
     /// PICO-8 color values.
     #[allow(clippy::approx_constant)]
     static PICO8_COLORS: [Color; 16] = [
-        Color::new(0.0, 0.0, 0.0, 1.0),             // 0  black
-        Color::new(0.114, 0.169, 0.326, 1.0),        // 1  dark-blue
-        Color::new(0.494, 0.145, 0.326, 1.0),        // 2  dark-purple
-        Color::new(0.0, 0.529, 0.318, 1.0),          // 3  dark-green
-        Color::new(0.671, 0.322, 0.212, 1.0),        // 4  brown
-        Color::new(0.373, 0.341, 0.310, 1.0),        // 5  dark-grey
-        Color::new(0.761, 0.765, 0.780, 1.0),        // 6  light-grey
-        Color::new(1.0, 0.945, 0.910, 1.0),          // 7  white
-        Color::new(1.0, 0.0, 0.302, 1.0),            // 8  red
-        Color::new(1.0, 0.639, 0.0, 1.0),            // 9  orange
-        Color::new(1.0, 0.925, 0.153, 1.0),          // 10 yellow
-        Color::new(0.0, 0.894, 0.212, 1.0),          // 11 green
-        Color::new(0.161, 0.678, 1.0, 1.0),          // 12 blue
-        Color::new(0.514, 0.463, 0.612, 1.0),        // 13 lavender
-        Color::new(1.0, 0.467, 0.659, 1.0),          // 14 pink
-        Color::new(1.0, 0.800, 0.667, 1.0),          // 15 peach
+        Color::new(0.0, 0.0, 0.0, 1.0),       // 0  black
+        Color::new(0.114, 0.169, 0.326, 1.0), // 1  dark-blue
+        Color::new(0.494, 0.145, 0.326, 1.0), // 2  dark-purple
+        Color::new(0.0, 0.529, 0.318, 1.0),   // 3  dark-green
+        Color::new(0.671, 0.322, 0.212, 1.0), // 4  brown
+        Color::new(0.373, 0.341, 0.310, 1.0), // 5  dark-grey
+        Color::new(0.761, 0.765, 0.780, 1.0), // 6  light-grey
+        Color::new(1.0, 0.945, 0.910, 1.0),   // 7  white
+        Color::new(1.0, 0.0, 0.302, 1.0),     // 8  red
+        Color::new(1.0, 0.639, 0.0, 1.0),     // 9  orange
+        Color::new(1.0, 0.925, 0.153, 1.0),   // 10 yellow
+        Color::new(0.0, 0.894, 0.212, 1.0),   // 11 green
+        Color::new(0.161, 0.678, 1.0, 1.0),   // 12 blue
+        Color::new(0.514, 0.463, 0.612, 1.0), // 13 lavender
+        Color::new(1.0, 0.467, 0.659, 1.0),   // 14 pink
+        Color::new(1.0, 0.800, 0.667, 1.0),   // 15 peach
     ];
 
     /// Game Boy color values (classic green-tint LCD).
     static GAMEBOY_COLORS: [Color; 4] = [
-        Color::new(0.059, 0.220, 0.059, 1.0),        // darkest
-        Color::new(0.188, 0.384, 0.188, 1.0),        // dark
-        Color::new(0.545, 0.675, 0.059, 1.0),        // light
-        Color::new(0.608, 0.737, 0.059, 1.0),        // lightest
+        Color::new(0.059, 0.220, 0.059, 1.0), // darkest
+        Color::new(0.188, 0.384, 0.188, 1.0), // dark
+        Color::new(0.545, 0.675, 0.059, 1.0), // light
+        Color::new(0.608, 0.737, 0.059, 1.0), // lightest
     ];
 
     /// NES representative colors (16 distinct hues from the NES PPU palette).
     #[allow(clippy::approx_constant)]
     static NES_COLORS: [Color; 16] = [
-        Color::new(0.482, 0.482, 0.482, 1.0),        // grey
-        Color::new(0.0, 0.180, 0.678, 1.0),          // dark-blue
-        Color::new(0.078, 0.0, 0.741, 1.0),          // blue-purple
-        Color::new(0.318, 0.0, 0.612, 1.0),          // purple
-        Color::new(0.549, 0.0, 0.349, 1.0),          // magenta
-        Color::new(0.639, 0.0, 0.027, 1.0),          // red
-        Color::new(0.612, 0.098, 0.0, 1.0),          // dark-red
-        Color::new(0.478, 0.188, 0.0, 1.0),          // brown
-        Color::new(0.310, 0.282, 0.0, 1.0),          // olive
-        Color::new(0.0, 0.357, 0.0, 1.0),            // dark-green
-        Color::new(0.0, 0.392, 0.0, 1.0),            // green
-        Color::new(0.0, 0.337, 0.173, 1.0),          // teal-green
-        Color::new(0.0, 0.278, 0.459, 1.0),          // teal
-        Color::new(0.0, 0.0, 0.0, 1.0),              // black
-        Color::new(1.0, 1.0, 1.0, 1.0),              // white
-        Color::new(0.741, 0.078, 0.078, 1.0),        // bright-red
+        Color::new(0.482, 0.482, 0.482, 1.0), // grey
+        Color::new(0.0, 0.180, 0.678, 1.0),   // dark-blue
+        Color::new(0.078, 0.0, 0.741, 1.0),   // blue-purple
+        Color::new(0.318, 0.0, 0.612, 1.0),   // purple
+        Color::new(0.549, 0.0, 0.349, 1.0),   // magenta
+        Color::new(0.639, 0.0, 0.027, 1.0),   // red
+        Color::new(0.612, 0.098, 0.0, 1.0),   // dark-red
+        Color::new(0.478, 0.188, 0.0, 1.0),   // brown
+        Color::new(0.310, 0.282, 0.0, 1.0),   // olive
+        Color::new(0.0, 0.357, 0.0, 1.0),     // dark-green
+        Color::new(0.0, 0.392, 0.0, 1.0),     // green
+        Color::new(0.0, 0.337, 0.173, 1.0),   // teal-green
+        Color::new(0.0, 0.278, 0.459, 1.0),   // teal
+        Color::new(0.0, 0.0, 0.0, 1.0),       // black
+        Color::new(1.0, 1.0, 1.0, 1.0),       // white
+        Color::new(0.741, 0.078, 0.078, 1.0), // bright-red
     ];
 }

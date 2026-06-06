@@ -19,8 +19,12 @@ pub mod draw;
 pub mod grid_motion;
 /// Variable floor/ceiling height map.
 pub mod heightmap;
+/// Level rendering helpers for multi-level raycaster.
+pub mod level_render;
 /// Distance-based wall and sprite lighting.
 pub mod lighting;
+/// Multi-level grid with floor/ceiling holes.
+pub mod multilevel;
 /// Column projection math: wall slice height and screen coordinates.
 pub mod projection;
 /// Ray-hit record produced by a single DDA ray.
@@ -35,16 +39,12 @@ pub mod segment;
 pub mod sprite_manager;
 /// Screen-space sprite projection math.
 pub mod sprite_projection;
+/// Tile picker: screen-to-tile coordinate mapping.
+pub mod tile_picker;
 /// Field-of-view visibility grid computation.
 pub mod visibility;
 /// Debug visualization helpers (ray paths, normals, tiles).
 pub mod visualization;
-/// Multi-level grid with floor/ceiling holes.
-pub mod multilevel;
-/// Tile picker: screen-to-tile coordinate mapping.
-pub mod tile_picker;
-/// Level rendering helpers for multi-level raycaster.
-pub mod level_render;
 
 pub use build_scene::{SceneBuildParams, WorldSprite};
 pub use column_batch::{ColumnBatch, ColumnData};

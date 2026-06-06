@@ -116,7 +116,11 @@ impl AdsrEnvelope {
         match self.phase {
             EnvelopePhase::Idle => 0.0,
             EnvelopePhase::Attack => {
-                let step = if self.attack <= 0.0 { 1.0 } else { 1.0 / (self.attack * sr) };
+                let step = if self.attack <= 0.0 {
+                    1.0
+                } else {
+                    1.0 / (self.attack * sr)
+                };
                 self.level = (self.level + step).min(1.0);
                 if self.level >= 1.0 {
                     self.phase = EnvelopePhase::Decay;
@@ -137,7 +141,11 @@ impl AdsrEnvelope {
             }
             EnvelopePhase::Sustain => self.sustain,
             EnvelopePhase::Release => {
-                let step = if self.release <= 0.0 { 1.0 } else { self.level / (self.release * sr) };
+                let step = if self.release <= 0.0 {
+                    1.0
+                } else {
+                    self.level / (self.release * sr)
+                };
                 self.level = (self.level - step).max(0.0);
                 if self.level <= 0.0 {
                     self.phase = EnvelopePhase::Idle;
@@ -196,7 +204,13 @@ impl Synthesizer {
     }
 
     /// Generates a sound buffer from waveform and optional envelope.
-    pub fn generate(&self, freq: f32, duration: f32, sample_rate: u32, amplitude: f32) -> SoundData {
+    pub fn generate(
+        &self,
+        freq: f32,
+        duration: f32,
+        sample_rate: u32,
+        amplitude: f32,
+    ) -> SoundData {
         let mut sound_data = self.waveform.render(freq, duration, sample_rate, amplitude);
         if let Some(envelope) = &self.envelope {
             envelope.apply(&mut sound_data);

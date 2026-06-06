@@ -4,12 +4,12 @@ use super::SharedState;
 use crate::globe::export::export_regions_to_obj;
 use crate::globe::loader;
 use crate::globe::registry::{Globe, GlobeRegistry};
+use crate::globe::sphere::{
+    great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect,
+};
 use crate::globe::types::{
     FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerStyle, Region, RegionId,
     MAX_REGIONS,
-};
-use crate::globe::sphere::{
-    great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -72,7 +72,11 @@ impl LuaUserData for LuaGlobe {
             }
             let neighbors: Vec<RegionId> = p
                 .get::<_, LuaTable>("neighbors")
-                .map(|t| t.sequence_values::<u32>().map(|r| r.map(RegionId)).collect::<LuaResult<Vec<_>>>())
+                .map(|t| {
+                    t.sequence_values::<u32>()
+                        .map(|r| r.map(RegionId))
+                        .collect::<LuaResult<Vec<_>>>()
+                })
                 .unwrap_or_else(|_| Ok(vec![]))?;
             let color_tbl: Option<LuaTable> = p.get("base_color").ok();
             let base_color = if let Some(ct) = color_tbl {
@@ -113,7 +117,11 @@ impl LuaUserData for LuaGlobe {
             }
             let neighbors: Vec<RegionId> = p
                 .get::<_, LuaTable>("neighbors")
-                .map(|t| t.sequence_values::<u32>().map(|r| r.map(RegionId)).collect::<LuaResult<Vec<_>>>())
+                .map(|t| {
+                    t.sequence_values::<u32>()
+                        .map(|r| r.map(RegionId))
+                        .collect::<LuaResult<Vec<_>>>()
+                })
                 .unwrap_or_else(|_| Ok(vec![]))?;
             let color_tbl: Option<LuaTable> = p.get("base_color").ok();
             let base_color = if let Some(ct) = color_tbl {
@@ -145,9 +153,7 @@ impl LuaUserData for LuaGlobe {
         // -- regionCount -- (alias)
         /// Returns the number of regions in this globe.
         /// @return | integer | Region count.
-        methods.add_method("regionCount", |_, this, ()| {
-            this.with(|g| g.region_count())
-        });
+        methods.add_method("regionCount", |_, this, ()| this.with(|g| g.region_count()));
         // -- getNeighbors --
         /// Returns neighboring province ids for a province.
         /// @param | id | integer | Province id.
@@ -189,7 +195,10 @@ impl LuaUserData for LuaGlobe {
         /// @param | key | string | Attribute key.
         /// @return | string | Attribute string, or nil when the province or key is missing.
         methods.add_method("getProvinceAttr", |_, this, (id, key): (u32, String)| {
-            this.with(|g| g.get_province(RegionId(id)).and_then(|p| p.attrs.get(&key).cloned()))
+            this.with(|g| {
+                g.get_province(RegionId(id))
+                    .and_then(|p| p.attrs.get(&key).cloned())
+            })
         });
         // -- setProvinceTexture --
         /// Assigns a raw texture handle and UV rectangle to a province.
@@ -649,7 +658,11 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut(
             "setLayerColor",
             |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
-                this.with_mut(|globe| globe.layers.set_province_color(&layer, RegionId(id), [r, g, b, a]))
+                this.with_mut(|globe| {
+                    globe
+                        .layers
+                        .set_province_color(&layer, RegionId(id), [r, g, b, a])
+                })
             },
         );
         // -- setLayerVisible --
@@ -708,7 +721,10 @@ impl LuaUserData for LuaGlobe {
         /// @param | to_id | integer | Target province id.
         /// @return | string[] | Province ids, or nil when no path exists.
         methods.add_method("findPath", |lua, this, (from_id, to_id): (u32, u32)| {
-            let path_opt = this.with(|g| g.graph.find_path_default(RegionId(from_id), RegionId(to_id)))?;
+            let path_opt = this.with(|g| {
+                g.graph
+                    .find_path_default(RegionId(from_id), RegionId(to_id))
+            })?;
             match path_opt {
                 None => Ok(None),
                 Some(path) => {
@@ -728,7 +744,8 @@ impl LuaUserData for LuaGlobe {
         methods.add_method(
             "reachable",
             |lua, this, (start_id, max_cost): (u32, f64)| {
-                let reached = this.with(|g| g.graph.reachable_default(RegionId(start_id), max_cost))?;
+                let reached =
+                    this.with(|g| g.graph.reachable_default(RegionId(start_id), max_cost))?;
                 let t = lua.create_table()?;
                 for (id, cost) in reached {
                     t.set(id.0, cost)?;
@@ -744,7 +761,9 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut(
             "cacheReachability",
             |_, this, (faction, start_id, max_cost): (String, u32, f64)| {
-                this.with_mut(|g| g.cache_reachability_default(faction, RegionId(start_id), max_cost))
+                this.with_mut(|g| {
+                    g.cache_reachability_default(faction, RegionId(start_id), max_cost)
+                })
             },
         );
         // -- getCachedReachability --

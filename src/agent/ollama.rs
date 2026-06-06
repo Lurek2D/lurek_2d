@@ -60,7 +60,6 @@ impl OllamaManager {
         self.list_models().into_iter().map(|m| m.name).collect()
     }
 
-
     /// Returns `true` if the Ollama HTTP server responds on the base URL within 5 seconds.
     pub fn is_running(&self) -> bool {
         use crate::network::http::execute_request as http_exec;
@@ -204,7 +203,10 @@ impl OllamaManager {
                 Ok(())
             };
             if let Ok(mut guard) = pending.lock() {
-                guard.push(OllamaPullResult { callback_id, result });
+                guard.push(OllamaPullResult {
+                    callback_id,
+                    result,
+                });
             }
         });
         callback_id

@@ -3,7 +3,6 @@ trigger: manual
 description: "Add or update one CAG artifact in .github/ with validation and zero drift."
 expected_agent: "Manager"
 ---
-
 # Add CAG Artifact
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any linked docs or validator rule to honor.
 
 ## Steps
-1. Load [skill: cag-workflow](../rules/skill_cag-workflow.md) and [skill: tools-cag-validation](../rules/skill_tools-cag-validation.md) before acting.
+1. Load [skill: cag-workflow](../skills/cag-workflow/SKILL.md) and [skill: tools-cag-validation](../skills/tools-cag-validation/SKILL.md) before acting.
 2. Read the target .github file, .github/agents/README.md, docs/architecture/cag-system.md, and the current validator rules before editing.
 3. Place the change in the smallest valid CAG layer, keep wording low-token, and update shared docs when routing, schema, or templates moved.
 4. Run the focused CAG validator first, then rerun the full CAG pass and link check when the change crosses files or shared docs.

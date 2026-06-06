@@ -3,7 +3,6 @@ trigger: manual
 description: "Fix one Lua-side error in content or examples using the current API surface."
 expected_agent: "Manager"
 ---
-
 # Fix Lua Error
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected behavior.
 
 ## Steps
-1. Load [skill: dev-debugging](../rules/skill_dev-debugging.md) and [skill: lua-scripting](../rules/skill_lua-scripting.md) before acting.
+1. Load [skill: dev-debugging](../skills/dev-debugging/SKILL.md) and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
 2. Reproduce the failure from the failing Lua file, the smallest repro path, nearby examples, and the current API docs for the calls involved.
 3. Correct the Lua content, usage pattern, or local wiring that caused the error, and only escalate to engine owners if the API itself is broken.
 4. Rerun the same content path or failing Lua test first, then widen validation only if the local fix passed.

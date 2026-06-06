@@ -11,7 +11,6 @@
 //! Without this container, subsystems would duplicate ownership logic or pass oversized parameter sets through every call.
 //! In practice this is the mutable coordination nucleus of the runtime.
 
-use crate::midi::MidiState;
 use crate::audio::Mixer;
 use crate::camera::Camera;
 use crate::event::EventQueue;
@@ -20,6 +19,7 @@ use crate::input::{
     GamepadMappings, GamepadState, GamepadVibrationRequest, KeyboardState, MouseState, TouchState,
 };
 use crate::light::LightWorld;
+use crate::midi::MidiState;
 use crate::parallax::ParallaxLayer;
 use crate::particle::ParticleSystem;
 use crate::province::registry::ProvinceRegistry;
@@ -652,7 +652,8 @@ impl SharedState {
     }
 
     fn apply_configured_default_font(&mut self) {
-        let default_key = self.builtin_default_font_key(self.default_font_size, self.default_font_bold);
+        let default_key =
+            self.builtin_default_font_key(self.default_font_size, self.default_font_bold);
         self.default_font = default_key;
         if !self.font_override_active || self.active_font.is_none() {
             self.active_font = default_key;

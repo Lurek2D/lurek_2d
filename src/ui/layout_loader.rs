@@ -88,8 +88,7 @@ pub fn render_to_image(
     ctx.set_viewport(width as f32, height as f32);
     let img = ctx.draw_to_image(width, height);
     let png = img.encode_png()?;
-    std::fs::write(path, png)
-        .map_err(|e| format!("render_to_image: failed to save '{path}': {e}"))
+    std::fs::write(path, png).map_err(|e| format!("render_to_image: failed to save '{path}': {e}"))
 }
 /// Instantiate a single widget from `def` in `ctx` without recursing into children; return its index or an error.
 fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {

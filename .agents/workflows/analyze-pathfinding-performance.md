@@ -3,7 +3,6 @@ trigger: manual
 description: "Analyze pathfinding cost, search hotspots, or route-quality regressions."
 expected_agent: "Manager"
 ---
-
 # Analyze Pathfinding Performance
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any trace or timing data.
 
 ## Steps
-1. Load [skill: performance-profiling](../rules/skill_performance-profiling.md) and [skill: module-architecture](../rules/skill_module-architecture.md) before acting.
+1. Load [skill: performance-profiling](../skills/performance-profiling/SKILL.md) and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
 2. Gather only the relevant source material from pathfinding code, timing output, sample maps, and any nearby specs or tests.
 3. Measure the dominant cost driver, note whether the issue is algorithmic, data-shape, or call-frequency driven, and keep unsupported guesses out.
 4. Return the likely owner path, the highest-value next experiment, and any content patterns that amplify the problem.

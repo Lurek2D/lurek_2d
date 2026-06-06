@@ -2,8 +2,8 @@
 
 use super::SharedState;
 use crate::mapblock::{
-    MapBlock, MapBlockConfig, MapBlockGenerator, MapGroup, MapOrientation, MapScript, NeighborRules,
-    PlacementGrid, ScriptStep, StepType, TilesetRef,
+    MapBlock, MapBlockConfig, MapBlockGenerator, MapGroup, MapOrientation, MapScript,
+    NeighborRules, PlacementGrid, ScriptStep, StepType, TilesetRef,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -63,10 +63,17 @@ impl LuaUserData for LuaMapBlockConfig {
         /// @param | name | string | Slot name.
         /// @param | required | boolean | Whether this slot is required.
         /// @param | default_gid | integer | Default GID when empty.
-        methods.add_method_mut("addSlot", |_, this, (name, required, default_gid): (String, Option<bool>, Option<u32>)| {
-            this.inner.borrow_mut().add_slot(&name, required.unwrap_or(false), default_gid.unwrap_or(0));
-            Ok(())
-        });
+        methods.add_method_mut(
+            "addSlot",
+            |_, this, (name, required, default_gid): (String, Option<bool>, Option<u32>)| {
+                this.inner.borrow_mut().add_slot(
+                    &name,
+                    required.unwrap_or(false),
+                    default_gid.unwrap_or(0),
+                );
+                Ok(())
+            },
+        );
 
         // -- removeSlot --
         /// Remove a slot by name for this object.
@@ -111,10 +118,15 @@ impl LuaUserData for LuaMapBlock {
         /// @param | slot | integer | Slot index.
         /// @param | tileset_id | integer | Tileset ID.
         /// @param | gid | integer | Tile GID.
-        methods.add_method_mut("setTile", |_, this, (layer, x, y, slot, tileset_id, gid): (usize, u32, u32, usize, u32, u32)| {
-            this.inner.borrow_mut().set_tile(layer, x, y, slot, tileset_id, gid);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "setTile",
+            |_, this, (layer, x, y, slot, tileset_id, gid): (usize, u32, u32, usize, u32, u32)| {
+                this.inner
+                    .borrow_mut()
+                    .set_tile(layer, x, y, slot, tileset_id, gid);
+                Ok(())
+            },
+        );
 
         // -- getTile --
         /// Get the tile GID at a specified row and column position.
@@ -123,26 +135,32 @@ impl LuaUserData for LuaMapBlock {
         /// @param | y | integer | Tile Y.
         /// @param | slot | integer | Slot index.
         /// @return | integer | Tile GID.
-        methods.add_method("getTile", |_, this, (layer, x, y, slot): (usize, u32, u32, usize)| {
-            Ok(this.inner.borrow().get_tile(layer, x, y, slot))
-        });
+        methods.add_method(
+            "getTile",
+            |_, this, (layer, x, y, slot): (usize, u32, u32, usize)| {
+                Ok(this.inner.borrow().get_tile(layer, x, y, slot))
+            },
+        );
 
         // -- setEdge --
         /// Set edge type for a side and segment.
         /// @param | edge | string | Edge direction: "north", "east", "south", "west".
         /// @param | segment | integer | Segment index along the edge.
         /// @param | edge_type | integer | Edge type identifier.
-        methods.add_method_mut("setEdge", |_, this, (edge_str, segment, edge_type): (String, u32, u32)| {
-            let edge = match edge_str.to_lowercase().as_str() {
-                "north" | "n" => crate::mapblock::block::Edge::North,
-                "east" | "e" => crate::mapblock::block::Edge::East,
-                "south" | "s" => crate::mapblock::block::Edge::South,
-                "west" | "w" => crate::mapblock::block::Edge::West,
-                _ => return Err(LuaError::RuntimeError(format!("Invalid edge: {edge_str}"))),
-            };
-            this.inner.borrow_mut().set_edge(edge, segment, edge_type);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "setEdge",
+            |_, this, (edge_str, segment, edge_type): (String, u32, u32)| {
+                let edge = match edge_str.to_lowercase().as_str() {
+                    "north" | "n" => crate::mapblock::block::Edge::North,
+                    "east" | "e" => crate::mapblock::block::Edge::East,
+                    "south" | "s" => crate::mapblock::block::Edge::South,
+                    "west" | "w" => crate::mapblock::block::Edge::West,
+                    _ => return Err(LuaError::RuntimeError(format!("Invalid edge: {edge_str}"))),
+                };
+                this.inner.borrow_mut().set_edge(edge, segment, edge_type);
+                Ok(())
+            },
+        );
 
         // -- setName --
         /// Set the map block's display or lookup name string value.
@@ -221,7 +239,9 @@ impl LuaUserData for LuaMapGroup {
         /// @param | block | MapBlock | Block to add.
         methods.add_method_mut("addBlock", |_, this, block: LuaAnyUserData| {
             let lua_block = block.borrow::<LuaMapBlock>()?;
-            this.inner.borrow_mut().add_block(lua_block.inner.borrow().clone());
+            this.inner
+                .borrow_mut()
+                .add_block(lua_block.inner.borrow().clone());
             Ok(())
         });
 
@@ -244,7 +264,9 @@ impl LuaUserData for LuaMapGroup {
         /// @param | script | MapScript | Script to add.
         methods.add_method_mut("addScript", |_, this, script: LuaAnyUserData| {
             let lua_script = script.borrow::<LuaMapScript>()?;
-            this.inner.borrow_mut().add_script(lua_script.inner.borrow().clone());
+            this.inner
+                .borrow_mut()
+                .add_script(lua_script.inner.borrow().clone());
             Ok(())
         });
     }
@@ -256,83 +278,93 @@ impl LuaUserData for LuaMapScript {
         /// Add a generation step â€” Lua userdata object exposed by the engine.
         /// @param | step_type | string | Step type name.
         /// @param | opts | table | Step configuration options.
-        methods.add_method_mut("addStep", |_, this, (step_type_str, opts): (String, Option<LuaTable>)| {
-            let step_type = match step_type_str.to_lowercase().as_str() {
-                "fill_random" | "fillrandom" => StepType::FillRandom,
-                "place_block" | "placeblock" => StepType::PlaceBlock,
-                "place_random" | "placerandom" => StepType::PlaceRandom,
-                "place_line" | "placeline" => StepType::PlaceLine,
-                "flood_fill" | "floodfill" => StepType::FloodFill,
-                "fill_area" | "fillarea" => StepType::FillArea,
-                "draw_path" | "drawpath" => StepType::DrawPath,
-                "fill_rect" | "fillrect" => StepType::FillRect,
-                "fill_edges" | "filledges" => StepType::FillEdges,
-                "auto_place" | "autoplace" => StepType::AutoPlace,
-                _ => return Err(LuaError::RuntimeError(format!("Unknown step type: {step_type_str}"))),
-            };
+        methods.add_method_mut(
+            "addStep",
+            |_, this, (step_type_str, opts): (String, Option<LuaTable>)| {
+                let step_type = match step_type_str.to_lowercase().as_str() {
+                    "fill_random" | "fillrandom" => StepType::FillRandom,
+                    "place_block" | "placeblock" => StepType::PlaceBlock,
+                    "place_random" | "placerandom" => StepType::PlaceRandom,
+                    "place_line" | "placeline" => StepType::PlaceLine,
+                    "flood_fill" | "floodfill" => StepType::FloodFill,
+                    "fill_area" | "fillarea" => StepType::FillArea,
+                    "draw_path" | "drawpath" => StepType::DrawPath,
+                    "fill_rect" | "fillrect" => StepType::FillRect,
+                    "fill_edges" | "filledges" => StepType::FillEdges,
+                    "auto_place" | "autoplace" => StepType::AutoPlace,
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "Unknown step type: {step_type_str}"
+                        )))
+                    }
+                };
 
-            let mut step = ScriptStep { step_type, ..Default::default() };
+                let mut step = ScriptStep {
+                    step_type,
+                    ..Default::default()
+                };
 
-            if let Some(opts) = opts {
-                if let Ok(group) = opts.get::<_, String>("group") {
-                    step.group_name = group;
+                if let Some(opts) = opts {
+                    if let Ok(group) = opts.get::<_, String>("group") {
+                        step.group_name = group;
+                    }
+                    if let Ok(count) = opts.get::<_, u32>("count") {
+                        step.count = count;
+                    }
+                    if let Ok(x) = opts.get::<_, i32>("x") {
+                        step.x = x;
+                    }
+                    if let Ok(y) = opts.get::<_, i32>("y") {
+                        step.y = y;
+                    }
+                    if let Ok(w) = opts.get::<_, u32>("width") {
+                        step.width = w;
+                    }
+                    if let Ok(h) = opts.get::<_, u32>("height") {
+                        step.height = h;
+                    }
+                    if let Ok(r) = opts.get::<_, u32>("rotation") {
+                        step.rotation = r;
+                    }
+                    if let Ok(m) = opts.get::<_, bool>("mirror") {
+                        step.mirror = m;
+                    }
+                    if let Ok(rr) = opts.get::<_, bool>("random_rotation") {
+                        step.random_rotation = rr;
+                    }
+                    if let Ok(rm) = opts.get::<_, bool>("random_mirror") {
+                        step.random_mirror = rm;
+                    }
+                    if let Ok(ms) = opts.get::<_, bool>("match_sides") {
+                        step.match_sides = ms;
+                    }
+                    if let Ok(c) = opts.get::<_, f32>("chance") {
+                        step.chance = c;
+                    }
+                    if let Ok(rc) = opts.get::<_, u32>("repeat") {
+                        step.repeat_count = rc;
+                    }
+                    if let Ok(bi) = opts.get::<_, i32>("block_index") {
+                        step.block_index = bi;
+                    }
+                    if let Ok(tid) = opts.get::<_, u32>("tile_id") {
+                        step.tile_id = tid;
+                    }
+                    if let Ok(si) = opts.get::<_, usize>("slot") {
+                        step.slot_index = si;
+                    }
+                    if let Ok(l) = opts.get::<_, u32>("layer") {
+                        step.layer = l;
+                    }
+                    if let Ok(lv) = opts.get::<_, u32>("level") {
+                        step.level = lv;
+                    }
                 }
-                if let Ok(count) = opts.get::<_, u32>("count") {
-                    step.count = count;
-                }
-                if let Ok(x) = opts.get::<_, i32>("x") {
-                    step.x = x;
-                }
-                if let Ok(y) = opts.get::<_, i32>("y") {
-                    step.y = y;
-                }
-                if let Ok(w) = opts.get::<_, u32>("width") {
-                    step.width = w;
-                }
-                if let Ok(h) = opts.get::<_, u32>("height") {
-                    step.height = h;
-                }
-                if let Ok(r) = opts.get::<_, u32>("rotation") {
-                    step.rotation = r;
-                }
-                if let Ok(m) = opts.get::<_, bool>("mirror") {
-                    step.mirror = m;
-                }
-                if let Ok(rr) = opts.get::<_, bool>("random_rotation") {
-                    step.random_rotation = rr;
-                }
-                if let Ok(rm) = opts.get::<_, bool>("random_mirror") {
-                    step.random_mirror = rm;
-                }
-                if let Ok(ms) = opts.get::<_, bool>("match_sides") {
-                    step.match_sides = ms;
-                }
-                if let Ok(c) = opts.get::<_, f32>("chance") {
-                    step.chance = c;
-                }
-                if let Ok(rc) = opts.get::<_, u32>("repeat") {
-                    step.repeat_count = rc;
-                }
-                if let Ok(bi) = opts.get::<_, i32>("block_index") {
-                    step.block_index = bi;
-                }
-                if let Ok(tid) = opts.get::<_, u32>("tile_id") {
-                    step.tile_id = tid;
-                }
-                if let Ok(si) = opts.get::<_, usize>("slot") {
-                    step.slot_index = si;
-                }
-                if let Ok(l) = opts.get::<_, u32>("layer") {
-                    step.layer = l;
-                }
-                if let Ok(lv) = opts.get::<_, u32>("level") {
-                    step.level = lv;
-                }
-            }
 
-            this.inner.borrow_mut().add_step(step);
-            Ok(())
-        });
+                this.inner.borrow_mut().add_step(step);
+                Ok(())
+            },
+        );
 
         // -- getStepCount --
         /// Get the number of steps for this object.
@@ -461,8 +493,9 @@ impl LuaUserData for LuaMapBlockGenerator {
         /// Set rendering orientation for this object.
         /// @param | orientation | string | "topdown" or "isometric".
         methods.add_method_mut("setOrientation", |_, this, orientation: String| {
-            let o = MapOrientation::from_name(&orientation)
-                .ok_or_else(|| LuaError::RuntimeError(format!("Unknown orientation: {orientation}")))?;
+            let o = MapOrientation::from_name(&orientation).ok_or_else(|| {
+                LuaError::RuntimeError(format!("Unknown orientation: {orientation}"))
+            })?;
             this.inner.borrow_mut().set_orientation(o);
             Ok(())
         });
@@ -480,7 +513,9 @@ impl LuaUserData for LuaMapBlockGenerator {
         /// @param | rules | NeighborRules | Rules object.
         methods.add_method_mut("setRules", |_, this, rules: LuaAnyUserData| {
             let lua_rules = rules.borrow::<LuaNeighborRules>()?;
-            this.inner.borrow_mut().set_rules(lua_rules.inner.borrow().clone());
+            this.inner
+                .borrow_mut()
+                .set_rules(lua_rules.inner.borrow().clone());
             Ok(())
         });
 
@@ -506,7 +541,9 @@ impl LuaUserData for LuaMapBlockGenerator {
         /// @param | group | MapGroup | Group of blocks.
         methods.add_method_mut("addGroup", |_, this, group: LuaAnyUserData| {
             let lua_group = group.borrow::<LuaMapGroup>()?;
-            this.inner.borrow_mut().add_group(lua_group.inner.borrow().clone());
+            this.inner
+                .borrow_mut()
+                .add_group(lua_group.inner.borrow().clone());
             Ok(())
         });
 
@@ -561,14 +598,19 @@ impl LuaUserData for LuaMapBlockResult {
         /// @param | y | integer | Tile Y.
         /// @param | slot | integer | Slot index.
         /// @return | integer | GID value.
-        methods.add_method("getGid", |_, this, (level, layer, x, y, slot): (u32, u32, u32, u32, usize)| {
-            Ok(this.inner.get_gid(level, layer, x, y, slot))
-        });
+        methods.add_method(
+            "getGid",
+            |_, this, (level, layer, x, y, slot): (u32, u32, u32, u32, usize)| {
+                Ok(this.inner.get_gid(level, layer, x, y, slot))
+            },
+        );
 
         // -- getBlocksPlaced --
         /// Get number of blocks placed for this object.
         /// @return | integer | Blocks placed.
-        methods.add_method("getBlocksPlaced", |_, this, ()| Ok(this.inner.blocks_placed));
+        methods.add_method("getBlocksPlaced", |_, this, ()| {
+            Ok(this.inner.blocks_placed)
+        });
 
         // -- isEmpty --
         /// Check if result is empty for this object.
@@ -639,13 +681,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | MapBlock | New block.
     module.set(
         "newBlock",
-        lua.create_function(|_, (w, h, layers, config): (u32, u32, u32, LuaAnyUserData)| {
-            let lua_config = config.borrow::<LuaMapBlockConfig>()?;
-            let block = MapBlock::new(w, h, layers, &lua_config.inner.borrow());
-            Ok(LuaMapBlock {
-                inner: Rc::new(RefCell::new(block)),
-            })
-        })?,
+        lua.create_function(
+            |_, (w, h, layers, config): (u32, u32, u32, LuaAnyUserData)| {
+                let lua_config = config.borrow::<LuaMapBlockConfig>()?;
+                let block = MapBlock::new(w, h, layers, &lua_config.inner.borrow());
+                Ok(LuaMapBlock {
+                    inner: Rc::new(RefCell::new(block)),
+                })
+            },
+        )?,
     )?;
 
     /// Create a new map group exposed by the lurek engine.
@@ -734,10 +778,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     module.set(
         "newTilesetRef",
         lua.create_function(
-            |_, (id, name, tile_count, columns, tile_width, tile_height): (u32, String, u32, u32, u32, u32)| {
+            |_,
+             (id, name, tile_count, columns, tile_width, tile_height): (
+                u32,
+                String,
+                u32,
+                u32,
+                u32,
+                u32,
+            )| {
                 Ok(LuaTilesetRef {
                     inner: Rc::new(RefCell::new(TilesetRef::new(
-                        id, &name, tile_count, columns, tile_width, tile_height,
+                        id,
+                        &name,
+                        tile_count,
+                        columns,
+                        tile_width,
+                        tile_height,
                     ))),
                 })
             },

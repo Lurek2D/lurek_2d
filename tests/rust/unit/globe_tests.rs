@@ -4,8 +4,8 @@
 
 mod fog_tests {
 
-    use lurek2d::globe::{FogMask, FogStore};
     use lurek2d::globe::types::RegionId;
+    use lurek2d::globe::{FogMask, FogStore};
 
     // FogMask::all_hidden
 
@@ -671,7 +671,10 @@ mod topology_tests {
     use lurek2d::globe::types::{GlobeError, Province, RegionId};
 
     fn make_province(id: u32, neighbors: Vec<u32>) -> Province {
-        let mut p = Province::new(RegionId(id), vec![(0.0_f32, 0.0_f32), (1.0, 0.0), (0.5, 1.0)]);
+        let mut p = Province::new(
+            RegionId(id),
+            vec![(0.0_f32, 0.0_f32), (1.0, 0.0), (0.5, 1.0)],
+        );
         p.neighbors = neighbors.into_iter().map(RegionId).collect();
         p
     }
@@ -771,7 +774,10 @@ mod topology_tests {
     fn set_attr_nonexistent_province_returns_error() {
         let mut g = ProvinceGraph::new();
         let result = g.set_attr(RegionId(999), "k".to_string(), "v".to_string());
-        assert!(matches!(result, Err(GlobeError::RegionNotFound(RegionId(999)))));
+        assert!(matches!(
+            result,
+            Err(GlobeError::RegionNotFound(RegionId(999)))
+        ));
     }
 
     #[test]

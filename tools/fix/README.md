@@ -12,3 +12,6 @@
 - **`format_examples.py`**: tools/fix/format_examples.py
 - **`improve_examples.py`**: tools/fix/improve_examples.py
 - **`improve_lua_docstrings.py`**: improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in
+- **`module_docstring_fix.py`**: module_docstring_fix.py -- Expand/repair module-level //! docstrings in Rust source files.
+- **`spec_docstring_apply.py`**: spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings.
+- **`strip_garbage_doc_lines.py`**: strip_garbage_doc_lines.py -- Remove auto-generated garbage lines from //! docstrings.

@@ -330,9 +330,18 @@ fn easing_back_out_reaches_one() {
 
 #[test]
 fn easing_parse_str_valid() {
-    assert_eq!(EasingFunction::parse_str("linear"), Some(EasingFunction::Linear));
-    assert_eq!(EasingFunction::parse_str("bounce_out"), Some(EasingFunction::BounceOut));
-    assert_eq!(EasingFunction::parse_str("elastic_out"), Some(EasingFunction::ElasticOut));
+    assert_eq!(
+        EasingFunction::parse_str("linear"),
+        Some(EasingFunction::Linear)
+    );
+    assert_eq!(
+        EasingFunction::parse_str("bounce_out"),
+        Some(EasingFunction::BounceOut)
+    );
+    assert_eq!(
+        EasingFunction::parse_str("elastic_out"),
+        Some(EasingFunction::ElasticOut)
+    );
 }
 
 #[test]

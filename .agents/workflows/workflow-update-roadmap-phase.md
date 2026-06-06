@@ -3,7 +3,6 @@ trigger: manual
 description: "Update one roadmap phase from new evidence without turning it into a fresh brainstorm."
 expected_agent: "Manager"
 ---
-
 # Workflow Update Roadmap Phase
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Target decision horizon.
 
 ## Steps
-1. Load [skill: opportunity-discovery](../rules/skill_opportunity-discovery.md) and [skill: roadmap-planning](../rules/skill_roadmap-planning.md) before acting.
+1. Load [skill: opportunity-discovery](../skills/opportunity-discovery/SKILL.md) and [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md) before acting.
 2. Read the current phase first, then the new evidence, and identify exactly which assumptions or gates changed.
 3. Update only the sections affected by the new signal, keeping problem framing, why-now, dependencies, and acceptance gate explicit.
 4. Separate confirmed changes from still-speculative ideas instead of smoothing uncertainty away.

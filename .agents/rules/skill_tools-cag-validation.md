@@ -2,7 +2,6 @@
 trigger: model_decision
 description: "Load this skill when validating, debugging, or maintaining CAG files and cag_validate.py rules. Skip it for engine code or game scripts."
 ---
-
 # tools-cag-validation
 
 ## Mission
@@ -19,24 +18,17 @@ description: "Load this skill when validating, debugging, or maintaining CAG fil
 - CI/CD workflow setup.
 
 ## Domain Knowledge
-- `python tools/validate/cag_validate.py` is the entry gate for any CAG commit. It validates: (1) frontmatter keys and required values, (2) required sections (Mission, When To Load, When To Skip, Domain Knowledge), (3) line count cap per file, (4) known agent and skill names in cross-references, (5) description field phrasing (must start with "Load this" or "Skip it for"), (6) prompt `expected_agent` names against the live roster. A clean validator run is a commit prerequisite.
-- Scoped runs for fast iteration: `--type skill` validates all skills; `--type agent` validates all agents; passing a single file path validates just that file. Use scoped runs during authoring. Run the full validator before committing.
-- `python tools/audit/cag_link_check.py --strict` verifies that every `.md` file path referenced in any CAG file actually exists. Run after any file rename, move, or deletion in `.github/` or `docs/`. Dead links in CAG files silently degrade routing quality.
+- `python tools/validate/cag_validate.py` is the entry gate for any CAG commit. It validates: frontmatter keys and required values, required sections, line count cap per file, known agent and skill names in cross-references, description field phrasing, prompt `expected_agent` names against the live roster.
+- Scoped runs for fast iteration: `--type skill` validates all skills; `--type agent` validates all agents; passing a single file path validates just that file. Use scoped runs during authoring.
+- `python tools/audit/cag_link_check.py --strict` verifies that every `.md` file path referenced in any CAG file actually exists. Run after any file rename, move, or deletion in `.github/` or `docs/`.
 - `python tools/audit/cag_coverage.py` reports which agent roles lack associated skill bundles and which skills have no agent owner. An unowned skill is a candidate for removal; a role without primary skills is a routing gap.
 - `python tools/audit/cag_persona_matrix.py` outputs the persona coverage matrix. Run it after any agent addition or removal to confirm no persona lost all its serving agents.
-- Distinguishing content vs. validator defects: when validation fails, first confirm the rule exists in `cag_validate.py` source code. If the rule is correct and the file is wrong, fix the file. If the rule is outdated (removed agent name, old field), update the rule — but treat rule changes as a separate commit with a changelog entry.
+- Distinguishing content vs. validator defects: when validation fails, first confirm the rule exists in `cag_validate.py` source code.
 - `--baseline` flag produces a baseline snapshot for comparison. Use it when starting a large CAG sweep: baseline at start, validate again at end, diff to confirm only intended changes.
 - Common validator failures and their fixes: `unknown_agent_name` → agent file was deleted or renamed without updating references; `description_phrasing` → description does not start with "Load this skill when"; `section_missing` → one of the four required sections is absent or has the wrong heading.
-- SKILL.md files must not contain code blocks (triple-backtick) or inline code (single-backtick). The validator enforces this. If domain knowledge requires an exact command, write it in plain prose without backtick formatting.
-- After the validator passes, update `docs/CHANGELOG.md` with a `docs` or `chore` entry describing the CAG change. CAG changes without a changelog entry fail the commit hygiene check.
+- SKILL.md files must not contain triple-backtick code fences. Single backticks are allowed for short inline command or path references when they improve clarity.
 ## Companion File Index
 - None.
-
-
-## Gemini Tips (Antigravity Optimization)
-- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
-- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
-- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - tools/validate/cag_validate.py

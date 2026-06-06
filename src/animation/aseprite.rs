@@ -96,20 +96,20 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
         .max()
         .unwrap_or(0);
     let meta = root.get("meta");
-    let size = meta.and_then(|meta| meta.get("size"));
+    let size = meta.and_then(|m| m.get("size"));
     let sheet_width = size
-        .and_then(|size| size.get("w"))
+        .and_then(|s| s.get("w"))
         .and_then(Value::as_u64)
-        .map(|value| value as u32)
+        .map(|v| v as u32)
         .unwrap_or(derived_sheet_width);
     let sheet_height = size
-        .and_then(|size| size.get("h"))
+        .and_then(|s| s.get("h"))
         .and_then(Value::as_u64)
-        .map(|value| value as u32)
+        .map(|v| v as u32)
         .unwrap_or(derived_sheet_height);
     let mut tags: Vec<AsepriteTagData> = Vec::new();
     if let Some(tag_arr) = meta
-        .and_then(|meta| meta.get("frameTags"))
+        .and_then(|m| m.get("frameTags"))
         .and_then(Value::as_array)
     {
         for tag_val in tag_arr {

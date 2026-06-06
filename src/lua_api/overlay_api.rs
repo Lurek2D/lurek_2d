@@ -167,7 +167,8 @@ impl LuaUserData for LuaOverlay {
         /// Copies this overlay ambient color into the shared light world.
         methods.add_method_mut("pushAmbientToLight", |_, this, ()| {
             let mut st = this.state.borrow_mut();
-            this.inner.push_ambient_to_light(&mut st.light_world.ambient);
+            this.inner
+                .push_ambient_to_light(&mut st.light_world.ambient);
             Ok(())
         });
         // -- syncAmbientWithLight --

@@ -3,7 +3,6 @@ trigger: manual
 description: "Analyze game telemetry, SQL results, or DataFrame outputs for balance or KPI questions."
 expected_agent: "Manager"
 ---
-
 # Analyze Game Telemetry
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Balance or KPI concern.
 
 ## Steps
-1. Load [skill: analytics](../rules/skill_analytics.md) before acting.
+1. Load [skill: analytics](../skills/analytics/SKILL.md) before acting.
 2. Gather only the relevant source material from logs/, logs/data/, SQL exports, DataFrame outputs, and any linked balance notes.
 3. Compute the key metrics, trends, and outliers for the named question, then separate measured facts from interpretation.
 4. Tie each result to likely game balance, economy, or content implications and note what extra data would change the conclusion.

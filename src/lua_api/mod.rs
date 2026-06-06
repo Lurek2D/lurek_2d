@@ -14,6 +14,8 @@ pub mod audio_api;
 /// Exposes the `lurek.automation` binding module.
 #[cfg(feature = "automation-plugin")]
 pub mod automation_api;
+/// Exposes the `lurek.binary` binding module.
+pub mod binary_api;
 /// Exposes shared callback registry helpers for Lua bindings.
 pub mod callback_registry;
 /// Exposes the `lurek.camera` binding module.
@@ -27,8 +29,6 @@ pub mod color_api;
 pub mod compute_api;
 /// Exposes the `lurek.cursor` binding module.
 pub mod cursor_api;
-/// Exposes the `lurek.binary` binding module.
-pub mod binary_api;
 /// Exposes the `lurek.dataframe` binding module.
 pub mod dataframe_api;
 /// Exposes the `lurek.debugbridge` binding module.
@@ -52,15 +52,15 @@ pub mod engine_api;
 pub mod event_api;
 /// Exposes the `lurek.filesystem` binding module.
 pub mod filesystem_api;
+/// Exposes the `lurek.flownet` binding module.
+#[cfg(feature = "flownet")]
+pub mod flownet_api;
 /// Exposes the `lurek.font` binding module.
 pub mod font_api;
 /// Exposes the `lurek.globe` binding module.
 pub mod globe_api;
 /// Exposes the `lurek.grep` binding module.
 pub mod grep_api;
-/// Exposes the `lurek.flownet` binding module.
-#[cfg(feature = "flownet")]
-pub mod flownet_api;
 /// Exposes the `lurek.html` binding module.
 pub mod html_api;
 /// Exposes the `lurek.i18n` binding module.
@@ -77,14 +77,14 @@ pub mod learning_api;
 pub mod light_api;
 /// Exposes the `lurek.log` binding module.
 pub mod log_api;
-/// Exposes shared Lua binding type helpers.
-pub mod lua_types;
 /// Exposes the `LuaModule` trait and module registry types.
 pub mod lua_module;
-/// Exposes the `lurek.math` binding module.
-pub mod math_api;
+/// Exposes shared Lua binding type helpers.
+pub mod lua_types;
 /// Exposes the `lurek.mapblock` binding module.
 pub mod mapblock_api;
+/// Exposes the `lurek.math` binding module.
+pub mod math_api;
 /// Exposes the `lurek.midi` binding module.
 pub mod midi_api;
 /// Exposes the `lurek.minimap` binding module.

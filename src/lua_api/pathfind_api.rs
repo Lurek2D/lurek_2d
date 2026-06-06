@@ -3,9 +3,9 @@
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
+use crate::pathfind::goal_map::{GoalMap, GoalSource};
 use crate::pathfind::hpa::{build_abstract, hpa_star, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
-use crate::pathfind::goal_map::{GoalMap, GoalSource};
 use crate::pathfind::{
     bidirectional_astar, DiagonalMode, FlowField, NavGrid, NavMesh, UnitPathfinder, Waypoint,
 };
@@ -19,10 +19,7 @@ static PATHFIND_THREAD_COUNT: AtomicU32 = AtomicU32::new(1);
 
 fn one_based_to_zero_based(value: u32, label: &str) -> LuaResult<u32> {
     value.checked_sub(1).ok_or_else(|| {
-        LuaError::RuntimeError(format!(
-            "{} must be >= 1 for one-based coordinates",
-            label
-        ))
+        LuaError::RuntimeError(format!("{} must be >= 1 for one-based coordinates", label))
     })
 }
 
@@ -316,13 +313,10 @@ impl LuaUserData for LuaUnitPathfinder {
                 let sy = one_based_to_zero_based(y1, "y1")?;
                 let gx = one_based_to_zero_based(x2, "x2")?;
                 let gy = one_based_to_zero_based(y2, "y2")?;
-                let result = this.inner.borrow_mut().find_path(
-                    sx,
-                    sy,
-                    gx,
-                    gy,
-                    unit_size.unwrap_or(1),
-                );
+                let result =
+                    this.inner
+                        .borrow_mut()
+                        .find_path(sx, sy, gx, gy, unit_size.unwrap_or(1));
                 match result {
                     Some(path) => Ok(LuaValue::Table(waypoints_to_lua(lua, &path)?)),
                     None => Ok(LuaValue::Nil),
@@ -1533,12 +1527,17 @@ impl LuaUserData for LuaGoalMap {
         /// @param | x      | integer  | One-based column.
         /// @param | y      | integer  | One-based row.
         /// @param | weight | integer? | Relative weight (default 1). Lower = stronger pull.
-        methods.add_method("addSource", |_, this, (x, y, weight): (u32, u32, Option<u32>)| {
-            let xz = one_based_to_zero_based(x, "x")?;
-            let yz = one_based_to_zero_based(y, "y")?;
-            this.inner.borrow_mut().add_source(xz, yz, weight.unwrap_or(1));
-            Ok(())
-        });
+        methods.add_method(
+            "addSource",
+            |_, this, (x, y, weight): (u32, u32, Option<u32>)| {
+                let xz = one_based_to_zero_based(x, "x")?;
+                let yz = one_based_to_zero_based(y, "y")?;
+                this.inner
+                    .borrow_mut()
+                    .add_source(xz, yz, weight.unwrap_or(1));
+                Ok(())
+            },
+        );
 
         // -- setSources --
         /// Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.
@@ -1595,7 +1594,9 @@ impl LuaUserData for LuaGoalMap {
                         blocked[(y * w + x) as usize] = result;
                     }
                 }
-                this.inner.borrow_mut().bake(&|x, y| blocked[(y * w + x) as usize]);
+                this.inner
+                    .borrow_mut()
+                    .bake(&|x, y| blocked[(y * w + x) as usize]);
             } else {
                 this.inner.borrow_mut().bake(&|_, _| false);
             }
@@ -1650,21 +1651,24 @@ impl LuaUserData for LuaGoalMap {
         /// @param | cy        | integer | One-based center row.
         /// @param | threshold | integer | Maximum distance to include.
         /// @return | table | Array of `{x, y}` tables (one-based).
-        methods.add_method("floodFill", |lua, this, (cx, cy, threshold): (u32, u32, u32)| {
-            let cxz = one_based_to_zero_based(cx, "cx")?;
-            let cyz = one_based_to_zero_based(cy, "cy")?;
-            let cells = this.inner.borrow().flood_fill(cxz, cyz, threshold);
-            let out = lua.create_table()?;
-            for (i, (x, y)) in cells.into_iter().enumerate() {
-                let pt = lua.create_table()?;
-                /// The 'x' field value exposed to Lua scripts.
-                pt.set("x", x + 1)?;
-                /// The 'y' field value exposed to Lua scripts.
-                pt.set("y", y + 1)?;
-                out.set(i + 1, pt)?;
-            }
-            Ok(out)
-        });
+        methods.add_method(
+            "floodFill",
+            |lua, this, (cx, cy, threshold): (u32, u32, u32)| {
+                let cxz = one_based_to_zero_based(cx, "cx")?;
+                let cyz = one_based_to_zero_based(cy, "cy")?;
+                let cells = this.inner.borrow().flood_fill(cxz, cyz, threshold);
+                let out = lua.create_table()?;
+                for (i, (x, y)) in cells.into_iter().enumerate() {
+                    let pt = lua.create_table()?;
+                    /// The 'x' field value exposed to Lua scripts.
+                    pt.set("x", x + 1)?;
+                    /// The 'y' field value exposed to Lua scripts.
+                    pt.set("y", y + 1)?;
+                    out.set(i + 1, pt)?;
+                }
+                Ok(out)
+            },
+        );
 
         // -- save --
         /// Serialises the current distance field to a binary blob string.
@@ -1677,7 +1681,10 @@ impl LuaUserData for LuaGoalMap {
         /// Restores a distance field from a blob produced by `save`.
         /// @param | blob | string | Serialised blob.
         methods.add_method("restore", |_, this, blob: LuaString| {
-            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+            this.inner
+                .borrow_mut()
+                .restore(blob.as_bytes())
+                .map_err(LuaError::external)
         });
 
         // -- type --

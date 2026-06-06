@@ -48,11 +48,15 @@ impl LuaUserData for LuaSprite {
         // -- hasNormalMap --
         /// Returns whether the sprite currently has a normal map.
         /// @return | boolean | True when a normal map is assigned.
-        methods.add_method("hasNormalMap", |_, this, ()| Ok(this.inner.has_normal_map()));
+        methods.add_method("hasNormalMap", |_, this, ()| {
+            Ok(this.inner.has_normal_map())
+        });
         // -- getNormalMap --
         /// Returns the assigned normal-map texture handle, or nil when absent.
         /// @return | integer | Texture handle for the normal map.
-        methods.add_method("getNormalMap", |_, this, ()| Ok(this.inner.get_normal_map()));
+        methods.add_method("getNormalMap", |_, this, ()| {
+            Ok(this.inner.get_normal_map())
+        });
         // -- setNormalIntensity --
         /// Sets the normal-map intensity used by lit sprite workflows.
         /// @param | intensity | number | Non-negative intensity multiplier.
@@ -430,12 +434,16 @@ impl LuaUserData for LuaAtlasPacker {
         // -- regionCount --
         /// Returns the number of currently packed regions.
         /// @return | integer | Region count.
-        methods.add_method("regionCount", |_, this, ()| Ok(this.inner.get_region_count()));
+        methods.add_method("regionCount", |_, this, ()| {
+            Ok(this.inner.get_region_count())
+        });
         // -- getDimensions --
         /// Returns the current width and height of this atlas packer.
         /// @return | integer | Atlas width in pixels.
         /// @return | integer | Atlas height in pixels.
-        methods.add_method("getDimensions", |_, this, ()| Ok(this.inner.get_dimensions()));
+        methods.add_method("getDimensions", |_, this, ()| {
+            Ok(this.inner.get_dimensions())
+        });
         // -- clear --
         /// Removes all packed regions and resets packing shelves.
         methods.add_method_mut("clear", |_, this, ()| {

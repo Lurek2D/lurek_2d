@@ -2,9 +2,7 @@
 
 use super::SharedState;
 use crate::math::Vec2;
-use crate::physics::{
-    Body, BodyId, BodyType, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
-};
+use crate::physics::{Body, BodyId, BodyType, PhysicsZone, RaycastHit, Shape, TerrainMap, World};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -1594,7 +1592,9 @@ impl LuaUserData for LuaBody {
         /// Sets the body's angular velocity directly.
         /// @param | omega | number | Angular velocity in radians per second.
         methods.add_method("setAngularVelocity", |_, this, omega: f32| {
-            this.world.borrow_mut().set_angular_velocity(this.id.0, omega);
+            this.world
+                .borrow_mut()
+                .set_angular_velocity(this.id.0, omega);
             Ok(())
         });
         // -- getMass --
@@ -1789,7 +1789,9 @@ impl LuaUserData for LuaBody {
         /// Sets the linear damping factor (higher = more velocity decay per step).
         /// @param | damping | number | Damping value (0 = no damping).
         methods.add_method("setLinearDamping", |_, this, damping: f32| {
-            this.world.borrow_mut().set_linear_damping(this.id.0, damping);
+            this.world
+                .borrow_mut()
+                .set_linear_damping(this.id.0, damping);
             Ok(())
         });
         // -- getAngularDamping --

@@ -29,6 +29,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `audit/lua_evidence_golden_contract_audit.py` - Audit Lua evidence and golden test contract compliance.
 - `audit/lua_spec_coverage.py` - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
 - `audit/lua_test_structure_audit.py` - Audit and normalize Lua BDD test structure under tests/lua.
+- `audit/module_docstring_audit.py` - module_docstring_audit.py -- Audit Rust source files for adequate module-level //! docstrings.
 - `audit/mutation_report.py` - mutation_report.py — run cargo-mutants for selected priority modules.
 - `audit/parse_test_log.py` - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
 - `audit/perf_regression_gate.py` - perf_regression_gate.py — lightweight perf/stress regression gate for CI.
@@ -57,7 +58,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 
 ### /dev
 - `dev/parallel_cargo.py` - Repository-owned cargo orchestration for build, run, test, lint, fmt, and doc.
-- `dev/test_fix_loop.py` - tools/scripts/test_fix_loop.py — Agent-friendly test-run / fix / re-run loop.
+- `dev/test_fix_loop.py` - Agent-friendly test-run / fix / re-run loop for cargo test.
 
 ### /dist
 - `dist/pack.py` - tools/pack.py — Pack a Lurek2D game directory into a .lurek archive.
@@ -66,6 +67,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 ### /docs
 - `docs/collect_docs.py` - collect_docs.py — Lurek2D rich structured API documentation collector.
 - `docs/gen_docs_lua.py` - gen_docs_lua.py -- Generate Lua API reference from logs/data/lua_api_data.json.
+- `docs/gen_docs_lua_html.py` - Generate compatibility redirects for legacy ``/lua-docs`` URLs.
 - `docs/gen_docs_rust.py` - gen_docs_rust.py — Generate compact inline Rust API reference from logs/data/rust_api_data.json.
 - `docs/gen_engine_docs.py` - gen_engine_docs.py — Generate per-module documentation for Lurek2D Rust engine source.
 - `docs/gen_extension_api.py` - gen_extension_api.py -- Convert logs/data/lua_api_data.json to
@@ -77,9 +79,11 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `docs/gen_lua_docstring_skeletons.py` - gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
 - `docs/gen_lua_library_api.py` - gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
 - `docs/gen_luadoc.py` - gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
+- `docs/gen_module_pages.py` - Generate per-module MkDocs pages in docs/modules/ from:
 - `docs/gen_module_specs.py` - Generate merged docs/specs/<module>.md files for top-level src modules.
 - `docs/gen_rust_api_data.py` - gen_rust_api_data.py — Generate Lurek2D master API data file.
 - `docs/gen_rust_docstrings.py` - gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
+- `docs/gen_rust_html_docs.py` - Generate Rust HTML documentation and publish it to pages/rust-docs/.
 - `docs/gen_test_docs.py` - gen_test_docs.py — Generate human-readable test documentation for Lurek2D.
 - `docs/gen_wiki.py` - Generate the user-facing GitHub Wiki for Lurek2D.
 - `docs/gen_wiki_api.py` - gen_wiki_api.py — Generate wiki/API-Reference.md from logs/data/lua_api_data.json.
@@ -95,6 +99,9 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `fix/format_examples.py` - tools/fix/format_examples.py
 - `fix/improve_examples.py` - tools/fix/improve_examples.py
 - `fix/improve_lua_docstrings.py` - improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in
+- `fix/module_docstring_fix.py` - module_docstring_fix.py -- Expand/repair module-level //! docstrings in Rust source files.
+- `fix/spec_docstring_apply.py` - spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings.
+- `fix/strip_garbage_doc_lines.py` - strip_garbage_doc_lines.py -- Remove auto-generated garbage lines from //! docstrings.
 
 ### /github
 - `github/ideas_to_github_issues.py` - Create GitHub issues from each markdown file in docs/ideas/.
@@ -106,8 +113,6 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 ### /rag
 - `rag/build_index.py` - build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D documentation and code.
 - `rag/query.py` - query.py — Queries the local SQLite FTS5 RAG index for Lurek2D API examples and usage.
-- `rag/scratch.py` - Brak docstringu.
-- `rag/test_rag.py` - Brak docstringu.
 
 ### /root
 - `gen_all_docs.py` - Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
@@ -131,8 +136,9 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `validate/validate_library.py` - Validate Lureksome libraries under content/library/.
 - `validate/validate_lua_api.py` - validate_lua_api.py -- Validates a Lurek2D lua_api file against the SKILL.md contract.
 - `validate/validate_lua_binding_reports.py` - Validate docstring bindings against code-derived Lua registration snapshots.
-- `validate/validate_module_coverage.py` - validate_module_coverage.py
+- `validate/validate_module_coverage.py` - Validate top-level module/spec coverage.
 - `validate/validate_param_types.py` - validate_param_types.py — Verify that @param type tags match Rust closure type inference.
+- `validate/validate_rust_file_docs.py` - validate_rust_file_docs.py — Check that every Rust source file in src/
 - `validate/validate_rust_source_docs.py` - Validate file-level and public-item Rust documentation under src/.
 - `validate/validate_snippets.py` - Validate content/snippets marker structure and VS Code snippet output freshness.
 

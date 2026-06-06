@@ -736,13 +736,8 @@ impl PostFxPipeline {
             label: Some(&label),
             source: wgpu::ShaderSource::Wgsl(full_src.into()),
         });
-        let pipeline = Self::create_render_pipeline(
-            device,
-            &label,
-            &layout,
-            &module,
-            self.surface_format,
-        );
+        let pipeline =
+            Self::create_render_pipeline(device, &label, &layout, &module, self.surface_format);
         self.pipelines.insert(name.to_string(), pipeline);
     }
     fn create_bind_group(

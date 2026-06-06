@@ -12,17 +12,17 @@
 
 ## Summary
 
-The `audio` module is the central runtime for sound behavior in Lurek2D. It manages source lifecycle, playback state, routing, and control so game systems can treat sound as a predictable service. In practice, it gives one place to start, stop, inspect, and shape audio during live gameplay.
+The audio module delivers a comprehensive sound and music engine for Lurek2D, managing device enumeration and streaming output lifecycles. It provides dual playback surfaces: static sources cached fully in memory for immediate sound triggers, and streaming or queueable sources designed for music and procedural PCM buffer feeds. The playback engine handles fading ramps, cloned voices, and round-robin voice pools that distribute low-latency triggering load across pre-allocated voices.
 
-Its mixer and bus model make project-wide control easier. Sources can be grouped, routed, and adjusted through shared bus rules for volume, pitch, pause, and ducking. This allows teams to manage complex mixes with clear structure instead of scattered per-source overrides.
+To manage complex soundscapes, the module implements a named mixing bus hierarchy. Individual sources route through buses to share high-level pitch, pause, and volume controls. Buses support dynamic sidechain ducking relationships, allowing priority audio streams—such as dialogue—to automatically attenuate background channels. Real-time metering captures peak and RMS amplitude values across channels for in-game diagnostic metering and audio-driven visualizers.
 
-The module also supports different playback patterns. It handles normal sources, queueable streaming, pool-based repeated playback, and cloned voices. This makes it suitable for music, effects, reactive one-shots, and high-frequency events without forcing one playback style for every case.
+Positional simulation is governed by a spatialized audio engine that maps coordinates in 2D and 3D space. It calculates panning, distance-model attenuation, and Doppler shifts by tracking relative coordinates, velocity vectors, and orientation arrays for both sound sources and listeners. This creates immersive motion cues, which are highly customizable through global scale limits and selectable distance-decay curves, integrating spatial movement with physics.
 
-Spatial and timing features are built into the runtime surface. Listener and source transforms, distance and doppler controls, and beat-clock utilities support both positional sound and rhythm-aware gameplay. Functionally, this keeps audio decisions close to game state and player timing.
+Rhythm-heavy games and synchronized gameplay elements are driven by a musical beat clock. The clock maps wall time to beats, bars, and subdivisions, accommodating linear tempo ramps without phase jumps. Scripts can schedule timed callbacks, tap tempo beats, apply rhythmic swing offsets for syncopation, and evaluate user-input timing accuracy against adjustable judgment windows, allowing gameplay mechanics to align perfectly with musical structures.
 
-Sound data workflows are practical for both authored and procedural content. Decode paths, in-memory sample containers, basic transforms, and WAV export support quick iteration and tooling scenarios. At the same time, advanced DSP and MIDI concerns remain in dedicated modules, keeping boundaries clear.
+For complex sequenced soundtracks, the module includes a dedicated MIDI player and synthesis system. It parses standard MIDI tracks, providing master volume scaling, per-channel instruments, and individual track muting. Tempos can scale dynamically relative to original speeds, while synthesis parameters are driven by selectable SoundFont files. This enables responsive and memory-efficient musical scoring that scales and changes tempo programmatically.
 
-Overall, the module provides a complete operational contract for audio: load or stream sound, route it, schedule it, control it, and monitor it through one Lua-facing API. This consistency improves maintainability as projects grow in content and runtime complexity.
+Frequency shaping and procedural audio are supported through built-in digital signal processing and sample-level access. Sound sources can apply highpass and lowpass filters to attenuate specific frequency bands, alongside stereo width modifications and random pitch fluctuations. For direct sample manipulation, the sound data container exposes interleaved PCM buffers, allowing scripts to read, edit, mix buffers, draw waveform images, and export audio as WAV files.
 
 ## Files
 

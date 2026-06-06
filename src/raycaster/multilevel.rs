@@ -150,7 +150,8 @@ impl MultiLevelGrid {
         if self.active_level == 0 {
             return false;
         }
-        self.levels.get(self.active_level)
+        self.levels
+            .get(self.active_level)
             .map(|l| l.is_floor_hole(x, y))
             .unwrap_or(false)
     }
@@ -160,7 +161,8 @@ impl MultiLevelGrid {
         if self.active_level + 1 >= self.levels.len() {
             return false;
         }
-        self.levels.get(self.active_level)
+        self.levels
+            .get(self.active_level)
             .map(|l| l.is_ceiling_hole(x, y))
             .unwrap_or(false)
     }

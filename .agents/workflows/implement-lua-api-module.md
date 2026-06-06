@@ -3,7 +3,6 @@ trigger: manual
 description: "Implement one lurek.* Lua API module with the required bindings, tests, and doc sync."
 expected_agent: "Manager"
 ---
-
 # Implement Lua API Module
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Required validation path.
 
 ## Steps
-1. Load [skill: lua-api-design](../rules/skill_lua-api-design.md), [skill: lua-rust-bridge](../rules/skill_lua-rust-bridge.md), [skill: rust-coding](../rules/skill_rust-coding.md), and [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read src/lua_api/<module>_api.rs, the matching src/<module>/ code, docs/specs/<module>.md, tests/lua/, and nearby examples before editing.
 3. Keep bindings thin, move domain behavior into src/<module>/, sync only the accepted public surface, and update source docstrings rather than generated files.
 4. Run the narrowest Lua API tests, regenerate Lua API docs from source if the module changed publicly, and finish with the required broader gate.

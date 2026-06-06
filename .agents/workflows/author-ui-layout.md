@@ -3,7 +3,6 @@ trigger: manual
 description: "Author or update a TOML UI layout under content/layouts/."
 expected_agent: "Manager"
 ---
-
 # Author UI Layout
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any runtime consumer.
 
 ## Steps
-1. Load [skill: ui-layout](../rules/skill_ui-layout.md) and [skill: lua-scripting](../rules/skill_lua-scripting.md) before acting.
+1. Load [skill: ui-layout](../skills/ui-layout/SKILL.md) and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
 2. Read the target layout file, neighboring layouts, the Lua consumer, and any supporting content assets before editing.
 3. Keep the layout readable, consistent with the existing content format, and aligned with the consuming Lua side instead of inventing new schema fields.
 4. Run the narrowest content or runtime check that loads the layout and confirm the touched screen still resolves correctly.

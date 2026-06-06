@@ -262,8 +262,7 @@ impl MapBlockGenerator {
         let (gx, gy) = if step.x != 0 || step.y != 0 {
             (step.x, step.y)
         } else {
-            let valid =
-                find_valid_positions(&self.grid, group.blocks(), block_idx, &self.rules);
+            let valid = find_valid_positions(&self.grid, group.blocks(), block_idx, &self.rules);
             if valid.is_empty() {
                 return;
             }
@@ -394,8 +393,7 @@ impl MapBlockGenerator {
             attempts += 1;
             let block_idx = rng.next_bounded(group.block_count() as u32) as usize;
 
-            let valid =
-                find_valid_positions(&self.grid, group.blocks(), block_idx, &self.rules);
+            let valid = find_valid_positions(&self.grid, group.blocks(), block_idx, &self.rules);
 
             if valid.is_empty() {
                 continue;

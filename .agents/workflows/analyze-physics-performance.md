@@ -3,7 +3,6 @@ trigger: manual
 description: "Analyze physics step cost, collision pressure, or world-update slowdowns."
 expected_agent: "Manager"
 ---
-
 # Analyze Physics Performance
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any timing capture.
 
 ## Steps
-1. Load [skill: performance-profiling](../rules/skill_performance-profiling.md) before acting.
+1. Load [skill: performance-profiling](../skills/performance-profiling/SKILL.md) before acting.
 2. Gather only the relevant source material from physics traces, tests, demo content, and the owning src/physics code path.
 3. Quantify broad-phase, narrow-phase, stepping, or data conversion cost as far as the available evidence allows.
 4. State the likely hotspot, the confidence level, and which owner should validate or change it next.

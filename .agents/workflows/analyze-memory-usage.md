@@ -3,7 +3,6 @@ trigger: manual
 description: "Analyze memory growth, allocation churn, or resource lifetime issues in the engine."
 expected_agent: "Manager"
 ---
-
 # Analyze Memory Usage
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any profiler or log output.
 
 ## Steps
-1. Load [skill: performance-profiling](../rules/skill_performance-profiling.md) and [skill: gpu-programming](../rules/skill_gpu-programming.md) before acting.
+1. Load [skill: performance-profiling](../skills/performance-profiling/SKILL.md) and [skill: gpu-programming](../skills/gpu-programming/SKILL.md) before acting.
 2. Gather only the relevant source material from profiler output, logs, resource lifetime code, cache paths, texture paths, and the narrow code slice for the symptom.
 3. Quantify memory growth, long-lived allocations, or churn sources and distinguish CPU ownership from GPU ownership.
 4. Explain the most likely controlling path, the confidence level, and the narrowest next validation or implementation step.

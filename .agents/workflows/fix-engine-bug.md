@@ -3,7 +3,6 @@ trigger: manual
 description: "Fix one engine bug in the smallest owner slice with focused validation."
 expected_agent: "Manager"
 ---
-
 # Fix Engine Bug
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Acceptance gate.
 
 ## Steps
-1. Load [skill: dev-debugging](../rules/skill_dev-debugging.md), [skill: error-handling](../rules/skill_error-handling.md), and [skill: rust-coding](../rules/skill_rust-coding.md) before acting.
+1. Load [skill: dev-debugging](../skills/dev-debugging/SKILL.md), [skill: error-handling](../skills/error-handling/SKILL.md), and [skill: rust-coding](../skills/rust-coding/SKILL.md) before acting.
 2. Reproduce the failure from the smallest reproducer, nearby tests, the owning module, and the accepted contract source.
 3. Change only the logic that controls the failing behavior, keep ownership boundaries intact, and add or update a test when the bug lacked coverage.
 4. Rerun the same reproducer or failing test first, then run the broader required check if the bug is fixed.

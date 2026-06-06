@@ -2,12 +2,12 @@
 
 use super::SharedState;
 use crate::ai::{
-    AIDirector, AILod, AIWorld, BTNode, Bandit, BanditStrategy, BehaviorTree,
-    Blackboard, CommandQueue, Consideration, ContextSteering, DecisionModel, DialogueAI, Emotion,
-    EmotionModel, FormationType, GOAPAction, GOAPGoal, GOAPPlanner, GeneticAlgorithm, HTNDomain,
-    HTNMethod, HTNPlanner, MCTSConfig, MCTSEngine, Need, NeedSystem, NeuralNet, Neuroevolution,
-    ORCAAgent, ORCASolver, ParallelPolicy, QLearner, ResponseCurve, Squad, SteeringManager,
-    StimulusWorld, StrategyAI, TraitProfile, UAAction, UtilityAI, WorldState,
+    AIDirector, AILod, AIWorld, BTNode, Bandit, BanditStrategy, BehaviorTree, Blackboard,
+    CommandQueue, Consideration, ContextSteering, DecisionModel, DialogueAI, Emotion, EmotionModel,
+    FormationType, GOAPAction, GOAPGoal, GOAPPlanner, GeneticAlgorithm, HTNDomain, HTNMethod,
+    HTNPlanner, MCTSConfig, MCTSEngine, Need, NeedSystem, NeuralNet, Neuroevolution, ORCAAgent,
+    ORCASolver, ParallelPolicy, QLearner, ResponseCurve, Squad, SteeringManager, StimulusWorld,
+    StrategyAI, TraitProfile, UAAction, UtilityAI, WorldState,
 };
 use crate::lua_api::callback_registry::CallbackRegistry;
 use crate::pathfind::InfluenceMap;
@@ -1079,7 +1079,9 @@ impl LuaUserData for LuaSteeringManager {
 }
 /// Re-use the dialogue AI handle from the dialog_api module for backward compatibility.
 use super::dialog_api::LuaDialogueAI;
-use super::learning_api::{LuaBandit, LuaGeneticAlgorithm, LuaNeuralNet, LuaNeuroevolution, LuaQLearner};
+use super::learning_api::{
+    LuaBandit, LuaGeneticAlgorithm, LuaNeuralNet, LuaNeuroevolution, LuaQLearner,
+};
 /// Lua handle for utility AI action scoring and consideration curves.
 #[derive(Clone)]
 struct LuaUtilityAI {

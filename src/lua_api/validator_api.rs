@@ -24,7 +24,9 @@ impl LuaUserData for LuaValidationEngine {
         /// Add the built-in asset existence rule.
         /// @param | asset_root | string | Root directory for asset files.
         methods.add_method("addAssetRule", |_, this, asset_root: String| {
-            this.inner.borrow_mut().add_asset_rule(PathBuf::from(asset_root));
+            this.inner
+                .borrow_mut()
+                .add_asset_rule(PathBuf::from(asset_root));
             Ok(())
         });
 
@@ -50,30 +52,38 @@ impl LuaUserData for LuaValidationEngine {
         /// @param | pattern | string | Text pattern to match.
         /// @param | message | string | Violation message.
         /// @param | severity | string | Severity: hint, warning, error, critical.
-        methods.add_method("addPatternRule", |_, this, (id, pattern, message, severity): (String, String, String, String)| {
-            let sev = Severity::from_name(&severity);
-            let rule = LuaPatternRule::new(id, pattern, message, sev);
-            this.inner.borrow_mut().add_pattern_rule(rule);
-            Ok(())
-        });
+        methods.add_method(
+            "addPatternRule",
+            |_, this, (id, pattern, message, severity): (String, String, String, String)| {
+                let sev = Severity::from_name(&severity);
+                let rule = LuaPatternRule::new(id, pattern, message, sev);
+                this.inner.borrow_mut().add_pattern_rule(rule);
+                Ok(())
+            },
+        );
 
         // -- addRequiredRule --
         /// Add a required pattern rule (violation if pattern NOT found).
         /// @param | id | string | Rule identifier.
         /// @param | pattern | string | Required text pattern.
         /// @param | message | string | Violation message.
-        methods.add_method("addRequiredRule", |_, this, (id, pattern, message): (String, String, String)| {
-            let mut rule = LuaPatternRule::new(id, pattern, message, Severity::Warning);
-            rule.set_invert(true);
-            this.inner.borrow_mut().add_pattern_rule(rule);
-            Ok(())
-        });
+        methods.add_method(
+            "addRequiredRule",
+            |_, this, (id, pattern, message): (String, String, String)| {
+                let mut rule = LuaPatternRule::new(id, pattern, message, Severity::Warning);
+                rule.set_invert(true);
+                this.inner.borrow_mut().add_pattern_rule(rule);
+                Ok(())
+            },
+        );
 
         // -- loadTomlRules --
         /// Load validation rules from a TOML-formatted rule file.
         /// @param | path | string | Path to .toml rules file.
         methods.add_method("loadTomlRules", |_, this, path: String| {
-            this.inner.borrow_mut().load_toml_rules(&PathBuf::from(path));
+            this.inner
+                .borrow_mut()
+                .load_toml_rules(&PathBuf::from(path));
             Ok(())
         });
 
@@ -107,7 +117,10 @@ impl LuaUserData for LuaValidationEngine {
 // Helper
 // ---------------------------------------------------------------------------
 
-fn report_to_table<'lua>(lua: &'lua Lua, report: &crate::validator::report::ValidationReport) -> LuaResult<LuaTable<'lua>> {
+fn report_to_table<'lua>(
+    lua: &'lua Lua,
+    report: &crate::validator::report::ValidationReport,
+) -> LuaResult<LuaTable<'lua>> {
     let tbl = lua.create_table()?;
     tbl.set("files_checked", report.files_checked)?;
     tbl.set("duration_ms", report.duration_ms)?;

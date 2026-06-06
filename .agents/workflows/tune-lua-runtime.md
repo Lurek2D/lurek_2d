@@ -3,7 +3,6 @@ trigger: manual
 description: "Tune one Lua runtime behavior or performance-sensitive path in the engine."
 expected_agent: "Manager"
 ---
-
 # Tune Lua Runtime
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Acceptance gate.
 
 ## Steps
-1. Load [skill: lua-runtime](../rules/skill_lua-runtime.md) and [skill: rust-coding](../rules/skill_rust-coding.md) before acting.
+1. Load [skill: lua-runtime](../skills/lua-runtime/SKILL.md) and [skill: rust-coding](../skills/rust-coding/SKILL.md) before acting.
 2. Read the smallest repro, the owning runtime or bridge code, and any current measurement or test evidence before editing.
 3. Keep the change inside the controlling runtime path, preserve LuaJIT-first constraints, and document any behavior difference instead of hiding it.
 4. Rerun the same repro or narrow runtime test first, then widen validation only if the focused path improved or was fixed.

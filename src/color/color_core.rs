@@ -20,27 +20,82 @@ pub struct Color {
 
 impl Color {
     /// Opaque white color (1, 1, 1, 1).
-    pub const WHITE: Color = Color { r: 1.0, g: 1.0, b: 1.0, a: 1.0 };
+    pub const WHITE: Color = Color {
+        r: 1.0,
+        g: 1.0,
+        b: 1.0,
+        a: 1.0,
+    };
     /// Opaque black color (0, 0, 0, 1).
-    pub const BLACK: Color = Color { r: 0.0, g: 0.0, b: 0.0, a: 1.0 };
+    pub const BLACK: Color = Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    };
     /// Opaque primary red color (1, 0, 0, 1).
-    pub const RED: Color = Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 };
+    pub const RED: Color = Color {
+        r: 1.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    };
     /// Opaque green color (0, 1, 0, 1).
-    pub const GREEN: Color = Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 };
+    pub const GREEN: Color = Color {
+        r: 0.0,
+        g: 1.0,
+        b: 0.0,
+        a: 1.0,
+    };
     /// Opaque blue color (0, 0, 1, 1).
-    pub const BLUE: Color = Color { r: 0.0, g: 0.0, b: 1.0, a: 1.0 };
+    pub const BLUE: Color = Color {
+        r: 0.0,
+        g: 0.0,
+        b: 1.0,
+        a: 1.0,
+    };
     /// Opaque yellow color (1, 1, 0, 1).
-    pub const YELLOW: Color = Color { r: 1.0, g: 1.0, b: 0.0, a: 1.0 };
+    pub const YELLOW: Color = Color {
+        r: 1.0,
+        g: 1.0,
+        b: 0.0,
+        a: 1.0,
+    };
     /// Opaque cyan color (0, 1, 1, 1).
-    pub const CYAN: Color = Color { r: 0.0, g: 1.0, b: 1.0, a: 1.0 };
+    pub const CYAN: Color = Color {
+        r: 0.0,
+        g: 1.0,
+        b: 1.0,
+        a: 1.0,
+    };
     /// Opaque magenta color (1, 0, 1, 1).
-    pub const MAGENTA: Color = Color { r: 1.0, g: 0.0, b: 1.0, a: 1.0 };
+    pub const MAGENTA: Color = Color {
+        r: 1.0,
+        g: 0.0,
+        b: 1.0,
+        a: 1.0,
+    };
     /// Fully transparent black (0, 0, 0, 0).
-    pub const TRANSPARENT: Color = Color { r: 0.0, g: 0.0, b: 0.0, a: 0.0 };
+    pub const TRANSPARENT: Color = Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 0.0,
+    };
     /// Lurek2D default background color (dark indigo-purple).
-    pub const LUREK_BG: Color = Color { r: 0.15, g: 0.12, b: 0.25, a: 1.0 };
+    pub const LUREK_BG: Color = Color {
+        r: 0.15,
+        g: 0.12,
+        b: 0.25,
+        a: 1.0,
+    };
     /// Lurek2D branding accent color (warm gold).
-    pub const LUREK_ACCENT: Color = Color { r: 0.85, g: 0.75, b: 0.45, a: 1.0 };
+    pub const LUREK_ACCENT: Color = Color {
+        r: 0.85,
+        g: 0.75,
+        b: 0.45,
+        a: 1.0,
+    };
 
     /// Construct a Color from four f32 components.
     pub const fn new(r: f32, g: f32, b: f32, a: f32) -> Self {
@@ -145,7 +200,12 @@ impl Color {
 
     /// Return a copy of this color with a different alpha value.
     pub fn with_alpha(&self, a: f32) -> Color {
-        Color { r: self.r, g: self.g, b: self.b, a }
+        Color {
+            r: self.r,
+            g: self.g,
+            b: self.b,
+            a,
+        }
     }
 
     /// Perceived brightness using ITU-R BT.601 luma coefficients.
@@ -185,11 +245,7 @@ impl Default for Color {
 /// Convert HSV `(hue 0–359, saturation 0–1, value 0–1)` to an RGB u8 triple.
 pub fn hsv_to_rgb(h: u16, s: f32, v: f32) -> (u8, u8, u8) {
     let (r, g, b) = hsv_to_rgb_f32(h as f32, s, v);
-    (
-        (r * 255.0) as u8,
-        (g * 255.0) as u8,
-        (b * 255.0) as u8,
-    )
+    ((r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8)
 }
 
 /// Internal: convert HSV (hue 0–360, saturation 0–1, value 0–1) to f32 RGB.

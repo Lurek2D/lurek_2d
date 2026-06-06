@@ -25,6 +25,7 @@
 - **`lua_evidence_golden_contract_audit.py`**: Audit Lua evidence and golden test contract compliance.
 - **`lua_spec_coverage.py`**: lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
 - **`lua_test_structure_audit.py`**: Audit and normalize Lua BDD test structure under tests/lua.
+- **`module_docstring_audit.py`**: module_docstring_audit.py -- Audit Rust source files for adequate module-level //! docstrings.
 - **`mutation_report.py`**: mutation_report.py — run cargo-mutants for selected priority modules.
 - **`parse_test_log.py`**: tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
 - **`perf_regression_gate.py`**: perf_regression_gate.py — lightweight perf/stress regression gate for CI.

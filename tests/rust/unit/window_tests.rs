@@ -53,7 +53,11 @@ mod viewport_tests {
 
     #[test]
     fn from_pixels_negative_scale_returns_zero() {
-        let ws = WindowState { viewport_scale_x: 0.0, viewport_scale_y: -0.0, ..Default::default() };
+        let ws = WindowState {
+            viewport_scale_x: 0.0,
+            viewport_scale_y: -0.0,
+            ..Default::default()
+        };
         let (gx, gy) = from_pixels(&ws, 50.0, 50.0);
         assert_eq!(gx, 0.0);
         assert_eq!(gy, 0.0);

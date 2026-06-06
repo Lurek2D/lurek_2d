@@ -8,8 +8,8 @@
 //! In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
 
 // Re-export the CPU-side font types from the font module for backward compatibility.
-pub use crate::font::{TextMetrics, TextAlign, WordWrap, FontStyle};
 pub use crate::font::GlyphMetrics as FontGlyphMetrics;
+pub use crate::font::{FontStyle, TextAlign, TextMetrics, WordWrap};
 
 use crate::runtime::error::{EngineError, EngineResult};
 use fontdue::{Font as RuntimeFont, FontSettings};

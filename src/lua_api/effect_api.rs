@@ -2,7 +2,8 @@
 
 use super::SharedState;
 use crate::effect::{
-    presets::{build_preset, preset_names}, ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
+    presets::{build_preset, preset_names},
+    ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
 use mlua::prelude::*;

@@ -1,5 +1,9 @@
 -- Evidence tests: cellular_sand module
 -- Evidence comes from lurek.procgen.cellularAutomata outputs.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.procgen.cellularAutomata
+
 
 
 local OUT = "tests/output/cellular_sand/"

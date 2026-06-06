@@ -4,8 +4,8 @@
 //! It serves as the main engine entry used by runtime tooling and validation commands.
 //! It keeps rule execution boundaries explicit so validation behavior remains auditable.
 
-use super::asset_check::AssetExistenceRule;
 use super::api_check::ApiComplianceRule;
+use super::asset_check::AssetExistenceRule;
 use super::config::ValidatorConfig;
 use super::import_check::ImportResolutionRule;
 use super::parallel::{collect_lua_files, validate_parallel};
@@ -35,17 +35,20 @@ impl ValidationEngine {
 
     /// Add the built-in asset existence rule.
     pub fn add_asset_rule(&mut self, asset_root: impl Into<PathBuf>) {
-        self.rules.push(Arc::new(AssetExistenceRule::new(asset_root)));
+        self.rules
+            .push(Arc::new(AssetExistenceRule::new(asset_root)));
     }
 
     /// Add the built-in import resolution rule.
     pub fn add_import_rule(&mut self, lua_paths: Vec<PathBuf>) {
-        self.rules.push(Arc::new(ImportResolutionRule::new(lua_paths)));
+        self.rules
+            .push(Arc::new(ImportResolutionRule::new(lua_paths)));
     }
 
     /// Add the built-in API compliance rule.
     pub fn add_api_rule(&mut self) {
-        self.rules.push(Arc::new(ApiComplianceRule::with_defaults()));
+        self.rules
+            .push(Arc::new(ApiComplianceRule::with_defaults()));
     }
 
     /// Add a custom Lua pattern validation rule.

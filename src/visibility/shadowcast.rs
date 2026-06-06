@@ -75,7 +75,14 @@ impl TileFov {
         // Run all 8 octants
         let light_walls = self.light_walls;
         for octant in 0..8u8 {
-            let p = CastParams { ox: ox as i32, oy: oy as i32, row: 1, start_slope: 1.0, end_slope: 0.0, octant };
+            let p = CastParams {
+                ox: ox as i32,
+                oy: oy as i32,
+                row: 1,
+                start_slope: 1.0,
+                end_slope: 0.0,
+                octant,
+            };
             self.cast_light(p, light_walls, blocker);
         }
     }
@@ -158,7 +165,7 @@ impl TileFov {
         if data.len() < expected {
             return Err("fov restore: blob truncated".into());
         }
-        self.visible  = unpack_bits(&data[8..8 + byte_count], n);
+        self.visible = unpack_bits(&data[8..8 + byte_count], n);
         self.explored = unpack_bits(&data[8 + byte_count..expected], n);
         Ok(())
     }
@@ -168,29 +175,24 @@ impl TileFov {
     /// Mark a cell visible in the current frame and explored permanently.
     fn mark_visible(&mut self, x: u32, y: u32) {
         let idx = (y * self.width + x) as usize;
-        self.visible[idx]   = true;
-        self.explored[idx]  = true;
+        self.visible[idx] = true;
+        self.explored[idx] = true;
     }
 
     /// Recursive shadowcasting for one octant.
     /// `light_walls` is passed by value to avoid a `self` borrow alongside the mutable borrow
     /// inside the recursive call.
-    fn cast_light(
-        &mut self,
-        p: CastParams,
-        light_walls: bool,
-        blocker: &dyn Fn(u32, u32) -> bool,
-    ) {
+    fn cast_light(&mut self, p: CastParams, light_walls: bool, blocker: &dyn Fn(u32, u32) -> bool) {
         // Octant transform table: (xx, xy, yx, yy) for each octant
         const MULT: [[i32; 4]; 8] = [
-            [ 1,  0,  0,  1],
-            [ 0,  1,  1,  0],
-            [ 0, -1,  1,  0],
-            [-1,  0,  0,  1],
-            [-1,  0,  0, -1],
-            [ 0, -1, -1,  0],
-            [ 0,  1, -1,  0],
-            [ 1,  0,  0, -1],
+            [1, 0, 0, 1],
+            [0, 1, 1, 0],
+            [0, -1, 1, 0],
+            [-1, 0, 0, 1],
+            [-1, 0, 0, -1],
+            [0, -1, -1, 0],
+            [0, 1, -1, 0],
+            [1, 0, 0, -1],
         ];
         let m = &MULT[p.octant as usize];
 
@@ -216,7 +218,9 @@ impl TileFov {
 
                 if wx < 0 || wy < 0 || wx >= self.width as i32 || wy >= self.height as i32 {
                     dx += 1;
-                    if dx > 0 { break 'col; }
+                    if dx > 0 {
+                        break 'col;
+                    }
                     continue;
                 }
 
@@ -228,7 +232,9 @@ impl TileFov {
 
                 if start_slope < r_slope {
                     dx += 1;
-                    if dx > 0 { break 'col; }
+                    if dx > 0 {
+                        break 'col;
+                    }
                     continue;
                 }
                 if p.end_slope > l_slope {
@@ -250,7 +256,8 @@ impl TileFov {
                 } else if is_blocked {
                     blocked = true;
                     let child = CastParams {
-                        ox: p.ox, oy: p.oy,
+                        ox: p.ox,
+                        oy: p.oy,
                         row: r + 1,
                         start_slope,
                         end_slope: l_slope,
@@ -262,7 +269,9 @@ impl TileFov {
                 }
 
                 dx += 1;
-                if dx > 0 { break 'col; }
+                if dx > 0 {
+                    break 'col;
+                }
             }
 
             if blocked {

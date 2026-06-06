@@ -6,9 +6,7 @@
 //! Serves as the filled-series rendering backend behind the charts area API surface.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
-use crate::charts::render_utils::{
-    auto_range, draw_line, fill_buffer, set_pixel, world_to_screen,
-};
+use crate::charts::render_utils::{auto_range, draw_line, fill_buffer, set_pixel, world_to_screen};
 use crate::color::Color;
 use crate::dataframe::frame::DataFrame;
 use crate::image::ImageData;
@@ -44,7 +42,11 @@ impl AreaChart {
         self.series.push(ChartSeries {
             name: name.to_string(),
             color: [color.r, color.g, color.b, color.a],
-            data: vals.iter().enumerate().map(|(i, &v)| (i as f32, v)).collect(),
+            data: vals
+                .iter()
+                .enumerate()
+                .map(|(i, &v)| (i as f32, v))
+                .collect(),
         });
     }
 
@@ -134,11 +136,7 @@ impl AreaChart {
         }
 
         let min_y = 0.0_f32;
-        let max_y = if stacked_max > 0.0 {
-            stacked_max
-        } else {
-            1.0
-        };
+        let max_y = if stacked_max > 0.0 { stacked_max } else { 1.0 };
 
         // Draw grid.
         if self.config.show_grid {
@@ -198,12 +196,10 @@ impl AreaChart {
                     let top_val = top0 + (top1 - top0) * t;
                     let bot_val = bot0 + (bot1 - bot0) * t;
 
-                    let sy_top =
-                        (plot_y + plot_h - world_to_screen(top_val, min_y, max_y, plot_h)).round()
-                            as u32;
-                    let sy_bot =
-                        (plot_y + plot_h - world_to_screen(bot_val, min_y, max_y, plot_h)).round()
-                            as u32;
+                    let sy_top = (plot_y + plot_h - world_to_screen(top_val, min_y, max_y, plot_h))
+                        .round() as u32;
+                    let sy_bot = (plot_y + plot_h - world_to_screen(bot_val, min_y, max_y, plot_h))
+                        .round() as u32;
 
                     for py in sy_top..=sy_bot.min(h - 1) {
                         set_pixel(buffer, w, px, py, s.color);

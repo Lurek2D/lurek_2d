@@ -384,8 +384,7 @@ impl EasingFunction {
                     return t;
                 }
                 let p = 0.3;
-                (2.0_f32).powf(-10.0 * t)
-                    * ((t - p / 4.0) * (2.0 * std::f32::consts::PI) / p).sin()
+                (2.0_f32).powf(-10.0 * t) * ((t - p / 4.0) * (2.0 * std::f32::consts::PI) / p).sin()
                     + 1.0
             }
             Self::BackOut => {

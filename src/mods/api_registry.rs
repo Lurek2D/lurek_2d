@@ -95,7 +95,11 @@ impl GameApiRegistry {
     }
 
     /// Validate a set of field values against a type schema.
-    pub fn validate_instance(&self, type_name: &str, fields: &HashMap<String, String>) -> Vec<String> {
+    pub fn validate_instance(
+        &self,
+        type_name: &str,
+        fields: &HashMap<String, String>,
+    ) -> Vec<String> {
         let mut errors = Vec::new();
 
         let schema = match self.types.get(type_name) {

@@ -3,7 +3,6 @@ trigger: manual
 description: "Create a bounded test suite for one module or behavior area in the correct layer."
 expected_agent: "Manager"
 ---
-
 # Create Test Suite
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation command.
 
 ## Steps
-1. Load [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read existing tests in the same layer, the owning module, harness files, and the repo test placement rules before editing.
 3. Keep the suite organized around one capability, reuse the existing harness patterns, and avoid mixing Rust-only internals with Lua-visible behavior in the same layer.
 4. For every `it()`, add the suite marker directly above it (same indentation, no blank lines): `unit -> @covers`, `security -> @security`, `integration -> @integration`, `stress -> @stress`, `evidence -> @evidence`. For unit tests, list one symbol per `@covers` line and only symbols called in that `it()`. Never use `-- @tests`. Never group markers above a `describe()`.

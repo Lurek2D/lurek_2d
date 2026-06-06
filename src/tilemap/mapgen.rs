@@ -11,9 +11,9 @@
 //! It enables data-driven map variety without requiring hand-authored full layouts for every scene.
 //! It anchors procedural authoring in predictable structures that can be debugged and replayed.
 
+pub use super::mapgen_model::Edge;
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
-pub use super::mapgen_model::Edge;
 use crate::log_msg;
 use crate::runtime::log_messages::{MG01, MG02, MG03};
 use std::collections::HashMap;

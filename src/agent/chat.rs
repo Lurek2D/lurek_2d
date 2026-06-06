@@ -5,8 +5,8 @@
 //! Applies lightweight prompt templating to inject runtime variables without changing call contracts.
 //! Normalizes backend responses into stable Lua-facing shapes with predictable field semantics.
 
-use std::sync::{Mutex, OnceLock};
 use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 // ─── GlobalLlmConfig ─────────────────────────────────────────────────────────
 
@@ -63,7 +63,13 @@ pub fn write_global_config(cfg: GlobalLlmConfig) {
 /// Calls the Ollama `/api/generate` endpoint synchronously and returns the response text.
 ///
 /// Returns `Err(message)` on HTTP or JSON failure.
-pub fn ollama_generate(base_url: &str, model: &str, prompt: &str, system: &str, timeout_secs: u64) -> Result<String, String> {
+pub fn ollama_generate(
+    base_url: &str,
+    model: &str,
+    prompt: &str,
+    system: &str,
+    timeout_secs: u64,
+) -> Result<String, String> {
     use crate::network::http::execute_request as http_execute;
 
     let body = serde_json::json!({
@@ -89,7 +95,13 @@ pub fn ollama_generate(base_url: &str, model: &str, prompt: &str, system: &str, 
 }
 
 /// Calls the Ollama `/api/generate` endpoint and requests a JSON format response.
-pub fn ollama_generate_json(base_url: &str, model: &str, prompt: &str, system: &str, timeout_secs: u64) -> Result<serde_json::Value, String> {
+pub fn ollama_generate_json(
+    base_url: &str,
+    model: &str,
+    prompt: &str,
+    system: &str,
+    timeout_secs: u64,
+) -> Result<serde_json::Value, String> {
     use crate::network::http::execute_request as http_execute;
 
     let body = serde_json::json!({
@@ -113,7 +125,12 @@ pub fn ollama_generate_json(base_url: &str, model: &str, prompt: &str, system: &
 }
 
 /// Calls the Ollama `/api/embeddings` endpoint and returns the embedding vector.
-pub fn ollama_embed(base_url: &str, model: &str, text: &str, timeout_secs: u64) -> Result<Vec<f64>, String> {
+pub fn ollama_embed(
+    base_url: &str,
+    model: &str,
+    text: &str,
+    timeout_secs: u64,
+) -> Result<Vec<f64>, String> {
     use crate::network::http::execute_request as http_execute;
 
     let body = serde_json::json!({ "model": model, "prompt": text });
@@ -274,7 +291,12 @@ impl LlmChat {
     /// Sends the current history plus `user_message` to the LLM and returns the assistant reply.
     ///
     /// On success the user message and assistant reply are appended to history.
-    pub fn complete(&mut self, base_url: &str, model: &str, timeout_secs: u64) -> Result<String, String> {
+    pub fn complete(
+        &mut self,
+        base_url: &str,
+        model: &str,
+        timeout_secs: u64,
+    ) -> Result<String, String> {
         use crate::network::http::execute_request as http_execute;
 
         let mut messages: Vec<serde_json::Value> = Vec::new();
@@ -304,7 +326,10 @@ impl LlmChat {
             .map(|s| s.to_string())
             .ok_or_else(|| format!("missing 'message.content' field: {}", raw))?;
 
-        self.history.push(ChatMessage { role: "assistant".to_string(), content: reply.clone() });
+        self.history.push(ChatMessage {
+            role: "assistant".to_string(),
+            content: reply.clone(),
+        });
         Ok(reply)
     }
 }

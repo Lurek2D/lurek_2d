@@ -221,7 +221,12 @@ impl BeatClock {
         let bar = (beat / self.beats_per_bar as f64).floor() as u64;
         let beat_in_bar = (beat.floor() as u64 % self.beats_per_bar as u64) as u32;
         let phase = beat - beat.floor();
-        BeatPosition { beat, bar, beat_in_bar, phase }
+        BeatPosition {
+            beat,
+            bar,
+            beat_in_bar,
+            phase,
+        }
     }
 
     /// Return total beats elapsed (fractional).
@@ -244,7 +249,11 @@ impl BeatClock {
         let div = division.max(1);
         let scaled = self.effective_beat() * div as f64;
         let phase = scaled - scaled.floor();
-        if phase < 0.0 { phase + 1.0 } else { phase }
+        if phase < 0.0 {
+            phase + 1.0
+        } else {
+            phase
+        }
     }
 
     /// Return whether the clock is on a division grid within `tolerance` seconds.
@@ -399,7 +408,10 @@ impl BeatClock {
         if beat <= self.beat_total() {
             return false;
         }
-        if let Err(pos) = self.scheduled.binary_search_by(|b| b.partial_cmp(&beat).unwrap()) {
+        if let Err(pos) = self
+            .scheduled
+            .binary_search_by(|b| b.partial_cmp(&beat).unwrap())
+        {
             self.scheduled.insert(pos, beat);
         }
         true
@@ -428,7 +440,9 @@ impl BeatClock {
 
     /// Quantise `beat` to the nearest `grid` beat grid (e.g. 0.25 for 16th notes).
     pub fn quantise(beat: f64, grid: f64) -> f64 {
-        if grid <= 0.0 { return beat; }
+        if grid <= 0.0 {
+            return beat;
+        }
         (beat / grid).round() * grid
     }
 

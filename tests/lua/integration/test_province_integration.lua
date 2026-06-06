@@ -2,6 +2,14 @@
 -- Integration tests for province properties used in multi-province game scenarios.
 
 -- @describe Province properties integration with game logic
+-- @covers lurek.province.clearProperties
+-- @covers lurek.province.getAttr
+-- @covers lurek.province.getProperty
+-- @covers lurek.province.hasFlag
+-- @covers lurek.province.setAttr
+-- @covers lurek.province.setFlag
+-- @covers lurek.province.setProperty
+
 describe("lurek.province integration", function()
     -- @integration lurek.province.setProperty
     -- @integration lurek.province.getProperty

@@ -103,15 +103,13 @@ impl RegionGraph {
     }
     /// Return the cached neighbor slice for a region or an empty slice when missing.
     pub fn neighbors_of(&self, id: RegionId) -> Vec<RegionId> {
-        self.neighbors.get(&id.0).map(|v| v.iter().map(|&r| RegionId(r)).collect()).unwrap_or_default()
+        self.neighbors
+            .get(&id.0)
+            .map(|v| v.iter().map(|&r| RegionId(r)).collect())
+            .unwrap_or_default()
     }
     /// Set a region attribute or return RegionNotFound when the id is missing.
-    pub fn set_attr(
-        &mut self,
-        id: RegionId,
-        key: String,
-        value: String,
-    ) -> Result<(), GlobeError> {
+    pub fn set_attr(&mut self, id: RegionId, key: String, value: String) -> Result<(), GlobeError> {
         let p = self
             .regions
             .get_mut(&id)
@@ -139,7 +137,8 @@ impl RegionGraph {
         self.centroids.clear();
         self.edge_tags.clear();
         for (id, p) in &self.regions {
-            self.neighbors.insert(id.0, p.neighbors.iter().map(|r| r.0).collect());
+            self.neighbors
+                .insert(id.0, p.neighbors.iter().map(|r| r.0).collect());
             self.centroids.insert(id.0, p.centroid);
             for ((a, b), v) in &p.edge_tags {
                 self.edge_tags.insert((a.0, b.0), v.clone());

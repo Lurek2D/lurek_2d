@@ -109,7 +109,9 @@ impl ProvinceRegistry {
         graph.rebuild_from_pairs(&pairs);
         let mut provinces = HashMap::new();
         for id in 1..=grid.province_count() {
-            provinces.entry(ProvinceId(id)).or_insert_with(ProvinceRecord::default);
+            provinces
+                .entry(ProvinceId(id))
+                .or_insert_with(ProvinceRecord::default);
         }
         let spans = grid.province_spans();
         let mut spans_by_province: HashMap<ProvinceId, Vec<(u32, u32, u32)>> = HashMap::new();

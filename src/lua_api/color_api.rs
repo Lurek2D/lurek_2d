@@ -1,9 +1,7 @@
 //! File: src/lua_api/color_api.rs
 
 use super::SharedState;
-use crate::color::{
-    blend, gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, retro, Color,
-};
+use crate::color::{blend, gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, retro, Color};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -115,7 +113,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "fromHsv",
         lua.create_function(|lua, (h, s, v): (f32, f32, f32)| {
             let (r, g, b) = hsv_to_rgb((h as u16).min(359), s, v);
-            color_to_table(lua, r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0, 1.0)
+            color_to_table(
+                lua,
+                r as f32 / 255.0,
+                g as f32 / 255.0,
+                b as f32 / 255.0,
+                1.0,
+            )
         })?,
     )?;
 

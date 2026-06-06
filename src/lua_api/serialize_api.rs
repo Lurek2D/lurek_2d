@@ -320,8 +320,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|lua, (value, schema): (LuaValue, LuaValue)| {
             let val = from_lua(&value)?;
             let sch = from_lua(&schema)?;
-            let patched =
-                crate::serialize::apply_schema_defaults(&val, &sch).map_err(LuaError::RuntimeError)?;
+            let patched = crate::serialize::apply_schema_defaults(&val, &sch)
+                .map_err(LuaError::RuntimeError)?;
             to_lua(lua, &patched)
         })?,
     )?;

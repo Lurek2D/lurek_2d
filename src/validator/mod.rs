@@ -2,10 +2,10 @@
 //! It combines built-in and custom rule paths into one extensible quality-check pipeline.
 //! It outputs structured findings that guide fixes in development and continuous integration.
 
-/// Asset existence checker: validates images, sounds, and fonts referenced in scripts.
-pub mod asset_check;
 /// Mod API compliance checker against registered type schemas and field contracts.
 pub mod api_check;
+/// Asset existence checker: validates images, sounds, and fonts referenced in scripts.
+pub mod asset_check;
 /// Validator configuration: search paths, rule sets, and file extension filters.
 pub mod config;
 /// Validation engine orchestrating rule execution across file trees.
@@ -25,5 +25,5 @@ pub mod rules_toml;
 
 pub use config::ValidatorConfig;
 pub use engine::ValidationEngine;
-pub use report::{ValidationReport, Violation, Severity};
+pub use report::{Severity, ValidationReport, Violation};
 pub use rule::ValidationRule;

@@ -32,7 +32,10 @@ fn undirected_graph_adds_reverse_edge() {
     let a = g.add_node("a");
     let b = g.add_node("b");
     g.add_edge(a, b, 1.0, "link");
-    assert!(!g.edges_to(a).is_empty(), "undirected should have reverse edge");
+    assert!(
+        !g.edges_to(a).is_empty(),
+        "undirected should have reverse edge"
+    );
 }
 
 #[test]

@@ -40,13 +40,18 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, Ld
     let levels = root
         .get("levels")
         .and_then(|v| v.as_array())
-        .ok_or_else(|| LdtkImportError::new("ldtk_missing_levels", "LDtk JSON missing 'levels' array"))?;
+        .ok_or_else(|| {
+            LdtkImportError::new("ldtk_missing_levels", "LDtk JSON missing 'levels' array")
+        })?;
     let level = if let Some(name) = level_name {
         levels
             .iter()
             .find(|l| l.get("identifier").and_then(|v| v.as_str()) == Some(name))
             .ok_or_else(|| {
-                LdtkImportError::new("ldtk_level_not_found", format!("LDtk level '{name}' not found"))
+                LdtkImportError::new(
+                    "ldtk_level_not_found",
+                    format!("LDtk level '{name}' not found"),
+                )
             })?
     } else {
         levels
@@ -57,7 +62,10 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, Ld
         .get("layerInstances")
         .and_then(|v| v.as_array())
         .ok_or_else(|| {
-            LdtkImportError::new("ldtk_missing_layer_instances", "LDtk level missing 'layerInstances'")
+            LdtkImportError::new(
+                "ldtk_missing_layer_instances",
+                "LDtk level missing 'layerInstances'",
+            )
         })?;
     let tile_layer = layer_instances.iter().rev().find(|l| is_tile_layer(l));
     let (grid_size, map_width, map_height) = if let Some(tl) = tile_layer {

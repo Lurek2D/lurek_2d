@@ -3,7 +3,6 @@ trigger: manual
 description: "Find the best existing prompt for a user's request and return its name, agent, and a filled-in invocation example."
 expected_agent: "Manager"
 ---
-
 # Route Prompt
 
 ## Goal
@@ -14,7 +13,7 @@ expected_agent: "Manager"
 - Optional: known agent name or domain constraint.
 
 ## Steps
-1. Load [skill: agent-routing](../rules/skill_agent-routing.md) and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: agent-routing](../skills/agent-routing/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Map the request to a primary domain: Rust engine code, Lua API design, Lua scripting/content, CAG layer, build/CI, documentation, roadmap/planning, testing, or performance analysis.
 3. From `docs/architecture/cag-system.md § 4.1`, identify the owning agent for that domain.
 4. List every `agent: "<owner>"` prompt in `.github/prompts/` whose `description` overlaps the request. Do not invent names — only list files that exist.

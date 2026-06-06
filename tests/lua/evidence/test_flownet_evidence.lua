@@ -1,5 +1,7 @@
 -- Evidence tests: graph module
 -- Output-only evidence from direct lurek.flownet API calls.
+-- @covers lurek.graph.newGraph
+
 
 
 local function write_text(path, text)

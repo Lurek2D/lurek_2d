@@ -24,7 +24,14 @@ pub struct TilesetRef {
 
 impl TilesetRef {
     /// Create a new tileset reference.
-    pub fn new(id: u32, name: &str, tile_count: u32, columns: u32, tile_width: u32, tile_height: u32) -> Self {
+    pub fn new(
+        id: u32,
+        name: &str,
+        tile_count: u32,
+        columns: u32,
+        tile_width: u32,
+        tile_height: u32,
+    ) -> Self {
         Self {
             id,
             name: name.to_string(),

@@ -18,11 +18,16 @@ impl LuaUserData for LuaVisibilityGrid {
         /// @param | player_id | integer | Player index (0-based).
         /// @param | region_id | integer | Region index (0-based).
         /// @param | flags | integer? | Optional bitfield flags to set on the region.
-        methods.add_method("reveal", |_, this, (player_id, region_id, flags): (u32, u32, Option<u64>)| {
-            let reveal_flags = VisibilityFlags(flags.unwrap_or(0));
-            this.inner.borrow_mut().reveal(player_id, region_id, reveal_flags);
-            Ok(())
-        });
+        methods.add_method(
+            "reveal",
+            |_, this, (player_id, region_id, flags): (u32, u32, Option<u64>)| {
+                let reveal_flags = VisibilityFlags(flags.unwrap_or(0));
+                this.inner
+                    .borrow_mut()
+                    .reveal(player_id, region_id, reveal_flags);
+                Ok(())
+            },
+        );
 
         // -- hide --
         /// Hides a region for a player (moves from Visible to Discovered).
@@ -54,9 +59,12 @@ impl LuaUserData for LuaVisibilityGrid {
         /// @param | player_id | integer | Player index (0-based).
         /// @param | region_id | integer | Region index (0-based).
         /// @return | number | Fog intensity from 0.0 (clear) to 1.0 (fully fogged).
-        methods.add_method("getFogIntensity", |_, this, (player_id, region_id): (u32, u32)| {
-            Ok(this.inner.borrow().get_fog_intensity(player_id, region_id))
-        });
+        methods.add_method(
+            "getFogIntensity",
+            |_, this, (player_id, region_id): (u32, u32)| {
+                Ok(this.inner.borrow().get_fog_intensity(player_id, region_id))
+            },
+        );
 
         // -- setCost --
         /// Sets the discovery cost for a region.
@@ -80,13 +88,16 @@ impl LuaUserData for LuaVisibilityGrid {
         /// @param | region_id | integer | Region index (0-based).
         /// @param | bit | integer | Flag bit index (0-63).
         /// @param | value | boolean | Whether to set or clear the bit.
-        methods.add_method("setFlag", |_, this, (region_id, bit, value): (u32, u8, bool)| {
-            let mut grid = this.inner.borrow_mut();
-            let mut flags = grid.get_flags(region_id);
-            flags.set(bit, value);
-            grid.set_flags(region_id, flags);
-            Ok(())
-        });
+        methods.add_method(
+            "setFlag",
+            |_, this, (region_id, bit, value): (u32, u8, bool)| {
+                let mut grid = this.inner.borrow_mut();
+                let mut flags = grid.get_flags(region_id);
+                flags.set(bit, value);
+                grid.set_flags(region_id, flags);
+                Ok(())
+            },
+        );
 
         // -- hasFlag --
         /// Checks if a visibility flag bit is set on a region.
@@ -144,17 +155,26 @@ impl LuaUserData for LuaVisibilityGrid {
             for (i, event) in events.iter().enumerate() {
                 let tbl = lua.create_table()?;
                 match event {
-                    VisibilityEvent::Revealed { player_id, region_id } => {
+                    VisibilityEvent::Revealed {
+                        player_id,
+                        region_id,
+                    } => {
                         tbl.set("type", "revealed")?;
                         tbl.set("player_id", *player_id)?;
                         tbl.set("region_id", *region_id)?;
                     }
-                    VisibilityEvent::Hidden { player_id, region_id } => {
+                    VisibilityEvent::Hidden {
+                        player_id,
+                        region_id,
+                    } => {
                         tbl.set("type", "hidden")?;
                         tbl.set("player_id", *player_id)?;
                         tbl.set("region_id", *region_id)?;
                     }
-                    VisibilityEvent::Forgotten { player_id, region_id } => {
+                    VisibilityEvent::Forgotten {
+                        player_id,
+                        region_id,
+                    } => {
                         /// Event type string for this forgotten visibility event.
                         tbl.set("type", "forgotten")?;
                         /// Player index affected by this forgotten visibility event.
@@ -162,7 +182,10 @@ impl LuaUserData for LuaVisibilityGrid {
                         /// Region index hidden from this player.
                         tbl.set("region_id", *region_id)?;
                     }
-                    VisibilityEvent::GroupChanged { player_id, group_id } => {
+                    VisibilityEvent::GroupChanged {
+                        player_id,
+                        group_id,
+                    } => {
                         /// Event type string for this group-changed visibility event.
                         tbl.set("type", "group_changed")?;
                         /// Player index whose group membership changed.
@@ -304,7 +327,9 @@ impl LuaUserData for LuaTileFov {
                         blocked[(y * w + x) as usize] = result;
                     }
                 }
-                this.inner.borrow_mut().compute(oxz, oyz, &|x, y| blocked[(y * w + x) as usize]);
+                this.inner
+                    .borrow_mut()
+                    .compute(oxz, oyz, &|x, y| blocked[(y * w + x) as usize]);
             } else {
                 this.inner.borrow_mut().compute(oxz, oyz, &|_, _| false);
             }
@@ -381,7 +406,10 @@ impl LuaUserData for LuaTileFov {
         /// Restores visible and explored masks from a blob produced by `export`.
         /// @param | blob | string | Binary blob.
         methods.add_method("import", |_, this, blob: LuaString| {
-            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+            this.inner
+                .borrow_mut()
+                .restore(blob.as_bytes())
+                .map_err(LuaError::external)
         });
 
         // -- type --

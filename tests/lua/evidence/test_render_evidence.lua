@@ -1,6 +1,37 @@
 -- test_render_evidence.lua
 -- Canonical file. Contains all graphics, canvas, layers, shapes, golden text,
 -- and combined module integration tests. Fully deduplicated.
+-- @covers lurek.ai.newStateMachine
+-- @covers lurek.audio.newSoundData
+-- @covers lurek.audio.saveWAV
+-- @covers lurek.binary.encode
+-- @covers lurek.binary.encodeToml
+-- @covers lurek.binary.hash
+-- @covers lurek.binary.parseToml
+-- @covers lurek.compute.zeros
+-- @covers lurek.dataframe.fromCSV
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.filesystem.createDirectory
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.math.newBezierCurve
+-- @covers lurek.minimap.newMinimap
+-- @covers lurek.particle.newSystem
+-- @covers lurek.pathfind.newNavGrid
+-- @covers lurek.pathfind.newPathfinder
+-- @covers lurek.physics.newTerrain
+-- @covers lurek.physics.newWorld
+-- @covers lurek.procgen.cellularAutomata
+-- @covers lurek.procgen.newNoiseGenerator
+-- @covers lurek.procgen.simplexNoise
+-- @covers lurek.raycaster.new
+-- @covers lurek.render.getColor
+-- @covers lurek.render.newCanvas
+-- @covers lurek.render.newDrawLayer
+-- @covers lurek.render.setColor
+-- @covers lurek.tilemap.newTileMap
+
 
 local OUT = "tests/output/graphics/"
 

@@ -3,7 +3,6 @@ trigger: manual
 description: "Review entity lifecycle handling for leaks, stale handles, or invalid state transitions."
 expected_agent: "Manager"
 ---
-
 # Review Entity Lifecycle
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any repro or failing test.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md), [skill: module-architecture](../rules/skill_module-architecture.md), and [skill: error-handling](../rules/skill_error-handling.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), and [skill: error-handling](../skills/error-handling/SKILL.md) before acting.
 2. Read the owning module, creation or teardown paths, related tests, and any lifecycle spec notes.
 3. Look for stale references, invalid transition order, missed cleanup, and ownership that crosses module boundaries.
 4. Tie each finding to the exact lifecycle stage and the proof or missing proof behind it.

@@ -12,15 +12,13 @@
 
 ## Summary
 
-The `ecs` module is the world-state backbone for entity-driven gameplay logic. It provides one runtime container for entities, components, tags, hierarchy, and relationship data.
+This module provides the Entity-Component-System framework, serving as the central database and simulation coordinator for the game world. It tracks entity lifecycles using generational IDs, which prevent dangling references when slots are reused. Component data is stored in flexible tables, exposing optimized methods to set, query, and remove components dynamically during runtime updates.
 
-Its storage model is built for script integration. Component payloads are Lua-table based, while generational entity identifiers protect against stale-handle reuse and keep lookup behavior predictable.
+To organize the game world, the module supports hierarchical parent-child nesting, layers, and tag-based grouping. Entities can be grouped using fast bitmap tags for low-cost queries, while a relation tracking system maps directed or unordered connections between entities. This allows gameplay systems to reason about structured ownership and network routing directly within the world model.
 
-Universe-level utilities support common operational needs: spawn and remove entities, mutate components, clone state, apply blueprints, and run query-like access patterns over live data.
+Data processing is optimized through advanced queries with inclusion and exclusion filters, allowing systems to locate entities efficiently. The module orchestrates systems using a phase-aware scheduler. Systems are registered with custom priorities, and the engine executes them in a topologically sorted order across update and render cycles to guarantee deterministic behaviors.
 
-Relationship and extended universe helpers make it easier to model links between entities and perform larger state operations without scattering ECS logic across many modules.
-
-In practice, `lurek.ecs` provides a stable data contract for systems: maintain structured world state, query it deterministically, and evolve it safely over time.
+To support data-driven workflows, the system implements blueprints, bulk-spawning routines, and snapshot serialization. Blueprints act as templates supporting overrides, letting developers instantiate large batches of entities easily. Finally, the snapshot manager captures incremental diffs and serialized states, making it simple to save, restore, or synchronize world states.
 
 ## Files
 

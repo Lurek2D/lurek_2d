@@ -3,7 +3,6 @@ trigger: manual
 description: "Design one lurek.* API slice before implementation."
 expected_agent: "Manager"
 ---
-
 # Design API Surface
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Known constraints or compatibility concerns.
 
 ## Steps
-1. Load [skill: lua-api-design](../rules/skill_lua-api-design.md), [skill: lua-scripting](../rules/skill_lua-scripting.md), and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: lua-scripting](../skills/lua-scripting/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Read the current lurek.* surface, docs/specs/, nearby examples, and any accepted architecture notes before editing.
 3. Focus on naming, parameters, returns, callbacks, and consistency; stop before implementation and record any tradeoff that affects later bindings.
 4. Check the design against nearby APIs and usage patterns, then call out open compatibility risk or missing source truth instead of inventing certainty.

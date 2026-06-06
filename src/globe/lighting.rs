@@ -3,8 +3,8 @@
 //! Supports batch intensity and terminator blending calculations for smooth day-night transitions.
 //! Delivers reusable illumination math consumed by globe rendering passes.
 
-use crate::globe::types::GlobeSpec;
 use super::sphere::{lat_lon_to_unit, rot_y};
+use crate::globe::types::GlobeSpec;
 use crate::math::Vec3;
 /// Compute the sun direction in world space from globe rotation and time of day.
 pub fn sun_direction(spec: &GlobeSpec) -> Vec3 {

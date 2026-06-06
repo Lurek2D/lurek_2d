@@ -3,7 +3,6 @@ trigger: manual
 description: "Tune Cargo build or profile settings for a concrete build goal."
 expected_agent: "Manager"
 ---
-
 # Tune Cargo Build
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Platform.
 
 ## Steps
-1. Load [skill: build-system](../rules/skill_build-system.md), [skill: cross-platform](../rules/skill_cross-platform.md), and [skill: quality-pipeline](../rules/skill_quality-pipeline.md) before acting.
+1. Load [skill: build-system](../skills/build-system/SKILL.md), [skill: cross-platform](../skills/cross-platform/SKILL.md), and [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md) before acting.
 2. Read the current Cargo profiles, build tasks, and the command that exhibits the problem before changing knobs.
 3. Change only the settings tied to the named goal, such as debug speed, release size, or CI stability, and keep platform behavior explicit.
 4. Measure or validate the targeted build path after the first change instead of stacking many speculative tweaks.

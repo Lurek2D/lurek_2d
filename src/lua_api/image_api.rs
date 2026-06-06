@@ -2,7 +2,9 @@
 
 use super::SharedState;
 use crate::image::serial;
-use crate::image::{CompressedImageData, ImageData, LayeredImage, ProvinceGrid, ProvinceShapeCacheEntry};
+use crate::image::{
+    CompressedImageData, ImageData, LayeredImage, ProvinceGrid, ProvinceShapeCacheEntry,
+};
 use crate::render::{DrawMode, RenderCommand};
 use mlua::prelude::*;
 use std::cell::RefCell;

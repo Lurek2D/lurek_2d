@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one roadmap phase draft with clear problem, gate, and dependency framing."
 expected_agent: "Manager"
 ---
-
 # Create Roadmap Phase
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Known dependencies or blockers.
 
 ## Steps
-1. Load [skill: opportunity-discovery](../rules/skill_opportunity-discovery.md) and [skill: roadmap-planning](../rules/skill_roadmap-planning.md) before acting.
+1. Load [skill: opportunity-discovery](../skills/opportunity-discovery/SKILL.md) and [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md) before acting.
 2. Read the target roadmap or ideas artifact, adjacent phase notes, and any supporting gap or evidence files before editing.
 3. Keep the phase grounded in one clear problem, why-now, dependencies, and acceptance gate instead of turning it into a loose brainstorm.
 4. Re-read the phase for clarity, dependency ordering, and evidence strength, then flag any missing proof instead of smoothing it over.

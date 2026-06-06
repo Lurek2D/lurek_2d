@@ -192,10 +192,10 @@ mod texture_atlas_tests {
 
 mod effects_and_lut_tests {
     use super::*;
+    use lurek2d::color::Color;
     use lurek2d::image::effects::ResizeFilter;
     use lurek2d::image::premultiply_alpha_rgba8_in_place;
     use lurek2d::image::serial;
-    use lurek2d::color::Color;
     use lurek2d::sprite::SpriteAtlas;
 
     #[test]

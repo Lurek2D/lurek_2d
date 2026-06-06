@@ -2,8 +2,8 @@
 
 use super::SharedState;
 use crate::cursor::{
-    AnimatedCursor, CursorContext, CursorManager, CursorTrail, CursorZoom,
-    CustomCursor, PulseConfig, SystemCursor, TrailMode,
+    AnimatedCursor, CursorContext, CursorManager, CursorTrail, CursorZoom, CustomCursor,
+    PulseConfig, SystemCursor, TrailMode,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -35,7 +35,9 @@ impl LuaUserData for LuaCursorManager {
         /// @param | cursor | LCustomCursor | Custom cursor object.
         methods.add_method("setCustom", |_, this, cursor: LuaAnyUserData| {
             let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
-            this.inner.borrow_mut().set_custom(cursor.inner.borrow().clone());
+            this.inner
+                .borrow_mut()
+                .set_custom(cursor.inner.borrow().clone());
             Ok(())
         });
 
@@ -44,7 +46,9 @@ impl LuaUserData for LuaCursorManager {
         /// @param | cursor | LAnimatedCursor | Animated cursor object.
         methods.add_method("setAnimated", |_, this, cursor: LuaAnyUserData| {
             let cursor = cursor.borrow::<LuaAnimatedCursor>()?.clone();
-            this.inner.borrow_mut().set_animated(cursor.inner.borrow().clone());
+            this.inner
+                .borrow_mut()
+                .set_animated(cursor.inner.borrow().clone());
             Ok(())
         });
 
@@ -52,7 +56,9 @@ impl LuaUserData for LuaCursorManager {
         /// Set the current context for context-sensitive switching.
         /// @param | ctx | string | Context name (default, raycaster, globe, tilemap, ui_button, etc.).
         methods.add_method("setContext", |_, this, ctx: String| {
-            this.inner.borrow_mut().set_context(CursorContext::from_name(&ctx));
+            this.inner
+                .borrow_mut()
+                .set_context(CursorContext::from_name(&ctx));
             Ok(())
         });
 
@@ -60,22 +66,28 @@ impl LuaUserData for LuaCursorManager {
         /// Add a context rule that maps a context to a system cursor.
         /// @param | ctx | string | Context name.
         /// @param | cursor_name | string | System cursor name.
-        methods.add_method("addRule", |_, this, (ctx, cursor_name): (String, String)| {
-            let cursor = SystemCursor::from_name(&cursor_name)
-                .ok_or_else(|| LuaError::runtime(format!("unknown system cursor: {cursor_name}")))?;
-            use crate::cursor::context::{ContextRule, CursorState};
-            this.inner.borrow_mut().add_rule(ContextRule {
-                context: CursorContext::from_name(&ctx),
-                cursor: CursorState::System(cursor),
-            });
-            Ok(())
-        });
+        methods.add_method(
+            "addRule",
+            |_, this, (ctx, cursor_name): (String, String)| {
+                let cursor = SystemCursor::from_name(&cursor_name).ok_or_else(|| {
+                    LuaError::runtime(format!("unknown system cursor: {cursor_name}"))
+                })?;
+                use crate::cursor::context::{ContextRule, CursorState};
+                this.inner.borrow_mut().add_rule(ContextRule {
+                    context: CursorContext::from_name(&ctx),
+                    cursor: CursorState::System(cursor),
+                });
+                Ok(())
+            },
+        );
 
         // -- removeRule --
         /// Remove a context rule for this object.
         /// @param | ctx | string | Context name to remove.
         methods.add_method("removeRule", |_, this, ctx: String| {
-            this.inner.borrow_mut().remove_rule(&CursorContext::from_name(&ctx));
+            this.inner
+                .borrow_mut()
+                .remove_rule(&CursorContext::from_name(&ctx));
             Ok(())
         });
 
@@ -141,14 +153,17 @@ impl LuaUserData for LuaCursorManager {
         /// @param | g | number | Green (0-1).
         /// @param | b | number | Blue (0-1).
         /// @param | lifetime | number | Seconds before trail fades.
-        methods.add_method("enableTrail", |_, this, (r, g, b, lifetime): (f32, f32, f32, f32)| {
-            let trail = CursorTrail::new(TrailMode::FadePoints {
-                color: [r, g, b, 1.0],
-                lifetime,
-            });
-            this.inner.borrow_mut().set_trail(Some(trail));
-            Ok(())
-        });
+        methods.add_method(
+            "enableTrail",
+            |_, this, (r, g, b, lifetime): (f32, f32, f32, f32)| {
+                let trail = CursorTrail::new(TrailMode::FadePoints {
+                    color: [r, g, b, 1.0],
+                    lifetime,
+                });
+                this.inner.borrow_mut().set_trail(Some(trail));
+                Ok(())
+            },
+        );
 
         // -- enableLineTrail --
         /// Enable cursor trail with line mode.
@@ -156,15 +171,18 @@ impl LuaUserData for LuaCursorManager {
         /// @param | g | number | Green (0-1).
         /// @param | b | number | Blue (0-1).
         /// @param | width | number | Line width in pixels.
-        methods.add_method("enableLineTrail", |_, this, (r, g, b, width): (f32, f32, f32, f32)| {
-            let trail = CursorTrail::new(TrailMode::Line {
-                color: [r, g, b, 1.0],
-                width,
-                fade: true,
-            });
-            this.inner.borrow_mut().set_trail(Some(trail));
-            Ok(())
-        });
+        methods.add_method(
+            "enableLineTrail",
+            |_, this, (r, g, b, width): (f32, f32, f32, f32)| {
+                let trail = CursorTrail::new(TrailMode::Line {
+                    color: [r, g, b, 1.0],
+                    width,
+                    fade: true,
+                });
+                this.inner.borrow_mut().set_trail(Some(trail));
+                Ok(())
+            },
+        );
 
         // -- disableTrail --
         /// Disable cursor trail for this object.
@@ -178,7 +196,9 @@ impl LuaUserData for LuaCursorManager {
         /// @param | magnification | number | Zoom factor (1-10).
         /// @param | radius | number | Lens radius in pixels.
         methods.add_method("enableZoom", |_, this, (mag, radius): (f32, f32)| {
-            this.inner.borrow_mut().set_zoom(Some(CursorZoom::new(mag, radius)));
+            this.inner
+                .borrow_mut()
+                .set_zoom(Some(CursorZoom::new(mag, radius)));
             Ok(())
         });
 
@@ -211,10 +231,13 @@ impl LuaUserData for LuaCustomCursor {
         /// @param | g | integer | Green (0-255).
         /// @param | b | integer | Blue (0-255).
         /// @param | a | integer | Alpha (0-255).
-        methods.add_method("setPixel", |_, this, (x, y, r, g, b, a): (u32, u32, u8, u8, u8, u8)| {
-            this.inner.borrow_mut().set_pixel(x, y, r, g, b, a);
-            Ok(())
-        });
+        methods.add_method(
+            "setPixel",
+            |_, this, (x, y, r, g, b, a): (u32, u32, u8, u8, u8, u8)| {
+                this.inner.borrow_mut().set_pixel(x, y, r, g, b, a);
+                Ok(())
+            },
+        );
 
         // -- getPixel --
         /// Get the pixel color at the specified cursor image position.
@@ -267,12 +290,15 @@ impl LuaUserData for LuaAnimatedCursor {
         /// Add a frame from a custom cursor image.
         /// @param | cursor | LCustomCursor | Frame image.
         /// @param | duration_ms | integer | Frame duration in milliseconds.
-        methods.add_method("addFrame", |_, this, (cursor, dur): (LuaAnyUserData, u32)| {
-            let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
-            let img = cursor.inner.borrow().clone();
-            this.inner.borrow_mut().add_frame(img, dur);
-            Ok(())
-        });
+        methods.add_method(
+            "addFrame",
+            |_, this, (cursor, dur): (LuaAnyUserData, u32)| {
+                let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
+                let img = cursor.inner.borrow().clone();
+                this.inner.borrow_mut().add_frame(img, dur);
+                Ok(())
+            },
+        );
 
         // -- update --
         /// Update animation (call each frame).
@@ -308,14 +334,17 @@ impl LuaUserData for LuaAnimatedCursor {
         /// @param | min_scale | number | Minimum scale.
         /// @param | max_scale | number | Maximum scale.
         /// @param | speed | number | Pulse speed.
-        methods.add_method("setPulse", |_, this, (min_s, max_s, speed): (f32, f32, f32)| {
-            this.inner.borrow_mut().set_pulse(Some(PulseConfig {
-                min_scale: min_s,
-                max_scale: max_s,
-                speed,
-            }));
-            Ok(())
-        });
+        methods.add_method(
+            "setPulse",
+            |_, this, (min_s, max_s, speed): (f32, f32, f32)| {
+                this.inner.borrow_mut().set_pulse(Some(PulseConfig {
+                    min_scale: min_s,
+                    max_scale: max_s,
+                    speed,
+                }));
+                Ok(())
+            },
+        );
 
         // -- clearPulse --
         /// Disable pulse animation for this object.
@@ -412,9 +441,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "systemCursors",
         lua.create_function(|lua, ()| {
             let names = vec![
-                "arrow", "ibeam", "wait", "crosshair", "wait_arrow",
-                "size_nwse", "size_nesw", "size_we", "size_ns", "size_all",
-                "no", "hand",
+                "arrow",
+                "ibeam",
+                "wait",
+                "crosshair",
+                "wait_arrow",
+                "size_nwse",
+                "size_nesw",
+                "size_we",
+                "size_ns",
+                "size_all",
+                "no",
+                "hand",
             ];
             let tbl = lua.create_table()?;
             for (i, name) in names.iter().enumerate() {

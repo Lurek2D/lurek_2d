@@ -66,7 +66,15 @@ fn assign_positions(
     } else {
         let first_child = kids[0];
         for &child in &kids {
-            assign_positions(child, depth + 1, x_offset, children, nodes, config, positions);
+            assign_positions(
+                child,
+                depth + 1,
+                x_offset,
+                children,
+                nodes,
+                config,
+                positions,
+            );
         }
         let last_child = *kids.last().unwrap();
 

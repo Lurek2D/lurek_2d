@@ -1,9 +1,7 @@
 //! File: src/lua_api/grep_api.rs
 
 use super::SharedState;
-use crate::grep::{
-    engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig,
-};
+use crate::grep::{engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::path::PathBuf;
@@ -27,7 +25,10 @@ impl LuaUserData for LuaGrepEngine {
         /// @return | table | Search result with matches, files_searched, total_matches, duration_ms.
         methods.add_method("search", |lua, this, (path, pattern): (String, String)| {
             let filter = FileFilter::game_content();
-            let result = this.inner.borrow().search_literal(&PathBuf::from(&path), &pattern, &filter);
+            let result =
+                this.inner
+                    .borrow()
+                    .search_literal(&PathBuf::from(&path), &pattern, &filter);
             result_to_table(lua, &result)
         });
 
@@ -37,23 +38,35 @@ impl LuaUserData for LuaGrepEngine {
         /// @param | pattern | string | Text pattern.
         /// @param | extensions | table | Array of file extensions (e.g., {"lua", "toml"}).
         /// @return | table | Search result.
-        methods.add_method("searchExt", |lua, this, (path, pattern, exts): (String, String, Vec<String>)| {
-            let mut filter = FileFilter::new();
-            filter.extensions = exts;
-            let result = this.inner.borrow().search_literal(&PathBuf::from(&path), &pattern, &filter);
-            result_to_table(lua, &result)
-        });
+        methods.add_method(
+            "searchExt",
+            |lua, this, (path, pattern, exts): (String, String, Vec<String>)| {
+                let mut filter = FileFilter::new();
+                filter.extensions = exts;
+                let result =
+                    this.inner
+                        .borrow()
+                        .search_literal(&PathBuf::from(&path), &pattern, &filter);
+                result_to_table(lua, &result)
+            },
+        );
 
         // -- multiSearch --
         /// Search with multiple patterns simultaneously.
         /// @param | path | string | Directory to search.
         /// @param | patterns | table | Array of literal patterns.
         /// @return | table | Search result.
-        methods.add_method("multiSearch", |lua, this, (path, patterns): (String, Vec<String>)| {
-            let filter = FileFilter::game_content();
-            let result = this.inner.borrow().search_multi(&PathBuf::from(&path), patterns, &filter);
-            result_to_table(lua, &result)
-        });
+        methods.add_method(
+            "multiSearch",
+            |lua, this, (path, patterns): (String, Vec<String>)| {
+                let filter = FileFilter::game_content();
+                let result =
+                    this.inner
+                        .borrow()
+                        .search_multi(&PathBuf::from(&path), patterns, &filter);
+                result_to_table(lua, &result)
+            },
+        );
 
         // -- count --
         /// Count total matches without returning line details.
@@ -62,7 +75,10 @@ impl LuaUserData for LuaGrepEngine {
         /// @return | integer | Total match count.
         methods.add_method("count", |_, this, (path, pattern): (String, String)| {
             let filter = FileFilter::game_content();
-            Ok(this.inner.borrow().count(&PathBuf::from(&path), &pattern, &filter))
+            Ok(this
+                .inner
+                .borrow()
+                .count(&PathBuf::from(&path), &pattern, &filter))
         });
 
         // -- searchFiles --
@@ -70,11 +86,14 @@ impl LuaUserData for LuaGrepEngine {
         /// @param | files | table | Array of file paths.
         /// @param | pattern | string | Text pattern.
         /// @return | table | Search result.
-        methods.add_method("searchFiles", |lua, this, (files, pattern): (Vec<String>, String)| {
-            let paths: Vec<PathBuf> = files.into_iter().map(PathBuf::from).collect();
-            let result = this.inner.borrow().search_files(&paths, &pattern);
-            result_to_table(lua, &result)
-        });
+        methods.add_method(
+            "searchFiles",
+            |lua, this, (files, pattern): (Vec<String>, String)| {
+                let paths: Vec<PathBuf> = files.into_iter().map(PathBuf::from).collect();
+                let result = this.inner.borrow().search_files(&paths, &pattern);
+                result_to_table(lua, &result)
+            },
+        );
     }
 }
 
@@ -127,7 +146,10 @@ impl LuaUserData for LuaFileFilter {
 // Helper: convert SearchResult to Lua table
 // ---------------------------------------------------------------------------
 
-fn result_to_table<'lua>(lua: &'lua Lua, result: &crate::grep::result::SearchResult) -> LuaResult<LuaTable<'lua>> {
+fn result_to_table<'lua>(
+    lua: &'lua Lua,
+    result: &crate::grep::result::SearchResult,
+) -> LuaResult<LuaTable<'lua>> {
     let tbl = lua.create_table()?;
     tbl.set("files_searched", result.files_searched)?;
     tbl.set("files_matched", result.files_matched)?;
@@ -312,7 +334,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             let entries = log_search::parse_log_lines(&lines);
             let opts = log_search::LogSearchOpts {
                 level_filter: if level.is_empty() { None } else { Some(level) },
-                pattern: if pattern.is_empty() { None } else { Some(pattern) },
+                pattern: if pattern.is_empty() {
+                    None
+                } else {
+                    Some(pattern)
+                },
                 ..Default::default()
             };
             let results = log_search::search_logs(&entries, &opts);

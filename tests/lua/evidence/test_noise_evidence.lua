@@ -1,5 +1,9 @@
 -- Evidence tests: noise module
 -- Output-only evidence from direct lurek.math noise APIs.
+-- @covers lurek.procgen.newNoiseGenerator
+-- @covers lurek.procgen.perlin2d
+-- @covers lurek.procgen.simplex2d
+
 
 
 local function write_text(path, text)

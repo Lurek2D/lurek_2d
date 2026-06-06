@@ -276,5 +276,4 @@ mod bus_tests {
         bus.clear_duck_target();
         assert!(bus.duck_target.is_none());
     }
-
 }

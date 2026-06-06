@@ -3,7 +3,6 @@ trigger: manual
 description: "Refresh API reference content from source docstrings and current contracts."
 expected_agent: "Manager"
 ---
-
 # Doc API Reference
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Required generation scope.
 
 ## Steps
-1. Load [skill: documentation](../rules/skill_documentation.md) and [skill: lua-api-design](../rules/skill_lua-api-design.md) before acting.
+1. Load [skill: documentation](../skills/documentation/SKILL.md) and [skill: lua-api-design](../skills/lua-api-design/SKILL.md) before acting.
 2. Read the owning Rust docstrings, docs/specs/, linked examples, and the generator inputs before editing.
 3. Fix the source text that drives the generated docs, keep the wording concrete for Lua users, and avoid manual edits to generated artifacts.
 4. Run the relevant doc generators and verify the resulting reference matches the intended contract.

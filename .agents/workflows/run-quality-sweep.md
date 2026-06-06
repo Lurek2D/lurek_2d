@@ -3,7 +3,6 @@ trigger: manual
 description: "Run a broader repo quality sweep and summarize real blockers by owner."
 expected_agent: "Manager"
 ---
-
 # Run Quality Sweep
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any known hot spots.
 
 ## Steps
-1. Load [skill: quality-pipeline](../rules/skill_quality-pipeline.md), [skill: module-audit](../rules/skill_module-audit.md), [skill: testing-rust](../rules/skill_testing-rust.md), and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), [skill: module-audit](../skills/module-audit/SKILL.md), [skill: testing-rust](../skills/testing-rust/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Decide whether the request needs a full-repo sweep or a bounded sweep first; avoid paying full-repo cost when the question is local.
 3. Run the requested gates in a stable order and group findings by owning subsystem or artifact type.
 4. Separate hard blockers from advisory gaps so the next owner can act without rereading the whole sweep.

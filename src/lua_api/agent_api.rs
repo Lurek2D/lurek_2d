@@ -1,12 +1,14 @@
 //! File: src/lua_api/agent_api.rs
 
-use crate::agent::{
-    AgentMemory, EpisodicMemory, GlobalLlmConfig, LlmChat, LlmTemplate, OllamaManager,
-    SemanticMemory, WorkingMemory, read_global_config, write_global_config,
-};
-use crate::agent::chat::{ollama_embed, ollama_generate, ollama_generate_json, ollama_is_available, ollama_list_models};
 use self::runtime::{
-    AgentBatchTask, LuaAISystemRuntime, LuaAgentManagerRuntime, LuaAgentRuntime, lua_to_json,
+    lua_to_json, AgentBatchTask, LuaAISystemRuntime, LuaAgentManagerRuntime, LuaAgentRuntime,
+};
+use crate::agent::chat::{
+    ollama_embed, ollama_generate, ollama_generate_json, ollama_is_available, ollama_list_models,
+};
+use crate::agent::{
+    read_global_config, write_global_config, AgentMemory, EpisodicMemory, GlobalLlmConfig, LlmChat,
+    LlmTemplate, OllamaManager, SemanticMemory, WorkingMemory,
 };
 use crate::runtime::SharedState;
 use mlua::prelude::*;
@@ -47,11 +49,14 @@ impl UserData for LuaAgent {
         /// @param | key | string | Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`).
         /// @param | value | any | Option value forwarded as JSON.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("setOption", |_, this, (key, value): (String, mlua::Value)| {
-            let json_val = lua_to_json(value)?;
-            this.runtime.set_option(key, json_val);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "setOption",
+            |_, this, (key, value): (String, mlua::Value)| {
+                let json_val = lua_to_json(value)?;
+                this.runtime.set_option(key, json_val);
+                Ok(())
+            },
+        );
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setFormat Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Changes the response format for future prompts.
@@ -76,7 +81,8 @@ impl UserData for LuaAgent {
         /// @param | n | integer | Context size in tokens (e.g. 4096).
         /// @return | nil | No value is returned.
         methods.add_method_mut("setContextSize", |_, this, n: u32| {
-            this.runtime.set_option("num_ctx".to_string(), serde_json::json!(n));
+            this.runtime
+                .set_option("num_ctx".to_string(), serde_json::json!(n));
             Ok(())
         });
 
@@ -85,7 +91,8 @@ impl UserData for LuaAgent {
         /// @param | t | number | Temperature value (e.g. 0.7). Higher = more random.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setTemperature", |_, this, t: f64| {
-            this.runtime.set_option("temperature".to_string(), serde_json::json!(t));
+            this.runtime
+                .set_option("temperature".to_string(), serde_json::json!(t));
             Ok(())
         });
 
@@ -180,9 +187,7 @@ impl UserData for LuaAgent {
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ skillCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of registered skills.
         /// @return | integer | Skill count.
-        methods.add_method("skillCount", |_, this, ()| {
-            Ok(this.runtime.skill_count())
-        });
+        methods.add_method("skillCount", |_, this, ()| Ok(this.runtime.skill_count()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ listSkills Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns a list of registered skill names in insertion order.
@@ -301,11 +306,14 @@ impl UserData for LuaAISystem {
         /// @param | name | string | Unique agent name used for routing.
         /// @param | agent | LAgent | The agent instance to register.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("addAgent", |_, this, (name, agent_ud): (String, AnyUserData)| {
-            let agent = agent_ud.borrow::<LuaAgent>()?;
-            this.runtime.add_agent(name, agent.runtime.state.clone());
-            Ok(())
-        });
+        methods.add_method_mut(
+            "addAgent",
+            |_, this, (name, agent_ud): (String, AnyUserData)| {
+                let agent = agent_ud.borrow::<LuaAgent>()?;
+                this.runtime.add_agent(name, agent.runtime.state.clone());
+                Ok(())
+            },
+        );
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ removeAgent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes a registered agent by name.
@@ -338,19 +346,20 @@ impl UserData for LuaAISystem {
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ agentCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of registered agents.
         /// @return | integer | Agent count.
-        methods.add_method("agentCount", |_, this, ()| {
-            Ok(this.runtime.agent_count())
-        });
+        methods.add_method("agentCount", |_, this, ()| Ok(this.runtime.agent_count()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ addInstruction Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Adds a named instruction block the user can explicitly include per prompt.
         /// @param | key | string | Unique instruction identifier.
         /// @param | text | string | Instruction text injected into the system block.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("addInstruction", |_, this, (key, text): (String, String)| {
-            this.runtime.add_instruction(key, text);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "addInstruction",
+            |_, this, (key, text): (String, String)| {
+                this.runtime.add_instruction(key, text);
+                Ok(())
+            },
+        );
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ removeInstruction Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes an instruction block by key.
@@ -434,22 +443,27 @@ impl UserData for LuaAISystem {
         /// @param | instruction | string | The prompt text used for keyword matching.
         /// @param | opts | table | Optional table with `agent` (string) and `instructions` (table) keys.
         /// @return | string | The assembled system context block.
-        methods.add_method("buildContext", |_, this, (instruction, opts): (String, Option<mlua::Table>)| {
-            let mut include = Vec::new();
-            let mut agent_name = None;
-            if let Some(opts_tbl) = opts {
-                if let Ok(inst_list) = opts_tbl.get::<_, mlua::Table>("instructions") {
-                    for pair in inst_list.pairs::<mlua::Integer, String>() {
-                        let (_, k) = pair?;
-                        include.push(k);
+        methods.add_method(
+            "buildContext",
+            |_, this, (instruction, opts): (String, Option<mlua::Table>)| {
+                let mut include = Vec::new();
+                let mut agent_name = None;
+                if let Some(opts_tbl) = opts {
+                    if let Ok(inst_list) = opts_tbl.get::<_, mlua::Table>("instructions") {
+                        for pair in inst_list.pairs::<mlua::Integer, String>() {
+                            let (_, k) = pair?;
+                            include.push(k);
+                        }
+                    }
+                    if let Ok(name) = opts_tbl.get::<_, String>("agent") {
+                        agent_name = Some(name);
                     }
                 }
-                if let Ok(name) = opts_tbl.get::<_, String>("agent") {
-                    agent_name = Some(name);
-                }
-            }
-            Ok(this.runtime.build_context(&instruction, &include, agent_name.as_deref()))
-        });
+                Ok(this
+                    .runtime
+                    .build_context(&instruction, &include, agent_name.as_deref()))
+            },
+        );
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ prompt Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends a prompt to a named agent through the system, auto-injecting matching context.
@@ -477,7 +491,8 @@ impl UserData for LuaAISystem {
                         }
                     }
                 }
-                this.runtime.prompt(lua, agent_name, instruction, callback, include)
+                this.runtime
+                    .prompt(lua, agent_name, instruction, callback, include)
             },
         );
 
@@ -534,16 +549,12 @@ impl UserData for LuaOllamaManager {
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ isRunning Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if the Ollama HTTP server responds within 5 seconds.
         /// @return | boolean | `true` if Ollama is reachable.
-        methods.add_method("isRunning", |_, this, ()| {
-            Ok(this.manager.is_running())
-        });
+        methods.add_method("isRunning", |_, this, ()| Ok(this.manager.is_running()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ version Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the Ollama version string, or an empty string if not running.
         /// @return | string | Ollama version or `""`.
-        methods.add_method("version", |_, this, ()| {
-            Ok(this.manager.version())
-        });
+        methods.add_method("version", |_, this, ()| Ok(this.manager.version()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ baseUrl Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the base URL this manager was created with.
@@ -590,23 +601,17 @@ impl UserData for LuaOllamaManager {
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ start Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Spawns `ollama serve` as a managed child process. Returns `true` on success.
         /// @return | boolean | `true` if the process started.
-        methods.add_method_mut("start", |_, this, ()| {
-            Ok(this.manager.start())
-        });
+        methods.add_method_mut("start", |_, this, ()| Ok(this.manager.start()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ stop Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Kills the Ollama process started by this manager. Returns `true` if it was running.
         /// @return | boolean | `true` if the process was running under this manager.
-        methods.add_method_mut("stop", |_, this, ()| {
-            Ok(this.manager.stop())
-        });
+        methods.add_method_mut("stop", |_, this, ()| Ok(this.manager.stop()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ restart Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Stops then restarts the managed Ollama process. Returns `true` on success.
         /// @return | boolean | `true` if the restart succeeded.
-        methods.add_method_mut("restart", |_, this, ()| {
-            Ok(this.manager.restart())
-        });
+        methods.add_method_mut("restart", |_, this, ()| Ok(this.manager.restart()));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ pullModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Dispatches an async model download; calls `callback(success, err_msg)` on completion.
@@ -681,10 +686,13 @@ impl UserData for LuaAgentChat {
         /// @param | role | string | Role identifier: `"user"`, `"assistant"`, or `"system"`.
         /// @param | content | string | Message content.
         /// @return | nil | No value is returned.
-        methods.add_method_mut("addMessage", |_, this, (role, content): (String, String)| {
-            this.chat.add_message(role, content);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "addMessage",
+            |_, this, (role, content): (String, String)| {
+                this.chat.add_message(role, content);
+                Ok(())
+            },
+        );
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ complete Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends the current history to the LLM and returns the assistant reply.
@@ -749,7 +757,9 @@ impl UserData for LuaAgentTemplate {
                 };
                 map.insert(k, s);
             }
-            this.template.render(&map).map_err(mlua::Error::RuntimeError)
+            this.template
+                .render(&map)
+                .map_err(mlua::Error::RuntimeError)
         });
     }
 }
@@ -808,20 +818,16 @@ impl UserData for LuaWorkingMemory {
         /// Returns the value for `key`, or `nil` if not found.
         /// @param | key | string | Entry key.
         /// @return | table | Stored value converted from JSON when present; returns nil when missing.
-        methods.add_method("get", |lua, this, key: String| {
-            match this.mem.get(&key) {
-                Some(v) => json_to_lua(lua, v.clone()),
-                None => Ok(mlua::Value::Nil),
-            }
+        methods.add_method("get", |lua, this, key: String| match this.mem.get(&key) {
+            Some(v) => json_to_lua(lua, v.clone()),
+            None => Ok(mlua::Value::Nil),
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ forget Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes the entry with `key`.  Returns `true` if it existed.
         /// @param | key | string | Entry key.
         /// @return | boolean | `true` if the entry was removed.
-        methods.add_method_mut("forget", |_, this, key: String| {
-            Ok(this.mem.forget(&key))
-        });
+        methods.add_method_mut("forget", |_, this, key: String| Ok(this.mem.forget(&key)));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getRecent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
@@ -949,9 +955,7 @@ impl UserData for LuaSemanticMemory {
         /// Removes the fact at `key`.  Returns `true` if it existed.
         /// @param | key | string | Fact key.
         /// @return | boolean | `true` if the fact was removed.
-        methods.add_method_mut("forget", |_, this, key: String| {
-            Ok(this.mem.forget(&key))
-        });
+        methods.add_method_mut("forget", |_, this, key: String| Ok(this.mem.forget(&key)));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ query Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns all facts whose value matches every key-value pair in `filter`.
@@ -994,35 +998,47 @@ impl UserData for LuaAgentMemory {
         /// Returns the working memory component.
         /// @return | LWorkingMemory | Working memory handle.
         methods.add_method("working", |_, this, ()| {
-            Ok(LuaWorkingMemory { mem: WorkingMemory::new(this.mem.working.capacity()) })
+            Ok(LuaWorkingMemory {
+                mem: WorkingMemory::new(this.mem.working.capacity()),
+            })
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ episodic Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the episodic memory component.
         /// @return | LEpisodicMemory | Episodic memory handle.
         methods.add_method("episodic", |_, _this, ()| {
-            Ok(LuaEpisodicMemory { mem: EpisodicMemory::new() })
+            Ok(LuaEpisodicMemory {
+                mem: EpisodicMemory::new(),
+            })
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ semantic Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the semantic memory component.
         /// @return | LSemanticMemory | Semantic memory handle.
         methods.add_method("semantic", |_, _this, ()| {
-            Ok(LuaSemanticMemory { mem: SemanticMemory::new() })
+            Ok(LuaSemanticMemory {
+                mem: SemanticMemory::new(),
+            })
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ save Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Serialises all memory banks to the configured persist_path.
         /// @return | boolean | `true` on success, raises an error on failure.
         methods.add_method("save", |_, this, ()| {
-            this.mem.save().map(|_| true).map_err(mlua::Error::RuntimeError)
+            this.mem
+                .save()
+                .map(|_| true)
+                .map_err(mlua::Error::RuntimeError)
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ load Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Deserialises memory state from the configured persist_path.
         /// @return | boolean | `true` on success, raises an error on failure.
         methods.add_method_mut("load", |_, this, ()| {
-            this.mem.load().map(|_| true).map_err(mlua::Error::RuntimeError)
+            this.mem
+                .load()
+                .map(|_| true)
+                .map_err(mlua::Error::RuntimeError)
         });
     }
 }
@@ -1098,11 +1114,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(move |_, config: mlua::Table| {
             let current = read_global_config();
             let cfg = GlobalLlmConfig {
-                provider: config.get::<_, String>("provider").unwrap_or(current.provider),
-                base_url: config.get::<_, String>("base_url").unwrap_or(current.base_url),
+                provider: config
+                    .get::<_, String>("provider")
+                    .unwrap_or(current.provider),
+                base_url: config
+                    .get::<_, String>("base_url")
+                    .unwrap_or(current.base_url),
                 model: config.get::<_, String>("model").unwrap_or(current.model),
-                timeout_ms: config.get::<_, u64>("timeout_ms").unwrap_or(current.timeout_ms),
-                api_key: config.get::<_, Option<String>>("api_key").unwrap_or(current.api_key),
+                timeout_ms: config
+                    .get::<_, u64>("timeout_ms")
+                    .unwrap_or(current.timeout_ms),
+                api_key: config
+                    .get::<_, Option<String>>("api_key")
+                    .unwrap_or(current.api_key),
             };
             write_global_config(cfg);
             Ok(())
@@ -1172,7 +1196,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     agent_table.set(
         "newChat",
         lua.create_function(move |_, ()| {
-            Ok(LuaAgentChat { chat: LlmChat::new() })
+            Ok(LuaAgentChat {
+                chat: LlmChat::new(),
+            })
         })?,
     )?;
 
@@ -1183,7 +1209,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     agent_table.set(
         "newTemplate",
         lua.create_function(move |_, pattern: String| {
-            Ok(LuaAgentTemplate { template: LlmTemplate::new(pattern) })
+            Ok(LuaAgentTemplate {
+                template: LlmTemplate::new(pattern),
+            })
         })?,
     )?;
 
@@ -1256,7 +1284,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     agent_table.set(
         "newWorkingMemory",
         lua.create_function(move |_, capacity: usize| {
-            Ok(LuaWorkingMemory { mem: WorkingMemory::new(capacity) })
+            Ok(LuaWorkingMemory {
+                mem: WorkingMemory::new(capacity),
+            })
         })?,
     )?;
 
@@ -1266,7 +1296,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     agent_table.set(
         "newEpisodicMemory",
         lua.create_function(move |_, ()| {
-            Ok(LuaEpisodicMemory { mem: EpisodicMemory::new() })
+            Ok(LuaEpisodicMemory {
+                mem: EpisodicMemory::new(),
+            })
         })?,
     )?;
 
@@ -1276,7 +1308,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     agent_table.set(
         "newSemanticMemory",
         lua.create_function(move |_, ()| {
-            Ok(LuaSemanticMemory { mem: SemanticMemory::new() })
+            Ok(LuaSemanticMemory {
+                mem: SemanticMemory::new(),
+            })
         })?,
     )?;
 
@@ -1294,7 +1328,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             } else {
                 (64, None)
             };
-            Ok(LuaAgentMemory { mem: AgentMemory::new(capacity, path) })
+            Ok(LuaAgentMemory {
+                mem: AgentMemory::new(capacity, path),
+            })
         })?,
     )?;
 
@@ -1385,7 +1421,8 @@ mod runtime {
                 let packed_id = pack_batch_callback_id(batch_id, task.agent_idx);
                 formats.insert(task.agent_idx, task.state.format.clone());
                 let req = if let Some(sys) = task.system_override {
-                    task.state.to_request_with_system(task.instruction, sys, packed_id)
+                    task.state
+                        .to_request_with_system(task.instruction, sys, packed_id)
                 } else {
                     task.state.to_request(task.instruction, packed_id)
                 };
@@ -1439,9 +1476,10 @@ mod runtime {
                     .get(&idx)
                     .map(String::as_str)
                     .unwrap_or("text");
-                let result = state.results.remove(&idx).unwrap_or_else(|| {
-                    Err(AgentError::Model("missing batch result".to_string()))
-                });
+                let result = state
+                    .results
+                    .remove(&idx)
+                    .unwrap_or_else(|| Err(AgentError::Model("missing batch result".to_string())));
                 let result_table = lua.create_table()?;
                 let (success, data, err_info) = process_response(lua, format, result)?;
                 result_table.set("success", success)?;
@@ -1476,9 +1514,7 @@ mod runtime {
             let url: String = config
                 .get("url")
                 .unwrap_or_else(|_| "http://127.0.0.1:11434/api/generate".to_string());
-            let model: String = config
-                .get("model")
-                .unwrap_or_else(|_| "llama3".to_string());
+            let model: String = config.get("model").unwrap_or_else(|_| "llama3".to_string());
             let system_prompt: String = config.get("system_prompt").unwrap_or_default();
             let format: String = config.get("format").unwrap_or_else(|_| "json".to_string());
 
@@ -1625,7 +1661,8 @@ mod runtime {
 
             let format = self.state.format.clone();
             let callback_key = lua.create_registry_value(callback)?;
-            self.callback_registry.insert(callback_id, (callback_key, format));
+            self.callback_registry
+                .insert(callback_id, (callback_key, format));
 
             self.client
                 .send_prompt(self.state.to_request(instruction, callback_id))
@@ -1654,7 +1691,9 @@ mod runtime {
             };
 
             for request in requests {
-                self.client.send_prompt(request).map_err(LuaError::runtime)?;
+                self.client
+                    .send_prompt(request)
+                    .map_err(LuaError::runtime)?;
             }
 
             Ok(batch_id)
@@ -1670,8 +1709,7 @@ mod runtime {
                 {
                     let callback: Function = lua.registry_value(&callback_key)?;
                     lua.remove_registry_value(callback_key)?;
-                    let (success, data, err_info) =
-                        process_response(lua, &format, response.body)?;
+                    let (success, data, err_info) = process_response(lua, &format, response.body)?;
                     callback.call::<_, ()>((success, data, err_info))?;
                     continue;
                 }
@@ -1742,12 +1780,16 @@ mod runtime {
             tasks: Vec<AgentBatchTask>,
             callback: Function,
         ) -> LuaResult<usize> {
-            let Some((batch_id, requests)) = self.batch_dispatcher.start_batch(lua, tasks, callback)? else {
+            let Some((batch_id, requests)) =
+                self.batch_dispatcher.start_batch(lua, tasks, callback)?
+            else {
                 return Ok(0);
             };
 
             for request in requests {
-                self.client.send_prompt(request).map_err(LuaError::runtime)?;
+                self.client
+                    .send_prompt(request)
+                    .map_err(LuaError::runtime)?;
             }
 
             Ok(batch_id)
@@ -1914,14 +1956,16 @@ mod runtime {
                 .ok_or_else(|| LuaError::runtime(format!("agent '{}' not found", agent_name)))?
                 .clone();
 
-            let system_block = self.build_context(&instruction, &include_instructions, Some(&agent_name));
+            let system_block =
+                self.build_context(&instruction, &include_instructions, Some(&agent_name));
 
             let callback_id = self.next_callback_id;
             self.next_callback_id += 1;
 
             let format = agent.format.clone();
             let callback_key = lua.create_registry_value(callback)?;
-            self.callback_registry.insert(callback_id, (callback_key, format));
+            self.callback_registry
+                .insert(callback_id, (callback_key, format));
 
             let req = agent.to_request_with_system(instruction, system_block, callback_id);
             self.client.send_prompt(req).map_err(LuaError::runtime)?;
@@ -1943,7 +1987,9 @@ mod runtime {
             };
 
             for request in requests {
-                self.client.send_prompt(request).map_err(LuaError::runtime)?;
+                self.client
+                    .send_prompt(request)
+                    .map_err(LuaError::runtime)?;
             }
 
             Ok(batch_id)
@@ -1978,8 +2024,7 @@ mod runtime {
                 {
                     let callback: Function = lua.registry_value(&callback_key)?;
                     lua.remove_registry_value(callback_key)?;
-                    let (success, data, err_info) =
-                        process_response(lua, &format, response.body)?;
+                    let (success, data, err_info) = process_response(lua, &format, response.body)?;
                     callback.call::<_, ()>((success, data, err_info))?;
                     continue;
                 }
@@ -2073,8 +2118,8 @@ mod runtime {
         let rows = lua.create_table()?;
         let mut row_idx = 1;
         for record in reader.records() {
-            let record =
-                record.map_err(|error| LuaError::RuntimeError(format!("CSV record error: {}", error)))?;
+            let record = record
+                .map_err(|error| LuaError::RuntimeError(format!("CSV record error: {}", error)))?;
             let row = lua.create_table()?;
             for (idx, value) in record.iter().enumerate() {
                 if let Some(header) = headers.get(idx) {
@@ -2095,14 +2140,16 @@ mod runtime {
         body: Result<String, AgentError>,
     ) -> LuaResult<(bool, Value<'lua>, Value<'lua>)> {
         match body {
-            Ok(body) if format == "json" => match serde_json::from_str::<serde_json::Value>(&body) {
-                Ok(value) => Ok((true, json_to_lua(lua, &value)?, Value::Nil)),
-                Err(error) => Ok((
-                    false,
-                    Value::Nil,
-                    error_table(lua, "PARSE_ERROR", format!("Invalid JSON: {}", error))?,
-                )),
-            },
+            Ok(body) if format == "json" => {
+                match serde_json::from_str::<serde_json::Value>(&body) {
+                    Ok(value) => Ok((true, json_to_lua(lua, &value)?, Value::Nil)),
+                    Err(error) => Ok((
+                        false,
+                        Value::Nil,
+                        error_table(lua, "PARSE_ERROR", format!("Invalid JSON: {}", error))?,
+                    )),
+                }
+            }
             Ok(body) if format == "csv" => match parse_csv_to_lua(lua, &body) {
                 Ok(value) => Ok((true, value, Value::Nil)),
                 Err(error) => Ok((
@@ -2121,11 +2168,14 @@ mod runtime {
     }
 
     /// Builds a Lua error-info table with `code` and `message` fields.
-    fn error_table<'lua>(lua: &'lua Lua, code: &str, message: impl AsRef<str>) -> LuaResult<Value<'lua>> {
+    fn error_table<'lua>(
+        lua: &'lua Lua,
+        code: &str,
+        message: impl AsRef<str>,
+    ) -> LuaResult<Value<'lua>> {
         let table = lua.create_table()?;
         table.set("code", code)?;
         table.set("message", message.as_ref())?;
         Ok(Value::Table(table))
     }
-
 }

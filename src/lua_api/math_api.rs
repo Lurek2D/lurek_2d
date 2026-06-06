@@ -12,11 +12,11 @@ use crate::math::Rect;
 use crate::math::RectPacker;
 use crate::math::SpatialHash;
 use crate::math::Transform;
-use crate::tween::Tween;
 use crate::math::Vec2;
 use crate::math::Vec3;
 use crate::math::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
 use crate::math::{CatmullRomSpline, HermiteSpline};
+use crate::tween::Tween;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -488,9 +488,7 @@ impl LuaUserData for LuaRandomGenerator {
         /// Rolls a single die with the given number of sides.
         /// @param | sides | integer | Number of sides (minimum 1).
         /// @return | integer | Result in range [1, sides].
-        methods.add_method_mut("roll", |_, this, sides: u32| {
-            Ok(this.inner.roll(sides))
-        });
+        methods.add_method_mut("roll", |_, this, sides: u32| Ok(this.inner.roll(sides)));
         // -- rollN --
         /// Rolls N dice with the given number of sides and returns all results.
         /// @param | count | integer | Number of dice (clamped to [1, 1000]).
@@ -1382,14 +1380,19 @@ impl LuaUserData for LuaLootTable {
         /// @param | id | string | Unique item identifier.
         /// @param | weight | number | Relative drop weight (positive).
         /// @param | meta | table? | Optional key-value metadata table.
-        methods.add_method("add", |_, this, (id, weight, meta): (String, f64, Option<LuaTable>)| {
-            let mut m = std::collections::HashMap::new();
-            if let Some(t) = meta {
-                for (k, v) in t.pairs::<String, String>().flatten() { m.insert(k, v); }
-            }
-            this.inner.borrow_mut().add(&id, weight, m);
-            Ok(())
-        });
+        methods.add_method(
+            "add",
+            |_, this, (id, weight, meta): (String, f64, Option<LuaTable>)| {
+                let mut m = std::collections::HashMap::new();
+                if let Some(t) = meta {
+                    for (k, v) in t.pairs::<String, String>().flatten() {
+                        m.insert(k, v);
+                    }
+                }
+                this.inner.borrow_mut().add(&id, weight, m);
+                Ok(())
+            },
+        );
         // -- remove --
         /// Removes an entry by id. Returns true when found.
         /// @param | id | string | Item identifier.
@@ -1532,9 +1535,7 @@ impl LuaUserData for LuaPityTracker {
         // -- counter --
         /// Returns the current miss counter used by pity-prime progression logic.
         /// @return | integer | Current miss count.
-        methods.add_method("counter", |_, this, ()| {
-            Ok(this.inner.borrow().counter())
-        });
+        methods.add_method("counter", |_, this, ()| Ok(this.inner.borrow().counter()));
         // -- save --
         /// Serialises pity state to a binary blob.
         /// @return | string | Binary blob.
@@ -1545,7 +1546,10 @@ impl LuaUserData for LuaPityTracker {
         /// Restores pity state from a blob produced by `save`.
         /// @param | blob | string | Binary blob.
         methods.add_method("restore", |_, this, blob: LuaString| {
-            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+            this.inner
+                .borrow_mut()
+                .restore(blob.as_bytes())
+                .map_err(LuaError::external)
         });
         // -- export --
         /// Compatibility alias for `save` that exports the same binary payload.
@@ -1557,7 +1561,10 @@ impl LuaUserData for LuaPityTracker {
         /// Compatibility alias for `restore`.
         /// @param | blob | string | Binary blob.
         methods.add_method("import", |_, this, blob: LuaString| {
-            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+            this.inner
+                .borrow_mut()
+                .restore(blob.as_bytes())
+                .map_err(LuaError::external)
         });
         // -- type --
         /// Returns the Lua-visible type name.
@@ -2791,38 +2798,38 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @field | site | table | Site position with `x` and `y` fields.
     /// @field | vertices | table | Array of vertex positions with `x` and `y` fields.
     let geometric_voronoi_fn = lua.create_function(|lua, points: LuaTable| {
-            let pts = lua_table_to_poly(points)?;
-            let cells = crate::math::voronoi_from_points(&pts);
-            let out = lua.create_table()?;
-            for (i, cell) in cells.iter().enumerate() {
-                let site_tbl = lua.create_table()?;
+        let pts = lua_table_to_poly(points)?;
+        let cells = crate::math::voronoi_from_points(&pts);
+        let out = lua.create_table()?;
+        for (i, cell) in cells.iter().enumerate() {
+            let site_tbl = lua.create_table()?;
+            /// The 'x' field value exposed to Lua scripts.
+            site_tbl.set("x", cell.site.0)?;
+            /// The 'y' field value exposed to Lua scripts.
+            site_tbl.set("y", cell.site.1)?;
+            let verts_tbl = lua.create_table()?;
+            for (j, &(vx, vy)) in cell.vertices.iter().enumerate() {
+                let v = lua.create_table()?;
                 /// The 'x' field value exposed to Lua scripts.
-                site_tbl.set("x", cell.site.0)?;
+                v.set("x", vx)?;
                 /// The 'y' field value exposed to Lua scripts.
-                site_tbl.set("y", cell.site.1)?;
-                let verts_tbl = lua.create_table()?;
-                for (j, &(vx, vy)) in cell.vertices.iter().enumerate() {
-                    let v = lua.create_table()?;
-                    /// The 'x' field value exposed to Lua scripts.
-                    v.set("x", vx)?;
-                    /// The 'y' field value exposed to Lua scripts.
-                    v.set("y", vy)?;
-                    verts_tbl.set(j + 1, v)?;
-                }
-                let cell_tbl = lua.create_table()?;
-                /// Performs the 'site' operation.
-                cell_tbl.set("site", site_tbl)?;
-                /// Performs the 'vertices' operation.
-                cell_tbl.set("vertices", verts_tbl)?;
-                out.set(i + 1, cell_tbl)?;
+                v.set("y", vy)?;
+                verts_tbl.set(j + 1, v)?;
             }
-            Ok(out)
-        })?;
+            let cell_tbl = lua.create_table()?;
+            /// Performs the 'site' operation.
+            cell_tbl.set("site", site_tbl)?;
+            /// Performs the 'vertices' operation.
+            cell_tbl.set("vertices", verts_tbl)?;
+            out.set(i + 1, cell_tbl)?;
+        }
+        Ok(out)
+    })?;
     /// Builds Voronoi cells from a polygon-style point table using geometric tessellation.
     tbl.set("geometricVoronoi", geometric_voronoi_fn.clone())?;
     /// Alias for geometricVoronoi â€” builds Voronoi cells from a polygon-style point table.
     tbl.set("voronoi", geometric_voronoi_fn)?; // backward compat alias
-    // -- easingNames --
+                                               // -- easingNames --
     /// Returns an array of all built-in easing function names.
     /// @group math
     /// @function easingNames
@@ -2934,8 +2941,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, path: String| {
             let src = std::fs::read_to_string(&path)
                 .map_err(|e| LuaError::RuntimeError(format!("lootFromToml read error: {e}")))?;
-            let inner = crate::math::LootTable::from_toml(&src)
-                .map_err(LuaError::RuntimeError)?;
+            let inner = crate::math::LootTable::from_toml(&src).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaLootTable {
                 inner: std::cell::RefCell::new(inner),
             })
@@ -2950,7 +2956,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "newPityTracker",
         lua.create_function(|lua, (target_id, threshold): (String, u32)| {
             lua.create_userdata(LuaPityTracker {
-                inner: std::cell::RefCell::new(crate::math::PityTracker::new(&target_id, threshold)),
+                inner: std::cell::RefCell::new(crate::math::PityTracker::new(
+                    &target_id, threshold,
+                )),
             })
         })?,
     )?;
@@ -2967,14 +2975,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 let selected = {
                     let mut loot = loot_ud.borrow_mut::<LuaLootTable>()?;
                     let mut pity = pity_ud.borrow_mut::<LuaPityTracker>()?;
-                    crate::math::sample_with_pity(loot.inner.get_mut(), pity.inner.get_mut()).cloned()
+                    crate::math::sample_with_pity(loot.inner.get_mut(), pity.inner.get_mut())
+                        .cloned()
                 };
 
                 match selected {
                     None => Ok((LuaValue::Nil, LuaValue::Nil)),
                     Some(e) => {
                         let meta = map_to_lua_meta(lua, &e.meta)?;
-                        Ok((LuaValue::String(lua.create_string(&e.id)?), LuaValue::Table(meta)))
+                        Ok((
+                            LuaValue::String(lua.create_string(&e.id)?),
+                            LuaValue::Table(meta),
+                        ))
                     }
                 }
             },
@@ -3009,7 +3021,10 @@ fn map_to_lua_meta<'lua>(
     Ok(tbl)
 }
 
-fn loot_entry_table<'lua>(lua: &'lua Lua, entry: &crate::math::LootEntry) -> LuaResult<LuaTable<'lua>> {
+fn loot_entry_table<'lua>(
+    lua: &'lua Lua,
+    entry: &crate::math::LootEntry,
+) -> LuaResult<LuaTable<'lua>> {
     let t = lua.create_table()?;
     t.set("id", entry.id.as_str())?;
     t.set("weight", entry.weight)?;

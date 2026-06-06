@@ -1,8 +1,3 @@
-﻿---
-trigger: model_decision
-description: "Load this skill when designing or maintaining retrieval corpus shape, chunking, freshness, source ranking, or RAG evaluation for agent support. Skip it for generic .github authoring, prompt wording, or engine code."
----
-
 # retrieval-architecture
 
 ## Mission
@@ -20,22 +15,16 @@ description: "Load this skill when designing or maintaining retrieval corpus sha
 - Non-retrieval docs updates.
 
 ## Domain Knowledge
-- Source priority (highest to lowest): binding constraints (`docs/architecture/philosophy.md`) â†’ CAG layer (`.github/`) â†’ module specs (`docs/specs/*.md`) â†’ architecture docs (`docs/architecture/`) â†’ handbook/CONTRIBUTING â†’ wiki pages â†’ examples/games â†’ generated outputs (`docs/api/`). A retrieval answer from a higher tier overrides one from a lower tier.
-- Chunk by ownership boundary, not by fixed byte size. One complete SKILL.md, one module spec, one agent file, one `## Section` in a doc, or one function docstring are all natural chunk units. Splitting a module spec's Invariants section from its Public API section destroys the context that makes the answer useful.
-- Generated files (`docs/api/lurek.md`, `docs/api/lurek.lua`, `docs/api/lureksome.md`) should be indexed at lower priority than their sources (`src/lua_api/*_api.rs`, `library/*/init.lua`). When both the source and the generated output match a query, prefer the source â€” it is what gets edited.
-- Freshness trigger table: if `src/lua_api/<module>_api.rs` changes, invalidate chunks for `docs/api/lurek.md` and `docs/specs/<module>.md` (generated section). If an agent file changes, invalidate the `.github/agents/README.md` chunk. If a skill `SKILL.md` changes, invalidate that skill's chunk only.
+- Source priority: binding constraints â†’ CAG layer â†’ module specs â†’ architecture docs â†’ handbook/CONTRIBUTING â†’ wiki pages â†’ examples/games â†’ generated outputs. A retrieval answer from a higher tier overrides one from a lower tier.
+- Chunk by ownership boundary, not by fixed byte size. One complete SKILL.md, one module spec, one agent file, one `## Section` in a doc, or one function docstring are all natural chunk units.
+- Generated files must be indexed at lower priority than their sources. When both the source and the generated output match a query, prefer the source â€” it is what gets edited.
+- Freshness trigger table: if `src/lua_api/<module>_api.rs` changes, invalidate chunks for `docs/api/lurek.md` and `docs/specs/<module>.md`. If an agent file changes, invalidate the `.github/agents/README.md` chunk.
 - Stale chunk detection: a chunk is stale when its `last_modified` timestamp is older than the source file that generates or governs it. Run `python tools/audit/cag_link_check.py` as a proxy stale-link detector for CAG chunks.
-- Evaluation query set (minimum 10 queries per corpus update): 3 exact-contract questions ("what does X return?"), 3 workflow questions ("how do I Y?"), 2 ownership questions ("which module owns Z?"), 1 ambiguous-ownership question, 1 stale-content trap (query for a renamed API). Expected top-1 result must be from the canonical source, not a generated copy.
-- Duplicate ranking problem: `docs/api/lurek.md`, `wiki/API-Reference.md`, and `docs/specs/<module>.md` may all describe the same function. Index only the canonical source at full weight; generated and wiki variants at 0.3 weight. This prevents stale duplicates from beating the authoritative source.
-- Coverage gap reporting: `python tools/audit/doc_coverage.py --retrieval` outputs modules with no retrievable spec. Each gap is a source that should be added or a module that needs a spec created.
+- Evaluation query set: 3 exact-contract questions, 3 workflow questions, 2 ownership questions, 1 ambiguous-ownership question, 1 stale-content trap. Expected top-1 result must be from the canonical source, not a generated copy.
+- Duplicate ranking problem: `docs/api/lurek.md`, `wiki/API-Reference.md`, and `docs/specs/<module>.md` may all describe the same function. Index only the canonical source at full weight; generated and wiki variants at 0.3 weight.
+- Coverage gap reporting: `python tools/audit/doc_coverage.py --retrieval` outputs modules with no retrievable spec. Each gap is a source that must be added or a module that needs a spec created.
 ## Companion File Index
 - None.
-
-
-## Gemini Tips (Antigravity Optimization)
-- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
-- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
-- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - docs/specs/
@@ -44,4 +33,3 @@ description: "Load this skill when designing or maintaining retrieval corpus sha
 - tools/README.md
 - extension/vscode/src/mcp/
 - logs/data/
-

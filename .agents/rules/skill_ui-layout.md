@@ -2,7 +2,6 @@
 trigger: model_decision
 description: "Load this skill when designing or reviewing TOML UI layouts in content/layouts/ and related layout tools. Skip it for Rust UI code or Lua game logic."
 ---
-
 # ui-layout
 
 ## Mission
@@ -19,21 +18,15 @@ description: "Load this skill when designing or reviewing TOML UI layouts in con
 - Lua game-logic scripting — use `lua-scripting` skill.
 
 ## Domain Knowledge
-- TOML layout schema: every file has a `[root]` table with `widget_type`, `id`, `x`, `y`, `w`, `h` fields, then `[[root.children]]` array entries for child widgets. Supported `widget_type` values are: `panel`, `label`, `button`, `progressbar`, `checkbox`, `image`, `slider`, `list`. Each type has additional optional fields (`text` for labels, `min/max/value` for progressbar, `src` for image). Check `content/layouts/games/fps_hud.toml` for a minimal real example.
-- Coordinate system: x and y are top-left pixel offsets from the parent's top-left corner, not the screen origin. For root-level widgets, `x` and `y` are screen-absolute. Viewport comment at the top of each file (e.g., `# Viewport: 1280 × 720`) documents the design canvas size — coordinates must fit within it.
-- Grid discipline: run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` to snap `x`, `y`, `w`, `h` to 8-pixel multiples. Run this before committing any layout change. Fine adjustments use `--grid 4`. The tool only modifies geometry fields — `min`, `max`, `value`, and other semantic fields are untouched.
-- How to validate a layout: run `python tools/ui/render_layout.py content/layouts/games/my_layout.toml` to produce a PNG preview. Compare against the `.png` reference file that lives beside each `.toml` file (e.g., `fps_hud.png`). If the rendered output differs from the reference, the layout change is a visual regression. Update the reference PNG in the same commit as the layout change.
+- TOML layout schema: every file has a `[root]` table with `widget_type`, `id`, `x`, `y`, `w`, `h` fields, then `[[root.children]]` array entries for child widgets. Supported `widget_type` values are: `panel`, `label`, `button`, `progressbar`, `checkbox`, `image`, `slider`, `list`.
+- Coordinate system: x and y are top-left pixel offsets from the parent's top-left corner, not the screen origin. For root-level widgets, `x` and `y` are screen-absolute.
+- Grid discipline: run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` to snap `x`, `y`, `w`, `h` to 8-pixel multiples. Run this before committing any layout change.
+- How to validate a layout: run `python tools/ui/render_layout.py content/layouts/games/my_layout.toml` to produce a PNG preview. Compare against the `.png` reference file that lives beside each `.toml` file.
 - How to run `fix_layouts.py`: `python tools/ui/fix_layouts.py content/layouts/` normalises field ordering, strips extra whitespace, and enforces TOML array formatting. Run it after hand-editing to avoid diff noise from formatting differences.
-- ID naming rules: `snake_case`, prefixed by widget role (e.g., `hp_bar`, `score_label`, `pause_btn`). IDs must be unique within a file. IDs are referenced from Lua scripts via `lurek.ui.getElementById("id")` — changing an ID after a script has been written breaks the wiring silently.
-- `apps/` layouts are for standalone UI demos (calculator, login form, dashboard). `games/` layouts are in-game HUDs and menus. Keep these folders distinct in meaning: a games/ layout should assume a game is running; an apps/ layout should not. Do not add game-specific IDs (e.g., `hp_bar`) to apps/ layouts.
+- ID naming rules: `snake_case`, prefixed by widget role. IDs must be unique within a file.
+- `apps/` layouts are for standalone UI demos. `games/` layouts are in-game HUDs and menus.
 ## Companion File Index
 - None.
-
-
-## Gemini Tips (Antigravity Optimization)
-- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
-- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
-- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - content/layouts/

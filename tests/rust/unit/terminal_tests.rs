@@ -87,8 +87,8 @@ mod ansi_tests {
 // â”€â”€ widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod widget_tests {
-    use lurek2d::terminal::{BorderStyle, WidgetBase};
     use lurek2d::terminal::Widget;
+    use lurek2d::terminal::{BorderStyle, WidgetBase};
 
     #[test]
     fn border_style_roundtrip() {
@@ -310,7 +310,10 @@ mod render_tests {
 
         let first_commands = terminal.generate_render_commands(dummy_font(), 8.0, 16.0, 1.0);
         let second_commands = terminal.generate_render_commands(dummy_font(), 8.0, 16.0, 1.0);
-        let first_debug: Vec<String> = first_commands.iter().map(|cmd| format!("{:?}", cmd)).collect();
+        let first_debug: Vec<String> = first_commands
+            .iter()
+            .map(|cmd| format!("{:?}", cmd))
+            .collect();
         let second_debug: Vec<String> = second_commands
             .iter()
             .map(|cmd| format!("{:?}", cmd))

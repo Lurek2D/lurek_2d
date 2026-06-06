@@ -29,14 +29,14 @@ pub mod projection;
 pub mod province_adapter;
 /// Globe registry state. This module is publicly re-exported.
 pub mod registry;
+/// Sphere-surface coordinate helpers and rotation matrices.
+pub mod sphere;
 /// Globe synchronization helpers.
 pub mod sync;
 /// Globe topology helpers. This module is publicly re-exported.
 pub mod topology;
 /// Globe shared value types. This module is publicly re-exported.
 pub mod types;
-/// Sphere-surface coordinate helpers and rotation matrices.
-pub mod sphere;
 /// Fog state and mask types.
 pub use fog::{FogMask, FogStore};
 /// Picking result type.
@@ -47,6 +47,14 @@ pub use projection::OrbitCamera;
 pub use registry::{Globe, GlobeRegistry};
 /// Synchronization channel and snapshot types.
 pub use sync::{GlobeSyncChannel, GlobeSyncSnapshot};
+/// Backward compatibility: ProvinceGraph alias.
+pub use topology::ProvinceGraph;
+/// Region graph (primary name).
+pub use topology::RegionGraph;
+/// Backward compatibility: ProjectedProvince alias.
+pub use types::ProjectedProvince;
+/// Projected region type.
+pub use types::ProjectedRegion;
 /// Shared globe value types (primary names).
 pub use types::{
     FogState, GlobeError, GlobeSpec, HeatLayer, Label, LabelStyle, Layer, LodTier, Marker,
@@ -54,11 +62,3 @@ pub use types::{
 };
 /// Backward compatibility re-exports.
 pub use types::{Province, ProvinceId, MAX_PROVINCES};
-/// Region graph (primary name).
-pub use topology::RegionGraph;
-/// Backward compatibility: ProvinceGraph alias.
-pub use topology::ProvinceGraph;
-/// Projected region type.
-pub use types::ProjectedRegion;
-/// Backward compatibility: ProjectedProvince alias.
-pub use types::ProjectedProvince;

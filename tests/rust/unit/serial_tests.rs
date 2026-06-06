@@ -112,8 +112,8 @@ mod lua_table_tests {
 
 mod codec_tests {
     use lurek2d::serial::{
-        decode_bytes, decode_text, detect_format, encode, from_csv, DecodeOptions,
-        EncodeOptions, EncodedValue, SerialFormat, SerialValue,
+        decode_bytes, decode_text, detect_format, encode, from_csv, DecodeOptions, EncodeOptions,
+        EncodedValue, SerialFormat, SerialValue,
     };
 
     fn lcg_next(state: &mut u64) -> u64 {

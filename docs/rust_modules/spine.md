@@ -4,19 +4,27 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/spine/`
+- Feature gate: `spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
-- Lua API surface: `3` functions, `5` types, `34` methods
+- Lua API surface: `4` functions, `5` types, `34` methods
 - Rust test path(s): tests/rust/unit/spine_tests.rs
-- Lua test path(s): tests/lua/unit/test_spine.lua
+- Lua test path(s): tests/lua/unit/test_spine_core_unit.lua
+- Bench path(s): benches/spine_update_world_transforms.rs
 
 ## Summary
 
-Moving beyond traditional frame-by-frame sprites, this module enables fluid, dynamic animations using hierarchical bone trees and slot-based attachments. Central to the system is the `Skeleton` struct, which maintains an ordered array of `Bone` elements. Each bone stores local transform properties (position, rotation, scale) and automatically computes accumulated world-space transforms as they propagate down the parent-child hierarchy. Visual representation is handled via `Slot` attachments, which bind graphical content—such as sprite regions, meshes, or bounding boxes—to specific bones with precise draw-order and blend-mode configurations, ensuring correct back-to-front rendering even in complex layered characters.
+This module provides a skeletal animation runtime for 2D assets, offering pose-driven movement through hierarchies of bones and slots. Bones carry local transform offsets that propagate down parent-child chains to resolve world-space positions. To achieve organic, procedural responsiveness alongside keyframed animations, the system implements an inverse-kinematics solver that constrains joint angles toward target positions with controllable bend directions.
 
-To achieve sophisticated, procedural motion, the module features a dedicated Inverse Kinematics (IK) system. The `IKConstraint` solver calculates the necessary joint rotations for a two-bone chain (e.g., an arm or leg) to reach a specific world-space target, vastly simplifying dynamic interactions like foot placement on uneven terrain or aiming weapons. The animation pipeline itself is driven by `SkeletonAnimation` clips, which organize multiple `BoneTimeline` and `SlotTimeline` sequences containing keyed property changes. The runtime efficiently interpolates between these keyframes using various easing curves (linear, stepped, bezier) and applies the resulting poses to the skeleton. Animations can be blended together using configurable weights, allowing for smooth transitions between states (like transitioning from a run cycle to a jump).
+Skins and slots isolate visual assets from bone hierarchies. Slots are attached directly to bones to manage layering and draw order, letting sprites swap dynamically. Skins group slot mappings to switch visual variants on a single skeletal rig. Playback advances through sampled timelines, interpolating values with smooth or stepped curves while triggering timeline event markers.
 
-The module also supports extensive customization and event handling. The Skin system allows developers to group specific slot attachments into switchable visual sets, enabling character customization (e.g., changing armor or weapons) without duplicating the underlying animation rig. Furthermore, `EventKeyframe` markers can be embedded within timelines to trigger Lua callbacks at precise moments, perfect for syncing footstep audio or hit-box activation. Fully exposed through the `lurek.spine.*` API, this module provides the robust tooling necessary to bring complex, expressive, and interactive 2D characters to life.
+Per-frame pose updates are designed to avoid cloning full animation or IK constraint objects in runtime hot paths. Animation sampling and IK solving operate on borrowed indexed data, so update loops scale with rig size without extra heap churn from repeated structural clones.
+
+The module is available only when the `spine` feature is enabled. That feature gate applies to the Rust module, Lua bindings, and the dedicated `spine_update_world_transforms` benchmark that tracks hierarchy-update cost for the public `updateWorldTransforms` path.
+
+The module also integrates rendering and diagnostic layers. It flattens rig poses into generic draw commands, letting the renderer paint attachments without skeleton awareness. The system parses standard Spine and DragonBones JSON rig files (bones, slots, skins, and basic timelines) and provides software visualizers that render skeleton linkages to CPU images for debug inspection.
+
+Current public behavior is covered through the Lua-facing spine test suite, including construction, hierarchy updates, animation playback helpers, and render-adjacent debug outputs, while the benchmark focuses specifically on steady-state world-transform recomputation.
 
 ## Files
 
@@ -39,6 +47,7 @@ The module also supports extensive customization and event handling. The Skin sy
 
 - This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
 - It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
+- The module is compiled only behind the `spine` feature gate, matching the optional nature of skeletal runtime support.
 - At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
 
 ### [render.rs](https://github.com/Lurek2D/lurek_2d/blob/main/src/spine/render.rs)
@@ -55,6 +64,7 @@ The module also supports extensive customization and event handling. The Skin sy
 - Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
 - Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
 - World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
+- A dedicated no-harness benchmark measures repeated `update_world_transforms` runs against this hierarchy-update path.
 - Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
 - The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
 - It is where skeletal state becomes animated pose over time.

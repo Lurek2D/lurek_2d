@@ -1,5 +1,7 @@
 -- tests/lua/visibility/test_fov_unit.lua
 -- Unit tests for lurek.visibility.newFov (tile-grid shadowcasting)
+-- @covers lurek.visibility.newFov
+
 
 local t = require("test_harness")
 

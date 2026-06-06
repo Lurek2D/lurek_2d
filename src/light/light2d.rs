@@ -6,6 +6,7 @@
 //! Supports optional flicker and grouping metadata for batched animation and edits.
 //! Includes debug-oriented helpers that visualize key lighting parameter effects.
 
+use crate::color::Color;
 use crate::light::attenuation::Attenuation;
 use crate::light::blend_mode::LightBlendMode;
 use crate::light::falloff::FalloffMode;
@@ -13,7 +14,6 @@ use crate::light::flicker::FlickerConfig;
 use crate::light::light_type::LightType;
 use crate::light::shadow::ShadowFilter;
 use crate::log_msg;
-use crate::color::Color;
 use crate::runtime::log_messages::{LT01, LT02, LT03};
 
 /// Complete 2D light definition: position, color, radius, type, shadow, masks, flicker, and attenuation.

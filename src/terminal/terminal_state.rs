@@ -645,7 +645,11 @@ impl Terminal {
                     }
                     _ => false,
                 };
-                self.select_all_textbox = if select_all { Some(focused_index) } else { None };
+                self.select_all_textbox = if select_all {
+                    Some(focused_index)
+                } else {
+                    None
+                };
                 if changed {
                     events.push(TerminalEvent::TextChanged {
                         index: focused_index,

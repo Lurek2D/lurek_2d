@@ -35,7 +35,12 @@ pub fn load_rules_from_toml(content: &str) -> Vec<LuaPatternRule> {
 
         if trimmed == "[[rule]]" {
             if in_rule && !current_id.is_empty() && !current_pattern.is_empty() {
-                let mut rule = LuaPatternRule::new(&current_id, &current_pattern, &current_message, current_severity);
+                let mut rule = LuaPatternRule::new(
+                    &current_id,
+                    &current_pattern,
+                    &current_message,
+                    current_severity,
+                );
                 rule.set_invert(current_invert);
                 rules.push(rule);
             }
@@ -67,7 +72,12 @@ pub fn load_rules_from_toml(content: &str) -> Vec<LuaPatternRule> {
 
     // Push last rule
     if in_rule && !current_id.is_empty() && !current_pattern.is_empty() {
-        let mut rule = LuaPatternRule::new(&current_id, &current_pattern, &current_message, current_severity);
+        let mut rule = LuaPatternRule::new(
+            &current_id,
+            &current_pattern,
+            &current_message,
+            current_severity,
+        );
         rule.set_invert(current_invert);
         rules.push(rule);
     }

@@ -93,7 +93,12 @@ fn parse_color4(tbl: &LuaTable) -> LuaResult<[f32; 4]> {
     let g: f32 = tbl.get(2)?;
     let b: f32 = tbl.get(3)?;
     let a: f32 = tbl.get::<_, f32>(4).unwrap_or(1.0);
-    Ok([r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0), a.clamp(0.0, 1.0)])
+    Ok([
+        r.clamp(0.0, 1.0),
+        g.clamp(0.0, 1.0),
+        b.clamp(0.0, 1.0),
+        a.clamp(0.0, 1.0),
+    ])
 }
 
 /// Parse margin table: {top, right, bottom, left}.
@@ -134,17 +139,27 @@ impl LuaUserData for LuaLineChart {
         /// @param | name | string | Display name of the series.
         /// @param | data | table | Array of {x, y} point tables.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}.
-        methods.add_method("addSeries", |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
-            let points = parse_series_data(&data)?;
-            let c = match color {
-                Some(ref t) => parse_color4(t)?,
-                None => palette_color(this.count.get()),
-            };
-            this.count.set(this.count.get() + 1);
-            let color_rgba = crate::color::Color { r: c[0], g: c[1], b: c[2], a: c[3] };
-            this.inner.borrow_mut().add_series(&name, &points, color_rgba);
-            Ok(())
-        });
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
+                let points = parse_series_data(&data)?;
+                let c = match color {
+                    Some(ref t) => parse_color4(t)?,
+                    None => palette_color(this.count.get()),
+                };
+                this.count.set(this.count.get() + 1);
+                let color_rgba = crate::color::Color {
+                    r: c[0],
+                    g: c[1],
+                    b: c[2],
+                    a: c[3],
+                };
+                this.inner
+                    .borrow_mut()
+                    .add_series(&name, &points, color_rgba);
+                Ok(())
+            },
+        );
 
         // -- clear --
         /// Removes all data series from this chart.
@@ -199,17 +214,25 @@ impl LuaUserData for LuaBarChart {
         /// @param | name | string | Display name of the series.
         /// @param | data | table | Array of {x, y} point tables.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}.
-        methods.add_method("addSeries", |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
-            let _points = parse_series_data(&data)?;
-            let c = match color {
-                Some(ref t) => parse_color4(t)?,
-                None => palette_color(this.count.get()),
-            };
-            this.count.set(this.count.get() + 1);
-            let color_rgba = crate::color::Color { r: c[0], g: c[1], b: c[2], a: c[3] };
-            this.inner.borrow_mut().add_series(&name, color_rgba);
-            Ok(())
-        });
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
+                let _points = parse_series_data(&data)?;
+                let c = match color {
+                    Some(ref t) => parse_color4(t)?,
+                    None => palette_color(this.count.get()),
+                };
+                this.count.set(this.count.get() + 1);
+                let color_rgba = crate::color::Color {
+                    r: c[0],
+                    g: c[1],
+                    b: c[2],
+                    a: c[3],
+                };
+                this.inner.borrow_mut().add_series(&name, color_rgba);
+                Ok(())
+            },
+        );
 
         // -- clear --
         /// Removes all data series from this chart.
@@ -272,20 +295,23 @@ impl LuaUserData for LuaScatterPlot {
         /// @param | name | string | Display name of the series.
         /// @param | data | table | Array of {x, y} point tables.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}.
-        methods.add_method("addSeries", |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
-            let points = parse_series_data(&data)?;
-            let c = match color {
-                Some(ref t) => parse_color4(t)?,
-                None => palette_color(this.count.get()),
-            };
-            this.count.set(this.count.get() + 1);
-            this.inner.borrow_mut().push_series_raw(ChartSeries {
-                name,
-                color: c,
-                data: points,
-            });
-            Ok(())
-        });
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
+                let points = parse_series_data(&data)?;
+                let c = match color {
+                    Some(ref t) => parse_color4(t)?,
+                    None => palette_color(this.count.get()),
+                };
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().push_series_raw(ChartSeries {
+                    name,
+                    color: c,
+                    data: points,
+                });
+                Ok(())
+            },
+        );
 
         // -- clear --
         /// Removes all data series from this chart.
@@ -348,15 +374,18 @@ impl LuaUserData for LuaPieChart {
         /// @param | label | string | Display label for the slice.
         /// @param | value | number | Numeric value determining the slice proportion.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.
-        methods.add_method("addSlice", |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
-            let c = match color {
-                Some(ref t) => parse_color4(t)?,
-                None => palette_color(this.count.get()),
-            };
-            this.count.set(this.count.get() + 1);
-            this.inner.borrow_mut().add_slice(&label, value.max(0.0), c);
-            Ok(())
-        });
+        methods.add_method(
+            "addSlice",
+            |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
+                let c = match color {
+                    Some(ref t) => parse_color4(t)?,
+                    None => palette_color(this.count.get()),
+                };
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().add_slice(&label, value.max(0.0), c);
+                Ok(())
+            },
+        );
 
         // -- clear --
         /// Removes all pie data slices from this chart.
@@ -411,20 +440,23 @@ impl LuaUserData for LuaAreaChart {
         /// @param | name | string | Display name of the series.
         /// @param | data | table | Array of {x, y} point tables.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}.
-        methods.add_method("addSeries", |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
-            let points = parse_series_data(&data)?;
-            let c = match color {
-                Some(ref t) => parse_color4(t)?,
-                None => palette_color(this.count.get()),
-            };
-            this.count.set(this.count.get() + 1);
-            this.inner.borrow_mut().add_series(ChartSeries {
-                name,
-                color: c,
-                data: points,
-            });
-            Ok(())
-        });
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
+                let points = parse_series_data(&data)?;
+                let c = match color {
+                    Some(ref t) => parse_color4(t)?,
+                    None => palette_color(this.count.get()),
+                };
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().add_series(ChartSeries {
+                    name,
+                    color: c,
+                    data: points,
+                });
+                Ok(())
+            },
+        );
 
         // -- clear --
         /// Removes all data series from this chart.

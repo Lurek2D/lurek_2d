@@ -13,7 +13,8 @@
 - **`validate_library.py`**: Validate Lureksome libraries under content/library/.
 - **`validate_lua_api.py`**: validate_lua_api.py -- Validates a Lurek2D lua_api file against the SKILL.md contract.
 - **`validate_lua_binding_reports.py`**: Validate docstring bindings against code-derived Lua registration snapshots.
-- **`validate_module_coverage.py`**: validate_module_coverage.py
+- **`validate_module_coverage.py`**: Validate top-level module/spec coverage.
 - **`validate_param_types.py`**: validate_param_types.py — Verify that @param type tags match Rust closure type inference.
+- **`validate_rust_file_docs.py`**: validate_rust_file_docs.py — Check that every Rust source file in src/
 - **`validate_rust_source_docs.py`**: Validate file-level and public-item Rust documentation under src/.
 - **`validate_snippets.py`**: Validate content/snippets marker structure and VS Code snippet output freshness.

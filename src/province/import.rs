@@ -415,7 +415,10 @@ pub fn import_metadata_from_files(
                     };
                     registry.set_terrain_type(ProvinceId(gid), terrain_type);
                     if opts.set_political_colors {
-                        registry.set_political_color(ProvinceId(gid), color_for_gameid(game_id, is_water));
+                        registry.set_political_color(
+                            ProvinceId(gid),
+                            color_for_gameid(game_id, is_water),
+                        );
                     }
                     registry.set_attr(ProvinceId(gid), "game_id".to_string(), game_id.to_string());
                     if let Some(t) = terrain {

@@ -4,8 +4,8 @@
 //! Applies facing checks and depth culling to reject back-hemisphere geometry during projection.
 //! Delivers camera and projection utilities used by drawing, picking, and interaction code paths.
 
-use crate::globe::types::{GlobeSpec, LodTier, ProjectedRegion, Region};
 use super::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};
+use crate::globe::types::{GlobeSpec, LodTier, ProjectedRegion, Region};
 use crate::math::{Vec2, Vec3};
 /// Orbit camera state used to project globe geometry into screen space.
 #[derive(Debug, Clone)]

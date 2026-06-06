@@ -285,4 +285,3 @@ fn color256(n: u8) -> AnsiColor {
         }
     }
 }
-

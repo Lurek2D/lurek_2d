@@ -12,13 +12,11 @@
 
 ## Summary
 
-The `binary` module is the low-level data toolbox for byte-oriented workflows in the engine. It gives scripts and systems one consistent way to create buffers, read and write typed values, and transform payloads between raw bytes and transport-friendly formats.
+The binary module serves as the core byte-manipulation and low-level data transformation toolbox for Lurek2D. Its primary purpose is to provide scripts with high-performance, safe control over raw binary structures, memory buffers, and network interchange payloads. It exposes mutable, owned byte containers supporting bit-level updates and text decoding, read-only typed window views for bounds-checked numeric reads, and growable, seekable data writers for endian-aware structure construction.
 
-Its practical scope covers the full binary path: structured pack and unpack operations, sequential writing, read-only views, text encoding and decoding, compression and decompression, and integrity checks with checksums and hashes. This makes it useful for save data, protocol payloads, and tool interoperability.
+To serialize structured data compactly, the module implements dynamic format-driven packing and unpacking systems. Developers can pack heterogeneous Lua tables and values into binary strings using tokenized formatting rules that support endian directives, padding alignments, and value coercions. It also parses standard TOML documents and decodes high-efficiency MsgPack payloads directly into standard Lua values, bridging data interchange and runtime memory models seamlessly.
 
-The module is intentionally composable. Instead of forcing one serializer style, it offers focused building blocks that can be combined as needed. Teams can use quick helpers for small tasks or build strict format-driven flows for larger binary contracts.
-
-Predictability is a key value here. Endianness, bounds checks, cursor behavior, and conversion semantics are explicit and deterministic, so higher modules can rely on stable behavior over time.
+Rhythmic queues, network protocols, and data protection are supported by a suite of helper structures. Fixed-capacity elements are managed by a circular element ring buffer that applies FIFO element caching and evictions. This is paired with multi-codec data compression systems—handling zlib, gzip, deflate, and lz4 streams—alongside base64 and hexadecimal conversions, MD5 and SHA cryptographic hashing, and CRC32 fast checksums for data integrity verification.
 
 ## Files
 

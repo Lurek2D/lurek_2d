@@ -25,7 +25,12 @@ pub struct LuaPatternRule {
 
 impl LuaPatternRule {
     /// Create a new `LuaPatternRule` with the given id, pattern string, violation message, and severity.
-    pub fn new(id: impl Into<String>, pattern: impl Into<String>, message: impl Into<String>, severity: Severity) -> Self {
+    pub fn new(
+        id: impl Into<String>,
+        pattern: impl Into<String>,
+        message: impl Into<String>,
+        severity: Severity,
+    ) -> Self {
         Self {
             id_str: id.into(),
             desc: String::new(),
@@ -43,9 +48,15 @@ impl LuaPatternRule {
 }
 
 impl ValidationRule for LuaPatternRule {
-    fn id(&self) -> &str { &self.id_str }
-    fn description(&self) -> &str { &self.desc }
-    fn severity(&self) -> Severity { self.sev }
+    fn id(&self) -> &str {
+        &self.id_str
+    }
+    fn description(&self) -> &str {
+        &self.desc
+    }
+    fn severity(&self) -> Severity {
+        self.sev
+    }
 
     fn validate(&self, path: &Path, content: &str) -> Vec<Violation> {
         let mut violations = Vec::new();
@@ -53,9 +64,12 @@ impl ValidationRule for LuaPatternRule {
         if self.invert {
             // Required pattern: violation if NOT found anywhere
             if !content.contains(&self.pattern) {
-                violations.push(
-                    Violation::new(&self.id_str, self.sev, path.to_path_buf(), &self.message)
-                );
+                violations.push(Violation::new(
+                    &self.id_str,
+                    self.sev,
+                    path.to_path_buf(),
+                    &self.message,
+                ));
             }
         } else {
             // Forbidden pattern: violation on each line containing it
@@ -63,7 +77,7 @@ impl ValidationRule for LuaPatternRule {
                 if line.contains(&self.pattern) {
                     violations.push(
                         Violation::new(&self.id_str, self.sev, path.to_path_buf(), &self.message)
-                            .with_line(line_num + 1)
+                            .with_line(line_num + 1),
                     );
                 }
             }

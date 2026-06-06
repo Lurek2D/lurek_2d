@@ -5,8 +5,8 @@
 //! Serializes and restores the field as a compact binary blob.
 //! Gives AI code a reusable distance surface for steering and influence.
 
-use std::collections::BinaryHeap;
 use std::cmp::Reverse;
+use std::collections::BinaryHeap;
 
 /// Sentinel value indicating a cell is unreachable.
 pub const UNREACHABLE: u32 = u32::MAX;
@@ -66,7 +66,11 @@ impl GoalMap {
 
     /// Register a source cell. Coordinates are zero-based.
     pub fn add_source(&mut self, x: u32, y: u32, weight: u32) {
-        self.sources.push(GoalSource { x, y, weight: weight.max(1) });
+        self.sources.push(GoalSource {
+            x,
+            y,
+            weight: weight.max(1),
+        });
         self.dirty = true;
     }
 

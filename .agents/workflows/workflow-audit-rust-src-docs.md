@@ -3,7 +3,6 @@ trigger: manual
 description: "Audit and fix Rust docs across src/ excluding src/lua_api by reading each file fully, editing one file at a time, and writing feature-based file headers."
 expected_agent: "Manager"
 ---
-
 # Workflow: Audit Rust Src Docs
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any user-imposed language or formatting override.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md) and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Traverse `src/` in strict alphabetical order by folder, then by file, and skip `src/lua_api/` completely.
 3. Work on exactly one `.rs` file at a time and read the whole file before writing any doc change.
 4. Audit every Rust item in that file and keep, fix, or add one-line docs only when they match the real code exactly.

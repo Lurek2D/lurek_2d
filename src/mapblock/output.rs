@@ -75,9 +75,7 @@ impl MapBlockResult {
         let tiles: TileData = (0..level_count)
             .map(|_| {
                 (0..max_layers)
-                    .map(|_| {
-                        vec![empty_tile.clone(); (width * height) as usize]
-                    })
+                    .map(|_| vec![empty_tile.clone(); (width * height) as usize])
                     .collect()
             })
             .collect();
@@ -117,12 +115,10 @@ impl MapBlockResult {
                                     if out_x < width && out_y < height {
                                         let idx = (out_y * width + out_x) as usize;
                                         if let Some(tile) = layer.get_tile(tx, ty) {
-                                            for (slot_idx, slot) in
-                                                tile.slots.iter().enumerate()
-                                            {
+                                            for (slot_idx, slot) in tile.slots.iter().enumerate() {
                                                 if !slot.is_empty() {
-                                                    result.tiles[level_idx as usize]
-                                                        [layer_idx][idx][slot_idx] =
+                                                    result.tiles[level_idx as usize][layer_idx]
+                                                        [idx][slot_idx] =
                                                         (slot.tileset_id, slot.gid);
                                                 }
                                             }
@@ -142,7 +138,12 @@ impl MapBlockResult {
     /// Get a tile slot value at (level, layer, x, y, slot).
     pub fn get_tile(&self, level: u32, layer: u32, x: u32, y: u32, slot: usize) -> (u32, u32) {
         if level < self.level_count
-            && (layer as usize) < self.tiles.get(level as usize).map(|l: &Vec<Vec<Vec<(u32, u32)>>>| l.len()).unwrap_or(0)
+            && (layer as usize)
+                < self
+                    .tiles
+                    .get(level as usize)
+                    .map(|l: &Vec<Vec<Vec<(u32, u32)>>>| l.len())
+                    .unwrap_or(0)
             && x < self.width
             && y < self.height
             && slot < self.slot_count

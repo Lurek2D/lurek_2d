@@ -3,7 +3,6 @@ trigger: manual
 description: "Run the required quality gates for one bounded change area and report the first failing gate."
 expected_agent: "Manager"
 ---
-
 # Run Quality Gates
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any known flaky area.
 
 ## Steps
-1. Load [skill: quality-pipeline](../rules/skill_quality-pipeline.md) before acting.
+1. Load [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md) before acting.
 2. Choose the narrowest meaningful gate first, then expand to the broader required gates only after the focused gate result is clear.
 3. Keep formatter, lints, tests, and docs or generator checks separated so the first real blocker stays obvious.
 4. If a gate fails, report the failing command, target surface, and likely owner instead of burying the problem in a long transcript.

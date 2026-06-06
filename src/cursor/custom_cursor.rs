@@ -30,7 +30,13 @@ impl CustomCursor {
     }
 
     /// Create a cursor from raw RGBA byte data; returns `None` if `data.len()` does not match dimensions.
-    pub fn from_rgba(width: u32, height: u32, hotspot_x: u32, hotspot_y: u32, data: Vec<u8>) -> Option<Self> {
+    pub fn from_rgba(
+        width: u32,
+        height: u32,
+        hotspot_x: u32,
+        hotspot_y: u32,
+        data: Vec<u8>,
+    ) -> Option<Self> {
         let expected = (width * height * 4) as usize;
         if data.len() != expected {
             return None;
@@ -59,7 +65,12 @@ impl CustomCursor {
     pub fn get_pixel(&self, x: u32, y: u32) -> Option<(u8, u8, u8, u8)> {
         if x < self.width && y < self.height {
             let idx = ((y * self.width + x) * 4) as usize;
-            Some((self.pixels[idx], self.pixels[idx + 1], self.pixels[idx + 2], self.pixels[idx + 3]))
+            Some((
+                self.pixels[idx],
+                self.pixels[idx + 1],
+                self.pixels[idx + 2],
+                self.pixels[idx + 3],
+            ))
         } else {
             None
         }

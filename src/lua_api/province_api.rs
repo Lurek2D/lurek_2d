@@ -5,10 +5,8 @@ use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::MapModeConfig;
 use crate::province::registry::ProvinceRegistry;
+use crate::province::render::{generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode};
 use crate::province::routing;
-use crate::province::render::{
-    generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
-};
 use crate::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
 use crate::province::{
@@ -17,9 +15,9 @@ use crate::province::{
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::path::Path;
 use std::rc::Rc;
-use std::collections::HashMap;
 /// Resolves a province asset path against the active game directory when the path is relative.
 fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     let st = state.borrow();
@@ -95,7 +93,9 @@ fn parse_border_pair_style_from_lua(style: &LuaTable) -> LuaResult<BorderPairSty
     } else {
         None
     };
-    let flags_value = style.get::<_, Option<LuaValue>>("flags")?.unwrap_or(LuaValue::Nil);
+    let flags_value = style
+        .get::<_, Option<LuaValue>>("flags")?
+        .unwrap_or(LuaValue::Nil);
     let flags = parse_border_pair_flags_from_lua(flags_value)?;
     Ok(BorderPairStyle {
         color,
@@ -421,85 +421,40 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | to_id | integer | Target province id.
         /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number`.
         /// @return | table | Array of province ids from start to target; nil when unreachable.
-        methods.add_method("findRoute", |lua, this, (from_id, to_id, cost_fn): (u32, u32, Option<LuaFunction>)| {
-            let (pairs, all_ids) = this.with_registry(|r| {
-                let pairs: Vec<(u32, u32)> = r
-                    .adjacency_pairs()
-                    .into_iter()
-                    .map(|(a, b)| (a.0, b.0))
-                    .collect();
-                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
-                (pairs, ids)
-            })?;
+        methods.add_method(
+            "findRoute",
+            |lua, this, (from_id, to_id, cost_fn): (u32, u32, Option<LuaFunction>)| {
+                let (pairs, all_ids) = this.with_registry(|r| {
+                    let pairs: Vec<(u32, u32)> = r
+                        .adjacency_pairs()
+                        .into_iter()
+                        .map(|(a, b)| (a.0, b.0))
+                        .collect();
+                    let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                    (pairs, ids)
+                })?;
 
-            let adjacency = routing::build_adjacency_map(&pairs);
-            let has_from = all_ids.contains(&from_id);
-            let has_to = all_ids.contains(&to_id);
-            if !has_from || !has_to {
-                return Ok(LuaValue::Nil);
-            }
-
-            let route = if let Some(f) = cost_fn {
-                let mut edge_cost: HashMap<(u32, u32), f64> = HashMap::new();
-                for (a, b) in pairs {
-                    let ab = f.call::<_, Option<f64>>((a, b))?.unwrap_or(1.0).max(0.000_001);
-                    let ba = f.call::<_, Option<f64>>((b, a))?.unwrap_or(1.0).max(0.000_001);
-                    edge_cost.insert((a, b), ab);
-                    edge_cost.insert((b, a), ba);
+                let adjacency = routing::build_adjacency_map(&pairs);
+                let has_from = all_ids.contains(&from_id);
+                let has_to = all_ids.contains(&to_id);
+                if !has_from || !has_to {
+                    return Ok(LuaValue::Nil);
                 }
-                routing::find_route_dijkstra(&adjacency, from_id, to_id, &|a, b| {
-                    edge_cost.get(&(a, b)).copied().unwrap_or(1.0)
-                })
-            } else {
-                routing::find_route_bfs(&adjacency, from_id, to_id)
-            };
 
-            if let Some(path) = route {
-                let out = lua.create_table()?;
-                for (i, id) in path.into_iter().enumerate() {
-                    out.set(i + 1, id)?;
-                }
-                Ok(LuaValue::Table(out))
-            } else {
-                Ok(LuaValue::Nil)
-            }
-        });
-        // -- findRoutes --
-        /// Finds routes for a batch of `{from, to}` pairs.
-        /// @param | pairs | table | Array of `{from=integer, to=integer}` tables.
-        /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number?`.
-        /// @return | table | Array of route arrays (or nil for unreachable entries).
-        methods.add_method("findRoutes", |lua, this, (pairs_tbl, cost_fn): (LuaTable, Option<LuaFunction>)| {
-            let (pairs, all_ids) = this.with_registry(|r| {
-                let pairs: Vec<(u32, u32)> = r
-                    .adjacency_pairs()
-                    .into_iter()
-                    .map(|(a, b)| (a.0, b.0))
-                    .collect();
-                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
-                (pairs, ids)
-            })?;
-            let adjacency = routing::build_adjacency_map(&pairs);
-
-            let mut edge_cost: HashMap<(u32, u32), f64> = HashMap::new();
-            if let Some(ref f) = cost_fn {
-                for &(a, b) in &pairs {
-                    let ab = f.call::<_, Option<f64>>((a, b))?.unwrap_or(1.0).max(0.000_001);
-                    let ba = f.call::<_, Option<f64>>((b, a))?.unwrap_or(1.0).max(0.000_001);
-                    edge_cost.insert((a, b), ab);
-                    edge_cost.insert((b, a), ba);
-                }
-            }
-
-            let out = lua.create_table()?;
-            for (i, pair_val) in pairs_tbl.sequence_values::<LuaTable>().enumerate() {
-                let t = pair_val?;
-                let from_id: u32 = t.get("from")?;
-                let to_id: u32 = t.get("to")?;
-
-                let route = if !all_ids.contains(&from_id) || !all_ids.contains(&to_id) {
-                    None
-                } else if cost_fn.is_some() {
+                let route = if let Some(f) = cost_fn {
+                    let mut edge_cost: HashMap<(u32, u32), f64> = HashMap::new();
+                    for (a, b) in pairs {
+                        let ab = f
+                            .call::<_, Option<f64>>((a, b))?
+                            .unwrap_or(1.0)
+                            .max(0.000_001);
+                        let ba = f
+                            .call::<_, Option<f64>>((b, a))?
+                            .unwrap_or(1.0)
+                            .max(0.000_001);
+                        edge_cost.insert((a, b), ab);
+                        edge_cost.insert((b, a), ba);
+                    }
                     routing::find_route_dijkstra(&adjacency, from_id, to_id, &|a, b| {
                         edge_cost.get(&(a, b)).copied().unwrap_or(1.0)
                     })
@@ -508,17 +463,80 @@ impl LuaUserData for LuaProvinceRegistry {
                 };
 
                 if let Some(path) = route {
-                    let row = lua.create_table()?;
-                    for (j, id) in path.into_iter().enumerate() {
-                        row.set(j + 1, id)?;
+                    let out = lua.create_table()?;
+                    for (i, id) in path.into_iter().enumerate() {
+                        out.set(i + 1, id)?;
                     }
-                    out.set(i + 1, LuaValue::Table(row))?;
+                    Ok(LuaValue::Table(out))
                 } else {
-                    out.set(i + 1, LuaValue::Nil)?;
+                    Ok(LuaValue::Nil)
                 }
-            }
-            Ok(out)
-        });
+            },
+        );
+        // -- findRoutes --
+        /// Finds routes for a batch of `{from, to}` pairs.
+        /// @param | pairs | table | Array of `{from=integer, to=integer}` tables.
+        /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number?`.
+        /// @return | table | Array of route arrays (or nil for unreachable entries).
+        methods.add_method(
+            "findRoutes",
+            |lua, this, (pairs_tbl, cost_fn): (LuaTable, Option<LuaFunction>)| {
+                let (pairs, all_ids) = this.with_registry(|r| {
+                    let pairs: Vec<(u32, u32)> = r
+                        .adjacency_pairs()
+                        .into_iter()
+                        .map(|(a, b)| (a.0, b.0))
+                        .collect();
+                    let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                    (pairs, ids)
+                })?;
+                let adjacency = routing::build_adjacency_map(&pairs);
+
+                let mut edge_cost: HashMap<(u32, u32), f64> = HashMap::new();
+                if let Some(ref f) = cost_fn {
+                    for &(a, b) in &pairs {
+                        let ab = f
+                            .call::<_, Option<f64>>((a, b))?
+                            .unwrap_or(1.0)
+                            .max(0.000_001);
+                        let ba = f
+                            .call::<_, Option<f64>>((b, a))?
+                            .unwrap_or(1.0)
+                            .max(0.000_001);
+                        edge_cost.insert((a, b), ab);
+                        edge_cost.insert((b, a), ba);
+                    }
+                }
+
+                let out = lua.create_table()?;
+                for (i, pair_val) in pairs_tbl.sequence_values::<LuaTable>().enumerate() {
+                    let t = pair_val?;
+                    let from_id: u32 = t.get("from")?;
+                    let to_id: u32 = t.get("to")?;
+
+                    let route = if !all_ids.contains(&from_id) || !all_ids.contains(&to_id) {
+                        None
+                    } else if cost_fn.is_some() {
+                        routing::find_route_dijkstra(&adjacency, from_id, to_id, &|a, b| {
+                            edge_cost.get(&(a, b)).copied().unwrap_or(1.0)
+                        })
+                    } else {
+                        routing::find_route_bfs(&adjacency, from_id, to_id)
+                    };
+
+                    if let Some(path) = route {
+                        let row = lua.create_table()?;
+                        for (j, id) in path.into_iter().enumerate() {
+                            row.set(j + 1, id)?;
+                        }
+                        out.set(i + 1, LuaValue::Table(row))?;
+                    } else {
+                        out.set(i + 1, LuaValue::Nil)?;
+                    }
+                }
+                Ok(out)
+            },
+        );
         // -- getConnectedComponents --
         /// Returns connected components in the province adjacency graph.
         /// @return | table | Array of arrays of province ids.
@@ -559,7 +577,11 @@ impl LuaUserData for LuaProvinceRegistry {
                 let mut owner_by_id = HashMap::new();
                 for id in &ids {
                     if let Some(snap) = r.get_province(ProvinceId(*id)) {
-                        let v = snap.attrs.get(owner_attr.as_str()).cloned().unwrap_or_default();
+                        let v = snap
+                            .attrs
+                            .get(owner_attr.as_str())
+                            .cloned()
+                            .unwrap_or_default();
                         owner_by_id.insert(*id, v);
                     }
                 }
@@ -603,27 +625,38 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | owner_val | string | Owner attribute value to filter by.
         /// @param | sum_attr | string | Numeric attribute key to sum.
         /// @return | number | Total numeric sum.
-        methods.add_method("totalAttrForOwner", |_, this, (owner_attr, owner_val, sum_attr): (String, String, String)| {
-            let (owner_by_id, value_by_id) = this.with_registry(|r| {
-                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
-                let mut owner_by_id = HashMap::new();
-                let mut value_by_id = HashMap::new();
-                for id in ids {
-                    if let Some(snap) = r.get_province(ProvinceId(id)) {
-                        let owner = snap.attrs.get(owner_attr.as_str()).cloned().unwrap_or_default();
-                        owner_by_id.insert(id, owner);
-                        let value = snap
-                            .attrs
-                            .get(sum_attr.as_str())
-                            .and_then(|s| s.parse::<f64>().ok())
-                            .unwrap_or(0.0);
-                        value_by_id.insert(id, value);
+        methods.add_method(
+            "totalAttrForOwner",
+            |_, this, (owner_attr, owner_val, sum_attr): (String, String, String)| {
+                let (owner_by_id, value_by_id) = this.with_registry(|r| {
+                    let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                    let mut owner_by_id = HashMap::new();
+                    let mut value_by_id = HashMap::new();
+                    for id in ids {
+                        if let Some(snap) = r.get_province(ProvinceId(id)) {
+                            let owner = snap
+                                .attrs
+                                .get(owner_attr.as_str())
+                                .cloned()
+                                .unwrap_or_default();
+                            owner_by_id.insert(id, owner);
+                            let value = snap
+                                .attrs
+                                .get(sum_attr.as_str())
+                                .and_then(|s| s.parse::<f64>().ok())
+                                .unwrap_or(0.0);
+                            value_by_id.insert(id, value);
+                        }
                     }
-                }
-                (owner_by_id, value_by_id)
-            })?;
-            Ok(routing::total_numeric_attr_for_owner(&owner_by_id, &value_by_id, owner_val.as_str()))
-        });
+                    (owner_by_id, value_by_id)
+                })?;
+                Ok(routing::total_numeric_attr_for_owner(
+                    &owner_by_id,
+                    &value_by_id,
+                    owner_val.as_str(),
+                ))
+            },
+        );
         // -- getBorderType --
         /// Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
         /// @param | a | integer | First province ID.
@@ -641,7 +674,9 @@ impl LuaUserData for LuaProvinceRegistry {
         methods.add_method_mut(
             "setBorderType",
             |_, this, (a, b, border_type): (u32, u32, u8)| {
-                this.with_registry_mut(|r| r.set_border_type(ProvinceId(a), ProvinceId(b), border_type))?;
+                this.with_registry_mut(|r| {
+                    r.set_border_type(ProvinceId(a), ProvinceId(b), border_type)
+                })?;
                 Ok(())
             },
         );
@@ -662,7 +697,9 @@ impl LuaUserData for LuaProvinceRegistry {
         methods.add_method_mut(
             "setBorderClass",
             |_, this, (a, b, border_type): (u32, u32, u8)| {
-                this.with_registry_mut(|r| r.set_border_type(ProvinceId(a), ProvinceId(b), border_type))?;
+                this.with_registry_mut(|r| {
+                    r.set_border_type(ProvinceId(a), ProvinceId(b), border_type)
+                })?;
                 Ok(())
             },
         );
@@ -679,10 +716,8 @@ impl LuaUserData for LuaProvinceRegistry {
                 let g_val: f32 = color_tbl.get::<_, f32>(2)? / 255.0;
                 let b_val: f32 = color_tbl.get::<_, f32>(3)? / 255.0;
                 let a_val: f32 = color_tbl.get::<_, Option<f32>>(4)?.unwrap_or(255.0) / 255.0;
-                let thickness: f32 =
-                    config.get::<_, Option<f32>>("thickness")?.unwrap_or(1.0);
-                let draw_priority: u8 =
-                    config.get::<_, Option<u8>>("draw_priority")?.unwrap_or(0);
+                let thickness: f32 = config.get::<_, Option<f32>>("thickness")?.unwrap_or(1.0);
+                let draw_priority: u8 = config.get::<_, Option<u8>>("draw_priority")?.unwrap_or(0);
                 this.with_registry_mut(|reg| {
                     reg.register_border_type(
                         type_id,
@@ -707,7 +742,9 @@ impl LuaUserData for LuaProvinceRegistry {
             "setBorderPairStyle",
             |_, this, (a, b, style): (u32, u32, LuaTable)| {
                 let parsed = parse_border_pair_style_from_lua(&style)?;
-                this.with_registry_mut(|r| r.set_border_pair_style(ProvinceId(a), ProvinceId(b), parsed))?;
+                this.with_registry_mut(|r| {
+                    r.set_border_pair_style(ProvinceId(a), ProvinceId(b), parsed)
+                })?;
                 Ok(true)
             },
         );
@@ -717,7 +754,8 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @param | b | integer | Second province ID.
         /// @return | table | Style table or nil.
         methods.add_method("getBorderPairStyle", |lua, this, (a, b): (u32, u32)| {
-            let style = this.with_registry(|r| r.get_border_pair_style(ProvinceId(a), ProvinceId(b)))?;
+            let style =
+                this.with_registry(|r| r.get_border_pair_style(ProvinceId(a), ProvinceId(b)))?;
             let Some(style) = style else {
                 return Ok(LuaValue::Nil);
             };
@@ -792,7 +830,9 @@ impl LuaUserData for LuaProvinceRegistry {
         methods.add_method_mut(
             "setVisibilityState",
             |_, this, (id, visibility_state): (u32, u8)| {
-                this.with_registry_mut(|reg| reg.set_visibility_state(ProvinceId(id), visibility_state))
+                this.with_registry_mut(|reg| {
+                    reg.set_visibility_state(ProvinceId(id), visibility_state)
+                })
             },
         );
         // -- setAttr --
@@ -1135,34 +1175,47 @@ impl LuaUserData for LuaProvinceRegistry {
         /// Registers a named map mode with display configuration. Overwrites if name exists.
         /// @param | name | string | Map mode identifier (e.g. "political", "religion", "economy").
         /// @param | config | table | Config: show_labels (bool?), show_borders (bool?), show_roads (bool?), show_capitals (bool?), show_values (bool?), value_property (string?), color_property (string?), fog_intensity (number?), border_filter (integer[]?).
-        methods.add_method_mut("registerMapMode", |_, this, (name, config): (String, LuaTable)| {
-            let map_config = MapModeConfig {
-                name: name.clone(),
-                show_labels: config.get::<_, Option<bool>>("show_labels")?.unwrap_or(true),
-                show_borders: config.get::<_, Option<bool>>("show_borders")?.unwrap_or(true),
-                show_roads: config.get::<_, Option<bool>>("show_roads")?.unwrap_or(true),
-                show_capitals: config.get::<_, Option<bool>>("show_capitals")?.unwrap_or(true),
-                show_values: config.get::<_, Option<bool>>("show_values")?.unwrap_or(false),
-                value_property: config.get::<_, Option<String>>("value_property")?,
-                color_property: config.get::<_, Option<String>>("color_property")?,
-                fog_intensity: config.get::<_, Option<f32>>("fog_intensity")?.unwrap_or(1.0),
-                border_filter: {
-                    let filter: Option<LuaTable> = config.get("border_filter")?;
-                    match filter {
-                        Some(t) => {
-                            let mut v = Vec::new();
-                            for i in 1..=t.len()? {
-                                v.push(t.get::<_, u8>(i)?);
+        methods.add_method_mut(
+            "registerMapMode",
+            |_, this, (name, config): (String, LuaTable)| {
+                let map_config = MapModeConfig {
+                    name: name.clone(),
+                    show_labels: config
+                        .get::<_, Option<bool>>("show_labels")?
+                        .unwrap_or(true),
+                    show_borders: config
+                        .get::<_, Option<bool>>("show_borders")?
+                        .unwrap_or(true),
+                    show_roads: config.get::<_, Option<bool>>("show_roads")?.unwrap_or(true),
+                    show_capitals: config
+                        .get::<_, Option<bool>>("show_capitals")?
+                        .unwrap_or(true),
+                    show_values: config
+                        .get::<_, Option<bool>>("show_values")?
+                        .unwrap_or(false),
+                    value_property: config.get::<_, Option<String>>("value_property")?,
+                    color_property: config.get::<_, Option<String>>("color_property")?,
+                    fog_intensity: config
+                        .get::<_, Option<f32>>("fog_intensity")?
+                        .unwrap_or(1.0),
+                    border_filter: {
+                        let filter: Option<LuaTable> = config.get("border_filter")?;
+                        match filter {
+                            Some(t) => {
+                                let mut v = Vec::new();
+                                for i in 1..=t.len()? {
+                                    v.push(t.get::<_, u8>(i)?);
+                                }
+                                v
                             }
-                            v
+                            None => Vec::new(),
                         }
-                        None => Vec::new(),
-                    }
-                },
-            };
-            this.with_registry_mut(|r| r.register_map_mode(&name, map_config))?;
-            Ok(())
-        });
+                    },
+                };
+                this.with_registry_mut(|r| r.register_map_mode(&name, map_config))?;
+                Ok(())
+            },
+        );
         // -- setMapMode --
         /// Switches the active map mode to a previously registered mode name.
         /// @param | name | string | Mode name to activate.
@@ -1415,9 +1468,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setFlag",
         lua.create_function(move |_, (id, bit, value): (u32, u8, bool)| {
-            s.borrow_mut()
-                .province_properties
-                .set_flag(id, bit, value);
+            s.borrow_mut().province_properties.set_flag(id, bit, value);
             Ok(())
         })?,
     )?;

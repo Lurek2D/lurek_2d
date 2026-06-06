@@ -46,7 +46,12 @@ impl GrepEngine {
     }
 
     /// Search a directory with multiple literal patterns.
-    pub fn search_multi(&self, root: &Path, patterns: Vec<String>, filter: &FileFilter) -> SearchResult {
+    pub fn search_multi(
+        &self,
+        root: &Path,
+        patterns: Vec<String>,
+        filter: &FileFilter,
+    ) -> SearchResult {
         let matcher = Matcher::new(
             PatternKind::multi_literal(patterns),
             self.config.case_sensitive,

@@ -3,7 +3,6 @@ trigger: manual
 description: "Run the full CAG validation flow and report the owning files for any violations."
 expected_agent: "Manager"
 ---
-
 # Run CAG Validation
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any recent shared-doc or routing changes.
 
 ## Steps
-1. Load [skill: tools-cag-validation](../rules/skill_tools-cag-validation.md) before acting.
+1. Load [skill: tools-cag-validation](../skills/tools-cag-validation/SKILL.md) before acting.
 2. Choose the narrowest validator scope that can answer the question, then widen to a full pass if the change crossed files or shared contracts.
 3. Run supporting audits such as link, coverage, or persona checks when the touched scope makes them relevant.
 4. Group any failures by file and rule so the owning fix is obvious, and keep warnings visible instead of smoothing them over.

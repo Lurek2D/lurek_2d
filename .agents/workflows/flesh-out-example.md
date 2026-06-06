@@ -3,7 +3,6 @@ trigger: manual
 description: "Expand an existing example into a clearer, more complete teaching artifact."
 expected_agent: "Manager"
 ---
-
 # Flesh Out Example
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Required runnable proof.
 
 ## Steps
-1. Load [skill: examples-management](../rules/skill_examples-management.md), [skill: documentation](../rules/skill_documentation.md), and [skill: lua-scripting](../rules/skill_lua-scripting.md) before acting.
+1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
 2. Read the existing example, nearby examples, the related API docs or spec, and any missing assets before editing.
 3. Preserve the example's original teaching goal, add only the missing setup or concept coverage, and keep the example easy to read and run.
 4. Run the narrowest load path for the example and confirm the new content still teaches one coherent idea.

@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one Lua-side AI behavior using the current lurek.ai surface."
 expected_agent: "Manager"
 ---
-
 # Create AI Behavior
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected demo or test path.
 
 ## Steps
-1. Load [skill: game-ai](../rules/skill_game-ai.md) and [skill: lua-scripting](../rules/skill_lua-scripting.md) before acting.
+1. Load [skill: game-ai](../skills/game-ai/SKILL.md) and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
 2. Read the target content file, nearby lurek.ai usage, matching examples, and the accepted API surface before editing.
 3. Use current lurek.ai behavior primitives, keep the behavior runnable in content, and avoid inventing new engine-side APIs from the prompt layer.
 4. Run the narrowest content check or test that exercises the new behavior and confirm any required registration stays in sync.

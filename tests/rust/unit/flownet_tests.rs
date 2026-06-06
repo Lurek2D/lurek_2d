@@ -54,10 +54,10 @@ mod simulation_tests {
         let events_b = b.update_parallel(1.5);
 
         assert!(
-            events_a
-                .iter()
-                .any(|e| matches!(e, lurek2d::flownet::simulation::GraphEvent::ItemDecay { .. }))
-                || !events_a.is_empty()
+            events_a.iter().any(|e| matches!(
+                e,
+                lurek2d::flownet::simulation::GraphEvent::ItemDecay { .. }
+            )) || !events_a.is_empty()
         );
         let _ = events_b; // direct coverage: ensure update_parallel executes in tests
 

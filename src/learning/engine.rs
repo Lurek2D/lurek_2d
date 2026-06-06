@@ -5,8 +5,8 @@
 //! Serves as the composition hub for mixed-architecture experimentation in the learning module.
 
 use crate::learning::{
-    Conv2D, EvolutionaryLayer, GruLayer, LstmLayer, MaxPool2D, NeuralLayer, TransformerDecoderBlock,
-    TransformerEncoderBlock,
+    Conv2D, EvolutionaryLayer, GruLayer, LstmLayer, MaxPool2D, NeuralLayer,
+    TransformerDecoderBlock, TransformerEncoderBlock,
 };
 
 /// Supported functional blocks for `LurekNeuralEngine`.

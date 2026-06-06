@@ -32,7 +32,12 @@ impl LstmLayer {
     }
 
     /// Execute one recurrent step.
-    pub fn step(&self, x: &[f32], prev_h: &[f32], prev_c: &[f32]) -> Result<(Vec<f32>, Vec<f32>), String> {
+    pub fn step(
+        &self,
+        x: &[f32],
+        prev_h: &[f32],
+        prev_c: &[f32],
+    ) -> Result<(Vec<f32>, Vec<f32>), String> {
         let h = self.hidden_size;
         if x.len() != self.input_size {
             return Err("LstmLayer::step input size mismatch".to_string());

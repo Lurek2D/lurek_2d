@@ -136,10 +136,7 @@ mod pack_tests {
 
     #[test]
     fn get_packed_size_accepts_mixed_format_int_and_string() {
-        let values = vec![
-            PackValue::Int(42),
-            PackValue::Str("hello".to_string()),
-        ];
+        let values = vec![PackValue::Int(42), PackValue::Str("hello".to_string())];
         let size = get_packed_size("<is", &values).expect("get_packed_size should succeed");
         // '<' = little-endian prefix (0 bytes)
         // 'i' = 4 bytes (int32)

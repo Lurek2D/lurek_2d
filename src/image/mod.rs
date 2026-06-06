@@ -20,6 +20,8 @@ pub use palette_lut::PaletteLUT;
 pub mod layers;
 /// Single image layer and layered image types.
 pub use layers::{ImageLayer, LayeredImage};
+/// Online rectangle bin-packing algorithm for texture atlases.
+pub mod rect_packing;
 /// Image-to-render-command bridge helpers.
 pub mod render;
 /// Custom image serialization helpers.
@@ -30,13 +32,11 @@ pub mod texture;
 pub mod texture_atlas;
 /// Image visualizations for debugging and analysis.
 pub mod visualization;
-/// Online rectangle bin-packing algorithm for texture atlases.
-pub mod rect_packing;
+/// Backward-compat re-export: province_grid moved to `crate::province::province_grid`.
+pub use crate::province::province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};
+/// Rectangle packing types.
+pub use rect_packing::{PackedRect, RectPacker};
 /// Texture upload helpers and texture metadata types.
 pub use texture::{premultiply_alpha_rgba8_in_place, Texture, TextureColorSpace};
 /// Texture atlas types and nine-slice metadata.
 pub use texture_atlas::{NineSliceInsets, TextureAtlas};
-/// Rectangle packing types.
-pub use rect_packing::{PackedRect, RectPacker};
-/// Backward-compat re-export: province_grid moved to `crate::province::province_grid`.
-pub use crate::province::province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};

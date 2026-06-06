@@ -835,8 +835,7 @@ impl LuaUserData for LuaPipeline {
                         wrappers
                             .get(dep_name)
                             .map(|dep_wrapper| dep_wrapper.inner.borrow().status)
-                    })
-                {
+                    }) {
                     Ok(true) => {}
                     Ok(false) => {
                         if abort_on_fail {

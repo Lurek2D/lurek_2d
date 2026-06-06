@@ -9,6 +9,7 @@ use crate::animation::state_machine::{AnimParamValue, AnimStateMachine};
 use crate::animation::{AnimRenderParams, Animation};
 use crate::math::Rect;
 use mlua::prelude::*;
+use serde_json;
 use std::cell::RefCell;
 use std::rc::Rc;
 /// Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
@@ -469,9 +470,7 @@ impl LuaUserData for LuaAnimStateMachine {
         /// @param | image | LImage | Texture atlas or spritesheet containing the animation frames.
         methods.add_method_mut("setImage", |_, this, image_ud: LuaAnyUserData| {
             let image = image_ud.borrow::<LuaImage>().map_err(|_| {
-                LuaError::RuntimeError(
-                    "LAnimStateMachine:setImage: argument must be LImage".into(),
-                )
+                LuaError::RuntimeError("LAnimStateMachine:setImage: argument must be LImage".into())
             })?;
             this.stored_image = Some(image.clone());
             Ok(())
@@ -649,16 +648,31 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return | LuaValue | Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed.
     tbl.set(
         "fromAseprite",
-        lua.create_function(
-            |lua, json_str: String| match load_aseprite_json(&json_str) {
+        lua.create_function(|lua, json_str: String| {
+            // First, check if meta exists in the original JSON
+            match serde_json::from_str::<serde_json::Value>(&json_str) {
+                Ok(root) => {
+                    if root.get("meta").is_none() {
+                        return Err(LuaError::RuntimeError(
+                            "fromAseprite: missing 'meta' key".to_string(),
+                        ));
+                    }
+                }
+                Err(_) => {} // JSON parse errors will be caught below
+            }
+
+            match load_aseprite_json(&json_str) {
                 Ok(parsed) => {
                     let anim = Animation::load_from_aseprite(&parsed);
-                    let ud = lua.create_userdata(LuaAnimation { inner: anim, stored_image: None })?;
+                    let ud = lua.create_userdata(LuaAnimation {
+                        inner: anim,
+                        stored_image: None,
+                    })?;
                     Ok(LuaValue::UserData(ud))
                 }
                 Err(e) => Err(LuaError::RuntimeError(format!("fromAseprite: {}", e))),
-            },
-        )?,
+            }
+        })?,
     )?;
     // -- newStateMachine --
     /// Creates an animation state machine by consuming an animation handle.
@@ -743,7 +757,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             }
             let out = lua.create_table()?;
             let anim_clone_for_sm = anim.clone();
-            let anim_ud = lua.create_userdata(LuaAnimation { inner: anim, stored_image: None })?;
+            let anim_ud = lua.create_userdata(LuaAnimation {
+                inner: anim,
+                stored_image: None,
+            })?;
             /// Performs the 'animation' operation.
             out.set("animation", anim_ud)?;
             if let Some(states) = cfg.get::<_, Option<LuaTable>>("states")? {
@@ -768,7 +785,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                         sm.add_transition(&from, &to, &condition);
                     }
                 }
-                let sm_ud = lua.create_userdata(LuaAnimStateMachine { inner: sm, stored_image: None })?;
+                let sm_ud = lua.create_userdata(LuaAnimStateMachine {
+                    inner: sm,
+                    stored_image: None,
+                })?;
                 /// Performs the 'stateMachine' operation.
                 out.set("stateMachine", sm_ud)?;
             }
@@ -891,11 +911,14 @@ fn draw_animation_frame_from_args(
             Some(LuaValue::UserData(ud)) => ud,
             _ => unreachable!(),
         };
-        let image = ud.borrow::<LuaImage>().map_err(|_| {
-            LuaError::RuntimeError(format!(
-                "{method_name}: first argument must be LImage, a number, or nil"
-            ))
-        })?.clone();
+        let image = ud
+            .borrow::<LuaImage>()
+            .map_err(|_| {
+                LuaError::RuntimeError(format!(
+                    "{method_name}: first argument must be LImage, a number, or nil"
+                ))
+            })?
+            .clone();
         let x = parse_opt_coord(method_name, "x", iter.next().as_ref())?;
         let y = parse_opt_coord(method_name, "y", iter.next().as_ref())?;
         let opts = parse_opt_table_arg(method_name, "opts", iter.next())?;
@@ -914,7 +937,11 @@ fn draw_animation_frame_from_args(
 }
 
 /// Parse an optional coordinate (x or y) from a `LuaValue`, accepting nil, integer, or number.
-fn parse_opt_coord(method_name: &str, field: &str, val: Option<&LuaValue>) -> LuaResult<Option<f32>> {
+fn parse_opt_coord(
+    method_name: &str,
+    field: &str,
+    val: Option<&LuaValue>,
+) -> LuaResult<Option<f32>> {
     match val {
         None | Some(LuaValue::Nil) => Ok(None),
         Some(LuaValue::Number(n)) => Ok(Some(*n as f32)),

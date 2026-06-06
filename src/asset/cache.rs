@@ -57,17 +57,17 @@ impl AssetType {
     /// Parses the Lua-facing lowercase type string into the matching variant.
     pub fn from_type_str(s: &str) -> Self {
         match s {
-            "image"  => Self::Image,
-            "font"   => Self::Font,
-            "audio"  => Self::Audio,
-            "music"  => Self::Music,
-            "text"   => Self::Text,
-            "toml"   => Self::Toml,
-            "json"   => Self::Json,
-            "obj"    => Self::Obj,
+            "image" => Self::Image,
+            "font" => Self::Font,
+            "audio" => Self::Audio,
+            "music" => Self::Music,
+            "text" => Self::Text,
+            "toml" => Self::Toml,
+            "json" => Self::Json,
+            "obj" => Self::Obj,
             "shader" => Self::Shader,
-            "lua"    => Self::Lua,
-            other    => Self::Unknown(other.to_string()),
+            "lua" => Self::Lua,
+            other => Self::Unknown(other.to_string()),
         }
     }
 
@@ -86,17 +86,17 @@ impl AssetType {
     /// Returns the canonical lowercase string used in stats tables and Lua-side queries.
     pub fn as_str(&self) -> &str {
         match self {
-            Self::Image       => "image",
-            Self::Font        => "font",
-            Self::Audio       => "audio",
-            Self::Music       => "music",
-            Self::Text        => "text",
-            Self::Toml        => "toml",
-            Self::Json        => "json",
-            Self::Obj         => "obj",
-            Self::Shader      => "shader",
-            Self::Lua         => "lua",
-            Self::Unknown(s)  => s.as_str(),
+            Self::Image => "image",
+            Self::Font => "font",
+            Self::Audio => "audio",
+            Self::Music => "music",
+            Self::Text => "text",
+            Self::Toml => "toml",
+            Self::Json => "json",
+            Self::Obj => "obj",
+            Self::Shader => "shader",
+            Self::Lua => "lua",
+            Self::Unknown(s) => s.as_str(),
         }
     }
 }
@@ -242,9 +242,7 @@ impl AssetCache {
 
     /// Returns `true` when the entry with the given ID has the given tag.
     pub fn has_tag(&self, id: u64, tag: &str) -> bool {
-        self.entries
-            .get(&id)
-            .is_some_and(|e| e.tags.contains(tag))
+        self.entries.get(&id).is_some_and(|e| e.tags.contains(tag))
     }
 
     /// Returns the current ref count for `id`, or `0` when not present.

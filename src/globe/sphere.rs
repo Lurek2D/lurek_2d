@@ -150,4 +150,3 @@ pub(crate) fn rot_y(angle_deg: f32) -> Mat3x3 {
     let (c, s) = (r.cos(), r.sin());
     Mat3x3::from_cols([c, 0.0, -s], [0.0, 1.0, 0.0], [s, 0.0, c])
 }
-

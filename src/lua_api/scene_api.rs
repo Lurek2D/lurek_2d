@@ -509,9 +509,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     if !s.stack.is_physics_enabled(*id) {
                         None
                     } else {
-                    s.scene_refs
-                        .get(id)
-                        .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
+                        s.scene_refs
+                            .get(id)
+                            .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
                     }
                 };
                 if let Some(table) = table {
@@ -539,9 +539,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     if !s.stack.is_late_enabled(*id) {
                         None
                     } else {
-                    s.scene_refs
-                        .get(id)
-                        .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
+                        s.scene_refs
+                            .get(id)
+                            .and_then(|key| lua.registry_value::<LuaTable>(key).ok())
                     }
                 };
                 if let Some(table) = table {

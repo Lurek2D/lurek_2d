@@ -26,6 +26,8 @@ pub mod audio;
 #[cfg(feature = "automation-plugin")]
 /// Exposes the automation subsystem module when the plugin is enabled.
 pub mod automation;
+/// Exposes the binary utilities subsystem module.
+pub mod binary;
 /// Exposes the camera subsystem module.
 pub mod camera;
 #[cfg(feature = "ui-charts")]
@@ -37,19 +39,17 @@ pub mod color;
 pub mod compute;
 /// Exposes the cursor subsystem module.
 pub mod cursor;
-/// Exposes the binary utilities subsystem module.
-pub mod binary;
 /// Backward-compatible re-export so existing `crate::data::` imports continue to work.
 pub use binary as data;
 /// Exposes the dataframe subsystem module.
 pub mod dataframe;
-/// Exposes the dialog and conversation subsystem module.
-pub mod dialog;
 /// Exposes the debug bridge subsystem module.
 pub mod debugbridge;
 #[cfg(feature = "devtools-plugin")]
 /// Exposes the developer tools subsystem module when the plugin is enabled.
 pub mod devtools;
+/// Exposes the dialog and conversation subsystem module.
+pub mod dialog;
 /// Exposes the runtime documentation subsystem module.
 pub mod docs;
 /// Exposes the digital signal processing subsystem module.
@@ -62,15 +62,15 @@ pub mod effect;
 pub mod event;
 /// Exposes the filesystem subsystem module.
 pub mod filesystem;
+#[cfg(feature = "flownet")]
+/// Exposes the flownet subsystem module when the feature is enabled.
+pub mod flownet;
 /// Exposes the font subsystem module.
 pub mod font;
 /// Exposes the globe subsystem module.
 pub mod globe;
 /// Exposes the grep text search subsystem module.
 pub mod grep;
-#[cfg(feature = "flownet")]
-/// Exposes the flownet subsystem module when the feature is enabled.
-pub mod flownet;
 #[cfg(feature = "flownet")]
 /// Backward-compatible re-export so existing `crate::graph` imports continue to work.
 pub use flownet as graph;
@@ -180,7 +180,11 @@ pub fn cli_startup_main_path(
         return None;
     }
     let main = game_dir.join("main.lua");
-    if main.exists() { Some(main) } else { None }
+    if main.exists() {
+        Some(main)
+    } else {
+        None
+    }
 }
 
 /// Starts the Lurek2D runtime using the current CLI arguments and active game path.

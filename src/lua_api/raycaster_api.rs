@@ -1,20 +1,19 @@
 //! File: src/lua_api/raycaster_api.rs
 
 use super::SharedState;
+use crate::color::Color;
+use crate::image::ImageData;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LObjModel;
 use crate::lua_api::render_api::LuaImage;
-use crate::color::Color;
-use crate::image::ImageData;
-use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::minimap::raycaster_overlay::extract_minimap;
+use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::raycaster::lighting::apply_lit_shade;
 use crate::raycaster::sprite_manager::SpriteManager;
 use crate::raycaster::{
-    compute_lighting, dir4_delta, distance_shade,
-    project_column, try_move, DoorDirection, DoorManager, DoorState,
-    GridMoveAction, HeightMap, ModelMesh, PointLight, RayHit, Raycaster2D, RaycasterScene,
-    SceneBuildParams, WorldSprite,
+    compute_lighting, dir4_delta, distance_shade, project_column, try_move, DoorDirection,
+    DoorManager, DoorState, GridMoveAction, HeightMap, ModelMesh, PointLight, RayHit, Raycaster2D,
+    RaycasterScene, SceneBuildParams, WorldSprite,
 };
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
@@ -840,7 +839,15 @@ impl LuaUserData for LuaRaycaster {
         /// @return | LImageData | Image data containing the extracted minimap.
         methods.add_method(
             "extractMinimap",
-            |_, this, (player_x, player_y, player_angle, view_radius, cell_size): (f32, f32, f32, u32, u32)| {
+            |_,
+             this,
+             (player_x, player_y, player_angle, view_radius, cell_size): (
+                f32,
+                f32,
+                f32,
+                u32,
+                u32,
+            )| {
                 let (pixels, width, height) = extract_minimap(
                     &this.inner,
                     player_x,
@@ -852,8 +859,8 @@ impl LuaUserData for LuaRaycaster {
                     [20, 24, 30, 255],
                     [255, 220, 90, 255],
                 );
-                let img = ImageData::from_bytes(width, height, pixels)
-                    .map_err(LuaError::runtime)?;
+                let img =
+                    ImageData::from_bytes(width, height, pixels).map_err(LuaError::runtime)?;
                 Ok(img)
             },
         );

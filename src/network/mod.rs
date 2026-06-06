@@ -20,10 +20,10 @@ pub mod net_sync;
 pub mod net_thread;
 /// Relay server client: punch-through, forwarding, and relay session lifecycle.
 pub mod relay;
+/// Server-Sent Events (SSE) stream reader backed by a background thread.
+pub mod sse;
 /// Raw TCP transport: connect, send, receive, and graceful close.
 pub mod tcp;
 /// WebSocket transport wrapping `tungstenite`; mirrors the TCP interface.
 pub mod websocket;
-/// Server-Sent Events (SSE) stream reader backed by a background thread.
-pub mod sse;
 pub use sse::{SseEvent, SseStream};

@@ -1,12 +1,12 @@
 //! File: src/lua_api/light_api.rs
 
 use super::SharedState;
+use crate::color::Color;
 use crate::light::transition::LightTransition;
 use crate::light::{
     Attenuation, FalloffMode, FlickerConfig, Light2D, LightBlendMode, LightType, Occluder,
     ShadowFilter,
 };
-use crate::color::Color;
 use crate::math::Vec2;
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use mlua::prelude::*;

@@ -17,13 +17,13 @@
 //! It maintains robust rendering behavior under dynamic UI mutation each frame.
 //! It anchors the visual execution layer of the retained UI subsystem.
 
+use crate::math::Rect;
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::render::Font;
 use crate::runtime::resource_keys::FontKey;
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::theme::WidgetStyle;
 use crate::ui::widget::{TextVAlign, WidgetBase};
-use crate::math::Rect;
 use slotmap::SlotMap;
 
 fn text_scale(style: &WidgetStyle, font: Option<&Font>) -> f32 {
@@ -285,7 +285,16 @@ fn draw_tree_nodes_cpu(
             );
         }
     }
-    draw_cpu_text(img, font, &node.text, indent + 10, ry + (row_h - 7) / 2, fg[0], fg[1], fg[2]);
+    draw_cpu_text(
+        img,
+        font,
+        &node.text,
+        indent + 10,
+        ry + (row_h - 7) / 2,
+        fg[0],
+        fg[1],
+        fg[2],
+    );
     let mut next_y = ry + row_h;
     if node.expanded {
         let children: Vec<usize> = node.children.clone();
@@ -407,7 +416,12 @@ fn emit_text(
         return;
     }
     let clip = lines[0].clip_rect;
-    cmds.push(RenderCommand::SetScissor(Some((clip.x, clip.y, clip.width, clip.height))));
+    cmds.push(RenderCommand::SetScissor(Some((
+        clip.x,
+        clip.y,
+        clip.width,
+        clip.height,
+    ))));
     for line in &lines {
         cmds.push(RenderCommand::Print {
             font_key,
@@ -489,7 +503,8 @@ fn emit_slider(
     }
     let thumb_w = (base.height * 0.35).clamp(4.0, 12.0);
     let thumb_h = (base.height - 2.0).max(6.0);
-    let thumb_x = (base.x + fill_w - thumb_w * 0.5).clamp(base.x, base.x + (base.width - thumb_w).max(0.0));
+    let thumb_x =
+        (base.x + fill_w - thumb_w * 0.5).clamp(base.x, base.x + (base.width - thumb_w).max(0.0));
     let thumb_y = base.y + (base.height - thumb_h) * 0.5;
     cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
     cmds.push(RenderCommand::Rectangle {
@@ -960,7 +975,13 @@ impl<'a> WidgetRenderer<'a> {
             .unwrap_or(self.font_key);
         if let Some(children) = self.ctx.widgets.first().and_then(|w| w.children()) {
             let mut sorted = children.to_vec();
-            sorted.sort_by_key(|&i| self.ctx.widgets.get(i).map(|w| w.base().z_order).unwrap_or(0));
+            sorted.sort_by_key(|&i| {
+                self.ctx
+                    .widgets
+                    .get(i)
+                    .map(|w| w.base().z_order)
+                    .unwrap_or(0)
+            });
             for child_idx in sorted {
                 if child_idx < self.ctx.widgets.len() {
                     render_widget(
@@ -992,18 +1013,19 @@ fn render_widget(
     }
     // Use computed_rect for absolute screen coordinates; fall back to raw fields if layout has not run.
     let patched;
-    let base: &WidgetBase = if raw_base.computed_rect.width > 0.0 || raw_base.computed_rect.height > 0.0 {
-        patched = WidgetBase {
-            x: raw_base.computed_rect.x,
-            y: raw_base.computed_rect.y,
-            width: raw_base.computed_rect.width,
-            height: raw_base.computed_rect.height,
-            ..raw_base.clone()
+    let base: &WidgetBase =
+        if raw_base.computed_rect.width > 0.0 || raw_base.computed_rect.height > 0.0 {
+            patched = WidgetBase {
+                x: raw_base.computed_rect.x,
+                y: raw_base.computed_rect.y,
+                width: raw_base.computed_rect.width,
+                height: raw_base.computed_rect.height,
+                ..raw_base.clone()
+            };
+            &patched
+        } else {
+            raw_base
         };
-        &patched
-    } else {
-        raw_base
-    };
     let font_key = base.font_key.unwrap_or(font_key);
     let font = fonts.get(font_key);
     let style_with_alpha = resolve_style_with_alpha(ctx, base, default_style);
@@ -1958,7 +1980,16 @@ impl GuiContext {
                     } else if knob_x > max_x {
                         knob_x = max_x;
                     }
-                    img.draw_rect(knob_x, y + ((h as i32 - knob_h as i32) / 2), knob_w, knob_h, 220, 230, 240, 255);
+                    img.draw_rect(
+                        knob_x,
+                        y + ((h as i32 - knob_h as i32) / 2),
+                        knob_w,
+                        knob_h,
+                        220,
+                        230,
+                        240,
+                        255,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::ProgressBar(pb) => {
@@ -1978,8 +2009,20 @@ impl GuiContext {
                         );
                     }
                     let pct_label = format!("{}%", (t * 100.0).round() as u32);
-                    let lw = ui_font.as_ref().map(|f| f.text_width(&pct_label) as i32).unwrap_or((pct_label.chars().count() as i32) * 6);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &pct_label, x + ((w as i32 - lw) / 2).max(1), y + ((h as i32 - 7) / 2).max(1), 230, 235, 240);
+                    let lw = ui_font
+                        .as_ref()
+                        .map(|f| f.text_width(&pct_label) as i32)
+                        .unwrap_or((pct_label.chars().count() as i32) * 6);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &pct_label,
+                        x + ((w as i32 - lw) / 2).max(1),
+                        y + ((h as i32 - 7) / 2).max(1),
+                        230,
+                        235,
+                        240,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::SpinBox(sb) => {
@@ -2012,8 +2055,20 @@ impl GuiContext {
                     img.draw_line(ax - 3, dy - 2, ax, dy + 2, 200, 210, 220, 255);
                     img.draw_line(ax, dy + 2, ax + 3, dy - 2, 200, 210, 220, 255);
                     let label = format!("{}", sb.value);
-                    let lw = ui_font.as_ref().map(|f| f.text_width(&label) as i32).unwrap_or((label.chars().count() as i32) * 6);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &label, x + ((w as i32 - btn_w - lw) / 2).max(2), y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                    let lw = ui_font
+                        .as_ref()
+                        .map(|f| f.text_width(&label) as i32)
+                        .unwrap_or((label.chars().count() as i32) * 6);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &label,
+                        x + ((w as i32 - btn_w - lw) / 2).max(2),
+                        y + ((h as i32 - 7) / 2).max(1),
+                        fr,
+                        fg,
+                        fb,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::ScrollBar(sb) => {
@@ -2058,7 +2113,16 @@ impl GuiContext {
                     let thumb_w = ((thumb_h as f32) * 0.6).clamp(4.0, 12.0) as u32;
                     let travel = (w.saturating_sub(thumb_w + 4)) as f32;
                     let thumb_x = x + 2 + (sw.thumb_t.clamp(0.0, 1.0) * travel) as i32;
-                    img.draw_rect(thumb_x, y + ((h as i32 - thumb_h as i32) / 2), thumb_w, thumb_h, 220, 230, 240, 255);
+                    img.draw_rect(
+                        thumb_x,
+                        y + ((h as i32 - thumb_h as i32) / 2),
+                        thumb_w,
+                        thumb_h,
+                        220,
+                        230,
+                        240,
+                        255,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::CheckBox(cb) => {
@@ -2099,7 +2163,16 @@ impl GuiContext {
                         );
                     }
                     if !cb.text.is_empty() {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &cb.text, bx + box_sz + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &cb.text,
+                            bx + box_sz + 6,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                     }
                     skip_text = true;
                 }
@@ -2122,31 +2195,82 @@ impl GuiContext {
                         let inner = ((box_sz as f32) * 0.45).round() as i32;
                         let ix = bx + ((box_sz - inner) / 2);
                         let iy = by + ((box_sz - inner) / 2);
-                        img.draw_rect(ix, iy, inner.max(2) as u32, inner.max(2) as u32, fr, fg, fb, 255);
+                        img.draw_rect(
+                            ix,
+                            iy,
+                            inner.max(2) as u32,
+                            inner.max(2) as u32,
+                            fr,
+                            fg,
+                            fb,
+                            255,
+                        );
                     }
                     if !rb.text.is_empty() {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &rb.text, bx + box_sz + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &rb.text,
+                            bx + box_sz + 6,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                     }
                     skip_text = true;
                 }
                 WidgetKind::TextInput(ti) => {
                     if ti.text.is_empty() && !ti.placeholder.is_empty() {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &ti.placeholder, x + base.padding[3] as i32 + 4, y + ((h as i32 - 7) / 2).max(1), 120, 125, 145);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &ti.placeholder,
+                            x + base.padding[3] as i32 + 4,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            120,
+                            125,
+                            145,
+                        );
                     } else {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &ti.text, x + base.padding[3] as i32 + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &ti.text,
+                            x + base.padding[3] as i32 + 4,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                     }
                     if ti.focused {
                         let cursor_x = x
                             + base.padding[3] as i32
                             + 4
-                            + ui_font.as_ref().map(|f| f.text_width(&ti.text[..ti.cursor_pos.min(ti.text.len())]) as i32).unwrap_or(ti.cursor_pos.min(ti.text.len()) as i32 * 6);
+                            + ui_font
+                                .as_ref()
+                                .map(|f| {
+                                    f.text_width(&ti.text[..ti.cursor_pos.min(ti.text.len())])
+                                        as i32
+                                })
+                                .unwrap_or(ti.cursor_pos.min(ti.text.len()) as i32 * 6);
                         img.draw_rect(cursor_x, y + 3, 1, h.saturating_sub(6), fr, fg, fb, 220);
                     }
                     skip_text = true;
                 }
                 WidgetKind::ComboBox(cb) => {
                     if let Some(text) = cb.selected_item() {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), text, x + base.padding[3] as i32 + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            text,
+                            x + base.padding[3] as i32 + 4,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                     }
                     let ax = x + w as i32 - 12;
                     let ay = y + h as i32 / 2;
@@ -2179,7 +2303,16 @@ impl GuiContext {
                                     220,
                                 );
                             }
-                            draw_cpu_text(&mut img, ui_font.as_ref(), item, x + 6, row_y + (row_h - 7) / 2, fr, fg, fb);
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                item,
+                                x + 6,
+                                row_y + (row_h - 7) / 2,
+                                fr,
+                                fg,
+                                fb,
+                            );
                             img.draw_rect(x, row_y + row_h - 1, w, 1, 55, 60, 75, 160);
                         }
                     }
@@ -2206,7 +2339,16 @@ impl GuiContext {
                                 200,
                             );
                         }
-                        draw_cpu_text(&mut img, ui_font.as_ref(), item, x + 6, iy + (row_h - 7) / 2, fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            item,
+                            x + 6,
+                            iy + (row_h - 7) / 2,
+                            fr,
+                            fg,
+                            fb,
+                        );
                         img.draw_rect(x, iy + row_h - 1, w, 1, 55, 60, 75, 120);
                     }
                     skip_text = true;
@@ -2226,8 +2368,20 @@ impl GuiContext {
                             if i == tb.active_tab {
                                 img.draw_rect(tx, y, tab_w as u32, 2, fr, fg, fb, 255);
                             }
-                            let lw = ui_font.as_ref().map(|f| f.text_width(tab) as i32).unwrap_or((tab.chars().count() as i32) * 6);
-                            draw_cpu_text(&mut img, ui_font.as_ref(), tab, tx + ((tab_w - lw) / 2).max(2), y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                            let lw = ui_font
+                                .as_ref()
+                                .map(|f| f.text_width(tab) as i32)
+                                .unwrap_or((tab.chars().count() as i32) * 6);
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                tab,
+                                tx + ((tab_w - lw) / 2).max(2),
+                                y + ((h as i32 - 7) / 2).max(1),
+                                fr,
+                                fg,
+                                fb,
+                            );
                         }
                     }
                     skip_text = true;
@@ -2240,19 +2394,49 @@ impl GuiContext {
                     img.draw_rect(x, y, 4, h, br, bg, bb, 255);
                     let fade_a = ((1.0 - t.progress()) * 200.0) as u8;
                     img.draw_rect(x + w as i32 - 6, y, 6, h, 255, 255, 255, fade_a);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &t.message, x + 10, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &t.message,
+                        x + 10,
+                        y + ((h as i32 - 7) / 2).max(1),
+                        fr,
+                        fg,
+                        fb,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::Badge(badge) => {
                     let text = badge.display_text();
-                    let lw = ui_font.as_ref().map(|f| f.text_width(&text) as i32).unwrap_or((text.chars().count() as i32) * 6);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &text, x + ((w as i32 - lw) / 2).max(1), y + ((h as i32 - 7) / 2).max(1), 245, 250, 255);
+                    let lw = ui_font
+                        .as_ref()
+                        .map(|f| f.text_width(&text) as i32)
+                        .unwrap_or((text.chars().count() as i32) * 6);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &text,
+                        x + ((w as i32 - lw) / 2).max(1),
+                        y + ((h as i32 - 7) / 2).max(1),
+                        245,
+                        250,
+                        255,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::TooltipPanel(ttp) => {
                     img.draw_rect(x, y, w, 2, fr, fg, fb, 100);
                     if !ttp.text.is_empty() {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &ttp.text, x + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &ttp.text,
+                            x + 6,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                     }
                     skip_text = true;
                 }
@@ -2273,7 +2457,16 @@ impl GuiContext {
                     let bar_h = 24u32;
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &win.title, x + 10, y + 7, fr, fg, fb);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &win.title,
+                        x + 10,
+                        y + 7,
+                        fr,
+                        fg,
+                        fb,
+                    );
                     if win.closeable {
                         let cx = x + w as i32 - 14;
                         let cy = y + 8;
@@ -2286,7 +2479,16 @@ impl GuiContext {
                     let bar_h = 28u32;
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &dlg.title, x + 10, y + 9, fr, fg, fb);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &dlg.title,
+                        x + 10,
+                        y + 9,
+                        fr,
+                        fg,
+                        fb,
+                    );
                     let close_x = x + w as i32 - 18;
                     let close_y = y + 10;
                     img.draw_line(close_x, close_y, close_x + 8, close_y + 8, 200, 80, 80, 255);
@@ -2300,8 +2502,20 @@ impl GuiContext {
                         for label in &dlg.footer_buttons {
                             img.draw_rect(bx, footer_y + 4, btn_w as u32, 24, 48, 52, 72, 255);
                             img.draw_rect(bx, footer_y + 4, btn_w as u32, 1, 75, 80, 105, 255);
-                            let lw = ui_font.as_ref().map(|f| f.text_width(label) as i32).unwrap_or((label.chars().count() as i32) * 6);
-                            draw_cpu_text(&mut img, ui_font.as_ref(), label, bx + ((btn_w - lw) / 2).max(2), footer_y + 10, fr, fg, fb);
+                            let lw = ui_font
+                                .as_ref()
+                                .map(|f| f.text_width(label) as i32)
+                                .unwrap_or((label.chars().count() as i32) * 6);
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                label,
+                                bx + ((btn_w - lw) / 2).max(2),
+                                footer_y + 10,
+                                fr,
+                                fg,
+                                fb,
+                            );
                             bx += btn_w + 6;
                         }
                     }
@@ -2311,7 +2525,16 @@ impl GuiContext {
                     let mut sx = x;
                     for (text, sec_w) in &sb.sections {
                         let sw = sec_w.max(20.0) as i32;
-                        draw_cpu_text(&mut img, ui_font.as_ref(), text, sx + 6, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            text,
+                            sx + 6,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                         img.draw_rect(sx + sw, y, 1, h, 55, 60, 75, 160);
                         sx += sw;
                     }
@@ -2347,7 +2570,16 @@ impl GuiContext {
                             img.draw_line(axp, ayp - 4, axp + 6, ayp, fr, fg, fb, 220);
                             img.draw_line(axp, ayp + 4, axp + 6, ayp, fr, fg, fb, 220);
                         }
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &section.title, axp + 14, ay + (hdr_h - 7) / 2, fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &section.title,
+                            axp + 14,
+                            ay + (hdr_h - 7) / 2,
+                            fr,
+                            fg,
+                            fb,
+                        );
                         ay += hdr_h;
                         if section.expanded {
                             ay += 36;
@@ -2384,7 +2616,16 @@ impl GuiContext {
                         (cp.g * 255.0) as u8,
                         (cp.b * 255.0) as u8
                     );
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &hex, x + 6, y + sw as i32 + 10, fr, fg, fb);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &hex,
+                        x + 6,
+                        y + sw as i32 + 10,
+                        fr,
+                        fg,
+                        fb,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::GUITable(tbl) => {
@@ -2394,7 +2635,16 @@ impl GuiContext {
                     let mut cx = x;
                     for col in &tbl.columns {
                         let cw = col.width.max(20.0) as i32;
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &col.header, cx + 4, y + (col_h - 7) / 2, 190, 200, 220);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &col.header,
+                            cx + 4,
+                            y + (col_h - 7) / 2,
+                            190,
+                            200,
+                            220,
+                        );
                         img.draw_rect(cx + cw, y, 1, col_h as u32, 55, 60, 80, 255);
                         cx += cw;
                     }
@@ -2414,7 +2664,16 @@ impl GuiContext {
                         let mut cx2 = x;
                         for (ci, cell) in row.iter().enumerate() {
                             let cw = tbl.columns.get(ci).map(|c| c.width).unwrap_or(80.0) as i32;
-                            draw_cpu_text(&mut img, ui_font.as_ref(), cell, cx2 + 4, ry + (row_h - 7) / 2, fr, fg, fb);
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                cell,
+                                cx2 + 4,
+                                ry + (row_h - 7) / 2,
+                                fr,
+                                fg,
+                                fb,
+                            );
                             cx2 += cw;
                         }
                         img.draw_rect(x, ry + row_h - 1, w, 1, 40, 43, 58, 140);
@@ -2484,7 +2743,16 @@ impl GuiContext {
                         );
                         if let Some(c) = btn.id.chars().next() {
                             let cs = c.to_uppercase().to_string();
-                            draw_cpu_text(&mut img, ui_font.as_ref(), &cs, bx + btn_sz as i32 / 2 - 3, y + (h as i32 - 7) / 2, fr, fg, fb);
+                            draw_cpu_text(
+                                &mut img,
+                                ui_font.as_ref(),
+                                &cs,
+                                bx + btn_sz as i32 / 2 - 3,
+                                y + (h as i32 - 7) / 2,
+                                fr,
+                                fg,
+                                fb,
+                            );
                         }
                         bx += btn_sz as i32 + 4;
                     }
@@ -2496,13 +2764,43 @@ impl GuiContext {
                 }
                 WidgetKind::MenuItem(mi) => {
                     if mi.checked {
-                        draw_cpu_text(&mut img, ui_font.as_ref(), "v", x + 4, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            "v",
+                            x + 4,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            fr,
+                            fg,
+                            fb,
+                        );
                     }
                     let label_x = if mi.checked { x + 18 } else { x + 6 };
-                    draw_cpu_text(&mut img, ui_font.as_ref(), &mi.text, label_x, y + ((h as i32 - 7) / 2).max(1), fr, fg, fb);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        &mi.text,
+                        label_x,
+                        y + ((h as i32 - 7) / 2).max(1),
+                        fr,
+                        fg,
+                        fb,
+                    );
                     if !mi.shortcut.is_empty() {
-                        let lw = ui_font.as_ref().map(|f| f.text_width(&mi.shortcut) as i32).unwrap_or((mi.shortcut.chars().count() as i32) * 6);
-                        draw_cpu_text(&mut img, ui_font.as_ref(), &mi.shortcut, x + w as i32 - lw - 6, y + ((h as i32 - 7) / 2).max(1), 140, 145, 165);
+                        let lw = ui_font
+                            .as_ref()
+                            .map(|f| f.text_width(&mi.shortcut) as i32)
+                            .unwrap_or((mi.shortcut.chars().count() as i32) * 6);
+                        draw_cpu_text(
+                            &mut img,
+                            ui_font.as_ref(),
+                            &mi.shortcut,
+                            x + w as i32 - lw - 6,
+                            y + ((h as i32 - 7) / 2).max(1),
+                            140,
+                            145,
+                            165,
+                        );
                     }
                     skip_text = true;
                 }
@@ -2528,7 +2826,16 @@ impl GuiContext {
                     img.draw_rect(x, y + h as i32 - 1, w, 1, 90, 95, 115, 255);
                     img.draw_rect(x, y, 1, h, 90, 95, 115, 255);
                     img.draw_rect(x + w as i32 - 1, y, 1, h, 90, 95, 115, 255);
-                    draw_cpu_text(&mut img, ui_font.as_ref(), "[image]", x + ((w as i32 - 42) / 2).max(1), y + ((h as i32 - 7) / 2).max(1), 130, 135, 155);
+                    draw_cpu_text(
+                        &mut img,
+                        ui_font.as_ref(),
+                        "[image]",
+                        x + ((w as i32 - 42) / 2).max(1),
+                        y + ((h as i32 - 7) / 2).max(1),
+                        130,
+                        135,
+                        155,
+                    );
                     skip_text = true;
                 }
                 WidgetKind::SplitPanel(sp) => {
@@ -2551,7 +2858,10 @@ impl GuiContext {
             }
             if !skip_text {
                 if let Some(text) = display_text(widget) {
-                    let approx_w = ui_font.as_ref().map(|f| f.text_width(text) as i32).unwrap_or((text.chars().count() as i32) * 6);
+                    let approx_w = ui_font
+                        .as_ref()
+                        .map(|f| f.text_width(text) as i32)
+                        .unwrap_or((text.chars().count() as i32) * 6);
                     let tx = match style.text_align.as_str() {
                         "left" => x + base.padding[3] as i32 + 4,
                         "right" => x + w as i32 - approx_w - 6,

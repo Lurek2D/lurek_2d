@@ -12,9 +12,13 @@ pub struct ProvinceId(pub u32);
 
 impl ProvinceId {
     /// Creates a new ProvinceId from a raw u32.
-    pub fn new(id: u32) -> Self { Self(id) }
+    pub fn new(id: u32) -> Self {
+        Self(id)
+    }
     /// Returns the raw u32 underlying value.
-    pub fn raw(self) -> u32 { self.0 }
+    pub fn raw(self) -> u32 {
+        self.0
+    }
 }
 
 impl std::fmt::Display for ProvinceId {
@@ -24,11 +28,15 @@ impl std::fmt::Display for ProvinceId {
 }
 
 impl From<u32> for ProvinceId {
-    fn from(v: u32) -> Self { Self(v) }
+    fn from(v: u32) -> Self {
+        Self(v)
+    }
 }
 
 impl From<ProvinceId> for u32 {
-    fn from(id: ProvinceId) -> Self { id.0 }
+    fn from(id: ProvinceId) -> Self {
+        id.0
+    }
 }
 
 /// Game-defined border type identifier. Games register types via `registerBorderType` from Lua.

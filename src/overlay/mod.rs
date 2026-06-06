@@ -18,7 +18,9 @@ pub mod water;
 pub mod weather;
 
 pub use ambient::AmbientState;
-pub use atmosphere::{CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState};
+pub use atmosphere::{
+    CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
+};
 pub use controller::Overlay;
 pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use transition::{ScreenTransition, TransitionKind};

@@ -75,44 +75,47 @@ pub fn parse_log_lines(lines: &[String]) -> Vec<LogEntry> {
 
 /// Search log entries with filters.
 pub fn search_logs<'a>(entries: &'a [LogEntry], opts: &LogSearchOpts) -> Vec<&'a LogEntry> {
-    entries.iter().filter(|entry| {
-        // Level filter
-        if let Some(ref level) = opts.level_filter {
-            match &entry.level {
-                Some(el) => {
-                    if !el.eq_ignore_ascii_case(level) {
+    entries
+        .iter()
+        .filter(|entry| {
+            // Level filter
+            if let Some(ref level) = opts.level_filter {
+                match &entry.level {
+                    Some(el) => {
+                        if !el.eq_ignore_ascii_case(level) {
+                            return false;
+                        }
+                    }
+                    None => return false,
+                }
+            }
+
+            // Pattern filter
+            if let Some(ref pat) = opts.pattern {
+                if !entry.message.to_lowercase().contains(&pat.to_lowercase()) {
+                    return false;
+                }
+            }
+
+            // Time filters (string comparison - assumes ISO-like format)
+            if let Some(ref after) = opts.time_after {
+                if let Some(ref ts) = entry.timestamp {
+                    if ts.as_str() < after.as_str() {
                         return false;
                     }
                 }
-                None => return false,
             }
-        }
-
-        // Pattern filter
-        if let Some(ref pat) = opts.pattern {
-            if !entry.message.to_lowercase().contains(&pat.to_lowercase()) {
-                return false;
-            }
-        }
-
-        // Time filters (string comparison - assumes ISO-like format)
-        if let Some(ref after) = opts.time_after {
-            if let Some(ref ts) = entry.timestamp {
-                if ts.as_str() < after.as_str() {
-                    return false;
+            if let Some(ref before) = opts.time_before {
+                if let Some(ref ts) = entry.timestamp {
+                    if ts.as_str() > before.as_str() {
+                        return false;
+                    }
                 }
             }
-        }
-        if let Some(ref before) = opts.time_before {
-            if let Some(ref ts) = entry.timestamp {
-                if ts.as_str() > before.as_str() {
-                    return false;
-                }
-            }
-        }
 
-        true
-    }).collect()
+            true
+        })
+        .collect()
 }
 
 /// Parse a single log line into (timestamp, level, message).

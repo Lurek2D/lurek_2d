@@ -17,9 +17,13 @@ pub struct RegionId(pub u32);
 
 impl RegionId {
     /// Creates a new RegionId from a raw u32.
-    pub fn new(id: u32) -> Self { Self(id) }
+    pub fn new(id: u32) -> Self {
+        Self(id)
+    }
     /// Returns the raw u32 underlying value.
-    pub fn raw(self) -> u32 { self.0 }
+    pub fn raw(self) -> u32 {
+        self.0
+    }
 }
 
 impl std::fmt::Display for RegionId {
@@ -29,11 +33,15 @@ impl std::fmt::Display for RegionId {
 }
 
 impl From<u32> for RegionId {
-    fn from(v: u32) -> Self { Self(v) }
+    fn from(v: u32) -> Self {
+        Self(v)
+    }
 }
 
 impl From<RegionId> for u32 {
-    fn from(id: RegionId) -> Self { id.0 }
+    fn from(id: RegionId) -> Self {
+        id.0
+    }
 }
 
 impl mlua::IntoLua<'_> for RegionId {
@@ -396,11 +404,9 @@ impl std::fmt::Display for GlobeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             GlobeError::RegionNotFound(id) => write!(f, "region {} not found", id),
-            GlobeError::TooManyRegions => write!(
-                f,
-                "region count exceeds MAX_REGIONS ({})",
-                MAX_REGIONS
-            ),
+            GlobeError::TooManyRegions => {
+                write!(f, "region count exceeds MAX_REGIONS ({})", MAX_REGIONS)
+            }
             GlobeError::LoadError(s) => write!(f, "load error: {}", s),
             GlobeError::GlobeNotFound(s) => write!(f, "globe '{}' not registered", s),
             GlobeError::NoPath(a, b) => write!(f, "no path between {} and {}", a, b),

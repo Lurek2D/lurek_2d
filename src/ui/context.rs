@@ -32,7 +32,9 @@ use crate::ui::extras::{
     Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
 };
 use crate::ui::theme::Theme;
-use crate::ui::widget::{EasingFunction, WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind, WidgetType};
+use crate::ui::widget::{
+    EasingFunction, WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind, WidgetType,
+};
 use std::collections::HashMap;
 
 const COMBO_MIN_ITEM_HEIGHT: f32 = 20.0;
@@ -1399,7 +1401,10 @@ impl GuiContext {
         match widget {
             WidgetKind::Button(w) => {
                 let text_w = Self::measure_text_width(&w.text, font);
-                (text_w + pad_h + 16.0, base.padding[0] + base.padding[2] + 24.0)
+                (
+                    text_w + pad_h + 16.0,
+                    base.padding[0] + base.padding[2] + 24.0,
+                )
             }
             WidgetKind::Label(w) => {
                 let text_w = Self::measure_text_width(&w.text, font);
@@ -1472,7 +1477,10 @@ impl GuiContext {
             }
             _ => {
                 let (dw, dh) = base.widget_type.default_size();
-                (base.min_width.max(dw.min(32.0)) + pad_h, base.min_height.max(dh.min(16.0)) + pad_v)
+                (
+                    base.min_width.max(dw.min(32.0)) + pad_h,
+                    base.min_height.max(dh.min(16.0)) + pad_v,
+                )
             }
         }
     }

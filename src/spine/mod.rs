@@ -17,8 +17,8 @@ pub mod slot;
 /// Timeline, keyframe, easing, and animation clip data for skeletal animation.
 pub mod timeline;
 pub use bone::Bone;
-pub use importer::{skeleton_from_json_str, skeleton_from_json_value, SpineImportError};
 pub use ik::IKConstraint;
+pub use importer::{skeleton_from_json_str, skeleton_from_json_value, SpineImportError};
 pub use skeleton::{BoneParams, Skeleton};
 pub use slot::Slot;
 pub use timeline::{BoneProperty, BoneTimeline, EasingType, Keyframe, SkeletonAnimation};

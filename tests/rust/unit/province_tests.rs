@@ -8,19 +8,17 @@ use lurek2d::province::import::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
+use lurek2d::province::registry::ProvinceRegistry;
+use lurek2d::province::render::{
+    generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
+};
+use lurek2d::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use lurek2d::province::{
-    border_index::{
-        build_border_index_from_registry, dilate_border_index_with_styles,
-    },
+    border_index::{build_border_index_from_registry, dilate_border_index_with_styles},
     distance_field::compute_distance_field_from_registry,
     gpu_bridge::build_border_style_gpu_records,
     gpu_upload::{pack_u16_pixels_le, pack_u32_pixels_le},
 };
-use lurek2d::province::render::{
-    generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
-};
-use lurek2d::province::registry::ProvinceRegistry;
-use lurek2d::province::types::{BorderPairFlags, BorderPairStyle, BorderTypeConfig, ProvinceId};
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 
 fn sample_grid() -> ProvinceGrid {
@@ -104,18 +102,24 @@ fn test_registry_border_type_config() {
     let grid = sample_grid();
     let mut reg = ProvinceRegistry::from_grid(&grid);
 
-    reg.register_border_type(0, BorderTypeConfig {
-        name: "land".to_string(),
-        color: [0.5, 0.5, 0.5, 1.0],
-        thickness: 1.0,
-        draw_priority: 0,
-    });
-    reg.register_border_type(1, BorderTypeConfig {
-        name: "coast".to_string(),
-        color: [0.0, 0.5, 1.0, 1.0],
-        thickness: 2.0,
-        draw_priority: 1,
-    });
+    reg.register_border_type(
+        0,
+        BorderTypeConfig {
+            name: "land".to_string(),
+            color: [0.5, 0.5, 0.5, 1.0],
+            thickness: 1.0,
+            draw_priority: 0,
+        },
+    );
+    reg.register_border_type(
+        1,
+        BorderTypeConfig {
+            name: "coast".to_string(),
+            color: [0.0, 0.5, 1.0, 1.0],
+            thickness: 2.0,
+            draw_priority: 1,
+        },
+    );
 
     let config0 = reg.get_border_type_config(0).expect("config 0");
     assert_eq!(config0.name, "land");
@@ -138,7 +142,9 @@ fn test_registry_border_pair_style_roundtrip() {
         flags,
     };
     reg.set_border_pair_style(ProvinceId(1), ProvinceId(2), style);
-    let got = reg.get_border_pair_style(ProvinceId(2), ProvinceId(1)).expect("style should exist");
+    let got = reg
+        .get_border_pair_style(ProvinceId(2), ProvinceId(1))
+        .expect("style should exist");
 
     assert_eq!(got.color, style.color);
     assert_eq!(got.thickness, style.thickness);
@@ -167,7 +173,10 @@ fn test_registry_capital_and_label_metadata_roundtrip() {
     assert_eq!(reg.capital_for(ProvinceId(1)), Some((10.5, 20.5)));
 
     assert!(reg.set_label_line(ProvinceId(1), 1.0, 2.0, 3.0, 4.0));
-    assert_eq!(reg.label_line_for(ProvinceId(1)), Some(((1.0, 2.0), (3.0, 4.0))));
+    assert_eq!(
+        reg.label_line_for(ProvinceId(1)),
+        Some(((1.0, 2.0), (3.0, 4.0)))
+    );
 
     assert!(reg.set_label_text(ProvinceId(1), "Yukon".to_string()));
     assert_eq!(reg.label_text_for(ProvinceId(1)), Some("Yukon"));
@@ -240,7 +249,9 @@ fn test_import_metadata_from_files_sets_attrs_labels_and_markers() {
     assert!(summary.capitals_set >= 1);
     assert!(summary.labels_set >= 1);
 
-    let snap = reg.get_province(ProvinceId(1)).expect("province 1 snapshot");
+    let snap = reg
+        .get_province(ProvinceId(1))
+        .expect("province 1 snapshot");
     assert_eq!(snap.style.terrain_type, 0);
     assert_eq!(snap.attrs.get("game_id").map(String::as_str), Some("101"));
     assert_eq!(snap.attrs.get("terrain").map(String::as_str), Some("sea"));
@@ -345,7 +356,10 @@ fn test_fow_render_hidden_and_discovered_fill_rules() {
                 if (*r, *g, *b, *a) == (0.2_f32, 0.2_f32, 0.2_f32, 1.0_f32)
         )
     });
-    assert!(has_discovered_gray, "discovered province should render gray fill");
+    assert!(
+        has_discovered_gray,
+        "discovered province should render gray fill"
+    );
 }
 
 #[test]
@@ -367,7 +381,10 @@ fn test_fow_borders_require_both_provinces_fully_visible() {
         .iter()
         .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
         .count();
-    assert!(visible_lines > 0, "expected border lines when both provinces are visible");
+    assert!(
+        visible_lines > 0,
+        "expected border lines when both provinces are visible"
+    );
 
     assert!(reg.set_visibility_state(ProvinceId(2), 1));
     let discovered_cmds = generate_render_commands(&reg, &opts, None);
@@ -437,7 +454,10 @@ fn test_strategic_mode_renders_country_overrides_but_skips_land_land() {
         .iter()
         .filter(|cmd| matches!(cmd, RenderCommand::Line { .. }))
         .count();
-    assert!(tactical_lines > 0, "tactical mode should draw default land-land borders");
+    assert!(
+        tactical_lines > 0,
+        "tactical mode should draw default land-land borders"
+    );
 
     let strategic_opts = ProvinceRenderOptions {
         draw_fills: false,
@@ -499,7 +519,10 @@ fn test_distance_field_has_zero_on_border_and_greater_inside() {
     let border = field.at(1, 2).expect("border exists");
 
     assert_eq!(border, 0, "border pixel distance must be zero");
-    assert!(center > 0, "interior pixel distance must be greater than zero");
+    assert!(
+        center > 0,
+        "interior pixel distance must be greater than zero"
+    );
 }
 
 #[test]
@@ -508,10 +531,17 @@ fn test_border_index_builds_pair_ids_and_dilation_expands_coverage() {
     let mut reg = ProvinceRegistry::from_grid(&grid);
 
     let mut index = build_border_index_from_registry(&reg);
-    assert_eq!(index.pair_count(), 1, "sample grid should have one border pair");
+    assert_eq!(
+        index.pair_count(),
+        1,
+        "sample grid should have one border pair"
+    );
 
     let border_pixels_before = index.data.iter().filter(|&&v| v != 0).count();
-    assert!(border_pixels_before > 0, "border index should mark border pixels");
+    assert!(
+        border_pixels_before > 0,
+        "border index should mark border pixels"
+    );
 
     let mut flags = BorderPairFlags::empty();
     flags.insert_bits(BorderPairFlags::COUNTRY);
@@ -574,7 +604,11 @@ fn test_gpu_bridge_border_style_records_follow_border_index_pairs() {
     let records = build_border_style_gpu_records(&reg, &index);
     assert_eq!(records.len(), index.id_to_pair.len());
     assert_eq!(records[0].flags, 0, "slot 0 should stay empty");
-    assert_eq!(records[1].flags & 0x01, 0x01, "country flag should be propagated");
+    assert_eq!(
+        records[1].flags & 0x01,
+        0x01,
+        "country flag should be propagated"
+    );
     assert_eq!(records[1].thickness, 4.0);
     assert_eq!(records[1].color, [1.0, 0.0, 0.0, 1.0]);
 }

@@ -61,9 +61,15 @@ impl ImportResolutionRule {
 }
 
 impl ValidationRule for ImportResolutionRule {
-    fn id(&self) -> &str { "import-resolve" }
-    fn description(&self) -> &str { "Checks that require() imports can be resolved" }
-    fn severity(&self) -> Severity { Severity::Warning }
+    fn id(&self) -> &str {
+        "import-resolve"
+    }
+    fn description(&self) -> &str {
+        "Checks that require() imports can be resolved"
+    }
+    fn severity(&self) -> Severity {
+        Severity::Warning
+    }
 
     fn validate(&self, path: &Path, content: &str) -> Vec<Violation> {
         let mut violations = Vec::new();
@@ -76,9 +82,13 @@ impl ValidationRule for ImportResolutionRule {
             }
             if !self.resolve_module(&module) {
                 violations.push(
-                    Violation::new("import-resolve", Severity::Warning, path.to_path_buf(),
-                        format!("Cannot resolve module: {module}"))
-                        .with_line(line)
+                    Violation::new(
+                        "import-resolve",
+                        Severity::Warning,
+                        path.to_path_buf(),
+                        format!("Cannot resolve module: {module}"),
+                    )
+                    .with_line(line),
                 );
             }
         }
@@ -89,7 +99,13 @@ impl ValidationRule for ImportResolutionRule {
 
 fn extract_module_name(s: &str) -> Option<String> {
     let s = s.trim();
-    let quote = if s.starts_with('"') { '"' } else if s.starts_with('\'') { '\'' } else { return None };
+    let quote = if s.starts_with('"') {
+        '"'
+    } else if s.starts_with('\'') {
+        '\''
+    } else {
+        return None;
+    };
     let rest = &s[1..];
     rest.find(quote).map(|end| rest[..end].to_string())
 }

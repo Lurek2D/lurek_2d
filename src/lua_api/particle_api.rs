@@ -274,9 +274,7 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | name | string | Type name to compare against `LParticleSystem`, `ParticleSystem`, `Drawable`, and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LParticleSystem"
-                || name == "LDrawable"
-                || name == "LObject")
+            Ok(name == "LParticleSystem" || name == "LDrawable" || name == "LObject")
         });
         // -- setPosition --
         /// Sets emitter position. This method is available to Lua scripts.
@@ -1553,23 +1551,27 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LImageData | Image data containing the lifecycle chart.
     tbl.set(
         "drawLifecycleToImage",
-        lua.create_function(|_, (snapshots, max_particles, w, h): (LuaTable, u32, u32, u32)| {
-            let mut snapshot_pairs = Vec::new();
-            for pair in snapshots.sequence_values::<LuaTable>() {
-                let entry = pair?;
-                let step = entry.get::<_, Option<u32>>("step")?.unwrap_or(entry.get(1)?);
-                let count = entry
-                    .get::<_, Option<u32>>("count")?
-                    .unwrap_or(entry.get(2)?);
-                snapshot_pairs.push((step, count as usize));
-            }
-            Ok(particle_vis::draw_lifecycle_to_image(
-                &snapshot_pairs,
-                max_particles as usize,
-                w,
-                h,
-            ))
-        })?,
+        lua.create_function(
+            |_, (snapshots, max_particles, w, h): (LuaTable, u32, u32, u32)| {
+                let mut snapshot_pairs = Vec::new();
+                for pair in snapshots.sequence_values::<LuaTable>() {
+                    let entry = pair?;
+                    let step = entry
+                        .get::<_, Option<u32>>("step")?
+                        .unwrap_or(entry.get(1)?);
+                    let count = entry
+                        .get::<_, Option<u32>>("count")?
+                        .unwrap_or(entry.get(2)?);
+                    snapshot_pairs.push((step, count as usize));
+                }
+                Ok(particle_vis::draw_lifecycle_to_image(
+                    &snapshot_pairs,
+                    max_particles as usize,
+                    w,
+                    h,
+                ))
+            },
+        )?,
     )?;
     /// Particle system method names also exposed as module-level forwarding functions.
     let flat_methods: &[&str] = &[

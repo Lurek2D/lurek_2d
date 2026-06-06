@@ -3,7 +3,6 @@ trigger: manual
 description: "Create one bounded physics feature and keep the Lua-facing contract honest."
 expected_agent: "Manager"
 ---
-
 # Create Physics Feature
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation path.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md), [skill: error-handling](../rules/skill_error-handling.md), [skill: testing-rust](../rules/skill_testing-rust.md), and [skill: lua-rust-bridge](../rules/skill_lua-rust-bridge.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: error-handling](../skills/error-handling/SKILL.md), [skill: testing-rust](../skills/testing-rust/SKILL.md), and [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md) before acting.
 2. Read src/physics/, any matching Lua bridge code, docs/specs/physics.md, and nearby tests before editing.
 3. Keep the physics state authoritative in the domain module, make boundary errors explicit, and avoid leaking implementation details into the Lua API.
 4. Run the narrowest physics test or build check first, then sync docs or bindings only where the feature changed the contract.

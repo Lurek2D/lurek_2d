@@ -3,7 +3,6 @@ trigger: manual
 description: "Run the release readiness checklist for the current build, docs, and CAG state."
 expected_agent: "Manager"
 ---
-
 # Workflow Release Check
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any changed areas.
 
 ## Steps
-1. Load [skill: quality-pipeline](../rules/skill_quality-pipeline.md), [skill: build-system](../rules/skill_build-system.md), [skill: tools-cag-validation](../rules/skill_tools-cag-validation.md), and [skill: testing-rust](../rules/skill_testing-rust.md) before acting.
+1. Load [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), [skill: build-system](../skills/build-system/SKILL.md), [skill: tools-cag-validation](../skills/tools-cag-validation/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
 2. Read the target build or dist path, current tasks, and any release docs before running gates.
 3. Run the required build, test, and validation commands in a stable order so the first real blocker stays obvious.
 4. Include CAG validation when .github changed and keep generated-doc or packaging checks explicit when the release path depends on them.

@@ -69,8 +69,7 @@ impl TilePicker {
     /// Pick a tile from screen coordinates using simplified raycasting.
     pub fn pick_tile(&self, screen_x: f32, _screen_y: f32) -> Option<PickResult> {
         let fov = std::f32::consts::FRAC_PI_3; // 60 degrees
-        let ray_angle = self.camera_angle
-            + (screen_x / self.screen_width - 0.5) * fov;
+        let ray_angle = self.camera_angle + (screen_x / self.screen_width - 0.5) * fov;
 
         let dir_x = ray_angle.cos();
         let dir_y = ray_angle.sin();
@@ -79,8 +78,16 @@ impl TilePicker {
         let mut map_x = (self.camera_x / self.tile_size) as i32;
         let mut map_y = (self.camera_y / self.tile_size) as i32;
 
-        let delta_x = if dir_x.abs() < 1e-10 { f32::MAX } else { (self.tile_size / dir_x).abs() };
-        let delta_y = if dir_y.abs() < 1e-10 { f32::MAX } else { (self.tile_size / dir_y).abs() };
+        let delta_x = if dir_x.abs() < 1e-10 {
+            f32::MAX
+        } else {
+            (self.tile_size / dir_x).abs()
+        };
+        let delta_y = if dir_y.abs() < 1e-10 {
+            f32::MAX
+        } else {
+            (self.tile_size / dir_y).abs()
+        };
 
         let step_x: i32 = if dir_x > 0.0 { 1 } else { -1 };
         let step_y: i32 = if dir_y > 0.0 { 1 } else { -1 };
@@ -112,7 +119,8 @@ impl TilePicker {
                 1u8
             };
 
-            if map_x < 0 || map_y < 0
+            if map_x < 0
+                || map_y < 0
                 || map_x >= self.grid_width as i32
                 || map_y >= self.grid_height as i32
             {
@@ -141,7 +149,8 @@ impl TilePicker {
     pub fn world_to_tile(&self, world_x: f32, world_y: f32) -> Option<(usize, usize)> {
         let tx = (world_x / self.tile_size) as i32;
         let ty = (world_y / self.tile_size) as i32;
-        if tx >= 0 && ty >= 0 && (tx as usize) < self.grid_width && (ty as usize) < self.grid_height {
+        if tx >= 0 && ty >= 0 && (tx as usize) < self.grid_width && (ty as usize) < self.grid_height
+        {
             Some((tx as usize, ty as usize))
         } else {
             None

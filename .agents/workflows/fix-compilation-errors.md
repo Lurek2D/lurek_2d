@@ -3,7 +3,6 @@ trigger: manual
 description: "Fix current compilation errors in the narrowest owner slice."
 expected_agent: "Manager"
 ---
-
 # Fix Compilation Errors
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Acceptance gate.
 
 ## Steps
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md), [skill: error-handling](../rules/skill_error-handling.md), and [skill: quality-pipeline](../rules/skill_quality-pipeline.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: error-handling](../skills/error-handling/SKILL.md), and [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md) before acting.
 2. Reproduce the failure from the failing cargo output, the named files, and the smallest owning module or bridge slice.
 3. Address the compile error in the owner layer, prefer a real type or contract fix over temporary workarounds, and avoid unrelated cleanup.
 4. Rerun the same failing compile target first, then run the broader named gate if the narrow fix passed.

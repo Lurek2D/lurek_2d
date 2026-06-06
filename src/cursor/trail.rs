@@ -23,7 +23,11 @@ pub enum TrailMode {
     /// Fading dots with color and lifetime.
     FadePoints { color: [f32; 4], lifetime: f32 },
     /// Connected line with width and fade.
-    Line { color: [f32; 4], width: f32, fade: bool },
+    Line {
+        color: [f32; 4],
+        width: f32,
+        fade: bool,
+    },
 }
 
 /// Manages a trail of points behind the cursor.

@@ -1,8 +1,6 @@
 //! File: tests/rust/unit/dsp_tests.rs
 
-use lurek2d::dsp::{
-    ActiveEffect, AtomicParam, EffectParams, EffectType, OfflineEffect,
-};
+use lurek2d::dsp::{ActiveEffect, AtomicParam, EffectParams, EffectType, OfflineEffect};
 use std::sync::Arc;
 
 #[test]
@@ -67,5 +65,3 @@ fn offline_effect_struct_fields() {
     assert_eq!(effect.typ, EffectType::Lowpass);
     assert!((effect.p1 - 1000.0).abs() < 0.001);
 }
-
-

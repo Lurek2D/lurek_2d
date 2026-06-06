@@ -3,7 +3,6 @@ trigger: manual
 description: "Create or extend one event pattern in the engine without breaking ownership boundaries."
 expected_agent: "Manager"
 ---
-
 # Create Event Pattern
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation path.
 
 ## Steps
-1. Load [skill: module-architecture](../rules/skill_module-architecture.md), [skill: rust-coding](../rules/skill_rust-coding.md), and [skill: error-handling](../rules/skill_error-handling.md) before acting.
+1. Load [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), and [skill: error-handling](../skills/error-handling/SKILL.md) before acting.
 2. Read src/event/, the owning module, nearby event producers or consumers, and any matching spec text before editing.
 3. Keep event shape and ownership explicit, avoid ad hoc global signaling, and surface failures where the producing or consuming side can actually act on them.
 4. Run the narrowest test or build path that proves the new event flow and confirm no unrelated event surface drifted.

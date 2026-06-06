@@ -3,8 +3,9 @@
 use super::SharedState;
 use crate::learning::{
     Activation, Bandit, BanditStrategy, Conv2D, EvolutionaryLayer, FrameStack, GeneticAlgorithm,
-    GruLayer, LstmLayer, LurekTensor, MaxPool2D, MultiHeadAttention, NeuralNet, Neuroevolution, OnnxModel, PositionalEncoding,
-    QLearner, SpaceSpec, TransformerDecoderBlock, TransformerEncoderBlock,
+    GruLayer, LstmLayer, LurekTensor, MaxPool2D, MultiHeadAttention, NeuralNet, Neuroevolution,
+    OnnxModel, PositionalEncoding, QLearner, SpaceSpec, TransformerDecoderBlock,
+    TransformerEncoderBlock,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -513,25 +514,21 @@ impl LuaUserData for LuaModel {
         /// and as a `table` of numbers for NeuralNet.
         /// @param | input | any | State index (integer) for QLearner/Bandit, or number array table for NeuralNet.
         /// @return | integer, table | Action index for QLearner/Bandit, or number-array table for NeuralNet.
-        methods.add_method_mut("predict", |lua, this, input: LuaValue| {
-            match this {
-                LuaModel::QLearner(q) => {
-                    let state: usize = lua.unpack(input)?;
-                    Ok(lua.pack(q.inner.borrow().choose_action(state.saturating_sub(1)) + 1)?)
-                }
-                LuaModel::NeuralNet(n) => {
-                    let v: Vec<f32> = lua.unpack(input)?;
-                    let out = n.inner.borrow().forward(&v);
-                    let t = lua.create_table()?;
-                    for (i, val) in out.into_iter().enumerate() {
-                        t.raw_set(i + 1, val)?;
-                    }
-                    Ok(lua.pack(t)?)
-                }
-                LuaModel::Bandit(b) => {
-                    Ok(lua.pack(b.inner.borrow_mut().select() as i64)?)
-                }
+        methods.add_method_mut("predict", |lua, this, input: LuaValue| match this {
+            LuaModel::QLearner(q) => {
+                let state: usize = lua.unpack(input)?;
+                Ok(lua.pack(q.inner.borrow().choose_action(state.saturating_sub(1)) + 1)?)
             }
+            LuaModel::NeuralNet(n) => {
+                let v: Vec<f32> = lua.unpack(input)?;
+                let out = n.inner.borrow().forward(&v);
+                let t = lua.create_table()?;
+                for (i, val) in out.into_iter().enumerate() {
+                    t.raw_set(i + 1, val)?;
+                }
+                Ok(lua.pack(t)?)
+            }
+            LuaModel::Bandit(b) => Ok(lua.pack(b.inner.borrow_mut().select() as i64)?),
         });
         // -- type --
         /// Returns this wrapper's stable type name `"LModel"`.
@@ -672,21 +669,18 @@ impl LuaUserData for LuaEnv {
         /// @return | number | Reward for this step.
         /// @return | boolean | Whether the episode has ended.
         /// @return | table | Extra info table.
-        methods.add_method_mut(
-            "step",
-            |lua, this, action: LuaValue| {
-                let (mut obs, reward, mut done, info) = this.call_step(lua, action)?;
-                this.apply_normalize(&mut obs);
-                this.step_count += 1;
-                if let Some(limit) = this.time_limit {
-                    if this.step_count >= limit {
-                        done = true;
-                    }
+        methods.add_method_mut("step", |lua, this, action: LuaValue| {
+            let (mut obs, reward, mut done, info) = this.call_step(lua, action)?;
+            this.apply_normalize(&mut obs);
+            this.step_count += 1;
+            if let Some(limit) = this.time_limit {
+                if this.step_count >= limit {
+                    done = true;
                 }
-                let obs_tbl = Self::obs_to_table(lua, obs)?;
-                Ok((obs_tbl, reward as f64, done, info))
-            },
-        );
+            }
+            let obs_tbl = Self::obs_to_table(lua, obs)?;
+            Ok((obs_tbl, reward as f64, done, info))
+        });
         // -- obsSpace --
         /// Returns the observation space descriptor.
         /// @return | table | Observation space with shape, low, high fields.
@@ -753,9 +747,7 @@ impl LuaUserData for LuaFrameStack {
         // -- capacity --
         /// Returns the maximum number of frames retained.
         /// @return | integer | Frame capacity n.
-        methods.add_method("capacity", |_, this, ()| {
-            Ok(this.inner.borrow().capacity())
-        });
+        methods.add_method("capacity", |_, this, ()| Ok(this.inner.borrow().capacity()));
         // -- type --
         /// Returns the type name `"LFrameStack"`.
         /// @return | string | The string `LFrameStack`.
@@ -797,7 +789,12 @@ fn parse_space_spec(tbl: &LuaTable) -> LuaResult<SpaceSpec> {
         }
     }
     let n: u32 = tbl.raw_get("n").unwrap_or(0);
-    Ok(SpaceSpec { shape, low, high, n })
+    Ok(SpaceSpec {
+        shape,
+        low,
+        high,
+        n,
+    })
 }
 
 fn vec_to_lua_f32<'lua>(lua: &'lua Lua, values: &[f32]) -> LuaResult<LuaTable<'lua>> {
@@ -963,11 +960,9 @@ impl LuaUserData for LuaConv2D {
         /// @return | LTensor | Output tensor produced by this convolution layer.
         methods.add_method("forward", |_, this, input: LuaAnyUserData| {
             let t = tensor_ud_to_owned(&input)?;
-            let out = this
-                .0
-                .borrow()
-                .forward(&t)
-                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.conv2d.forward: {}", e)))?;
+            let out = this.0.borrow().forward(&t).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.conv2d.forward: {}", e))
+            })?;
             Ok(LuaTensor(Rc::new(RefCell::new(out))))
         });
         // -- setWeights --
@@ -987,7 +982,9 @@ impl LuaUserData for LuaConv2D {
         // -- paramCount --
         /// Returns trainable parameter count for this Conv2D layer.
         /// @return | integer | Total number of trainable scalar parameters.
-        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.0.borrow().param_count() as i64)
+        });
         // -- type --
         /// Returns the Lua-visible type name for this wrapper.
         /// @return | string | The string `LConv2D`.
@@ -1014,11 +1011,9 @@ impl LuaUserData for LuaMaxPool2D {
         /// @return | LTensor | Output tensor after max-pooling reduction.
         methods.add_method("forward", |_, this, input: LuaAnyUserData| {
             let t = tensor_ud_to_owned(&input)?;
-            let out = this
-                .0
-                .borrow()
-                .forward(&t)
-                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.maxpool2d.forward: {}", e)))?;
+            let out = this.0.borrow().forward(&t).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.maxpool2d.forward: {}", e))
+            })?;
             Ok(LuaTensor(Rc::new(RefCell::new(out))))
         });
         // -- type --
@@ -1047,11 +1042,9 @@ impl LuaUserData for LuaMha {
         /// @return | LTensor | Output sequence tensor after attention projection.
         methods.add_method("forward", |_, this, input: LuaAnyUserData| {
             let t = tensor_ud_to_owned(&input)?;
-            let out = this
-                .0
-                .borrow()
-                .forward(&t)
-                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.mha.forward: {}", e)))?;
+            let out = this.0.borrow().forward(&t).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.mha.forward: {}", e))
+            })?;
             Ok(LuaTensor(Rc::new(RefCell::new(out))))
         });
         // -- setWeights --
@@ -1071,7 +1064,9 @@ impl LuaUserData for LuaMha {
         // -- paramCount --
         /// Returns trainable parameter count for this MHA block.
         /// @return | integer | Total number of trainable scalar parameters.
-        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.0.borrow().param_count() as i64)
+        });
         // -- type --
         /// Returns the Lua-visible type name for this wrapper.
         /// @return | string | The string `LMultiHeadAttention`.
@@ -1098,10 +1093,9 @@ impl LuaUserData for LuaPositionalEncoding {
         /// @return | LTensor | Encoded sequence tensor with added positional values.
         methods.add_method("apply", |_, this, input: LuaAnyUserData| {
             let mut t = tensor_ud_to_owned(&input)?;
-            this.0
-                .borrow()
-                .apply(&mut t)
-                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.positional.apply: {}", e)))?;
+            this.0.borrow().apply(&mut t).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.positional.apply: {}", e))
+            })?;
             Ok(LuaTensor(Rc::new(RefCell::new(t))))
         });
         // -- type --
@@ -1130,11 +1124,9 @@ impl LuaUserData for LuaTransformerEncoder {
         /// @return | LTensor | Output sequence tensor after encoder block operations.
         methods.add_method("forward", |_, this, input: LuaAnyUserData| {
             let t = tensor_ud_to_owned(&input)?;
-            let out = this
-                .0
-                .borrow()
-                .forward(&t)
-                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.transformer.encoder.forward: {}", e)))?;
+            let out = this.0.borrow().forward(&t).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.transformer.encoder.forward: {}", e))
+            })?;
             Ok(LuaTensor(Rc::new(RefCell::new(out))))
         });
         // -- setWeights --
@@ -1154,7 +1146,9 @@ impl LuaUserData for LuaTransformerEncoder {
         // -- paramCount --
         /// Returns trainable parameter count for this encoder block.
         /// @return | integer | Total number of trainable scalar parameters.
-        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.0.borrow().param_count() as i64)
+        });
         // -- type --
         /// Returns the Lua-visible type name for this wrapper.
         /// @return | string | The string `LTransformerEncoder`.
@@ -1185,16 +1179,12 @@ impl LuaUserData for LuaTransformerDecoder {
             |_, this, (input, encoder_out): (LuaAnyUserData, LuaAnyUserData)| {
                 let t = tensor_ud_to_owned(&input)?;
                 let e = tensor_ud_to_owned(&encoder_out)?;
-                let out = this
-                    .0
-                    .borrow()
-                    .forward(&t, &e)
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!(
-                            "lurek.learning.transformer.decoder.forward: {}",
-                            err
-                        ))
-                    })?;
+                let out = this.0.borrow().forward(&t, &e).map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.learning.transformer.decoder.forward: {}",
+                        err
+                    ))
+                })?;
                 Ok(LuaTensor(Rc::new(RefCell::new(out))))
             },
         );
@@ -1215,7 +1205,9 @@ impl LuaUserData for LuaTransformerDecoder {
         // -- paramCount --
         /// Returns trainable parameter count for this decoder block.
         /// @return | integer | Total number of trainable scalar parameters.
-        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.0.borrow().param_count() as i64)
+        });
         // -- type --
         /// Returns the Lua-visible type name for this wrapper.
         /// @return | string | The string `LTransformerDecoder`.
@@ -1275,11 +1267,10 @@ impl LuaUserData for LuaTensor {
                     )),
                 })
                 .collect::<LuaResult<Vec<usize>>>()?;
-            let val = this
-                .0
-                .borrow()
-                .get_element(&idx_vec)
-                .ok_or_else(|| LuaError::RuntimeError("LTensor:get: index out of bounds".into()))?;
+            let val =
+                this.0.borrow().get_element(&idx_vec).ok_or_else(|| {
+                    LuaError::RuntimeError("LTensor:get: index out of bounds".into())
+                })?;
             Ok(val as f64)
         });
         // -- len --
@@ -1534,27 +1525,29 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LEnv | New wrapped environment handle.
     tbl.set(
         "normalizeEnv",
-        lua.create_function(|_, (env_ud, mean, std): (LuaAnyUserData, Vec<f64>, Vec<f64>)| {
-            let source = env_ud.borrow::<LuaEnv>().map_err(|_| {
-                LuaError::RuntimeError("normalizeEnv: expected LEnv".into())
-            })?;
-            let obs_space = source.obs_space.clone();
-            let action_space = source.action_space.clone();
-            drop(source);
-            let mean_f32: Vec<f32> = mean.iter().map(|&v| v as f32).collect();
-            let std_f32: Vec<f32> = std.iter().map(|&v| v as f32).collect();
-            Ok(LuaEnv {
-                reset_fn: None,
-                step_fn: None,
-                obs_space,
-                action_space,
-                normalize_mean: Some(mean_f32),
-                normalize_std: Some(std_f32),
-                time_limit: None,
-                step_count: 0,
-                inner_env: Some(Rc::new(RefCell::new(env_ud.take::<LuaEnv>()?))),
-            })
-        })?,
+        lua.create_function(
+            |_, (env_ud, mean, std): (LuaAnyUserData, Vec<f64>, Vec<f64>)| {
+                let source = env_ud
+                    .borrow::<LuaEnv>()
+                    .map_err(|_| LuaError::RuntimeError("normalizeEnv: expected LEnv".into()))?;
+                let obs_space = source.obs_space.clone();
+                let action_space = source.action_space.clone();
+                drop(source);
+                let mean_f32: Vec<f32> = mean.iter().map(|&v| v as f32).collect();
+                let std_f32: Vec<f32> = std.iter().map(|&v| v as f32).collect();
+                Ok(LuaEnv {
+                    reset_fn: None,
+                    step_fn: None,
+                    obs_space,
+                    action_space,
+                    normalize_mean: Some(mean_f32),
+                    normalize_std: Some(std_f32),
+                    time_limit: None,
+                    step_count: 0,
+                    inner_env: Some(Rc::new(RefCell::new(env_ud.take::<LuaEnv>()?))),
+                })
+            },
+        )?,
     )?;
     // -- timeLimit --
     /// Wraps an LEnv so episodes end automatically after max_steps steps.
@@ -1564,9 +1557,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "timeLimit",
         lua.create_function(|_, (env_ud, max_steps): (LuaAnyUserData, u32)| {
-            let source = env_ud.borrow::<LuaEnv>().map_err(|_| {
-                LuaError::RuntimeError("timeLimit: expected LEnv".into())
-            })?;
+            let source = env_ud
+                .borrow::<LuaEnv>()
+                .map_err(|_| LuaError::RuntimeError("timeLimit: expected LEnv".into()))?;
             let obs_space = source.obs_space.clone();
             let action_space = source.action_space.clone();
             drop(source);
@@ -1591,7 +1584,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "loadOnnx",
         lua.create_function(|_, path: String| {
-            OnnxModel::load(&path).map(|m| LuaOnnxModel(Rc::new(RefCell::new(m))))
+            OnnxModel::load(&path)
+                .map(|m| LuaOnnxModel(Rc::new(RefCell::new(m))))
                 .map_err(LuaError::RuntimeError)
         })?,
     )?;
@@ -1615,7 +1609,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     Ok(v as f32)
                 })
                 .collect::<LuaResult<Vec<f32>>>()?;
-            Ok(LuaTensor(Rc::new(RefCell::new(LurekTensor::new(shape, data)))))
+            Ok(LuaTensor(Rc::new(RefCell::new(LurekTensor::new(
+                shape, data,
+            )))))
         })?,
     )?;
 
@@ -1694,12 +1690,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LMaxPool2D | New MaxPool2D layer handle.
     tbl.set(
         "newMaxPool2D",
-        lua.create_function(|_, (kernel_h, kernel_w, stride_h, stride_w): (usize, usize, usize, usize)| {
-            Ok(LuaMaxPool2D(Rc::new(RefCell::new(MaxPool2D::new(
-                (kernel_h, kernel_w),
-                (stride_h, stride_w),
-            )))))
-        })?,
+        lua.create_function(
+            |_, (kernel_h, kernel_w, stride_h, stride_w): (usize, usize, usize, usize)| {
+                Ok(LuaMaxPool2D(Rc::new(RefCell::new(MaxPool2D::new(
+                    (kernel_h, kernel_w),
+                    (stride_h, stride_w),
+                )))))
+            },
+        )?,
     )?;
 
     // -- newPositionalEncoding --
@@ -1710,9 +1708,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newPositionalEncoding",
         lua.create_function(|_, (d_model, max_len): (usize, usize)| {
-            Ok(LuaPositionalEncoding(Rc::new(RefCell::new(PositionalEncoding::new(
-                d_model, max_len,
-            )))))
+            Ok(LuaPositionalEncoding(Rc::new(RefCell::new(
+                PositionalEncoding::new(d_model, max_len),
+            ))))
         })?,
     )?;
 

@@ -3,8 +3,8 @@
 use super::dataframe_api::LuaDataFrame;
 use super::render_api::LuaFont;
 use super::SharedState;
-use crate::color::Color;
 use crate::charts::ChartDataFrameOptions;
+use crate::color::Color;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
 use crate::ui::extras::{AccordionSection, TableColumn, TableDataFrameOptions, Toast};
@@ -427,22 +427,24 @@ fn create_widget_table<'a>(
     /// @return | boolean | True when direction is valid; false otherwise.
     t.set(
         "setFocusNeighbor",
-        lua.create_function(move |_, (_self, direction, target): (LuaValue, String, Option<u32>)| {
-            let mut g = c.borrow_mut();
-            let Some(w) = g.widgets.get_mut(idx) else {
-                return Ok(false);
-            };
-            let base = w.base_mut();
-            let slot = match direction.as_str() {
-                "up" => &mut base.focus_neighbor_up,
-                "down" => &mut base.focus_neighbor_down,
-                "left" => &mut base.focus_neighbor_left,
-                "right" => &mut base.focus_neighbor_right,
-                _ => return Ok(false),
-            };
-            *slot = target.map(|v| v as usize);
-            Ok(true)
-        })?,
+        lua.create_function(
+            move |_, (_self, direction, target): (LuaValue, String, Option<u32>)| {
+                let mut g = c.borrow_mut();
+                let Some(w) = g.widgets.get_mut(idx) else {
+                    return Ok(false);
+                };
+                let base = w.base_mut();
+                let slot = match direction.as_str() {
+                    "up" => &mut base.focus_neighbor_up,
+                    "down" => &mut base.focus_neighbor_down,
+                    "left" => &mut base.focus_neighbor_left,
+                    "right" => &mut base.focus_neighbor_right,
+                    _ => return Ok(false),
+                };
+                *slot = target.map(|v| v as usize);
+                Ok(true)
+            },
+        )?,
     )?;
 
     let c = ctx.clone();
@@ -6374,9 +6376,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let c = ctx.clone();
     tbl.set(
         "getScaleFactor",
-        lua.create_function(move |_, ()| {
-            Ok(c.borrow().scale_factor)
-        })?,
+        lua.create_function(move |_, ()| Ok(c.borrow().scale_factor))?,
     )?;
 
     // -- visibleRange --
@@ -6389,11 +6389,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let c = ctx.clone();
     tbl.set(
         "visibleRange",
-        lua.create_function(move |_, (widget, item_count, item_height): (LuaTable, usize, f32)| {
-            let idx: usize = widget.get("_idx")?;
-            let (start, end) = c.borrow().visible_item_range(idx, item_count, item_height);
-            Ok((start, end))
-        })?,
+        lua.create_function(
+            move |_, (widget, item_count, item_height): (LuaTable, usize, f32)| {
+                let idx: usize = widget.get("_idx")?;
+                let (start, end) = c.borrow().visible_item_range(idx, item_count, item_height);
+                Ok((start, end))
+            },
+        )?,
     )?;
 
     // -- animateScale --
@@ -6410,14 +6412,22 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "animateScale",
         lua.create_function(
-            move |_, (idx, from_sx, from_sy, to_sx, to_sy, duration, easing): (
-                usize, f32, f32, f32, f32, f32, Option<String>,
+            move |_,
+                  (idx, from_sx, from_sy, to_sx, to_sy, duration, easing): (
+                usize,
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                Option<String>,
             )| {
                 let ease = easing
                     .as_deref()
                     .and_then(EasingFunction::parse_str)
                     .unwrap_or(EasingFunction::Linear);
-                Ok(c.borrow_mut().animate_scale(idx, from_sx, from_sy, to_sx, to_sy, duration, ease))
+                Ok(c.borrow_mut()
+                    .animate_scale(idx, from_sx, from_sy, to_sx, to_sy, duration, ease))
             },
         )?,
     )?;
@@ -6439,7 +6449,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     .as_deref()
                     .and_then(EasingFunction::parse_str)
                     .unwrap_or(EasingFunction::Linear);
-                Ok(c.borrow_mut().animate_rotation(idx, from, to, duration, ease))
+                Ok(c.borrow_mut()
+                    .animate_rotation(idx, from, to, duration, ease))
             },
         )?,
     )?;
@@ -6456,8 +6467,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "animateColor",
         lua.create_function(
-            move |_, (idx, from_tbl, to_tbl, duration, easing): (
-                usize, LuaTable, LuaTable, f32, Option<String>,
+            move |_,
+                  (idx, from_tbl, to_tbl, duration, easing): (
+                usize,
+                LuaTable,
+                LuaTable,
+                f32,
+                Option<String>,
             )| {
                 let from = [
                     from_tbl.get::<_, f32>("r").unwrap_or(1.0),

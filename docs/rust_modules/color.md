@@ -12,15 +12,9 @@
 
 ## Summary
 
-The `color` module is the base utility layer for working with color values in the engine. It provides a consistent RGBA model and common operations so rendering, UI, effects, and tools can use the same color rules.
+The color module provides fundamental color representations, space conversions, blending mathematics, and curated palettes for Lurek2D, supporting UI, rendering, and effects. It manages RGBA colors, supplying conversions between RGB, HSL, and HSV spaces, alongside Hex string parsing. For rendering, it computes clamped linear interpolations, alpha compositing (Porter-Duff), channel inversions, perceived luminance, gamma-to-linear conversions, and multiple blend modes. It also includes retro palettes like PICO-8, Game Boy, and NES.
 
-Its functional scope includes creation, conversion, blending, and palette access. Scripts can move between RGB, HSL, and HSV forms, convert gamma and linear components, and apply practical blend modes for real-time visual work.
-
-Because these operations are centralized, teams avoid repeating ad-hoc color formulas in many modules. This improves predictability and testability, especially when visual behavior must stay stable across runtime paths and content updates.
-
-Palette helpers add reusable curated color sets, while core math stays lightweight and deterministic. Together, this gives both quick authoring convenience and low-level control when custom visual logic is needed.
-
-Overall, the module provides one reliable color contract: define values, transform them, combine them, and reuse them consistently across the project.
+This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Files
 

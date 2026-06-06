@@ -12,15 +12,9 @@
 
 ## Summary
 
-The `dialog` module is the runtime layer for conversation flow. It lets projects define topics, branches, and progression state in a structured way, so dialogue behavior is predictable during gameplay.
+This module provides the narrative scripting and conversation logic system, allowing gameplay scripts to choreograph complex dialogues. It handles multi-character conversation graphs, player choices, and conditional narrative gates. Conversations are built as dialogue trees where branches are evaluated and ranked dynamically using utility scoring, ensuring the engine can select contextually appropriate dialogue paths.
 
-Its core value is controlled branching. Dialog options can be gated by context conditions, weighted for selection, and advanced through explicit state transitions instead of ad-hoc script branching.
-
-Speaker metadata and dialogue events are part of the same surface. This makes it easier for UI and tooling to react to conversation changes without reading internal conversation storage directly.
-
-The module is intentionally focused on dialogue logic, not presentation. Narrative UI timing, animations, and game-specific storytelling policy can consume this runtime contract while staying outside the module boundary.
-
-In practice, `lurek.dialog` provides one stable conversation foundation: define choices, evaluate gates, track progress, and publish outcomes consistently.
+To keep dialogue flows organized, the system separates narrative structure from presentation. It features a dedicated speaker registry that maps character IDs to display names, portraits, and audio properties. Additionally, a persistent state tracker maintains the history of visited nodes, active conversation nodes, and custom variable stores. This decouples visual layouts from script logic while ensuring progression stays coherent.
 
 ## Files
 

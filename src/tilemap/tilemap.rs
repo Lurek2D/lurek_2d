@@ -391,7 +391,11 @@ impl TileMap {
                 (pos.x, pos.y)
             }
             MapOrientation::Hexagonal => {
-                let pos = super::coords::to_screen_hex(tx as i32, ty as i32, self.tile_height as f32 * 0.5);
+                let pos = super::coords::to_screen_hex(
+                    tx as i32,
+                    ty as i32,
+                    self.tile_height as f32 * 0.5,
+                );
                 (pos.x, pos.y)
             }
         }

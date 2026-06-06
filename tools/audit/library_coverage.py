@@ -10,8 +10,10 @@ Measures:
   2. **API doc coverage** — What % of public functions are present in
       ``docs/api/lureksome.md`` (the generated human-readable API reference).
 
-  3. **Test coverage** — What % of public functions have a ``@covers`` marker
-     in the corresponding ``tests/lua/library/test_library_<name>.lua``.
+  3. **Test coverage** — What % of public functions are exercised by the
+      corresponding ``tests/lua/library/test_library_<name>.lua``. The audit
+      accepts legacy ``@library`` markers, modern ``@covers`` markers, and
+      falls back to name matching in the test body.
 
 Usage:
     python tools/audit/library_coverage.py              # all libraries, text report
@@ -130,18 +132,24 @@ def parse_library_functions(init_lua: Path) -> list[dict]:
     return results
 
 
-def _test_covered_names(test_lua: Path) -> set[str]:
-    """Return set of bare function names appearing in @covers markers."""
+def _test_covered_names(test_lua: Path, candidate_names: set[str]) -> set[str]:
+    """Return set of bare function names exercised by a library test file."""
     if not test_lua.exists():
         return set()
     text = test_lua.read_text(encoding="utf-8", errors="replace")
-    # @covers library.battle.newStatusEffect  → "newStatusEffect"
+    # Marker-based coverage: accept both @covers and legacy @library entries.
     names: set[str] = set()
-    for m in re.finditer(r"@covers\s+library\.\w+\.(\w+)", text):
-        names.add(m.group(1))
-    # Also match class method patterns: @covers library.battle.Combatant:method
-    for m in re.finditer(r"@covers\s+library\.\w+\.\w+:(\w+)", text):
-        names.add(m.group(1))
+    for m in re.finditer(r"@(covers|library)\s+([\w.:-]+)", text):
+        symbol = m.group(2)
+        names.add(_bare_name(symbol))
+
+    # Heuristic fallback: many library tests use module-level annotations, so
+    # we also treat the presence of the public function name in the test body
+    # as coverage evidence.
+    for candidate_name in candidate_names:
+        if re.search(rf"\b{re.escape(candidate_name)}\b", text):
+            names.add(candidate_name)
+
     return names
 
 
@@ -233,7 +241,7 @@ def audit_library(lib_name: str) -> dict:
     result["api_md_missing"] = missing_api[:20]
 
     # Test coverage (@covers in test file)
-    covered = _test_covered_names(test_lua)
+    covered = _test_covered_names(test_lua, bare_names)
     in_test = {n for n in bare_names if n in covered}
     missing_test = sorted(bare_names - covered)
     result["test_covered"] = len(in_test)

@@ -41,22 +41,13 @@ impl NeighborRules {
 
     /// Add a bidirectional compatibility rule: type_a matches type_b and vice versa.
     pub fn add_compatible(&mut self, type_a: u32, type_b: u32) {
-        self.compatibility
-            .entry(type_a)
-            .or_default()
-            .insert(type_b);
-        self.compatibility
-            .entry(type_b)
-            .or_default()
-            .insert(type_a);
+        self.compatibility.entry(type_a).or_default().insert(type_b);
+        self.compatibility.entry(type_b).or_default().insert(type_a);
     }
 
     /// Add a one-directional compatibility rule: type_a matches type_b (but not reverse).
     pub fn add_compatible_one_way(&mut self, type_a: u32, type_b: u32) {
-        self.compatibility
-            .entry(type_a)
-            .or_default()
-            .insert(type_b);
+        self.compatibility.entry(type_a).or_default().insert(type_b);
     }
 
     /// Check if two edge types are compatible.

@@ -3,8 +3,7 @@
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{
     detect_system_locale, flat_table_from_json, flat_table_from_toml, interpolate,
-    interpolate_pairs, is_rtl,
-    is_valid_locale_code, Catalog, PluralForm,
+    interpolate_pairs, is_rtl, is_valid_locale_code, Catalog, PluralForm,
 };
 use crate::runtime::SharedState;
 use mlua::prelude::*;
@@ -481,7 +480,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     }
                     candidate_lists.push(list);
                 }
-                let keys = Catalog::search_indexed_intersection(candidate_lists, limit.unwrap_or(0));
+                let keys =
+                    Catalog::search_indexed_intersection(candidate_lists, limit.unwrap_or(0));
                 let tbl = lua.create_table()?;
                 for (i, k) in keys.iter().enumerate() {
                     tbl.set(i + 1, k.as_str())?;

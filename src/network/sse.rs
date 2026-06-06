@@ -116,8 +116,7 @@ impl SseStream {
                     }
                     data.push_str(value.strip_prefix(' ').unwrap_or(value));
                 } else if let Some(value) = line.strip_prefix("event:") {
-                    event_type =
-                        Some(value.strip_prefix(' ').unwrap_or(value).to_string());
+                    event_type = Some(value.strip_prefix(' ').unwrap_or(value).to_string());
                 } else if let Some(value) = line.strip_prefix("id:") {
                     id = Some(value.strip_prefix(' ').unwrap_or(value).to_string());
                 }

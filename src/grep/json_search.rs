@@ -18,7 +18,11 @@ pub struct JsonMatch {
 }
 
 /// Search JSON files for values at specific paths.
-pub fn search_json_path(content: &str, query_path: &str, value_pattern: Option<&str>) -> Vec<JsonMatch> {
+pub fn search_json_path(
+    content: &str,
+    query_path: &str,
+    value_pattern: Option<&str>,
+) -> Vec<JsonMatch> {
     let mut results = Vec::new();
 
     // Simple JSON key-value search (line-based heuristic for TOML/JSON without serde)
@@ -44,7 +48,11 @@ pub fn search_json_path(content: &str, query_path: &str, value_pattern: Option<&
 }
 
 /// Search a JSON file for a key path.
-pub fn search_json_file(path: &Path, query_path: &str, value_pattern: Option<&str>) -> Vec<JsonMatch> {
+pub fn search_json_file(
+    path: &Path,
+    query_path: &str,
+    value_pattern: Option<&str>,
+) -> Vec<JsonMatch> {
     match std::fs::read_to_string(path) {
         Ok(content) => search_json_path(&content, query_path, value_pattern),
         Err(_) => Vec::new(),
@@ -54,7 +62,10 @@ pub fn search_json_file(path: &Path, query_path: &str, value_pattern: Option<&st
 fn extract_json_value(line: &str) -> String {
     // Extract value after : or =
     if let Some(pos) = line.find(':') {
-        line[pos + 1..].trim().trim_matches(|c| c == '"' || c == ',' || c == '}').to_string()
+        line[pos + 1..]
+            .trim()
+            .trim_matches(|c| c == '"' || c == ',' || c == '}')
+            .to_string()
     } else if let Some(pos) = line.find('=') {
         line[pos + 1..].trim().trim_matches('"').to_string()
     } else {

@@ -1,6 +1,25 @@
 -- test_evidence_audio.lua
 -- Evidence test: lurek.audio API + saves generated audio as WAV files
 -- Produces: audio_sine_440hz.wav, audio_chord.wav, audio_sweep.wav
+-- @covers lurek.audio.mixInto
+-- @covers lurek.audio.newBus
+-- @covers lurek.audio.newSoundData
+-- @covers lurek.audio.saveWAV
+-- @covers lurek.dsp.applyBandpass
+-- @covers lurek.dsp.applyHighpass
+-- @covers lurek.dsp.applyLowpass
+-- @covers lurek.dsp.newSawtoothWave
+-- @covers lurek.dsp.newSineWave
+-- @covers lurek.dsp.newSquareWave
+-- @covers lurek.dsp.newTriangleWave
+-- @covers lurek.dsp.newWhiteNoise
+-- @covers lurek.dsp.normalize
+-- @covers lurek.dsp.processOffline
+-- @covers lurek.dsp.spectrogramToPng
+-- @covers lurek.dsp.waveformToPng
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 
 local OUT = "tests/output/audio/"

@@ -22,18 +22,30 @@ fn parse_gamepad_binding(binding: &str) -> Option<(usize, u32)> {
     let button = parts.next()?.parse::<u32>().ok()?;
     Some((id, button))
 }
-/// Returns whether a keyboard or gamepad binding is currently down.
+fn parse_mouse_binding(binding: &str) -> Option<usize> {
+    let binding = binding.trim().to_ascii_lowercase();
+    let button = binding.strip_prefix("mouse")?.parse::<usize>().ok()?;
+    (button >= 1 && button <= 5).then_some(button - 1)
+}
+
+/// Returns whether a keyboard, mouse, or gamepad binding is currently down.
 fn binding_is_down(st: &SharedState, binding: &str) -> bool {
+    if let Some(button) = parse_mouse_binding(binding) {
+        return st.mouse.is_down(button);
+    }
     if let Some((id, button)) = parse_gamepad_binding(binding) {
         return st
             .gamepads
             .get(id)
             .is_some_and(|gp| gp.is_button_pressed(button));
     }
-    st.keyboard.is_down(binding)
+    st.keyboard.is_down(binding) || st.keyboard.is_scancode_down(binding)
 }
-/// Returns whether a keyboard or gamepad binding was pressed this frame.
+/// Returns whether a keyboard, mouse, or gamepad binding was pressed this frame.
 fn binding_was_pressed(st: &SharedState, binding: &str) -> bool {
+    if let Some(button) = parse_mouse_binding(binding) {
+        return st.mouse.buttons_pressed[button];
+    }
     if let Some((id, button)) = parse_gamepad_binding(binding) {
         return st
             .gamepads
@@ -41,9 +53,13 @@ fn binding_was_pressed(st: &SharedState, binding: &str) -> bool {
             .is_some_and(|gp| gp.was_button_pressed(button));
     }
     st.keyboard.get_pressed().iter().any(|k| k == binding)
+        || st.keyboard.was_scancode_pressed(binding)
 }
-/// Returns whether a keyboard or gamepad binding was released this frame.
+/// Returns whether a keyboard, mouse, or gamepad binding was released this frame.
 fn binding_was_released(st: &SharedState, binding: &str) -> bool {
+    if let Some(button) = parse_mouse_binding(binding) {
+        return st.mouse.buttons_released[button];
+    }
     if let Some((id, button)) = parse_gamepad_binding(binding) {
         return st
             .gamepads
@@ -51,6 +67,7 @@ fn binding_was_released(st: &SharedState, binding: &str) -> bool {
             .is_some_and(|gp| gp.was_button_released(button));
     }
     st.keyboard.get_released().iter().any(|k| k == binding)
+        || st.keyboard.was_scancode_released(binding)
 }
 /// Computes a -1/0/+1 axis value from an action's first two bindings; first binding is positive, second is negative.
 fn compute_axis(map: &HashMap<String, ActionDef>, st: &SharedState, action: &str) -> f32 {
@@ -1019,10 +1036,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     /// Performs the 'touch' operation.
     input_tbl.set("touch", touch)?;
-    let action_map: Rc<RefCell<HashMap<String, ActionDef>>> =
-        Rc::new(RefCell::new(HashMap::new()));
-    let rebind_callbacks: Rc<RefCell<Vec<LuaRegistryKey>>> =
-        Rc::new(RefCell::new(Vec::new()));
+    let action_map: Rc<RefCell<HashMap<String, ActionDef>>> = Rc::new(RefCell::new(HashMap::new()));
+    let rebind_callbacks: Rc<RefCell<Vec<LuaRegistryKey>>> = Rc::new(RefCell::new(Vec::new()));
     let last_pressed_frame: Rc<RefCell<HashMap<String, u64>>> =
         Rc::new(RefCell::new(HashMap::new()));
     let am = action_map.clone();
@@ -1071,7 +1086,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             for i in 0..n {
                 let cb = {
                     let cbs = rbc.borrow();
-                    cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                    cbs.get(i)
+                        .and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
                 };
                 if let Some(cb) = cb {
                     let kt = lua.create_table()?;
@@ -1194,7 +1210,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 for i in 0..n {
                     let cb = {
                         let cbs = rbc.borrow();
-                        cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                        cbs.get(i)
+                            .and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
                     };
                     if let Some(cb) = cb {
                         let kt = lua.create_table()?;
@@ -1353,7 +1370,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 for i in 0..n {
                     let cb = {
                         let cbs = rbc.borrow();
-                        cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                        cbs.get(i)
+                            .and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
                     };
                     if let Some(cb) = cb {
                         let kt = lua.create_table()?;
@@ -1484,7 +1502,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 for i in 0..n {
                     let cb = {
                         let cbs = rbc.borrow();
-                        cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                        cbs.get(i)
+                            .and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
                     };
                     if let Some(cb) = cb {
                         let kt = lua.create_table()?;
@@ -1692,4 +1711,44 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Performs the 'input' operation.
     lurek.set("input", input_tbl)?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::runtime::SharedState;
+    use std::path::PathBuf;
+
+    #[test]
+    fn mouse_bindings_resolve_to_mouse_button_state() {
+        let mut st = SharedState::new(800, 600, "test", PathBuf::new());
+        st.mouse.set_button(0, true);
+        st.mouse.set_button(1, true);
+
+        assert!(binding_is_down(&st, "mouse1"));
+        assert!(binding_is_down(&st, "mouse2"));
+        assert!(!binding_is_down(&st, "mouse3"));
+    }
+
+    #[test]
+    fn mouse_bindings_track_button_transitions() {
+        let mut st = SharedState::new(800, 600, "test", PathBuf::new());
+        st.mouse.set_button(0, true);
+        assert!(binding_was_pressed(&st, "mouse1"));
+
+        st.mouse.set_button(0, false);
+        assert!(binding_was_released(&st, "mouse1"));
+    }
+
+    #[test]
+    fn scancode_bindings_resolve_to_scancode_state() {
+        let mut st = SharedState::new(800, 600, "test", PathBuf::new());
+        st.keyboard.press_scancode("lshift".to_string());
+
+        assert!(binding_is_down(&st, "lshift"));
+        assert!(binding_was_pressed(&st, "lshift"));
+
+        st.keyboard.release_scancode("lshift".to_string());
+        assert!(binding_was_released(&st, "lshift"));
+    }
 }

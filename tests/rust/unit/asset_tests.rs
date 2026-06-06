@@ -23,7 +23,11 @@ fn ref_count_transitions_to_unloaded_after_dec() {
 #[test]
 fn set_name_and_group_roundtrip() {
     let mut cache = AssetCache::new();
-    let id = cache.register("foo.toml".to_string(), AssetType::Toml, Some("x=1".to_string()));
+    let id = cache.register(
+        "foo.toml".to_string(),
+        AssetType::Toml,
+        Some("x=1".to_string()),
+    );
     cache.set_name(id, "config".to_string());
     cache.set_group(id, "project".to_string());
 
@@ -35,7 +39,11 @@ fn set_name_and_group_roundtrip() {
 #[test]
 fn add_and_remove_tags_behave_as_set() {
     let mut cache = AssetCache::new();
-    let id = cache.register("a.json".to_string(), AssetType::Json, Some("{}".to_string()));
+    let id = cache.register(
+        "a.json".to_string(),
+        AssetType::Json,
+        Some("{}".to_string()),
+    );
 
     cache.add_tag(id, "ui");
     cache.add_tag(id, "ui");
@@ -49,7 +57,11 @@ fn add_and_remove_tags_behave_as_set() {
 #[test]
 fn find_by_name_is_case_insensitive() {
     let mut cache = AssetCache::new();
-    let id = cache.register("Cargo.toml".to_string(), AssetType::Toml, Some("".to_string()));
+    let id = cache.register(
+        "Cargo.toml".to_string(),
+        AssetType::Toml,
+        Some("".to_string()),
+    );
     cache.set_name(id, "ProjectConfig".to_string());
 
     let hits = cache.find_by_name("project");
@@ -59,8 +71,16 @@ fn find_by_name_is_case_insensitive() {
 #[test]
 fn find_by_group_returns_only_matching_ids() {
     let mut cache = AssetCache::new();
-    let a = cache.register("a.json".to_string(), AssetType::Json, Some("{}".to_string()));
-    let b = cache.register("b.json".to_string(), AssetType::Json, Some("{}".to_string()));
+    let a = cache.register(
+        "a.json".to_string(),
+        AssetType::Json,
+        Some("{}".to_string()),
+    );
+    let b = cache.register(
+        "b.json".to_string(),
+        AssetType::Json,
+        Some("{}".to_string()),
+    );
     cache.set_group(a, "ui".to_string());
     cache.set_group(b, "gfx".to_string());
 
@@ -92,7 +112,11 @@ fn find_by_type_matches_type_string() {
 #[test]
 fn clear_removes_all_entries_and_groups() {
     let mut cache = AssetCache::new();
-    let a = cache.register("a.json".to_string(), AssetType::Json, Some("{}".to_string()));
+    let a = cache.register(
+        "a.json".to_string(),
+        AssetType::Json,
+        Some("{}".to_string()),
+    );
     cache.set_group(a, "ui".to_string());
 
     assert_eq!(1, cache.loaded_count());

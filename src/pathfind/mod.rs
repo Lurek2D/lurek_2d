@@ -3,8 +3,6 @@
 //! Includes grid, hex, isometric, and navmesh navigation surfaces.
 //! Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
 
-/// Multi-source Dijkstra distance field for goal-oriented AI movement.
-pub mod goal_map;
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;
 /// Core A* search, line-of-sight checks, and path smoothing.
@@ -15,6 +13,8 @@ pub mod async_pool;
 pub mod bidir;
 /// Dijkstra-based flow field for multi-target distance maps.
 pub mod flow_field;
+/// Multi-source Dijkstra distance field for goal-oriented AI movement.
+pub mod goal_map;
 /// Province-level graph pathfinding and reachability.
 pub mod graph_path;
 /// Generic 2D grid abstraction for pathfinding algorithms.
@@ -33,12 +33,12 @@ pub mod pathgrid;
 pub mod render;
 /// Per-unit pathfinder with waypoint queue and replanning.
 pub mod unit_pathfinder;
-pub use goal_map::{GoalMap, GoalSource, UNREACHABLE};
 pub use ai_flow_field::FlowField as SimpleFlowField;
 pub use astar::{astar, line_of_sight, smooth_path};
 pub use async_pool::PathThreadPool;
 pub use bidir::bidirectional_astar;
 pub use flow_field::FlowField;
+pub use goal_map::{GoalMap, GoalSource, UNREACHABLE};
 pub use graph_path::{find_province_path, province_reachable, ProvinceCostFn, ProvincePath};
 pub use grid::Grid;
 pub use hpa::{build_abstract, is_reachable as hpa_is_reachable, AbstractGraph};

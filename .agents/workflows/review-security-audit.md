@@ -3,7 +3,6 @@ trigger: manual
 description: "Review a target surface for security risks, unsafe assumptions, and missing hardening."
 expected_agent: "Manager"
 ---
-
 # Review Security Audit
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any known incident or repro.
 
 ## Steps
-1. Load [skill: error-handling](../rules/skill_error-handling.md), [skill: asset-pipeline](../rules/skill_asset-pipeline.md), and [skill: dev-debugging](../rules/skill_dev-debugging.md) before acting.
+1. Load [skill: error-handling](../skills/error-handling/SKILL.md), [skill: asset-pipeline](../skills/asset-pipeline/SKILL.md), and [skill: dev-debugging](../skills/dev-debugging/SKILL.md) before acting.
 2. Read the named files, data entry points, relevant asset or script loading paths, and any current validation logic.
 3. Prioritize trust boundaries, file or script ingestion, panic paths, unchecked assumptions, and exploitability.
 4. State severity, realistic exploit path, and the most important missing validation or hardening step.

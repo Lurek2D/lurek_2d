@@ -3,7 +3,6 @@ trigger: manual
 description: "Review module dependencies for direction, ownership, and unnecessary coupling."
 expected_agent: "Manager"
 ---
-
 # Review Module Deps
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any desired boundary outcome.
 
 ## Steps
-1. Load [skill: module-architecture](../rules/skill_module-architecture.md) before acting.
+1. Load [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
 2. Read the named modules, their public edges, docs/specs, and any recent dependency changes.
 3. Look for dependency inversion failures, utility creep, hidden cycles, and domain logic leaking through thin wrappers.
 4. Return the clearest dependency risks, the clean boundary direction, and the smallest safe refactor path.

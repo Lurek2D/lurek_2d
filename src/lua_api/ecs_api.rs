@@ -29,9 +29,7 @@ impl LuaUserData for LuaUniverse {
         /// Deletes an entity and removes its components from this universe.
         /// @param | id | integer | Entity id to delete.
         methods.add_method("kill", |lua, this, id: u32| {
-            this.inner
-                .borrow_mut()
-                .kill(crate::ecs::EntityId(id), lua)
+            this.inner.borrow_mut().kill(crate::ecs::EntityId(id), lua)
         });
         // -- isAlive --
         /// Returns whether an entity id currently exists in this universe.

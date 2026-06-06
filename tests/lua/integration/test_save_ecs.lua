@@ -1,5 +1,9 @@
 -- Integration: save manager tracking entity state and TOML config blueprints
 -- @describe integration: save entity world state
+-- @covers lurek.binary.parseToml
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.save.newSaveManager
+
 
 describe("integration: save entity world state", function()
 

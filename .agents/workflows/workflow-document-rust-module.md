@@ -3,7 +3,6 @@ trigger: manual
 description: "Audit and complete Rust docs in src/<module>/ by following rust-coding skill rules as the single source of truth, then verify with quality checks."
 expected_agent: "Manager"
 ---
-
 # Workflow: Document Rust Module
 
 ## Goal
@@ -12,13 +11,13 @@ expected_agent: "Manager"
 - All `#[cfg(test)]` blocks are moved out to `tests/rust/unit/<module>_<file>_tests.rs`.
 - **Do not run build or task commands during comment-only edits unless the user explicitly asks.**
 
-> All doc formatting rules live in `../rules/skill_rust-coding.md`. Do not restate them here.
+> All doc formatting rules live in `../skills/rust-coding/SKILL.md`. Do not restate them here.
 
 ## Inputs
 - `module` — the module directory to process (e.g. `physics`, `render`, `audio`).
 
 ## Documentation Rules
-Single source of truth: `../rules/skill_rust-coding.md`. All formatting rules are there.
+Single source of truth: `../skills/rust-coding/SKILL.md`. All formatting rules are there.
 If this prompt and the skill disagree on style, the skill wins.
 
 ## Required Non-style Rules
@@ -35,7 +34,7 @@ For every `mod.rs` in scope:
 
 ## Steps
 
-1. Load [skill: rust-coding](../rules/skill_rust-coding.md) and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 
 2. **Fix tests first** — Extract all `#[cfg(test)]` blocks from source files, create the corresponding `tests/rust/unit/` files, and update `mod.rs` registration.
 

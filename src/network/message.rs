@@ -33,4 +33,3 @@ pub fn pack(value: &NetValue) -> Result<Vec<u8>, NetworkError> {
 pub fn unpack(data: &[u8]) -> Result<NetValue, NetworkError> {
     rmp_serde::from_slice(data).map_err(|e| NetworkError::Serialization(e.to_string()))
 }
-

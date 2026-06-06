@@ -93,7 +93,15 @@ impl KeyboardState {
     pub fn is_scancode_down(&self, scancode: &str) -> bool {
         self.scancodes_down.contains(scancode)
     }
+    /// Return true when a scan-code transitioned to pressed this frame.
+    pub fn was_scancode_pressed(&self, scancode: &str) -> bool {
+        self.scancodes_pressed.iter().any(|k| k == scancode)
+    }
 
+    /// Return true when a scan-code transitioned to released this frame.
+    pub fn was_scancode_released(&self, scancode: &str) -> bool {
+        self.scancodes_released.iter().any(|k| k == scancode)
+    }
     /// Enable or disable OS key-repeat forwarding.
     pub(crate) fn set_key_repeat(&mut self, enabled: bool) {
         self.key_repeat_enabled = enabled;

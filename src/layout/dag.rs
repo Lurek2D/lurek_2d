@@ -31,7 +31,8 @@ pub fn layout_dag(
 fn assign_layers(nodes: &[LayoutNode], edges: &[LayoutEdge]) -> Vec<Vec<NodeId>> {
     let node_ids: HashSet<NodeId> = nodes.iter().map(|n| n.id).collect();
     let mut in_degree: HashMap<NodeId, usize> = node_ids.iter().map(|&id| (id, 0)).collect();
-    let mut adj: HashMap<NodeId, Vec<NodeId>> = node_ids.iter().map(|&id| (id, Vec::new())).collect();
+    let mut adj: HashMap<NodeId, Vec<NodeId>> =
+        node_ids.iter().map(|&id| (id, Vec::new())).collect();
 
     for edge in edges {
         if node_ids.contains(&edge.from) && node_ids.contains(&edge.to) {

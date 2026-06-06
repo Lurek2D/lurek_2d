@@ -2,8 +2,6 @@
 //! Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface.
 //! Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation.
 
-/// Type-safe identifiers for nodes, edges, and items.
-pub mod types;
 /// Graph algorithm helpers. This module is publicly re-exported.
 pub mod algorithms;
 /// Core graph container and stats.
@@ -22,6 +20,8 @@ pub mod render;
 pub mod simulation;
 /// Supply and demand helpers. This module is publicly re-exported.
 pub mod supply_demand;
+/// Type-safe identifiers for nodes, edges, and items.
+pub mod types;
 /// Core graph container and stats.
 pub use core::{Graph, GraphStats};
 /// Edge data type.

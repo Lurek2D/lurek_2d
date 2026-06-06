@@ -118,7 +118,7 @@ impl LootTable {
     pub fn build(&mut self) {
         let n = self.entries.len();
         if n == 0 {
-            self.prob  = Vec::new();
+            self.prob = Vec::new();
             self.alias = Vec::new();
             self.built = true;
             return;
@@ -128,28 +128,44 @@ impl LootTable {
         assert!(total > 0.0, "LootTable: all weights are zero");
 
         let avg = total / n as f64;
-        let mut scaled: Vec<f64> = self.entries.iter().map(|e| e.weight / avg * n as f64).collect();
+        let mut scaled: Vec<f64> = self
+            .entries
+            .iter()
+            .map(|e| e.weight / avg * n as f64)
+            .collect();
 
-        self.prob  = vec![0.0; n];
+        self.prob = vec![0.0; n];
         self.alias = vec![0usize; n];
 
         let mut small: Vec<usize> = Vec::new();
         let mut large: Vec<usize> = Vec::new();
 
         for (i, &s) in scaled.iter().enumerate() {
-            if s < 1.0 { small.push(i); } else { large.push(i); }
+            if s < 1.0 {
+                small.push(i);
+            } else {
+                large.push(i);
+            }
         }
 
         while !small.is_empty() && !large.is_empty() {
             let l = small.pop().unwrap();
             let g = large.pop().unwrap();
-            self.prob[l]  = scaled[l];
+            self.prob[l] = scaled[l];
             self.alias[l] = g;
             scaled[g] = scaled[g] + scaled[l] - 1.0;
-            if scaled[g] < 1.0 { small.push(g); } else { large.push(g); }
+            if scaled[g] < 1.0 {
+                small.push(g);
+            } else {
+                large.push(g);
+            }
         }
-        for l in small  { self.prob[l] = 1.0; }
-        for g in large  { self.prob[g] = 1.0; }
+        for l in small {
+            self.prob[l] = 1.0;
+        }
+        for g in large {
+            self.prob[g] = 1.0;
+        }
 
         self.built = true;
     }
@@ -164,10 +180,16 @@ impl LootTable {
     pub fn sample(&mut self) -> Option<&LootEntry> {
         self.ensure_built();
         let n = self.entries.len();
-        if n == 0 { return None; }
+        if n == 0 {
+            return None;
+        }
         let col = self.rng.random_int(0, n as i64 - 1) as usize;
-        let r   = self.rng.random();
-        let idx = if r < self.prob[col] { col } else { self.alias[col] };
+        let r = self.rng.random();
+        let idx = if r < self.prob[col] {
+            col
+        } else {
+            self.alias[col]
+        };
         Some(&self.entries[idx])
     }
 
@@ -190,8 +212,12 @@ impl LootTable {
         let mut result = Vec::new();
         let max_attempts = n * 20 + 100;
         for _ in 0..max_attempts {
-            if result.len() >= n { break; }
-            if seen.len() >= self.entries.len() { break; }
+            if result.len() >= n {
+                break;
+            }
+            if seen.len() >= self.entries.len() {
+                break;
+            }
             if let Some(e) = self.sample() {
                 if seen.insert(e.id.clone()) {
                     result.push(e.clone());
@@ -298,7 +324,9 @@ impl LootTable {
 
         if self.built {
             if self.prob.len() != self.entries.len() || self.alias.len() != self.entries.len() {
-                return Err("loot table restore: alias/prob lengths do not match entry count".into());
+                return Err(
+                    "loot table restore: alias/prob lengths do not match entry count".into(),
+                );
             }
         } else {
             self.prob.clear();
@@ -336,9 +364,9 @@ impl LootTable {
             .ok_or_else(|| "loot table from_toml: missing entries array".to_string())?;
 
         for (idx, entry) in entries.iter().enumerate() {
-            let entry_tbl = entry.as_table().ok_or_else(|| {
-                format!("loot table from_toml: entries[{idx}] must be a table")
-            })?;
+            let entry_tbl = entry
+                .as_table()
+                .ok_or_else(|| format!("loot table from_toml: entries[{idx}] must be a table"))?;
             let id = entry_tbl
                 .get("id")
                 .and_then(TomlValue::as_str)
@@ -415,7 +443,7 @@ impl PityTracker {
     pub fn notice(&mut self, result_id: &str) -> bool {
         if result_id == self.target_id {
             self.counter = 0;
-            self.primed  = false;
+            self.primed = false;
             false
         } else {
             self.counter += 1;
@@ -437,7 +465,7 @@ impl PityTracker {
     /// Reset counter and primed state without consuming a guaranteed drop.
     pub fn reset(&mut self) {
         self.counter = 0;
-        self.primed  = false;
+        self.primed = false;
     }
 
     /// Returns the current pity-system miss counter value.
@@ -461,8 +489,8 @@ impl PityTracker {
             return Err("pity restore: blob too short".into());
         }
         self.threshold = u32::from_le_bytes(data[0..4].try_into().unwrap());
-        self.counter   = u32::from_le_bytes(data[4..8].try_into().unwrap());
-        self.primed    = data[8] != 0;
+        self.counter = u32::from_le_bytes(data[4..8].try_into().unwrap());
+        self.primed = data[8] != 0;
         Ok(())
     }
 }

@@ -3,7 +3,6 @@ trigger: manual
 description: "Analyze frame time, draw cost, or render-pipeline hotspots in one scenario."
 expected_agent: "Manager"
 ---
-
 # Analyze Render Performance
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any profiling output.
 
 ## Steps
-1. Load [skill: performance-profiling](../rules/skill_performance-profiling.md) and [skill: gpu-programming](../rules/skill_gpu-programming.md) before acting.
+1. Load [skill: performance-profiling](../skills/performance-profiling/SKILL.md) and [skill: gpu-programming](../skills/gpu-programming/SKILL.md) before acting.
 2. Gather only the relevant source material from render traces, frame captures, GPU validation output, render code, and the scenario that reproduces the issue.
 3. Break the cost down into passes, draw submission, resource updates, or synchronization so the main bottleneck is explicit.
 4. Return the most likely controlling render path, any missing measurement, and the next narrow validation step.

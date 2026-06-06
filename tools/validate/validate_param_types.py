@@ -25,6 +25,7 @@ Exit codes:
     1  one or more type/name mismatches found
 """
 
+import argparse
 import importlib.util
 import re
 import sys
@@ -239,12 +240,25 @@ def _check_file(api_file: Path) -> int:
 # ─── entry point ─────────────────────────────────────────────────────────────
 
 def main(argv: list[str] | None = None) -> int:
-    args = argv if argv is not None else sys.argv[1:]
-    errors_only = "--errors-only" in args
-    positional = [a for a in args if not a.startswith("--")]
+    parser = argparse.ArgumentParser(
+        description="Verify that @param type tags match Rust closure type inference.",
+    )
+    parser.add_argument(
+        "target",
+        nargs="?",
+        help="src/lua_api directory or a specific *_api.rs file (default: all API files)",
+    )
+    parser.add_argument(
+        "--errors-only",
+        action="store_true",
+        help="Only print mismatches, not name-divergence warnings.",
+    )
+    args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
-    if positional:
-        target = Path(positional[0]).resolve()
+    errors_only = args.errors_only
+
+    if args.target:
+        target = Path(args.target).resolve()
         if target.is_dir():
             api_files = sorted(target.glob("*_api.rs"))
         else:

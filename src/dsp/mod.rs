@@ -16,11 +16,11 @@ pub mod synthesis;
 pub mod visualizer;
 
 pub use analysis::{LevelDetector, SpectrumAnalyzer};
-pub use effects::{
-	add_effect_to_shared_chain, remove_effect_from_shared_chain, set_shared_chain_effect_param,
-	ActiveEffect, AtomicParam, DynamicEffectSource, EffectParams, EffectType,
-};
 pub use effects::SharedEffectGraph;
+pub use effects::{
+    add_effect_to_shared_chain, remove_effect_from_shared_chain, set_shared_chain_effect_param,
+    ActiveEffect, AtomicParam, DynamicEffectSource, EffectParams, EffectType,
+};
 pub use graph::{DspGraph, DspNode, DspNodeType, NodeId};
 pub use offline::OfflineEffect;
 pub use synthesis::{AdsrEnvelope, Synthesizer, Waveform};

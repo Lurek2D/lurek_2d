@@ -89,7 +89,11 @@ impl Default for ProvinceRenderOptions {
 }
 
 /// Return the RGBA line colour for a border segment based on its registered type config.
-fn border_color_from_registry(registry: &ProvinceRegistry, a: ProvinceId, b: ProvinceId) -> [f32; 4] {
+fn border_color_from_registry(
+    registry: &ProvinceRegistry,
+    a: ProvinceId,
+    b: ProvinceId,
+) -> [f32; 4] {
     let border_type = registry.get_border_type(a, b).unwrap_or(0);
     registry
         .get_border_type_config(border_type)
@@ -141,10 +145,7 @@ fn resolve_zoom_mode(opts: &ProvinceRenderOptions) -> ProvinceZoomMode {
     ProvinceZoomMode::Tactical
 }
 
-fn should_render_border_in_mode(
-    mode: ProvinceZoomMode,
-    is_country: bool,
-) -> bool {
+fn should_render_border_in_mode(mode: ProvinceZoomMode, is_country: bool) -> bool {
     match mode {
         ProvinceZoomMode::Tactical => true,
         ProvinceZoomMode::Strategic => is_country,
@@ -257,10 +258,12 @@ pub fn generate_render_commands(
                 let Some(sb) = registry.style_for(ProvinceId(b)) else {
                     continue;
                 };
-                if !is_fully_visible(sa.visibility_state) || !is_fully_visible(sb.visibility_state) {
+                if !is_fully_visible(sa.visibility_state) || !is_fully_visible(sb.visibility_state)
+                {
                     continue;
                 }
-                let pair_style_override = registry.get_border_pair_style(ProvinceId(a), ProvinceId(b));
+                let pair_style_override =
+                    registry.get_border_pair_style(ProvinceId(a), ProvinceId(b));
                 let pair_style = pair_style_override.unwrap_or_default();
                 let is_country = pair_style.flags.contains_bits(BorderPairFlags::COUNTRY);
                 if !should_render_border_in_mode(zoom_mode, is_country) {
@@ -277,9 +280,13 @@ pub fn generate_render_commands(
                     active_width = Some(width);
                 }
 
-                let color = pair_style.color.unwrap_or_else(|| border_color_from_registry(registry, ProvinceId(a), ProvinceId(b)));
+                let color = pair_style.color.unwrap_or_else(|| {
+                    border_color_from_registry(registry, ProvinceId(a), ProvinceId(b))
+                });
                 if active_color != Some(color) {
-                    cmds.push(RenderCommand::SetColor(color[0], color[1], color[2], color[3]));
+                    cmds.push(RenderCommand::SetColor(
+                        color[0], color[1], color[2], color[3],
+                    ));
                     active_color = Some(color);
                 }
 
@@ -293,7 +300,9 @@ pub fn generate_render_commands(
         }
     }
     if opts.draw_roads && zoom_mode == ProvinceZoomMode::Tactical {
-        cmds.push(RenderCommand::SetLineWidth((opts.border_width * 1.25).max(1.0)));
+        cmds.push(RenderCommand::SetLineWidth(
+            (opts.border_width * 1.25).max(1.0),
+        ));
         cmds.push(RenderCommand::SetColor(
             140.0 / 255.0,
             100.0 / 255.0,
@@ -441,17 +450,17 @@ pub fn generate_render_commands(
             .map(|style| is_fully_visible(style.visibility_state))
             .unwrap_or(false);
         if can_draw_hover {
-        if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
-            cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 0.35));
-            cmds.push(RenderCommand::SetLineWidth(2.0));
-            cmds.push(RenderCommand::Rectangle {
-                mode: DrawMode::Line,
-                x: min_x as f32 * opts.pixel_size,
-                y: min_y as f32 * opts.pixel_size,
-                w: (max_x.saturating_sub(min_x) + 1) as f32 * opts.pixel_size,
-                h: (max_y.saturating_sub(min_y) + 1) as f32 * opts.pixel_size,
-            });
-        }
+            if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
+                cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 0.35));
+                cmds.push(RenderCommand::SetLineWidth(2.0));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Line,
+                    x: min_x as f32 * opts.pixel_size,
+                    y: min_y as f32 * opts.pixel_size,
+                    w: (max_x.saturating_sub(min_x) + 1) as f32 * opts.pixel_size,
+                    h: (max_y.saturating_sub(min_y) + 1) as f32 * opts.pixel_size,
+                });
+            }
         }
     }
     if let Some(id) = opts.selected_id {
@@ -460,17 +469,17 @@ pub fn generate_render_commands(
             .map(|style| is_fully_visible(style.visibility_state))
             .unwrap_or(false);
         if can_draw_selected {
-        if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
-            cmds.push(RenderCommand::SetColor(1.0, 0.9, 0.1, 0.9));
-            cmds.push(RenderCommand::SetLineWidth(3.0));
-            cmds.push(RenderCommand::Rectangle {
-                mode: DrawMode::Line,
-                x: min_x as f32 * opts.pixel_size,
-                y: min_y as f32 * opts.pixel_size,
-                w: (max_x.saturating_sub(min_x) + 1) as f32 * opts.pixel_size,
-                h: (max_y.saturating_sub(min_y) + 1) as f32 * opts.pixel_size,
-            });
-        }
+            if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
+                cmds.push(RenderCommand::SetColor(1.0, 0.9, 0.1, 0.9));
+                cmds.push(RenderCommand::SetLineWidth(3.0));
+                cmds.push(RenderCommand::Rectangle {
+                    mode: DrawMode::Line,
+                    x: min_x as f32 * opts.pixel_size,
+                    y: min_y as f32 * opts.pixel_size,
+                    w: (max_x.saturating_sub(min_x) + 1) as f32 * opts.pixel_size,
+                    h: (max_y.saturating_sub(min_y) + 1) as f32 * opts.pixel_size,
+                });
+            }
         }
     }
     cmds.push(RenderCommand::PopTransform);

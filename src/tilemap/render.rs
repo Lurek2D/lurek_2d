@@ -31,9 +31,7 @@ fn gid_to_color(gid: u32) -> (f32, f32, f32) {
 impl TileMap {
     fn tile_origin_for_render(&self, tx: u32, ty: u32, tw: f32, th: f32) -> (f32, f32) {
         match self.get_orientation() {
-            MapOrientation::TopDown | MapOrientation::SideView => {
-                (tx as f32 * tw, ty as f32 * th)
-            }
+            MapOrientation::TopDown | MapOrientation::SideView => (tx as f32 * tw, ty as f32 * th),
             MapOrientation::Isometric => {
                 let pos = to_screen_iso(tx as f32, ty as f32, tw, th);
                 (pos.x, pos.y)

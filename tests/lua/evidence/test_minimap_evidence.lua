@@ -2,6 +2,10 @@
 -- Evidence tests: lurek.minimap API + PNG visualization
 -- Covers exactly 5 high-quality unique evidence files:
 -- minimap_terrain.png, minimap_fog.png, minimap_blips.png, minimap_bounds.png, minimap_waypoints.png
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.minimap.newMinimap
+
 
 
 local OUT = "tests/output/minimap/"

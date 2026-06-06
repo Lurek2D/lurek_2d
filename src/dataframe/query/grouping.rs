@@ -173,7 +173,10 @@ impl DataFrame {
             })
             .collect();
 
-        let key_col: Vec<CellValue> = key_order.iter().map(|k| CellValue::Text(k.clone())).collect();
+        let key_col: Vec<CellValue> = key_order
+            .iter()
+            .map(|k| CellValue::Text(k.clone()))
+            .collect();
         Ok(DataFrame::from_raw(
             vec![group_name, out_col],
             vec![key_col, results],

@@ -5,7 +5,7 @@
 //! The file is intentionally narrow because it exists to answer identity questions, not to abstract whole platform APIs.
 
 use crate::log_msg;
-use crate::runtime::log_messages::{LA03_OPEN_URL_REJECTED};
+use crate::runtime::log_messages::LA03_OPEN_URL_REJECTED;
 
 /// Returns the current operating system name.
 pub fn get_os_name() -> &'static str {

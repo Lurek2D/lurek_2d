@@ -4,8 +4,8 @@
 //! Packed ray input is unpacked here into stable per-column records that preserve shading and visibility decisions from the DDA stage.
 //! The result is a narrow transport format between hit collection and later wall, floor, or sprite composition work.
 
-use crate::log_msg;
 use crate::color::Color;
+use crate::log_msg;
 use crate::runtime::log_messages::{CB01, CB02};
 /// Projected wall-slice data for one screen column produced by a single DDA ray.
 #[derive(Debug, Clone)]

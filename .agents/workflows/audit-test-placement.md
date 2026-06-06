@@ -3,7 +3,6 @@ trigger: manual
 description: "Audit whether tests live in the correct Rust or Lua layer for the behavior they cover."
 expected_agent: "Manager"
 ---
-
 # Audit Test Placement
 
 ## Goal
@@ -15,7 +14,7 @@ expected_agent: "Manager"
 - Any current placement concern.
 
 ## Steps
-1. Load [skill: testing-rust](../rules/skill_testing-rust.md), [skill: lua-rust-bridge](../rules/skill_lua-rust-bridge.md), and [skill: module-architecture](../rules/skill_module-architecture.md) before acting.
+1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md), [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md), and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
 2. Read tests/, src/lua_api/, docs/specs/, and the touched module paths.
 3. Check whether Lua-visible behavior lives under tests/lua/, Rust-only internals live under tests/rust/unit/, and support files sit in the right harness layer.
 4. Report misplaced tests, missing tests, and the exact target path each issue should move to.

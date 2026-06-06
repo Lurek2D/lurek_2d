@@ -2,7 +2,6 @@
 trigger: model_decision
 description: "Load this skill when running end-to-end audits on src/ modules for docs, tests, architecture, wiki, or code quality. Skip it for feature work, game scripts, or pure Lua."
 ---
-
 # module-audit
 
 ## Mission
@@ -23,25 +22,19 @@ Own the 12-phase module audit process: structure, documentation, testing, archit
 - Pure Lua work -> use lua-scripting skill
 
 ## Domain Knowledge
-- `python tools/audit/audit_module.py <module>` is the entry point. It runs 12 phases: (1) mod.rs thinness, (2) file size limits, (3) docs/specs presence, (4) Lua API coverage, (5) test coverage, (6) wiki coverage, (7) example coverage, (8) dependency direction, (9) lua_api wrapper leakage, (10) println/eprintln hotspots, (11) unsafe without SAFETY comments, (12) bare unwrap in public paths. A module that passes all 12 is ready for release.
-- Phase 9 (wrapper leakage) checks that no `src/<module>/` file imports from `src/lua_api/`. If it does, that is a T-02 violation — not a style issue, a blocking defect.
-- Phase 3 (docs/specs presence) checks that `docs/specs/<module>.md` exists AND has non-empty Ownership and Invariants sections. A spec file with placeholder text fails this phase.
-- Phase 4 (Lua API coverage) compares functions registered in `src/lua_api/<module>_api.rs` against `@covers` markers in `tests/lua/unit/test_<module>_*.lua`. Every registered function must have at least one test covering it.
-- Phase 10 (println/eprintln) treats any `println!` in `src/<module>/` as a defect. Engine output must go through `src/log/` with proper level tagging. `eprintln!` in bin/ and tools/ is acceptable.
-- Audit output format: each finding includes phase number, file path, line number, finding type (BLOCKING/WARNING/INFO), and description. BLOCKING findings must be resolved before merge. WARNING findings should be resolved. INFO findings are informational.
-- Routing audit findings: BLOCKING dependency violations → Architect. BLOCKING coverage gaps → Tester. BLOCKING spec defects → Doc-Writer. Code-quality findings (unsafe, unwrap) → Developer. The Verifier decides accept/reject based on the full picture.
+- `python tools/audit/audit_module.py <module>` is the entry point. It runs 12 phases: mod.rs thinness, file size limits, docs/specs presence, Lua API coverage, test coverage, wiki coverage, example coverage, dependency direction, lua_api wrapper leakage, println/eprintln hotspots, unsafe without SAFETY comments, bare unwrap in public paths.
+- Phase 9 checks that no `src/<module>/` file imports from `src/lua_api/`. If it does, that is a T-02 violation — not a style issue, a blocking defect.
+- Phase 3 checks that `docs/specs/<module>.md` exists AND has non-empty Ownership and Invariants sections. A spec file with placeholder text fails this phase.
+- Phase 4 compares functions registered in `src/lua_api/<module>_api.rs` against `@covers` markers in `tests/lua/unit/test_<module>_*.lua`. Every registered function must have at least one test covering it.
+- Phase 10 treats any `println!` in `src/<module>/` as a defect. Engine output must go through `src/log/` with proper level tagging.
+- Audit output format: each finding includes phase number, file path, line number, finding type, and description. BLOCKING findings must be resolved before merge.
+- Routing audit findings: BLOCKING dependency violations → Architect. BLOCKING coverage gaps → Tester.
 - Run `python tools/audit/doc_coverage.py --module <name>` alongside the main audit to get the documentation completeness score separately. The main audit reports presence; doc_coverage reports density.
 - Use the audit as a pre-PR gate, not a post-merge cleanup job. A module that enters review with 12/12 phases passing costs half the reviewer time.
-- When several audit findings share a root cause (e.g., all phase-3 failures trace to a missing spec), report the shared root cause first rather than listing 8 individual findings.
+- When several audit findings share a root cause, report the shared root cause first rather than listing 8 individual findings.
 ## Companion File Index
 
 None - all guidance is inline.
-
-
-## Gemini Tips (Antigravity Optimization)
-- **Token Efficiency**: Load this skill selectively. Do not copy long code snippets when reference paths or outline will suffice.
-- **Tool Usage**: Prefer specific IDE tools (`view_file`, `grep_search`, `multi_replace_file_content`) over bash commands where possible for faster, structured execution.
-- **Context Limit**: Focus strictly on the required modules specified in constraints. Do not read unrelated codebase parts.
 
 ## References
 - tools/audit/audit_module.py

@@ -29,8 +29,10 @@ pub mod facade;
 pub use facade::{get_playback_device, get_playback_devices, set_playback_device};
 
 // ── Backward-compatibility re-exports from extracted modules ────────────────
-pub use crate::dsp::{AtomicParam, DynamicEffectSource, EffectParams, EffectType, SharedEffectGraph};
 pub use crate::dsp::OfflineEffect;
+pub use crate::dsp::{
+    AtomicParam, DynamicEffectSource, EffectParams, EffectType, SharedEffectGraph,
+};
 pub use crate::midi::{MidiPlayer, MidiState};
 
 /// Musical beat clock: BPM tracking, tap-tempo, beat scheduling, quantisation.

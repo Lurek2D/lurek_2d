@@ -121,17 +121,33 @@ impl ModInfo {
         };
         let (req_maj, req_min, _) = match parse(required) {
             Some(v) => v,
-            None => return Err(format!("mod api_version '{}' is not a valid semver", required)),
+            None => {
+                return Err(format!(
+                    "mod api_version '{}' is not a valid semver",
+                    required
+                ))
+            }
         };
         let (host_maj, host_min, _) = match parse(host_version) {
             Some(v) => v,
-            None => return Err(format!("host api_version '{}' is not a valid semver", host_version)),
+            None => {
+                return Err(format!(
+                    "host api_version '{}' is not a valid semver",
+                    host_version
+                ))
+            }
         };
         if req_maj != host_maj {
-            return Err(format!("mod requires API {}.x but host provides {}.x", req_maj, host_maj));
+            return Err(format!(
+                "mod requires API {}.x but host provides {}.x",
+                req_maj, host_maj
+            ));
         }
         if req_min > host_min {
-            return Err(format!("mod requires API {}.{}.x but host provides {}.{}.x", req_maj, req_min, host_maj, host_min));
+            return Err(format!(
+                "mod requires API {}.{}.x but host provides {}.{}.x",
+                req_maj, req_min, host_maj, host_min
+            ));
         }
         Ok(())
     }

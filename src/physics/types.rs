@@ -8,9 +8,13 @@ pub struct BodyId(pub usize);
 
 impl BodyId {
     /// Creates a new BodyId from a raw usize.
-    pub fn new(id: usize) -> Self { Self(id) }
+    pub fn new(id: usize) -> Self {
+        Self(id)
+    }
     /// Returns the raw usize underlying value.
-    pub fn raw(self) -> usize { self.0 }
+    pub fn raw(self) -> usize {
+        self.0
+    }
 }
 
 impl std::fmt::Display for BodyId {
@@ -20,11 +24,15 @@ impl std::fmt::Display for BodyId {
 }
 
 impl From<usize> for BodyId {
-    fn from(v: usize) -> Self { Self(v) }
+    fn from(v: usize) -> Self {
+        Self(v)
+    }
 }
 
 impl From<BodyId> for usize {
-    fn from(id: BodyId) -> Self { id.0 }
+    fn from(id: BodyId) -> Self {
+        id.0
+    }
 }
 
 impl mlua::IntoLua<'_> for BodyId {

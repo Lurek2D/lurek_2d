@@ -119,7 +119,14 @@ impl TransformerEncoderBlock {
         let x1 = add_tensors(x, &attn)?;
         let n1 = self.norm1.forward_tensor(&x1)?;
 
-        let ff1 = linear(&n1.data, n1.shape[0], self.d_model, self.d_ff, &self.ffn_w1, &self.ffn_b1);
+        let ff1 = linear(
+            &n1.data,
+            n1.shape[0],
+            self.d_model,
+            self.d_ff,
+            &self.ffn_w1,
+            &self.ffn_b1,
+        );
         let ff1_relu: Vec<f32> = ff1.into_iter().map(|v| v.max(0.0)).collect();
         let ff2 = linear(
             &ff1_relu,
@@ -181,7 +188,8 @@ impl EvolutionaryLayer for TransformerEncoderBlock {
         let w2 = self.d_ff * self.d_model;
         self.ffn_w2.copy_from_slice(&weights[off..off + w2]);
         off += w2;
-        self.ffn_b2.copy_from_slice(&weights[off..off + self.d_model]);
+        self.ffn_b2
+            .copy_from_slice(&weights[off..off + self.d_model]);
         true
     }
 
@@ -236,7 +244,11 @@ impl TransformerDecoderBlock {
     }
 
     /// Forward pass for one decoder block.
-    pub fn forward(&self, x: &LurekTensor, encoder_out: &LurekTensor) -> Result<LurekTensor, String> {
+    pub fn forward(
+        &self,
+        x: &LurekTensor,
+        encoder_out: &LurekTensor,
+    ) -> Result<LurekTensor, String> {
         if encoder_out.shape.len() != 2 || encoder_out.shape[1] != self.d_model {
             return Err("TransformerDecoderBlock::forward encoder_out shape mismatch".to_string());
         }
@@ -257,7 +269,14 @@ impl TransformerDecoderBlock {
         let x2 = add_tensors(&n1, &cross_attn)?;
         let n2 = self.norm2.forward_tensor(&x2)?;
 
-        let ff1 = linear(&n2.data, n2.shape[0], self.d_model, self.d_ff, &self.ffn_w1, &self.ffn_b1);
+        let ff1 = linear(
+            &n2.data,
+            n2.shape[0],
+            self.d_model,
+            self.d_ff,
+            &self.ffn_w1,
+            &self.ffn_b1,
+        );
         let ff1_relu: Vec<f32> = ff1.into_iter().map(|v| v.max(0.0)).collect();
         let ff2 = linear(
             &ff1_relu,
@@ -333,7 +352,8 @@ impl EvolutionaryLayer for TransformerDecoderBlock {
         let w2 = self.d_ff * self.d_model;
         self.ffn_w2.copy_from_slice(&weights[off..off + w2]);
         off += w2;
-        self.ffn_b2.copy_from_slice(&weights[off..off + self.d_model]);
+        self.ffn_b2
+            .copy_from_slice(&weights[off..off + self.d_model]);
         true
     }
 

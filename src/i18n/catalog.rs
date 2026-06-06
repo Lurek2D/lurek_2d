@@ -234,7 +234,10 @@ impl Catalog {
         }
     }
     /// Compute the intersection of multiple candidate key lists and return them sorted and optionally truncated.
-    pub fn search_indexed_intersection(candidate_lists: Vec<Vec<String>>, limit: usize) -> Vec<String> {
+    pub fn search_indexed_intersection(
+        candidate_lists: Vec<Vec<String>>,
+        limit: usize,
+    ) -> Vec<String> {
         if candidate_lists.is_empty() {
             return Vec::new();
         }

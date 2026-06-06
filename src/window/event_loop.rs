@@ -146,7 +146,12 @@ pub(crate) fn select_startup_monitor(
     monitor.or(primary)
 }
 /// Center `window` on `monitor` given its `width` × `height` in physical pixels.
-pub(crate) fn center_window_on_monitor(window: &Window, monitor: &MonitorHandle, width: u32, height: u32) {
+pub(crate) fn center_window_on_monitor(
+    window: &Window,
+    monitor: &MonitorHandle,
+    width: u32,
+    height: u32,
+) {
     let monitor_size = monitor.size();
     let monitor_position = monitor.position();
     let x = monitor_position.x + ((monitor_size.width as i32 - width as i32).max(0) / 2);

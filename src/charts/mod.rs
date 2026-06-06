@@ -2,20 +2,20 @@
 //! Groups chart types, shared config contracts, and utility drawing primitives into one surface.
 //! Serves as the composition entry for runtime chart image generation from raw series or DataFrames.
 
+/// Area chart: filled regions below line series for cumulative value display.
+pub mod area;
+/// Bar chart: displays grouped or stacked vertical bars for category comparison.
+pub mod bar;
 /// Chart configuration and shared types.
 pub mod config;
 /// Line chart: plots data series as connected lines over time or categories.
 pub mod line;
-/// Bar chart: displays grouped or stacked vertical bars for category comparison.
-pub mod bar;
-/// Scatter plot: renders (x, y) point series to show distribution and correlation.
-pub mod scatter;
 /// Pie chart: renders proportional slice segments from a single data series.
 pub mod pie;
-/// Area chart: filled regions below line series for cumulative value display.
-pub mod area;
 /// Shared rasterization utilities.
 pub mod render_utils;
+/// Scatter plot: renders (x, y) point series to show distribution and correlation.
+pub mod scatter;
 
 pub use area::AreaChart;
 pub use bar::BarChart;

@@ -3,7 +3,6 @@ trigger: manual
 description: "Turn a rough feature description into one roadmap phase draft."
 expected_agent: "Manager"
 ---
-
 # Generate Roadmap Phase From Description
 
 ## Goal
@@ -16,7 +15,7 @@ expected_agent: "Manager"
 - Any constraints.
 
 ## Steps
-1. Load [skill: opportunity-discovery](../rules/skill_opportunity-discovery.md), [skill: roadmap-planning](../rules/skill_roadmap-planning.md), and [skill: documentation](../rules/skill_documentation.md) before acting.
+1. Load [skill: opportunity-discovery](../skills/opportunity-discovery/SKILL.md), [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Read the supplied description, nearby roadmap or ideas files, and any supporting repo evidence before editing.
 3. Extract the real problem, why-now, dependencies, and acceptance gate, then write the smallest useful phase instead of a broad vision document.
 4. Re-read the draft for evidence strength and planning clarity, and mark open questions explicitly when the input is underspecified.

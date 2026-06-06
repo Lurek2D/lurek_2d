@@ -54,7 +54,11 @@ impl FileFilter {
             let ext = path.extension().map(|e| e.to_string_lossy().to_lowercase());
             match ext {
                 Some(e) => {
-                    if !self.extensions.iter().any(|allowed| allowed.to_lowercase() == e) {
+                    if !self
+                        .extensions
+                        .iter()
+                        .any(|allowed| allowed.to_lowercase() == e)
+                    {
                         return false;
                     }
                 }
@@ -65,7 +69,11 @@ impl FileFilter {
         // Check excluded extensions
         if let Some(ext) = path.extension() {
             let ext_lower = ext.to_string_lossy().to_lowercase();
-            if self.exclude_extensions.iter().any(|ex| ex.to_lowercase() == ext_lower) {
+            if self
+                .exclude_extensions
+                .iter()
+                .any(|ex| ex.to_lowercase() == ext_lower)
+            {
                 return false;
             }
         }
@@ -79,9 +87,13 @@ impl FileFilter {
 
         // Check include patterns
         if !self.include_patterns.is_empty()
-            && !self.include_patterns.iter().any(|pat| path_str.contains(pat.as_str())) {
-                return false;
-            }
+            && !self
+                .include_patterns
+                .iter()
+                .any(|pat| path_str.contains(pat.as_str()))
+        {
+            return false;
+        }
 
         true
     }
@@ -104,8 +116,12 @@ impl FileFilter {
     pub fn game_content() -> Self {
         let mut f = Self::new();
         f.extensions = vec![
-            "lua".to_string(), "toml".to_string(), "json".to_string(),
-            "txt".to_string(), "md".to_string(), "cfg".to_string(),
+            "lua".to_string(),
+            "toml".to_string(),
+            "json".to_string(),
+            "txt".to_string(),
+            "md".to_string(),
+            "cfg".to_string(),
         ];
         f
     }

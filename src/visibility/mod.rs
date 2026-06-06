@@ -2,8 +2,6 @@
 //! It stays geometry-agnostic so tile, province, and custom topologies can share the same model.
 //! It unifies state storage, ownership sharing, reveal costs, events, and fog presentation paths.
 
-/// Tile-grid recursive shadowcasting FOV for roguelike and stealth games.
-pub mod shadowcast;
 /// Adjacency provider trait defining region neighbor relationships.
 pub mod adjacency;
 /// Per-region discovery cost and adjacency requirements for reveal logic.
@@ -18,6 +16,8 @@ pub mod fog_render;
 pub mod grid;
 /// Player and group ownership of shared visibility and discovery state.
 pub mod owner;
+/// Tile-grid recursive shadowcasting FOV for roguelike and stealth games.
+pub mod shadowcast;
 /// Visibility state enum: Hidden, Discovered, Visible, and custom levels.
 pub mod state;
 

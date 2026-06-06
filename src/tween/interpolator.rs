@@ -64,7 +64,10 @@ impl Tween {
         let easing_fn = match resolve_easing(easing_name) {
             Some(f) => f,
             None => {
-                log::warn!("Unknown easing function '{}', falling back to linear", easing_name);
+                log::warn!(
+                    "Unknown easing function '{}', falling back to linear",
+                    easing_name
+                );
                 easing::linear
             }
         };

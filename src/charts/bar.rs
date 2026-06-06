@@ -73,7 +73,10 @@ impl BarChart {
                 let col = df.get_column(ColRef::Name(vc.clone()))?;
                 vals.push(col.get(row).and_then(|c| c.as_number()).unwrap_or(0.0) as f32);
             }
-            let label = label_data.get(row).map(|c| format!("{c}")).unwrap_or_default();
+            let label = label_data
+                .get(row)
+                .map(|c| format!("{c}"))
+                .unwrap_or_default();
             self.add_category(&label, &vals);
         }
         Ok(n)
@@ -137,7 +140,8 @@ impl BarChart {
         }
 
         // Draw axes.
-        let baseline_y = plot_y + plot_h - world_to_screen(0.0_f32.max(min_y), min_y, max_y, plot_h);
+        let baseline_y =
+            plot_y + plot_h - world_to_screen(0.0_f32.max(min_y), min_y, max_y, plot_h);
         draw_line(
             buffer,
             w,
@@ -172,11 +176,10 @@ impl BarChart {
         for (si, s) in self.series.iter().enumerate() {
             for (di, &(_x, y)) in s.data.iter().enumerate() {
                 let group_center = plot_x + step * (di as f32 + 0.5);
-                let bar_x = group_center - group_width * 0.5
-                    + si as f32 * (self.bar_width + self.gap);
+                let bar_x =
+                    group_center - group_width * 0.5 + si as f32 * (self.bar_width + self.gap);
 
-                let bar_top =
-                    plot_y + plot_h - world_to_screen(y, min_y, max_y, plot_h);
+                let bar_top = plot_y + plot_h - world_to_screen(y, min_y, max_y, plot_h);
                 let bar_bottom = baseline_y;
 
                 let (draw_y, draw_h) = if bar_top < bar_bottom {

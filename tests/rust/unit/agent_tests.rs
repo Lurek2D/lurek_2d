@@ -37,7 +37,11 @@ fn agent_state_add_skill_preserves_insertion_order() {
     state.add_skill("second".to_string(), "two".to_string());
 
     let prompt = state.build_system_block();
-    let first = prompt.find("- [first]: one").expect("first skill should exist");
-    let second = prompt.find("- [second]: two").expect("second skill should exist");
+    let first = prompt
+        .find("- [first]: one")
+        .expect("first skill should exist");
+    let second = prompt
+        .find("- [second]: two")
+        .expect("second skill should exist");
     assert!(first < second, "skills should remain in insertion order");
 }
