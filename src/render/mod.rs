@@ -12,6 +12,11 @@ pub mod draw_layer;
 pub mod font;
 /// wgpu device/queue wrapper, pipeline creation, render-pass execution.
 pub mod gpu_renderer;
+pub(crate) mod gpu_types;
+pub(crate) mod gpu_state;
+pub(crate) mod gpu_pipeline;
+pub(crate) mod gpu_shaders;
+pub(crate) mod gpu_light;
 /// Per-frame image post-processing effect descriptors and shader parameter blocks.
 pub mod image_effect;
 /// GPU-uploadable mesh geometry: vertices, indices, and draw modes.

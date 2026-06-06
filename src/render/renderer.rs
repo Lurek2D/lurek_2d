@@ -16,6 +16,7 @@ use crate::render::image_effect::ShaderPassDescriptor;
 use crate::render::mesh::Mesh;
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
+    StaticGeometryKey, InstanceBufferKey,
 };
 use std::collections::HashMap;
 /// Depth comparison function for stencil and depth-buffer tests.
@@ -548,6 +549,20 @@ pub enum RenderCommand {
         texture_key: Option<TextureKey>,
         tint: [f32; 4],
         blend: BlendMode,
+    },
+    /// Draw pre-cached static geometry.
+    DrawStaticGeometry {
+        geometry_key: StaticGeometryKey,
+        x: f32,
+        y: f32,
+        rotation: f32,
+        sx: f32,
+        sy: f32,
+    },
+    /// Draw an instanced mesh or shape using a buffer of instance transforms.
+    InstancedDraw {
+        geometry_kind: DrawableKind,
+        instances: InstanceBufferKey,
     },
 }
 /// Raw CPU-side texture pixel data passed to `GpuRenderer::upload_texture`.

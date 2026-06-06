@@ -32,4 +32,8 @@ new_key_type! {
     pub struct LightKey;
     /// Key for occluder storage entries.
     pub struct OccluderKey;
+    /// Key for static geometry cache entries.
+    pub struct StaticGeometryKey;
+    /// Key for GPU instance buffer entries.
+    pub struct InstanceBufferKey;
 }
