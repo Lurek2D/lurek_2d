@@ -414,7 +414,6 @@ def _page_template(*, title: str, site_base: str, asset_prefix: str, sidebar_htm
       </a>
     </div>
     <div class="topnav-right">
-      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
     </div>
   </header>
   <div class="shell">

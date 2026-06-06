@@ -579,7 +579,6 @@ def build_rust_api_page(modules: list[str]) -> str:
     out.append("")
     out.append("Krótki indeks modułów Rust generowany ze specek.")
     out.append("")
-    out.append("- [Open Rust API Browser](/rust-docs/index.html)")
     out.append("")
 
     rows: list[tuple[str, str, int, str]] = []

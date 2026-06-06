@@ -90,7 +90,6 @@
 - **`docs/gen_module_specs.py`**: Generate merged docs/specs/<module>.md files for top-level src modules.
 - **`docs/gen_rust_api_data.py`**: gen_rust_api_data.py — Generate Lurek2D master API data file.
 - **`docs/gen_rust_docstrings.py`**: gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
-- **`docs/gen_rust_html_docs.py`**: Generate Rust HTML documentation and publish it to pages/rust-docs/.
 - **`docs/gen_test_docs.py`**: gen_test_docs.py — Generate human-readable test documentation for Lurek2D.
 - **`docs/gen_wiki.py`**: Generate the user-facing GitHub Wiki for Lurek2D.
 - **`docs/gen_wiki_api.py`**: gen_wiki_api.py — Generate wiki/API-Reference.md from logs/data/lua_api_data.json.

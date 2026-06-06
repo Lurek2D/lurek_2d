@@ -2,7 +2,6 @@
 
 Krótki indeks modułów Rust generowany ze specek.
 
-- [Open Rust API Browser](/rust-docs/index.html)
 
 ## Module table
 

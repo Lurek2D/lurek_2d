@@ -7,7 +7,6 @@ on:
       - "docs/**"
       - "mkdocs.yml"
       - "pages/lua-docs/**"
-      - "pages/rust-docs/**"
   workflow_dispatch:
 
 permissions:

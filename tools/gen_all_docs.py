@@ -19,11 +19,6 @@ Steps:
    15.  example_coverage.py          -> logs/reports/example_coverage.md       (example coverage)
    16.  test_coverage.py             -> logs/reports/test_coverage.md          (test coverage report)
    17.  lua_api_test_coverage.py     -> logs/reports/lua_test_coverage.md      (Lua test coverage)
-   18.  gen_rust_html_docs.py --skip-cargo -> pages/rust-docs                  (Rust HTML docs for GitHub Pages)
-
-Note: step 18 copies existing build/doc/ to pages/rust-docs/.
-      Run 'cargo doc --no-deps' before gen_all_docs.py to rebuild Rust HTML docs.
-      Or run 'python tools/docs/gen_rust_html_docs.py' to do both in one command.
 
 Usage:
     python tools/gen_all_docs.py          # run all steps
@@ -69,8 +64,6 @@ SCRIPTS_WITH_ARGS = [
      "Test coverage report (logs/reports/test_coverage.md)"),
     ("audit/lua_api_test_coverage.py", ["--report", "--output", "logs/reports/lua_test_coverage.md"],
      "Lua API test coverage (logs/reports/lua_test_coverage.md)"),
-    ("docs/gen_rust_html_docs.py", ["--skip-cargo"],
-     "Rust HTML docs (pages/rust-docs)"),
 ]
 
 
