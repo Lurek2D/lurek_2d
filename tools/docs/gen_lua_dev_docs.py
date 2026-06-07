@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_lua_dev_docs.py — Generate Lua developer documentation from lua_api *.rs files.
+gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files.
 
 Parses the lurek2d lua_api docstring format (defined in .github/skills/lua-api-design/SKILL.md):
 

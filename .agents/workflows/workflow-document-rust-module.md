@@ -34,7 +34,7 @@ For every `mod.rs` in scope:
 
 ## Steps
 
-1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
 
 2. **Fix tests first** — Extract all `#[cfg(test)]` blocks from source files, create the corresponding `tests/rust/unit/` files, and update `mod.rs` registration.
 
@@ -70,5 +70,5 @@ For every `mod.rs` in scope:
 
 ## CAG Metadata
 Mode: agent
-Loads skills: rust-coding, documentation
+Loads skills: rust-coding, docs-general
 Inputs required: Target module directory name (e.g. physics, render, audio).

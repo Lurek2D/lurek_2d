@@ -13,7 +13,7 @@ description: Create or update new user interface layout and review it, regenerat
 - Agent must collect available UI primitives from the engine
 
 # STEPS TO DO
-1. Load skills: ui-layout, html-css.
+1. Load skills: ui-layout, ui-html.
 2. Author the UI layout in TOML format within `content/layouts/`, explicitly setting anchors, alignment, and hierarchical node structures.
 3. Write a small Lua script under `content/examples/ui_preview/` that loads the new TOML file.
 4. Execute the UI screenshot rendering tool to generate a PNG preview. If the TOML parser throws an error (exit code >0), fix the syntax in step 2.

@@ -12,7 +12,7 @@ showing three categories of issues:
      produce "(undocumented)" entries in rust-api.md.
 
   3. Lua API functions and classes with missing descriptions. These will appear without
-     helpful documentation in lua-api.md.
+     helpful docs-general in lua-api.md.
 
 Usage:
     python tools/gen_coverage_gaps.py                    # -> logs/reports/coverage_gaps.md
@@ -602,7 +602,7 @@ def generate_report(rust_data: dict, lua_data: dict) -> str:
     lines.append(f"## 3. Lua Docstring Issues ({len(lua_bad_docs)} items)")
     lines.append("")
     lines.append(f"Lua API items with missing or very short descriptions (< {_MIN_DESC_LENGTH} chars).")
-    lines.append("These appear without documentation in `docs/api/lurek.md` and IntelliSense.")
+    lines.append("These appear without docs-general in `docs/api/lurek.md` and IntelliSense.")
     lines.append("")
 
     if lua_bad_docs:

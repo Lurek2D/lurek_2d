@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-doc_coverage.py — Lurek2D documentation coverage analytics.
+doc_coverage.py — Lurek2D docs-general coverage analytics.
 
 Scans all public Rust items in src/ and all lurek.* Lua API functions,
 counts those with doc comments (/// or ---), and reports coverage metrics.

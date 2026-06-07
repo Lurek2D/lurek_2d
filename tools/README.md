@@ -15,8 +15,8 @@
 - **`audit/cag_link_check.py`**: cag_link_check.py — broken-link checker for the CAG layer.
 - **`audit/cag_persona_matrix.py`**: cag_persona_matrix.py — persona ↔ agent value matrix.
 - **`audit/count_gaps.py`**: count_gaps.py — Count undocumented public API items per lurek.* module.
-- **`audit/doc_audit.py`**: doc_audit.py — Lurek2D unified documentation audit.
-- **`audit/doc_coverage.py`**: doc_coverage.py — Lurek2D documentation coverage analytics.
+- **`audit/doc_audit.py`**: doc_audit.py — Lurek2D unified docs-general audit.
+- **`audit/doc_coverage.py`**: doc_coverage.py — Lurek2D docs-general coverage analytics.
 - **`audit/docstring_audit.py`**: docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
 - **`audit/example_add_missing.py`**: Append stub sections to content/examples/ for uncovered lurek.* API items.
 - **`audit/example_coverage.py`**: Cross-reference Lua example scripts against the lurek.* Lua API.
@@ -72,17 +72,17 @@
 
 ## docs
 
-- **`docs/collect_docs.py`**: collect_docs.py — Lurek2D rich structured API documentation collector.
+- **`docs/collect_docs.py`**: collect_docs.py — Lurek2D rich structured API docs-general collector.
 - **`docs/gen_docs_lua.py`**: gen_docs_lua.py -- Generate Lua API reference from logs/data/lua_api_data.json.
 - **`docs/gen_docs_lua_html.py`**: Generate compatibility redirects for legacy ``/lua-docs`` URLs.
 - **`docs/gen_docs_rust.py`**: gen_docs_rust.py — Generate compact inline Rust API reference from logs/data/rust_api_data.json.
-- **`docs/gen_engine_docs.py`**: gen_engine_docs.py — Generate per-module documentation for Lurek2D Rust engine source.
+- **`docs/gen_engine_docs.py`**: gen_engine_docs.py — Generate per-module docs-general for Lurek2D Rust engine source.
 - **`docs/gen_extension_api.py`**: gen_extension_api.py -- Convert logs/data/lua_api_data.json to
 - **`docs/gen_lib_docs.py`**: gen_lib_docs.py — Generate API docs from Lurek2D library Lua files.
 - **`docs/gen_lua_api.py`**: gen_lua_api.py â€” Lurek2D Lua API parser library.
 - **`docs/gen_lua_api_data.py`**: gen_lua_api_data.py — Generate Lurek2D master API data file.
 - **`docs/gen_lua_binding_reports.py`**: Generate source-derived Lua binding snapshots from src/lua_api/*.rs.
-- **`docs/gen_lua_dev_docs.py`**: gen_lua_dev_docs.py — Generate Lua developer documentation from lua_api *.rs files.
+- **`docs/gen_lua_dev_docs.py`**: gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files.
 - **`docs/gen_lua_docstring_skeletons.py`**: gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
 - **`docs/gen_lua_library_api.py`**: gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
 - **`docs/gen_luadoc.py`**: gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
@@ -90,7 +90,7 @@
 - **`docs/gen_module_specs.py`**: Generate merged docs/specs/<module>.md files for top-level src modules.
 - **`docs/gen_rust_api_data.py`**: gen_rust_api_data.py — Generate Lurek2D master API data file.
 - **`docs/gen_rust_docstrings.py`**: gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
-- **`docs/gen_test_docs.py`**: gen_test_docs.py — Generate human-readable test documentation for Lurek2D.
+- **`docs/gen_test_docs.py`**: gen_test_docs.py — Generate human-readable test docs-general for Lurek2D.
 - **`docs/gen_wiki.py`**: Generate the user-facing GitHub Wiki for Lurek2D.
 - **`docs/gen_wiki_api.py`**: gen_wiki_api.py — Generate wiki/API-Reference.md from logs/data/lua_api_data.json.
 - **`docs/scan_missing_docs.py`**: scan_missing_docs.py — detect Rust items without doc-comments in src/ (no lua_api).
@@ -121,12 +121,12 @@
 
 ## rag
 
-- **`rag/build_index.py`**: build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D documentation and code.
+- **`rag/build_index.py`**: build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D docs-general and code.
 - **`rag/query.py`**: query.py — Queries the local SQLite FTS5 RAG index for Lurek2D API examples and usage.
 
 ## root
 
-- **`gen_all_docs.py`**: Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
+- **`gen_all_docs.py`**: Convenience runner: regenerate the full Lurek2D docs-general pipeline in one command.
 
 ## snippets
 
@@ -153,6 +153,6 @@
 - **`validate/validate_module_coverage.py`**: Validate top-level module/spec coverage.
 - **`validate/validate_param_types.py`**: validate_param_types.py — Verify that @param type tags match Rust closure type inference.
 - **`validate/validate_rust_file_docs.py`**: validate_rust_file_docs.py — Check that every Rust source file in src/
-- **`validate/validate_rust_source_docs.py`**: Validate file-level and public-item Rust documentation under src/.
+- **`validate/validate_rust_source_docs.py`**: Validate file-level and public-item Rust docs-general under src/.
 - **`validate/validate_snippets.py`**: Validate content/snippets marker structure and VS Code snippet output freshness.
 

@@ -121,7 +121,7 @@ _SYSTEM_AUTONOMY_RE = re.compile(
 
 _BUILTIN_TOOL_PREFIXES = {"vscode", "edit", "search"}
 _BUILTIN_TOOL_NAMES = {"execute", "read", "agent", "todo", "search"}
-_MANAGER_ROUTING_SKILL = (GITHUB_DIR / "skills" / "agent-routing" / "SKILL.md").resolve()
+_MANAGER_ROUTING_SKILL = (GITHUB_DIR / "skills" / "cag-routing" / "SKILL.md").resolve()
 AGENT_LINE_CAP = 450
 
 
@@ -279,7 +279,7 @@ def _check_agent_routing_contract(
             rel,
             "E107",
             "error",
-            "Routing Table is deprecated; keep routing rules in shared docs or .github/skills/agent-routing/SKILL.md",
+            "Routing Table is deprecated; keep routing rules in shared docs or .github/skills/cag-routing/SKILL.md",
             body_offset_lines + routing_line,
         ))
 
@@ -292,7 +292,7 @@ def _check_agent_routing_contract(
             rel,
             "E104",
             "error",
-            "routes_to is deprecated; move routing rules to .github/skills/agent-routing/SKILL.md",
+            "routes_to is deprecated; move routing rules to .github/skills/cag-routing/SKILL.md",
             body_offset_lines + cag_meta_line,
         ))
 
@@ -308,7 +308,7 @@ def _check_agent_routing_contract(
             rel,
             "E104",
             "error",
-            "Manager Workflow must include a markdown link to '../skills/agent-routing/SKILL.md' for mandatory routing guidance",
+            "Manager Workflow must include a markdown link to '../skills/cag-routing/SKILL.md' for mandatory routing guidance",
             body_offset_lines + workflow_line,
         ))
     return out

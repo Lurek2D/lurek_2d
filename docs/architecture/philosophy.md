@@ -67,7 +67,7 @@ A game is a `main.lua` file. The engine runs it. You write Lua; the engine owns 
 
 The competitive landscape is dominated by multi-gigabyte engines with visual editors and months-long learning curves. Lurek2D is the opposite: one binary, one scripting language, one afternoon to learn.
 
-**The AI angle**: Lurek2D is designed with AI copilots as first-class users. Every API is shaped so an AI agent can use it correctly from the docs alone. The CAG layer, the VS Code extension, and the documentation pipeline are all optimised for AI-assisted workflow.
+**The AI angle**: Lurek2D is designed with AI copilots as first-class users. Every API is shaped so an AI agent can use it correctly from the docs alone. The CAG layer, the VS Code extension, and the docs-general pipeline are all optimised for AI-assisted workflow.
 
 ---
 

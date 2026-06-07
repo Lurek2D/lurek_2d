@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_engine_docs.py — Generate per-module documentation for Lurek2D Rust engine source.
+gen_engine_docs.py — Generate per-module docs-general for Lurek2D Rust engine source.
 
 Reads all src/**/*.rs EXCEPT src/lua_api/ and produces one Markdown file per
 top-level module (e.g. src/timer/*.rs → logs/reports/engine/timer.md).
@@ -121,7 +121,7 @@ class ParsedDoc:
 
 @dataclass
 class RustItem:
-    """One public Rust item (struct, enum, fn, trait, type) with its documentation."""
+    """One public Rust item (struct, enum, fn, trait, type) with its docs-general."""
     kind: str            # struct | enum | fn | trait | type
     name: str
     signature: str       # raw declaration line (simplified)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_test_docs.py — Generate human-readable test documentation for Lurek2D.
+gen_test_docs.py — Generate human-readable test docs-general for Lurek2D.
 
 Reads logs/data/test_coverage.json (produced by test_coverage.py) and generates
 Markdown documents describing what each module tests, coverage statistics, and
@@ -262,7 +262,7 @@ def generate_markdown(data: dict, fn_docs: dict[str, dict[str, str]], mode: str 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate human-readable test documentation from test_coverage.json",
+        description="Generate human-readable test docs-general from test_coverage.json",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

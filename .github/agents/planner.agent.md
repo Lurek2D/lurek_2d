@@ -76,4 +76,4 @@ Score work from 1 to 10 stars:
 ## CAG Metadata
 Personas: EngDev, GameDev, Modder, Player
 Primary skills: roadmap-planning, opportunity-discovery, analytics
-Secondary skills: github-workflow, documentation, enterprise-architecture
+Secondary skills: github-workflow, docs-general, enterprise-architecture

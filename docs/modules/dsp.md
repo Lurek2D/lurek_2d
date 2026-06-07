@@ -2,15 +2,13 @@
 
 ## Summary
 
-The `dsp` module is the signal-processing layer for audio transformation and analysis. It handles how signals are shaped and measured, while playback scheduling and source lifecycle stay outside this boundary.
+This module handles audio signal processing and synthesis, offering control over sound generation and manipulation. It provides the runtime for real-time effects like filters, delays, and modulations. These effects use lock-free parameters to ensure low-latency safety, wrapping audio sources to apply clean transformations sample-by-sample during live playback.
 
-Its runtime capabilities include effect chains, graph-style processing, and thread-safe parameter control for live updates. This allows dynamic sound changes without blocking critical audio paths.
+To organize audio paths, the module features a digital signal processing graph where developers connect nodes to describe ordered signal flows. This supports both real-time streaming and offline processing, enabling users to batch render effect chains to files. This is ideal for asset baking, peak normalization, and preparing audio exports.
 
-The module also supports offline workflows. Effect chains can be applied to stored data for batch processing, export preparation, and deterministic preprocessing tasks.
+Procedural synthesis is supported by primitives generating waveforms and noise. These oscillators combine with envelopes that apply gain changes over attack, decay, sustain, and release phases. This makes it easy to generate dynamic sound effects and musical notes dynamically, without relying on pre-recorded files.
 
-Synthesis and analysis tools are included in the same surface. Teams can generate waveforms, apply envelope shaping, inspect levels and spectrum behavior, and create visual artifacts such as waveform or spectrogram outputs.
-
-In practice, `lurek.dsp` provides one reusable transformation core: process, inspect, and render signal behavior consistently across runtime and tooling scenarios.
+Additionally, the system provides level detectors tracking peak, average amplitude, and clipping thresholds, alongside spectral analyzers. These feed visualization utilities that convert audio data into waveform plots and spectrogram images, helping developers inspect audio assets and verify sound behaviors.
 
 ## Functions
 

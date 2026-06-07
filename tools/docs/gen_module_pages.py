@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-module MkDocs pages in docs/pages/ from:
+"""Generate per-module MkDocs pages in docs/lua/ from:
   - docs/specs/<module>.md  -> description (TL;DR + Summary)
   - docs/api/lurek.lua      -> function/method signatures + param/return docs
   - content/examples/<module>.lua -> code examples per symbol
@@ -18,8 +18,8 @@ SPECS_DIR = ROOT / "docs" / "specs"
 STUB_FILE = ROOT / "docs" / "api" / "lurek.lua"
 LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 EXAMPLES_DIR = ROOT / "content" / "examples"
-OUT_DIR = ROOT / "docs" / "pages"  # GitHub Pages - Lua module documentation
-CALLBACKS_MD = ROOT / "docs" / "api" / "callbacks.md"
+OUT_DIR = ROOT / "docs" / "modules"  # MkDocs input - Lua API module markdown documentation
+CALLBACKS_MD = ROOT / "docs" / "callbacks.md"
 
 # ---------------------------------------------------------------------------
 # Spec description extraction
@@ -719,7 +719,7 @@ def main():
         print(f"  {module}.md  ({fn_count} functions)")
         generated.append(module)
 
-    print(f"\nDone — {len(generated)} Lua module pages in docs/pages/")
+    print(f"\nDone — {len(generated)} Lua module pages in {OUT_DIR}")
 
     callbacks_md = build_callbacks_page()
     CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")

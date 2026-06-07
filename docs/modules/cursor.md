@@ -2,15 +2,9 @@
 
 ## Summary
 
-The `cursor` module gives one runtime layer for pointer presentation. It lets scripts control how the pointer looks, when it is visible, whether it is locked, and how it reacts in different runtime contexts.
+The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. Its core purpose is to provide scripts with highly responsive, interactive cursor customizations that adapt to game states, UI contexts, and player actions.
 
-It supports both system and custom visuals in the same flow. Teams can use native cursor shapes, pixel-defined custom cursors, or animated cursor sequences, then switch between them through explicit rules instead of ad-hoc per-screen logic.
-
-The module also adds optional feedback features such as trails and zoom lens behavior. These features improve readability and interaction feel without forcing changes in core input capture.
-
-A key functional boundary is separation from raw input collection. Input systems provide pointer state, and the cursor module decides presentation policy. This keeps cursor behavior easier to tune for accessibility, UX style, and tool-specific modes.
-
-In practice, `lurek.cursor` provides a stable pointer contract for gameplay and tools: pick active cursor mode, apply context mapping, and keep pointer feedback predictable across different runtime surfaces.
+It handles cross-platform platform-native system cursor shapes alongside fully custom cursors built from RGBA pixel buffers and coordinate hotspots. Cursors can be animated through time-stepped frame sequences and standalone scale pulse animations. Additionally, the cursor manager orchestrates context-sensitive style transitions, and applies aesthetic and functional trail feedback overlays (fading points, connected strokes) and cursor-following post-process zoom magnifiers.
 
 ## Functions
 

@@ -1,5 +1,5 @@
 """
-build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D documentation and code.
+build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D docs-general and code.
 """
 import os
 import sys

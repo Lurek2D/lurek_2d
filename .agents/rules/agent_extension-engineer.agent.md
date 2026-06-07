@@ -22,7 +22,7 @@
 
 ## Workflow
 - Read target files, package.json, and UX patterns.
-- Load vscode-extension, html-css, ui-layout.
+- Load vscode-extension, ui-html, ui-layout.
 - Extension logic in extension/vscode/. No engine code.
 - Invoke tools/ scripts from extension commands.
 - Route data through tools/ generator, no TS parsing.
@@ -51,4 +51,4 @@ Score work from 1 to 10 stars:
 ## CAG Metadata
 Personas: EngDev, GameDev, Modder
 Primary skills: vscode-extension
-Secondary skills: html-css, ui-layout, build-system, lua-api-design, documentation
+Secondary skills: ui-html, ui-layout, build-system, lua-api-design, docs-general

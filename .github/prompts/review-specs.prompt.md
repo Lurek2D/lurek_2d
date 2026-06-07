@@ -12,7 +12,7 @@ description: Regenerate specs via script and then review summary section based o
 - Agent must collect current source code vs existing spec state
 
 # STEPS TO DO
-1. Load skills: documentation, module-architecture.
+1. Load skills: docs-general, module-architecture.
 2. Execute `python tools/gen_all_docs.py` to automatically update the raw data tables in `docs/specs/<module>.md`. If it exits with >0, fix the source code annotations.
 3. Rewrite the human-authored summary section in the spec to reflect the regenerated data.
 4. Execute `python tools/audit/lua_spec_coverage.py`. If it reports coverage <100% or missing specs, create the missing spec files and repeat step 4 until it returns exactly 100%.
@@ -30,6 +30,6 @@ description: Regenerate specs via script and then review summary section based o
 - Allowing spec-to-code drift to remain unaddressed.
 
 # REFERENCES
-- skills: documentation, module-architecture
+- skills: docs-general, module-architecture
 - tools: python tools/gen_all_docs.py, python tools/audit/lua_spec_coverage.py
 - agent: Doc-Writer

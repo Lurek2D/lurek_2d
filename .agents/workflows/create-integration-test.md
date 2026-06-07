@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation command.
 
 ## Steps
-1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md) and [skill: rust-coding](../skills/rust-coding/SKILL.md) before acting.
+1. Load [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md) and [skill: rust-coding](../skills/rust-coding/SKILL.md) before acting.
 2. Read the owning module, existing tests in the same layer, the test placement rules, and the current failing or missing behavior before editing.
 3. Choose the right home first, keep the test focused on externally visible behavior, and avoid hiding product bugs behind test-only scaffolding.
 4. Run the narrowest test target that includes the new test and confirm the test proves the intended behavior.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: testing-rust, rust-coding
+Loads skills: testing-ecosystem, rust-coding
 Inputs required: Behavior to cover., Target module or API., Correct test layer., Expected validation command.

@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Any blocked owner.
 
 ## Steps
-1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md), [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
+1. Load [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md), [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
 2. Run or read the smallest failing test target first and cluster failures by owning subsystem instead of treating every failure as separate.
 3. Choose the smallest valid owner for each cluster, keep one binary gate per cluster, and avoid parallel work when one root cause is more likely.
 4. After each fix, rerun the same failing target before broadening to the next gate or owner.
@@ -37,5 +37,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: testing-rust, quality-pipeline, module-architecture
+Loads skills: testing-ecosystem, quality-pipeline, module-architecture
 Inputs required: Failing test command or cluster., Known recent changes., Target acceptance bar., Any blocked owner.

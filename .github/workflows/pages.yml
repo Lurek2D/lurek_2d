@@ -6,7 +6,9 @@ on:
     paths:
       - "docs/**"
       - "mkdocs.yml"
-      - "pages/lua-docs/**"
+      - "logs/data/lua_api_data.json"
+      - "content/examples/**"
+      - "tools/docs/gen_module_pages.py"
   workflow_dispatch:
 
 permissions:
@@ -38,6 +40,12 @@ jobs:
 
       - name: Build MkDocs site
         run: mkdocs build
+
+      - name: Generate Lua API docs-general wrapper
+        run: python tools/docs/gen_lua_api_html_wrapper.py
+
+      - name: Generate Lua API module pages (Markdown)
+        run: python tools/docs/gen_module_pages.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -12,7 +12,7 @@ description: Review if docs in architecture are in sync with specs and lurek api
 - Agent must collect `docs/architecture/` files, specs, and API definitions
 
 # STEPS TO DO
-1. Load skills: enterprise-architecture, documentation.
+1. Load skills: enterprise-architecture, docs-general.
 2. Execute `python tools/audit/cag_link_check.py --strict`. Capture the number of broken links relating to `docs/architecture/`.
 3. Modify the architecture markdown files to fix outdated module names and broken references to deprecated APIs.
 4. Execute `python tools/audit/cag_link_check.py --strict` again. If the broken link count is >0, repeat step 3 until the count is exactly 0.
@@ -29,6 +29,6 @@ description: Review if docs in architecture are in sync with specs and lurek api
 - Adding overly granular implementation details to high-level architecture docs.
 
 # REFERENCES
-- skills: enterprise-architecture, documentation
+- skills: enterprise-architecture, docs-general
 - tools: python tools/audit/cag_link_check.py
 - agent: Architect

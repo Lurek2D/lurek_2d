@@ -216,7 +216,7 @@ def file_has_module_doc(source: str) -> bool:
 # ── LLM integration ───────────────────────────────────────────────────────────
 
 _SYSTEM_PROMPT = """\
-You are a senior Rust engine engineer. Write precise, accurate Rust documentation.
+You are a senior Rust engine engineer. Write precise, accurate Rust docs-general.
 
 Output format: a single JSON object — no prose, no markdown fences, no extra keys.
 
@@ -279,7 +279,7 @@ def _call_llm(
         f"File: {file_rel}\n"
         f"Need file-level doc: {need_file_doc}\n\n"
         f"--- SOURCE ---\n{_truncate_source(source)}\n--- END SOURCE ---\n\n"
-        f"Items requiring documentation (has_doc=false):\n"
+        f"Items requiring docs-general (has_doc=false):\n"
         f"{json.dumps(pending, indent=2)}\n\n"
         f"Return the JSON object as specified."
     )

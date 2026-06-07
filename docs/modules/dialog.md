@@ -2,17 +2,149 @@
 
 ## Summary
 
-The `dialog` module is the runtime layer for conversation flow. It lets projects define topics, branches, and progression state in a structured way, so dialogue behavior is predictable during gameplay.
+This module provides the narrative scripting and conversation logic system, allowing gameplay scripts to choreograph complex dialogues. It handles multi-character conversation graphs, player choices, and conditional narrative gates. Conversations are built as dialogue trees where branches are evaluated and ranked dynamically using utility scoring, ensuring the engine can select contextually appropriate dialogue paths.
 
-Its core value is controlled branching. Dialog options can be gated by context conditions, weighted for selection, and advanced through explicit state transitions instead of ad-hoc script branching.
+To keep dialogue flows organized, the system separates narrative structure from presentation. It features a dedicated speaker registry that maps character IDs to display names, portraits, and audio properties. Additionally, a persistent state tracker maintains the history of visited nodes, active conversation nodes, and custom variable stores. This decouples visual layouts from script logic while ensuring progression stays coherent.
 
-Speaker metadata and dialogue events are part of the same surface. This makes it easier for UI and tooling to react to conversation changes without reading internal conversation storage directly.
-
-The module is intentionally focused on dialogue logic, not presentation. Narrative UI timing, animations, and game-specific storytelling policy can consume this runtime contract while staying outside the module boundary.
-
-In practice, `lurek.dialog` provides one stable conversation foundation: define choices, evaluate gates, track progress, and publish outcomes consistently.
+The dialog sequencer adds a presentation layer on top of the tree system, enabling typewriter-style text reveal, choice selection, branching nodes, and playback control. Scripts can load node sequences, control reveal speed, advance through lines, and handle player choices through a unified interface.
 
 ## Functions
+
+### `lurek.dialog.call`
+
+Creates a Call node (invokes a Lua function by name).
+
+```lua
+lurek.dialog.call(fn_name, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn_name` | string | Lua function name to call. |
+| `opts?` | table | Optional table (reserved for future use). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Call node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.call("on_quest_accepted")
+    print("lurek.dialog.call type=" .. node.type)
+    print("name=" .. node.name)
+end
+```
+
+---
+
+### `lurek.dialog.choice`
+
+Creates a Choice node with selectable options.
+
+```lua
+lurek.dialog.choice(prompt, options, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `prompt` | string | Choice prompt text. |
+| `options` | table | Array of option strings. |
+| `opts?` | table | Optional table (reserved for future use). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Choice node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.choice("What do you do?", {"Fight", "Flee", "Talk"})
+    print("lurek.dialog.choice type=" .. node.type)
+    print("prompt=" .. node.prompt)
+    print("options=" .. #node.options)
+end
+```
+
+---
+
+### `lurek.dialog.event`
+
+Creates an Event node (fires a named callback).
+
+```lua
+lurek.dialog.event(name, data, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Event name. |
+| `data?` | string | Optional event payload. |
+| `opts?` | table | Optional table (reserved for future use). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Event node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.event("combat_end", "victory")
+    print("lurek.dialog.event type=" .. node.type)
+    print("name=" .. node.name)
+    print("data=" .. tostring(node.data))
+end
+```
+
+---
+
+### `lurek.dialog.jump`
+
+Creates a Jump node (branches to a labeled position).
+
+```lua
+lurek.dialog.jump(target, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | string | Label name to jump to. |
+| `opts?` | table | Optional table (reserved for future use). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Jump node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.jump("ending_good")
+    print("lurek.dialog.jump type=" .. node.type)
+    print("target=" .. node.target)
+end
+```
+
+---
 
 ### `lurek.dialog.newAI`
 
@@ -36,6 +168,32 @@ do
     ai:addTopic("greeting", 1.0)
     print("lurek.dialog.newAI type=" .. ai:type())
     print("topics=" .. ai:getTopicCount())
+end
+```
+
+---
+
+### `lurek.dialog.newSequencer`
+
+Creates an empty dialog sequencer for typewriter-style playback.
+
+```lua
+lurek.dialog.newSequencer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LDialogSequencer](#ldialogsequencer) | New sequencer handle. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    print("lurek.dialog.newSequencer type=" .. seq:type())
+    print("state=" .. seq:getState())
 end
 ```
 
@@ -95,6 +253,74 @@ end
 
 ---
 
+### `lurek.dialog.say`
+
+Creates a Say node for character dialog.
+
+```lua
+lurek.dialog.say(actor, text, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `actor` | string | Character name. |
+| `text` | string | Dialog text. |
+| `opts?` | table | Optional table with duration field. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Say node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.say("Hero", "I'm ready!")
+    print("lurek.dialog.say type=" .. node.type)
+    print("actor=" .. node.actor)
+    print("text=" .. node.text)
+end
+```
+
+---
+
+### `lurek.dialog.wait`
+
+Creates a Wait node (delay before continuing).
+
+```lua
+lurek.dialog.wait(seconds, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `seconds` | number | Seconds to wait. |
+| `opts?` | table | Optional table (reserved for future use). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Wait node table for sequencer.load(). |
+
+**Example**
+
+```lua
+do
+    local node = lurek.dialog.wait(3.0)
+    print("lurek.dialog.wait type=" .. node.type)
+    print("seconds=" .. node.seconds)
+end
+```
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
@@ -109,9 +335,508 @@ end
 
 ## Types
 
+- [LDialogSequencer](#ldialogsequencer)
 - [LDialogueAI](#ldialogueai)
 - [LDialogueState](#ldialoguestate)
 - [LSpeakerRegistry](#lspeakerregistry)
+
+## LDialogSequencer
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LDialogSequencer:advance`
+
+Skips to the next node (or instantly reveals current line if typing).
+
+```lua
+LDialogSequencer:advance()
+```
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(1.0)
+    seq:load({
+        lurek.dialog.say("NPC", "Line one"),
+        lurek.dialog.say("NPC", "Line two")
+    })
+    seq:start()
+    seq:advance()
+    seq:advance()
+    print("LDialogSequencer:advance text=" .. seq:currentText())
+end
+```
+
+---
+
+#### `LDialogSequencer:choose`
+
+Selects a choice option when waiting for choice input.
+
+```lua
+LDialogSequencer:choose(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index` | number | Option index (1-based) to select. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.choice("Pick one:", {"A", "B", "C"}),
+        lurek.dialog.say("NPC", "You picked!")
+    })
+    seq:start()
+    seq:choose(2)
+    print("LDialogSequencer:choose state=" .. seq:getState())
+end
+```
+
+---
+
+#### `LDialogSequencer:currentSpeaker`
+
+Returns the actor name for the current line, or nil.
+
+```lua
+LDialogSequencer:currentSpeaker()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Actor name, or nil. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("Warrior", "At last!") })
+    seq:start()
+    print("LDialogSequencer:currentSpeaker=" .. tostring(seq:currentSpeaker()))
+end
+```
+
+---
+
+#### `LDialogSequencer:currentText`
+
+Returns the full text of the current line.
+
+```lua
+LDialogSequencer:currentText()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Full line text. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "The full line here") })
+    seq:start()
+    print("LDialogSequencer:currentText=" .. seq:currentText())
+end
+```
+
+---
+
+#### `LDialogSequencer:getChoiceLabels`
+
+Returns an array of choice option labels.
+
+```lua
+LDialogSequencer:getChoiceLabels()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of choice strings. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.choice("Pick:", {"Option A", "Option B", "Option C"}) })
+    seq:start()
+    local labels = seq:getChoiceLabels()
+    print("LDialogSequencer:getChoiceLabels count=" .. #labels)
+    print("first=" .. labels[1])
+end
+```
+
+---
+
+#### `LDialogSequencer:getChoiceText`
+
+Returns the choice prompt text, or nil if not in a choice node.
+
+```lua
+LDialogSequencer:getChoiceText()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Choice prompt, or nil. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.choice("Your move?", {"Attack", "Defend"}) })
+    seq:start()
+    print("LDialogSequencer:getChoiceText=" .. tostring(seq:getChoiceText()))
+end
+```
+
+---
+
+#### `LDialogSequencer:getSpeed`
+
+Gets the current typewriter speed in characters per second.
+
+```lua
+LDialogSequencer:getSpeed()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Characters per second. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(25.0)
+    print("LDialogSequencer:getSpeed=" .. seq:getSpeed())
+end
+```
+
+---
+
+#### `LDialogSequencer:getState`
+
+Returns the current playback state as a string.
+
+```lua
+LDialogSequencer:getState()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of: "idle", "typing", "waiting", "choice", "done". |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Text") })
+    seq:start()
+    print("LDialogSequencer:getState=" .. seq:getState())
+end
+```
+
+---
+
+#### `LDialogSequencer:isActive`
+
+Checks if the sequencer is currently playing.
+
+```lua
+LDialogSequencer:isActive()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when not idle or done. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    print("idle active=" .. tostring(seq:isActive()))
+    seq:load({ lurek.dialog.say("NPC", "Started") })
+    seq:start()
+    print("started active=" .. tostring(seq:isActive()))
+end
+```
+
+---
+
+#### `LDialogSequencer:isWaitingForChoice`
+
+Checks if the sequencer is waiting for a choice selection.
+
+```lua
+LDialogSequencer:isWaitingForChoice()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when waiting for player choice. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.choice("Pick:", {"Yes", "No"}) })
+    seq:start()
+    print("LDialogSequencer:isWaitingForChoice=" .. tostring(seq:isWaitingForChoice()))
+end
+```
+
+---
+
+#### `LDialogSequencer:load`
+
+Loads a sequence of dialog nodes for playback.
+
+```lua
+LDialogSequencer:load(nodes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `nodes` | table | Array of node tables created via lurek.dialog.say(), choice(), etc. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    local nodes = {
+        lurek.dialog.say("NPC", "Hello there!"),
+        lurek.dialog.choice("How are you?", {"Good", "Bad"})
+    }
+    seq:load(nodes)
+    print("LDialogSequencer:load ok")
+end
+```
+
+---
+
+#### `LDialogSequencer:revealedText`
+
+Returns only the typewriter-revealed portion of the current line.
+
+```lua
+LDialogSequencer:revealedText()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Revealed text. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(5.0)
+    seq:load({ lurek.dialog.say("NPC", "Slowly revealed") })
+    seq:start()
+    seq:update(0.2)
+    print("LDialogSequencer:revealedText=" .. seq:revealedText())
+end
+```
+
+---
+
+#### `LDialogSequencer:setSpeed`
+
+Sets the typewriter reveal speed in characters per second.
+
+```lua
+LDialogSequencer:setSpeed(cps)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cps` | number | Characters per second. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(50.0)
+    print("LDialogSequencer:setSpeed speed=" .. seq:getSpeed())
+end
+```
+
+---
+
+#### `LDialogSequencer:skip`
+
+Instantly reveals the full current line without typewriter effect.
+
+```lua
+LDialogSequencer:skip()
+```
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(1.0)
+    seq:load({ lurek.dialog.say("NPC", "Instant reveal") })
+    seq:start()
+    seq:skip()
+    print("LDialogSequencer:skip revealed=" .. seq:revealedText())
+end
+```
+
+---
+
+#### `LDialogSequencer:start`
+
+Starts playback from the beginning of the loaded sequence.
+
+```lua
+LDialogSequencer:start()
+```
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Beginning...") })
+    seq:start()
+    print("LDialogSequencer:start state=" .. seq:getState())
+end
+```
+
+---
+
+#### `LDialogSequencer:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LDialogSequencer:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LDialogSequencer](#ldialogsequencer)`. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    print("LDialogSequencer:type=" .. seq:type())
+end
+```
+
+---
+
+#### `LDialogSequencer:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LDialogSequencer:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the type name matches. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    print("LDialogSequencer:typeOf LDialogSequencer=" .. tostring(seq:typeOf("LDialogSequencer")))
+end
+```
+
+---
+
+#### `LDialogSequencer:update`
+
+Advances the sequencer by dt seconds, updating typewriter reveal.
+
+```lua
+LDialogSequencer:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Delta time in seconds. |
+
+**Example**
+
+```lua
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(10.0)
+    seq:load({ lurek.dialog.say("NPC", "Hello") })
+    seq:start()
+    seq:update(0.15)
+    print("LDialogSequencer:update revealed=" .. seq:revealedText())
+end
+```
+
+---
 
 ## LDialogueAI
 

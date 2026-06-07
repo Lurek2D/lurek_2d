@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Parameters and return shape.
 
 ## Steps
-1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
+1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md), and [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md) before acting.
 2. Read src/lua_api/<module>_api.rs, the matching src/<module>/ code, docs/specs/<module>.md, and nearby tests or examples before editing.
 3. Implement the binding in the thinnest API layer, keep business logic out of src/lua_api/, and update source docstrings instead of hand-editing generated API docs.
 4. Run the narrowest Lua or Rust test for the new function, regenerate Lua API docs from source if the public API changed, and finish with the required broader gate.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: lua-api-design, rust-coding, lua-rust-bridge, testing-rust
+Loads skills: lua-api-design, rust-coding, lua-rust-bridge, testing-ecosystem
 Inputs required: Module., Function name., Lua-visible behavior., Parameters and return shape.

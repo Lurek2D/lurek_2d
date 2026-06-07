@@ -2,11 +2,13 @@
 
 ## Summary
 
-It provides the essential abstraction layer between Lua game scripts and the host operating system, ensuring that all file I/O is secure. By confining operations to a designated base game directory and a specific user save directory, `GameFS` actively prevents path-traversal attacks. It intercepts and validates every path component, rejecting any attempts to use `..`, symbolic links, or absolute prefixes that point outside the allowed security boundary. Violations immediately trigger an `EngineError::FsPathTraversal`.
+This module provides virtual filesystem services, sandboxing file access to game directories. It coordinates path resolution, file operations, and virtual mounts, ensuring scripting layers interact with files safely. Normalising paths across systems guarantees consistent cross-platform behavior for all read, write, and directory workflows.
 
-Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
+To support asset loading, the system features virtual overlays. It mounts directories or ZIP archives under virtual prefixes, building lookup indexes to read archive files on demand without full extraction. This lets the engine resolve assets across folders dynamically, simplifying modding support and content overrides.
 
-To prevent blocking the main engine thread during expensive I/O operations, the module includes an `AsyncLoader`. This loader dispatches read and write requests to a dedicated background worker thread, returning opaque handles that scripts can poll for completion. For fine-grained file manipulation, `FileHandle` provides a buffered, cursor-based streaming API with discrete read, write, and append modes. Additionally, for hot-reload development workflows, a poll-based `FileWatcher` tracks modification-time (`mtime`) changes across registered paths, enabling real-time asset updates. The full functionality of the virtual filesystem, including JSON validation helpers and file metadata queries, is exposed to scripts via the `lurek.filesystem.*` API.
+I/O operations support both synchronous streams and non-blocking asynchronous requests. The async loader delegates tasks to a dedicated worker thread, allowing the engine to transfer files without main-thread stalls. Buffered handles support mode-aware reading, writing, seeking, and appending for predictable stream control.
+
+Additionally, a poll-based file watcher tracks modification timestamps. This detects file changes on demand, serving as the foundation for hot-reloading configurations and assets. The virtual filesystem layer also provides JSON serialization, temporary file creation, and directory metadata inspection.
 
 ## Functions
 

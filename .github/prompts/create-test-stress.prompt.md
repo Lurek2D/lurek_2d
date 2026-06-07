@@ -13,7 +13,7 @@ description: Create or update heavy stress test for specific module and check te
 - Agent must collect current baseline performance metrics
 
 # STEPS TO DO
-1. Load skills: testing-rust, performance-profiling.
+1. Load skills: testing-ecosystem, performance-profiling.
 2. Execute `python tools/audit/stress_report.py` to gather current stress test ceilings.
 3. Write high-volume loops or parallel execution paths that hammer the module's primary functionality in `tests/lua/stress/` or `tests/rust/stress/`.
 4. Execute the stress script and monitor output. If the script causes an OOM crash or the frame time exceeds the target threshold (e.g. >16.6ms), adjust the load parameters or implement graceful degradation in step 3.
@@ -32,6 +32,6 @@ description: Create or update heavy stress test for specific module and check te
 - Making stress tests part of the standard CI pipeline without isolating them.
 
 # REFERENCES
-- skills: testing-rust, performance-profiling
+- skills: testing-ecosystem, performance-profiling
 - tools: python tools/audit/stress_report.py
 - agent: Tester

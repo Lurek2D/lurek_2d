@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-doc_audit.py — Lurek2D unified documentation audit.
+doc_audit.py — Lurek2D unified docs-general audit.
 
 Runs both collect_docs.py and gen_lua_api.py to produce a combined
-documentation coverage report. Shows per-module breakdowns for both
+docs-general coverage report. Shows per-module breakdowns for both
 Rust source docs and Lua API docs.
 
 Usage:
@@ -14,7 +14,7 @@ Usage:
 
 Exit codes:
     0  - all items documented (coverage >= threshold)
-    1  - documentation gaps found
+    1  - docs-general gaps found
     2  - fatal error
 """
 
@@ -63,7 +63,7 @@ def _run_json_tool(script: str, extra_args: list = None, *, json_flag: bool = Tr
 
 
 def _analyze_rust_docs(data: dict) -> dict:
-    """Analyze Rust documentation coverage from collect_docs.py JSON."""
+    """Analyze Rust docs-general coverage from collect_docs.py JSON."""
     items = data.get("items", [])
     module_docs = data.get("module_docs", {})
 
@@ -101,7 +101,7 @@ def _analyze_rust_docs(data: dict) -> dict:
 
 
 def _analyze_lua_api(data: dict) -> dict:
-    """Analyze Lua API documentation coverage from gen_lua_api_data.py JSON."""
+    """Analyze Lua API docs-general coverage from gen_lua_api_data.py JSON."""
     # gen_lua_api_data.py nests everything under "lua_api"
     lua_api = data.get("lua_api", data)
     summary = lua_api.get("summary", {})
@@ -225,7 +225,7 @@ def generate_report(rust_analysis: dict, lua_analysis: dict) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Lurek2D unified documentation audit",
+        description="Lurek2D unified docs-general audit",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -237,7 +237,7 @@ def main() -> int:
                         help="Coverage threshold %% (default: 90)")
     args = parser.parse_args()
 
-    print("[INFO] Running Rust documentation scan...", file=sys.stderr)
+    print("[INFO] Running Rust docs-general scan...", file=sys.stderr)
     rust_data = _run_json_tool("docs/collect_docs.py")
     if not rust_data:
         return 2

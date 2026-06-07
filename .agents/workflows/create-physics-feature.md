@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation path.
 
 ## Steps
-1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: error-handling](../skills/error-handling/SKILL.md), [skill: testing-rust](../skills/testing-rust/SKILL.md), and [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md), [skill: error-handling](../skills/error-handling/SKILL.md), [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md), and [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md) before acting.
 2. Read src/physics/, any matching Lua bridge code, docs/specs/physics.md, and nearby tests before editing.
 3. Keep the physics state authoritative in the domain module, make boundary errors explicit, and avoid leaking implementation details into the Lua API.
 4. Run the narrowest physics test or build check first, then sync docs or bindings only where the feature changed the contract.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: rust-coding, error-handling, testing-rust, lua-rust-bridge
+Loads skills: rust-coding, error-handling, testing-ecosystem, lua-rust-bridge
 Inputs required: Feature goal., Target physics path., Lua-facing impact., Expected validation path.

@@ -19,7 +19,7 @@ Traditional game engines were designed for humans clicking through GUIs.
 Lurek2D is designed so that an AI coding agent can write a complete, working game â€” correctly, on the first try â€” because:
 
 1. **Every reusable behaviour is a pre-built, tested API block.** 5 000+ `lurek.*` functions covering render, audio, physics, AI, UI, tilemap, particle, procgen, pathfinding, ECS, networking, data, and more.
-2. **100% API documentation coverage is a hard quality gate.** `cargo clippy` and `collect_docs.py` reject any merge that leaves a public function undocumented.
+2. **100% API docs-general coverage is a hard quality gate.** `cargo clippy` and `collect_docs.py` reject any merge that leaves a public function undocumented.
 3. **Every API function ships with examples, BDD tests, integration tests, and demo evidence.** An AI agent reads the docs, sees the example, and ships working code. No hallucination needed.
 4. **The Lua scripting layer is synchronous and side-effect-free from the script's perspective.** Async complexity is hidden in Rust threads and `Channel`. Scripts stay simple and predictable.
 
@@ -87,7 +87,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Unity 2D | Massive. Inconsistent. Some methods have minimal descriptions. |
 | **Lurek2D** | **100% coverage enforced by quality gate.** `collect_docs.py --report-missing` fails CI if any `pub` item lacks a `///` doc comment. `docs/api/lurek.md` and `docs/api/lurek.lua` are generated from source â€” always in sync. |
 
-**Lurek2D verdict:** Only engine where 100% documentation is a hard, automated, non-bypassable gate. AI agents read the generated reference and use functions correctly on first attempt.
+**Lurek2D verdict:** Only engine where 100% docs-general is a hard, automated, non-bypassable gate. AI agents read the generated reference and use functions correctly on first attempt.
 
 ---
 

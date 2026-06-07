@@ -2,15 +2,9 @@
 
 ## Summary
 
-The `debugbridge` module is the runtime communication path between the engine and external debug clients. It allows tools to connect to a live process, exchange messages, and receive diagnostics without embedding tool code in gameplay systems.
+This module establishes a communication bridge between the active game session and external editing panels. By running a background network server, it allows developers to remotely inspect and control the engine's state without interrupting gameplay. It enables on-the-fly code updates, performance tracking, and screenshot captures.
 
-Its core behavior is queue-based and thread-safe. Requests, responses, and bridge events are stored in shared buffers so runtime logic and network handling can cooperate in a controlled way.
-
-The module also supports practical debugging workflows such as print capture, performance polling, and screenshot requests. This gives one integration point for common tool operations during development.
-
-The boundary stays transport-focused. Gameplay inspection policies belong to other modules, while `debugbridge` is responsible for safe message flow, connection handling, and protocol consistency.
-
-In practice, `lurek.debugbridge` improves reliability of live debugging by keeping cross-process communication explicit, predictable, and easier to observe.
+Additionally, the system manages session security and distributes console logs to all connected screens. This remote messaging streamlines session monitoring and facilitates diagnosing behaviors during development.
 
 ## Functions
 

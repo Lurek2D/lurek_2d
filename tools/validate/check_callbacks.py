@@ -4,7 +4,7 @@ check_callbacks.py — Verify that gen_docs_lua.py _callbacks() output has no em
 
 Dynamically imports gen_docs_lua.py and calls its internal _callbacks()
 function, then scans every returned string for embedded \n or \r characters
-that would corrupt the generated documentation.
+that would corrupt the generated docs-general.
 
 Usage:
     python tools/validate/check_callbacks.py        # prints PASS or newline locations

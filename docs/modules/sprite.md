@@ -2,13 +2,89 @@
 
 ## Summary
 
-It provides the essential building blocks for 2D game visuals, encompassing sprite sheets, texture atlases, scalable UI panels, and high-performance batch rendering. At its most basic level, the `Sprite` struct defines a single textured unit with properties for position, scale, rotation, and color tint. To manage animation frames, the `SpriteSheet` divides a single texture into a uniform grid. It supports precomputed frame rectangles, named frame groups for animation sequences, and specific layouts for directional character sprites (such as the standard RPG Maker 3x4 layout). 
+This module turns raw textures into reusable sprites, sheets, and UI panels. It supports named texture atlases parsed from TexturePacker and Aseprite JSON data, mapping semantic names to specific regions while handling rotation and flip flags. This allows scripts to query packed sprites by name instead of raw coordinates.
 
-For more complex texture packing, the module features a comprehensive `SpriteAtlas` system. It parses standard texture atlas formats, specifically supporting JSON exports from popular tools like TexturePacker and Aseprite. The atlas stores named regions (`AtlasEntry`) complete with pixel rectangles and flags for rotation or flipping, allowing for O(1) name lookups and seamless integration with existing art pipelines. The module also includes `NineSlice`, a specialized struct that generates 9-patch geometry. This enables the creation of scalable UI elements—such as dialog boxes, health bars, or menu panels—that preserve their corner and edge pixel ratios while stretching to fit target dimensions.
+Atlas parsing now shares the engine's common Aseprite loader with the animation module. This keeps frame-shape validation and malformed-export error behavior aligned across sprite-atlas import and Aseprite animation ingest, instead of maintaining separate parsers for the same source format.
 
-To ensure optimal rendering performance, the module provides the `SpriteBatch` mechanism. A `SpriteBatch` acts as a deferred draw-call collector bound to a single texture atlas. Instead of submitting individual sprites to the GPU one by one, developers can accumulate hundreds of positioned, rotated, and scaled sprite entries into a single batch. This approach drastically reduces state changes and GPU draw calls, making it highly efficient for rendering dense tile layers, complex UI screens, or large swarms of characters. Fully accessible via the `lurek.sprite.*` Lua API, this module is indispensable for performant 2D game development in Lurek2D.
+For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
+
+Row and column extraction on `SpriteSheet` are implemented with allocation-light internal paths (row slices and column iterators), while Lua still receives the same table-shaped frame arrays via `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`.
+
+To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
+
+Individual sprites can also carry optional normal-map texture state and a strength scalar for lit-sprite workflows. This extends the sprite data model without changing atlas, sheet, or batch APIs for unlit content.
+
+The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
+
+Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite.newAnimator(clips)` creates `LSpriteAnimator`, which handles named clip playback (`play`, `pause`, `resume`, `stop`), frame stepping (`update`, `currentFrame`), clip editing (`addClip`), timing helpers, and loop/end/frame callbacks.
 
 ## Functions
+
+### `lurek.sprite.newAnimator`
+
+Creates a stateful sprite clip animator from an optional clip definition table.
+
+```lua
+lurek.sprite.newAnimator(clips)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `clips?` | table | Map `{ clip_name = { row, from, to, fps, loop? } }`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSpriteAnimator](#lspriteanimator) | A new clip animator object. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({
+        idle = { row = 1, from = 1, to = 3, fps = 10, loop = true }
+    })
+    print("animator type = " .. anim:type())
+end
+```
+
+---
+
+### `lurek.sprite.newAtlasPacker`
+
+Creates a runtime atlas packer for dynamically allocating named sprite regions.
+
+```lua
+lurek.sprite.newAtlasPacker(width, height, padding)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Atlas width in pixels. |
+| `height` | number | Atlas height in pixels. |
+| `padding` | number | Padding in pixels inserted around each packed region. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAtlasPacker](#latlaspacker) | A new runtime atlas packer. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    print("atlas packer type = " .. packer:type())
+end
+```
+
+---
 
 ### `lurek.sprite.newAtlasSheet`
 
@@ -116,6 +192,39 @@ end
 
 ---
 
+### `lurek.sprite.newSprite`
+
+Creates a lightweight sprite record with transform and optional normal-map metadata.
+
+```lua
+lurek.sprite.newSprite(texture_id, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `texture_id` | number | Texture handle used by the sprite. |
+| `x` | number | Initial world X position. |
+| `y` | number | Initial world Y position. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSprite](#lsprite) | A new sprite object. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("sprite created = " .. tostring(sprite ~= nil))
+end
+```
+
+---
+
 ### `lurek.sprite.parseAsepriteAtlas`
 
 Parses an Aseprite JSON atlas string and returns a sprite atlas object.
@@ -198,8 +307,959 @@ end
 
 ## Types
 
+- [LAtlasPacker](#latlaspacker)
+- [LSprite](#lsprite)
+- [LSpriteAnimator](#lspriteanimator)
 - [LSpriteAtlas](#lspriteatlas)
 - [LSpriteSheet](#lspritesheet)
+
+## LAtlasPacker
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LAtlasPacker:clear`
+
+Removes all packed regions and resets packing shelves.
+
+```lua
+LAtlasPacker:clear()
+```
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    if packer:getRegion("hero") ~= nil and packer:getRegion("hero").nine_slice ~= nil then
+        print("hero nine-slice left = " .. packer:getRegion("hero").nine_slice.left)
+    end
+    packer:clear()
+    print("after clear count = " .. packer:regionCount())
+end
+```
+
+---
+
+#### `LAtlasPacker:getDimensions`
+
+Returns the current width and height of this atlas packer.
+
+```lua
+LAtlasPacker:getDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Atlas width in pixels. |
+| number | Atlas height in pixels. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    local w, h = packer:getDimensions()
+    print("dimensions = " .. w .. "x" .. h)
+end
+```
+
+---
+
+#### `LAtlasPacker:getRegion`
+
+Returns the named packed atlas region, or nil if not found.
+
+```lua
+LAtlasPacker:getRegion(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region key to fetch. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LAtlasPackerGetRegionResult | Region table `{name, x, y, w, h, nine_slice}` or nil when missing. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    local region = packer:getRegion("hero")
+    print("region x = " .. (region and region.x or -1))
+end
+```
+
+---
+
+#### `LAtlasPacker:pack`
+
+Packs a named region into this atlas and returns whether allocation succeeded.
+
+```lua
+LAtlasPacker:pack(name, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Region key used for later lookups. |
+| `w` | number | Region width in pixels. |
+| `h` | number | Region height in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the region was packed. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    local ok = packer:pack("hero", 24, 24)
+    print("packed hero = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LAtlasPacker:regionCount`
+
+Returns the number of currently packed regions.
+
+```lua
+LAtlasPacker:regionCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Region count. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    print("region count = " .. packer:regionCount())
+end
+```
+
+---
+
+#### `LAtlasPacker:setNineSlice`
+
+Sets nine-slice insets for a previously packed region.
+
+```lua
+LAtlasPacker:setNineSlice(name, left, right, top, bottom)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Packed region key. |
+| `left` | number | Left inset in pixels. |
+| `right` | number | Right inset in pixels. |
+| `top` | number | Top inset in pixels. |
+| `bottom` | number | Bottom inset in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when insets were applied. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    packer:pack("hero", 24, 24)
+    local ok = packer:setNineSlice("hero", 4, 4, 4, 4)
+    print("set nine-slice = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LAtlasPacker:type`
+
+Returns the type name of this object.
+
+```lua
+LAtlasPacker:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LAtlasPacker](#latlaspacker)"`. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    print("type = " .. packer:type())
+end
+```
+
+---
+
+#### `LAtlasPacker:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LAtlasPacker:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check (e.g. `"[LAtlasPacker](#latlaspacker)"` or `"Object"`). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the object is the given type. |
+
+**Example**
+
+```lua
+do
+    local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
+    print("typeOf LAtlasPacker = " .. tostring(packer:typeOf("LAtlasPacker")))
+end
+```
+
+---
+
+## LSprite
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSprite:clearNormalMap`
+
+Removes the assigned normal map from this sprite.
+
+```lua
+LSprite:clearNormalMap()
+```
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(3)
+    sprite:clearNormalMap()
+    print("has normal after clear = " .. tostring(sprite:hasNormalMap()))
+end
+```
+
+---
+
+#### `LSprite:getNormalIntensity`
+
+Returns the normal-map intensity multiplier.
+
+```lua
+LSprite:getNormalIntensity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current non-negative intensity multiplier. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalIntensity(2.5)
+    print("normal intensity = " .. tostring(sprite:getNormalIntensity()))
+end
+```
+
+---
+
+#### `LSprite:getNormalMap`
+
+Returns the assigned normal-map texture handle, or nil when absent.
+
+```lua
+LSprite:getNormalMap()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Texture handle for the normal map. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(11)
+    print("normal map = " .. tostring(sprite:getNormalMap()))
+end
+```
+
+---
+
+#### `LSprite:getPosition`
+
+Returns the sprite anchor position in pixels.
+
+```lua
+LSprite:getPosition()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | World X position. |
+| number | World Y position. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local x, y = sprite:getPosition()
+    print("position = " .. x .. "," .. y)
+end
+```
+
+---
+
+#### `LSprite:hasNormalMap`
+
+Returns whether the sprite currently has a normal map.
+
+```lua
+LSprite:hasNormalMap()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a normal map is assigned. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("has normal before = " .. tostring(sprite:hasNormalMap()))
+    sprite:setNormalMap(3)
+    print("has normal after = " .. tostring(sprite:hasNormalMap()))
+end
+```
+
+---
+
+#### `LSprite:setNormalIntensity`
+
+Sets the normal-map intensity used by lit sprite workflows.
+
+```lua
+LSprite:setNormalIntensity(intensity)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `intensity` | number | Non-negative intensity multiplier. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalIntensity(2.5)
+    print("normal intensity set")
+end
+```
+
+---
+
+#### `LSprite:setNormalMap`
+
+Assigns the texture used as this sprite's normal map for lit sprite workflows.
+
+```lua
+LSprite:setNormalMap(texture_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `texture_id` | number | Texture handle used as the normal-map source. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(11)
+    print("normal map set = " .. tostring(sprite:getNormalMap() == 11))
+end
+```
+
+---
+
+#### `LSprite:setPosition`
+
+Sets the sprite anchor position in pixels.
+
+```lua
+LSprite:setPosition(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setPosition(32, 48)
+    local x, y = sprite:getPosition()
+    print("position = " .. x .. "," .. y)
+end
+```
+
+---
+
+#### `LSprite:type`
+
+Returns the type name of this object.
+
+```lua
+LSprite:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LSprite](#lsprite)"`. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("type = " .. sprite:type())
+end
+```
+
+---
+
+#### `LSprite:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LSprite:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the object is the given type. |
+
+**Example**
+
+```lua
+do
+    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    print("typeOf LSprite = " .. tostring(sprite:typeOf("LSprite")))
+end
+```
+
+---
+
+## LSpriteAnimator
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSpriteAnimator:addClip`
+
+Add or replace a named clip definition.
+
+```lua
+LSpriteAnimator:addClip(name, def)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Clip name. |
+| `def` | table | Clip definition table with `row`, `from`, `to`, `fps`, and optional `loop`. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator()
+    anim:addClip("run", { row = 3, from = 1, to = 4, fps = 12, loop = true })
+    anim:play("run")
+    print("current clip after add = " .. tostring(anim:currentClip()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:clipDuration`
+
+Return full one-pass duration for the current clip.
+
+```lua
+LSpriteAnimator:clipDuration()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total clip duration in seconds. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 6, loop = true } })
+    anim:play("idle")
+    print("clip duration = " .. tostring(anim:clipDuration()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:currentClip`
+
+Return the currently selected clip name.
+
+```lua
+LSpriteAnimator:currentClip()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Active clip name, or nil if none. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    print("current clip = " .. tostring(anim:currentClip()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:currentFrame`
+
+Return current draw frame as sprite-sheet row and column.
+
+```lua
+LSpriteAnimator:currentFrame()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Sprite-sheet row. |
+| number | Sprite-sheet column (frame index). |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 2, from = 3, to = 4, fps = 10, loop = true } })
+    anim:play("idle")
+    local row, col = anim:currentFrame()
+    print("frame = " .. row .. "," .. col)
+end
+```
+
+---
+
+#### `LSpriteAnimator:frameDuration`
+
+Return frame duration for the current clip.
+
+```lua
+LSpriteAnimator:frameDuration()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Seconds per frame. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 20, loop = true } })
+    anim:play("idle")
+    print("frame duration = " .. tostring(anim:frameDuration()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:isPlaying`
+
+Return whether the animator is currently playing.
+
+```lua
+LSpriteAnimator:isPlaying()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when playing. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    print("is playing = " .. tostring(anim:isPlaying()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:onEnd`
+
+Set callback fired when a non-looping clip reaches its end.
+
+```lua
+LSpriteAnimator:onEnd(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Callback signature `(clip_name)`. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ jump = { row = 1, from = 1, to = 2, fps = 10, loop = false } })
+    anim:onEnd(function(clip)
+        print("onEnd " .. clip)
+    end)
+    anim:play("jump")
+    anim:update(0.5)
+end
+```
+
+---
+
+#### `LSpriteAnimator:onFrame`
+
+Set callback fired on each frame advance.
+
+```lua
+LSpriteAnimator:onFrame(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Callback signature `(row, col, clip_name)`. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:onFrame(function(row, col, clip)
+        print("onFrame " .. clip .. " " .. row .. ":" .. col)
+    end)
+    anim:play("idle")
+    anim:update(0.11)
+end
+```
+
+---
+
+#### `LSpriteAnimator:onLoop`
+
+Set callback fired when a looping clip wraps.
+
+```lua
+LSpriteAnimator:onLoop(fn)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fn` | function | Callback signature `(clip_name)`. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 2, fps = 10, loop = true } })
+    anim:onLoop(function(clip)
+        print("onLoop " .. clip)
+    end)
+    anim:play("idle")
+    anim:update(0.25)
+end
+```
+
+---
+
+#### `LSpriteAnimator:pause`
+
+Pause playback without resetting frame state.
+
+```lua
+LSpriteAnimator:pause()
+```
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:pause()
+    print("is playing after pause = " .. tostring(anim:isPlaying()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:play`
+
+Play or restart a named clip.
+
+```lua
+LSpriteAnimator:play(name, restart)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Clip name. |
+| `restart?` | boolean | Whether to restart when already playing this clip. Defaults to true. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    print("clip after play = " .. tostring(anim:currentClip()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:resume`
+
+Resume playback from current frame when a clip is selected.
+
+```lua
+LSpriteAnimator:resume()
+```
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:pause()
+    anim:resume()
+    print("is playing after resume = " .. tostring(anim:isPlaying()))
+end
+```
+
+---
+
+#### `LSpriteAnimator:stop`
+
+Stop playback and reset to the first frame of the current clip.
+
+```lua
+LSpriteAnimator:stop()
+```
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:update(0.2)
+    anim:stop()
+    local _, col = anim:currentFrame()
+    print("frame after stop = " .. tostring(col))
+end
+```
+
+---
+
+#### `LSpriteAnimator:type`
+
+Returns the type name of this object.
+
+```lua
+LSpriteAnimator:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LSpriteAnimator](#lspriteanimator)"`. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator()
+    print("type = " .. anim:type())
+end
+```
+
+---
+
+#### `LSpriteAnimator:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LSpriteAnimator:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the object is the given type. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator()
+    print("typeOf LSpriteAnimator = " .. tostring(anim:typeOf("LSpriteAnimator")))
+end
+```
+
+---
+
+#### `LSpriteAnimator:update`
+
+Advance playback by delta time and dispatch callback events.
+
+```lua
+LSpriteAnimator:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Delta time in seconds. |
+
+**Example**
+
+```lua
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:update(0.11)
+    local _, col = anim:currentFrame()
+    print("frame after update = " .. tostring(col))
+end
+```
+
+---
 
 ## LSpriteAtlas
 
@@ -495,6 +1555,7 @@ do
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
     local col0 = sheet:getColumn(0)
     print("col 0 frames = " .. #col0)
+    print("col 0 second frame = " .. col0[2].x .. "," .. col0[2].y)
 end
 ```
 
@@ -703,6 +1764,7 @@ do
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
     local row0 = sheet:getRow(0)
     print("row 0 frames = " .. #row0)
+    print("row 0 first frame = " .. row0[1].x .. "," .. row0[1].y)
 end
 ```
 

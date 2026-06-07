@@ -252,7 +252,7 @@ The primary requirement for these editors is that they **must generate and save 
   - Reward dispensing triggers upon successful node completion.
   - Interactive quest stage simulation mimicking player progress.
   - Automatic layout generation for complex branching story arcs.
-  - Note and documentation attachments for writers.
+  - Note and docs-general attachments for writers.
   - Quest state tracking and live debugging overlay.
 
 ### 10. GuiWidgetEditor
@@ -347,11 +347,11 @@ The primary requirement for these editors is that they **must generate and save 
 
 ### 16. ApiReferenceEditor
 - **Reference / Inspiration:** Dash, Zeal, Godot built-in Help.
-- **Use case:** Quick, built-in offline access to the full, specific API documentation of the Lurek2D engine.
-- **Lurek API Integration:** Pulls data from `lurek.docs` to provide fully generated, up-to-date offline documentation.
-- **Ideas / Vision:** Acts as the offline heartbeat of the Love2D-style code-first philosophy. By reading directly from `lurek.docs`, it guarantees that the documentation never drifts from the actual installed engine version.
+- **Use case:** Quick, built-in offline access to the full, specific API docs-general of the Lurek2D engine.
+- **Lurek API Integration:** Pulls data from `lurek.docs` to provide fully generated, up-to-date offline docs-general.
+- **Ideas / Vision:** Acts as the offline heartbeat of the Love2D-style code-first philosophy. By reading directly from `lurek.docs`, it guarantees that the docs-general never drifts from the actual installed engine version.
 - **Feature list:**
-  - Full offline markdown-rendered documentation browser.
+  - Full offline markdown-rendered docs-general browser.
   - Fuzzy search across all Lurek API namespaces.
   - Syntax examples and executable code snippets.
   - Cross-linking hyperlinks between related functions.
@@ -813,7 +813,7 @@ User request
            â”‚
            â”śâ”€â”€ Multi-step workflow / role?
            â”‚     â†’ match task to agent `mission`
-           â”‚     â†’ Manager loads `agent-routing` for handoffs
+           â”‚     â†’ Manager loads `cag-routing` for handoffs
            â”‚
            â””â”€â”€ Slash command / user button?
                  â†’ .github/prompts/<verb>-<noun>.prompt.md
@@ -821,7 +821,7 @@ User request
 
 Three properties hold:
 - **System prompt is the only file always loaded.** Everything else is demand-pulled.
-- **Skills are additive.** A single task may load several (e.g. `lua-api-design` + `lua-rust-bridge` + `testing-rust`).
+- **Skills are additive.** A single task may load several (e.g. `lua-api-design` + `lua-rust-bridge` + `testing-ecosystem`).
 - **Agents are roles.** When work spans â‰Ą3 agents or â‰Ą5 files, route to Manager first; Manager engages Planner before implementation.
 
 **Worked example** â€” "fix a crash in `src/physics/`": load skills `dev-debugging` + `module-architecture` + `error-handling` â†’ route to `Developer` for root-cause and fix â†’ `Tester` for regression test â†’ `Verifier` to gate commit.

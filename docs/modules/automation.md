@@ -2,15 +2,9 @@
 
 ## Summary
 
-The `automation` module gives one reliable way to simulate runtime interaction without manual input. It turns test intent into scripted steps and replays those steps in a controlled timeline. This helps teams verify behavior repeatedly with the same sequence and expected outcomes.
+The automation module delivers a deterministic input replay and scripted verification pipeline for Lurek2D. Its core purpose is to programmatically simulate human player interactions—including keyboard, mouse, and text inputs—to test gameplay behaviors. It parses ordered step sequences from TOML or Lua tables, expanding repeat directives and time intervals into concrete playback schedules.
 
-Its core value is deterministic playback. Scripts are stored as ordered actions, then executed by a simulator that advances time and dispatches events in strict order. Because runs are data-driven, results are less dependent on machine timing, device noise, or manual tester variance.
-
-The module supports practical workflow features for test authoring and reuse. Scripts can be loaded, started, paused, resumed, stopped, and limited by step count. Named macros and conditional gates allow larger scenarios to be built from smaller reusable pieces.
-
-Verification is part of the runtime flow, not an afterthought. The simulator can apply assertions, track failures, and expose status such as running, paused, complete, failed, and last error. This makes it useful for CI and regression checks where pass/fail signals must be explicit.
-
-Functionally, the module stays focused on sequencing and control logic. It does not replace device, rendering, or gameplay systems. Instead, it drives those systems through scripted input and observation, providing a stable automation layer for quality and debugging work.
+Simulation playback supports real-time pausing, resuming, speed scaling, and macro reuse. Scripts can wait for predicates, run conditional steps gated by boolean flags, and execute visual assertions with configurable error tolerances, enabling robust regression verification.
 
 ## Functions
 

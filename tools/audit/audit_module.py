@@ -149,7 +149,7 @@ class ModuleFileAnalysis:
     warning_files: List[Tuple[str, int]] = field(default_factory=list)
 
 
-_STUB_PATTERNS = ("TODO", "FIXME", "Consult the module-level documentation")
+_STUB_PATTERNS = ("TODO", "FIXME", "Consult the module-level docs-general")
 _PUB_ITEM_RE = re.compile(r"pub\s+(?:fn|struct|enum|trait|type|const)\s+")
 _PUB_ITEM_NAME_RE = re.compile(r"pub\s+(fn|struct|enum|trait|type|const)\s+(\w+)")
 
@@ -333,8 +333,8 @@ def check_file_naming(module: str) -> Check:
 
 # ── Phase 2: docs/specs Quality ──
 
-# Canonical docs/specs sections (must match agent-md skill and actual src/<module>/docs/specs files).
-# See .github/skills/agent-md/SKILL.md for the authoritative template.
+# Canonical docs/specs sections (must match docs-specs skill and actual src/<module>/docs/specs files).
+# See .github/skills/docs-specs/SKILL.md for the authoritative template.
 REQUIRED_AGENT_SECTIONS = ["Purpose", "Source Files"]
 # "Full Specification" may appear as the short form "Full Spec" in older files.
 REQUIRED_AGENT_SPEC_SECTION_VARIANTS = ["Full Specification", "Full Spec"]
@@ -569,7 +569,7 @@ def check_structured_sections(module: str) -> Check:
 
 
 def check_lua_api_docs(module: str) -> List[Check]:
-    """D-06 through D-09: Lua API file documentation checks."""
+    """D-06 through D-09: Lua API file docs-general checks."""
     results: List[Check] = []
     api_file = LUA_API / f"{module}_api.rs"
     api_dir = LUA_API / f"{module}_api"

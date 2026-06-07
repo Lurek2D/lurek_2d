@@ -32,6 +32,6 @@ description: Create new example or update example for specific module.
 - Failing to document the code with clear comments.
 
 # REFERENCES
-- skills: examples-management, lua-scripting, documentation
+- skills: examples-management, lua-scripting, docs-general
 - tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py
 - agent: Content-Maker

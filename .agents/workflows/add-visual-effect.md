@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Expected validation or demo path.
 
 ## Steps
-1. Load [skill: visual-effects](../skills/visual-effects/SKILL.md), [skill: gpu-programming](../skills/gpu-programming/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
+1. Load [skill: visual-effects](../skills/visual-effects/SKILL.md), [skill: gpu-programming](../skills/gpu-programming/SKILL.md), and [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md) before acting.
 2. Read the owning render or effect files, nearby tests, docs/architecture/render-command-architecture.md, and any existing effect path before editing.
 3. Keep the change inside the current 2D or pseudo-3D pipeline, wire only the required parameters, and update the nearest test or demo proof.
 4. Run the narrowest render test, build check, or demo path that exercises the effect before broadening validation.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: visual-effects, gpu-programming, testing-rust
+Loads skills: visual-effects, gpu-programming, testing-ecosystem
 Inputs required: Effect goal., Target render stage., Input data or parameters., Expected validation or demo path.

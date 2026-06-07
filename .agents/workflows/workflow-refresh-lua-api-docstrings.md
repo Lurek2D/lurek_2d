@@ -14,7 +14,7 @@ expected_agent: "Manager"
 - Required generation scope.
 
 ## Steps
-1. Load [skill: documentation](../skills/documentation/SKILL.md) and [skill: lua-api-design](../skills/lua-api-design/SKILL.md) before acting.
+1. Load [skill: docs-general](../skills/docs-general/SKILL.md) and [skill: lua-api-design](../skills/lua-api-design/SKILL.md) before acting.
 2. Read the owning src/lua_api/*_api.rs file, the matching spec, and the current generated output before editing text.
 3. Fix the source doc comments only, keeping Lua-facing wording concrete and consistent with the shipped API.
 4. Regenerate the Lua API data and generated docs after the source edit, and copy extension-facing artifacts only if that flow is part of the current contract.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: documentation, lua-api-design
+Loads skills: docs-general, lua-api-design
 Inputs required: Target module or API slice., Doc drift or wording issue., Required generation scope.

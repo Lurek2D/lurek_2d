@@ -214,7 +214,7 @@ Finally, the module provides a robust suite of diagnostic visualization utilitie
 - Renders normalized and raw grayscale maps to compare contrast handling across noise sources.
 - Provides biome and elevation band coloring to inspect threshold-driven terrain classification.
 - Supports sliced and tiled comparison views for spotting artifacts across parameter variations.
-- Keeps sampling and raster paths deterministic for stable test and documentation visuals.
+- Keeps sampling and raster paths deterministic for stable test and docs-general visuals.
 
 ### visualization/procgen.rs
 

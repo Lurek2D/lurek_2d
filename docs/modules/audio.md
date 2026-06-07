@@ -2,17 +2,17 @@
 
 ## Summary
 
-The `audio` module is the central runtime for sound behavior in Lurek2D. It manages source lifecycle, playback state, routing, and control so game systems can treat sound as a predictable service. In practice, it gives one place to start, stop, inspect, and shape audio during live gameplay.
+The audio module delivers a comprehensive sound and music engine for Lurek2D, managing device enumeration and streaming output lifecycles. It provides dual playback surfaces: static sources cached fully in memory for immediate sound triggers, and streaming or queueable sources designed for music and procedural PCM buffer feeds. The playback engine handles fading ramps, cloned voices, and round-robin voice pools that distribute low-latency triggering load across pre-allocated voices.
 
-Its mixer and bus model make project-wide control easier. Sources can be grouped, routed, and adjusted through shared bus rules for volume, pitch, pause, and ducking. This allows teams to manage complex mixes with clear structure instead of scattered per-source overrides.
+To manage complex soundscapes, the module implements a named mixing bus hierarchy. Individual sources route through buses to share high-level pitch, pause, and volume controls. Buses support dynamic sidechain ducking relationships, allowing priority audio streams—such as dialogue—to automatically attenuate background channels. Real-time metering captures peak and RMS amplitude values across channels for in-game diagnostic metering and audio-driven visualizers.
 
-The module also supports different playback patterns. It handles normal sources, queueable streaming, pool-based repeated playback, and cloned voices. This makes it suitable for music, effects, reactive one-shots, and high-frequency events without forcing one playback style for every case.
+Positional simulation is governed by a spatialized audio engine that maps coordinates in 2D and 3D space. It calculates panning, distance-model attenuation, and Doppler shifts by tracking relative coordinates, velocity vectors, and orientation arrays for both sound sources and listeners. This creates immersive motion cues, which are highly customizable through global scale limits and selectable distance-decay curves, integrating spatial movement with physics.
 
-Spatial and timing features are built into the runtime surface. Listener and source transforms, distance and doppler controls, and beat-clock utilities support both positional sound and rhythm-aware gameplay. Functionally, this keeps audio decisions close to game state and player timing.
+Rhythm-heavy games and synchronized gameplay elements are driven by a musical beat clock. The clock maps wall time to beats, bars, and subdivisions, accommodating linear tempo ramps without phase jumps. Scripts can schedule timed callbacks, tap tempo beats, apply rhythmic swing offsets for syncopation, and evaluate user-input timing accuracy against adjustable judgment windows, allowing gameplay mechanics to align perfectly with musical structures.
 
-Sound data workflows are practical for both authored and procedural content. Decode paths, in-memory sample containers, basic transforms, and WAV export support quick iteration and tooling scenarios. At the same time, advanced DSP and MIDI concerns remain in dedicated modules, keeping boundaries clear.
+For complex sequenced soundtracks, the module includes a dedicated MIDI player and synthesis system. It parses standard MIDI tracks, providing master volume scaling, per-channel instruments, and individual track muting. Tempos can scale dynamically relative to original speeds, while synthesis parameters are driven by selectable SoundFont files. This enables responsive and memory-efficient musical scoring that scales and changes tempo programmatically.
 
-Overall, the module provides a complete operational contract for audio: load or stream sound, route it, schedule it, control it, and monitor it through one Lua-facing API. This consistency improves maintainability as projects grow in content and runtime complexity.
+Frequency shaping and procedural audio are supported through built-in digital signal processing and sample-level access. Sound sources can apply highpass and lowpass filters to attenuate specific frequency bands, alongside stereo width modifications and random pitch fluctuations. For direct sample manipulation, the sound data container exposes interleaved PCM buffers, allowing scripts to read, edit, mix buffers, draw waveform images, and export audio as WAV files.
 
 ## Functions
 
@@ -1196,6 +1196,35 @@ end
 
 ---
 
+### `lurek.audio.isMuted`
+
+Returns whether global audio is currently muted.
+
+```lua
+lurek.audio.isMuted()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if muted (all sources paused). |
+
+**Example**
+
+```lua
+do
+    local muted = lurek.audio.isMuted()
+    print("audio is muted = " .. tostring(muted))
+    if not muted then
+        lurek.audio.setMuted(true)
+        print("now muted = " .. tostring(lurek.audio.isMuted()))
+    end
+end
+```
+
+---
+
 ### `lurek.audio.isPaused`
 
 Returns whether a source is currently paused.
@@ -1781,6 +1810,41 @@ end
 
 ---
 
+### `lurek.audio.playSfx`
+
+Plays a one-shot sound effect from a file path with optional settings.
+
+```lua
+lurek.audio.playSfx(path, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | Path to audio file. |
+| `opts?` | table | Optional: `bus` (string), `volume` (0.0-1.0), `loop` (bool). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSource](#lsource) | The audio source handle for the playing effect. |
+
+**Example**
+
+```lua
+do
+    local opts = { volume = 0.8, loop = false }
+    local sfx = lurek.audio.playSfx("content/examples/assets/audio/sample_click.wav", opts)
+    print("sfx played = " .. tostring(sfx ~= nil))
+    print("sfx type = " .. sfx:type())
+    print("volume = " .. tostring(sfx:getVolume()))
+end
+```
+
+---
+
 ### `lurek.audio.queueSource`
 
 Queues a decoded audio chunk for playback on a queueable source.
@@ -2264,6 +2328,33 @@ end
 
 ---
 
+### `lurek.audio.setMuted`
+
+Globally mutes all audio (pauses all sources without stopping them).
+
+```lua
+lurek.audio.setMuted(muted)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `muted` | boolean | True to mute, false to unmute all audio. |
+
+**Example**
+
+```lua
+do
+    lurek.audio.setMuted(true)
+    print("audio muted = " .. tostring(lurek.audio.isMuted()))
+    lurek.audio.setMuted(false)
+    print("audio unmuted = " .. tostring(not lurek.audio.isMuted()))
+end
+```
+
+---
+
 ### `lurek.audio.setOrientation`
 
 Sets the orientation of a source using forward and up vectors.
@@ -2644,6 +2735,34 @@ do
     lurek.audio.stopAll()
     print("all stopped")
     print("sample source stopped = " .. tostring(lurek.audio.isStopped(src)))
+end
+```
+
+---
+
+### `lurek.audio.stopMusic`
+
+Stops all music sources with optional fade-out.
+
+```lua
+lurek.audio.stopMusic(fade_duration)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fade_duration?` | number | Fade-out duration in seconds (default: 0.0). |
+
+**Example**
+
+```lua
+do
+    local src = lurek.audio.newSource("content/examples/assets/audio/sample_loop.wav", "stream")
+    lurek.audio.play(src)
+    print("music playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.audio.stopMusic(0.5)
+    print("music stopped with fade")
 end
 ```
 

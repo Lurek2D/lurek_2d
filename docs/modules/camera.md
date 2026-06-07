@@ -2,15 +2,11 @@
 
 ## Summary
 
-The `camera` module controls how the world is seen on screen in 2D runtime scenarios. It provides one consistent place to manage camera position, zoom, rotation, follow logic, and viewport mapping. Functionally, it separates view behavior from gameplay logic so systems can share the same camera rules.
+The camera module serves as the primary viewport projection layer for Lurek2D, mapping 2D world coordinates onto the user's screen. Its core purpose is to track gameplay targets smoothly using follow algorithms that apply dead-zone constraints, speed smoothing, easing modes, and look-ahead displacements. It supplies follow presets—aggressive, balanced, cinematic, and tight—to quickly capture common movement profiles while enforcing hard bounds to lock the view inside active maps.
 
-Its camera state tools support both direct control and guided motion. Scripts can move or target the camera, apply smoothing and easing, run path-based travel, and use zoom transitions. This makes the module useful for gameplay tracking, cutscene movement, and tool-driven inspection flows.
+To enhance the visual and kinetic feel of gameplay, the module layers a dynamic suite of transient camera effects on top of the base tracking transform. Scripts can programmatically trigger camera shake impulses, pulse-based zoom bursts, oscillatory sways with adjustable damping, and ambient breathing zoom modulations for low-action timing. The engine composes these layers with zoom, rotation, and dampening constraints to construct a stable, frame-accurate view matrix while providing pixel-to-world coordinate conversion tools.
 
-Visual motion quality is improved through effect primitives such as shake, sway, and pulse-like zoom. These effects layer on top of base camera behavior, so teams can add impact and feedback without rewriting core follow or transform code.
-
-Viewport handling is treated as its own concern. Scaling strategy and coordinate conversion are managed alongside camera transforms, which helps keep behavior stable across different window sizes and presentation modes. This reduces coupling between display policy and gameplay camera decisions.
-
-The module also supports multi-camera orchestration through named rigs and layout helpers. Split-screen, minimap, and picture-in-picture flows can be managed through one control surface while keeping render integration predictable. Overall, the module provides a complete and reusable view-control foundation for 2D projects.
+For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the module supplies multi-camera rig orchestrators. Rigs govern groups of named cameras, auto-calculating split-screen, minimap, and inset display layouts. Viewports are governed by scaling policies that resolve aspect-ratio adjustments into letterbox, stretched, or pixel-perfect projection dimensions, while waypoint-driven path systems interpolate guided cameras along authored waypoints.
 
 ## Functions
 
@@ -106,6 +102,49 @@ end
 
 ---
 
+### `lurek.camera.newWalker`
+
+Creates a tile-grid walker with smooth camera following.
+
+```lua
+lurek.camera.newWalker(map, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `map` | [LTileMap](#ltilemap) | Tilemap for collision detection. |
+| `opts?` | table | Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCameraWalker](#lcamerawalker) | New walker handle. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, {
+        layer = 1,
+        tile_w = 32,
+        tile_h = 32,
+        body_w = 24,
+        body_h = 24,
+        speed = 100,
+        x = 64,
+        y = 64
+    })
+    print("walker created = " .. tostring(walker ~= nil))
+    print("walker type = " .. walker:type())
+end
+```
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
@@ -122,6 +161,8 @@ end
 
 - [LCamera](#lcamera)
 - [LCameraRig](#lcamerarig)
+- [LCameraWalker](#lcamerawalker)
+- [LTileMap](#ltilemap)
 
 ## LCamera
 
@@ -2485,5 +2526,1306 @@ do
     print("camera count = " .. tostring(#rig:names()))
 end
 ```
+
+---
+
+## LCameraWalker
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LCameraWalker:getCamera`
+
+Returns the associated camera.
+
+```lua
+LCameraWalker:getCamera()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCamera](#lcamera) | Camera that follows the walker. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    local cam = walker:getCamera()
+    print("camera type = " .. cam:type())
+end
+```
+
+---
+
+#### `LCameraWalker:getPosition`
+
+Returns the walker world-space center position.
+
+```lua
+LCameraWalker:getPosition()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Walker X and Y position in world units. (value 1). |
+| number | Walker X and Y position in world units. (value 2). |
+
+---
+
+#### `LCameraWalker:getTilePosition`
+
+Returns current walker tile coordinates (1-based).
+
+```lua
+LCameraWalker:getTilePosition()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile column and row (1-based). (value 1). |
+| number | Tile column and row (1-based). (value 2). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
+    walker:setTilePosition(3, 2)
+    local tx, ty = walker:getTilePosition()
+    print("walker tile = " .. tx .. ", " .. ty)
+end
+```
+
+---
+
+#### `LCameraWalker:moveDown`
+
+Moves the walker down (positive Y) with collision checking.
+
+```lua
+LCameraWalker:moveDown(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt?` | number | Time delta in seconds (defaults to 1/60). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveDown(1.0)
+    local _, y = walker:getPosition()
+    print("moved down, new y = " .. y)
+end
+```
+
+---
+
+#### `LCameraWalker:moveLeft`
+
+Moves the walker left (negative X) with collision checking.
+
+```lua
+LCameraWalker:moveLeft(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt?` | number | Time delta in seconds (defaults to 1/60). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveLeft(1.0)
+    local x, _ = walker:getPosition()
+    print("moved left, new x = " .. x)
+end
+```
+
+---
+
+#### `LCameraWalker:moveRight`
+
+Moves the walker right (positive X) with collision checking.
+
+```lua
+LCameraWalker:moveRight(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt?` | number | Time delta in seconds (defaults to 1/60). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveRight(1.0)
+    local x, _ = walker:getPosition()
+    print("moved right, new x = " .. x)
+end
+```
+
+---
+
+#### `LCameraWalker:moveUp`
+
+Moves the walker up (negative Y) with collision checking.
+
+```lua
+LCameraWalker:moveUp(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt?` | number | Time delta in seconds (defaults to 1/60). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveUp(1.0)
+    local _, y = walker:getPosition()
+    print("moved up, new y = " .. y)
+end
+```
+
+---
+
+#### `LCameraWalker:setPosition`
+
+Sets the walker world-space center position.
+
+```lua
+LCameraWalker:setPosition(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Walker X position in world units. |
+| `y` | number | Walker Y position in world units. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    walker:setPosition(128, 96)
+    local x, y = walker:getPosition()
+    print("walker pos = " .. x .. ", " .. y)
+end
+```
+
+---
+
+#### `LCameraWalker:setTilePosition`
+
+Places walker using 1-based tile coordinates.
+
+```lua
+LCameraWalker:setTilePosition(tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tx` | number | Tile column (1-based). |
+| `ty` | number | Tile row (1-based). |
+
+---
+
+#### `LCameraWalker:type`
+
+Returns the type name of this userdata.
+
+```lua
+LCameraWalker:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LCameraWalker](#lcamerawalker)"`. |
+
+---
+
+#### `LCameraWalker:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LCameraWalker:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check against. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if `name` is `"[LCameraWalker](#lcamerawalker)"` or `"Object"`. |
+
+---
+
+#### `LCameraWalker:update`
+
+Updates camera state and advances smooth interpolation.
+
+```lua
+LCameraWalker:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt?` | number | Time delta in seconds (defaults to 1/60). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    walker:setPosition(50, 50)
+    walker:update(0.016)  -- Update at ~60 FPS
+    local x, y = walker:getPosition()
+    print("walker updated, pos = " .. x .. ", " .. y)
+end
+```
+
+---
+
+## LTileMap
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTileMap:addLayer`
+
+Creates a new tile layer with the given name and dimensions.
+
+```lua
+LTileMap:addLayer(name, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Layer name. |
+| `w` | number | Width in tiles. |
+| `h` | number | Height in tiles. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Index of the new layer (1-based). |
+
+---
+
+#### `LTileMap:addTileSet`
+
+Attaches a tileset to this map for tile rendering.
+
+```lua
+LTileMap:addTileSet(tileSet)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tileSet` | [LTileSet](tilemap.md#ltileset) | Tileset to add. |
+
+---
+
+#### `LTileMap:applyAutoTile`
+
+Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
+
+```lua
+LTileMap:applyAutoTile(layer, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTile8`
+
+Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
+
+```lua
+LTileMap:applyAutoTile8(layer, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTile8At`
+
+Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+```lua
+LTileMap:applyAutoTile8At(layer, x, y, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTileAt`
+
+Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+```lua
+LTileMap:applyAutoTileAt(layer, x, y, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose rules to apply. |
+
+---
+
+#### `LTileMap:checkEntities`
+
+Checks a list of entities against registered tile-enter callbacks on a layer.
+
+```lua
+LTileMap:checkEntities(layer, entities)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `entities` | table | Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields. |
+
+---
+
+#### `LTileMap:clearTile`
+
+Removes the tile at a specific grid position, setting it to empty (GID 0).
+
+```lua
+LTileMap:clearTile(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+---
+
+#### `LTileMap:drawToImage`
+
+Rasterizes the map into an image using the given tile size, returning an image handle.
+
+```lua
+LTileMap:drawToImage(tileSize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tileSize` | number | Pixel size of each tile in the output image. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImage](render.md#limage) | Rasterized image of the map. |
+
+---
+
+#### `LTileMap:fill`
+
+Fills every cell of a layer with the given GID.
+
+```lua
+LTileMap:fill(layer, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `gid` | number | Global tile ID to fill with. |
+
+---
+
+#### `LTileMap:findTilesByGid`
+
+Returns all positions on a layer that contain a specific GID.
+
+```lua
+LTileMap:findTilesByGid(layer, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `gid` | number | Global tile ID to search for. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTileMapFindTilesByGidResult | Array of `{x=number, y=number}` positions. |
+
+---
+
+#### `LTileMap:fireTileExit`
+
+Manually fires the tile-exit callback for a specific GID and entity at a tile position.
+
+```lua
+LTileMap:fireTileExit(gid, entity, tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID. |
+| `entity` | table | Entity table to pass to the callback. |
+| `tx` | number | Tile column. |
+| `ty` | number | Tile row. |
+
+---
+
+#### `LTileMap:fireTileStep`
+
+Manually fires the tile-step callback for a specific GID and entity at a tile position.
+
+```lua
+LTileMap:fireTileStep(gid, entity, tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID. |
+| `entity` | table | Entity table to pass to the callback. |
+| `tx` | number | Tile column. |
+| `ty` | number | Tile row. |
+
+---
+
+#### `LTileMap:getChunkSize`
+
+Returns the chunk size used for internal tile storage.
+
+```lua
+LTileMap:getChunkSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Chunk size in tiles per side. |
+
+---
+
+#### `LTileMap:getLayerColor`
+
+Returns the tint color of a layer as four RGBA components.
+
+```lua
+LTileMap:getLayerColor(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red (0..1). |
+| number | Green (0..1). |
+| number | Blue (0..1). |
+| number | Alpha (0..1). |
+
+---
+
+#### `LTileMap:getLayerCount`
+
+Returns the total number of layers in this map.
+
+```lua
+LTileMap:getLayerCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer count. |
+
+---
+
+#### `LTileMap:getLayerName`
+
+Returns the name of a layer by index.
+
+```lua
+LTileMap:getLayerName(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Layer name, or nil if index is out of range. |
+
+---
+
+#### `LTileMap:getLayerOffset`
+
+Returns the pixel offset of a layer.
+
+```lua
+LTileMap:getLayerOffset(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Horizontal offset. |
+| number | Vertical offset. |
+
+---
+
+#### `LTileMap:getLayerParallax`
+
+Returns the parallax scroll factor of a layer.
+
+```lua
+LTileMap:getLayerParallax(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Horizontal parallax factor. |
+| number | Vertical parallax factor. |
+
+---
+
+#### `LTileMap:getLayerVisible`
+
+Returns whether a layer is currently visible.
+
+```lua
+LTileMap:getLayerVisible(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the layer is visible. |
+
+---
+
+#### `LTileMap:getOrientation`
+
+Returns the current map orientation as a string.
+
+```lua
+LTileMap:getOrientation()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+
+---
+
+#### `LTileMap:getTile`
+
+Returns the tile GID at a specific grid position on a layer.
+
+```lua
+LTileMap:getTile(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Global tile ID at that position. |
+
+---
+
+#### `LTileMap:getTileDimensions`
+
+Returns both tile width and height in pixels.
+
+```lua
+LTileMap:getTileDimensions()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile width. |
+| number | Tile height. |
+
+---
+
+#### `LTileMap:getTileHeight`
+
+Returns the height of a single tile in pixels for this map.
+
+```lua
+LTileMap:getTileHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile height in pixels. |
+
+---
+
+#### `LTileMap:getTileSet`
+
+Returns the tileset at the given index.
+
+```lua
+LTileMap:getTileSet(idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Tileset index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileSet](tilemap.md#ltileset) | The tileset, or nil if index is out of range. |
+
+---
+
+#### `LTileMap:getTileSetCount`
+
+Returns how many tilesets are attached to this map.
+
+```lua
+LTileMap:getTileSetCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tileset count. |
+
+---
+
+#### `LTileMap:getTileWidth`
+
+Returns the width of a single tile in pixels for this map.
+
+```lua
+LTileMap:getTileWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile width in pixels. |
+
+---
+
+#### `LTileMap:getViewport`
+
+Returns the current viewport rectangle, or nils if none is set.
+
+```lua
+LTileMap:getViewport()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Left edge. |
+| number | Top edge. |
+| number | Width. |
+| number | Height. |
+
+---
+
+#### `LTileMap:isSolid`
+
+Checks whether the tile at a given position on a layer is solid.
+
+```lua
+LTileMap:isSolid(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the tile at that position is marked solid. |
+
+---
+
+#### `LTileMap:onTileEnter`
+
+Registers a callback invoked when an entity enters a tile with the given GID.
+
+```lua
+LTileMap:onTileEnter(gid, func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(wx, wy, tx, ty)`. |
+
+---
+
+#### `LTileMap:onTileExit`
+
+Registers a callback invoked when an entity leaves a tile with the given GID.
+
+```lua
+LTileMap:onTileExit(gid, func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(entity, tx, ty)`. |
+
+---
+
+#### `LTileMap:onTileStep`
+
+Registers a callback invoked each frame an entity remains on a tile with the given GID.
+
+```lua
+LTileMap:onTileStep(gid, func)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gid` | number | Global tile ID to watch for. |
+| `func` | function | Callback receiving `(entity, tx, ty)`. |
+
+---
+
+#### `LTileMap:rectOverlapsSolid`
+
+Tests whether a world-space rectangle overlaps any solid tile on a layer.
+
+```lua
+LTileMap:rectOverlapsSolid(layer, x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Rectangle left edge in world pixels. |
+| `y` | number | Rectangle top edge in world pixels. |
+| `w` | number | Rectangle width in pixels. |
+| `h` | number | Rectangle height in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if any solid tile is overlapped. |
+
+---
+
+#### `LTileMap:render`
+
+Submits render commands for all visible tiles, optionally offset by a scroll position.
+
+```lua
+LTileMap:render(ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `ox?` | number | Horizontal scroll offset (default 0). |
+| `oy?` | number | Vertical scroll offset (default 0). |
+
+---
+
+#### `LTileMap:setLayerColor`
+
+Sets the tint color for an entire layer.
+
+```lua
+LTileMap:setLayerColor(idx, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `r` | number | Red channel (0..1). |
+| `g` | number | Green channel (0..1). |
+| `b` | number | Blue channel (0..1). |
+| `a` | number | Alpha channel (0..1). |
+
+---
+
+#### `LTileMap:setLayerOffset`
+
+Sets the pixel offset for a layer, shifting all tiles during rendering.
+
+```lua
+LTileMap:setLayerOffset(idx, ox, oy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `ox` | number | Horizontal offset in pixels. |
+| `oy` | number | Vertical offset in pixels. |
+
+---
+
+#### `LTileMap:setLayerParallax`
+
+Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+
+```lua
+LTileMap:setLayerParallax(idx, px, py)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `px` | number | Horizontal parallax factor. |
+| `py` | number | Vertical parallax factor. |
+
+---
+
+#### `LTileMap:setLayerVisible`
+
+Sets whether a layer is drawn during rendering.
+
+```lua
+LTileMap:setLayerVisible(idx, visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `idx` | number | Layer index (1-based). |
+| `visible` | boolean | True to show, false to hide. |
+
+---
+
+#### `LTileMap:setOrientation`
+
+Sets the map orientation, affecting coordinate transforms and rendering.
+
+```lua
+LTileMap:setOrientation(orientation)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `orientation` | string | One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`. |
+
+---
+
+#### `LTileMap:setTile`
+
+Sets the tile GID at a specific grid position on a layer.
+
+```lua
+LTileMap:setTile(layer, x, y, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `gid` | number | Global tile ID to place. |
+
+---
+
+#### `LTileMap:setTileTint`
+
+Overrides the color tint for a single tile at a given position.
+
+```lua
+LTileMap:setTileTint(layer, x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `r` | number | Red channel (0..1). |
+| `g` | number | Green channel (0..1). |
+| `b` | number | Blue channel (0..1). |
+| `a` | number | Alpha channel (0..1). |
+
+---
+
+#### `LTileMap:setViewport`
+
+Sets the visible area of the map for culling during rendering.
+
+```lua
+LTileMap:setViewport(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Left edge in world pixels. |
+| `y` | number | Top edge in world pixels. |
+| `w` | number | Viewport width in pixels. |
+| `h` | number | Viewport height in pixels. |
+
+---
+
+#### `LTileMap:sweepRect`
+
+Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
+
+```lua
+LTileMap:sweepRect(layer, x, y, w, h, dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Rectangle left edge in world pixels. |
+| `y` | number | Rectangle top edge in world pixels. |
+| `w` | number | Rectangle width in pixels. |
+| `h` | number | Rectangle height in pixels. |
+| `dx` | number | Horizontal movement delta. |
+| `dy` | number | Vertical movement delta. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Contact X position. |
+| number | Contact Y position. |
+| number | Normal X component. |
+| number | Normal Y component. |
+| number | Tile column hit (1-based; or 0 if no hit). |
+| number | Tile row hit (1-based; or 0 if no hit). |
+
+---
+
+#### `LTileMap:tileToWorld`
+
+Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
+
+```lua
+LTileMap:tileToWorld(tx, ty)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `tx` | number | Tile column (1-based). |
+| `ty` | number | Tile row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | World X position in pixels. |
+| number | World Y position in pixels. |
+
+---
+
+#### `LTileMap:tileTypeIndex`
+
+Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
+
+```lua
+LTileMap:tileTypeIndex(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LTileMapTileTypeIndexResult | Table keyed by GID, each value an array of `{x=number, y=number}`. |
+
+---
+
+#### `LTileMap:toNavGrid`
+
+Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+
+```lua
+LTileMap:toNavGrid(layer, gids)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `gids` | table | Array of walkable GIDs. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean[] | Flat walkable grid (true = walkable), row-major order. |
+
+---
+
+#### `LTileMap:type`
+
+Returns the type name of this userdata.
+
+```lua
+LTileMap:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `"[LTileMap](#ltilemap)"`. |
+
+---
+
+#### `LTileMap:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LTileMap:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check against. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if `name` is `"[LTileMap](#ltilemap)"` or `"Object"`. |
+
+---
+
+#### `LTileMap:update`
+
+Advances tile animations by the given delta time.
+
+```lua
+LTileMap:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Time elapsed in seconds since last update. |
+
+---
+
+#### `LTileMap:worldToTile`
+
+Converts world-space pixel coordinates to tile-grid coordinates.
+
+```lua
+LTileMap:worldToTile(wx, wy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | World X position in pixels. |
+| `wy` | number | World Y position in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Tile column (1-based). |
+| number | Tile row (1-based). |
 
 ---

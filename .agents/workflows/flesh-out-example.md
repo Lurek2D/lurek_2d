@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Required runnable proof.
 
 ## Steps
-1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
+1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: docs-general](../skills/docs-general/SKILL.md), and [skill: lua-scripting](../skills/lua-scripting/SKILL.md) before acting.
 2. Read the existing example, nearby examples, the related API docs or spec, and any missing assets before editing.
 3. Preserve the example's original teaching goal, add only the missing setup or concept coverage, and keep the example easy to read and run.
 4. Run the narrowest load path for the example and confirm the new content still teaches one coherent idea.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: examples-management, documentation, lua-scripting
+Loads skills: examples-management, docs-general, lua-scripting
 Inputs required: Existing example path., Missing concept or gap., Audience level., Required runnable proof.

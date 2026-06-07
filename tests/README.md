@@ -83,7 +83,7 @@ All other new Lua files need a harness entry or they will not run under `cargo t
 
 Still open after the demo scaffold:
 
-- Describe-coverage gate and orphaned `@covers` cleanup (batch per `testing-rust` skill).
+- Describe-coverage gate and orphaned `@covers` cleanup (batch per `testing-ecosystem` skill).
 - Phase 3: dedicated error-handling blocks, nil-argument audit, float `expect_near` sweep.
 - Full `content/games/**` demo coverage (27 headless tests today; ~100+ game folders remain).
 - Visual regression pipeline and evidence CI minimum gate.

@@ -7,7 +7,7 @@ description: Create or update how RAG system works, new feature or something, re
 - Configure Retrieval-Augmented Generation rules, specify new indexing targets, and regenerate the corpus.
 
 # INPUTS REQUIRED
-- New documentation source or structural change
+- New docs-general source or structural change
 - Relevance weighting rules
 = User must define what needs to be indexed or how retrieval should change
 - Agent must collect RAG tooling configuration

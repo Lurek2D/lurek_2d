@@ -13,7 +13,7 @@ description: Create or update lua tests with evidences/artifacts for a specific 
 - Agent must collect existing golden files and module API
 
 # STEPS TO DO
-1. Load skills: testing-rust, demo-creation.
+1. Load skills: testing-ecosystem, demo-creation.
 2. Execute `python tools/audit/lua_evidence_golden_contract_audit.py` to check the current evidence baseline and identify missing artifacts.
 3. Write the test script to trigger the target API and save output (e.g., visual snapshot, structured log output) to the baseline artifact directory.
 4. Execute `python tools/audit/golden_test.py` to compare new evidence against established baselines.
@@ -33,6 +33,6 @@ description: Create or update lua tests with evidences/artifacts for a specific 
 - Overwriting baseline golden files without explicit user approval.
 
 # REFERENCES
-- skills: testing-rust, lua-scripting, demo-creation
+- skills: testing-ecosystem, lua-scripting, demo-creation
 - tools: python tools/audit/lua_evidence_golden_contract_audit.py, python tools/audit/golden_test.py
 - agent: Tester

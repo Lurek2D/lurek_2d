@@ -977,7 +977,7 @@ def main():
 
     out = []
     out.append("---@meta")
-    out.append("--- Auto-generated Lurek2D API documentation for LuaCATS.")
+    out.append("--- Auto-generated Lurek2D API docs-general for LuaCATS.")
     out.append("")
     out.append("lurek = {}")
     out.append("")

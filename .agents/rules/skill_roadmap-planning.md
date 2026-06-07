@@ -19,7 +19,7 @@ Own the phase file format, dependency graph rules, acceptance gate authoring, st
 
 - Implementing code -> use rust-coding skill
 - Designing APIs -> use lua-api-design skill
-- Writing tests -> use testing-rust skill
+- Writing tests -> use testing-ecosystem skill
 
 ## Domain Knowledge
 - Current planning artifacts live in `ideas/` and `work/`. There is no formal roadmap directory yet.

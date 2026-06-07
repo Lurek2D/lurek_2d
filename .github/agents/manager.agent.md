@@ -29,7 +29,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/runInTerminal, read/readFile
 ## Workflow
 - **Setup**:
   - Normalize request: goal, constraints, out-of-scope, proof.
-  - Load [agent-routing](../skills/agent-routing/SKILL.md) on every routing task. Mandatory.
+  - Load [cag-routing](../skills/cag-routing/SKILL.md) on every routing task. Mandatory.
   - Confirm branch. Write temp files to work/, never outside.
   - Fast-track single-file tasks: skip handovers and session folders.
 - **Per-phase**:
@@ -67,5 +67,5 @@ Score work from 1 to 10 stars:
 
 ## CAG Metadata
 Personas: EngDev, GameDev, Modder, GameTest, EngTest
-Primary skills: agent-routing
-Secondary skills: quality-pipeline, roadmap-planning, solution-options
+Primary skills: cag-routing
+Secondary skills: quality-pipeline, roadmap-planning, architecture-decisions

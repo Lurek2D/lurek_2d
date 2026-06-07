@@ -13,7 +13,7 @@ description: Create or update lua test for specific module and check test covera
 - Agent must collect current test coverage metrics and existing test files
 
 # STEPS TO DO
-1. Load skills: testing-rust, lua-scripting, quality-pipeline.
+1. Load skills: testing-ecosystem, lua-scripting, quality-pipeline.
 2. Execute `python tools/audit/test_coverage.py --module <module>` to get the baseline test coverage percentage.
 3. Review the missing coverage areas identified by the script output.
 4. Create or update `tests/lua/test_<module>_<layer>.lua`. Write test cases to cover the missing logic paths, including negative testing.
@@ -36,6 +36,6 @@ description: Create or update lua test for specific module and check test covera
 - Modifying module source code within this prompt.
 
 # REFERENCES
-- skills: testing-rust, lua-scripting, quality-pipeline
+- skills: testing-ecosystem, lua-scripting, quality-pipeline
 - tools: python tools/validate/cag_validate.py, python tools/audit/test_coverage.py
 - agent: Tester

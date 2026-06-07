@@ -13,7 +13,7 @@ description: Find the best prompt for the current work context.
 - Agent must collect available prompts in `.github/prompts2/`
 
 # STEPS TO DO
-1. Load skills: agent-routing, documentation.
+1. Load skills: cag-routing, docs-general.
 2. Read the user's natural language request. Categorize it to a primary domain (e.g., Rust engine, Lua API, testing).
 3. Identify the owning agent from the CAG architecture rules that is responsible for that domain.
 4. Scan `.github/prompts2/` to find the prompt whose `description` or `goal` directly solves the user's request.
@@ -32,6 +32,6 @@ description: Find the best prompt for the current work context.
 - Inventing prompt filenames that don't exist.
 
 # REFERENCES
-- skills: agent-routing, documentation
+- skills: cag-routing, docs-general
 - tools: file system read over `.github/prompts2/`
 - agent: Manager

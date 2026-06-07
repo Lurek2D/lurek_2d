@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Any source of truth to honor.
 
 ## Steps
-1. Load [skill: module-audit](../skills/module-audit/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
+1. Load [skill: module-audit](../skills/module-audit/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: docs-general](../skills/docs-general/SKILL.md), and [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md) before acting.
 2. Read src/<module>/, docs/specs/<module>.md, related tests, and any linked docs or examples.
 3. List findings first in severity order, with emphasis on behavior regressions, ownership leaks, stale docs, and missing tests.
 4. Call out the highest-risk drift, the missing validation, and whether the module is ready for more feature work.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: module-audit, module-architecture, documentation, testing-rust
+Loads skills: module-audit, module-architecture, docs-general, testing-ecosystem
 Inputs required: Target module., Review depth., Known risk area., Any source of truth to honor.

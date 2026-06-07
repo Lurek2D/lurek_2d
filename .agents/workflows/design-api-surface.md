@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Known constraints or compatibility concerns.
 
 ## Steps
-1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: lua-scripting](../skills/lua-scripting/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
+1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md), [skill: lua-scripting](../skills/lua-scripting/SKILL.md), and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
 2. Read the current lurek.* surface, docs/specs/, nearby examples, and any accepted architecture notes before editing.
 3. Focus on naming, parameters, returns, callbacks, and consistency; stop before implementation and record any tradeoff that affects later bindings.
 4. Check the design against nearby APIs and usage patterns, then call out open compatibility risk or missing source truth instead of inventing certainty.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: lua-api-design, lua-scripting, documentation
+Loads skills: lua-api-design, lua-scripting, docs-general
 Inputs required: Target module., Capability goal., User-facing use case., Known constraints or compatibility concerns.

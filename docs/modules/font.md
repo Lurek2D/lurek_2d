@@ -2,9 +2,9 @@
 
 ## Summary
 
-The font module provides the CPU-side data layer for text rendering: bitmap font atlas loading with Latin-1 glyph coverage, per-glyph and per-text metrics, text alignment, word and character wrapping, and a central font registry for named handles. The module does not own GPU resources — texture management for font atlases remains in the render module. Fourteen bundled Courier New bitmap atlases are shipped in `assets/fonts/`.
+This module provides typography runtime services to load, resolve, and manage fonts. It operates a central registry caching styles and point sizes for TTF, OTF, and pre-rasterized bitmap fonts. This ensures that UI and render steps can query consistent font metrics on demand to size components.
 
-This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+For text layouts, the module handles kerning-aware measurements and shaping operations. It supports multiple wrapping strategies to fit text strings within pixel width limits, computing line placements and glyph advances to produce formatted, multi-line layouts for rendering.
 
 ## Functions
 

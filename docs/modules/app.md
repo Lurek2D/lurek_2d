@@ -2,16 +2,12 @@
 
 ## Summary
 
-The `app` module is where the whole runtime is assembled and driven from launch to shutdown. It does not own gameplay rules. Instead, it owns execution order: start services, process events, run frame stages, and present output in a predictable cycle.
+The app module serves as the desktop execution heartbeat for Lurek2D. It unifies winit windowing, wgpu graphics, user inputs, and the LuaJIT virtual machine into a deterministic main loop. From process launch to final shutdown, it governs bootstrapping, manages graphic surface reconfigurations, and controls viewport scaling so visuals remain stable.
 
-Its main job is keeping one stable frame pipeline. Input, script callbacks, simulation updates, and rendering are coordinated in a fixed order so modules do not drift into inconsistent timing. Functionally, this gives the engine one trusted place that defines what happens each frame and when.
+For scripting, the module coordinates the delivery of platform updates into Lua event handlers. It serves as the safety boundary, executing key lifecycle callbacks—such as fixed physics ticks, variable updates, rendering passes, and input event handlers—inside guarded boundaries. This protects against script anomalies, timeout lockups, and supports hot-reloading during live development.
 
-The module is also the bridge between platform events and engine behavior. Window, keyboard, mouse, touch, and gamepad signals are routed into runtime callbacks in a consistent form. This keeps script-side logic simpler, because gameplay code receives normalized events instead of platform-specific differences.
+To guide early startup and handle system faults, the module implements specialized visual screens. It renders a pre-game splash screen with branding elements and drag-and-drop feedback. If an unrecoverable failure occurs, it transitions to a formatted, clipboard-ready fatal crash screen that isolates traceback details and shows immediate troubleshooting guidance.
 
-Operational UX is managed here too. Startup splash flow, debug overlay output, frame profile text, and fatal error presentation are coordinated at the app layer. In practical terms, this means both normal and failure paths stay readable for users and maintainers during real sessions.
-
-Reliability policy lives at this boundary. Guarded callback calls, timeout-aware execution, and explicit recovery paths help prevent one failing script call from collapsing the whole loop silently. This makes runtime behavior easier to debug and safer to evolve as more subsystems are added.
-
-Overall, the `app` module is the integration backbone of Lurek2D. It keeps subsystem boundaries clear, controls execution rhythm, and provides a single lifecycle contract that other modules can rely on for deterministic behavior.
+For diagnostics, the module incorporates lightweight performance tracking utilities. It aggregates frame timing profiles—update, rendering, and callback durations—into compact text traces for logs. It also supplies a togglable debug HUD showing real-time frame rates and draw workloads, offering low-cost visibility into live engine budgets.
 
 *No public API documented yet.*

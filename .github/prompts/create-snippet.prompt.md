@@ -13,7 +13,7 @@ description: Create or update new snippet code for specific module with API.
 - Agent must collect the most idiomatic API usage patterns
 
 # STEPS TO DO
-1. Load skills: documentation, lua-scripting.
+1. Load skills: docs-general, lua-scripting.
 2. Execute `python tools/audit/snippet_coverage.py` to identify missing snippets for highly-used public methods.
 3. Write a fast, optimized VS Code-compatible snippet in the `tools/snippets/` folder. Ensure variables are correctly tokenized (e.g., `$1`, `$2`).
 4. Execute `python tools/validate/validate_snippets.py`. If it returns exit code >0, fix the JSON structure of your snippet.
@@ -32,6 +32,6 @@ description: Create or update new snippet code for specific module with API.
 - Writing overly long snippets that should be full examples instead.
 
 # REFERENCES
-- skills: documentation, lua-scripting
+- skills: docs-general, lua-scripting
 - tools: python tools/audit/snippet_coverage.py, python tools/validate/validate_snippets.py
 - agent: Doc-Writer

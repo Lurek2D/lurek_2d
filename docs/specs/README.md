@@ -8,17 +8,17 @@
 
 This index is the navigation layer for the entire module-spec corpus in `docs/specs/`. Its functional purpose is to tell contributors where each runtime module is documented, how those docs are produced, and which maintenance rules keep generated and manual sections in sync over time.
 
-It establishes a two-layer documentation contract: manual prose sections are curated by humans, while structural API and file metadata are regenerated from source. That split is essential because it preserves high-level module intent while keeping large factual surfaces current as code evolves.
+It establishes a two-layer docs-general contract: manual prose sections are curated by humans, while structural API and file metadata are regenerated from source. That split is essential because it preserves high-level module intent while keeping large factual surfaces current as code evolves.
 
 The module tables are grouped by dependency tier, so this page does more than list files. It communicates architectural placement, dependency direction, and plugin-evaluation status in one view, helping maintainers reason about ownership and migration planning before editing module code or specs.
 
 It also acts as operational guidance for doc updates. The page defines the expected generator commands, validation checks, and cross-artifact sync steps required when adding or changing modules, reducing drift between specs, architecture docs, generated API output, and changelog history.
 
-Because this index links every spec to architecture references, tooling scripts, and quality gates, it functions as the control point for documentation workflow rather than a passive table of links. Contributors can start here and follow a complete path from module discovery to compliant documentation updates.
+Because this index links every spec to architecture references, tooling scripts, and quality gates, it functions as the control point for docs-general workflow rather than a passive table of links. Contributors can start here and follow a complete path from module discovery to compliant docs-general updates.
 
 In practice, `docs/specs/README.md` is the coordination document for the spec system: it maps scope, explains production rules, and keeps the per-module reference set maintainable at repository scale.
 
-It also serves as the consistency checkpoint that aligns module specs with architecture references and documentation tooling, so contributors can verify both placement and process before changing module contracts.
+It also serves as the consistency checkpoint that aligns module specs with architecture references and docs-general tooling, so contributors can verify both placement and process before changing module contracts.
 
 ## Table of Contents
 
@@ -167,7 +167,7 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG â�
 | `app`         | [app.md](app.md)                 | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.         | â€”           |
 | `debugbridge` | [debugbridge.md](debugbridge.md) | TCP debug bridge (`127.0.0.1`, JSON-over-TCP) for the VS Code extension and MCP server.         | â€”           |
 | `devtools`    | [devtools.md](devtools.md)       | In-process logger, frame profiler, rolling stats, hot-reload file watcher (`lurek.devtools.*`). | â€”           |
-| `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | â€”           |
+| `docs`        | [docs.md](docs.md)               | In-engine API docs-general catalog and lightweight schema validation for structured game data. | â€”           |
 
 > Total module specs: **58** â€" one row per `*.md` file in `docs/specs/` excluding `README.md`.
 

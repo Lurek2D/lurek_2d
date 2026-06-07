@@ -47,7 +47,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.debugbridge](Module-debugbridge) | 16 | 0 | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [lurek.devtools](Module-devtools) | 50 | 2 | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
 | [lurek.dialog](Module-dialog) | 10 | 4 | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
-| [lurek.docs](Module-docs) | 26 | 5 | In-engine API documentation catalog and lightweight schema validation for structured game data. |
+| [lurek.docs](Module-docs) | 26 | 5 | In-engine API docs-general catalog and lightweight schema validation for structured game data. |
 | [lurek.dsp](Module-dsp) | 28 | 7 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
 | [lurek.ecs](Module-ecs) | 1 | 1 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
 | [lurek.effect](Module-effect) | 10 | 3 | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |

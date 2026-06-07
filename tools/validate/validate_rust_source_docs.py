@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Validate file-level and public-item Rust documentation under src/.
+"""Validate file-level and public-item Rust docs-general under src/.
 
 This tool checks that all Rust files under src/ have correct file-level
-documentation and that all phase-1 public items have a summary line.
+docs-general and that all phase-1 public items have a summary line.
 
 Rules enforced:
 1. Every Rust file under src/**/*.rs must have a file-level //! header.
@@ -22,7 +22,7 @@ Usage:
 ```
 usage: validate_rust_source_docs.py [-h] [--format {text,json}] [targets ...]
 
-Validate Rust source documentation rules.
+Validate Rust source docs-general rules.
 Enforces file-level headers and public item summaries.
 
 positional arguments:
@@ -272,7 +272,7 @@ Examples:
   python tools/validate/validate_rust_source_docs.py --format json
 """
     parser = argparse.ArgumentParser(
-        description="Validate Rust source documentation rules.\nEnforces file-level headers and public item summaries.",
+        description="Validate Rust source docs-general rules.\nEnforces file-level headers and public item summaries.",
         epilog=epilog,
         formatter_class=RawDescriptionHelpFormatter
     )

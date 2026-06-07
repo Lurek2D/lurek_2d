@@ -2,15 +2,13 @@
 
 ## Summary
 
-The `docs` module is the internal documentation infrastructure used by generation and tooling flows. It gives one structured place for doc entries, catalog operations, export output, and quality checks.
+This module acts as the docs-general workflow and quality assurance core, managing the generation, validation, and export of the engine's public interface data. It handles the parsing of API metadata into a unified in-memory docs-general catalog. This central catalog groups and organizes symbols across modules, maintaining their entry definitions to provide a single, consistent source of truth for the entire scripting framework.
 
-Its functional coverage spans the whole documentation path. Data can be collected into a catalog, validated against schema contracts, scored for quality, and exported into formats consumed by editor integrations.
+To verify the accuracy and completeness of API references, the module supplies detailed reporting and validation tools. It cross-references the catalog against live runtime tables to identify undocumented, missing, or outdated symbols. Additionally, the quality analyzer scores individual docs-general records based on detail, generating overall and per-module grades that highlight areas needing expansion or cleanup.
 
-By centralizing these responsibilities, the project reduces drift between source metadata and generated artifacts. This keeps completion, hover, and signature outputs aligned with the same underlying record model.
+For external tool integration, the system includes export builders that transform docs-general entries into files. These builders output rich autocomplete catalogs, hover details, and signature definitions formatted specifically for text editors and development extensions. This bridges the runtime's docs-general directly with the editor workspace, improving the developer experience.
 
-The module is designed for stable integration. Deterministic output shapes and explicit validation criteria make downstream tools more reliable in local workflows and automated checks.
-
-In practice, `lurek.docs` provides one dependable pipeline core for transforming API metadata into consistent, verifiable documentation artifacts.
+Additionally, a schema validation layer provides structured data checks. It connects docs-general workflows with unified type rules, allowing runtime systems to validate tables against schemas and generate detailed reports. This ensures all configuration and API data structures remain correct, providing reliable validation errors when data checks fail.
 
 ## Functions
 

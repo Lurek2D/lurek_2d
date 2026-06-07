@@ -2,15 +2,13 @@
 
 ## Summary
 
-The `agent` module turns model access into a stable service for gameplay and tools. Instead of many one-off scripts, it gives one consistent way to send prompts, receive answers, and handle callbacks. This makes AI features easier to build, easier to reason about, and safer to reuse across a project.
+The agent module provides a complete artificial intelligence and language model capability layer for the Lurek2D engine runtime, enabling gameplay scripts to integrate smart behaviors and dynamic conversations. It establishes stateful and stateless interface models that allow game entities to interact with large language models, perform text prompt completions, execute structured JSON requests, and generate text embeddings directly within the live simulation framework.
 
-Its main functional value is non-blocking work. Requests run in the background while the frame loop keeps moving, then scripts poll and consume completed results. This protects runtime responsiveness and gives practical control over timeout, retry, cancellation, and response format.
+To support long-term reasoning and context-aware interactions, the module supplies a robust, tiered agent memory system. Scripts can utilize bounded first-in-first-out working memory for immediate conversation contexts, append-only episodic memory to log and query timestamped game events, and unbounded semantic memory to retain key-value facts. These tiers can be unified into a cohesive memory bundle that supports saving and loading across sessions for persistent player-agent history.
 
-The module also supports orchestration at different scales. You can run one agent, batch several tasks, or use a system that combines shared instructions with keyword-matched skills. This keeps prompt behavior more consistent between teams and features, because common context rules are managed in one place.
+For complex multi-agent simulation scenarios, the module exposes high-level orchestration architectures like multi-agent managers and intelligent AI systems. Developers can register several distinct agent profiles with specialized roles, supply explicit instructions, and define keyword-gated systems that automatically inject relevant skill prompts based on user input. This setup coordinates parallel execution flows and schedules background processing seamlessly.
 
-For direct use, the module includes synchronous completions, JSON output, embeddings, model listing, and availability checks. It also provides stateful chat sessions and simple template rendering, so both quick utility calls and longer multi-turn interactions can use the same module surface.
-
-Memory is treated as a practical stack: short-term working context, episodic history, semantic facts, and a bundled memory that can persist across sessions. In real use, this helps agents keep continuity, retain useful facts, and restart with context, without every game script building custom memory plumbing.
+Additionally, the module takes charge of local Ollama infrastructure management, providing complete control over server processes, model downloads, and operational status checks. By handling network transport details—such as request retries, time-out bounds, task cancellations, and frame-safe background polling—the runtime isolates gameplay loops from networking latency, ensuring deterministic frame updates and stable performance.
 
 ## Functions
 

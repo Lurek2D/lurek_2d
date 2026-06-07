@@ -13,7 +13,7 @@ description: Create or update integration lua test combining 2 or more modules t
 - Agent must collect API surfaces of all involved modules
 
 # STEPS TO DO
-1. Load skills: testing-rust, lua-scripting.
+1. Load skills: testing-ecosystem, lua-scripting.
 2. Execute `python tools/audit/integration_coverage.py` to identify missing links between the targeted modules.
 3. Write a Lua script under `tests/lua/integration/` that initializes and feeds output from Module A into Module B, asserting the final combined state.
 4. Execute `cargo test --test lua_tests` ensuring the integration folder is included in the test runner. If tests fail, fix the integration script.
@@ -32,6 +32,6 @@ description: Create or update integration lua test combining 2 or more modules t
 - Coupling the test too tightly to the internal implementation of either module.
 
 # REFERENCES
-- skills: testing-rust, lua-scripting
+- skills: testing-ecosystem, lua-scripting
 - tools: python tools/audit/integration_coverage.py
 - agent: Tester

@@ -31,6 +31,6 @@ description: Review example coverage and fix all the gaps, ensure all practices 
 - Writing examples that depend on external, unprovided assets.
 
 # REFERENCES
-- skills: examples-management, documentation, lua-scripting
+- skills: examples-management, docs-general, lua-scripting
 - tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py
 - agent: Content-Maker

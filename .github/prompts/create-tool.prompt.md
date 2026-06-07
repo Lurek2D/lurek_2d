@@ -21,14 +21,14 @@ description: Create or update python or powershell tool in tools, review if all 
 
 # OUTPUTS PROVIDED
 - New or updated script in `tools/`
-- Updated CLI reference documentation
+- Updated CLI reference docs-general
 
 # SUCCESS CRITERIA
 - `python tools/audit/tool_registry_audit.py` exits with code 0 (exactly 0 unregistered tools).
 - The new tool exits with code 0 on standard execution.
 
 # ANIT PATTERNS
-- Writing scripts without `--help` documentation.
+- Writing scripts without `--help` docs-general.
 - Hardcoding paths instead of using relative repository roots.
 
 # REFERENCES

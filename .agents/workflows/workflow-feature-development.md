@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Required final gate.
 
 ## Steps
-1. Load [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), [skill: testing-rust](../skills/testing-rust/SKILL.md), and [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md) before acting.
+1. Load [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: docs-general](../skills/docs-general/SKILL.md), [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md), and [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md) before acting.
 2. Normalize the feature into goal, constraints, out-of-scope items, and the proof needed to call it done.
 3. Split the work into the smallest valid owner slices and keep docs and tests sync attached to the slices that actually move.
 4. Enforce test-layer placement under TST-01: behavior reachable through `lurek.*` must be covered in `tests/lua/unit/` first; Rust tests must not duplicate Lua-reachable behavior.
@@ -58,5 +58,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: module-architecture, documentation, testing-rust, roadmap-planning
+Loads skills: module-architecture, docs-general, testing-ecosystem, roadmap-planning
 Inputs required: Feature goal., Accepted source of truth., Constraints., Required final gate.

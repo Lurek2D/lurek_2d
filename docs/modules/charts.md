@@ -2,15 +2,9 @@
 
 ## Summary
 
-The `charts` module turns numeric data into ready-to-display chart images using CPU rasterization. It supports common chart families in one place, so scripts can generate visual summaries without relying on a dedicated GPU chart pipeline.
+The charts module provides a CPU-rasterized data-visualization rendering engine for Lurek2D. Its functional purpose is to generate static chart images directly from raw data series, Lua tables, or column-driven tabular DataFrames. This enables the creation of debug telemetry panels, player statistics HUDs, and diagnostic data overlays at runtime without external dependencies.
 
-Its main value is predictable image output from structured data. Callers provide series or slice values plus options, and the module produces RGBA buffers that can be shown in UI, overlays, reports, or saved artifacts. This keeps chart generation practical in both runtime and offline workflows.
-
-Each chart type keeps its own rendering behavior, while shared configuration and drawing helpers enforce consistent defaults and visual rules. That split allows chart-specific flexibility without losing cross-chart consistency in dimensions, styling, and value mapping.
-
-Because output is software-rasterized and deterministic, charts are easy to test and reproduce across environments. This makes the module useful for headless validation, automated evidence generation, and tooling scenarios where graphical backend assumptions should stay minimal.
-
-Overall, the module provides a clean conversion boundary: data in, chart pixels out. Higher layers can handle layout and interaction, while `charts` focuses on reliable visual generation from tabular or series-based inputs.
+The rasterization engine supports several standard chart formats: line charts for continuous trends, vertical or horizontal bar charts for categorical comparisons, stacked area charts for compositional trends, scatter plots for sample distributions, and proportional pie charts with optional donut-hole ring designs. It translates numerical data arrays into 32-bit RGBA pixel buffers, managing coordinate transformations, automatic axis domain estimation, title margins, and multi-color palette mappings.
 
 ## Functions
 

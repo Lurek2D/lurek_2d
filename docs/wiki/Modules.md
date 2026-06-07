@@ -100,7 +100,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [app](Module-app) | `lurek.input` | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing. |
 | [debugbridge](Module-debugbridge) | `lurek.debugbridge` | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [devtools](Module-devtools) | `lurek.devtools` | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
-| [docs](Module-docs) | `lurek.docs` | In-engine API documentation catalog and lightweight schema validation for structured game data. |
+| [docs](Module-docs) | `lurek.docs` | In-engine API docs-general catalog and lightweight schema validation for structured game data. |
 
 ## Other
 

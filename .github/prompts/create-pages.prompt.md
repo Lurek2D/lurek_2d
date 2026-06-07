@@ -12,7 +12,7 @@ description: Create or modify feature in gitub pages folder, then regnerate all 
 - Agent must collect the site generation pipeline scripts
 
 # STEPS TO DO
-1. Load skills: html-css, documentation.
+1. Load skills: ui-html, docs-general.
 2. Modify the static HTML/CSS template structures inside `docs/`.
 3. Execute `python tools/gen_all_docs.py` to rebuild the HTML output. If the script exits with code >0, fix the template parsing errors.
 4. Execute `python tools/audit/cag_link_check.py --strict`. If it returns >0 broken links, fix the internal navigation anchors and repeat step 4.
@@ -30,6 +30,6 @@ description: Create or modify feature in gitub pages folder, then regnerate all 
 - Introducing heavy JavaScript that impacts doc load times.
 
 # REFERENCES
-- skills: html-css, documentation
+- skills: ui-html, docs-general
 - tools: python tools/gen_all_docs.py, python tools/audit/cag_link_check.py
 - agent: Doc-Writer

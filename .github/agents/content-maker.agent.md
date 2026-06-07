@@ -45,7 +45,7 @@ tools: [vscode/memory, vscode/askQuestions, read/readFile, read/skill, edit/crea
   - Rank friction points, highlight good parts.
 - **Config mode**:
   - Read src/runtime/config.rs and templates.
-  - Load lua-scripting and documentation.
+  - Load lua-scripting and docs-general.
   - Map fields to conf.lua/conf.toml with defaults and comments.
   - Write smallest template solving request.
   - Run validate_game.py and validate_lua_api.py.
@@ -73,4 +73,4 @@ Score work from 1 to 10 stars:
 ## CAG Metadata
 Personas: GameDev, Modder, Player
 Primary skills: lua-scripting, examples-management, demo-creation
-Secondary skills: library-authoring, html-css, ui-layout, documentation
+Secondary skills: library-authoring, ui-html, ui-layout, docs-general

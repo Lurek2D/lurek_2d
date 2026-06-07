@@ -10,7 +10,7 @@
 - Validation path.
 
 ## Steps
-1. Load [skill: vscode-extension](../skills/vscode-extension/SKILL.md) and [skill: html-css](../skills/html-css/SKILL.md) before acting.
+1. Load [skill: vscode-extension](../skills/vscode-extension/SKILL.md) and [skill: ui-html](../skills/ui-html/SKILL.md) before acting.
 2. Read extensions/vscode/, package.json contributions, nearby extension patterns, and any generated data dependency before editing.
 3. Keep implementation inside the extension, make contributions explicit, and sync generated data or command wiring when the feature depends on them.
 4. Run the narrowest extension build or test path first and verify the changed command, panel, or provider still resolves correctly.
@@ -31,5 +31,5 @@
 
 ## CAG Metadata
 Mode: agent
-Loads skills: vscode-extension, html-css
+Loads skills: vscode-extension, ui-html
 Inputs required: Feature goal., Target extension area., Expected user action., Validation path.

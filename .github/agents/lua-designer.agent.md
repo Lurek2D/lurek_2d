@@ -61,4 +61,4 @@ Score work from 1 to 10 stars:
 ## CAG Metadata
 Personas: GameDev, Modder
 Primary skills: lua-api-design, lua-rust-bridge, examples-management
-Secondary skills: lua-runtime, lua-scripting, error-handling, documentation, threading
+Secondary skills: lua-runtime, lua-scripting, error-handling, docs-general, threading

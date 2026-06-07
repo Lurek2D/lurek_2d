@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Known blockers.
 
 ## Steps
-1. Load [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: testing-rust](../skills/testing-rust/SKILL.md) before acting.
+1. Load [skill: roadmap-planning](../skills/roadmap-planning/SKILL.md), [skill: module-architecture](../skills/module-architecture/SKILL.md), [skill: docs-general](../skills/docs-general/SKILL.md), and [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md) before acting.
 2. Read the accepted phase artifact first and restate the goal, boundaries, dependencies, and binary finish gate before routing work.
 3. Split the phase into the smallest valid owner slices and route only when the current gate and proof are clear.
 4. Keep docs and tests sync tied to the slices that actually changed instead of treating them as one late catch-all step.
@@ -37,5 +37,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: roadmap-planning, module-architecture, documentation, testing-rust
+Loads skills: roadmap-planning, module-architecture, docs-general, testing-ecosystem
 Inputs required: Accepted phase artifact., Constraints., Target gate., Known blockers.

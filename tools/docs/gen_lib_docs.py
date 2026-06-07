@@ -1009,7 +1009,7 @@ def render_luacats(modules: dict) -> str:
     """Render docs/api/lureksome.lua LuaCATS stubs in the same style as docs/api/lurek.lua."""
     out: list[str] = []
     out.append("---@meta")
-    out.append("--- Auto-generated Lureksome library API documentation for LuaCATS.")
+    out.append("--- Auto-generated Lureksome library API docs-general for LuaCATS.")
     out.append("")
     out.append("library = {}")
     out.append("")

@@ -13,8 +13,8 @@ expected_agent: "Manager"
 - Optional: known agent name or domain constraint.
 
 ## Steps
-1. Load [skill: agent-routing](../skills/agent-routing/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
-2. Map the request to a primary domain: Rust engine code, Lua API design, Lua scripting/content, CAG layer, build/CI, documentation, roadmap/planning, testing, or performance analysis.
+1. Load [skill: cag-routing](../skills/cag-routing/SKILL.md) and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
+2. Map the request to a primary domain: Rust engine code, Lua API design, Lua scripting/content, CAG layer, build/CI, docs-general, roadmap/planning, testing, or performance analysis.
 3. From `docs/architecture/cag-system.md § 4.1`, identify the owning agent for that domain.
 4. List every `agent: "<owner>"` prompt in `.github/prompts/` whose `description` overlaps the request. Do not invent names — only list files that exist.
 5. Score candidates: prefer the narrowest-scope prompt over a workflow-level prompt when the request is a single well-scoped task. State the score reason in one sentence per candidate.
@@ -40,5 +40,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: agent-routing, documentation
+Loads skills: cag-routing, docs-general
 Inputs required: User's request description., Optional agent or domain constraint.

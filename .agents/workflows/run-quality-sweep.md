@@ -14,7 +14,7 @@ expected_agent: "Manager"
 - Any known hot spots.
 
 ## Steps
-1. Load [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), [skill: module-audit](../skills/module-audit/SKILL.md), [skill: testing-rust](../skills/testing-rust/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
+1. Load [skill: quality-pipeline](../skills/quality-pipeline/SKILL.md), [skill: module-audit](../skills/module-audit/SKILL.md), [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md), and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
 2. Decide whether the request needs a full-repo sweep or a bounded sweep first; avoid paying full-repo cost when the question is local.
 3. Run the requested gates in a stable order and group findings by owning subsystem or artifact type.
 4. Separate hard blockers from advisory gaps so the next owner can act without rereading the whole sweep.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: quality-pipeline, module-audit, testing-rust, documentation
+Loads skills: quality-pipeline, module-audit, testing-ecosystem, docs-general
 Inputs required: Sweep scope., Required gates., Any known hot spots.

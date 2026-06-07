@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-collect_docs.py — Lurek2D rich structured API documentation collector.
+collect_docs.py — Lurek2D rich structured API docs-general collector.
 
 Walks src/, parses every *.rs file, extracts public items together with
 their /// doc comments, and generates a rich Markdown reference or reports
-missing/incomplete documentation.
+missing/incomplete docs-general.
 
 Usage:
     python tools/collect_docs.py                  # generate logs/reports/api-generated.md
@@ -704,7 +704,7 @@ def render_markdown(items: list[ApiItem], src_dir: Path = SRC_DIR) -> str:
             lines.append(item.description)
             lines.append("")
         else:
-            lines.append("*No documentation.*")
+            lines.append("*No docs-general.*")
             lines.append("")
 
         # ── Purpose (second paragraph) ───────────────────────────────────────
@@ -807,7 +807,7 @@ def _has_tagged_return(raw_doc: list) -> bool:
 
 def report_missing(items: list[ApiItem]) -> int:
     """
-    Print all items that lack documentation or are missing expected sections.
+    Print all items that lack docs-general or are missing expected sections.
 
     Returns 1 if any [ERROR] or [WARN] lines were emitted, 0 otherwise.
     """
@@ -823,7 +823,7 @@ def report_missing(items: list[ApiItem]) -> int:
         kind_name = f"{item.kind} {item.name}"
 
         if not item.description:
-            print(f"[ERROR] {loc:<50}  {kind_name} -- no documentation at all")
+            print(f"[ERROR] {loc:<50}  {kind_name} -- no docs-general at all")
             error_count += 1
             continue
 

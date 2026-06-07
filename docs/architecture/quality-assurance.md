@@ -18,7 +18,7 @@ Companion documents: [engine-core.md](engine-core.md) Â· [philosophy.md](philo
 4. [Directory Layout](#directory-layout)
 5. [Rust Test Suites](#rust-test-suites)
 6. [Lua BDD Test Framework](#lua-bdd-test-framework)
-7. [Lua Test Documentation Standard](#lua-test-documentation-standard)
+7. [Lua Test Documentation Standard](#lua-test-docs-general-standard)
 8. [Golden Tests](#golden-tests)
 9. [Naming Conventions](#naming-conventions)
 10. [Float Comparison Rules](#float-comparison-rules)
@@ -97,7 +97,7 @@ Under `tools/audit/`:
 | `thin_wrapper_audit.py` | TST-03 â€” flags business-logic violations inside `src/lua_api/` |
 | `thin_modrs_audit.py` | TST-04 â€” flags disallowed definitions inside any `mod.rs` |
 | `test_coverage.py` | TST-01 â€” reports undercovered `lurek.*` surface |
-| `lua_test_structure_audit.py` | BDD documentation standard |
+| `lua_test_structure_audit.py` | BDD docs-general standard |
 | `lua_evidence_golden_contract_audit.py` | Evidence/golden separation |
 | `gen_lua_contract_tests.py` | Generates periodic Lua contract smoke from `lua_api_data.json` |
 | `mutation_report.py` | Runs cargo-mutants and saves mutation report |
@@ -426,7 +426,7 @@ Both gates must pass before every merge:
 | `tools/audit/inline_test_audit.py` | Lists `#[cfg(test)]` in src/ (TST-02) |
 | `tools/audit/thin_wrapper_audit.py` | Flags business logic in `lua_api/` (TST-03) |
 | `tools/audit/thin_modrs_audit.py` | Flags definitions in `mod.rs` (TST-04) |
-| `tools/audit/lua_test_structure_audit.py` | BDD documentation standard |
+| `tools/audit/lua_test_structure_audit.py` | BDD docs-general standard |
 | `tools/audit/lua_evidence_golden_contract_audit.py` | Evidence/golden separation |
 
 Coverage report artefacts:

@@ -5,7 +5,7 @@ Lurek2D — Auto-expand example files to cover all missing API entries.
 
 For every entry in the lurek.* API docs that is NOT referenced in its
 corresponding content/examples/*.lua file, this script appends well-formatted
-documentation-style Lua stubs.
+docs-general-style Lua stubs.
 
 Usage:
     python tools/fix/expand_examples.py              # expand all files

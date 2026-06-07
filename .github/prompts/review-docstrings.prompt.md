@@ -4,7 +4,7 @@ description: Review docstrings for specific module, on rust level evreything on 
 ---
 
 # GOAL
-- Audit Rust docstrings to ensure comprehensive documentation that tooling can extract.
+- Audit Rust docstrings to ensure comprehensive docs-general that tooling can extract.
 
 # INPUTS REQUIRED
 - Target module
@@ -12,7 +12,7 @@ description: Review docstrings for specific module, on rust level evreything on 
 - Agent must collect Rust docstring standards and generator expectations
 
 # STEPS TO DO
-1. Load skills: documentation, rust-coding.
+1. Load skills: docs-general, rust-coding.
 2. Execute `python tools/audit/docstring_audit.py --module <module>`. Note the total count of undocumented items.
 3. Open the flagged `.rs` files and write accurate `///` docstrings. Include rust-doc examples for public APIs.
 4. Execute `cargo test --doc`. If any doc test fails (exit code >0), fix the rust-doc examples and repeat step 4.
@@ -31,6 +31,6 @@ description: Review docstrings for specific module, on rust level evreything on 
 - Documenting private items extensively while neglecting public APIs.
 
 # REFERENCES
-- skills: rust-coding, documentation
+- skills: rust-coding, docs-general
 - tools: python tools/audit/docstring_audit.py, cargo test
 - agent: Doc-Writer

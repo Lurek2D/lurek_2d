@@ -26,7 +26,7 @@ description: "Load this skill when designing or changing the lurek.* Lua API sur
 - Run `python tools/validate/validate_lua_api.py` on any new or changed binding to verify docstring shape, argument naming, and type annotation completeness. This feeds generated docs.
 - Migration notes are mandatory for: changed argument order, renamed params, removed functions, changed return type, changed callback signature. Migration notes go in `docs/specs/<module>.md` under a Changelog or Migration section.
 - If a proposed function is only useful for one game genre, check `library/` first. Core `lurek.*` is for universal game behaviors; domain logic belongs in library modules.
-- Enums must be represented as Lua strings with a small closed set, documented in the docstring. Magic strings with an open set are a design smell; if the set is open, use a type alias or documentation that says so explicitly.
+- Enums must be represented as Lua strings with a small closed set, documented in the docstring. Magic strings with an open set are a design smell; if the set is open, use a type alias or docs-general that says so explicitly.
 - `docs/api/lurek.lua` and `docs/api/lurek.md` are generated — never hand-edit them. Always fix docstring issues in `src/lua_api/<module>_api.rs`, then regenerate with `python tools/gen_all_docs.py`.
 ## Companion File Index
 - None.

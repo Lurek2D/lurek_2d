@@ -2,7 +2,7 @@
 """
 quality_report.py — Lurek2D master quality report.
 
-Aggregates documentation audit, test coverage, API validation, and module
+Aggregates docs-general audit, test coverage, API validation, and module
 audit into a single quality dashboard. This is the one-stop script for
 assessing overall project health.
 
@@ -171,7 +171,7 @@ def main() -> int:
                         help="Save report to file")
     args = parser.parse_args()
 
-    print("[1/4] Running documentation audit...", file=sys.stderr)
+    print("[1/4] Running docs-general audit...", file=sys.stderr)
     doc_data = _run_tool("audit/doc_audit.py")
 
     print("[2/4] Running test coverage analysis...", file=sys.stderr)
@@ -185,7 +185,7 @@ def main() -> int:
 
     if args.json:
         report = json.dumps({
-            "documentation": doc_data,
+            "docs-general": doc_data,
             "test_coverage": test_data,
             "modules": module_data,
             "validation": validation_data,

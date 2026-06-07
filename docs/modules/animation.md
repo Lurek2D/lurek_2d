@@ -2,17 +2,13 @@
 
 ## Summary
 
-The `animation` module is the place where visual motion is organized into a clear runtime flow. It lets teams define frames and clips, play them with stable timing, and keep updates predictable across gameplay and tooling. Functionally, it turns raw frame data into reusable animation behavior.
+The animation module provides a complete control and playback layer for sprite-based and skeletal animations. It acts as the import and execution pipeline for asset files, translating grid layouts, manual rectangles, and Aseprite JSON metadata into optimized runtime clips. The frame-animation engine supports diverse playback behaviors, including loop, reverse, ping-pong, and one-shot progression, while scaling speeds dynamically.
 
-Its playback layer supports common needs out of the box: looping and non-looping clips, speed scaling, reverse and ping-pong motion, and event polling during progression. This makes it practical for both simple UI or effects and character motion that must stay synchronized with gameplay logic.
+To coordinate character states, the module implements a parameter-driven animation state machine. This framework permits organizers to arrange individual clips into state networks, governing transitions using parameter checks and timeline triggers. Transitions are softened by automated crossfades that calculate blend states and transition weights, preventing visual jerks and ensuring fluid behavior across state boundaries.
 
-For richer behavior, the module includes a state-machine layer that changes clips based on parameters and transition conditions. It also includes blend layers so multiple animation sources can be mixed in a controlled way. In practice, this allows expressive combinations, like locomotion plus upper-body actions, without custom per-character pipelines.
+For complex movements, the module features a layered animation blending architecture. Multiple clip streams can combine dynamically using ordered layering, stacking weights, and custom bone masks that restrict blend influences to specific skeletal sub-regions. Skeletal animations are supported by a Spine integration bridge that keeps skeleton hierarchies and coordinate transformations synchronized with state transitions.
 
-Timing tools extend beyond basic frame stepping. Sync groups keep multiple animations on the same normalized timeline, while curves and property timelines drive smooth value changes through easing modes. This helps avoid abrupt jumps and keeps motion quality consistent when animation influences other systems.
-
-The module is built for real production inputs. It can import Aseprite JSON data and map external clip tags, and it also bridges state changes to Spine playback. This gives teams a unified control surface even when assets come from different authoring workflows.
-
-Rendering integration stays straightforward. The runtime can expose the current frame quad for custom drawing, and it also offers direct draw helpers with optional stored image handles. Overall, the module provides a complete animation foundation for Lua scripts: create, configure, advance, sync, blend, and render animation through one consistent API.
+Coordinated elements can be grouped into synchronization groups to enforce identical playback phases across entities. Additionally, the system provides standalone parameter curves that interpolate values over keyframed timelines using stepped, linear, or custom ease callbacks. These systems bridge abstract timing states with textured coordinates, generating render-ready draw payloads for visual execution.
 
 ## Functions
 

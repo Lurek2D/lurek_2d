@@ -37,7 +37,7 @@ description: "High-level technical lead. Owns architecture docs, module boundari
   - Break migration into small steps for Developer.
   - Update contract/specs if public surface or ownership changes.
 - **Solver mode**:
-  - Load solution-options.
+  - Load architecture-decisions.
   - Check work/ for prior attempts/rejected options first.
   - Rewrite ask as yes/no decision.
   - If symptom not understood, return gap to Manager.
@@ -71,5 +71,5 @@ Score work from 1 to 10 stars:
 
 ## CAG Metadata
 Personas: EngDev
-Primary skills: module-architecture, enterprise-architecture, solution-options
-Secondary skills: documentation, agent-md, togaf, roadmap-planning
+Primary skills: module-architecture, enterprise-architecture, architecture-decisions
+Secondary skills: docs-general, docs-specs, togaf, roadmap-planning

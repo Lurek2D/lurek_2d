@@ -6,7 +6,7 @@ description: "Load this skill when running end-to-end audits on src/ modules for
 
 ## Mission
 
-Own the 12-phase module audit process: structure, documentation, testing, architecture, code quality checks, and the tools/audit/audit_module.py workflow.
+Own the 12-phase module audit process: structure, docs-general, testing, architecture, code quality checks, and the tools/audit/audit_module.py workflow.
 
 ## When To Load
 
@@ -29,7 +29,7 @@ Own the 12-phase module audit process: structure, documentation, testing, archit
 - Phase 10 treats any `println!` in `src/<module>/` as a defect. Engine output must go through `src/log/` with proper level tagging.
 - Audit output format: each finding includes phase number, file path, line number, finding type, and description. BLOCKING findings must be resolved before merge.
 - Routing audit findings: BLOCKING dependency violations → Architect. BLOCKING coverage gaps → Tester.
-- Run `python tools/audit/doc_coverage.py --module <name>` alongside the main audit to get the documentation completeness score separately. The main audit reports presence; doc_coverage reports density.
+- Run `python tools/audit/doc_coverage.py --module <name>` alongside the main audit to get the docs-general completeness score separately. The main audit reports presence; doc_coverage reports density.
 - Use the audit as a pre-PR gate, not a post-merge cleanup job. A module that enters review with 12/12 phases passing costs half the reviewer time.
 - When several audit findings share a root cause, report the shared root cause first rather than listing 8 individual findings.
 ## Companion File Index

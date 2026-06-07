@@ -2,11 +2,25 @@
 
 ## Summary
 
-Central to this module is the `TileMap` struct, which stores stacked `TileLayer` grids, managing per-cell tile IDs (GIDs), flip flags, collision data, and layer-specific properties like tint and parallax scroll factors. Maps can be populated dynamically or imported from standard industry formats; the module includes robust parsers for both TMX (Tiled) and LDtk map files, seamlessly transforming their XML or JSON data into engine-native structures while supporting orthogonal, staggered, hexagonal, and isometric orientations.
+This module serves as the primary system for building, simulating, and visualizing rich, grid-based game worlds. It unifies orthogonal, isometric, and hexagonal structures under a single set of spatial operations, enabling developers to map virtual grid coordinates directly into screen-space projections. The system manages conversions, diamond layout ordering, diagonal sorting, and hexadecimal neighborhood navigations for gameplay logic.
 
-To support massive, open-world environments, the module implements a sophisticated `ChunkMap` system alongside a `LargeMapRenderer`. These tools partition infinite sparse tile grids into fixed-size square chunks, facilitating on-demand loading, unloading, and view-frustum culling, which drastically reduces memory usage and GPU load for oversized maps. For complex terrain, the `AutoTileSheet` simplifies level design by using bitmask-based neighbor rules to automatically select the correct tile index for seamless terrain transitions (supporting 4-bit and 8-bit matching). Additionally, specialized components like `IsoMap` provide dedicated handling for multi-level isometric projection, ensuring proper depth sorting (painter's algorithm) across intricate 3D-like structures.
+For massive sandbox and role-playing worlds, the module employs sparse chunk-based storage to handle vast environments without overwhelming memory allocations. This representation connects to a chunk-oriented rendering engine that groups layers and tiles into blocks for camera-aware view culling. Viewport-scoped culling keeps frame rates high, while dirty-chunk tracking guarantees that modified tiles update immediately.
 
-The module also goes far beyond simple rendering. It features a robust procedural generation engine (`MapGen`) that constructs maps deterministically from reusable `MapBlock` prefabs and scripted operations (fill, scatter, path). For physics and gameplay logic, the map supports continuous AABB sweep-cast collision detection directly against solid tiles. `PolygonMap` enables the definition and spatial querying of named convex/concave regions (useful for zones or provinces), while `TileWalker` provides utilities for grid-based discrete movement and facing logic. Supported by the extensive `lurek.tilemap.*` Lua API, this module is a foundational pillar for building complex, optimized, and interactive 2D worlds.
+To accommodate mainstream workflows, the tilemap engine supports direct imports from industry-standard editor formats. It parses XML-based Tiled files and LDtk JSON documents on the fly, decoding base64-compressed layers and preserving custom properties. The importer strips auxiliary packaging flags to isolate native cell identities, reconstructing layers, object entities, and visual settings into engine-native structures.
+
+In addition to hand-crafted environments, the subsystem provides a procedural generation pipeline built on repeatable seed values. By combining reusable block templates with procedural scripts, developers can orchestrate operations like flood fills, path carving, and noise scattering. Seed-driven randomness guarantees identical world outputs across runs, making procedural layouts stable and testable.
+
+Terrain continuity is managed dynamically via an autotiling system that checks tile neighborhoods to select matching sprites automatically. Supporting both four-neighbor and eight-neighbor diagonal rules, this system maps structural bitmasks directly to tileset transitions. Developers can paint paths, organic borders, and water flows, letting the runtime patch corner seams and transition quads smoothly.
+
+Beyond visual representation, the tilemap forms the bedrock of spatial collision detection and pathfinding. Individual tiles convey solidity properties that feed swept bounding-box tests, giving platformers and top-down entities collision responses. The system also exports raw layers into navigation grids, making it simple for pathfinding algorithms to query obstacle placements and plan routes.
+
+Finally, the module provides specialized spatial tools for tactical strategy games, including hex ring traversals, spiral patterns, and line-of-sight traversals. Hexagonal maps now travel through the same render-command path as other orientations, so hex coordinate helpers and tilemap drawing stay aligned. It also manages arbitrary polygon regions layered on top of the grid to define zone semantics, ownership areas, and visual outlines. These regions support selection testing and compute bounds to coordinate dynamic camera positioning and trigger regions.
+
+Interactive elements are rounded out by event-driven callbacks triggered as entities step across tile boundaries. These hooks notify gameplay scripts during entries and exits, facilitating pressure plates, hazards, and portals. Supported by coordinate interpolations for smooth movement ticks, this complete framework bridges static world data with reactive, dynamic gameplay simulation.
+
+Internal layout note: the module surface is now split more explicitly by concern. Procedural-generation model types live in `mapgen_model.rs`, collision helpers in `tilemap_collision.rs`, and reverse-index maintenance in `tilemap_index.rs`, while the public `tilemap` API remains unchanged.
+
+Animation update note: animated tile advancement is now tied to visible GIDs and viewport invalidation state, so on-screen animated cells refresh through the dirty/visible path without disturbing the active viewport configuration.
 
 ## Functions
 
@@ -29,17 +43,31 @@ lurek.tilemap.fromLDtk(jsonStr, levelName)
 
 | Type | Description |
 |------|-------------|
-| [LTileMap](#ltilemap) | Loaded tilemap. |
+| [LTileMap](#ltilemap) | Loaded tilemap; or nil when import fails. |
+| LTilemapFromLDtkResult | Structured import error table on import failure; or nil on success. |
 
 **Example**
 
 ```lua
 do
     local ldtkJson = '{"levels":[{"identifier":"Level_0","layerInstances":[]}]}'
-    local map = lurek.tilemap.fromLDtk(ldtkJson)
-    print("LDtk map type = " .. map:type())
-    local named = lurek.tilemap.fromLDtk(ldtkJson, "Level_0")
-    print("named level loaded")
+    local map, err = lurek.tilemap.fromLDtk(ldtkJson)
+    if map then
+        print("LDtk map type = " .. map:type())
+    else
+        local err_tbl = err or {}
+        local code = err_tbl["code"] or "unknown"
+        local message = err_tbl["message"] or "unknown"
+        print("LDtk import error: " .. code .. " - " .. message)
+    end
+    local named, named_err = lurek.tilemap.fromLDtk(ldtkJson, "Level_0")
+    if named then
+        print("named level loaded")
+    else
+        local err_tbl = named_err or {}
+        local code = err_tbl["code"] or "unknown"
+        print("named level import error: " .. code)
+    end
 end
 ```
 
@@ -552,19 +580,27 @@ lurek.tilemap.loadTMX(xml)
 
 | Type | Description |
 |------|-------------|
-| LTilemapLoadTMXResult | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`. |
+| LTilemapLoadTMXResult | Parsed map with `width`; `height`; `tileWidth`; `tileHeight`; `orientation`; and `layers`; or nil on parse failure. |
+| LTilemapLoadTMXResult | Structured import error table on parse failure; or nil on success. |
 
 **Example**
 
 ```lua
 do
     local tmxData = [[<?xml version="1.0" encoding="UTF-8"?> <map version="1.10" orientation="orthogonal" width="4" height="4" tilewidth="32" tileheight="32"> <layer name="ground" width="4" height="4"> <data encoding="csv">1,1,1,1,1,2,2,1,1,2,2,1,1,1,1,1</data> </layer> </map>]]
-    local result = lurek.tilemap.loadTMX(tmxData)
-    print("TMX width = " .. result.width)
-    print("TMX height = " .. result.height)
-    print("TMX tile size = " .. result.tileWidth .. "x" .. result.tileHeight)
-    print("TMX orientation = " .. result.orientation)
-    print("TMX layers = " .. #result.layers)
+    local result, err = lurek.tilemap.loadTMX(tmxData)
+    if result then
+        print("TMX width = " .. result.width)
+        print("TMX height = " .. result.height)
+        print("TMX tile size = " .. result.tileWidth .. "x" .. result.tileHeight)
+        print("TMX orientation = " .. result.orientation)
+        print("TMX layers = " .. #result.layers)
+    else
+        local err_tbl = err or {}
+        local code = err_tbl["code"] or "unknown"
+        local message = err_tbl["message"] or "unknown"
+        print("TMX import error: " .. code .. " - " .. message)
+    end
 end
 ```
 
@@ -925,6 +961,47 @@ end
 
 ---
 
+### `lurek.tilemap.syncMinimap`
+
+Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
+
+```lua
+lurek.tilemap.syncMinimap(map, layer, minimap, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `map` | [LTileMap](#ltilemap) | Source tilemap. |
+| `layer` | number | Layer index (1-based). |
+| `minimap` | [LMinimap](#lminimap) | Target minimap. |
+| `opts?` | table | Options with keys: solid_terrain (default 2), empty_terrain (default 1). |
+
+**Example**
+
+```lua
+do
+    local tilemap = lurek.tilemap.newTileMap(16, 16, 32)
+    local minimap = lurek.minimap.new(16, 16)
+
+    -- Sync the tilemap's collision layer to minimap terrain with options
+    lurek.tilemap.syncMinimap(tilemap, 1, minimap, {
+        solid_terrain = 2,
+        empty_terrain = 1
+    })
+    print("minimap synced from tilemap with options")
+
+    -- Also show sync with default terrain values
+    local tilemap2 = lurek.tilemap.newTileMap(10, 10, 32)
+    local minimap2 = lurek.minimap.new(10, 10)
+    lurek.tilemap.syncMinimap(tilemap2, 1, minimap2)
+    print("minimap synced with defaults")
+end
+```
+
+---
+
 ### `lurek.tilemap.toScreenHex`
 
 Converts axial hex coordinates to screen-space pixel position.
@@ -1016,6 +1093,7 @@ end
 - [LMapGen](#lmapgen)
 - [LMapGroup](#lmapgroup)
 - [LMapScript](#lmapscript)
+- [LMinimap](#lminimap)
 - [LTileMap](#ltilemap)
 - [LTileSet](#ltileset)
 
@@ -3739,6 +3817,1583 @@ end
 
 ---
 
+## LMinimap
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LMinimap:addMarker`
+
+Adds a world-space marker and returns its unique id.
+
+```lua
+LMinimap:addMarker(x, y, desc, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Marker x coordinate. |
+| `y` | number | Marker y coordinate. |
+| `desc?` | string | Marker description. |
+| `r?` | number | Red channel override, defaults to 1.0. |
+| `g?` | number | Green channel override, defaults to 0.0. |
+| `b?` | number | Blue channel override, defaults to 0.0. |
+| `a?` | number | Alpha channel override, defaults to 1.0. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Marker id. |
+
+---
+
+#### `LMinimap:addObjectType`
+
+Adds an object type and returns its one-based index.
+
+```lua
+LMinimap:addObjectType(name, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Object type name. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaults to 1.0. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | One-based object type index. |
+
+---
+
+#### `LMinimap:addPing`
+
+Adds a timed ping effect at a minimap world position.
+
+```lua
+LMinimap:addPing(x, y, duration, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World x coordinate of the ping. |
+| `y` | number | World y coordinate of the ping. |
+| `duration` | number | Duration in seconds before the ping fades out. |
+| `r?` | number | Red channel, defaults to 1.0. |
+| `g?` | number | Green channel, defaults to 1.0. |
+| `b?` | number | Blue channel, defaults to 0.0. |
+| `a?` | number | Alpha channel, defaults to 1.0. |
+
+---
+
+#### `LMinimap:clearMarkerAnimation`
+
+Clears the animation assigned to a marker by id.
+
+```lua
+LMinimap:clearMarkerAnimation(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+---
+
+#### `LMinimap:clearMarkerTexture`
+
+Clears image texture from a marker.
+
+```lua
+LMinimap:clearMarkerTexture(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+---
+
+#### `LMinimap:clearObjectTypeTexture`
+
+Clears image texture for an object type.
+
+```lua
+LMinimap:clearObjectTypeTexture(type_idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_idx` | number | One-based object type index. |
+
+---
+
+#### `LMinimap:clearObjects`
+
+Clears all objects from the minimap.
+
+```lua
+LMinimap:clearObjects()
+```
+
+---
+
+#### `LMinimap:clearOverlay`
+
+Clears all minimap overlay shapes.
+
+```lua
+LMinimap:clearOverlay()
+```
+
+---
+
+#### `LMinimap:clearPath`
+
+Clears one path by id or all paths when no id is provided.
+
+```lua
+LMinimap:clearPath(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id?` | number | Path id to clear. |
+
+---
+
+#### `LMinimap:clearViewportRect`
+
+Clears the minimap viewport rectangle overlay.
+
+```lua
+LMinimap:clearViewportRect()
+```
+
+---
+
+#### `LMinimap:drawLine`
+
+Adds an overlay line between two world-space points.
+
+```lua
+LMinimap:drawLine(x1, y1, x2, y2, color_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x1` | number | Start x coordinate. |
+| `y1` | number | Start y coordinate. |
+| `x2` | number | End x coordinate. |
+| `y2` | number | End y coordinate. |
+| `color_tbl` | table | RGBA byte color table. |
+
+---
+
+#### `LMinimap:drawRect`
+
+Adds an overlay rectangle at a world-space position.
+
+```lua
+LMinimap:drawRect(x, y, w, h, color_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Rectangle x coordinate. |
+| `y` | number | Rectangle y coordinate. |
+| `w` | number | Rectangle width. |
+| `h` | number | Rectangle height. |
+| `color_tbl` | table | RGBA byte color table. |
+
+---
+
+#### `LMinimap:drawToImage`
+
+Draws the minimap into image data at a pixel size.
+
+```lua
+LMinimap:drawToImage(pixel_size)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pixel_size` | number | Pixel size scale. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](render.md#limagedata) | Image data containing the rendered minimap. |
+
+---
+
+#### `LMinimap:getCellCount`
+
+Returns the total number of grid cells.
+
+```lua
+LMinimap:getCellCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Cell count. |
+
+---
+
+#### `LMinimap:getCenter`
+
+Returns the current minimap world-space center position.
+
+```lua
+LMinimap:getCenter()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Center x coordinate. |
+| number | Center y coordinate. |
+
+---
+
+#### `LMinimap:getCenterX`
+
+Returns minimap world center x coordinate.
+
+```lua
+LMinimap:getCenterX()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Center x coordinate. |
+
+---
+
+#### `LMinimap:getCenterY`
+
+Returns minimap world center y coordinate.
+
+```lua
+LMinimap:getCenterY()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Center y coordinate. |
+
+---
+
+#### `LMinimap:getColorMode`
+
+Returns the current minimap color mode.
+
+```lua
+LMinimap:getColorMode()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Color mode name. |
+
+---
+
+#### `LMinimap:getDisplayHeight`
+
+Returns the minimap display height.
+
+```lua
+LMinimap:getDisplayHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Display height in pixels. |
+
+---
+
+#### `LMinimap:getDisplaySize`
+
+Returns the minimap display width and height in pixels.
+
+```lua
+LMinimap:getDisplaySize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Display width in pixels. |
+| number | Display height in pixels. |
+
+---
+
+#### `LMinimap:getDisplayWidth`
+
+Returns the minimap display width.
+
+```lua
+LMinimap:getDisplayWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Display width in pixels. |
+
+---
+
+#### `LMinimap:getFogColor`
+
+Returns the current RGBA fog overlay color.
+
+```lua
+LMinimap:getFogColor()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LMinimap:getFogLevel`
+
+Returns fog level for a one-based grid cell.
+
+```lua
+LMinimap:getFogLevel(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based grid x coordinate. |
+| `y` | number | One-based grid y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Fog level byte. |
+
+---
+
+#### `LMinimap:getGridHeight`
+
+Returns the height of the minimap grid in cells.
+
+```lua
+LMinimap:getGridHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Grid height in cells. |
+
+---
+
+#### `LMinimap:getGridSize`
+
+Returns the minimap grid width and height in cells.
+
+```lua
+LMinimap:getGridSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Grid width in cells. |
+| number | Grid height in cells. |
+
+---
+
+#### `LMinimap:getGridWidth`
+
+Returns the width of the minimap grid in cells.
+
+```lua
+LMinimap:getGridWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Grid width in cells. |
+
+---
+
+#### `LMinimap:getHoverInfo`
+
+Returns hover text for a screen position when available.
+
+```lua
+LMinimap:getHoverInfo(sx, sy, mx, my)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `mx` | number | Minimap x position. |
+| `my` | number | Minimap y position. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Hover info text, or nil when unavailable. |
+
+---
+
+#### `LMinimap:getLayer`
+
+Returns the active minimap display layer index.
+
+```lua
+LMinimap:getLayer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer index. |
+
+---
+
+#### `LMinimap:getLayerCount`
+
+Returns the number of minimap layers.
+
+```lua
+LMinimap:getLayerCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Layer count. |
+
+---
+
+#### `LMinimap:getLayerData`
+
+Returns raw cell data for a minimap layer.
+
+```lua
+LMinimap:getLayerData(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Array table of cell bytes, or nil when missing. |
+
+---
+
+#### `LMinimap:getMarkerCount`
+
+Returns the total number of minimap markers.
+
+```lua
+LMinimap:getMarkerCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Marker count. |
+
+---
+
+#### `LMinimap:getMarkerDescription`
+
+Returns a marker description by id.
+
+```lua
+LMinimap:getMarkerDescription(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Marker description, or nil when missing. |
+
+---
+
+#### `LMinimap:getObjectCount`
+
+Returns the number of objects on the minimap.
+
+```lua
+LMinimap:getObjectCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Object count. |
+
+---
+
+#### `LMinimap:getObjectTypeCount`
+
+Returns the number of object types.
+
+```lua
+LMinimap:getObjectTypeCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Object type count. |
+
+---
+
+#### `LMinimap:getOverlayShapeCount`
+
+Returns the number of overlay shapes.
+
+```lua
+LMinimap:getOverlayShapeCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Overlay shape count. |
+
+---
+
+#### `LMinimap:getOwnerColor`
+
+Returns the current RGBA color for an owner id.
+
+```lua
+LMinimap:getOwnerColor(owner)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `owner` | number | Owner id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LMinimap:getPathCount`
+
+Returns the number of active path overlays.
+
+```lua
+LMinimap:getPathCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Path count. |
+
+---
+
+#### `LMinimap:getPingCount`
+
+Returns the number of active pings.
+
+```lua
+LMinimap:getPingCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Ping count. |
+
+---
+
+#### `LMinimap:getTerrain`
+
+Returns terrain type for a one-based grid cell.
+
+```lua
+LMinimap:getTerrain(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based grid x coordinate. |
+| `y` | number | One-based grid y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Terrain type id. |
+
+---
+
+#### `LMinimap:getTerrainColor`
+
+Returns RGBA color for a terrain type.
+
+```lua
+LMinimap:getTerrainColor(terrain_type)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `terrain_type` | number | Terrain type id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LMinimap:getTileDescription`
+
+Returns text description for a tile type.
+
+```lua
+LMinimap:getTileDescription(type_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_id` | number | Tile type id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Description text, or nil when missing. |
+
+---
+
+#### `LMinimap:getViewportColor`
+
+Returns the viewport rectangle color.
+
+```lua
+LMinimap:getViewportColor()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red channel. |
+| number | Green channel. |
+| number | Blue channel. |
+| number | Alpha channel. |
+
+---
+
+#### `LMinimap:getViewportRect`
+
+Returns the viewport rectangle when one is set.
+
+```lua
+LMinimap:getViewportRect()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | X coordinate; or nil when unset. |
+| number | Y coordinate; or nil when unset. |
+| number | Width; or nil when unset. |
+| number | Height; or nil when unset. |
+
+---
+
+#### `LMinimap:getZoom`
+
+Returns the current minimap zoom magnification level.
+
+```lua
+LMinimap:getZoom()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Zoom value. |
+
+---
+
+#### `LMinimap:gridToScreen`
+
+Converts grid coordinates to screen coordinates.
+
+```lua
+LMinimap:gridToScreen(gx, gy, mx, my)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gx` | number | Grid x coordinate. |
+| `gy` | number | Grid y coordinate. |
+| `mx` | number | Minimap x position. |
+| `my` | number | Minimap y position. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Screen x coordinate. |
+| number | Screen y coordinate. |
+
+---
+
+#### `LMinimap:hasMarker`
+
+Returns whether a marker id exists.
+
+```lua
+LMinimap:hasMarker(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists. |
+
+---
+
+#### `LMinimap:isAntiAlias`
+
+Returns whether anti-aliasing is enabled.
+
+```lua
+LMinimap:isAntiAlias()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when enabled. |
+
+---
+
+#### `LMinimap:isClickable`
+
+Returns whether minimap click handling is enabled.
+
+```lua
+LMinimap:isClickable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when clickable. |
+
+---
+
+#### `LMinimap:isFogEnabled`
+
+Returns whether fog display is enabled.
+
+```lua
+LMinimap:isFogEnabled()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when fog is enabled. |
+
+---
+
+#### `LMinimap:isObjectTypeVisible`
+
+Returns visibility for an object type by one-based index.
+
+```lua
+LMinimap:isObjectTypeVisible(type_idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_idx` | number | One-based object type index. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the object type is visible. |
+
+---
+
+#### `LMinimap:isViewportVisible`
+
+Returns whether the viewport rectangle is visible.
+
+```lua
+LMinimap:isViewportVisible()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when visible. |
+
+---
+
+#### `LMinimap:removeMarker`
+
+Removes a minimap marker by its unique id.
+
+```lua
+LMinimap:removeMarker(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a marker was removed. |
+
+---
+
+#### `LMinimap:removeObject`
+
+Removes a minimap object by its unique id.
+
+```lua
+LMinimap:removeObject(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Object id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when an object was removed. |
+
+---
+
+#### `LMinimap:render`
+
+Enqueues minimap render commands at an optional screen position.
+
+```lua
+LMinimap:render(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x?` | number | Screen x coordinate, defaults to 0. |
+| `y?` | number | Screen y coordinate, defaults to 0. |
+
+---
+
+#### `LMinimap:revealRadius`
+
+Reveals fog inside a world-space radius.
+
+```lua
+LMinimap:revealRadius(cx, cy, radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cx` | number | Center x coordinate. |
+| `cy` | number | Center y coordinate. |
+| `radius` | number | Reveal radius. |
+
+---
+
+#### `LMinimap:screenToGrid`
+
+Converts a screen position to grid coordinates.
+
+```lua
+LMinimap:screenToGrid(sx, sy, mx, my)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `mx` | number | Minimap x position. |
+| `my` | number | Minimap y position. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Grid x coordinate. |
+| number | Grid y coordinate. |
+
+---
+
+#### `LMinimap:setAntiAlias`
+
+Enables or disables minimap anti-aliasing.
+
+```lua
+LMinimap:setAntiAlias(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | Anti-alias flag. |
+
+---
+
+#### `LMinimap:setCenter`
+
+Sets the minimap world-space center position.
+
+```lua
+LMinimap:setCenter(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Center x coordinate. |
+| `y` | number | Center y coordinate. |
+
+---
+
+#### `LMinimap:setClickable`
+
+Enables or disables minimap click handling.
+
+```lua
+LMinimap:setClickable(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | Clickable flag. |
+
+---
+
+#### `LMinimap:setColorMode`
+
+Sets the minimap color mode to terrain or political.
+
+```lua
+LMinimap:setColorMode(mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `mode` | string | Color mode name, expected `terrain` or `political`. |
+
+---
+
+#### `LMinimap:setDisplaySize`
+
+Sets the minimap display width and height in pixels.
+
+```lua
+LMinimap:setDisplaySize(w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `w` | number | Display width in pixels. |
+| `h` | number | Display height in pixels. |
+
+---
+
+#### `LMinimap:setFogColor`
+
+Sets the RGBA fog overlay color for covered cells.
+
+```lua
+LMinimap:setFogColor(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaults to 0.8. |
+
+---
+
+#### `LMinimap:setFogData`
+
+Replaces fog data from a flat array table.
+
+```lua
+LMinimap:setFogData(data)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | table | Array table of fog level bytes. |
+
+---
+
+#### `LMinimap:setFogEnabled`
+
+Enables or disables the minimap fog display.
+
+```lua
+LMinimap:setFogEnabled(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | Fog enabled flag. |
+
+---
+
+#### `LMinimap:setFogLevel`
+
+Sets fog level for a one-based grid cell.
+
+```lua
+LMinimap:setFogLevel(x, y, level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based grid x coordinate. |
+| `y` | number | One-based grid y coordinate. |
+| `level` | number | Fog level byte. |
+
+---
+
+#### `LMinimap:setLayer`
+
+Sets the active minimap display layer index.
+
+```lua
+LMinimap:setLayer(layer)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+
+---
+
+#### `LMinimap:setLayerData`
+
+Sets raw cell data for a minimap layer.
+
+```lua
+LMinimap:setLayerData(layer, data_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index. |
+| `data_tbl` | table | Array table of cell bytes. |
+
+---
+
+#### `LMinimap:setMarkerAnimation`
+
+Sets marker animation by type name.
+
+```lua
+LMinimap:setMarkerAnimation(id, anim_type, speed)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `anim_type` | string | Animation type: `blink`, `pulse`, or `rotate`. |
+| `speed` | number | Animation speed. |
+
+---
+
+#### `LMinimap:setMarkerTexture`
+
+Assigns an image texture to a marker.
+
+```lua
+LMinimap:setMarkerTexture(id, image_ud, width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `image_ud` | [LImage](render.md#limage) | Image handle from `lurek.render.newImage`. |
+| `width?` | number | Display width override. |
+| `height?` | number | Display height override. |
+
+---
+
+#### `LMinimap:setObject`
+
+Adds or updates an object on the minimap.
+
+```lua
+LMinimap:setObject(id, x, y, type_idx, owner)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Object id. |
+| `x` | number | Object x coordinate. |
+| `y` | number | Object y coordinate. |
+| `type_idx` | number | One-based object type index. |
+| `owner?` | number | Owner id, defaults to 0. |
+
+---
+
+#### `LMinimap:setObjectTypeTexture`
+
+Assigns an image texture to an object type.
+
+```lua
+LMinimap:setObjectTypeTexture(type_idx, image_ud, width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_idx` | number | One-based object type index. |
+| `image_ud` | [LImage](render.md#limage) | Image handle from `lurek.render.newImage`. |
+| `width?` | number | Display width override. |
+| `height?` | number | Display height override. |
+
+---
+
+#### `LMinimap:setObjectTypeVisible`
+
+Sets visibility for an object type by one-based index.
+
+```lua
+LMinimap:setObjectTypeVisible(type_idx, visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_idx` | number | One-based object type index. |
+| `visible` | boolean | Visibility flag. |
+
+---
+
+#### `LMinimap:setOwnerColor`
+
+Sets the RGBA display color for an owner id.
+
+```lua
+LMinimap:setOwnerColor(owner, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `owner` | number | Owner id. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaults to 1.0. |
+
+---
+
+#### `LMinimap:setTerrain`
+
+Sets terrain type for a one-based grid cell.
+
+```lua
+LMinimap:setTerrain(x, y, terrain_type)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based grid x coordinate. |
+| `y` | number | One-based grid y coordinate. |
+| `terrain_type` | number | Terrain type id. |
+
+---
+
+#### `LMinimap:setTerrainColor`
+
+Sets the RGBA display color for a terrain type.
+
+```lua
+LMinimap:setTerrainColor(terrain_type, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `terrain_type` | number | Terrain type id. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaults to 1.0. |
+
+---
+
+#### `LMinimap:setTerrainData`
+
+Replaces terrain data from a flat array table.
+
+```lua
+LMinimap:setTerrainData(data)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | table | Array table of terrain type ids. |
+
+---
+
+#### `LMinimap:setTileDescription`
+
+Sets text description for a tile type.
+
+```lua
+LMinimap:setTileDescription(type_id, desc)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_id` | number | Tile type id. |
+| `desc` | string | Description text. |
+
+---
+
+#### `LMinimap:setViewportColor`
+
+Sets the viewport rectangle color.
+
+```lua
+LMinimap:setViewportColor(r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaults to 0.8. |
+
+---
+
+#### `LMinimap:setViewportRect`
+
+Sets the visible viewport rectangle shown on the minimap.
+
+```lua
+LMinimap:setViewportRect(x, y, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Viewport x coordinate. |
+| `y` | number | Viewport y coordinate. |
+| `w` | number | Viewport width. |
+| `h` | number | Viewport height. |
+
+---
+
+#### `LMinimap:setViewportVisible`
+
+Sets whether the viewport rectangle is visible.
+
+```lua
+LMinimap:setViewportVisible(visible)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `visible` | boolean | Visibility flag. |
+
+---
+
+#### `LMinimap:setZoom`
+
+Sets the minimap zoom magnification level.
+
+```lua
+LMinimap:setZoom(zoom)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `zoom` | number | Zoom value. |
+
+---
+
+#### `LMinimap:showPath`
+
+Adds a colored path overlay and returns its id.
+
+```lua
+LMinimap:showPath(points_tbl, color_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `points_tbl` | table | Array table of point arrays `{x, y}`. |
+| `color_tbl` | table | RGBA byte color table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Path id. |
+
+---
+
+#### `LMinimap:trackCamera`
+
+Centers the minimap and viewport rectangle from a camera handle.
+
+```lua
+LMinimap:trackCamera(camera_ud)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `camera_ud` | [LCamera](camera.md#lcamera) | Camera handle from `lurek.camera.newCamera`. |
+
+---
+
+#### `LMinimap:type`
+
+Returns the Lua-visible type name for this minimap handle.
+
+```lua
+LMinimap:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LMinimap](#lminimap)`. |
+
+---
+
+#### `LMinimap:typeOf`
+
+Returns whether this minimap handle matches a supported type name.
+
+```lua
+LMinimap:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LMinimap](#lminimap)`, `Minimap`, and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+---
+
+#### `LMinimap:update`
+
+Advances minimap animations and timers.
+
+```lua
+LMinimap:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Delta time in seconds. |
+
+---
+
 ## LTileMap
 
 ### Type Fields
@@ -4844,6 +6499,7 @@ do
 
     local overlap = map:rectOverlapsSolid(layer, 80, 80, 40, 40)
     print("rect overlaps solid = " .. tostring(overlap))
+    print("note: rectOverlapsSolid is a tile query pre-check; physics bodies need explicit lurek.physics colliders")
 end
 ```
 

@@ -26,11 +26,11 @@ description: "Write and maintain all Lurek2D docs including user guides, specs, 
 ## Workflow
 - **User-facing docs**:
   - Read doc and spec/code context.
-  - Load documentation and agent-md.
+  - Load docs-general and docs-specs.
   - Write for persona, ground in current lurek.*.
   - Actionable wiki, focused handbook.
 - **Spec sync**:
-  - Load documentation and enterprise-architecture.
+  - Load docs-general and enterprise-architecture.
   - Read spec and code surface.
   - List contract differences.
   - Update spec to match code.
@@ -65,5 +65,5 @@ Score work from 1 to 10 stars:
 
 ## CAG Metadata
 Personas: EngDev, GameDev, Modder
-Primary skills: documentation, agent-md
+Primary skills: docs-general, docs-specs
 Secondary skills: lua-api-design, roadmap-planning, enterprise-architecture, github-workflow

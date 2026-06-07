@@ -2,11 +2,13 @@
 
 ## Summary
 
-It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. The engine fully parses raw HTML strings into a live DOM tree populated with `HtmlElement` nodes. It evaluates cascaded CSS stylesheets—supporting extensive CSS selector matching including tag, class, id, attribute, pseudo-classes, and relationship combinators—to resolve a computed style for every element.
+This module provides the HTML/CSS user interface subsystem, letting developers build interactive menus and HUDs. It parses markup and CSS stylesheets into dynamic DOM trees. The layout engine computes bounds using a box model, resolving cascades into precise pixel coordinates for rendering.
 
-Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
+The document orchestrator manages the UI lifecycle, handling layout passes, styling cascades, and viewport resizes. It converts CSS declarations into normalized color vectors and size scales. Styles are resolved deterministically across elements, allowing developers to manage visuals through stylesheets.
 
-The module also handles complex text rendering, ensuring accurate wrapping, alignment, and multi-line overflow management. Furthermore, the `html` module is deeply interactive. It routes user input—such as mouse clicks, hover events, keyboard focus, and text input—directly to the appropriate DOM elements, executing bound Lua callbacks (`mousepressed`, `mousemoved`, `keypressed`). The entire document lifecycle, from DOM queries (`getElementById`, `querySelector`) to dynamic structural mutations, is fully scriptable via the `lurek.html.*` API.
+For user interactions, the module handles clicks, keyboard focus, and text inputs. Input events are dispatched down the element tree, triggering hover states or text changes. DOM elements can be mutated at runtime by toggling classes, editing attributes, or replacing inner HTML fragments.
+
+Additionally, selector queries support class, ID, and ancestry matching to locate elements. The completed layout output compiles into draw command streams containing render rectangles and text blocks ready for GPU rendering.
 
 ## Functions
 

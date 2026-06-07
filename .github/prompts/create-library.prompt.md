@@ -16,13 +16,13 @@ description: Create or update new lua pure library part of lureksome.
 1. Load skills: library-authoring, lua-scripting.
 2. Execute `python tools/audit/library_coverage.py` to identify missing test/doc dependencies for existing libraries as a reference point.
 3. Create `library/<name>/init.lua`. Write standard, highly optimized Lua code relying strictly on the `lurek.*` API.
-4. Add `tests/lua/test_library_<name>.lua` and `library/<name>/README.md` containing usage documentation.
+4. Add `tests/lua/test_library_<name>.lua` and `library/<name>/README.md` containing usage docs-general.
 5. Execute `python tools/validate/validate_library.py --lib <name>`. If it fails, fix the structure.
 6. Execute `python tools/audit/library_coverage.py`. If coverage is <100%, write additional tests and docs in step 4 until the script reports 100%.
 
 # OUTPUTS PROVIDED
 - The new `init.lua` library file
-- Library documentation and tests
+- Library docs-general and tests
 - Coverage report
 
 # SUCCESS CRITERIA

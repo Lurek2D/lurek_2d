@@ -13,7 +13,7 @@ description: "Own build scripts, Cargo profiles, packaging, and CI or release au
 - CI/CD workflow files in .github/workflows.
 - tools/ directory scripts.
 - VS Code workspace config in .vscode/.
-- tools/README.md script documentation.
+- tools/README.md script docs-general.
 - Build/packaging validation and install flow.
 - Release-check automation.
 
@@ -54,4 +54,4 @@ Score work from 1 to 10 stars:
 ## CAG Metadata
 Personas: EngDev, GameDev, EngTest
 Primary skills: build-system, ci-cd-pipeline, quality-pipeline
-Secondary skills: cross-platform, github-workflow, tools-cag-validation, documentation
+Secondary skills: cross-platform, github-workflow, cag-validation, docs-general

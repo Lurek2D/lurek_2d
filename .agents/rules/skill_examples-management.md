@@ -22,7 +22,7 @@
 - How to find missing coverage: run `python tools/audit/example_coverage.py` and compare its output against `docs/api/lurek.lua`. The audit tool produces a list of API names with no matching `--@api-stub:` tag.
 - Minimal setup is a hard rule. If an example needs a physics world, create exactly one `lurek.physics.newWorld(0, 9.81)`.
 - How to add a new example file: create `content/examples/<module>.lua`, run `cargo test --test examples_load_test`, and confirm the file is picked up and loads without error. If the module has a guard, add it at the top of the file so headless CI does not fail.
-- Sync rules: if an example changes a function name or parameter order because the API changed, update the matching entry in `docs/api/lurek.lua` and the affected `docs/specs/<module>.md` in the same commit. The example is living documentation; it must stay truthful.
+- Sync rules: if an example changes a function name or parameter order because the API changed, update the matching entry in `docs/api/lurek.lua` and the affected `docs/specs/<module>.md` in the same commit. The example is living docs-general; it must stay truthful.
 - Coverage gap workflow: audit â†’ pick one uncovered function â†’ write the `do` block â†’ confirm the stub tag â†’ run load test â†’ commit with sync. Never inflate count by writing stub tags without runnable code.
 - Snippet workflow in `content/snippets/`: each snippet block starts with `-- @snippet ...`, then `-- @prefix`, `-- @module`, `-- @description`, `-- @body`, body lines, and `-- @end`. Keep marker order exact because the parser and validator read strict line sequences.
 - Snippet design rule: snippets are not single-call API showcases. Each snippet must compose multiple API calls into one reusable gameplay building block.

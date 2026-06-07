@@ -8,8 +8,8 @@
 - **`cag_link_check.py`**: cag_link_check.py — broken-link checker for the CAG layer.
 - **`cag_persona_matrix.py`**: cag_persona_matrix.py — persona ↔ agent value matrix.
 - **`count_gaps.py`**: count_gaps.py — Count undocumented public API items per lurek.* module.
-- **`doc_audit.py`**: doc_audit.py — Lurek2D unified documentation audit.
-- **`doc_coverage.py`**: doc_coverage.py — Lurek2D documentation coverage analytics.
+- **`doc_audit.py`**: doc_audit.py — Lurek2D unified docs-general audit.
+- **`doc_coverage.py`**: doc_coverage.py — Lurek2D docs-general coverage analytics.
 - **`docstring_audit.py`**: docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
 - **`example_add_missing.py`**: Append stub sections to content/examples/ for uncovered lurek.* API items.
 - **`example_coverage.py`**: Cross-reference Lua example scripts against the lurek.* Lua API.

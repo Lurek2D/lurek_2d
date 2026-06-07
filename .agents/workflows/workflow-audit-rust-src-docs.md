@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Any user-imposed language or formatting override.
 
 ## Steps
-1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
+1. Load [skill: rust-coding](../skills/rust-coding/SKILL.md) and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
 2. Traverse `src/` in strict alphabetical order by folder, then by file, and skip `src/lua_api/` completely.
 3. Work on exactly one `.rs` file at a time and read the whole file before writing any doc change.
 4. Audit every Rust item in that file and keep, fix, or add one-line docs only when they match the real code exactly.
@@ -47,5 +47,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: rust-coding, documentation
+Loads skills: rust-coding, docs-general
 Inputs required: Start folder or current resume point., Optional stop boundary such as file count, module count, or end folder., Any user-imposed language or formatting override.

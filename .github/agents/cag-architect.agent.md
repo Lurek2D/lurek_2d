@@ -24,17 +24,17 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 ## Outputs
 - Edited .github files or CAG tools.
 - Clean CAG validator results.
-- Updated agent-routing SKILL.md rules.
+- Updated cag-routing SKILL.md rules.
 - Retrieval corpus change proposal.
 
 ## Workflow
 - **CAG mode**:
   - Run python tools/validate/cag_validate.py --baseline first.
-  - Load tools-cag-validation, cag-workflow, enterprise-architecture, togaf.
+  - Load cag-validation, cag-workflow, enterprise-architecture, togaf.
   - Model change at smallest layer: prompt, agent, skill, tool.
   - Keep scopes complementary, remove duplicate policy.
   - Short wording for routing clarity.
-  - Update agent-routing/SKILL.md if handoffs/routes change.
+  - Update cag-routing/SKILL.md if handoffs/routes change.
   - Run cag_link_check.py --strict, cag_coverage.py, cag_persona_matrix.py.
   - Run focused validator, then full validator. Fix new issues.
   - Check frontmatter, section order, graph, token-economy.
@@ -67,5 +67,5 @@ Score work from 1 to 10 stars:
 
 ## CAG Metadata
 Personas: EngDev, GameDev, Modder, GameTest, EngTest
-Primary skills: cag-workflow, tools-cag-validation, agent-routing
-Secondary skills: retrieval-architecture, documentation, module-architecture, enterprise-architecture
+Primary skills: cag-workflow, cag-validation, cag-routing
+Secondary skills: retrieval-architecture, docs-general, module-architecture, enterprise-architecture

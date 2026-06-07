@@ -13,7 +13,7 @@ description: Create or update new prompt, agent, skill or update them, revalidat
 - Agent must collect existing CAG validation rules
 
 # STEPS TO DO
-1. Load skills: cag-workflow, tools-cag-validation.
+1. Load skills: cag-workflow, cag-validation.
 2. Edit or create the Markdown file in `.github/agents/`, `.github/skills/`, or `.github/prompts/` applying strict YAML formatting rules.
 3. Execute `python tools/validate/cag_validate.py`. If it exits with code >0, fix the YAML metadata or naming conventions and repeat this step.
 4. Execute `python tools/audit/cag_link_check.py --strict`. If it reports >0 broken links, fix the file references and repeat.
@@ -31,6 +31,6 @@ description: Create or update new prompt, agent, skill or update them, revalidat
 - Failing to include the mandatory `CAG Metadata` block.
 
 # REFERENCES
-- skills: cag-workflow, tools-cag-validation
+- skills: cag-workflow, cag-validation
 - tools: python tools/validate/cag_validate.py, python tools/audit/cag_link_check.py
 - agent: CAG-Architect

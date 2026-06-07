@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Expected smoke-test coverage.
 
 ## Steps
-1. Load [skill: demo-creation](../skills/demo-creation/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
+1. Load [skill: demo-creation](../skills/demo-creation/SKILL.md) and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
 2. Read content/games/, neighboring demos, tests/lua/content/games/, tests/demo_smoke_tests.rs, and harness registration before editing.
 3. Keep the demo focused, runnable, and honest about the current API; update conf, registration, and README files when the demo shape requires them.
 4. Apply Lurek API first for gameplay and presentation: use `lurek.scene`, `lurek.render`, `lurek.ecs`, and `lurek.ui` (with `ui.toml`) wherever those APIs already solve the problem.
@@ -41,5 +41,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: demo-creation, documentation
+Loads skills: demo-creation, docs-general
 Inputs required: Demo name., Theme or mechanic., Target APIs., Expected smoke-test coverage.

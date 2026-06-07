@@ -12,7 +12,7 @@ description: Review unit lua test coverage and fix all gaps, ensure all practice
 - Agent must collect output from `lua_api_test_coverage.py` and `lua_test_structure_audit.py`
 
 # STEPS TO DO
-1. Load skills: testing-rust, lua-scripting.
+1. Load skills: testing-ecosystem, lua-scripting.
 2. Execute `python tools/audit/lua_test_structure_audit.py`. Note any structural violations.
 3. Execute `python tools/audit/lua_api_test_coverage.py`. Note the current test coverage percentage.
 4. Write new tests in `tests/lua/` to target missing functions, adhering to the one-file-per-module rule.
@@ -33,6 +33,6 @@ description: Review unit lua test coverage and fix all gaps, ensure all practice
 - Ignoring structural rules and placing tests in random directories.
 
 # REFERENCES
-- skills: testing-rust, quality-pipeline, lua-scripting
+- skills: testing-ecosystem, quality-pipeline, lua-scripting
 - tools: python tools/audit/lua_api_test_coverage.py, python tools/audit/lua_test_structure_audit.py, cargo test
 - agent: Tester

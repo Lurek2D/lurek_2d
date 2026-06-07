@@ -15,7 +15,7 @@ expected_agent: "Manager"
 - Required generation scope.
 
 ## Steps
-1. Load [skill: documentation](../skills/documentation/SKILL.md) and [skill: lua-api-design](../skills/lua-api-design/SKILL.md) before acting.
+1. Load [skill: docs-general](../skills/docs-general/SKILL.md) and [skill: lua-api-design](../skills/lua-api-design/SKILL.md) before acting.
 2. Read the owning Rust docstrings, docs/specs/, linked examples, and the generator inputs before editing.
 3. Fix the source text that drives the generated docs, keep the wording concrete for Lua users, and avoid manual edits to generated artifacts.
 4. Run the relevant doc generators and verify the resulting reference matches the intended contract.
@@ -36,5 +36,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: documentation, lua-api-design
+Loads skills: docs-general, lua-api-design
 Inputs required: Target module or API slice., Doc issue or gap., Source of truth., Required generation scope.

@@ -14,7 +14,7 @@ expected_agent: "Manager"
 - Any current placement concern.
 
 ## Steps
-1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md), [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md), and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
+1. Load [skill: testing-ecosystem](../skills/testing-ecosystem/SKILL.md), [skill: lua-rust-bridge](../skills/lua-rust-bridge/SKILL.md), and [skill: module-architecture](../skills/module-architecture/SKILL.md) before acting.
 2. Read tests/, src/lua_api/, docs/specs/, and the touched module paths.
 3. Check whether Lua-visible behavior lives under tests/lua/, Rust-only internals live under tests/rust/unit/, and support files sit in the right harness layer.
 4. Report misplaced tests, missing tests, and the exact target path each issue should move to.
@@ -35,5 +35,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: testing-rust, lua-rust-bridge, module-architecture
+Loads skills: testing-ecosystem, lua-rust-bridge, module-architecture
 Inputs required: Target module or test file set., Behavior area., Any current placement concern.

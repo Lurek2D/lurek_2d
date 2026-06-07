@@ -427,7 +427,7 @@ Layout pass runs during `generate_render_commands()` â€” computed rects are
 
 Several modules have `draw_to_image()` functions producing `ImageData` (CPU pixel buffer). These are **not the production rendering path**.
 
-**Purpose:** Unit testing without a GPU, visual debugging, screenshot for documentation, headless CI.
+**Purpose:** Unit testing without a GPU, visual debugging, screenshot for docs-general, headless CI.
 
 **Location:** `src/<module>/draw.rs` â€” separate file, not mixed into core algorithm files.
 

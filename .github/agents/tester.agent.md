@@ -29,7 +29,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/runInTerminal, execute/runTe
 ## Workflow
 - **Standard tests**:
   - Read spec, tests, docs/specs/<module>.md before choosing layer.
-  - Load testing-rust.
+  - Load testing-ecosystem.
   - Put lurek.* behavior in tests/lua/; Rust internals in tests/rust/unit/.
   - No #[cfg(test)] in src/, no logic in src/lua_api/.
   - Small assertions, one failure reason.
@@ -69,5 +69,5 @@ Score work from 1 to 10 stars:
 
 ## CAG Metadata
 Personas: EngDev, GameDev, GameTest, EngTest
-Primary skills: testing-rust, quality-pipeline
+Primary skills: testing-ecosystem, quality-pipeline
 Secondary skills: lua-rust-bridge, lua-api-design, asset-pipeline, error-handling

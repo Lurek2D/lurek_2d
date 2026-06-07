@@ -570,7 +570,7 @@ def _print_text_report(result: dict) -> None:
     )
     print(
         "[OK]" if lua_doc_completeness["issue_count"] == 0 else "[FAIL]",
-        "freshly generated Lua API data contains complete summary/param/return/class documentation",
+        "freshly generated Lua API data contains complete summary/param/return/class docs-general",
     )
 
     advisory_has_drift = any(

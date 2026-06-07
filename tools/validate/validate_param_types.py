@@ -272,7 +272,7 @@ def main(argv: list[str] | None = None) -> int:
         total_errors += n
 
     if not errors_only and _warnings:
-        print(f"\nParam-name divergences (documentation names differ from Rust variables):")
+        print(f"\nParam-name divergences (docs-general names differ from Rust variables):")
         for w in _warnings:
             print(w)
 

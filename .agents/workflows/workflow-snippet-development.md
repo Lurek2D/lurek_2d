@@ -10,7 +10,7 @@
 - Required final gate.
 
 ## Steps
-1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: documentation](../skills/documentation/SKILL.md), and [skill: vscode-extension](../skills/vscode-extension/SKILL.md) before acting.
+1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: docs-general](../skills/docs-general/SKILL.md), and [skill: vscode-extension](../skills/vscode-extension/SKILL.md) before acting.
 2. Normalize the request into goal, constraints, out-of-scope items, and proof needed to call it done.
 3. Author handcrafted snippets in `content/snippets/<module>.lua` using strict marker blocks:
    - `-- @snippet <symbol>`
@@ -45,5 +45,5 @@
 
 ## CAG Metadata
 Mode: agent
-Loads skills: examples-management, documentation, vscode-extension
+Loads skills: examples-management, docs-general, vscode-extension
 Inputs required: Snippet goal., Target modules., Coverage expectation (module-level)., Required final gate.

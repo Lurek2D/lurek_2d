@@ -70,4 +70,4 @@ Score work from 1 to 10 stars:
 ## CAG Metadata
 Personas: EngDev, GameDev, EngTest
 Primary skills: module-audit, performance-profiling
-Secondary skills: testing-rust, error-handling, quality-pipeline, dev-debugging
+Secondary skills: testing-ecosystem, error-handling, quality-pipeline, dev-debugging

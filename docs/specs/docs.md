@@ -3,7 +3,7 @@
 ## TL;DR
 
 - Builds an API catalog to generate editor files and Markdown reference.
-- Analyzes documentation coverage and quality using live table reflection.
+- Analyzes docs-general coverage and quality using live table reflection.
 
 ## General Info
 
@@ -17,13 +17,13 @@
 
 ## Summary
 
-This module acts as the documentation workflow and quality assurance core, managing the generation, validation, and export of the engine's public interface data. It handles the parsing of API metadata into a unified in-memory documentation catalog. This central catalog groups and organizes symbols across modules, maintaining their entry definitions to provide a single, consistent source of truth for the entire scripting framework.
+This module acts as the docs-general workflow and quality assurance core, managing the generation, validation, and export of the engine's public interface data. It handles the parsing of API metadata into a unified in-memory docs-general catalog. This central catalog groups and organizes symbols across modules, maintaining their entry definitions to provide a single, consistent source of truth for the entire scripting framework.
 
-To verify the accuracy and completeness of API references, the module supplies detailed reporting and validation tools. It cross-references the catalog against live runtime tables to identify undocumented, missing, or outdated symbols. Additionally, the quality analyzer scores individual documentation records based on detail, generating overall and per-module grades that highlight areas needing expansion or cleanup.
+To verify the accuracy and completeness of API references, the module supplies detailed reporting and validation tools. It cross-references the catalog against live runtime tables to identify undocumented, missing, or outdated symbols. Additionally, the quality analyzer scores individual docs-general records based on detail, generating overall and per-module grades that highlight areas needing expansion or cleanup.
 
-For external tool integration, the system includes export builders that transform documentation entries into files. These builders output rich autocomplete catalogs, hover details, and signature definitions formatted specifically for text editors and development extensions. This bridges the runtime's documentation directly with the editor workspace, improving the developer experience.
+For external tool integration, the system includes export builders that transform docs-general entries into files. These builders output rich autocomplete catalogs, hover details, and signature definitions formatted specifically for text editors and development extensions. This bridges the runtime's docs-general directly with the editor workspace, improving the developer experience.
 
-Additionally, a schema validation layer provides structured data checks. It connects documentation workflows with unified type rules, allowing runtime systems to validate tables against schemas and generate detailed reports. This ensures all configuration and API data structures remain correct, providing reliable validation errors when data checks fail.
+Additionally, a schema validation layer provides structured data checks. It connects docs-general workflows with unified type rules, allowing runtime systems to validate tables against schemas and generate detailed reports. This ensures all configuration and API data structures remain correct, providing reliable validation errors when data checks fail.
 
 ## Imports
 
@@ -33,16 +33,16 @@ Additionally, a schema validation layer provides structured data checks. It conn
 
 ### catalog.rs
 
-- Provides the in-memory documentation catalog used to collect and organize normalized API entries.
+- Provides the in-memory docs-general catalog used to collect and organize normalized API entries.
 - Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries.
-- Enables merge and dedup workflows for combining multiple documentation sources into one view.
+- Enables merge and dedup workflows for combining multiple docs-general sources into one view.
 - Delivers the central container that feeds both export generation and quality analysis stages.
 
 ### entry.rs
 
-- Provides normalized documentation record types that represent public API symbols and their metadata.
+- Provides normalized docs-general record types that represent public API symbols and their metadata.
 - Models parameter and return descriptors so downstream export and reporting stages share one data shape.
-- Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
+- Includes completeness checks that help quality tooling detect thin or malformed docs-general entries.
 - Delivers the common in-memory contract used across collection, transformation, and reporting flows.
 
 ### export.rs
@@ -51,18 +51,18 @@ Additionally, a schema validation layer provides structured data checks. It conn
 - Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers.
 - Supports compact or rich payload modes to match different integration and footprint constraints.
 - Writes single or bundled artifacts through stable serialization paths for predictable output handling.
-- Delivers the final packaging stage that turns in-memory documentation into distributable files.
+- Delivers the final packaging stage that turns in-memory docs-general into distributable files.
 
 ### mod.rs
 
-- Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages.
+- Provides the top-level docs-general module surface that connects collection, schema, export, and reporting stages.
 - Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point.
-- Delivers a coherent module boundary for transforming source metadata into validated documentation artifacts.
+- Delivers a coherent module boundary for transforming source metadata into validated docs-general artifacts.
 
 ### report.rs
 
-- Provides documentation quality evaluation logic that scores completeness and classifies report grades.
-- Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
+- Provides docs-general quality evaluation logic that scores completeness and classifies report grades.
+- Validates catalog integrity by tracking missing, phantom, and incomplete docs-general records.
 - Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
 - Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
 - Delivers consistent quality signals that guide doc cleanup and release readiness checks.
@@ -70,39 +70,39 @@ Additionally, a schema validation layer provides structured data checks. It conn
 ### schema.rs
 
 - Provides the schema bridge that exposes shared validation contracts used by the docs pipeline.
-- Connects documentation tooling with canonical field and type rules defined in the schema crate.
+- Connects docs-general tooling with canonical field and type rules defined in the schema crate.
 - Delivers one access point that keeps schema usage consistent across docs modules.
 
 ## Lua API Ref
 
 ### Functions
 
-- `lurek.docs.checkStaleness(catalog_ud, source_dir) -> table`: Lists source files in a directory for simple documentation staleness checks.
+- `lurek.docs.checkStaleness(catalog_ud, source_dir) -> table`: Lists source files in a directory for simple docs-general staleness checks.
 - `lurek.docs.coverage(catalog_ud?) -> integer`: Returns documented and live API counts for the full `lurek` table.
 - `lurek.docs.coverageModule(module_name, catalog_ud?) -> integer`: Returns documented and live API counts for one module.
 - `lurek.docs.describe(qualified_name, description) -> nil`: Adds or updates the description for one editable catalog entry.
-- `lurek.docs.exportAll(catalog_ud, output_dir) -> nil`: Exports all editor documentation artifacts for a catalog into a directory.
+- `lurek.docs.exportAll(catalog_ud, output_dir) -> nil`: Exports all editor docs-general artifacts for a catalog into a directory.
 - `lurek.docs.exportCheatsheet(catalog_ud, path) -> nil`: Writes a compact text cheatsheet from catalog entries.
 - `lurek.docs.exportCompletions(catalog_ud, path) -> nil`: Exports catalog completion metadata to a file.
 - `lurek.docs.exportHover(catalog_ud, path) -> nil`: Exports catalog hover metadata to a file.
 - `lurek.docs.exportMarkdown(catalog_ud, path) -> nil`: Writes a Markdown API reference from catalog entries.
 - `lurek.docs.exportSignatures(catalog_ud, path) -> nil`: Exports catalog signature metadata to a file.
-- `lurek.docs.getCatalog() -> LApiCatalog`: Returns the editable in-memory documentation catalog.
-- `lurek.docs.loadAll(directory) -> LApiCatalog`: Loads all TOML documentation catalog files from a directory and combines their entries.
-- `lurek.docs.loadToml(path) -> LApiCatalog`: Loads a TOML documentation catalog file and converts its entries into an API catalog.
-- `lurek.docs.quality(catalog_ud?) -> LQualityReport`: Computes documentation quality for a supplied catalog or the editable in-memory catalog.
-- `lurek.docs.qualityModule(module_name, catalog_ud?) -> LQualityReport`: Computes documentation quality for entries belonging to one module.
+- `lurek.docs.getCatalog() -> LApiCatalog`: Returns the editable in-memory docs-general catalog.
+- `lurek.docs.loadAll(directory) -> LApiCatalog`: Loads all TOML docs-general catalog files from a directory and combines their entries.
+- `lurek.docs.loadToml(path) -> LApiCatalog`: Loads a TOML docs-general catalog file and converts its entries into an API catalog.
+- `lurek.docs.quality(catalog_ud?) -> LQualityReport`: Computes docs-general quality for a supplied catalog or the editable in-memory catalog.
+- `lurek.docs.qualityModule(module_name, catalog_ud?) -> LQualityReport`: Computes docs-general quality for entries belonging to one module.
 - `lurek.docs.reflectLive(ns?) -> table`: Reflects live `lurek` module tables into plain name and type rows.
 - `lurek.docs.reflectTable(tbl, name?) -> table`: Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
-- `lurek.docs.resetCatalog() -> nil`: Clears the editable in-memory documentation catalog.
+- `lurek.docs.resetCatalog() -> nil`: Clears the editable in-memory docs-general catalog.
 - `lurek.docs.scan(opts?) -> LApiCatalog`: Reflects the live `lurek` table and builds a catalog of callable APIs.
 - `lurek.docs.scanModule(module_name) -> LApiCatalog`: Reflects one live `lurek.<module>` table and builds a catalog for that module.
 - `lurek.docs.schema(rules, name?) -> LSchema`: Builds a schema validator from Lua table rules.
 - `lurek.docs.schemaFromToml(toml_text) -> LSchema`: Builds a schema validator from TOML schema text.
 - `lurek.docs.setParamInfo(qualified_name, params) -> nil`: Replaces parameter metadata for one editable catalog entry.
 - `lurek.docs.setReturnInfo(qualified_name, returns) -> nil`: Replaces return-value metadata for one editable catalog entry.
-- `lurek.docs.validate(catalog_ud?) -> LValidationReport`: Compares a documentation catalog with the live reflected `lurek` API table.
-- `lurek.docs.validateModule(module_name, catalog_ud?) -> LValidationReport`: Compares one module's documentation catalog entries with the live reflected module table.
+- `lurek.docs.validate(catalog_ud?) -> LValidationReport`: Compares a docs-general catalog with the live reflected `lurek` API table.
+- `lurek.docs.validateModule(module_name, catalog_ud?) -> LValidationReport`: Compares one module's docs-general catalog entries with the live reflected module table.
 
 ### Callbacks
 
@@ -157,7 +157,7 @@ Additionally, a schema validation layer provides structured data checks. It conn
 
 #### LDocEntry Type
 
-- Provides Lua accessors for documentation entry metadata.
+- Provides Lua accessors for docs-general entry metadata.
 
 ##### Fields
 
@@ -168,20 +168,20 @@ Additionally, a schema validation layer provides structured data checks. It conn
 - `LDocEntry:getDeprecated() -> LuaValue`: Returns this entry's deprecation text when one was recorded.
 - `LDocEntry:getDescription() -> string`: Returns the prose description recorded for this entry.
 - `LDocEntry:getExample() -> LuaValue`: Returns this entry's example text when one was recorded.
-- `LDocEntry:getKind() -> string`: Returns the documentation kind recorded for this entry.
-- `LDocEntry:getModule() -> string`: Returns the module name associated with this documentation entry.
-- `LDocEntry:getName() -> string`: Returns the short API name stored by this documentation entry.
+- `LDocEntry:getKind() -> string`: Returns the docs-general kind recorded for this entry.
+- `LDocEntry:getModule() -> string`: Returns the module name associated with this docs-general entry.
+- `LDocEntry:getName() -> string`: Returns the short API name stored by this docs-general entry.
 - `LDocEntry:getParameters() -> table`: Returns parameter metadata recorded for this entry.
-- `LDocEntry:getQualifiedName() -> string`: Returns the full dotted API name stored by this documentation entry.
+- `LDocEntry:getQualifiedName() -> string`: Returns the full dotted API name stored by this docs-general entry.
 - `LDocEntry:getReturns() -> table`: Returns return-value metadata recorded for this entry.
-- `LDocEntry:getScore() -> number`: Returns the documentation quality score calculated for this entry.
+- `LDocEntry:getScore() -> number`: Returns the docs-general quality score calculated for this entry.
 - `LDocEntry:getSince() -> LuaValue`: Returns this entry's since-version text when one was recorded.
 - `LDocEntry:hasDescription() -> boolean`: Returns whether this entry has non-empty description text.
 - `LDocEntry:hasExample() -> boolean`: Returns whether this entry has example text.
 - `LDocEntry:hasParameters() -> boolean`: Returns whether this entry has parameter metadata.
 - `LDocEntry:hasReturnType() -> boolean`: Returns whether this entry has return-value metadata.
-- `LDocEntry:type() -> string`: Returns the Lua-visible type name for this documentation entry handle.
-- `LDocEntry:typeOf(name) -> boolean`: Returns whether this documentation entry handle matches a supported type name.
+- `LDocEntry:type() -> string`: Returns the Lua-visible type name for this docs-general entry handle.
+- `LDocEntry:typeOf(name) -> boolean`: Returns whether this docs-general entry handle matches a supported type name.
 
 #### LDocEntryGetParametersResult Type
 
@@ -242,7 +242,7 @@ Additionally, a schema validation layer provides structured data checks. It conn
 
 #### LQualityReport Type
 
-- Provides Lua accessors for documentation quality scoring results.
+- Provides Lua accessors for docs-general quality scoring results.
 
 ##### Fields
 
@@ -250,13 +250,13 @@ Additionally, a schema validation layer provides structured data checks. It conn
 
 ##### Methods
 
-- `LQualityReport:getBest(count?) -> LDocEntry[]`: Returns the highest-scoring documentation entries.
-- `LQualityReport:getByGrade(grade) -> LDocEntry[]`: Returns documentation entries whose calculated grade matches a grade string.
-- `LQualityReport:getGrade() -> string`: Returns the letter grade derived from the aggregate documentation score.
-- `LQualityReport:getModuleScores() -> table`: Returns per-module documentation quality scores.
-- `LQualityReport:getOverallScore() -> number`: Returns the aggregate documentation quality score.
+- `LQualityReport:getBest(count?) -> LDocEntry[]`: Returns the highest-scoring docs-general entries.
+- `LQualityReport:getByGrade(grade) -> LDocEntry[]`: Returns docs-general entries whose calculated grade matches a grade string.
+- `LQualityReport:getGrade() -> string`: Returns the letter grade derived from the aggregate docs-general score.
+- `LQualityReport:getModuleScores() -> table`: Returns per-module docs-general quality scores.
+- `LQualityReport:getOverallScore() -> number`: Returns the aggregate docs-general quality score.
 - `LQualityReport:getSummary() -> string`: Returns a human-readable summary of overall and per-module quality scores.
-- `LQualityReport:getWorst(count?) -> LDocEntry[]`: Returns the lowest-scoring documentation entries.
+- `LQualityReport:getWorst(count?) -> LDocEntry[]`: Returns the lowest-scoring docs-general entries.
 - `LQualityReport:toJSON() -> string`: Serializes this quality report to formatted JSON.
 - `LQualityReport:toTable() -> table`: Converts this quality report into a plain Lua table.
 - `LQualityReport:type() -> string`: Returns the Lua-visible type name for this quality report handle.
@@ -309,7 +309,7 @@ Additionally, a schema validation layer provides structured data checks. It conn
 
 #### LValidationReport Type
 
-- Provides Lua accessors for documentation validation results.
+- Provides Lua accessors for docs-general validation results.
 
 ##### Fields
 
@@ -317,11 +317,11 @@ Additionally, a schema validation layer provides structured data checks. It conn
 
 ##### Methods
 
-- `LValidationReport:getIncomplete() -> string[]`: Returns catalog APIs whose documentation was incomplete.
+- `LValidationReport:getIncomplete() -> string[]`: Returns catalog APIs whose docs-general was incomplete.
 - `LValidationReport:getMissing() -> string[]`: Returns live APIs that were missing from the checked catalog.
 - `LValidationReport:getPhantom() -> string[]`: Returns catalog APIs that were not present in the live Lua table.
 - `LValidationReport:getSummary() -> string`: Returns a compact text summary of missing, phantom, and incomplete counts.
-- `LValidationReport:incompleteCount() -> integer`: Returns the number of catalog APIs with incomplete documentation.
+- `LValidationReport:incompleteCount() -> integer`: Returns the number of catalog APIs with incomplete docs-general.
 - `LValidationReport:isValid() -> boolean`: Returns whether the validation report has no missing live APIs.
 - `LValidationReport:missingCount() -> integer`: Returns the number of live APIs missing from the catalog.
 - `LValidationReport:phantomCount() -> integer`: Returns the number of catalog APIs absent from live reflection.

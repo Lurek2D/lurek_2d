@@ -2,11 +2,15 @@
 
 ## Summary
 
-It provides the structural backbone for Lurek2D games by coordinating transitions between distinct game states, such as main menus, gameplay levels, and pause screens. The core `SceneStack` maintains the active scene hierarchy. Pushing a new scene pauses the underlying scene, while popping it resumes the previous one. The module supports overlay scenes for logic flow, but rendering now follows a strict engine-level rule: **only the top scene is render-active**.
+This module provides a robust game flow and state control subsystem built on a structured scene stack model. It organizes game progression across major runtime states, such as menus, levels, and popup screens, through standard push, pop, and switch operations. The stack supports overlay layouts that can run alongside underlying states, and utilizes prototype metatable factories to define and instantiate custom scene classes dynamically.
 
-Visual polish is heavily emphasized through built-in transition effects. When switching scenes, developers can apply animated transitions (including fade, wipe, slide, dissolve, pixelate, and iris effects) with configurable durations and mathematical easing curves (like bounce or back-overshoot). To ensure correct visual layering, the module features a highly optimized `DepthSorter`. This component adaptively selects the most efficient sorting strategy (unstable, stable, radix, or even multi-threaded rayon parallel sorting for 10k+ entries) based on the number of draw calls, ensuring that sprites and UI elements are rendered strictly front-to-back according to their assigned depth values.
+State navigation is governed by a predictable lifecycle callback pipeline. Pushed, popped, or transitioned scenes receive timely enter, leave, pause, resume, and ready callbacks in strict stack order, ensuring consistent state setups. To prevent startup stutters under heavy loads, developers can register deferred preload functions, lazy-loading heavy asset pools only when a scene is first pushed to the stack.
 
-The `scene` module also acts as a central registry and shared data bus. Scenes can be registered by string names, allowing for direct navigation (e.g., `popTo` a specific scene) or deferred loading via `pushPreloaded`, which is ideal for breaking up heavy asset initialization. Furthermore, the stack provides shared data slots, enabling scenes to pass state variables (like selected level indices or player choices) between each other without relying on fragile global variables. Game logic is driven by a deterministic callback lifecycle (`enter`, `leave`, `pause`, `resume`, `update`, `process`, `processPhysics`, `processLate`), and each callback family can be frozen/unfrozen per scene via `set*Enabled` APIs. Rendering remains separated into world-space (`render`) and screen-space (`renderUi`) passes, but both passes render only the current top scene. Exposed via the `lurek.scene.*` API, this module offers a complete solution for structuring complex, multi-state game flows.
+To bridge state changes smoothly, the module implements timed visual transition queues. Scene switches can trigger animated slides, fades, sweeps, or iris wipes with configurable easing curves. Easing parameters convert name descriptors into dynamic progress values, while a first-in-first-out transition queue schedules sequential animations automatically to support complex cinematic reveal loops.
+
+Frictions during transition and save-state routing are resolved using shared contexts and serialization engines. The module maintains a shared key-value data register that lets adjacent scenes pass parameters cleanly without global namespace sprawl. Additionally, it compiles the active scene stack and its shared context into a serializable snapshot table, enabling quick save and reload workflows.
+
+Finally, the system integrates a z-ordered painter-style depth sorter to handle visual overlays. The sorter collects raw draw callbacks or drawable game tables, sorting them in a back-to-front order before rendering. It supports both high-performance sorting and stable sorting configurations; enabling stable sorting prevents visual flickering for overlapping objects that share identical z-depths.
 
 ## Functions
 
@@ -915,6 +919,63 @@ end
 
 ---
 
+### `lurek.scene.newObjectContainer`
+
+Create a new scene object container for managing object lifecycle and draw ordering.
+
+```lua
+lurek.scene.newObjectContainer()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSceneObjectContainer](#lsceneobjectcontainer) | New container handle. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+
+    local player = {
+        layer = 1,
+        x = 10,
+        y = 20,
+        update = function(self, dt)
+            self.x = self.x + dt * 100
+        end,
+        draw = function(self)
+            print("Drawing player at x=" .. self.x .. ", y=" .. self.y)
+        end
+    }
+
+    local background = {
+        layer = 0,
+        draw = function(self)
+            print("Drawing background")
+        end
+    }
+
+    container:add(background)
+    container:add(player)
+
+    print("object_count=" .. container:getCount())
+
+    container:update(0.016)
+    container:draw()
+
+    container:remove(player)
+    print("after_remove=" .. container:getCount())
+
+    container:clear()
+    print("after_clear=" .. container:getCount())
+end
+```
+
+---
+
 ### `lurek.scene.newScene`
 
 Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
@@ -1778,6 +1839,7 @@ end
 ## Types
 
 - [LDepthSorter](#ldepthsorter)
+- [LSceneObjectContainer](#lsceneobjectcontainer)
 
 ## LDepthSorter
 
@@ -2070,5 +2132,159 @@ do
     print("is object = " .. tostring(ds:typeOf("Object")))
 end
 ```
+
+---
+
+## LSceneObjectContainer
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSceneObjectContainer:add`
+
+Add an object to the container.
+
+```lua
+LSceneObjectContainer:add(obj)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | any |  |
+
+---
+
+#### `LSceneObjectContainer:clear`
+
+Remove all objects from the container.
+
+```lua
+LSceneObjectContainer:clear()
+```
+
+---
+
+#### `LSceneObjectContainer:draw`
+
+Call draw() on all objects that have a draw method, sorted by layer.
+
+```lua
+LSceneObjectContainer:draw()
+```
+
+---
+
+#### `LSceneObjectContainer:getByLayer`
+
+Get all objects whose layer equals `n`.
+
+```lua
+LSceneObjectContainer:getByLayer(n)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `n` | any |  |
+
+---
+
+#### `LSceneObjectContainer:getCount`
+
+Get the number of objects currently in the container.
+
+```lua
+LSceneObjectContainer:getCount()
+```
+
+---
+
+#### `LSceneObjectContainer:getObjects`
+
+Get all objects as an array (layer-sorted).
+
+```lua
+LSceneObjectContainer:getObjects()
+```
+
+---
+
+#### `LSceneObjectContainer:has`
+
+Check whether an object is present in the container.
+
+```lua
+LSceneObjectContainer:has(obj)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | any |  |
+
+---
+
+#### `LSceneObjectContainer:remove`
+
+Remove an object from the container (identity comparison).
+
+```lua
+LSceneObjectContainer:remove(obj)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `obj` | any |  |
+
+---
+
+#### `LSceneObjectContainer:type`
+
+Get the type name of this userdata.
+
+```lua
+LSceneObjectContainer:type()
+```
+
+---
+
+#### `LSceneObjectContainer:typeOf`
+
+Check type by name.
+
+```lua
+LSceneObjectContainer:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+---
+
+#### `LSceneObjectContainer:update`
+
+Call update(dt) on all objects that have an update method.
+
+```lua
+LSceneObjectContainer:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | any |  |
 
 ---

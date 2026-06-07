@@ -2,11 +2,13 @@
 
 ## Summary
 
-It is engineered to handle a diverse array of network topologies and transport protocols, including high-performance ENet UDP transport, raw non-blocking TCP sockets, asynchronous HTTP requests, and persistent bidirectional WebSocket connections. The module is built around a dedicated background `NetworkRuntime` thread (powered by Tokio) that handles all blocking I/O, ensuring that socket latency and network operations never stall the primary game loop. The game thread communicates with this runtime via highly efficient MPSC request/response channels.
+This module represents the network communication and multiplayer transport subsystem, enabling real-time game coordination across host sessions. It wraps ENet bindings to handle low-level UDP sockets, connection lifecycles, and multi-channel packet delivery. By abstracting host behaviors into server, client, or combined host configurations, the engine manages connection slotting, disconnect sequences, and round-trip statistics seamlessly.
 
-At the heart of real-time multiplayer functionality is the `NetworkHost` structure, which wraps an ENet instance and manages robust connections across Server, Client, or Peer-to-Peer roles. It supports sophisticated traffic shaping, including per-peer bandwidth limits and reliable/unreliable channel separation, and provides a continuous stream of `NetworkEvent`s (connect, disconnect, receive) for Lua to consume. To address the complexities of modern internet connectivity, the module features a sophisticated `relay` system that utilizes NAT-punching probes and encoded `RelayTicket`s to establish peer connections even across restrictive networks. It also provides built-in LAN lobby discovery via UDP broadcasting.
+To isolate network latency from main-loop timings, the module operates on a background network thread. MPSC queues isolate message transfers, ensuring the game loop remains responsive during socket blockages. This thread drives non-blocking TCP connections and WebSocket pools, managing secure handshakes and frame exchanges. Additionally, ureq-backed HTTP agents handle synchronous queries and Server-Sent Event push streams in parallel.
 
-Beyond raw transport, the module implements high-level game synchronization features. The `net_sync` submodule provides tools for entity snapshot replication, utilizing linear dead-reckoning prediction and server-authoritative reconciliation to ensure smooth gameplay across varied latencies. Network messaging is powered by a custom `NetValue` wire-format, mirroring Lua's dynamic type system and utilizing compact MessagePack serialization. Auxiliary services, like the synchronous HTTP client (supporting all major verbs with headers and timeouts) and the WebSocket manager, provide vital hooks for integrating with REST APIs, authentication servers, and web-based services. This extensive networking suite is fully exposed to scripts via the `lurek.network.*` API, making it a cornerstone for connected Lurek2D games.
+Multiplayer states are synchronized using authoritative entity snapshots and client reconciliation. The system captures object positions, stepping simulations forward using linear dead-reckoning prediction between ticks. It resolves differences using configurable blending factors, keeping replicated entities aligned across clients. MessagePack serialization provides packed, zero-allocation sizing estimates before transport.
+
+Lobby discovery and NAT traversal facilitate session-matching workflows. Discovered games are advertised on local networks using UDP broadcasts, and the room registry handles creation, listing, and membership. Dynamic UDP hole punching and ticket generation support NAT traversal, allowing clients to establish direct connections through relay boundaries without manual port configurations or server-side setups.
 
 ## Functions
 
@@ -110,6 +112,111 @@ do
     local lobbies = lurek.network.discoverLobbies(200)
     print("lobbies=" .. #lobbies)
     print("first_name=" .. tostring(lobbies[1] and lobbies[1].name or "nil"))
+end
+```
+
+---
+
+### `lurek.network.getPlayerList`
+
+Returns list of peer IDs currently in a room.
+
+```lua
+lurek.network.getPlayerList(room_name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `room_name` | string | Room name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of peer ID integers. |
+
+**Example**
+
+```lua
+do
+    lurek.network.setReady("match_room", 1, true)
+    lurek.network.setReady("match_room", 3, true)
+    lurek.network.setReady("match_room", 2, false)
+    local players = lurek.network.getPlayerList("match_room")
+    print("player_list_count=" .. #players)
+    for i, pid in ipairs(players) do
+        print("player_" .. i .. "=" .. pid)
+    end
+end
+```
+
+---
+
+### `lurek.network.getRoom`
+
+Returns room metadata including host peer and player count.
+
+```lua
+lurek.network.getRoom(room_name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `room_name` | string | Room name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Room metadata table with fields: `name`, `host_peer`, `max_players`, `player_count`. |
+
+**Example**
+
+```lua
+do
+    lurek.network.setReady("session_room", 1, true)
+    lurek.network.setReady("session_room", 2, false)
+    local room = lurek.network.getRoom("session_room")
+    print("room_name=" .. room.name)
+    print("room_host=" .. room.host_peer)
+    print("room_players=" .. room.player_count)
+end
+```
+
+---
+
+### `lurek.network.isAllReady`
+
+Checks if all players in a room are ready. Requires at least 2 players.
+
+```lua
+lurek.network.isAllReady(room_name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `room_name` | string | Room name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if all players are ready and count >= 2. |
+
+**Example**
+
+```lua
+do
+    lurek.network.setReady("lobby_room", 1, true)
+    lurek.network.setReady("lobby_room", 2, true)
+    local all_ready = lurek.network.isAllReady("lobby_room")
+    print("all_ready=" .. tostring(all_ready))
 end
 ```
 
@@ -311,6 +418,55 @@ end
 
 ---
 
+### `lurek.network.newNetState`
+
+Creates a network state synchronization manager.
+
+```lua
+lurek.network.newNetState(host, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `host?` | [LNetworkHost](#lnetworkhost) | Network host for state transport, or nil for offline mode. |
+| `opts?` | table | Configuration table with `channel`, `authority`, `turnBased`, `maxDirtyKeys`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LNetworkState | New state manager handle. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
+    local state = lurek.network.newNetState(host, { authority = true })
+
+    state:set("player_x", 100)
+    state:set("player_y", 50)
+
+    local x = state:get("player_x")
+    print("player_x=" .. x)
+
+    state:onChange("player_x", function(value, old_value, peer_id)
+        print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+    end)
+
+    local all_state = state:getAll()
+    print("state_keys=" .. #all_state)
+
+    state:poll()
+
+    host:destroy()
+end
+```
+
+---
+
 ### `lurek.network.newRelayTicket`
 
 Creates an encoded relay ticket. This function is exposed to Lua scripts.
@@ -340,6 +496,46 @@ do
     local ticket = lurek.network.parseRelayTicket(token)
     print("ticket=" .. token)
     print("peer_id=" .. ticket.peer_id)
+end
+```
+
+---
+
+### `lurek.network.newRpc`
+
+Creates a network RPC manager attached to a host.
+
+```lua
+lurek.network.newRpc(host, channel, timeout_ms)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `host` | [LNetworkHost](#lnetworkhost) | Network host for RPC transport. |
+| `channel?` | number | Optional ENet channel for RPC traffic, defaults to 0. |
+| `timeout_ms?` | number | Optional timeout in milliseconds for pending calls, defaults to 30s. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LNetworkRpc | New RPC manager handle. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
+    local rpc = lurek.network.newRpc(host, 0, 30.0)
+
+    rpc:register("ping", function(peer_id)
+        return "pong"
+    end)
+
+    local responses = rpc:poll()
+    print("rpc_responses=" .. #responses)
 end
 ```
 
@@ -434,6 +630,44 @@ do
     local unpacked = lurek.network.unpack(packed)
     print("packed_bytes=" .. #packed)
     print("unpacked_name=" .. unpacked.name)
+end
+```
+
+---
+
+### `lurek.network.packSnapshot`
+
+Packs a sync snapshot table into a binary network message string.
+
+```lua
+lurek.network.packSnapshot(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Sync snapshot table. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Binary packed snapshot. |
+
+**Example**
+
+```lua
+do
+    local snapshot = {
+        type = "full",
+        tick = 100,
+        entities = {
+            { id = 1, tick = 100, x = 10.0, y = 20.0, vx = 1.0, vy = 0.0 }
+        }
+    }
+    local packed = lurek.network.packSnapshot(snapshot)
+    print("packed_snapshot_bytes=" .. #packed)
 end
 ```
 
@@ -569,6 +803,72 @@ do
     local result = lurek.network.reconcileSnapshot(pred, auth, 0.5)
     print("tick=" .. result.tick)
     print("x=" .. result.x)
+end
+```
+
+---
+
+### `lurek.network.reconcileWithPolicy`
+
+Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
+
+```lua
+lurek.network.reconcileWithPolicy(pred, auth, alpha, soft_threshold, hard_threshold)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `pred` | table | Predicted snapshot table. |
+| `auth` | table | Authoritative snapshot table. |
+| `alpha` | number | Blend factor. |
+| `soft_threshold` | number | Distance threshold below which no correction is made. |
+| `hard_threshold` | number | Distance threshold above which a hard snap occurs. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Reconciled snapshot table. |
+
+**Example**
+
+```lua
+do
+    local pred = { id = 1, tick = 10, x = 10.0, y = 0.0, vx = 0.0, vy = 0.0 }
+    local auth = { id = 1, tick = 10, x = 12.0, y = 0.0, vx = 1.0, vy = 2.0 }
+    local result = lurek.network.reconcileWithPolicy(pred, auth, 0.5, 0.2, 5.0)
+    print("reconciled_x=" .. result.x)
+end
+```
+
+---
+
+### `lurek.network.setReady`
+
+Marks a player as ready or not ready in a room.
+
+```lua
+lurek.network.setReady(room_name, peer_id, ready)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `room_name` | string | Room name. |
+| `peer_id` | number | Peer identifier. |
+| `ready` | boolean | True to mark as ready, false to unmark. |
+
+**Example**
+
+```lua
+do
+    lurek.network.setReady("game_room", 1, true)
+    lurek.network.setReady("game_room", 2, false)
+    print("set_player_1_ready=true")
+    print("set_player_2_ready=false")
 end
 ```
 
@@ -718,6 +1018,48 @@ end
 
 ---
 
+### `lurek.network.unpackSnapshot`
+
+Unpacks a binary network message string into a sync snapshot table.
+
+```lua
+lurek.network.unpackSnapshot(data)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `data` | string | Binary packed snapshot. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Unpacked sync snapshot table. |
+
+**Example**
+
+```lua
+do
+    local snapshot = {
+        type = "delta",
+        tick = 101,
+        base_tick = 100,
+        updates = {
+            { id = 1, tick = 101, x = 11.0, y = 20.0, vx = 1.0, vy = 0.0 }
+        },
+        removals = { 2 }
+    }
+    local packed = lurek.network.packSnapshot(snapshot)
+    local unpacked = lurek.network.unpackSnapshot(packed)
+    print("unpacked_type=" .. unpacked.type)
+    print("unpacked_tick=" .. unpacked.tick)
+end
+```
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
@@ -772,6 +1114,34 @@ do
     print("payload=" .. tostring(event and event.data or "nil"))
     client:destroy()
     server:destroy()
+end
+```
+
+---
+
+#### `LNetworkHost:clearLease`
+
+Removes a lease token immediately.
+
+```lua
+LNetworkHost:clearLease(token)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `token` | number | Reconnection token. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(4, 30)
+    host:clearLease(token)
+    print("cleared lease: " .. tostring(host:getLeasePeer(token) == nil))
+    host:destroy()
 end
 ```
 
@@ -1097,6 +1467,67 @@ end
 
 ---
 
+#### `LNetworkHost:getLeasePeer`
+
+Retrieves the peer ID associated with a valid, non-expired lease token.
+
+```lua
+LNetworkHost:getLeasePeer(token)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `token` | number | Reconnection token. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Original Peer ID or nil if invalid/expired. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(2, 30)
+    local peer_id = host:getLeasePeer(token)
+    print("lease peer: " .. tostring(peer_id))
+    host:destroy()
+end
+```
+
+---
+
+#### `LNetworkHost:getMetrics`
+
+Returns global network host metrics.
+
+```lua
+LNetworkHost:getMetrics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Metrics table with connected_peers, average_rtt, average_packet_loss, total_packets_sent, total_packets_lost. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local metrics = host:getMetrics()
+    print("host peers: " .. tostring(metrics.connected_peers))
+    host:destroy()
+end
+```
+
+---
+
 #### `LNetworkHost:getPeerAddress`
 
 Returns peer socket address when available.
@@ -1395,6 +1826,75 @@ end
 
 ---
 
+#### `LNetworkHost:registerLease`
+
+Registers a reconnection lease for the given peer ID.
+
+```lua
+LNetworkHost:registerLease(peer_id, timeout_secs)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `peer_id` | number | Peer ID. |
+| `timeout_secs` | number | Lease duration in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Reconnection token. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(1, 30)
+    print("registered lease token: " .. tostring(token))
+    host:destroy()
+end
+```
+
+---
+
+#### `LNetworkHost:renewLease`
+
+Renews an active lease token with a new duration.
+
+```lua
+LNetworkHost:renewLease(token, timeout_secs)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `token` | number | Reconnection token. |
+| `timeout_secs` | number | New lease duration in seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if successfully renewed, false otherwise. |
+
+**Example**
+
+```lua
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(3, 30)
+    local success = host:renewLease(token, 60)
+    print("lease renew: " .. tostring(success))
+    host:destroy()
+end
+```
+
+---
+
 #### `LNetworkHost:resetPeer`
 
 Resets a peer connection. This method is available to Lua scripts.
@@ -1611,6 +2111,142 @@ end
 
 ### Type Methods
 
+#### `LNetworkRuntime:authBootstrap`
+
+Start authenticating with a backend.
+
+```lua
+LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `auth_url` | string | Authentication URL. |
+| `payload` | string | JSON payload. |
+| `refresh_url` | string | Refresh URL. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Request id. |
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    local id = rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+    print("auth id: " .. tostring(id))
+    rt:shutdown()
+end
+```
+
+---
+
+#### `LNetworkRuntime:authCancel`
+
+Cancels active authentication.
+
+```lua
+LNetworkRuntime:authCancel()
+```
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    rt:authCancel()
+    rt:shutdown()
+end
+```
+
+---
+
+#### `LNetworkRuntime:getAuthStatus`
+
+Returns the current active authentication status.
+
+```lua
+LNetworkRuntime:getAuthStatus()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Current status ("unauthenticated", "authenticating", "authenticated", "failed"). |
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    local status = rt:getAuthStatus()
+    print("status: " .. tostring(status))
+    rt:shutdown()
+end
+```
+
+---
+
+#### `LNetworkRuntime:getAuthToken`
+
+Returns the current active access token.
+
+```lua
+LNetworkRuntime:getAuthToken()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string? | Access token or nil if unauthenticated. |
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    local token = rt:getAuthToken()
+    print("token: " .. tostring(token))
+    rt:shutdown()
+end
+```
+
+---
+
+#### `LNetworkRuntime:getMetrics`
+
+Returns network runtime metrics.
+
+```lua
+LNetworkRuntime:getMetrics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count. |
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    local metrics = rt:getMetrics()
+    print("queue size: " .. tostring(metrics.queue_size))
+    rt:shutdown()
+end
+```
+
+---
+
 #### `LNetworkRuntime:httpGet`
 
 Starts an HTTP GET request. This method is available to Lua scripts.
@@ -1781,6 +2417,66 @@ do
     -- httpStream streams response for SSE/chunked responses
     local response = net:httpStream("http://localhost:8080/stream")
     print("httpStream response: " .. tostring(response))
+end
+```
+
+---
+
+#### `LNetworkRuntime:matchmakeCancel`
+
+Cancel matchmaking request.
+
+```lua
+LNetworkRuntime:matchmakeCancel(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Request id. |
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    rt:matchmakeCancel(1)
+    rt:shutdown()
+end
+```
+
+---
+
+#### `LNetworkRuntime:matchmakeStart`
+
+Start matchmaking request.
+
+```lua
+LNetworkRuntime:matchmakeStart(url, payload)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `url` | string | Matchmaker URL. |
+| `payload` | string | JSON payload. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Request id. |
+
+**Example**
+
+```lua
+do
+    local rt = lurek.network.newRuntime()
+    local id = rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+    print("matchmake id: " .. tostring(id))
+    rt:shutdown()
 end
 ```
 

@@ -4,7 +4,7 @@ description: Create or update module in src, perform all needed steps to make it
 ---
 
 # GOAL
-- End-to-end creation of a new Rust engine module, including API bindings, documentation, and tests.
+- End-to-end creation of a new Rust engine module, including API bindings, docs-general, and tests.
 
 # INPUTS REQUIRED
 - Module name and group (Foundations, Core, Platform, Feature, Edge)
@@ -24,7 +24,7 @@ description: Create or update module in src, perform all needed steps to make it
 - `src/<module>/` code
 - `src/lua_api/<module>_api.rs`
 - `docs/specs/<module>.md`
-- Updated API documentation and tests
+- Updated API docs-general and tests
 
 # SUCCESS CRITERIA
 - `cargo test` exits with code 0 (100% test pass rate).
@@ -36,6 +36,6 @@ description: Create or update module in src, perform all needed steps to make it
 - Forgetting to register the module in the global `mod.rs`.
 
 # REFERENCES
-- skills: module-architecture, rust-coding, lua-rust-bridge, documentation
+- skills: module-architecture, rust-coding, lua-rust-bridge, docs-general
 - tools: python tools/validate/cag_validate.py, python tools/gen_all_docs.py, cargo test
 - agent: Developer

@@ -14,7 +14,7 @@ expected_agent: "Manager"
 - Any reported inconsistency.
 
 ## Steps
-1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
+1. Load [skill: lua-api-design](../skills/lua-api-design/SKILL.md) and [skill: docs-general](../skills/docs-general/SKILL.md) before acting.
 2. Read src/lua_api/, docs/specs/, docs/api/, and nearby examples or tests for the same surface.
 3. Focus on naming, return shape, callback style, defaults, and whether the API feels coherent with the rest of lurek.*.
 4. State the highest-value consistency fixes and any case where the inconsistency is intentional and documented.
@@ -35,5 +35,5 @@ expected_agent: "Manager"
 
 ## CAG Metadata
 Mode: agent
-Loads skills: lua-api-design, documentation
+Loads skills: lua-api-design, docs-general
 Inputs required: Target module or API slice., Compared APIs or prior art., Any reported inconsistency.
