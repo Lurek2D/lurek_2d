@@ -38,14 +38,14 @@ jobs:
       - name: Install MkDocs + Material
         run: pip install mkdocs mkdocs-material
 
+      - name: Generate Lua API module pages (Markdown)
+        run: python tools/docs/gen_module_pages.py
+
       - name: Build MkDocs site
         run: mkdocs build
 
       - name: Generate Lua API docs-general wrapper
         run: python tools/docs/gen_lua_api_html_wrapper.py
-
-      - name: Generate Lua API module pages (Markdown)
-        run: python tools/docs/gen_module_pages.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
