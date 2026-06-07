@@ -19,12 +19,19 @@ use lurek2d::render::DrawMode;
 mod province_map_pipeline_tests {
     use super::*;
 
+    fn assert_f32_slice_eq(actual: &[f32], expected: &[f32]) {
+        assert_eq!(actual.len(), expected.len());
+        for (i, (&a, &e)) in actual.iter().zip(expected.iter()).enumerate() {
+            assert!((a - e).abs() < 1e-5, "at index {}: expected {}, got {}", i, e, a);
+        }
+    }
+
     #[test]
     fn full_map_uniforms_cover_whole_map_and_default_to_tactical() {
         let u = ProvinceMapUniforms::full_map(2000, 900, 1920.0, 1080.0);
-        assert_eq!(u.viewport, [0.0, 0.0, 2000.0, 900.0]);
-        assert_eq!(u.map_size, [2000.0, 900.0]);
-        assert_eq!(u.screen_size, [1920.0, 1080.0]);
+        assert_f32_slice_eq(&u.viewport, &[0.0, 0.0, 2000.0, 900.0]);
+        assert_f32_slice_eq(&u.map_size, &[2000.0, 900.0]);
+        assert_f32_slice_eq(&u.screen_size, &[1920.0, 1080.0]);
         assert_eq!(u.zoom_mode, 1);
     }
 }
@@ -161,14 +168,15 @@ mod font_tests {
         let fonts = Font::load_all_sizes();
         let (ref font, _, _) = fonts[0];
         let w = font.text_width("AB");
-        assert_eq!(w, 16.0);
+        assert!((w - 16.0).abs() < 1e-5, "expected approximately 16.0, got {}", w);
     }
 
     #[test]
     fn text_width_empty_string() {
         let fonts = Font::load_all_sizes();
         let (ref font, _, _) = fonts[0];
-        assert_eq!(font.text_width(""), 0.0);
+        let w = font.text_width("");
+        assert!((w - 0.0).abs() < 1e-5, "expected approximately 0.0, got {}", w);
     }
 
     #[test]
@@ -183,7 +191,7 @@ mod font_tests {
         let fonts = Font::load_all_sizes();
         let (mut font, _, ch) = fonts.into_iter().next().unwrap();
         font.set_line_height(2.0);
-        assert_eq!(font.line_height(), ch as f32 * 2.0);
+        assert!((font.line_height() - ch as f32 * 2.0).abs() < 1e-5);
     }
 
     #[test]
@@ -254,7 +262,7 @@ mod image_effect_tests {
         pass.params.insert("strength".to_string(), 0.5);
         pass.params.insert("radius".to_string(), 3.0);
         assert_eq!(pass.params.len(), 2);
-        assert_eq!(pass.params["strength"], 0.5);
+        assert!((pass.params["strength"] - 0.5).abs() < 1e-5);
     }
 
     #[test]
@@ -277,8 +285,8 @@ mod mesh_tests {
         let m = Mesh::new(4, MeshDrawMode::Triangles);
         assert_eq!(m.vertex_count(), 4);
         let v = m.get_vertex(0).unwrap();
-        assert_eq!(v.r, 1.0);
-        assert_eq!(v.a, 1.0);
+        assert!((v.r - 1.0).abs() < 1e-5);
+        assert!((v.a - 1.0).abs() < 1e-5);
     }
 
     #[test]
@@ -297,7 +305,7 @@ mod mesh_tests {
         ];
         let m = Mesh::from_vertices(verts, MeshDrawMode::Fan);
         assert_eq!(m.vertex_count(), 2);
-        assert_eq!(m.get_vertex(0).unwrap().x, 10.0);
+        assert!((m.get_vertex(0).unwrap().x - 10.0).abs() < 1e-5);
     }
 
     #[test]
@@ -305,11 +313,11 @@ mod mesh_tests {
         let rows = [[1.0, 2.0, 0.5, 0.5, 0.1, 0.2, 0.3, 0.9]];
         let m = Mesh::from_vertex_rows(&rows, MeshDrawMode::Triangles);
         let v = m.get_vertex(0).unwrap();
-        assert_eq!(v.x, 1.0);
-        assert_eq!(v.y, 2.0);
-        assert_eq!(v.u, 0.5);
-        assert_eq!(v.b, 0.3);
-        assert_eq!(v.a, 0.9);
+        assert!((v.x - 1.0).abs() < 1e-5);
+        assert!((v.y - 2.0).abs() < 1e-5);
+        assert!((v.u - 0.5).abs() < 1e-5);
+        assert!((v.b - 0.3).abs() < 1e-5);
+        assert!((v.a - 0.9).abs() < 1e-5);
     }
 
     #[test]
@@ -323,7 +331,7 @@ mod mesh_tests {
                 ..Default::default()
             },
         );
-        assert_eq!(m.get_vertex(1).unwrap().x, 99.0);
+        assert!((m.get_vertex(1).unwrap().x - 99.0).abs() < 1e-5);
     }
 
     #[test]
@@ -385,12 +393,12 @@ mod mesh_tests {
     #[test]
     fn default_vertex_values() {
         let v = MeshVertex::default();
-        assert_eq!(v.x, 0.0);
-        assert_eq!(v.y, 0.0);
-        assert_eq!(v.r, 1.0);
-        assert_eq!(v.g, 1.0);
-        assert_eq!(v.b, 1.0);
-        assert_eq!(v.a, 1.0);
+        assert!((v.x - 0.0).abs() < 1e-5);
+        assert!((v.y - 0.0).abs() < 1e-5);
+        assert!((v.r - 1.0).abs() < 1e-5);
+        assert!((v.g - 1.0).abs() < 1e-5);
+        assert!((v.b - 1.0).abs() < 1e-5);
+        assert!((v.a - 1.0).abs() < 1e-5);
     }
 }
 
@@ -403,8 +411,11 @@ mod shape_tests {
     fn new_starts_empty_with_defaults() {
         let s = CompoundShape::new();
         assert_eq!(s.command_count(), 0);
-        assert_eq!(s.current_color, [1.0, 1.0, 1.0, 1.0]);
-        assert_eq!(s.current_line_width, 1.0);
+        assert!((s.current_color[0] - 1.0).abs() < 1e-5);
+        assert!((s.current_color[1] - 1.0).abs() < 1e-5);
+        assert!((s.current_color[2] - 1.0).abs() < 1e-5);
+        assert!((s.current_color[3] - 1.0).abs() < 1e-5);
+        assert!((s.current_line_width - 1.0).abs() < 1e-5);
     }
 
     #[test]
@@ -428,8 +439,11 @@ mod shape_tests {
         s.current_line_width = 3.0;
         s.clear();
         assert_eq!(s.command_count(), 0);
-        assert_eq!(s.current_color, [1.0, 1.0, 1.0, 1.0]);
-        assert_eq!(s.current_line_width, 1.0);
+        assert!((s.current_color[0] - 1.0).abs() < 1e-5);
+        assert!((s.current_color[1] - 1.0).abs() < 1e-5);
+        assert!((s.current_color[2] - 1.0).abs() < 1e-5);
+        assert!((s.current_color[3] - 1.0).abs() < 1e-5);
+        assert!((s.current_line_width - 1.0).abs() < 1e-5);
     }
 
     #[test]
@@ -512,7 +526,7 @@ mod renderer_tests {
         assert_eq!(span.g, 128);
         assert_eq!(span.b, 64);
         assert_eq!(span.a, 200);
-        assert_eq!(span.scale, 1.5);
+        assert!((span.scale - 1.5).abs() < 1e-5);
     }
 
     #[test]
@@ -524,9 +538,9 @@ mod renderer_tests {
     #[test]
     fn physics_debug_config_default_values() {
         let cfg = PhysicsDebugConfig::default();
-        assert_eq!(cfg.body_color[1], 1.0);
-        assert_eq!(cfg.static_color[0], 0.8);
-        assert_eq!(cfg.line_width, 1.0);
+        assert!((cfg.body_color[1] - 1.0).abs() < 1e-5);
+        assert!((cfg.static_color[0] - 0.8).abs() < 1e-5);
+        assert!((cfg.line_width - 1.0).abs() < 1e-5);
     }
 
     #[test]
@@ -552,7 +566,9 @@ mod postfx_pipeline_tests {
     fn params_to_uniform_empty_map_returns_zeros() {
         let params = HashMap::new();
         let u = params_to_uniform(&params);
-        assert_eq!(u, [0.0; 16]);
+        for &val in u.iter() {
+            assert!((val - 0.0).abs() < 1e-5);
+        }
     }
 
     #[test]
@@ -563,10 +579,10 @@ mod postfx_pipeline_tests {
         params.insert("radius".to_string(), 3.0);
         params.insert("time".to_string(), 42.0);
         let u = params_to_uniform(&params);
-        assert_eq!(u[0], 0.5);
-        assert_eq!(u[1], 1.2);
-        assert_eq!(u[2], 3.0);
-        assert_eq!(u[11], 42.0);
+        assert!((u[0] - 0.5).abs() < 1e-5);
+        assert!((u[1] - 1.2).abs() < 1e-5);
+        assert!((u[2] - 3.0).abs() < 1e-5);
+        assert!((u[11] - 42.0).abs() < 1e-5);
     }
 
     #[test]
@@ -574,7 +590,7 @@ mod postfx_pipeline_tests {
         let mut params = HashMap::new();
         params.insert("nonexistent".to_string(), 99.0);
         let u = params_to_uniform(&params);
-        assert_eq!(u[0], 0.0);
+        assert!((u[0] - 0.0).abs() < 1e-5);
     }
 
     #[test]
@@ -600,5 +616,135 @@ mod postfx_pipeline_tests {
         for (i, &val) in u.iter().enumerate() {
             assert_eq!(val, (i + 1) as f32, "slot {i} mismatch");
         }
+    }
+}
+
+mod gpu_renderer_tests {
+    use lurek2d::render::gpu_tess::{
+        normalize_scissor, color_write_mask_bits, color_write_mask_from_bits,
+        parse_filter_mode, uniform_bytes,
+    };
+    use lurek2d::render::gpu_pipeline::{
+        build_custom_color_shader_source, build_custom_texture_shader_source,
+        depth_stencil_state, GpuStencilMode,
+    };
+    use lurek2d::render::gpu_shaders::ShaderUniformKind;
+    use lurek2d::render::{Shader, UniformValue};
+    use lurek2d::render::renderer::{CompareMode, StencilAction};
+
+    const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
+@fragment
+pub(crate) fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+) -> @location(0) vec4<f32> {
+    return color + vec4<f32>(uv, 0.0, 0.0);
+}
+"#;
+
+    #[test]
+    fn test_phase02_live_scissor_normalization_clamps_to_target_bounds() {
+        assert_eq!(
+            normalize_scissor(Some((-1.2, 2.8, 20.1, 100.0)), 10, 8),
+            Some((0, 2, 10, 6))
+        );
+    }
+    #[test]
+    fn test_phase02_live_scissor_normalization_discards_fully_offscreen_rects() {
+        assert_eq!(normalize_scissor(Some((11.0, 0.0, 2.0, 2.0)), 10, 8), None);
+    }
+    #[test]
+    fn test_phase02_live_color_mask_bits_round_trip_selected_channels() {
+        let bits = color_write_mask_bits((true, false, true, false));
+        let mask = color_write_mask_from_bits(bits);
+        assert_eq!(mask, wgpu::ColorWrites::RED | wgpu::ColorWrites::BLUE);
+    }
+    #[test]
+    fn test_phase02_live_filter_mode_maps_linear_and_defaults_to_nearest() {
+        assert_eq!(parse_filter_mode("linear"), wgpu::FilterMode::Linear);
+        assert_eq!(parse_filter_mode("nearest"), wgpu::FilterMode::Nearest);
+        assert_eq!(parse_filter_mode("unsupported"), wgpu::FilterMode::Nearest);
+    }
+    #[test]
+    fn test_phase02_live_uniform_bytes_pack_bool_and_vec4_values() {
+        let bool_bytes = uniform_bytes(&UniformValue::Bool(true));
+        let vec4_bytes = uniform_bytes(&UniformValue::Vec4([1.0, 2.0, 3.0, 4.0]));
+        assert_eq!(u32::from_ne_bytes(bool_bytes[..4].try_into().unwrap()), 1);
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[0..4].try_into().unwrap()),
+            1.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[4..8].try_into().unwrap()),
+            2.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[8..12].try_into().unwrap()),
+            3.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[12..16].try_into().unwrap()),
+            4.0
+        );
+    }
+    #[test]
+    fn test_phase02_live_custom_color_shader_source_is_parseable_with_uniforms() {
+        let uniform_signature = vec![
+            ("tint".to_string(), ShaderUniformKind::Vec4),
+            ("time_scale".to_string(), ShaderUniformKind::Float),
+        ];
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_color_shader_source(&shader, &uniform_signature);
+        assert!(source.contains("@group(1) @binding(0) var<uniform> tint: vec4<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var<uniform> time_scale: f32;"));
+        assert!(source.contains("fn lurek_fragment_main"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped color shader source should remain valid WGSL");
+    }
+    #[test]
+    fn test_phase02_live_custom_texture_shader_source_is_parseable_with_uniforms() {
+        let uniform_signature = vec![("uv_scale".to_string(), ShaderUniformKind::Vec2)];
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_texture_shader_source(&shader, &uniform_signature);
+        assert!(source.contains("@group(1) @binding(0) var t_diffuse: texture_2d<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var s_diffuse: sampler;"));
+        assert!(source.contains("@group(2) @binding(0) var<uniform> uv_scale: vec2<f32>;"));
+        assert!(source.contains("textureSample(t_diffuse, s_diffuse, in.uv) * in.color"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped texture shader source should remain valid WGSL");
+    }
+    #[test]
+    fn test_phase02_live_stencil_write_depth_state_enables_writes_and_action() {
+        let state = depth_stencil_state(GpuStencilMode::Write(StencilAction::IncrementWrap));
+        assert_eq!(state.format, wgpu::TextureFormat::Depth24PlusStencil8);
+        assert_eq!(state.depth_compare, wgpu::CompareFunction::Always);
+        assert_eq!(state.stencil.read_mask, 0xFF);
+        assert_eq!(state.stencil.write_mask, 0xFF);
+        assert_eq!(state.stencil.front.compare, wgpu::CompareFunction::Always);
+        assert_eq!(
+            state.stencil.front.pass_op,
+            wgpu::StencilOperation::IncrementWrap
+        );
+        assert_eq!(
+            state.stencil.back.pass_op,
+            wgpu::StencilOperation::IncrementWrap
+        );
+    }
+    #[test]
+    fn test_phase02_live_stencil_test_depth_state_reads_without_writing() {
+        let state = depth_stencil_state(GpuStencilMode::Test(CompareMode::GreaterEqual));
+        assert_eq!(state.stencil.read_mask, 0xFF);
+        assert_eq!(state.stencil.write_mask, 0);
+        assert_eq!(
+            state.stencil.front.compare,
+            wgpu::CompareFunction::GreaterEqual
+        );
+        assert_eq!(state.stencil.front.pass_op, wgpu::StencilOperation::Keep);
+        assert_eq!(
+            state.stencil.back.compare,
+            wgpu::CompareFunction::GreaterEqual
+        );
     }
 }

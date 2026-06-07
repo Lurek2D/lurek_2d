@@ -1,10 +1,15 @@
-//! This file handles user-facing shader ingestion so custom WGSL fragments can plug into the renderer without exposing raw backend setup everywhere.
-//! Source code is parsed, constrained, and rewritten into the wrapper shape the engine expects for controlled pipeline generation.
-//! Fragment inputs are inspected so only supported coordinate and color channels enter the custom shader path.
-//! Uniform values are represented in typed form here, which keeps script-driven shader parameters explicit and serializable enough for per-frame upload.
-//! Ordered uniform iteration matters because GPU buffer layout must stay stable once a shader is accepted.
-//! Attribute markers are also normalized here so author-facing shader syntax can remain a little friendlier than raw internal conventions.
-//! The file is therefore the contract layer between flexible user shader text and a renderer that still needs predictable pipeline inputs.
+//! - Manages user-facing shader compilation and parsing of WGSL sources.
+//! - Wraps WGSL source code into normalized pipeline templates for the renderer.
+//! - Inspects fragment inputs to ensure only supported attributes are bound.
+//! - Represents shader uniform values in typed forms for per-frame upload.
+//! - Preserves the ordering of uniform variables to guarantee stable GPU buffer layouts.
+//! - Simplifies user shader attributes, mapping them to raw backend formats.
+//! - Translates dynamic Lua shader configurations into concrete wgpu pipeline steps.
+//! - Reports shader compilation errors and validation diagnostics to logs.
+//! - Defines uniform value mappings for arrays, float matrices, vectors, and scalars.
+//! - Validates uniform variables by matching types against compiled layout schemas.
+//! - Prevents runtime shader validation panic through strict preprocessing.
+//! - Keeps shader compilation metrics and uniform metadata key-indexed.
 
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;
@@ -12,7 +17,7 @@ use std::collections::HashMap;
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
 /// Fragment input location slot decoded from a user shader entry point.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ShaderFragmentInput {
+pub enum ShaderFragmentInput {
     /// `@location(0) vec4<f32>` RGBA color input.
     Color,
     /// `@location(1) vec2<f32>` UV coordinate input.
@@ -42,11 +47,11 @@ pub struct Shader {
     /// Original WGSL source as supplied by the game.
     pub source: String,
     /// Rewritten source with `@fragment` stripped for pipeline wrapper injection.
-    pub(crate) wrapper_source: String,
+    pub wrapper_source: String,
     /// Name of the fragment entry function in the rewritten source.
-    pub(crate) fragment_entry_name: String,
+    pub fragment_entry_name: String,
     /// Ordered list of input slots the fragment function accepts.
-    pub(crate) fragment_inputs: Vec<ShaderFragmentInput>,
+    pub fragment_inputs: Vec<ShaderFragmentInput>,
     /// Named uniform values set by `send()`; forwarded to the GPU each frame.
     pub uniforms: HashMap<String, UniformValue>,
 }

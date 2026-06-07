@@ -1,12 +1,12 @@
 {
-	// â”€â”€â”€ Editor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Editor ───────────────────────────────────────────────────────────
 	"editor.tabSize": 4,
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"editor.rulers": [120],
 	"editor.formatOnSave": false,
 
-	// â”€â”€â”€ Files â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Files ────────────────────────────────────────────────────────────
 	"files.trimTrailingWhitespace": true,
 	"files.insertFinalNewline": true,
 	"files.exclude": {
@@ -25,7 +25,7 @@
 		"extension/vscode/node_modules/**": true
 	},
 
-	// â”€â”€â”€ Rust Analyzer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Rust Analyzer ────────────────────────────────────────────────────
 	// Use clippy for inline diagnostics (matches Quality: Clippy task)
 	"rust-analyzer.check.command": "clippy",
 	"rust-analyzer.check.extraArgs": ["-D", "warnings"],
@@ -50,12 +50,12 @@
 	"rust-analyzer.hover.actions.enable": true,
 	"rust-analyzer.hover.actions.run.enable": true,
 	"rust-analyzer.hover.actions.debug.enable": true,
-	// Use rust-toolchain.toml pinned toolchain â€” do not override
+	// Use rust-toolchain.toml pinned toolchain — do not override
 	"rust-analyzer.rustfmt.extraArgs": [],
 	// Import granularity: group by module (idiomatic Rust style)
 	"rust-analyzer.imports.granularity.group": "module",
 
-	// â”€â”€â”€ Lua (sumneko.lua) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Lua (sumneko.lua) ────────────────────────────────────────────────
 	"Lua.runtime.version": "LuaJIT",
 	// Point the Lua LSP at the generated lurek.* API stubs and library stubs
 	"Lua.workspace.library": [
@@ -109,34 +109,34 @@
 	"editor.wordBasedSuggestions": "off",
 	"editor.snippetSuggestions": "top",
 
-	// â”€â”€â”€ TOML (tamasfe.even-better-toml) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── TOML (tamasfe.even-better-toml) ──────────────────────────────────
 	"evenBetterToml.schema.associations": {
 		"Cargo.toml": "https://json.schemastore.org/cargo.json"
 	},
 	"evenBetterToml.formatter.alignEntries": false,
 	"evenBetterToml.formatter.reorderKeys": false,
 
-	// â”€â”€â”€ Markdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Markdown ─────────────────────────────────────────────────────────
 	"markdownlint.config": {
 		"MD013": false,
 		"MD033": false
 	},
 
-	// â”€â”€â”€ Git â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Git ──────────────────────────────────────────────────────────────
 	"git.autofetch": true,
 
-	// â”€â”€â”€ Diff editor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Diff editor ──────────────────────────────────────────────────────
 	"diffEditor.maxComputationTime": 0,
 
-	// â”€â”€â”€ Terminal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Terminal ─────────────────────────────────────────────────────────
 	"terminal.integrated.cwd": "${workspaceFolder}",
 
-	// â”€â”€â”€ GitHub Copilot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── GitHub Copilot ───────────────────────────────────────────────────
 	"github.copilot.enable": {
 		"*": true,
-		"plaintext": false,
+		"plaintext": true,
 		"markdown": true,
-		"scminput": false,
+		"scminput": true,
 		"yaml": true,
 		"lua": true,
 		"cpp": true,
@@ -145,7 +145,7 @@
 		"skill": true
 	},
 	"github.copilot.renameSuggestions.triggerAutomatically": true,
-	// Next Edit Suggestions
+	// Next Edit Suggestions (Economy Mode: disabled)
 	"github.copilot.nextEditSuggestions.enabled": true,
 	"github.copilot.nextEditSuggestions.extendedRange": true,
 	"github.copilot.nextEditSuggestions.eagerness": "auto",
@@ -159,27 +159,27 @@
 	"github.copilot.chat.agent.currentEditorContext.enabled": true,
 	"github.copilot.chat.agent.largeToolResultsToDisk.enabled": true,
 	"github.copilot.chat.enableUserPreferences": true,
-	"github.copilot.chat.backgroundAgent.enabled": true,
-	"github.copilot.chat.summarizeAgentConversationHistory.enabled": true,
+	"github.copilot.chat.backgroundAgent.enabled": false,
+	"github.copilot.chat.summarizeAgentConversationHistory.enabled": false,
 	"github.copilot.chat.claudeAgent.enabled": true,
 	"github.copilot.chat.switchAgent.enabled": true,
-	"chat.agent.maxRequests": 100,
+	"chat.agent.maxRequests": 25,
 	"chat.autopilot.enabled": true,
 	"chat.edits2.enabled": true,
 	"chat.customAgentInSubagent.enabled": true,
 	"chat.useAgentSkills": true,
-	"chat.checkpoints.showFileChanges": true,
-	"chat.agentSessionProjection.enabled": true,
-	"chat.alternativeToolAction.enabled": true,
+	"chat.checkpoints.showFileChanges": false,
+	"chat.agentSessionProjection.enabled": false,
+	"chat.alternativeToolAction.enabled": false,
 	"chat.askQuestions.enabled": true,
 	"chat.tools.autoExpandFailures": true,
-	"chat.agent.thinking.collapsedTools": "withThinking",
-	"chat.agent.thinking.terminalTools": true,
+	"chat.agent.thinking.collapsedTools": "off",
+	"chat.agent.thinking.terminalTools": false,
 	"chat.thinking.style": "detailed",
 	"chat.includeReferencedInstructions": true,
 	"chat.editing.explainChanges.enabled": false,
 	"chat.viewProgressBadge.enabled": true,
-	"chat.experimental.useSkillAdherencePrompt": true,
+	"chat.experimental.useSkillAdherencePrompt": false,
 	// Context management
 	"github.copilot.chat.backgroundCompaction": true,
 	"github.copilot.chat.responsesApiContextManagement.enabled": true,
@@ -188,10 +188,10 @@
 	"github.copilot.chat.copilotMemory.enabled": true,
 	// Subagents
 	"github.copilot.chat.searchSubagent.enabled": true,
-	"github.copilot.chat.searchSubagent.useAgenticProxy": true,
-	"github.copilot.chat.searchSubagent.toolCallLimit": 8,
+	"github.copilot.chat.searchSubagent.useAgenticProxy": false,
+	"github.copilot.chat.searchSubagent.toolCallLimit": 4,
 	"github.copilot.chat.codesearch.agent.enabled": true,
-	"github.copilot.chat.codesearch.enabled": true,
+	"github.copilot.chat.codesearch.enabled": false,
 	"chat.subagents.allowInvocationsFromSubagents": true,
 	// Background agent / CLI
 	"github.copilot.chat.cli.planMode.enabled": true,
@@ -210,21 +210,21 @@
 		"default", "repos", "issues", "pull_requests",
 		"actions", "context"
 	],
-	// Anthropic / Claude
-	"github.copilot.chat.anthropic.thinking.budgetTokens": 8000,
-	"github.copilot.chat.anthropic.thinking.effort": "high",
-	"github.copilot.chat.responsesApiReasoningEffort": "high",
-	"github.copilot.chat.responsesApiReasoningSummary": "concise",
+	// Anthropic / Claude (Economy Mode: ultra-low budget/effort)
+	"github.copilot.chat.anthropic.thinking.budgetTokens": 512,
+	"github.copilot.chat.anthropic.thinking.effort": "low",
+	"github.copilot.chat.responsesApiReasoningEffort": "low",
+	"github.copilot.chat.responsesApiReasoningSummary": "off",
 	"github.copilot.chat.anthropic.useMessagesApi": true,
 	"github.copilot.chat.anthropic.toolSearchTool.enabled": false,
 	"github.copilot.chat.anthropic.contextEditing.mode": "clear-both",
 	"github.copilot.chat.anthropic.tools.websearch.enabled": true,
-	"github.copilot.chat.anthropic.tools.websearch.maxUses": 5,
+	"github.copilot.chat.anthropic.tools.websearch.maxUses": 2,
 	"github.copilot.chat.anthropic.cacheBreakpoints.lastTwoMessages": true,
-	// Workspace search
-	"github.copilot.chat.workspace.enableFullWorkspace": true,
-	"github.copilot.chat.workspace.enableCodeSearch": true,
-	"github.copilot.chat.workspace.enableEmbeddingsSearch": true,
+	// Workspace search (Economy Mode: disabled background indexing/search)
+	"github.copilot.chat.workspace.enableFullWorkspace": false,
+	"github.copilot.chat.workspace.enableCodeSearch": false,
+	"github.copilot.chat.workspace.enableEmbeddingsSearch": false,
 	// Instructions and prompts
 	"github.copilot.chat.codeGeneration.useInstructionFiles": true,
 	"github.copilot.chat.promptFileContextProvider.enabled": true,
@@ -233,22 +233,22 @@
 	"github.copilot.chat.customInstructionsInSystemMessage": true,
 	"github.copilot.chat.useProjectTemplates": true,
 	// Skills
-	"github.copilot.chat.getSearchViewResultsSkill.enabled": false,
-	"github.copilot.chat.installExtensionSkill.enabled": false,
-	"github.copilot.chat.projectSetupInfoSkill.enabled": false,
-	"github.copilot.chat.newWorkspaceCreation.enabled": false,
-	"github.copilot.chat.newWorkspace.useContext7": false,
-	"github.copilot.chat.setupTests.enabled": false,
-	// Image upload
-	"github.copilot.chat.imageUpload.enabled": true,
-	"github.copilot.chat.tools.viewImage.enabled": true,
+	"github.copilot.chat.getSearchViewResultsSkill.enabled": true,
+	"github.copilot.chat.installExtensionSkill.enabled": true,
+	"github.copilot.chat.projectSetupInfoSkill.enabled": true,
+	"github.copilot.chat.newWorkspaceCreation.enabled": true,
+	"github.copilot.chat.newWorkspace.useContext7": true,
+	"github.copilot.chat.setupTests.enabled": true,
+	// Image upload (Economy Mode: disabled)
+	"github.copilot.chat.imageUpload.enabled": false,
+	"github.copilot.chat.tools.viewImage.enabled": false,
 	// Skill tool + local index
 	"github.copilot.chat.skillTool.enabled": true,
 	"github.copilot.chat.localIndex.enabled": true,
 	// Misc
 	"workbench.browser.enableChatTools": true,
 
-	// â”€â”€â”€ Language associations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ─── Language associations ────────────────────────────────────────────
 	"files.associations": {
 		"*.lua": "lua",
 		"*.toml": "toml",
@@ -261,6 +261,12 @@
 	"markdown.preview.doubleClickToSwitchToEditor": true,
 	"files.saveConflictResolution": "overwriteFileOnDisk",
 	"github.copilot.chat.claudeAgent.allowAutoPermissions": true,
-	"markdown.preview.frontMatter": "codeBlock"
+	"markdown.preview.frontMatter": "codeBlock",
+	"github.copilot.chat.alternateGeminiModelFPrompt.enabled": true,
+	"chat.agentSkillsLocations": {
+		"~/.agents/skills": false,
+		"~/.copilot/skills": false,
+		"~/.claude/skills": false
+	}
 }
 

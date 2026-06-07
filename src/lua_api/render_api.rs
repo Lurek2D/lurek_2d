@@ -4898,7 +4898,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- loadObj --
     /// Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
     /// @param | path | string | File path to the .obj file relative to the game directory.
-    /// @return | LObjModel | The loaded OBJ model handle.
+    /// @return | LuaObjModel | The loaded OBJ model handle.
     #[cfg(feature = "obj-loader")]
     graphics.set(
         "loadObj",
@@ -4909,7 +4909,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             };
             let model = crate::render::obj_loader::ObjLoader::load_file(&full_path)
                 .map_err(|e| LuaError::RuntimeError(format!("loadObj '{}': {}", path, e)))?;
-            Ok(LObjModel {
+            Ok(LuaObjModel {
                 state: state_for_obj.clone(),
                 model,
                 sprite_cache: std::collections::HashMap::new(),
@@ -4921,7 +4921,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- loadModel --
     /// Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
     /// @param | path | string | File path to the model file relative to the game directory.
-    /// @return | LObjModel | The loaded model handle.
+    /// @return | LuaObjModel | The loaded model handle.
     #[cfg(feature = "obj-loader")]
     graphics.set(
         "loadModel",
@@ -4932,7 +4932,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             };
             let model = crate::render::obj_loader::ObjLoader::load_file(&full_path)
                 .map_err(|e| LuaError::RuntimeError(format!("loadModel '{}': {}", path, e)))?;
-            Ok(LObjModel {
+            Ok(LuaObjModel {
                 state: state_for_model.clone(),
                 model,
                 sprite_cache: std::collections::HashMap::new(),
@@ -4954,13 +4954,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 use crate::render::obj_loader::{ObjCamera, ObjModel};
 /// Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.
 #[cfg(feature = "obj-loader")]
-pub struct LObjModel {
+pub struct LuaObjModel {
     pub(crate) state: Rc<RefCell<SharedState>>,
     pub(crate) model: ObjModel,
     pub(crate) sprite_cache: std::collections::HashMap<String, TextureKey>,
 }
 #[cfg(feature = "obj-loader")]
-impl LuaUserData for LObjModel {
+impl LuaUserData for LuaObjModel {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getVertexCount --
         /// Returns the number of vertices in this OBJ model.

@@ -1,13 +1,20 @@
-//! This file handles the text asset side of rendering, from bundled bitmap atlases to dynamically rasterized font faces.
-//! It keeps glyph metrics, atlas placement, and lookup behavior close together so layout and draw code share one text model.
-//! Built-in faces give the engine predictable default text coverage even before user fonts are loaded from content.
-//! Runtime rasterization feeds custom font files into the same practical atlas-oriented representation used by bundled resources.
-//! Measurement helpers live here as well, which keeps wrapping, alignment, and cursor math consistent with the actual glyph data.
-//! Character lookup includes compatibility behavior for terminal-style symbols and legacy code ranges that show up in retro UI work.
-//! The file therefore sits between raw font assets and renderer-facing text quads, preserving both readability and runtime flexibility.
-//! In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
+//! - Handles text asset rendering from bundled bitmap atlases to dynamic font rasterization.
+//! - Packs glyph metrics, atlas placement, and UV offset maps under a unified interface.
+//! - Bundles Courier New regular and bold bitmap fonts at multiple point sizes for default text.
+//! - Uses fontdue to dynamically rasterize custom TTF/OTF font bytes at runtime.
+//! - Supports automatic word wrapping, alignment calculations, and pen advance metrics.
+//! - Extends character mapping to support retro drawing symbols and C1 box characters.
+//! - Bridges the gap between raw font files and ready-to-render texture quad geometry.
+//! - Provides text width measurement functions that are consistent with final GPU layouts.
+//! - Manages PNG atlas loading and parses texture cells with uniform dimensions.
+//! - Implements nearest-size matching for dynamic font scaling depending on pixel heights.
+//! - Tracks atlas dirty states to schedule GPU uploads when text structures change.
+//! - Isolates CPU-side text measurement logic from immediate graphics commands.
+//! - Integrates with slotmap resources via font keys to allow resource sharing across frames.
+//! - Standardizes font parameters including ascent, descent, and line height multiplier.
+//! - Facilitates debug text rendering and UI terminal overlays without custom asset setups.
 
-// Re-export the CPU-side font types from the font module for backward compatibility.
+/// Public re-exports of core font types for compatibility.
 pub use crate::font::GlyphMetrics as FontGlyphMetrics;
 pub use crate::font::{FontStyle, TextAlign, TextMetrics, WordWrap};
 
@@ -291,7 +298,7 @@ impl Font {
         })
     }
 
-    /// Loads all bundled regular fonts.
+    /// Retrieves all bundled regular bitmap fonts along with their cell dimensions, making them ready for GPU upload.
     pub fn load_all_sizes() -> Vec<(Font, u32, u32)> {
         let specs: [(u32, u32, &[u8]); NUM_SIZES] = [
             (9, 16, FONT_R_8),
@@ -305,7 +312,7 @@ impl Font {
         Self::load_specs(&specs)
     }
 
-    /// Loads all bundled bold fonts.
+    /// Retrieves all bundled bold bitmap fonts along with their cell dimensions, preparing them for rendering.
     pub fn load_all_bold() -> Vec<(Font, u32, u32)> {
         let specs: [(u32, u32, &[u8]); NUM_SIZES] = [
             (9, 16, FONT_B_8),

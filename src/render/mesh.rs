@@ -1,8 +1,13 @@
-//! This file defines reusable 2D mesh data for renderable geometry that is richer than the engine's immediate-mode shape commands.
-//! It keeps positions, UVs, colors, and topology choices together so imported content and generated geometry share one draw-ready format.
-//! Indexed and non-indexed paths are both represented, which gives callers flexibility without forcing a single authoring style.
-//! Triangulation helpers bridge higher-level topology choices into the triangles the backend ultimately needs.
-//! The file is therefore the geometry interchange layer between content generation, importers, and the renderer.
+//! - Defines reusable 2D mesh data for complex vector drawing and models.
+//! - Stores vertex coordinates, UV maps, colors, and topology information.
+//! - Bridges custom loaded model assets and procedural vector geometries.
+//! - Supports multiple drawing topologies including triangle lists and fans.
+//! - Retains optional diffuse texture keys mapping meshes to atlas resources.
+//! - Integrates slotmap mesh keys for persistent vertex cache storage on GPU.
+//! - Handles both indexed geometry index arrays and simple vertex lists.
+//! - Exposes helper methods to construct meshes from flat vector buffers.
+//! - Allows gameplay layers to specify color overlays and texture offsets.
+//! - Acts as the primary shape container passed to the renderer dispatch queue.
 
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;

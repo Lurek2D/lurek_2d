@@ -1,7 +1,9 @@
-//! This file stores deferred draw-layer callbacks that should execute in a chosen depth order later in the frame.
-//! Entries carry ordering intent without forcing immediate GPU work, which lets gameplay and UI enqueue layered drawing cheaply.
-//! Sorting is centralized here so every queued callback follows the same layering rule before the renderer flushes it.
-//! The result is a narrow scheduling buffer between scripting-time draw requests and render-time command emission.
+//! - Stores deferred draw-layer callbacks sorted by depth (Z-order).
+//! - Enables gameplay code and UI components to enqueue layered draw commands cheaply.
+//! - Postpones immediate GPU commands to allow sorting before final render dispatch.
+//! - Centralizes sorting rules to ensure consistent layering of all drawn elements.
+//! - Serves as a scheduling buffer between frame-level draw requests and GPU emission.
+//! - Provides methods to queue, flush, clear, and inspect pending callbacks.
 
 /// A pending draw-callback slot queued in `DrawLayer`.
 pub struct LayerEntry {

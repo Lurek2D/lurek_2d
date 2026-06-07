@@ -1,8 +1,13 @@
-//! This file stores reusable vector shape definitions as replayable command sequences instead of immediate one-off draw calls.
-//! A shape can therefore package many primitive strokes and fills into one named asset-like unit for later reuse.
-//! Drawing state such as color and line width travels with the sequence so replays preserve intended appearance.
-//! The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
-//! It acts as a small retained-mode layer inside the otherwise command-driven renderer.
+//! - Stores reusable vector shape definitions as replayable command sequences.
+//! - Packages stroke and fill operations into named assets for UI reuse.
+//! - Retains color and outline thickness attributes along with path commands.
+//! - Minimizes scene building overhead by avoiding dynamic shape rebuilding.
+//! - Implements retain-mode drawings inside the immediate-mode renderer.
+//! - Defines shape commands for circles, arcs, lines, rectangles, and polygons.
+//! - Handles rounded corners using bevels and adaptive curvature step counts.
+//! - Resolves complex shapes into lists of primitive rasterization items.
+//! - Restricts memory reallocations using flat vector coordinates.
+//! - Integrates with compound shape registries for simple frame-level lookups.
 
 use super::renderer::DrawMode;
 /// One drawing operation stored inside a `CompoundShape`.

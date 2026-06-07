@@ -1,6 +1,7 @@
-//! This file defines the lightweight canvas handle that describes an off-screen render target by size and identity.
-//! It is metadata for the renderer rather than a GPU allocation, so higher layers can reason about canvas ownership cheaply.
-//! The type exists to keep canvas-facing APIs stable while the renderer manages the actual backing resources elsewhere.
+//! - Canvas metadata representation for off-screen rendering targets.
+//! - Defines the dimensions (width and height) of paintable canvases.
+//! - Allows the game engine and Lua layers to query and specify render targets by ID.
+//! - Separates the logical target handle from actual backing GPU texture resources.
 
 use crate::log_msg;
 use crate::runtime::log_messages::CV01;

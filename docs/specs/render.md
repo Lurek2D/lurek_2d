@@ -203,7 +203,7 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
 - It acts as a small retained-mode layer inside the otherwise command-driven renderer.
 
-## Lua API Ref
+## Lua API Reference
 
 ### Functions
 
@@ -598,6 +598,201 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - Batched sprite renderer for efficiently drawing many copies of the same texture.
 
 ##### Fields
+- `LFont:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LImage Type
+
+- GPU-backed texture handle used for drawing images to screen.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LImage:getDimensions() -> number, number`: Returns both width and height of this image.
+- `LImage:getHeight() -> number`: Returns the height of this image in pixels.
+- `LImage:getId() -> number`: Returns the internal numeric handle ID for this image.
+- `LImage:getWidth() -> number`: Returns the width of this image in pixels.
+- `LImage:release() -> boolean`: Releases the GPU memory for this image. The handle becomes invalid after this call.
+- `LImage:type() -> string`: Returns the type name string for this image object.
+- `LImage:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LImageData Type
+
+- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LImageData:blit(source, dstX, dstY) -> nil`: Copies pixel data from another ImageData onto this one at the specified position.
+- `LImageData:diff(other) -> number`: Computes a numeric difference score between this image and another of the same size.
+- `LImageData:getHeight() -> number`: Returns the height of this image data in pixels.
+- `LImageData:getRegion(x, y, w, h) -> LImageData`: Extracts a rectangular sub-region as a new ImageData.
+- `LImageData:getWidth() -> number`: Returns the width of this image data in pixels.
+- `LImageData:mapPixels(callback) -> nil`: Iterates over every pixel and replaces its color with the return value of the callback.
+- `LImageData:resize(w, h) -> LImageData`: Creates a new ImageData resized to the given dimensions using bilinear sampling.
+- `LImageData:type() -> string`: Returns the type name of this object.
+- `LImageData:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LMesh Type
+
+- Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LMesh:getVertex(index) -> number, number, number, number, number, number, number, number`: Returns the data for a single vertex by 1-based index.
+- `LMesh:getVertexCount() -> number`: Returns the number of vertices in this mesh.
+- `LMesh:release() -> boolean`: Releases the mesh GPU resource and invalidates the handle.
+- `LMesh:setTexture(image?) -> nil`: Assigns or removes a texture for this mesh. Pass nil to clear the texture.
+- `LMesh:setVertex(index, data) -> nil`: Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
+- `LMesh:type() -> string`: Returns the type name string for this mesh object.
+- `LMesh:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LNineSlice Type
+
+- Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LNineSlice:getInsets() -> number, number, number, number`: Returns the border insets (top, right, bottom, left) that define the stretchable regions.
+- `LNineSlice:getTextureSize() -> number, number`: Returns the pixel dimensions of the underlying source texture.
+- `LNineSlice:type() -> string`: Returns the type name of this object.
+- `LNineSlice:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LObjModel Type
+
+- Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LObjModel:getFaceCount() -> number`: Returns the number of faces (triangles) in this OBJ model.
+- `LObjModel:getNormalCount() -> number`: Returns the number of vertex normals in this OBJ model.
+- `LObjModel:getUvCount() -> number`: Returns the number of UV texture coordinates in this OBJ model.
+- `LObjModel:getVertexCount() -> number`: Returns the number of vertices in this OBJ model.
+- `LObjModel:projectToMesh(camera, screenW, screenH) -> table`: Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
+- `LObjModel:renderToImage(width, height, rotation?) -> LImage`: Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
+
+#### LObjModelProjectToMeshResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `a` (`number`): A.
+- `b` (`number`): B.
+- `g` (`number`): G.
+- `r` (`number`): R.
+- `u` (`number`): U.
+- `v` (`number`): V.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LQuad Type
+
+- Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LQuad:getTextureDimensions() -> number, number`: Returns the full dimensions of the source texture this quad references.
+- `LQuad:getViewport() -> number, number, number, number`: Returns the quad's viewport rectangle within the source texture.
+- `LQuad:setViewport(x, y, w, h) -> nil`: Updates the quad's viewport rectangle.
+- `LQuad:type() -> string`: Returns the type name string for this quad object.
+- `LQuad:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LRenderGetStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `batched_draws` (`integer`): Batched draw count.
+- `canvas_switches` (`integer`): Canvas switch count.
+- `canvases` (`integer`): Active canvas count.
+- `cpu_render_ms` (`number`): CPU render time in milliseconds.
+- `drawcalls` (`integer`): Total draw call count.
+- `fonts` (`integer`): Loaded font count.
+- `gpu_draw_calls` (`integer`): GPU-side draw call count.
+- `shader_switches` (`integer`): Shader switch count.
+- `texture_memory` (`integer`): Texture memory in bytes.
+- `texture_switches` (`integer`): Texture switch count.
+- `textures` (`integer`): Loaded texture count.
+
+##### Methods
+
+- No documented methods.
+
+#### LShader Type
+
+- GPU shader program for custom rendering effects (post-processing, distortion, etc.).
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LShader:hasUniform(name) -> boolean`: Checks whether this shader declares a uniform with the given name.
+- `LShader:release() -> boolean`: Releases the shader resource. If active, the default shader is restored.
+- `LShader:send(name, value) -> nil`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+- `LShader:type() -> string`: Returns the type name string for this shader object.
+- `LShader:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LShape Type
+
+- Retained compound shape that accumulates drawing commands and can be rendered in one call.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LShape:arc(mode, x, y, r, astart, aend, segments?) -> nil`: Adds a filled or outlined arc command to the shape.
+- `LShape:circle(mode, x, y, r) -> nil`: Adds a filled or outlined circle command to the shape.
+- `LShape:clear() -> nil`: Removes all drawing commands from this shape, making it empty.
+- `LShape:draw(x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Renders the accumulated shape commands to the screen with optional transform.
+- `LShape:ellipse(mode, x, y, rx, ry) -> nil`: Adds an ellipse command to the shape.
+- `LShape:getCommandCount() -> number`: Returns the number of drawing commands accumulated in this shape.
+- `LShape:line(x1, y1, x2, y2) -> nil`: Adds a line segment command to the shape.
+- `LShape:polygon(mode, ...) -> nil`: Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
+- `LShape:polyline(...) -> nil`: Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
+- `LShape:rectangle(mode, x, y, w, h) -> nil`: Adds a rectangle command to the shape.
+- `LShape:roundedRectangle(mode, x, y, w, h, rx, ry?) -> nil`: Adds a rounded rectangle command to the shape.
+- `LShape:setColor(r, g, b, a?) -> nil`: Sets the drawing color for subsequent shape commands.
+- `LShape:setLineWidth(w) -> nil`: Sets the line width for subsequent line-mode shape commands.
+- `LShape:triangle(mode, x1, y1, x2, y2, x3, y3) -> nil`: Adds a triangle command to the shape.
+- `LShape:type() -> string`: Returns the type name string for this shape object.
+- `LShape:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LSpriteBatch Type
+
+- Batched sprite renderer for efficiently drawing many copies of the same texture.
+
+##### Fields
 
 - No documented fields.
 
@@ -610,3 +805,13 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `LSpriteBatch:release() -> boolean`: Releases the sprite batch resource.
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+## References
+
+- [wgpu API documentation](https://wgpu.rs)
+- [LuaJIT documentation](https://luajit.org)
+
+## Notes
+
+- All rendering operations are recorded into a command buffer and executed at the end of the frame.
+- Off-screen canvases must be cleared explicitly before use to avoid visual artifacts.

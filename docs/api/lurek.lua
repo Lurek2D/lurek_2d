@@ -24514,12 +24514,12 @@ lurek.render.line = function(...) end
 
 --- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 ---@param path string File path to the model file relative to the game directory.
----@return LObjModel The loaded model handle.
+---@return LuaObjModel The loaded model handle.
 lurek.render.loadModel = function(path) end
 
 --- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 ---@param path string File path to the .obj file relative to the game directory.
----@return LObjModel The loaded OBJ model handle.
+---@return LuaObjModel The loaded OBJ model handle.
 lurek.render.loadObj = function(path) end
 
 --- Creates a new off-screen render target with the given dimensions.

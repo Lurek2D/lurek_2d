@@ -1,15 +1,25 @@
-//! This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
-//! Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
-//! Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
-//! Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.
-//! Shared fullscreen geometry and ping-pong render targets keep multi-pass execution practical without rebuilding the whole frame graph each time.
-//! Disabled chains degrade gracefully to a plain copy, which keeps the backend simple when no visual treatment is active.
-//! Time, frame count, and resolution are injected centrally so effect authors can rely on common runtime signals.
-//! Pass order follows the configured chain order, making visual stacking explicit rather than implicit.
-//! The file therefore acts as the image-finishing stage of the renderer, where an already rendered frame can be polished or stylized.
-//! It is not about drawing scene geometry.
-//! It is about transforming one finished image into another with controlled GPU shader passes.
-//! In practice this is the renderer's color-grading room, distortion rack, and screen-material toolbox.
+//! - Manages post-processing effects and screen-space shader rendering passes.
+//! - Connects offscreen canvas textures to full-screen fragment shader operations.
+//! - Groups effect parameters, texture bindings, and samplers dynamically.
+//! - Renders multi-pass post-fx chains like blur, CRT warp, and color correction.
+//! - Coalesces texture swap passes, minimizing frame allocation overhead.
+//! - Configures pipeline states, blend modes, and write masks for screen passes.
+//! - Compiles and stores default fallback post-processing WGSL shaders.
+//! - Reuses texture descriptors, adapting resources to window dimensions.
+//! - Supports custom shader key registers to inject user filter passes.
+//! - Maps uniform variables dynamically using uniform value layout builders.
+//! - Handles color space correction, mapping outputs to the swapchain format.
+//! - Restricts memory reallocations by reusing double-buffered texture targets.
+//! - Enables retro pixelation, scanline overlays, and vignette shaders.
+//! - Integrates with slotmap resource keys for canvases and target textures.
+//! - Provides methods to build pipelines, dispatch passes, and update variables.
+//! - Coordinates drawing execution by mapping shader layouts to screen quads.
+//! - Minimizes state mutations by caching texture bind groups across passes.
+//! - Tracks pipeline invalidation state, rebuilding targets on screen resize.
+//! - Integrates with wgpu render passes to bind buffers and samplers.
+//! - Validates uniform variables, warning on mismatched parameter inputs.
+//! - Manages target depth views to allow stencil tests in screen shaders.
+//! - Feeds performance timing data to the engine trace collector.
 
 use std::collections::HashMap;
 /// Shared fullscreen-triangle vertex shader used by every built-in and custom post-fx effect.
@@ -544,13 +554,13 @@ enum PostFxSource<'a> {
 /// GPU post-processing pipeline owning compiled WGSL render pipelines and shared GPU resources.
 pub struct PostFxPipeline {
     /// Map from effect name to compiled wgpu render pipeline.
-    pub(crate) pipelines: HashMap<String, wgpu::RenderPipeline>,
+    pipelines: HashMap<String, wgpu::RenderPipeline>,
     /// Bilinear sampler reused by every pass.
-    pub(crate) sampler: wgpu::Sampler,
+    sampler: wgpu::Sampler,
     /// Uniform buffer holding the 16-float parameter payload for the current pass.
-    pub(crate) params_buf: wgpu::Buffer,
+    params_buf: wgpu::Buffer,
     /// Bind-group layout shared by all built-in and custom pipelines.
-    pub(crate) bind_group_layout: wgpu::BindGroupLayout,
+    bind_group_layout: wgpu::BindGroupLayout,
     /// Surface format used to match render-target attachments.
     surface_format: wgpu::TextureFormat,
     /// Cached dimensions and format for the internal ping-pong textures.

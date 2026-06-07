@@ -1,3 +1,5 @@
+< MANDATORY NEVER REMOVE BELOW TEXT FROM AGENT SYSTEM PROMPT>
+
 # Lurek2D System Prompt
 
 ## Communication
@@ -18,7 +20,6 @@
 - A-01 Runtime only. No editor. VS Code is optional.
 - A-02 Desktop only. No mobile, no WASM.
 - A-03 2D graphics only. No 3D.
-- A-04 No Steam/Epic SDKs.
 - B-01 LuaJIT main. Lua54 for fallback.
 - B-02 wgpu 22 only. No OpenGL.
 - B-03 60 FPS, 1080p on integrated GPU.

@@ -1401,12 +1401,12 @@ describe("render strict: batch text and OBJ APIs", function()
 
     -- @covers lurek.render.loadObj
     -- @covers lurek.render.loadModel
-    -- @covers LLObjModel:getFaceCount
-    -- @covers LLObjModel:getUvCount
-    -- @covers LLObjModel:getNormalCount
-    -- @covers LObjModel:getVertexCount
-    -- @covers LObjModel:renderToImage
-    -- @covers LLObjModel:projectToMesh
+    -- @covers LuaObjModel:getFaceCount
+    -- @covers LuaObjModel:getUvCount
+    -- @covers LuaObjModel:getNormalCount
+    -- @covers LuaObjModel:getVertexCount
+    -- @covers LuaObjModel:renderToImage
+    -- @covers LuaObjModel:projectToMesh
     it("loads OBJ model and exposes mesh projection methods", function()
         local obj = lurek.render.loadObj("content/games/retro/dungeon_crawler/assets/models/tank.obj")
         local mdl = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")

@@ -1,15 +1,21 @@
-//! This file defines the renderer command language that the rest of the engine speaks when it wants something visual to happen this frame.
-//! It gathers draw operations, state changes, auxiliary descriptors, and shared render-side enums into one canonical vocabulary.
-//! Shapes, text, textures, particles, Spine output, layered sorting, stencil control, and depth behavior all meet here as data instead of immediate API calls.
-//! The command set is broad because many subsystems submit visual intent before the GPU backend ever becomes involved.
-//! Shared enums for alignment, blend, compare, and draw styles live beside the commands so callers agree on meaning without backend coupling.
-//! Higher-level rendering helpers can build rich features simply by emitting combinations of these records.
-//! Post-processing descriptors and upload payloads also sit here because they are part of the same frame command stream.
-//! In practice this file is the renderer's grammar, not its execution engine.
-//! It explains what can be said to the backend, in what shapes, and with what supporting metadata.
-//! Keeping that grammar centralized is what lets Lua, gameplay systems, and specialized modules target one render pipeline.
-//! The file therefore stabilizes render intent across the codebase even as the backend implementation grows more complex.
-//! Almost every visible feature eventually passes through the types defined here.
+//! - Defines Lurek2D's front-end render command language and vocabulary.
+//! - Gathers draw operations, layout state structures, and drawing enum descriptors.
+//! - Encapsulates shapes, typography, sprites, and particle states into dynamic variants.
+//! - Declares enums for color blend modes, text alignment, and draw modes.
+//! - Specifies vertex colors, gradients, and custom outline thickness bounds.
+//! - Standardizes structures for texture repeat modes and sampler filters.
+//! - Integrates post-processing descriptors directly into the command queue.
+//! - Translates dynamic Lua drawing inputs into structured scene components.
+//! - Decouples gameplay modules from immediate wgpu graphics API operations.
+//! - Provides methods to construct circle segments and compute ellipse coordinates.
+//! - Standardizes font parameters including font size and bold weights.
+//! - Outlines layouts for particle render shapes, including circles, ellipses, and lines.
+//! - Manages mesh descriptors and texture coordinate maps uniformly.
+//! - Governs stencil buffer tests, compare options, and stencil action tags.
+//! - Handles scissor testing regions to mask sub-panels and GUI layout regions.
+//! - Facilitates offscreen canvas descriptors, keeping metadata clean.
+//! - Governs lighting inputs, containing parameters for position, color, and attenuation.
+//! - Serves as the central API vocabulary connecting all engine subsystems to rendering.
 
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;

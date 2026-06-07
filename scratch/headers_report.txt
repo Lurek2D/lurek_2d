@@ -1,0 +1,211 @@
+=== canvas.rs (21 LOC) ===
+ 1: //! This file defines the lightweight canvas handle that describes an off-screen render target by size and identity.
+ 2: //! It is metadata for the renderer rather than a GPU allocation, so higher layers can reason about canvas ownership cheaply.
+ 3: //! The type exists to keep canvas-facing APIs stable while the renderer manages the actual backing resources elsewhere.
+ 4: 
+
+=== decal_surface.rs (31 LOC) ===
+ 1: //! This file defines the persistent decal surface descriptor used when the engine needs a paintable texture space for marks and splats.
+ 2: //! It keeps only the durable dimensions and identity needed for later GPU allocation and reuse across frames.
+ 3: //! The descriptor stays intentionally small because the renderer owns the heavy texture lifecycle and attachment details.
+ 4: 
+ 5: /// Paint-target surface for persistent world decals; holds pixel dimensions only.
+
+=== draw_layer.rs (61 LOC) ===
+ 1: //! This file stores deferred draw-layer callbacks that should execute in a chosen depth order later in the frame.
+ 2: //! Entries carry ordering intent without forcing immediate GPU work, which lets gameplay and UI enqueue layered drawing cheaply.
+ 3: //! Sorting is centralized here so every queued callback follows the same layering rule before the renderer flushes it.
+ 4: //! The result is a narrow scheduling buffer between scripting-time draw requests and render-time command emission.
+ 5: 
+ 6: /// A pending draw-callback slot queued in `DrawLayer`.
+
+=== extracted_blocks.rs (686 LOC) ===
+ 1: //! This file implements procedural geometry generation for primitive shapes and standalone mathematical fallback routines.
+ 2: //! Tessellation algorithms dynamically calculate vertex coordinates for arcs, circles, and rounded rectangles during the frame build.
+ 3: //! Optimal triangle fan and strip layouts are computed here to minimize vertex duplication on curved paths.
+ 4: //! Abstract blending operations requested by Lua are translated into explicit wgpu state descriptors safely.
+ 5: //! Degenerate shapes fall back to empty paths or zero-area bounding boxes instead of crashing the geometry builder.
+ 6: //! These math routines remain isolated from the core renderer state so they can be tested and invoked independently.
+ 7: 
+ 8: /// Flat-shaded vertex with `position` and per-vertex `color`.
+
+=== font.rs (486 LOC) ===
+ 1: //! This file handles the text asset side of rendering, from bundled bitmap atlases to dynamically rasterized font faces.
+ 2: //! It keeps glyph metrics, atlas placement, and lookup behavior close together so layout and draw code share one text model.
+ 3: //! Built-in faces give the engine predictable default text coverage even before user fonts are loaded from content.
+ 4: //! Runtime rasterization feeds custom font files into the same practical atlas-oriented representation used by bundled resources.
+ 5: //! Measurement helpers live here as well, which keeps wrapping, alignment, and cursor math consistent with the actual glyph data.
+ 6: //! Character lookup includes compatibility behavior for terminal-style symbols and legacy code ranges that show up in retro UI work.
+ 7: //! The file therefore sits between raw font assets and renderer-facing text quads, preserving both readability and runtime flexibility.
+ 8: //! In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
+ 9: 
+10: // Re-export the CPU-side font types from the font module for backward compatibility.
+
+=== gpu_light.rs (53 LOC) ===
+ 1: //! This file enforces memory boundaries and layout constraints for the deferred shadow mapping pass.
+ 2: //! Maximum capacity limits on light sources are defined here to guarantee stable frame times without dynamic reallocation.
+ 3: //! The structures defined here instruct the renderer how to process additive light passes and resolve occlusion masks correctly.
+ 4: 
+ 5: /// Resolution of the shadow atlas in pixels.
+
+=== gpu_pipeline.rs (500 LOC) ===
+ 1: //! This file manages the creation and caching of wgpu render pipeline objects to prevent redundant state changes.
+ 2: //! Lookup behavior groups pipelines by geometry layout, blend mode, and stencil operation so matching draw calls can share execution state.
+ 3: //! Fallback behavior selects default built-in shaders when custom overrides are absent from the requested pipeline key.
+ 4: //! The caching mechanism ensures the engine pays the heavy pipeline compilation cost only once per unique rendering configuration.
+ 5: //! Stencil operations and color channel write masks are mapped directly to native wgpu descriptors.
+ 6: //! Blend states for alpha, additive, multiplicative, and replace modes are configured here.
+ 7: 
+
+=== gpu_renderer.rs (4285 LOC) ===
+ 1: //! This file drives the primary hardware-accelerated 2D rendering orchestrator from command ingestion to final screen presentation.
+ 2: //! The execution flow separates incoming geometry into distinct UI, game scene, and post-processing layers for correct transparency sorting.
+ 3: //! Draw calls are aggressively coalesced into large instanced batches whenever consecutive commands share pipelines and materials.
+ 4: //! Dynamic 1D shadow maps are generated using distance fields and compute shaders to resolve lighting occlusion natively on the hardware.
+ 5: //! State mutations are minimized by pre-sorting the command queue by required active bind groups before any draw dispatch occurs.
+ 6: //! Intermediate canvas render targets are managed here to resolve multisampled textures into their final tonemapped output.
+ 7: //! Degenerate rendering requests gracefully exit early, skipping empty passes and zero-sized geometry without raising errors.
+ 8: //! The orchestrator integrates directly with the Lua boundary, transforming script-driven RenderCommands into raw wgpu operations.
+ 9: //! Fallback shaders and placeholder textures are injected seamlessly if the requested assets are missing during the frame build.
+10: //! Memory mapping for surface readback is handled synchronously here to support screenshot captures without blocking the main update loop.
+11: 
+
+=== gpu_resources.rs (464 LOC) ===
+ 1: //! This file manages persistent GPU resource lifetimes, allocations, and buffer uploads.
+ 2: //! Dynamic capacity adjustment handles growing vertex/index buffers under heavy draw-call counts.
+ 3: //! Slotmap registration caches textures, fonts, and canvases synchronously for main render passes.
+ 4: //! Resource pruning runs automatically between frames to release dead texture and canvas resources.
+ 5: //! The allocator ensures buffers resize exponentially to minimize GPU-CPU synchronization stalls.
+ 6: //! Upload functions manage vertex and index buffers for static geometry to enable fast rendering.
+ 7: 
+
+=== gpu_shaders.rs (54 LOC) ===
+ 1: //! This file defines the types needed to represent compiled user WGSL shaders and their uniform value layouts.
+ 2: //! Uniform type tags drive buffer layout selection for custom shader bindings at draw time.
+ 3: //! Compiled pipeline variants are cached inside `GpuShader` to avoid re-creating pipelines on repeated use.
+ 4: //! The shader cache is owned by `GpuRenderer` and keyed by `ShaderKey` for zero-cost frame-level lookup.
+ 5: //! Missing or mis-typed uniforms trigger early errors rather than producing silent rendering glitches.
+
+=== gpu_shadows.rs (500 LOC) ===
+ 1: //! This file manages 1-D shadow map rendering, dynamic light lists, and compute dispatches.
+ 2: //! Occluder geometry is gathered and transformed into a dedicated GPU-side edge storage buffer.
+ 3: //! The shadow compute shader is dispatched per active light source to write distances into the atlas.
+ 4: //! Viewport-space visibility checks cull light regions before any rendering commands are queued.
+ 5: //! Compute pass layouts and bind groups are registered dynamically based on active lights.
+ 6: //! Edge collection filters occluders by light mask and culls geometry outside the radius bounds.
+ 7: 
+
+=== gpu_state.rs (101 LOC) ===
+ 1: //! This file provides a persistent hardware resource registry for static geometry, instance buffers, and active mesh metadata.
+ 2: //! Resource tracking spans across consecutive frames to prevent costly memory allocations during active gameplay.
+ 3: //! Active canvas render targets and material bindings are held here to guarantee their lifetimes match the rendering queue.
+ 4: //! Fallback behavior is handled by supplying empty default buffers when requested assets are still loading or unavailable.
+
+=== gpu_tess.rs (637 LOC) ===
+ 1: //! This file tessellates 2D vector shapes, text glyphs, and sprite quads into triangle lists.
+ 2: //! Stroke thick-lines are expanded to rectangular quads to solve native GPU line-width limitations.
+ 3: //! Circle and ellipse vertex counts adapt to screen-space radii to prevent excessive vertex pressure.
+ 4: //! Textured quad utilities pack position, UV coords, tints, and perspective-correct depth values.
+ 5: //! Coordinate transformation applies 3x3 matrices to map local coordinates to viewport space.
+ 6: //! Arc segment tessellation uses adaptive step sizes to preserve smooth visual curvature on hardware.
+ 7: 
+
+=== gpu_types.rs (204 LOC) ===
+ 1: //! This file defines the raw binary data structures used to upload vertex information to the GPU.
+ 2: //! Memory layouts are tightly packed using plain old data traits to ensure zero-cost transmission to the graphics API.
+ 3: //! Structs for flat-shaded, textured, and lit geometry encapsulate their required attributes like UV coordinates or shadow map depths.
+ 4: //! Command batching primitives are also defined here to standardize how individual draw calls are grouped before execution.
+ 5: //! It also holds dynamic instance transform vectors for instanced layout rendering passes.
+
+=== image_effect.rs (25 LOC) ===
+ 1: //! This file defines the compact descriptor for one post-processing step in a larger image-effect chain.
+ 2: //! Each record carries effect identity, parameter values, and enable state so pipelines can be configured without custom structs per effect.
+ 3: //! The type is the small control surface between high-level effect selection and the GPU post-processing backend.
+ 4: 
+
+=== mesh.rs (172 LOC) ===
+ 1: //! This file defines reusable 2D mesh data for renderable geometry that is richer than the engine's immediate-mode shape commands.
+ 2: //! It keeps positions, UVs, colors, and topology choices together so imported content and generated geometry share one draw-ready format.
+ 3: //! Indexed and non-indexed paths are both represented, which gives callers flexibility without forcing a single authoring style.
+ 4: //! Triangulation helpers bridge higher-level topology choices into the triangles the backend ultimately needs.
+ 5: //! The file is therefore the geometry interchange layer between content generation, importers, and the renderer.
+ 6: 
+
+=== mod.rs (56 LOC) ===
+ 1: //! This module provides the engine render stack, from command definitions and asset-side helpers to the concrete GPU backend.
+ 2: //! It covers shapes, text, textures, meshes, decals, canvas targets, shaders, and full-screen image effects under one rendering vocabulary.
+ 3: //! At the highest level it is the subsystem that turns frame-local draw intent into ordered, composited visual output.
+ 4: 
+ 5: /// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
+
+=== obj_loader.rs (852 LOC) ===
+ 1: //! This file imports Wavefront OBJ content and converts it into forms that make sense inside a 2D engine rather than a full 3D renderer.
+ 2: //! Parsed models can be projected into engine mesh data for GPU drawing or rasterized in software for previews and tooling images.
+ 3: //! Material parsing keeps basic diffuse color and texture references close to the mesh data so projected results still carry authored surface intent.
+ 4: //! Local vector and camera utilities are included here because the conversion work needs lightweight 3D math without spreading that concern across the engine.
+ 5: //! Face handling normalizes OBJ indexing quirks such as relative references and mixed attribute indices into stable internal structures.
+ 6: //! CPU rasterization gives the module a no-GPU path for thumbnails, validation, and other inspection-oriented workflows.
+ 7: //! Projection support is tuned for systems like the raycaster and globe views that want 3D-authored silhouettes in a 2D presentation model.
+ 8: //! The file is feature-gated because model import is useful but not fundamental to every game built on the runtime.
+ 9: //! In design terms this is an adapter from common 3D content formats to the engine's 2D rendering language.
+10: //! It preserves enough material and geometric structure to stay expressive without promising a general-purpose 3D pipeline.
+11: //! That boundary is the point: authored 3D assets may inform a scene, but final display still obeys the engine's 2D rendering architecture.
+12: //! This file is where that translation is made concrete and reusable.
+13: 
+
+=== postfx_pipeline.rs (958 LOC) ===
+ 1: //! This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
+ 2: //! Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
+ 3: //! Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
+ 4: //! Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.
+ 5: //! Shared fullscreen geometry and ping-pong render targets keep multi-pass execution practical without rebuilding the whole frame graph each time.
+ 6: //! Disabled chains degrade gracefully to a plain copy, which keeps the backend simple when no visual treatment is active.
+ 7: //! Time, frame count, and resolution are injected centrally so effect authors can rely on common runtime signals.
+ 8: //! Pass order follows the configured chain order, making visual stacking explicit rather than implicit.
+ 9: //! The file therefore acts as the image-finishing stage of the renderer, where an already rendered frame can be polished or stylized.
+10: //! It is not about drawing scene geometry.
+11: //! It is about transforming one finished image into another with controlled GPU shader passes.
+12: //! In practice this is the renderer's color-grading room, distortion rack, and screen-material toolbox.
+13: 
+
+=== province_map_pipeline.rs (245 LOC) ===
+ 1: //! This file provides the specialized GPU pipeline used to render province-map views that need more than generic sprite or mesh drawing.
+ 2: //! It binds province identity, borders, and distance-related data together so the shader can reason about map regions instead of plain pixels.
+ 3: //! Viewport mapping and mode-dependent behavior are configured here because that logic belongs to this strategic map presentation path.
+ 4: //! The pipeline is intentionally dedicated, reflecting that province rendering has distinct data needs from ordinary scene rendering.
+ 5: //! It turns map-analysis textures and buffers into a coherent fullscreen visual layer.
+ 6: //! This is the render-side home for province-specific screen synthesis.
+ 7: 
+
+=== renderer.rs (787 LOC) ===
+ 1: //! This file defines the renderer command language that the rest of the engine speaks when it wants something visual to happen this frame.
+ 2: //! It gathers draw operations, state changes, auxiliary descriptors, and shared render-side enums into one canonical vocabulary.
+ 3: //! Shapes, text, textures, particles, Spine output, layered sorting, stencil control, and depth behavior all meet here as data instead of immediate API calls.
+ 4: //! The command set is broad because many subsystems submit visual intent before the GPU backend ever becomes involved.
+ 5: //! Shared enums for alignment, blend, compare, and draw styles live beside the commands so callers agree on meaning without backend coupling.
+ 6: //! Higher-level rendering helpers can build rich features simply by emitting combinations of these records.
+ 7: //! Post-processing descriptors and upload payloads also sit here because they are part of the same frame command stream.
+ 8: //! In practice this file is the renderer's grammar, not its execution engine.
+ 9: //! It explains what can be said to the backend, in what shapes, and with what supporting metadata.
+10: //! Keeping that grammar centralized is what lets Lua, gameplay systems, and specialized modules target one render pipeline.
+11: //! The file therefore stabilizes render intent across the codebase even as the backend implementation grows more complex.
+12: //! Almost every visible feature eventually passes through the types defined here.
+13: 
+
+=== shader.rs (348 LOC) ===
+ 1: //! This file handles user-facing shader ingestion so custom WGSL fragments can plug into the renderer without exposing raw backend setup everywhere.
+ 2: //! Source code is parsed, constrained, and rewritten into the wrapper shape the engine expects for controlled pipeline generation.
+ 3: //! Fragment inputs are inspected so only supported coordinate and color channels enter the custom shader path.
+ 4: //! Uniform values are represented in typed form here, which keeps script-driven shader parameters explicit and serializable enough for per-frame upload.
+ 5: //! Ordered uniform iteration matters because GPU buffer layout must stay stable once a shader is accepted.
+ 6: //! Attribute markers are also normalized here so author-facing shader syntax can remain a little friendlier than raw internal conventions.
+ 7: //! The file is therefore the contract layer between flexible user shader text and a renderer that still needs predictable pipeline inputs.
+ 8: 
+
+=== shape.rs (114 LOC) ===
+ 1: //! This file stores reusable vector shape definitions as replayable command sequences instead of immediate one-off draw calls.
+ 2: //! A shape can therefore package many primitive strokes and fills into one named asset-like unit for later reuse.
+ 3: //! Drawing state such as color and line width travels with the sequence so replays preserve intended appearance.
+ 4: //! The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
+ 5: //! It acts as a small retained-mode layer inside the otherwise command-driven renderer.
+ 6: 

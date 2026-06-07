@@ -4,7 +4,7 @@ use super::SharedState;
 use crate::color::Color;
 use crate::image::ImageData;
 #[cfg(feature = "obj-loader")]
-use crate::lua_api::render_api::LObjModel;
+use crate::lua_api::render_api::LuaObjModel;
 use crate::lua_api::render_api::LuaImage;
 use crate::minimap::raycaster_overlay::extract_minimap;
 use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
@@ -1378,9 +1378,9 @@ impl LuaUserData for LuaRaycaster {
                     for pair in tbl.sequence_values::<LuaTable>() {
                         let mt = pair?;
                         let model_ud = mt.get::<_, LuaAnyUserData>("model")?;
-                        let model_ref = model_ud.borrow::<LObjModel>().map_err(|_| {
+                        let model_ref = model_ud.borrow::<LuaObjModel>().map_err(|_| {
                             LuaError::RuntimeError(
-                                "lurek.raycaster.buildSceneWithModels: models[].model must be LObjModel"
+                                "lurek.raycaster.buildSceneWithModels: models[].model must be LuaObjModel"
                                     .to_string(),
                             )
                         })?;

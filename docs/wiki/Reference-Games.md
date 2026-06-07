@@ -143,6 +143,7 @@
   - [bridge_builder](#bridgebuilder)
   - [card_game](#cardgame)
   - [deckbuilder](#deckbuilder)
+  - [dune2_like](#dune2like)
   - [eu2](#eu2)
   - [hex_strategy](#hexstrategy)
   - [logic_game](#logicgame)
@@ -1183,6 +1184,12 @@ Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opp
 Slay-the-Spire-style turn-based card battler. Build your deck as you climb three floors.
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [dune2_like](../tree/main/content/games/strategy/dune2_like)
+
+A compact RTS-style demo with a sand-swept desert map, spice harvesting, unit selection, and enemy raids.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
 
 ### [eu2](../tree/main/content/games/strategy/eu2)
 

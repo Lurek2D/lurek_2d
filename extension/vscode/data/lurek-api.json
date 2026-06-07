@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-02",
+  "generated": "2026-06-07",
   "modules": [
     {
       "name": "agent",
@@ -14521,7 +14521,7 @@
         {
           "name": "newTilesetRef",
           "fullPath": "lurek.mapblock.newTilesetRef",
-          "signature": "(id, name, tile_count, columns, tile_width, tile_height)",
+          "signature": "lurek.mapblock.newTilesetRef(id, name, tile_count, columns, tile_width, tile_height)",
           "description": "Create a tileset reference exposed by the lurek engine.",
           "parameters": [
             {
@@ -24286,8 +24286,8 @@
               "optional": false
             }
           ],
-          "returns": "LObjModel",
-          "returnType": "LObjModel",
+          "returns": "LuaObjModel",
+          "returnType": "LuaObjModel",
           "isMethod": false,
           "objectType": null
         },
@@ -24304,8 +24304,8 @@
               "optional": false
             }
           ],
-          "returns": "LObjModel",
-          "returnType": "LObjModel",
+          "returns": "LuaObjModel",
+          "returnType": "LuaObjModel",
           "isMethod": false,
           "objectType": null
         },
@@ -29571,7 +29571,7 @@
         {
           "name": "animateScale",
           "fullPath": "lurek.ui.animateScale",
-          "signature": "(idx, from_sx, from_sy, to_sx, to_sy, duration, [easing])",
+          "signature": "lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, [easing])",
           "description": "Animate widget scale from one value to another.",
           "parameters": [
             {
@@ -29667,7 +29667,7 @@
         {
           "name": "animateColor",
           "fullPath": "lurek.ui.animateColor",
-          "signature": "(idx, from_tbl, to_tbl, duration, [easing])",
+          "signature": "lurek.ui.animateColor(idx, from, to, duration, [easing])",
           "description": "Animate widget color tint from one RGBA value to another.",
           "parameters": [
             {
@@ -109878,7 +109878,7 @@
         {
           "name": "extractMinimap",
           "fullPath": "LRaycaster:extractMinimap",
-          "signature": "(player_x, player_y, player_angle, view_radius, cell_size)",
+          "signature": "LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize)",
           "description": "Extracts a pixel minimap image centered on the player from this raycaster map.",
           "parameters": [
             {

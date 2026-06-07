@@ -25,7 +25,7 @@ use crate::particle::ParticleSystem;
 use crate::province::registry::ProvinceRegistry;
 use crate::province::ProvinceProperties;
 use crate::raycaster::RaycasterScene;
-use crate::render::gpu_renderer::RenderStats;
+use crate::render::gpu_state::RenderStats;
 use crate::render::renderer::{BlendMode, DepthMode, RenderCommand, StencilMode, TextureData};
 use crate::render::{Canvas, CompoundShape, Mesh, Shader};
 use crate::runtime::mode::RuntimeMode;

@@ -1,3 +1,20 @@
+//! - Implements procedural geometry generation and tessellation for all primitive 2D shapes.
+//! - Generates vertex/index lists for arcs, circles, ellipses, sectors, and rounded rectangles.
+//! - Translates abstract blending modes requested by Lua into explicit wgpu descriptors.
+//! - Handles thick-line calculations by expanding stroke segments to screen-aligned quads.
+//! - Uses adaptive step sizes for curved geometry to trade off segment count vs visual smoothness.
+//! - Implements custom geometry builders for solid shapes, hollow wireframes, and textured sprites.
+//! - Calculates optimal layouts (like triangle lists and fans) to minimize GPU vertex buffer size.
+//! - Manages mathematical fallbacks for degenerate geometry, preventing panic on zero-sized shapes.
+//! - Retains isolated, pure functions for vector math, shape intersection, and coordinate projections.
+//! - Provides utility structures for color mapping, color interpolation, and vertex transformations.
+//! - Feeds geometry data into the graphics pipeline without maintaining direct GPU state handles.
+//! - Supports multiple shading layouts, including flat colors, texture mapping, and vertex gradients.
+//! - Standardizes font character drawing by converting glyph boxes into independent texture quads.
+//! - Enforces bounds-checking and coordinate constraints for scissor rectangles and viewports.
+//! - Serves as the math engine under the scene builder before final GPU buffer writeback.
+//! - Enables fast rendering of grid arrays, particle layouts, and complex vector drawing chains.
+
 /// Flat-shaded vertex with `position` and per-vertex `color`.
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
@@ -39,6 +56,7 @@ struct LightVertex {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
+/// Defines shadow caster edge representation for compute shader processing.
 struct ShadowEdgeGpu {
     ax: f32,
     ay: f32,
@@ -47,24 +65,32 @@ struct ShadowEdgeGpu {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Pod, Zeroable)]
+/// Defines uniform payload for a single shadow casting dispatch.
 struct ShadowComputeParams {
     inv_radius: f32,
     edge_count: u32,
     row: u32,
     _pad: u32,
 }
+/// Defines CPU-side configuration for preparing a shadow compute dispatch.
 struct ShadowDispatchInput<'a> {
     row: usize,
+    /// World X coordinate.
     light_x: f32,
+    /// World Y coordinate.
     light_y: f32,
+    /// Maximum shadow distance.
     light_radius: f32,
+    /// Occlusion filter bitmask.
     shadow_mask: u16,
+    /// Active occluders slice.
     occluders: &'a [&'a crate::light::occluder::Occluder],
 }
 /// Horizontal resolution of the 1-D shadow map texture.
 const SHADOW_MAP_RES: usize = 256;
 /// Maximum number of shadow-casting point lights rendered per frame.
 const MAX_SHADOW_LIGHTS: usize = 128;
+/// Size of a compute shader workgroup.
 const SHADOW_COMPUTE_WORKGROUP_SIZE: u32 = 64;
 /// Per-frame viewport uniform uploaded to the GPU: pixel dimensions, time, and camera transform.
 #[repr(C)]
@@ -84,17 +110,17 @@ struct ViewportUniform {
     view_col2: [f32; 4],
 }
 /// GPU texture with its bind group; held in slot-maps keyed by `TextureKey` / `CanvasKey` / `FontKey`.
-struct GpuTexture {
+pub struct GpuTexture {
     /// Owned wgpu texture object (prefixed with `_` to avoid unused-field warnings).
-    _texture: wgpu::Texture,
+    pub _texture: wgpu::Texture,
     /// View used as shader resource.
-    view: wgpu::TextureView,
+    pub view: wgpu::TextureView,
     /// Bind group pairing `view` with its sampler.
-    bind_group: wgpu::BindGroup,
+    pub bind_group: wgpu::BindGroup,
     /// Pixel width.
-    width: u32,
+    pub width: u32,
     /// Pixel height.
-    height: u32,
+    pub height: u32,
 }
 /// Combined depth/stencil render attachment; created lazily per render target.
 struct DepthStencilTarget {
@@ -255,27 +281,27 @@ enum ShaderUniformKind {
     Bool,
 }
 /// Compiled user WGSL shader with cached render pipelines for each `PipelineKey`.
-struct GpuShader {
+pub struct GpuShader {
     /// Original WGSL source string retained for hot-reload.
-    source: String,
+    pub source: String,
     /// Ordered list of uniform names and their value types.
-    uniform_signature: Vec<(String, ShaderUniformKind)>,
+    pub uniform_signature: Vec<(String, ShaderUniformKind)>,
     /// Per-uniform GPU buffers, one per `uniform_signature` entry.
-    uniform_buffers: Vec<wgpu::Buffer>,
+    pub uniform_buffers: Vec<wgpu::Buffer>,
     /// Bind group holding all uniform buffers for this shader.
-    uniform_bind_group: Option<wgpu::BindGroup>,
+    pub uniform_bind_group: Option<wgpu::BindGroup>,
     /// Compiled shader module for the flat-color vertex path.
-    color_module: wgpu::ShaderModule,
+    pub color_module: wgpu::ShaderModule,
     /// Compiled shader module for the textured vertex path.
-    texture_module: wgpu::ShaderModule,
+    pub texture_module: wgpu::ShaderModule,
     /// Pipeline layout for the color module.
-    color_layout: wgpu::PipelineLayout,
+    pub color_layout: wgpu::PipelineLayout,
     /// Pipeline layout for the texture module.
-    texture_layout: wgpu::PipelineLayout,
+    pub texture_layout: wgpu::PipelineLayout,
     /// Cached color render pipelines keyed by blend/stencil state.
-    color_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    pub color_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
     /// Cached texture render pipelines keyed by blend/stencil state.
-    texture_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    pub texture_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
 }
 /// Return the wgpu `BlendState` for a given `BlendMode`.
 fn blend_state_for(mode: BlendMode) -> wgpu::BlendState {
@@ -323,6 +349,7 @@ fn blend_state_for(mode: BlendMode) -> wgpu::BlendState {
         },
     }
 }
+/// Raw color WGSL source.
 const COLOR_SHADER: &str = r#"
 struct VertexInput {
     @location(0) position: vec2<f32>,
@@ -361,6 +388,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> { return in.color; }
 "#;
+/// Raw texture WGSL source.
 const TEXTURE_SHADER: &str = r#"
 struct VertexInput {
     @location(0) position: vec2<f32>,
@@ -406,6 +434,7 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     return textureSample(t_diffuse, s_diffuse, in.uv) * in.color;
 }
 "#;
+/// Raw light WGSL source.
 const LIGHT_SHADER: &str = r#"
 struct VertexInput {
     @location(0) position: vec2<f32>,
@@ -505,6 +534,7 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     return vec4<f32>(in.color.rgb * intensity * shadow, 1.0);
 }
 "#;
+/// Raw shadow compute WGSL source.
 const SHADOW_COMPUTE_SHADER: &str = r#"
 struct Edge {
     ax: f32,
@@ -552,47 +582,53 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3<u32>) {
 }
 "#;
 /// GPU state for the additive light accumulation and shadow-atlas composite pass.
-struct LightGpuState {
+pub struct LightGpuState {
     #[allow(dead_code)]
     /// Light accumulation RGBA texture (kept alive for its view).
-    accum_texture: wgpu::Texture,
+    pub accum_texture: wgpu::Texture,
     /// View bound as the accumulation render-attachment.
-    accum_view: wgpu::TextureView,
+    pub accum_view: wgpu::TextureView,
     /// Bind group for sampling the accumulation texture in the composite pass.
-    accum_bind_group: wgpu::BindGroup,
+    pub accum_bind_group: wgpu::BindGroup,
     /// Additive light blending pipeline.
-    additive_pipeline: wgpu::RenderPipeline,
+    pub additive_pipeline: wgpu::RenderPipeline,
     /// Final composite (multiply) pipeline.
-    composite_pipeline: wgpu::RenderPipeline,
+    pub composite_pipeline: wgpu::RenderPipeline,
     /// Vertex buffer for light quads.
-    vertex_buffer: wgpu::Buffer,
+    pub vertex_buffer: wgpu::Buffer,
     /// Index buffer for light quads.
-    index_buffer: wgpu::Buffer,
+    pub index_buffer: wgpu::Buffer,
     #[allow(dead_code)]
     /// Shadow atlas texture storing 1-D shadow maps for each light.
-    shadow_atlas_texture: wgpu::Texture,
+    pub shadow_atlas_texture: wgpu::Texture,
     #[allow(dead_code)]
     /// View of the shadow atlas (kept alive; bind group holds a reference).
-    shadow_atlas_view: wgpu::TextureView,
+    pub shadow_atlas_view: wgpu::TextureView,
     /// Bind group for sampling the shadow atlas in the light pass shader.
-    shadow_atlas_bind_group: wgpu::BindGroup,
-    shadow_compute_bind_group_layout: wgpu::BindGroupLayout,
-    shadow_compute_bind_group: wgpu::BindGroup,
-    shadow_compute_pipeline: wgpu::ComputePipeline,
-    shadow_edge_buffer: wgpu::Buffer,
-    shadow_edge_capacity: usize,
-    shadow_params_buffer: wgpu::Buffer,
+    pub shadow_atlas_bind_group: wgpu::BindGroup,
+    /// Layout required for the compute shadow dispatch.
+    pub shadow_compute_bind_group_layout: wgpu::BindGroupLayout,
+    /// Bind group supplying edges and params to the compute shader.
+    pub shadow_compute_bind_group: wgpu::BindGroup,
+    /// Compiled compute pipeline for shadow map generation.
+    pub shadow_compute_pipeline: wgpu::ComputePipeline,
+    /// Dynamic buffer containing active shadow caster edges.
+    pub shadow_edge_buffer: wgpu::Buffer,
+    /// Current allocated capacity in edges for the shadow buffer.
+    pub shadow_edge_capacity: usize,
+    /// Uniform buffer containing the shadow dispatch parameters.
+    pub shadow_params_buffer: wgpu::Buffer,
     /// Pixel width of accumulation and shadow-atlas textures.
-    width: u32,
+    pub width: u32,
     /// Pixel height of the accumulation texture.
-    height: u32,
+    pub height: u32,
 }
 /// Core wgpu renderer owning all GPU resources; used by the engine runtime each frame.
 pub struct GpuRenderer {
     /// wgpu logical device handle.
-    pub(crate) device: wgpu::Device,
+    device: wgpu::Device,
     /// wgpu submission queue.
-    pub(crate) queue: wgpu::Queue,
+    queue: wgpu::Queue,
     /// Bind-group layout for the viewport uniform buffer.
     viewport_bind_group_layout: wgpu::BindGroupLayout,
     /// Compiled WGSL module for the built-in flat-color shader.

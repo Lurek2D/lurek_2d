@@ -1,6 +1,8 @@
-//! This file defines the persistent decal surface descriptor used when the engine needs a paintable texture space for marks and splats.
-//! It keeps only the durable dimensions and identity needed for later GPU allocation and reuse across frames.
-//! The descriptor stays intentionally small because the renderer owns the heavy texture lifecycle and attachment details.
+//! - Paint-target surface descriptor for persistent world decals.
+//! - Stores the durable dimensions (width and height) needed for later GPU texture allocation.
+//! - Represents canvas-like surfaces where impact marks, splats, and footprints can be drawn.
+//! - Minimizes overhead by keeping texture resource allocations managed by the central renderer.
+//! - Ensures decal targets are cleanly referenced and reused across frame lifecycles.
 
 /// Paint-target surface for persistent world decals; holds pixel dimensions only.
 pub struct DecalSurface {

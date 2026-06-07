@@ -1,6 +1,9 @@
-//! This module provides the engine render stack, from command definitions and asset-side helpers to the concrete GPU backend.
-//! It covers shapes, text, textures, meshes, decals, canvas targets, shaders, and full-screen image effects under one rendering vocabulary.
-//! At the highest level it is the subsystem that turns frame-local draw intent into ordered, composited visual output.
+//! - Unified entry point for the Lurek2D render module stack.
+//! - Exposes submodules for canvases, decal surfaces, shapes, and font managers.
+//! - Declares modules for the GPU-accelerated renderer and compiled pipelines.
+//! - Unifies draw interfaces, shader uniform mappings, and shader passes.
+//! - Bridges game runtime draw buffers to backend hardware rendering layers.
+//! - Conforms to the binding rules, exposing all public rendering APIs.
 
 /// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
 pub mod canvas;
@@ -12,11 +15,14 @@ pub mod draw_layer;
 pub mod font;
 /// wgpu device/queue wrapper, pipeline creation, render-pass execution.
 pub mod gpu_renderer;
-pub(crate) mod gpu_types;
-pub(crate) mod gpu_state;
-pub(crate) mod gpu_pipeline;
-pub(crate) mod gpu_shaders;
-pub(crate) mod gpu_light;
+pub mod gpu_types;
+pub mod gpu_state;
+pub mod gpu_pipeline;
+pub mod gpu_shaders;
+pub mod gpu_light;
+pub mod gpu_tess;
+pub mod gpu_resources;
+pub mod gpu_shadows;
 /// Per-frame image post-processing effect descriptors and shader parameter blocks.
 pub mod image_effect;
 /// GPU-uploadable mesh geometry: vertices, indices, and draw modes.
@@ -45,7 +51,9 @@ pub use postfx_pipeline::PostFxPipeline;
 pub use province_map_pipeline::ProvinceMapPipeline;
 pub use renderer::{
     BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand, StencilAction,
-    StencilMode, TextAlign, TextureData,
+    TextAlign, TextureData,
 };
 pub use shader::{Shader, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};
+pub use gpu_pipeline::GpuStencilMode;
+pub use renderer::StencilMode;

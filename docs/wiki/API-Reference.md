@@ -6071,8 +6071,8 @@ lurek.render.isBold() -> boolean -- Returns true if the current default font sel
 lurek.render.isLayerVisible(name: string) -> boolean -- Returns whether a named rendering layer is currently visible.
 lurek.render.isWireframe() -> boolean -- Returns whether wireframe rendering is currently active.
 lurek.render.line(...: number) -- Draws a line between two points, or a polyline through multiple points.
-lurek.render.loadModel(path: string) -> LObjModel -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
-lurek.render.loadObj(path: string) -> LObjModel -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
+lurek.render.loadModel(path: string) -> LuaObjModel -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
+lurek.render.loadObj(path: string) -> LuaObjModel -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 lurek.render.newCanvas(width: integer, height: integer) -> LCanvas -- Creates a new off-screen render target with the given dimensions.
 lurek.render.newDepthSorter() -> LDepthSorter -- Registers the depth-sorted drawing helper constructor in the render module.
 lurek.render.newDrawLayer() -> LDrawLayer -- Creates a new z-ordered draw layer for sorting draw callbacks by depth.

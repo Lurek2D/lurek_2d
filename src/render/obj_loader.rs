@@ -1,15 +1,23 @@
-//! This file imports Wavefront OBJ content and converts it into forms that make sense inside a 2D engine rather than a full 3D renderer.
-//! Parsed models can be projected into engine mesh data for GPU drawing or rasterized in software for previews and tooling images.
-//! Material parsing keeps basic diffuse color and texture references close to the mesh data so projected results still carry authored surface intent.
-//! Local vector and camera utilities are included here because the conversion work needs lightweight 3D math without spreading that concern across the engine.
-//! Face handling normalizes OBJ indexing quirks such as relative references and mixed attribute indices into stable internal structures.
-//! CPU rasterization gives the module a no-GPU path for thumbnails, validation, and other inspection-oriented workflows.
-//! Projection support is tuned for systems like the raycaster and globe views that want 3D-authored silhouettes in a 2D presentation model.
-//! The file is feature-gated because model import is useful but not fundamental to every game built on the runtime.
-//! In design terms this is an adapter from common 3D content formats to the engine's 2D rendering language.
-//! It preserves enough material and geometric structure to stay expressive without promising a general-purpose 3D pipeline.
-//! That boundary is the point: authored 3D assets may inform a scene, but final display still obeys the engine's 2D rendering architecture.
-//! This file is where that translation is made concrete and reusable.
+//! - Parses Wavefront OBJ and material MTL files for rendering projection.
+//! - Translates 3D geometric models into 2D canvas coordinates and meshes.
+//! - Projects vertices from world positions to viewport dimensions using virtual cameras.
+//! - Performs linear diffuse color mapping and resolves texture path assets.
+//! - Implements software-based CPU rasterization for thumbnail rendering and validation.
+//! - Normalizes OBJ face indices, resolving negative and 1-based index offsets.
+//! - Filters back-facing triangles to optimize rendering output.
+//! - Computes face normals to calculate light reflection and shading coefficients.
+//! - Handles scaling, translation, and Y-rotation parameters for custom model instances.
+//! - Evaluates barycentric coordinate edge functions to resolve CPU depth values.
+//! - Builds sorting buffers to render projected triangles back-to-front.
+//! - Restricts memory reallocations by processing geometries in flat vector buffers.
+//! - Culls triangle vertices lying behind the camera near clip plane.
+//! - Bridges external 3D assets to the engine's 2D game layout pipelines.
+//! - Reads text files in memory, tokenizing components like vertices, UVs, and normals.
+//! - Maps texture coordinates, reversing Y components to align with wgpu samplers.
+//! - Supports MTL diffuse texture overlays mapped to renderer texture keys.
+//! - Separates mathematical vector operations from direct GPU state modifications.
+//! - Minimizes import overhead by caching parsed materials across instances.
+//! - Serves as an asset loader adapter, converting 3D files to 2D draw commands.
 
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
