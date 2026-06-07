@@ -29,7 +29,33 @@ pub fn pack(value: &NetValue) -> Result<Vec<u8>, NetworkError> {
     rmp_serde::to_vec(value).map_err(|e| NetworkError::Serialization(e.to_string()))
 }
 
+fn check_nesting(value: &NetValue, depth: usize) -> Result<(), NetworkError> {
+    if depth > 32 {
+        return Err(NetworkError::Serialization("maximum nesting depth exceeded".into()));
+    }
+    match value {
+        NetValue::Array(arr) => {
+            for val in arr {
+                check_nesting(val, depth + 1)?;
+            }
+        }
+        NetValue::Map(map) => {
+            for (_, val) in map {
+                check_nesting(val, depth + 1)?;
+            }
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
 /// Deserialize a `NetValue` from a MessagePack byte slice; returns `Serialization` error on failure.
 pub fn unpack(data: &[u8]) -> Result<NetValue, NetworkError> {
-    rmp_serde::from_slice(data).map_err(|e| NetworkError::Serialization(e.to_string()))
+    if data.len() > 65536 {
+        return Err(NetworkError::Serialization("payload too large".into()));
+    }
+    let val: NetValue = rmp_serde::from_slice(data).map_err(|e| NetworkError::Serialization(e.to_string()))?;
+    check_nesting(&val, 1)?;
+    Ok(val)
 }
+

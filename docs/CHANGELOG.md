@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+ - feat(network): implement MMO Support Sprint 3 Snapshot Authority Split & Reconcile Policy (`E4-T01`) — add `SyncSnapshot` enum (`Full`, `Delta`, `Corrective` variants) with NetValue serialization, distance-based reconciliation policy (soft correction threshold, alpha interpolation, hard snap), Lua bindings `packSnapshot`, `unpackSnapshot`, and `reconcileWithPolicy` under `lurek.network`, and comprehensive BDD integration test coverage.
+
  - test(terminal): migrate focus-layer scenario tests from Rust to Lua — remove `mouse_focus_respects_topmost_and_visibility_enabled_state` and `remove_widget_reindexes_focus_and_clears_when_focused_removed` from `tests/rust/unit/terminal_tests.rs` (Lua-reachable behavior, TST-01) and add equivalent `describe("focus behaviour: mouse and widget removal")` block in `tests/lua/unit/test_terminal_core_unit.lua` covering `LTerminal:mousepressed`/`getFocused` with z-order/visibility/enabled filtering, and `LTerminal:removeWidget` focus-clear semantics.
 
  - fix(sprite): split stacked `LAtlasPacker` example stubs in `content/examples/sprite.lua` into individual `--@api-stub: / do...end` blocks (E3 lint), add missing `LAtlasPacker:type` and `LAtlasPacker:typeOf` stubs (MISS), and extend `LAtlasPacker:getRegion`/`getDimensions` summary descriptions to meet minimum length in `src/lua_api/sprite_api.rs`; regenerated Lua API docs.

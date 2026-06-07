@@ -17666,6 +17666,84 @@
           "objectType": null
         },
         {
+          "name": "packSnapshot",
+          "fullPath": "lurek.network.packSnapshot",
+          "signature": "(snapshot)",
+          "description": "Packs a sync snapshot table into a binary network message string.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Sync snapshot table.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "unpackSnapshot",
+          "fullPath": "lurek.network.unpackSnapshot",
+          "signature": "(data)",
+          "description": "Unpacks a binary network message string into a sync snapshot table.",
+          "parameters": [
+            {
+              "name": "data",
+              "type": "string",
+              "description": "Binary packed snapshot.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "reconcileWithPolicy",
+          "fullPath": "lurek.network.reconcileWithPolicy",
+          "signature": "lurek.network.reconcileWithPolicy(pred, auth, alpha, soft_threshold, hard_threshold)",
+          "description": "Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.",
+          "parameters": [
+            {
+              "name": "pred",
+              "type": "table",
+              "description": "Predicted snapshot table.",
+              "optional": false
+            },
+            {
+              "name": "auth",
+              "type": "table",
+              "description": "Authoritative snapshot table.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Blend factor.",
+              "optional": false
+            },
+            {
+              "name": "soft_threshold",
+              "type": "number",
+              "description": "Distance threshold below which no correction is made.",
+              "optional": false
+            },
+            {
+              "name": "hard_threshold",
+              "type": "number",
+              "description": "Distance threshold above which a hard snap occurs.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "sseConnect",
           "fullPath": "lurek.network.sseConnect",
           "signature": "(url, callback)",
@@ -92304,6 +92382,101 @@
           "objectType": "LNetworkHost"
         },
         {
+          "name": "registerLease",
+          "fullPath": "LNetworkHost:registerLease",
+          "signature": "(peer_id, timeout_secs)",
+          "description": "Registers a reconnection lease for the given peer ID.",
+          "parameters": [
+            {
+              "name": "peer_id",
+              "type": "integer",
+              "description": "Peer ID.",
+              "optional": false
+            },
+            {
+              "name": "timeout_secs",
+              "type": "integer",
+              "description": "Lease duration in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNetworkHost"
+        },
+        {
+          "name": "getLeasePeer",
+          "fullPath": "LNetworkHost:getLeasePeer",
+          "signature": "(token)",
+          "description": "Retrieves the peer ID associated with a valid, non-expired lease token.",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "integer",
+              "description": "Reconnection token.",
+              "optional": false
+            }
+          ],
+          "returns": "integer?",
+          "returnType": "integer?",
+          "isMethod": true,
+          "objectType": "LNetworkHost"
+        },
+        {
+          "name": "renewLease",
+          "fullPath": "LNetworkHost:renewLease",
+          "signature": "(token, timeout_secs)",
+          "description": "Renews an active lease token with a new duration.",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "integer",
+              "description": "Reconnection token.",
+              "optional": false
+            },
+            {
+              "name": "timeout_secs",
+              "type": "integer",
+              "description": "New lease duration in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNetworkHost"
+        },
+        {
+          "name": "clearLease",
+          "fullPath": "LNetworkHost:clearLease",
+          "signature": "(token)",
+          "description": "Removes a lease token immediately.",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "integer",
+              "description": "Reconnection token.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNetworkHost"
+        },
+        {
+          "name": "getMetrics",
+          "fullPath": "LNetworkHost:getMetrics",
+          "signature": "()",
+          "description": "Returns global network host metrics.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LNetworkHost"
+        },
+        {
           "name": "type",
           "fullPath": "LNetworkHost:type",
           "signature": "()",
@@ -92471,6 +92644,111 @@
           "objectType": "LNetworkRuntime"
         },
         {
+          "name": "authBootstrap",
+          "fullPath": "LNetworkRuntime:authBootstrap",
+          "signature": "(auth_url, payload, refresh_url)",
+          "description": "Start authenticating with a backend.",
+          "parameters": [
+            {
+              "name": "auth_url",
+              "type": "string",
+              "description": "Authentication URL.",
+              "optional": false
+            },
+            {
+              "name": "payload",
+              "type": "string",
+              "description": "JSON payload.",
+              "optional": false
+            },
+            {
+              "name": "refresh_url",
+              "type": "string",
+              "description": "Refresh URL.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
+          "name": "getAuthToken",
+          "fullPath": "LNetworkRuntime:getAuthToken",
+          "signature": "()",
+          "description": "Returns the current active access token.",
+          "parameters": [],
+          "returns": "string?",
+          "returnType": "string?",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
+          "name": "getAuthStatus",
+          "fullPath": "LNetworkRuntime:getAuthStatus",
+          "signature": "()",
+          "description": "Returns the current active authentication status.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
+          "name": "authCancel",
+          "fullPath": "LNetworkRuntime:authCancel",
+          "signature": "()",
+          "description": "Cancels active authentication.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
+          "name": "matchmakeStart",
+          "fullPath": "LNetworkRuntime:matchmakeStart",
+          "signature": "(url, payload)",
+          "description": "Start matchmaking request.",
+          "parameters": [
+            {
+              "name": "url",
+              "type": "string",
+              "description": "Matchmaker URL.",
+              "optional": false
+            },
+            {
+              "name": "payload",
+              "type": "string",
+              "description": "JSON payload.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
+          "name": "matchmakeCancel",
+          "fullPath": "LNetworkRuntime:matchmakeCancel",
+          "signature": "(id)",
+          "description": "Cancel matchmaking request.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Request id.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
           "name": "tcpConnect",
           "fullPath": "LNetworkRuntime:tcpConnect",
           "signature": "(addr)",
@@ -92595,6 +92873,17 @@
           "fullPath": "LNetworkRuntime:poll",
           "signature": "()",
           "description": "Polls runtime responses for HTTP, TCP, and WebSocket operations.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LNetworkRuntime"
+        },
+        {
+          "name": "getMetrics",
+          "fullPath": "LNetworkRuntime:getMetrics",
+          "signature": "()",
+          "description": "Returns network runtime metrics.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",

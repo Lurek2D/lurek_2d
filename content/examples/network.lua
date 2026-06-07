@@ -697,3 +697,138 @@ do
     local response = net:httpStream("http://localhost:8080/stream")
     print("httpStream response: " .. tostring(response))
 end
+
+--@api-stub: LNetworkRuntime:authBootstrap
+do
+    local rt = lurek.network.newRuntime()
+    local id = rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+    print("auth id: " .. tostring(id))
+    rt:shutdown()
+end
+
+--@api-stub: LNetworkRuntime:getAuthToken
+do
+    local rt = lurek.network.newRuntime()
+    local token = rt:getAuthToken()
+    print("token: " .. tostring(token))
+    rt:shutdown()
+end
+
+--@api-stub: LNetworkRuntime:getAuthStatus
+do
+    local rt = lurek.network.newRuntime()
+    local status = rt:getAuthStatus()
+    print("status: " .. tostring(status))
+    rt:shutdown()
+end
+
+--@api-stub: LNetworkRuntime:authCancel
+do
+    local rt = lurek.network.newRuntime()
+    rt:authCancel()
+    rt:shutdown()
+end
+
+--@api-stub: LNetworkRuntime:matchmakeStart
+do
+    local rt = lurek.network.newRuntime()
+    local id = rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+    print("matchmake id: " .. tostring(id))
+    rt:shutdown()
+end
+
+--@api-stub: LNetworkRuntime:matchmakeCancel
+do
+    local rt = lurek.network.newRuntime()
+    rt:matchmakeCancel(1)
+    rt:shutdown()
+end
+
+--@api-stub: LNetworkHost:registerLease
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(1, 30)
+    print("registered lease token: " .. tostring(token))
+    host:destroy()
+end
+
+--@api-stub: LNetworkHost:getLeasePeer
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(2, 30)
+    local peer_id = host:getLeasePeer(token)
+    print("lease peer: " .. tostring(peer_id))
+    host:destroy()
+end
+
+--@api-stub: LNetworkHost:renewLease
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(3, 30)
+    local success = host:renewLease(token, 60)
+    print("lease renew: " .. tostring(success))
+    host:destroy()
+end
+
+--@api-stub: LNetworkHost:clearLease
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local token = host:registerLease(4, 30)
+    host:clearLease(token)
+    print("cleared lease: " .. tostring(host:getLeasePeer(token) == nil))
+    host:destroy()
+end
+
+--@api-stub: LNetworkHost:getMetrics
+do
+    local host = lurek.network.newHost({ port = 0 })
+    local metrics = host:getMetrics()
+    print("host peers: " .. tostring(metrics.connected_peers))
+    host:destroy()
+end
+
+--@api-stub: LNetworkRuntime:getMetrics
+do
+    local rt = lurek.network.newRuntime()
+    local metrics = rt:getMetrics()
+    print("queue size: " .. tostring(metrics.queue_size))
+    rt:shutdown()
+end
+
+--@api-stub: lurek.network.packSnapshot
+do
+    local snapshot = {
+        type = "full",
+        tick = 100,
+        entities = {
+            { id = 1, tick = 100, x = 10.0, y = 20.0, vx = 1.0, vy = 0.0 }
+        }
+    }
+    local packed = lurek.network.packSnapshot(snapshot)
+    print("packed_snapshot_bytes=" .. #packed)
+end
+
+--@api-stub: lurek.network.unpackSnapshot
+do
+    local snapshot = {
+        type = "delta",
+        tick = 101,
+        base_tick = 100,
+        updates = {
+            { id = 1, tick = 101, x = 11.0, y = 20.0, vx = 1.0, vy = 0.0 }
+        },
+        removals = { 2 }
+    }
+    local packed = lurek.network.packSnapshot(snapshot)
+    local unpacked = lurek.network.unpackSnapshot(packed)
+    print("unpacked_type=" .. unpacked.type)
+    print("unpacked_tick=" .. unpacked.tick)
+end
+
+--@api-stub: lurek.network.reconcileWithPolicy
+do
+    local pred = { id = 1, tick = 10, x = 10.0, y = 0.0, vx = 0.0, vy = 0.0 }
+    local auth = { id = 1, tick = 10, x = 12.0, y = 0.0, vx = 1.0, vy = 2.0 }
+    local result = lurek.network.reconcileWithPolicy(pred, auth, 0.5, 0.2, 5.0)
+    print("reconciled_x=" .. result.x)
+end

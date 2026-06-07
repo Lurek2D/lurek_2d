@@ -17775,6 +17775,10 @@ lurek.mods.newRegistry = function() end
 ---@param reliable? boolean Optional reliable flag, defaulting to true.
 function LNetworkHost:broadcast(channel_id, data, reliable) end
 
+--- Removes a lease token immediately.
+---@param token number Reconnection token.
+function LNetworkHost:clearLease(token) end
+
 --- Connects to a remote address. This method is available to Lua scripts.
 ---@param addr_str string Remote socket address.
 ---@param channels? number Optional channel count, defaulting to 1.
@@ -17823,6 +17827,15 @@ function LNetworkHost:getConnectedPeerCount() end
 ---@return number[] Array table of peer ids.
 function LNetworkHost:getConnectedPeerIds() end
 
+--- Retrieves the peer ID associated with a valid, non-expired lease token.
+---@param token number Reconnection token.
+---@return number? Original Peer ID or nil if invalid/expired.
+function LNetworkHost:getLeasePeer(token) end
+
+--- Returns global network host metrics.
+---@return table Metrics table with connected_peers, average_rtt, average_packet_loss, total_packets_sent, total_packets_lost.
+function LNetworkHost:getMetrics() end
+
 --- Returns peer socket address when available.
 ---@param peer_id number Peer id.
 ---@return string Peer address, or nil when unavailable.
@@ -17867,6 +17880,18 @@ function LNetworkHost:isServer() end
 ---@param peer_id number Peer id.
 function LNetworkHost:ping(peer_id) end
 
+--- Registers a reconnection lease for the given peer ID.
+---@param peer_id number Peer ID.
+---@param timeout_secs number Lease duration in seconds.
+---@return number Reconnection token.
+function LNetworkHost:registerLease(peer_id, timeout_secs) end
+
+--- Renews an active lease token with a new duration.
+---@param token number Reconnection token.
+---@param timeout_secs number New lease duration in seconds.
+---@return boolean True if successfully renewed, false otherwise.
+function LNetworkHost:renewLease(token, timeout_secs) end
+
 --- Resets a peer connection. This method is available to Lua scripts.
 ---@param peer_id number Peer id.
 function LNetworkHost:resetPeer(peer_id) end
@@ -17900,6 +17925,28 @@ function LNetworkHost:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNetworkHost:typeOf(name) end
 
+--- Start authenticating with a backend.
+---@param auth_url string Authentication URL.
+---@param payload string JSON payload.
+---@param refresh_url string Refresh URL.
+---@return number Request id.
+function LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) end
+
+--- Cancels active authentication.
+function LNetworkRuntime:authCancel() end
+
+--- Returns the current active authentication status.
+---@return string Current status ("unauthenticated", "authenticating", "authenticated", "failed").
+function LNetworkRuntime:getAuthStatus() end
+
+--- Returns the current active access token.
+---@return string? Access token or nil if unauthenticated.
+function LNetworkRuntime:getAuthToken() end
+
+--- Returns network runtime metrics.
+---@return table Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
+function LNetworkRuntime:getMetrics() end
+
 --- Starts an HTTP GET request. This method is available to Lua scripts.
 ---@param url string Request URL.
 ---@param headers? table Optional headers table.
@@ -17931,6 +17978,16 @@ function LNetworkRuntime:httpRequest(opts) end
 ---@param timeout_secs? number Optional timeout override in seconds.
 ---@return number Request id.
 function LNetworkRuntime:httpStream(url, headers, timeout_secs) end
+
+--- Cancel matchmaking request.
+---@param id number Request id.
+function LNetworkRuntime:matchmakeCancel(id) end
+
+--- Start matchmaking request.
+---@param url string Matchmaker URL.
+---@param payload string JSON payload.
+---@return number Request id.
+function LNetworkRuntime:matchmakeStart(url, payload) end
 
 --- Polls runtime responses for HTTP, TCP, and WebSocket operations.
 ---@return LNetworkRuntimePollResult Array table of response/event tables.
@@ -18065,6 +18122,11 @@ lurek.network.newServer = function(opts) end
 ---@return string Binary packed message.
 lurek.network.pack = function(value) end
 
+--- Packs a sync snapshot table into a binary network message string.
+---@param snapshot table Sync snapshot table.
+---@return string Binary packed snapshot.
+lurek.network.packSnapshot = function(snapshot) end
+
 --- Parses a relay punch probe payload.
 ---@param payload string Probe payload.
 ---@return string Parsed peer id, or nil when invalid.
@@ -18087,6 +18149,15 @@ lurek.network.predictLinear = function(snapshot, dt) end
 ---@param alpha number Blend factor.
 ---@return LNetworkReconcileSnapshotResult Reconciled snapshot table.
 lurek.network.reconcileSnapshot = function(pred, auth, alpha) end
+
+--- Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
+---@param pred table Predicted snapshot table.
+---@param auth table Authoritative snapshot table.
+---@param alpha number Blend factor.
+---@param soft_threshold number Distance threshold below which no correction is made.
+---@param hard_threshold number Distance threshold above which a hard snap occurs.
+---@return table Reconciled snapshot table.
+lurek.network.reconcileWithPolicy = function(pred, auth, alpha, soft_threshold, hard_threshold) end
 
 --- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 ---@param url string SSE endpoint URL.
@@ -18113,6 +18184,11 @@ lurek.network.syncEntity = function(host_ud, entity_id, data_tbl, channel, relia
 ---@param data string Binary packed message.
 ---@return LNetworkUnpackResult Unpacked Lua value.
 lurek.network.unpack = function(data) end
+
+--- Unpacks a binary network message string into a sync snapshot table.
+---@param data string Binary packed snapshot.
+---@return table Unpacked sync snapshot table.
+lurek.network.unpackSnapshot = function(data) end
 
 --- Clears active overlay effects and resets transient state.
 function LOverlay:clear() end

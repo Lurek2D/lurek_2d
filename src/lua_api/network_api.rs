@@ -162,6 +162,118 @@ fn netvalue_to_lua<'lua>(lua: &'lua Lua, val: &NetValue) -> LuaResult<LuaValue<'
         }
     }
 }
+/// Converts a Lua table to an EntitySnapshot.
+fn lua_to_entity_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::EntitySnapshot> {
+    Ok(crate::network::net_sync::EntitySnapshot {
+        id: t.get("id")?,
+        tick: t.get("tick")?,
+        x: t.get("x")?,
+        y: t.get("y")?,
+        vx: t.get("vx")?,
+        vy: t.get("vy")?,
+    })
+}
+/// Converts an EntitySnapshot to a Lua table.
+fn entity_snapshot_to_lua<'lua>(lua: &'lua Lua, es: &crate::network::net_sync::EntitySnapshot) -> LuaResult<LuaTable<'lua>> {
+    let t = lua.create_table()?;
+    t.set("id", es.id)?;
+    t.set("tick", es.tick)?;
+    t.set("x", es.x as f64)?;
+    t.set("y", es.y as f64)?;
+    t.set("vx", es.vx as f64)?;
+    t.set("vy", es.vy as f64)?;
+    Ok(t)
+}
+/// Converts a Lua table to a SyncSnapshot.
+fn lua_to_sync_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::SyncSnapshot> {
+    let type_str: String = t.get("type")?;
+    match type_str.as_str() {
+        "full" => {
+            let tick: u32 = t.get("tick")?;
+            let entities_table: LuaTable = t.get("entities")?;
+            let mut entities = Vec::new();
+            for ent in entities_table.sequence_values::<LuaTable>() {
+                entities.push(lua_to_entity_snapshot(&ent?)?);
+            }
+            Ok(crate::network::net_sync::SyncSnapshot::Full { tick, entities })
+        }
+        "delta" => {
+            let tick: u32 = t.get("tick")?;
+            let base_tick: u32 = t.get("base_tick")?;
+            let updates_table: LuaTable = t.get("updates")?;
+            let mut updates = Vec::new();
+            for ent in updates_table.sequence_values::<LuaTable>() {
+                updates.push(lua_to_entity_snapshot(&ent?)?);
+            }
+            let removals_table: LuaTable = t.get("removals")?;
+            let mut removals = Vec::new();
+            for id in removals_table.sequence_values::<u32>() {
+                removals.push(id?);
+            }
+            Ok(crate::network::net_sync::SyncSnapshot::Delta {
+                tick,
+                base_tick,
+                updates,
+                removals,
+            })
+        }
+        "corrective" => {
+            let tick: u32 = t.get("tick")?;
+            let entities_table: LuaTable = t.get("entities")?;
+            let mut entities = Vec::new();
+            for ent in entities_table.sequence_values::<LuaTable>() {
+                entities.push(lua_to_entity_snapshot(&ent?)?);
+            }
+            Ok(crate::network::net_sync::SyncSnapshot::Corrective { tick, entities })
+        }
+        _ => Err(LuaError::RuntimeError(format!("unknown snapshot type: {type_str}"))),
+    }
+}
+/// Converts a SyncSnapshot to a Lua table.
+fn sync_snapshot_to_lua<'lua>(lua: &'lua Lua, snap: &crate::network::net_sync::SyncSnapshot) -> LuaResult<LuaTable<'lua>> {
+    let t = lua.create_table()?;
+    match snap {
+        crate::network::net_sync::SyncSnapshot::Full { tick, entities } => {
+            t.set("type", "full")?;
+            t.set("tick", *tick)?;
+            let ents_table = lua.create_table()?;
+            for (i, ent) in entities.iter().enumerate() {
+                ents_table.set(i + 1, entity_snapshot_to_lua(lua, ent)?)?;
+            }
+            t.set("entities", ents_table)?;
+        }
+        crate::network::net_sync::SyncSnapshot::Delta {
+            tick,
+            base_tick,
+            updates,
+            removals,
+        } => {
+            t.set("type", "delta")?;
+            t.set("tick", *tick)?;
+            t.set("base_tick", *base_tick)?;
+            let ups_table = lua.create_table()?;
+            for (i, ent) in updates.iter().enumerate() {
+                ups_table.set(i + 1, entity_snapshot_to_lua(lua, ent)?)?;
+            }
+            t.set("updates", ups_table)?;
+            let rems_table = lua.create_table()?;
+            for (i, &id) in removals.iter().enumerate() {
+                rems_table.set(i + 1, id)?;
+            }
+            t.set("removals", rems_table)?;
+        }
+        crate::network::net_sync::SyncSnapshot::Corrective { tick, entities } => {
+            t.set("type", "corrective")?;
+            t.set("tick", *tick)?;
+            let ents_table = lua.create_table()?;
+            for (i, ent) in entities.iter().enumerate() {
+                ents_table.set(i + 1, entity_snapshot_to_lua(lua, ent)?)?;
+            }
+            t.set("entities", ents_table)?;
+        }
+    }
+    Ok(t)
+}
 /// Returns the Lua string for a network host role.
 fn role_to_string(role: HostRole) -> &'static str {
     match role {
@@ -466,6 +578,64 @@ impl LuaUserData for LuaNetworkHost {
         methods.add_method("isClient", |_, this, ()| {
             Ok(this.inner.borrow().role() == HostRole::Client)
         });
+        // -- registerLease --
+        /// Registers a reconnection lease for the given peer ID.
+        /// @param | peer_id | integer | Peer ID.
+        /// @param | timeout_secs | integer | Lease duration in seconds.
+        /// @return | integer | Reconnection token.
+        methods.add_method("registerLease", |_, this, (peer_id, timeout_secs): (usize, u64)| {
+            let token = this
+                .inner
+                .borrow_mut()
+                .register_lease(PeerID(peer_id), timeout_secs);
+            Ok(token)
+        });
+        // -- getLeasePeer --
+        /// Retrieves the peer ID associated with a valid, non-expired lease token.
+        /// @param | token | integer | Reconnection token.
+        /// @return | integer? | Original Peer ID or nil if invalid/expired.
+        methods.add_method("getLeasePeer", |_, this, token: u32| {
+            Ok(this
+                .inner
+                .borrow()
+                .get_lease_peer(token)
+                .map(|p| p.0))
+        });
+        // -- renewLease --
+        /// Renews an active lease token with a new duration.
+        /// @param | token | integer | Reconnection token.
+        /// @param | timeout_secs | integer | New lease duration in seconds.
+        /// @return | boolean | True if successfully renewed, false otherwise.
+        methods.add_method("renewLease", |_, this, (token, timeout_secs): (u32, u64)| {
+            Ok(this
+                .inner
+                .borrow_mut()
+                .renew_lease(token, timeout_secs))
+        });
+        // -- clearLease --
+        /// Removes a lease token immediately.
+        /// @param | token | integer | Reconnection token.
+        methods.add_method("clearLease", |_, this, token: u32| {
+            this.inner.borrow_mut().clear_lease(token);
+            Ok(())
+        });
+        // -- getMetrics --
+        /// Returns global network host metrics.
+        /// @return | table | Metrics table with connected_peers, average_rtt, average_packet_loss, total_packets_sent, total_packets_lost.
+        methods.add_method("getMetrics", |lua, this, ()| {
+            let (connected_peers, avg_rtt, avg_loss, total_sent, total_lost) = this
+                .inner
+                .borrow_mut()
+                .get_global_metrics()
+                .map_err(LuaError::external)?;
+            let t = lua.create_table()?;
+            t.set("connected_peers", connected_peers)?;
+            t.set("average_rtt", avg_rtt)?;
+            t.set("average_packet_loss", avg_loss)?;
+            t.set("total_packets_sent", total_sent)?;
+            t.set("total_packets_lost", total_lost)?;
+            Ok(t)
+        });
         /// Returns a string representation of the network host.
         /// @return | string | Debug string.
         methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
@@ -617,6 +787,68 @@ impl LuaUserData for LuaNetworkRuntime {
                 Ok(id)
             },
         );
+        // -- authBootstrap --
+        /// Start authenticating with a backend.
+        /// @param | auth_url | string | Authentication URL.
+        /// @param | payload | string | JSON payload.
+        /// @param | refresh_url | string | Refresh URL.
+        /// @return | integer | Request id.
+        methods.add_method(
+            "authBootstrap",
+            |_, this, (auth_url, payload, refresh_url): (String, String, String)| {
+                let id = this
+                    .inner
+                    .borrow_mut()
+                    .auth_bootstrap(&auth_url, &payload, &refresh_url)
+                    .map_err(LuaError::external)?;
+                Ok(id)
+            },
+        );
+        // -- getAuthToken --
+        /// Returns the current active access token.
+        /// @return | string? | Access token or nil if unauthenticated.
+        methods.add_method("getAuthToken", |_, this, ()| {
+            Ok(this.inner.borrow().get_auth_token())
+        });
+        // -- getAuthStatus --
+        /// Returns the current active authentication status.
+        /// @return | string | Current status ("unauthenticated", "authenticating", "authenticated", "failed").
+        methods.add_method("getAuthStatus", |_, this, ()| {
+            Ok(this.inner.borrow().get_auth_status())
+        });
+        // -- authCancel --
+        /// Cancels active authentication.
+        methods.add_method("authCancel", |_, this, ()| {
+            this.inner
+                .borrow_mut()
+                .auth_cancel()
+                .map_err(LuaError::external)
+        });
+        // -- matchmakeStart --
+        /// Start matchmaking request.
+        /// @param | url | string | Matchmaker URL.
+        /// @param | payload | string | JSON payload.
+        /// @return | integer | Request id.
+        methods.add_method(
+            "matchmakeStart",
+            |_, this, (url, payload): (String, String)| {
+                let id = this
+                    .inner
+                    .borrow_mut()
+                    .matchmake_start(&url, &payload)
+                    .map_err(LuaError::external)?;
+                Ok(id)
+            },
+        );
+        // -- matchmakeCancel --
+        /// Cancel matchmaking request.
+        /// @param | id | integer | Request id.
+        methods.add_method("matchmakeCancel", |_, this, id: u64| {
+            this.inner
+                .borrow_mut()
+                .matchmake_cancel(id)
+                .map_err(LuaError::external)
+        });
         // -- tcpConnect --
         /// Opens a TCP connection. This method is available to Lua scripts.
         /// @param | addr | string | Remote address.
@@ -720,6 +952,50 @@ impl LuaUserData for LuaNetworkRuntime {
                         /// Performs the 'headers' operation.
                         t.set("headers", headers_table)?;
                     }
+                    crate::network::net_thread::NetworkResponse::AuthEvent {
+                        id,
+                        event,
+                        token,
+                        expires_in,
+                        error,
+                    } => {
+                        t.set("type", "auth")?;
+                        t.set("request_id", *id)?;
+                        t.set("event", event.as_str())?;
+                        if let Some(ref tok) = token {
+                            t.set("token", tok.as_str())?;
+                        }
+                        if let Some(exp) = expires_in {
+                            t.set("expires_in", *exp)?;
+                        }
+                        if let Some(ref err) = error {
+                            t.set("error", err.as_str())?;
+                        }
+                    }
+                    crate::network::net_thread::NetworkResponse::MatchmakeEvent {
+                        id,
+                        event,
+                        ticket_id,
+                        host,
+                        room_id,
+                        error,
+                    } => {
+                        t.set("type", "matchmake")?;
+                        t.set("request_id", *id)?;
+                        t.set("event", event.as_str())?;
+                        if let Some(ref tid) = ticket_id {
+                            t.set("ticket_id", tid.as_str())?;
+                        }
+                        if let Some(ref h) = host {
+                            t.set("host", h.as_str())?;
+                        }
+                        if let Some(ref rid) = room_id {
+                            t.set("room_id", rid.as_str())?;
+                        }
+                        if let Some(ref err) = error {
+                            t.set("error", err.as_str())?;
+                        }
+                    }
                     crate::network::net_thread::NetworkResponse::TcpEvent { id, event } => {
                         /// Performs the 'type' operation.
                         t.set("type", "tcp")?;
@@ -796,6 +1072,19 @@ impl LuaUserData for LuaNetworkRuntime {
                 results.set(i + 1, t)?;
             }
             Ok(results)
+        });
+        // -- getMetrics --
+        /// Returns network runtime metrics.
+        /// @return | table | Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
+        methods.add_method("getMetrics", |lua, this, ()| {
+            let (active_reqs, reconnects, http_act, tcp_act, ws_act) = this.inner.borrow().get_metrics();
+            let t = lua.create_table()?;
+            t.set("queue_size", active_reqs)?;
+            t.set("reconnect_count", reconnects)?;
+            t.set("http_active_count", http_act)?;
+            t.set("tcp_active_count", tcp_act)?;
+            t.set("ws_active_count", ws_act)?;
+            Ok(t)
         });
         // -- shutdown --
         /// Shuts down the network runtime and cancels pending requests.
@@ -1333,6 +1622,64 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             t.set("vy", out.vy)?;
             Ok(t)
         })?,
+    )?;
+    // -- packSnapshot --
+    /// Packs a sync snapshot table into a binary network message string.
+    /// @param | snapshot | table | Sync snapshot table.
+    /// @return | string | Binary packed snapshot.
+    tbl.set(
+        "packSnapshot",
+        lua.create_function(|lua, snapshot: LuaTable| {
+            let snap = lua_to_sync_snapshot(&snapshot)?;
+            let net_val = snap.to_netvalue();
+            let bytes = crate::network::message::pack(&net_val).map_err(LuaError::external)?;
+            lua.create_string(&bytes)
+        })?,
+    )?;
+    // -- unpackSnapshot --
+    /// Unpacks a binary network message string into a sync snapshot table.
+    /// @param | data | string | Binary packed snapshot.
+    /// @return | table | Unpacked sync snapshot table.
+    tbl.set(
+        "unpackSnapshot",
+        lua.create_function(|lua, data: LuaString| {
+            let net_val = crate::network::message::unpack(data.as_bytes()).map_err(LuaError::external)?;
+            let snap = crate::network::net_sync::SyncSnapshot::from_netvalue(&net_val)
+                .ok_or_else(|| LuaError::RuntimeError("invalid snapshot payload".to_string()))?;
+            sync_snapshot_to_lua(lua, &snap)
+        })?,
+    )?;
+    // -- reconcileWithPolicy --
+    /// Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
+    /// @param | pred | table | Predicted snapshot table.
+    /// @param | auth | table | Authoritative snapshot table.
+    /// @param | alpha | number | Blend factor.
+    /// @param | soft_threshold | number | Distance threshold below which no correction is made.
+    /// @param | hard_threshold | number | Distance threshold above which a hard snap occurs.
+    /// @return | table | Reconciled snapshot table.
+    tbl.set(
+        "reconcileWithPolicy",
+        lua.create_function(
+            |lua,
+             (pred, auth, alpha, soft_threshold, hard_threshold): (
+                LuaTable,
+                LuaTable,
+                f32,
+                f32,
+                f32,
+             )| {
+                let predicted = lua_to_entity_snapshot(&pred)?;
+                let authoritative = lua_to_entity_snapshot(&auth)?;
+                let out = crate::network::net_sync::reconcile_with_policy(
+                    &predicted,
+                    &authoritative,
+                    alpha,
+                    soft_threshold,
+                    hard_threshold,
+                );
+                entity_snapshot_to_lua(lua, &out)
+            },
+        )?,
     )?;
     // -- sseConnect --
     /// Opens an SSE stream to `url` and returns an `LSseStream` handle.

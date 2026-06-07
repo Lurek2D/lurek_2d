@@ -148,10 +148,13 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - `lurek.network.newRuntime() -> LNetworkRuntime`: Creates a background network runtime.
 - `lurek.network.newServer(opts) -> LNetworkHost`: Creates a server host from an options table.
 - `lurek.network.pack(value) -> string`: Packs a supported Lua value into a binary network message string.
+- `lurek.network.packSnapshot(snapshot) -> string`: Packs a sync snapshot table into a binary network message string.
 - `lurek.network.parsePunchProbe(payload) -> string`: Parses a relay punch probe payload.
 - `lurek.network.parseRelayTicket(token) -> table`: Parses an encoded relay ticket. This function is exposed to Lua scripts.
 - `lurek.network.predictLinear(snapshot, dt) -> table`: Predicts an entity snapshot forward by linear velocity.
 - `lurek.network.reconcileSnapshot(pred, auth, alpha) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot.
+- `lurek.network.reconcileWithPolicy(pred, auth, alpha, soft_threshold, hard_threshold) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
+- `lurek.network.unpackSnapshot(data) -> table`: Unpacks a binary network message string into a sync snapshot table.
 - `lurek.network.sseCollect(url, n, timeout_secs?) -> table`: Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 - `lurek.network.sseConnect(url, callback) -> LSseStream`: Opens an SSE stream to `url` and returns an `LSseStream` handle.
 - `lurek.network.syncEntity(host_ud, entity_id, data_tbl, channel?, reliable?) -> nil`: Broadcasts a packed entity sync payload through a network host.
@@ -226,6 +229,7 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 ##### Methods
 
 - `LNetworkHost:broadcast(channel_id, data, reliable?) -> nil`: Broadcasts bytes to all connected peers on a channel.
+- `LNetworkHost:clearLease(token) -> nil`: Removes a lease token immediately.
 - `LNetworkHost:connect(addr_str, channels?, data?) -> integer`: Connects to a remote address. This method is available to Lua scripts.
 - `LNetworkHost:destroy() -> nil`: Destroys the network host and releases resources.
 - `LNetworkHost:disconnect(peer_id, data?) -> nil`: Requests a graceful peer disconnect.
@@ -237,6 +241,8 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - `LNetworkHost:getChannelLimit() -> integer`: Returns configured channel limit.
 - `LNetworkHost:getConnectedPeerCount() -> integer`: Returns the number of currently connected peers.
 - `LNetworkHost:getConnectedPeerIds() -> integer[]`: Returns an array of ids for all connected peers.
+- `LNetworkHost:getLeasePeer(token) -> integer?`: Retrieves the peer ID associated with a valid, non-expired lease token.
+- `LNetworkHost:getMetrics() -> table`: Returns global network host metrics.
 - `LNetworkHost:getPeerAddress(peer_id) -> string`: Returns peer socket address when available.
 - `LNetworkHost:getPeerLimit() -> integer`: Returns configured peer limit. This method is available to Lua scripts.
 - `LNetworkHost:getPeerState(peer_id) -> string`: Returns peer connection state. This method is available to Lua scripts.
@@ -247,6 +253,8 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - `LNetworkHost:isDestroyed() -> boolean`: Returns whether the network host is destroyed.
 - `LNetworkHost:isServer() -> boolean`: Returns whether this host has server role.
 - `LNetworkHost:ping(peer_id) -> nil`: Sends a ping to a peer. This method is available to Lua scripts.
+- `LNetworkHost:registerLease(peer_id, timeout_secs) -> integer`: Registers a reconnection lease for the given peer ID.
+- `LNetworkHost:renewLease(token, timeout_secs) -> boolean`: Renews an active lease token with a new duration.
 - `LNetworkHost:resetPeer(peer_id) -> nil`: Resets a peer connection. This method is available to Lua scripts.
 - `LNetworkHost:send(peer_id, channel_id, data, reliable?) -> nil`: Sends bytes to a peer on a channel. This method is available to Lua scripts.
 - `LNetworkHost:service() -> table`: Polls the host for one network event.
@@ -409,11 +417,18 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 
 ##### Methods
 
+- `LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) -> integer`: Starts non-blocking authentication bootstrap.
+- `LNetworkRuntime:authCancel() -> nil`: Cancels active authentication.
+- `LNetworkRuntime:getAuthStatus() -> string`: Returns the current auth status.
+- `LNetworkRuntime:getAuthToken() -> string?`: Returns the current active access token.
+- `LNetworkRuntime:getMetrics() -> table`: Returns network runtime metrics.
 - `LNetworkRuntime:httpGet(url, headers?) -> integer`: Starts an HTTP GET request. This method is available to Lua scripts.
 - `LNetworkRuntime:httpJson(url, body, headers?) -> integer`: Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
 - `LNetworkRuntime:httpPost(url, body, headers?) -> integer`: Starts an HTTP POST request. This method is available to Lua scripts.
 - `LNetworkRuntime:httpRequest(opts) -> integer`: Starts an HTTP request from an options table and returns its request id.
 - `LNetworkRuntime:httpStream(url, headers?, timeout_secs?) -> integer`: Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
+- `LNetworkRuntime:matchmakeCancel(id) -> nil`: Cancels active matchmaking request.
+- `LNetworkRuntime:matchmakeStart(url, payload) -> integer`: Starts non-blocking matchmaking request.
 - `LNetworkRuntime:poll() -> table`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
 - `LNetworkRuntime:shutdown() -> nil`: Shuts down the network runtime and cancels pending requests.
 - `LNetworkRuntime:tcpClose(id) -> nil`: Closes a TCP connection. This method is available to Lua scripts.

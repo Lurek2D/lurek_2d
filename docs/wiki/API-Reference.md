@@ -4517,20 +4517,24 @@ lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string -- Crea
 lurek.network.newRuntime() -> LNetworkRuntime -- Creates a background network runtime.
 lurek.network.newServer(opts: table) -> LNetworkHost -- Creates a server host from an options table.
 lurek.network.pack(value: any) -> string -- Packs a supported Lua value into a binary network message string.
+lurek.network.packSnapshot(snapshot: table) -> string -- Packs a sync snapshot table into a binary network message string.
 lurek.network.parsePunchProbe(payload: string) -> string -- Parses a relay punch probe payload.
 lurek.network.parseRelayTicket(token: string) -> table -- Parses an encoded relay ticket. This function is exposed to Lua scripts.
 lurek.network.predictLinear(snapshot: table, dt: number) -> table -- Predicts an entity snapshot forward by linear velocity.
 lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table -- Reconciles a predicted snapshot toward an authoritative snapshot.
+lurek.network.reconcileWithPolicy(pred: table, auth: table, alpha: number, soft_threshold: number, hard_threshold: number) -> table -- Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
 lurek.network.sseCollect(url: string, n: integer, [timeout_secs]: number) -> table -- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 lurek.network.sseConnect(url: string, callback: function) -> LSseStream -- Opens an SSE stream to `url` and returns an `LSseStream` handle.
 lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean) -- Broadcasts a packed entity sync payload through a network host.
 lurek.network.unpack(data: string) -> table -- Unpacks a binary network message string into a Lua value.
+lurek.network.unpackSnapshot(data: string) -> table -- Unpacks a binary network message string into a sync snapshot table.
 ```
 
 ### LNetworkHost
 
 ```lua
 LNetworkHost:broadcast(channel_id: integer, data: string, [reliable]: boolean) -- Broadcasts bytes to all connected peers on a channel.
+LNetworkHost:clearLease(token: integer) -- Removes a lease token immediately.
 LNetworkHost:connect(addr_str: string, [channels]: integer, [data]: integer) -> integer -- Connects to a remote address. This method is available to Lua scripts.
 LNetworkHost:destroy() -- Destroys the network host and releases resources.
 LNetworkHost:disconnect(peer_id: integer, [data]: integer) -- Requests a graceful peer disconnect.
@@ -4542,6 +4546,8 @@ LNetworkHost:getBandwidthLimit() -> table -- Returns incoming and outgoing bandw
 LNetworkHost:getChannelLimit() -> integer -- Returns configured channel limit.
 LNetworkHost:getConnectedPeerCount() -> integer -- Returns the number of currently connected peers.
 LNetworkHost:getConnectedPeerIds() -> integer[] -- Returns an array of ids for all connected peers.
+LNetworkHost:getLeasePeer(token: integer) -> integer? -- Retrieves the peer ID associated with a valid, non-expired lease token.
+LNetworkHost:getMetrics() -> table -- Returns global network host metrics.
 LNetworkHost:getPeerAddress(peer_id: integer) -> string -- Returns peer socket address when available.
 LNetworkHost:getPeerLimit() -> integer -- Returns configured peer limit. This method is available to Lua scripts.
 LNetworkHost:getPeerState(peer_id: integer) -> string -- Returns peer connection state. This method is available to Lua scripts.
@@ -4552,6 +4558,8 @@ LNetworkHost:isClient() -> boolean -- Returns whether this host has client role.
 LNetworkHost:isDestroyed() -> boolean -- Returns whether the network host is destroyed.
 LNetworkHost:isServer() -> boolean -- Returns whether this host has server role.
 LNetworkHost:ping(peer_id: integer) -- Sends a ping to a peer. This method is available to Lua scripts.
+LNetworkHost:registerLease(peer_id: integer, timeout_secs: integer) -> integer -- Registers a reconnection lease for the given peer ID.
+LNetworkHost:renewLease(token: integer, timeout_secs: integer) -> boolean -- Renews an active lease token with a new duration.
 LNetworkHost:resetPeer(peer_id: integer) -- Resets a peer connection. This method is available to Lua scripts.
 LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, [reliable]: boolean) -- Sends bytes to a peer on a channel. This method is available to Lua scripts.
 LNetworkHost:service() -> table -- Polls the host for one network event.
@@ -4564,11 +4572,18 @@ LNetworkHost:typeOf(name: string) -> boolean -- Returns whether this network hos
 ### LNetworkRuntime
 
 ```lua
+LNetworkRuntime:authBootstrap(auth_url: string, payload: string, refresh_url: string) -> integer -- Start authenticating with a backend.
+LNetworkRuntime:authCancel() -- Cancels active authentication.
+LNetworkRuntime:getAuthStatus() -> string -- Returns the current active authentication status.
+LNetworkRuntime:getAuthToken() -> string? -- Returns the current active access token.
+LNetworkRuntime:getMetrics() -> table -- Returns network runtime metrics.
 LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer -- Starts an HTTP GET request. This method is available to Lua scripts.
 LNetworkRuntime:httpJson(url: string, body: string, [headers]: table) -> integer -- Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
 LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer -- Starts an HTTP POST request. This method is available to Lua scripts.
 LNetworkRuntime:httpRequest(opts: table) -> integer -- Starts an HTTP request from an options table and returns its request id.
 LNetworkRuntime:httpStream(url: string, [headers]: table, [timeout_secs]: integer) -> integer -- Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
+LNetworkRuntime:matchmakeCancel(id: integer) -- Cancel matchmaking request.
+LNetworkRuntime:matchmakeStart(url: string, payload: string) -> integer -- Start matchmaking request.
 LNetworkRuntime:poll() -> table -- Polls runtime responses for HTTP, TCP, and WebSocket operations.
 LNetworkRuntime:shutdown() -- Shuts down the network runtime and cancels pending requests.
 LNetworkRuntime:tcpClose(id: integer) -- Closes a TCP connection. This method is available to Lua scripts.

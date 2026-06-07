@@ -12,8 +12,9 @@ use super::error::NetworkError;
 use crate::log_msg;
 use crate::runtime::log_messages::{NW01_HOST_BIND, NW04_NET_ERROR};
 use rusty_enet::{self as enet, Host, HostSettings, Packet, PacketKind, PeerID};
+use std::collections::HashMap;
 use std::net::{SocketAddr, UdpSocket};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 /// Logical role of this host in a multiplayer session.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum HostRole {
@@ -24,6 +25,14 @@ pub enum HostRole {
     /// Combined host/client running both sides locally.
     Host,
 }
+/// Connection lease representation for a peer.
+#[derive(Debug, Clone, Copy)]
+pub struct EnetLease {
+    /// ENet peer ID that originally owned this session.
+    pub peer_id: PeerID,
+    /// Lease expiration timestamp.
+    pub expiry: Instant,
+}
 /// ENet host wrapping a UDP socket; owns all peer slots for one network endpoint.
 pub struct NetworkHost {
     /// Underlying ENet host; `None` after `destroy()` is called.
@@ -32,6 +41,8 @@ pub struct NetworkHost {
     local_addr: SocketAddr,
     /// Role assigned at creation or via `set_role`.
     role: HostRole,
+    /// Reconnection leases mapped by token to their peer slot and expiry time.
+    leases: HashMap<u32, EnetLease>,
 }
 /// Events emitted by `NetworkHost::service` on each poll cycle.
 pub enum NetworkEvent {
@@ -100,6 +111,7 @@ impl NetworkHost {
             inner: Some(host),
             local_addr,
             role: HostRole::Host,
+            leases: HashMap::new(),
         })
     }
     /// Return a shared reference to the inner ENet host; returns `HostDestroyed` if destroyed.
@@ -112,6 +124,7 @@ impl NetworkHost {
     }
     /// Poll the ENet host for one pending event; returns `None` when the queue is empty.
     pub fn service(&mut self) -> Result<Option<NetworkEvent>, NetworkError> {
+        self.clean_expired_leases();
         let host = self.host_mut()?;
         match host.service() {
             Ok(Some(event)) => {
@@ -387,6 +400,81 @@ impl NetworkHost {
             incoming_data_total: peer.incoming_data_total(),
             outgoing_data_total: peer.outgoing_data_total(),
         })
+    }
+    /// Register a reconnection lease for the given peer ID, returning the generated u32 token.
+    pub fn register_lease(&mut self, peer_id: PeerID, timeout_secs: u64) -> u32 {
+        self.clean_expired_leases();
+        
+        // Generate a non-zero unique u32 token (0 is reserved for default/no-token connection)
+        let mut token = fastrand::u32(1..u32::MAX);
+        while self.leases.contains_key(&token) {
+            token = fastrand::u32(1..u32::MAX);
+        }
+        
+        let expiry = Instant::now() + Duration::from_secs(timeout_secs);
+        self.leases.insert(token, EnetLease { peer_id, expiry });
+        token
+    }
+
+    /// Retrieve the peer ID associated with a valid, non-expired lease token.
+    pub fn get_lease_peer(&self, token: u32) -> Option<PeerID> {
+        if let Some(lease) = self.leases.get(&token) {
+            if Instant::now() < lease.expiry {
+                return Some(lease.peer_id);
+            }
+        }
+        None
+    }
+
+    /// Renew an active lease token with a new duration, returning `true` on success.
+    pub fn renew_lease(&mut self, token: u32, timeout_secs: u64) -> bool {
+        self.clean_expired_leases();
+        if let Some(lease) = self.leases.get_mut(&token) {
+            if Instant::now() < lease.expiry {
+                lease.expiry = Instant::now() + Duration::from_secs(timeout_secs);
+                return true;
+            }
+        }
+        false
+    }
+
+    /// Remove a lease token immediately.
+    pub fn clear_lease(&mut self, token: u32) {
+        self.leases.remove(&token);
+    }
+
+    /// Clean up any expired leases from the database.
+    pub fn clean_expired_leases(&mut self) {
+        let now = Instant::now();
+        self.leases.retain(|_, lease| now < lease.expiry);
+    }
+
+    /// Calculate and return global peer statistics for telemetry:
+    /// `(connected_peers, avg_rtt_ms, avg_packet_loss, total_packets_sent, total_packets_lost)`
+    pub fn get_global_metrics(&mut self) -> Result<(usize, u32, u32, u32, u32), NetworkError> {
+        let host = self.host_mut()?;
+        let peers: Vec<_> = host.connected_peers().collect();
+        let connected_peers = peers.len();
+        if connected_peers == 0 {
+            return Ok((0, 0, 0, 0, 0));
+        }
+
+        let mut sum_rtt = 0u64;
+        let mut sum_loss = 0u64;
+        let mut total_sent = 0u32;
+        let mut total_lost = 0u32;
+
+        for peer in &peers {
+            sum_rtt += peer.round_trip_time().as_millis() as u64;
+            sum_loss += peer.packet_loss() as u64;
+            total_sent += peer.packets_sent();
+            total_lost += peer.packets_lost();
+        }
+
+        let avg_rtt = (sum_rtt / connected_peers as u64) as u32;
+        let avg_loss = (sum_loss / connected_peers as u64) as u32;
+
+        Ok((connected_peers, avg_rtt, avg_loss, total_sent, total_lost))
     }
 }
 /// Point-in-time network statistics snapshot for a single ENet peer.

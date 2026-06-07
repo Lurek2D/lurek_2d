@@ -682,4 +682,180 @@ describe("lurek.network.sseCollect", function()
   end)
 end)
 
+-- @describe LNetworkRuntime auth and matchmaking methods
+describe("LNetworkRuntime auth and matchmaking methods", function()
+  -- @covers LNetworkRuntime:authBootstrap
+  -- @covers LNetworkRuntime:getAuthToken
+  -- @covers LNetworkRuntime:getAuthStatus
+  -- @covers LNetworkRuntime:authCancel
+  it("auth methods are callable and manage state", function()
+    local rt = lurek.network.newRuntime()
+    expect_equal("unauthenticated", rt:getAuthStatus())
+    expect_equal(nil, rt:getAuthToken())
+
+    local id = rt:authBootstrap("http://127.0.0.1:9", '{"username":"test"}', "http://127.0.0.1:9")
+    expect_type("number", id)
+    expect_equal("authenticating", rt:getAuthStatus())
+
+    rt:authCancel()
+    expect_equal("unauthenticated", rt:getAuthStatus())
+    expect_equal(nil, rt:getAuthToken())
+    rt:shutdown()
+  end)
+
+  -- @covers LNetworkRuntime:matchmakeStart
+  -- @covers LNetworkRuntime:matchmakeCancel
+  it("matchmaking methods are callable", function()
+    local rt = lurek.network.newRuntime()
+    local id = rt:matchmakeStart("http://127.0.0.1:9", '{"tier":"ranked"}')
+    expect_type("number", id)
+
+    rt:matchmakeCancel(id)
+    rt:shutdown()
+  end)
+
+  -- @covers LNetworkHost:registerLease
+  -- @covers LNetworkHost:getLeasePeer
+  -- @covers LNetworkHost:renewLease
+  -- @covers LNetworkHost:clearLease
+  -- @covers LNetworkHost:getMetrics
+  it("host reconnect leases and metrics are functional", function()
+    local host = lurek.network.newHost({ port = 0 })
+    local metrics = host:getMetrics()
+    expect_type("table", metrics)
+    expect_equal(0, metrics.connected_peers)
+    expect_equal(0, metrics.average_rtt)
+
+    -- Register a lease for a dummy peer ID (e.g. 1) with 30s timeout
+    local token = host:registerLease(1, 30)
+    expect_type("number", token)
+    expect_true(token > 0)
+
+    -- Retrieve peer from token
+    local peer_id = host:getLeasePeer(token)
+    expect_equal(1, peer_id)
+
+    -- Renew lease
+    local ok = host:renewLease(token, 60)
+    expect_equal(true, ok)
+
+    -- Clear lease
+    host:clearLease(token)
+    expect_equal(nil, host:getLeasePeer(token))
+
+    host:destroy()
+  end)
+
+  -- @covers LNetworkRuntime:getMetrics
+  it("runtime telemetry metrics are functional", function()
+    local rt = lurek.network.newRuntime()
+    local metrics = rt:getMetrics()
+    expect_type("table", metrics)
+    expect_equal(0, metrics.queue_size)
+    expect_equal(0, metrics.reconnect_count)
+    expect_equal(0, metrics.http_active_count)
+    expect_equal(0, metrics.tcp_active_count)
+    expect_equal(0, metrics.ws_active_count)
+    rt:shutdown()
+  end)
+end)
+
+-- @describe lurek.network.packSnapshot / unpackSnapshot / reconcileWithPolicy
+describe("lurek.network.packSnapshot / unpackSnapshot / reconcileWithPolicy", function()
+  -- @covers lurek.network.packSnapshot
+  -- @covers lurek.network.unpackSnapshot
+  it("round-trips full snapshots", function()
+    local original = {
+      type = "full",
+      tick = 42,
+      entities = {
+        { id = 1, tick = 42, x = 10.5, y = -20.25, vx = 1.0, vy = 2.0 },
+        { id = 2, tick = 42, x = 0.0, y = 0.0, vx = 0.0, vy = 0.0 }
+      }
+    }
+    local packed = lurek.network.packSnapshot(original)
+    expect_equal(type(packed), "string")
+    local unpacked = lurek.network.unpackSnapshot(packed)
+    expect_equal(unpacked.type, "full")
+    expect_equal(unpacked.tick, 42)
+    expect_equal(#unpacked.entities, 2)
+    expect_equal(unpacked.entities[1].id, 1)
+    expect_near(unpacked.entities[1].x, 10.5, 0.001)
+    expect_near(unpacked.entities[1].y, -20.25, 0.001)
+    expect_near(unpacked.entities[1].vx, 1.0, 0.001)
+    expect_near(unpacked.entities[1].vy, 2.0, 0.001)
+  end)
+
+  -- @covers lurek.network.packSnapshot
+  -- @covers lurek.network.unpackSnapshot
+  it("round-trips delta snapshots", function()
+    local original = {
+      type = "delta",
+      tick = 100,
+      base_tick = 90,
+      updates = {
+        { id = 3, tick = 100, x = 5.0, y = 5.0, vx = 0.1, vy = -0.1 }
+      },
+      removals = { 10, 11 }
+    }
+    local packed = lurek.network.packSnapshot(original)
+    local unpacked = lurek.network.unpackSnapshot(packed)
+    expect_equal(unpacked.type, "delta")
+    expect_equal(unpacked.tick, 100)
+    expect_equal(unpacked.base_tick, 90)
+    expect_equal(#unpacked.updates, 1)
+    expect_equal(unpacked.updates[1].id, 3)
+    expect_equal(#unpacked.removals, 2)
+    expect_equal(unpacked.removals[1], 10)
+    expect_equal(unpacked.removals[2], 11)
+  end)
+
+  -- @covers lurek.network.packSnapshot
+  -- @covers lurek.network.unpackSnapshot
+  it("round-trips corrective snapshots", function()
+    local original = {
+      type = "corrective",
+      tick = 200,
+      entities = {
+        { id = 5, tick = 200, x = 12.0, y = 34.0, vx = 5.0, vy = 6.0 }
+      }
+    }
+    local packed = lurek.network.packSnapshot(original)
+    local unpacked = lurek.network.unpackSnapshot(packed)
+    expect_equal(unpacked.type, "corrective")
+    expect_equal(unpacked.tick, 200)
+    expect_equal(#unpacked.entities, 1)
+    expect_equal(unpacked.entities[1].id, 5)
+  end)
+
+  -- @covers lurek.network.reconcileWithPolicy
+  it("reconcileWithPolicy applies soft, alpha blend, or hard snap based on distance", function()
+    local pred = { id = 1, tick = 10, x = 10.0, y = 0.0, vx = 0.0, vy = 0.0 }
+    
+    -- Case 1: Under soft threshold -> no correction
+    local auth1 = { id = 1, tick = 10, x = 10.1, y = 0.0, vx = 1.0, vy = 2.0 }
+    local res1 = lurek.network.reconcileWithPolicy(pred, auth1, 0.5, 0.2, 5.0)
+    expect_near(res1.x, 10.0, 0.001) -- kept predicted position
+    expect_near(res1.y, 0.0, 0.001)
+    expect_near(res1.vx, 1.0, 0.001) -- updated velocity
+    expect_near(res1.vy, 2.0, 0.001)
+    expect_equal(res1.tick, 10)
+
+    -- Case 2: Between thresholds -> blend (alpha = 0.5)
+    local auth2 = { id = 1, tick = 10, x = 12.0, y = 0.0, vx = 1.0, vy = 2.0 }
+    local res2 = lurek.network.reconcileWithPolicy(pred, auth2, 0.5, 0.2, 5.0)
+    -- dist is 2.0, which is > 0.2 and < 5.0. Blend: 10.0 + (12.0 - 10.0) * 0.5 = 11.0
+    expect_near(res2.x, 11.0, 0.001)
+    expect_near(res2.y, 0.0, 0.001)
+
+    -- Case 3: Above hard threshold -> snap to authoritative
+    local auth3 = { id = 1, tick = 10, x = 20.0, y = 0.0, vx = 1.0, vy = 2.0 }
+    local res3 = lurek.network.reconcileWithPolicy(pred, auth3, 0.5, 0.2, 5.0)
+    -- dist is 10.0, which is >= 5.0. Hard snap to auth
+    expect_near(res3.x, 20.0, 0.001)
+    expect_near(res3.y, 0.0, 0.001)
+  end)
+end)
+
 test_summary()
+
