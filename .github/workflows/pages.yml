@@ -3,12 +3,6 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [root]
-    paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - "logs/data/lua_api_data.json"
-      - "content/examples/**"
-      - "tools/docs/gen_module_pages.py"
   workflow_dispatch:
 
 permissions:
