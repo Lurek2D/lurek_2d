@@ -1,6 +1,6 @@
 //! File: src/lua_api/dialog_api.rs
 
-use crate::dialog::{DialogueAI, DialogueState, Speaker, SpeakerRegistry};
+use crate::dialog::{DialogueAI, DialogueState, Speaker, SpeakerRegistry, DialogSequencer, SequencerNode};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -25,6 +25,13 @@ pub(crate) struct LuaDialogueState {
 pub(crate) struct LuaSpeakerRegistry {
     /// Shared speaker registry exposed by the lurek engine.
     pub inner: Rc<RefCell<SpeakerRegistry>>,
+}
+
+/// Lua handle for a dialog sequencer with typewriter-reveal playback.
+#[derive(Clone)]
+pub(crate) struct LuaDialogSequencer {
+    /// Sequencer managing node playback, choices, and typewriter effect.
+    pub inner: Rc<RefCell<DialogSequencer>>,
 }
 
 impl LuaUserData for LuaDialogueAI {
@@ -302,6 +309,195 @@ impl LuaUserData for LuaSpeakerRegistry {
     }
 }
 
+impl LuaUserData for LuaDialogSequencer {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- load --
+        /// Loads a sequence of dialog nodes for playback.
+        /// @param | nodes | table | Array of node tables created via lurek.dialog.say(), choice(), etc.
+        methods.add_method_mut("load", |_lua, this, nodes: LuaTable| {
+            let mut seq_nodes = Vec::new();
+            for i in 1..=nodes.len()? {
+                let node_tbl: LuaTable = nodes.get(i)?;
+                let node_type: String = node_tbl.get("type")?;
+
+                let node = match node_type.as_str() {
+                    "say" => {
+                        let actor = node_tbl.get("actor")?;
+                        let text = node_tbl.get("text")?;
+                        let duration = node_tbl.get("duration").ok();
+                        SequencerNode::Say { actor, text, duration }
+                    }
+                    "choice" => {
+                        let prompt = node_tbl.get("prompt")?;
+                        let options_tbl: LuaTable = node_tbl.get("options")?;
+                        let mut options = Vec::new();
+                        for j in 1..=options_tbl.len()? {
+                            options.push(options_tbl.get(j)?);
+                        }
+                        SequencerNode::Choice { prompt, options }
+                    }
+                    "wait" => {
+                        let seconds = node_tbl.get("seconds")?;
+                        SequencerNode::Wait { seconds }
+                    }
+                    "event" => {
+                        let name = node_tbl.get("name")?;
+                        let data = node_tbl.get("data").ok();
+                        SequencerNode::Event { name, data }
+                    }
+                    "call" => {
+                        let name = node_tbl.get("name")?;
+                        SequencerNode::Call { name }
+                    }
+                    "label" => {
+                        let name = node_tbl.get("name")?;
+                        SequencerNode::Label { name }
+                    }
+                    "jump" => {
+                        let target = node_tbl.get("target")?;
+                        SequencerNode::Jump { target }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!("Unknown node type: {}", node_type)));
+                    }
+                };
+                seq_nodes.push(node);
+            }
+            this.inner.borrow_mut().load(seq_nodes);
+            Ok(())
+        });
+
+        // -- start --
+        /// Starts playback from the beginning of the loaded sequence.
+        methods.add_method_mut("start", |_, this, ()| {
+            this.inner.borrow_mut().start();
+            Ok(())
+        });
+
+        // -- update --
+        /// Advances the sequencer by dt seconds, updating typewriter reveal.
+        /// @param | dt | number | Delta time in seconds.
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        // -- advance --
+        /// Skips to the next node (or instantly reveals current line if typing).
+        methods.add_method_mut("advance", |_, this, ()| {
+            this.inner.borrow_mut().advance();
+            Ok(())
+        });
+
+        // -- skip --
+        /// Instantly reveals the full current line without typewriter effect.
+        methods.add_method_mut("skip", |_, this, ()| {
+            this.inner.borrow_mut().skip();
+            Ok(())
+        });
+
+        // -- choose --
+        /// Selects a choice option when waiting for choice input.
+        /// @param | index | integer | Option index (1-based) to select.
+        methods.add_method_mut("choose", |_, this, index: i64| {
+            if index > 0 {
+                this.inner.borrow_mut().choose((index - 1) as usize);
+            }
+            Ok(())
+        });
+
+        // -- setSpeed --
+        /// Sets the typewriter reveal speed in characters per second.
+        /// @param | cps | number | Characters per second.
+        methods.add_method_mut("setSpeed", |_, this, cps: f32| {
+            this.inner.borrow_mut().set_speed(cps);
+            Ok(())
+        });
+
+        // -- getSpeed --
+        /// Gets the current typewriter speed in characters per second.
+        /// @return | number | Characters per second.
+        methods.add_method("getSpeed", |_, this, ()| {
+            Ok(this.inner.borrow().get_speed())
+        });
+
+        // -- getState --
+        /// Returns the current playback state as a string.
+        /// @return | string | One of: "idle", "typing", "waiting", "choice", "done".
+        methods.add_method("getState", |_, this, ()| {
+            Ok(this.inner.borrow().get_state().to_string())
+        });
+
+        // -- isActive --
+        /// Checks if the sequencer is currently playing.
+        /// @return | boolean | True when not idle or done.
+        methods.add_method("isActive", |_, this, ()| {
+            Ok(this.inner.borrow().is_active())
+        });
+
+        // -- isWaitingForChoice --
+        /// Checks if the sequencer is waiting for a choice selection.
+        /// @return | boolean | True when waiting for player choice.
+        methods.add_method("isWaitingForChoice", |_, this, ()| {
+            Ok(this.inner.borrow().is_waiting_for_choice())
+        });
+
+        // -- currentSpeaker --
+        /// Returns the actor name for the current line, or nil.
+        /// @return | string | Actor name, or nil.
+        methods.add_method("currentSpeaker", |_, this, ()| {
+            Ok(this.inner.borrow().current_speaker().map(|s| s.to_string()))
+        });
+
+        // -- currentText --
+        /// Returns the full text of the current line.
+        /// @return | string | Full line text.
+        methods.add_method("currentText", |_, this, ()| {
+            Ok(this.inner.borrow().current_text().to_string())
+        });
+
+        // -- revealedText --
+        /// Returns only the typewriter-revealed portion of the current line.
+        /// @return | string | Revealed text.
+        methods.add_method("revealedText", |_, this, ()| {
+            Ok(this.inner.borrow().revealed_text().to_string())
+        });
+
+        // -- getChoiceText --
+        /// Returns the choice prompt text, or nil if not in a choice node.
+        /// @return | string | Choice prompt, or nil.
+        methods.add_method("getChoiceText", |_, this, ()| {
+            Ok(this.inner.borrow().get_choice_text().map(|s| s.to_string()))
+        });
+
+        // -- getChoiceLabels --
+        /// Returns an array of choice option labels.
+        /// @return | table | Array of choice strings.
+        methods.add_method("getChoiceLabels", |lua, this, ()| {
+            let binding = this.inner.borrow();
+            let labels = binding.get_choice_labels();
+            let tbl = lua.create_table()?;
+            for (i, label) in labels.iter().enumerate() {
+                tbl.set(i + 1, label.clone())?;
+            }
+            Ok(tbl)
+        });
+
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LDialogSequencer`.
+        methods.add_method("type", |_, _, ()| Ok("LDialogSequencer"));
+
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | True when the type name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LDialogSequencer" || name == "LObject")
+        });
+    }
+}
+
 /// Registers the `lurek.dialog` namespace on the given lurek table.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let dialog_table = lua.create_table()?;
@@ -339,6 +535,121 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaSpeakerRegistry {
                 inner: Rc::new(RefCell::new(SpeakerRegistry::new())),
             })
+        })?,
+    )?;
+
+    // -- newSequencer --
+    /// Creates an empty dialog sequencer for typewriter-style playback.
+    /// @return | LDialogSequencer | New sequencer handle.
+    dialog_table.set(
+        "newSequencer",
+        lua.create_function(|_, ()| {
+            Ok(LuaDialogSequencer {
+                inner: Rc::new(RefCell::new(DialogSequencer::new())),
+            })
+        })?,
+    )?;
+
+    // -- say --
+    /// Creates a Say node for character dialog.
+    /// @param | actor | string | Character name.
+    /// @param | text | string | Dialog text.
+    /// @param | opts | table? | Optional table with duration field.
+    /// @return | table | Say node table for sequencer.load().
+    dialog_table.set(
+        "say",
+        lua.create_function(|lua, (actor, text, opts): (String, String, Option<LuaTable>)| {
+            let node = lua.create_table()?;
+            node.set("type", "say")?;
+            node.set("actor", actor)?;
+            node.set("text", text)?;
+            if let Some(o) = opts {
+                if let Ok(duration) = o.get::<_, f32>("duration") {
+                    node.set("duration", duration)?;
+                }
+            }
+            Ok(node)
+        })?,
+    )?;
+
+    // -- choice --
+    /// Creates a Choice node with selectable options.
+    /// @param | prompt | string | Choice prompt text.
+    /// @param | options | table | Array of option strings.
+    /// @param | opts | table? | Optional table (reserved for future use).
+    /// @return | table | Choice node table for sequencer.load().
+    dialog_table.set(
+        "choice",
+        lua.create_function(|lua, (prompt, options, _opts): (String, LuaTable, Option<LuaTable>)| {
+            let node = lua.create_table()?;
+            node.set("type", "choice")?;
+            node.set("prompt", prompt)?;
+            node.set("options", options)?;
+            Ok(node)
+        })?,
+    )?;
+
+    // -- wait --
+    /// Creates a Wait node (delay before continuing).
+    /// @param | seconds | number | Seconds to wait.
+    /// @param | opts | table? | Optional table (reserved for future use).
+    /// @return | table | Wait node table for sequencer.load().
+    dialog_table.set(
+        "wait",
+        lua.create_function(|lua, (seconds, _opts): (f32, Option<LuaTable>)| {
+            let node = lua.create_table()?;
+            node.set("type", "wait")?;
+            node.set("seconds", seconds)?;
+            Ok(node)
+        })?,
+    )?;
+
+    // -- event --
+    /// Creates an Event node (fires a named callback).
+    /// @param | name | string | Event name.
+    /// @param | data | string? | Optional event payload.
+    /// @param | opts | table? | Optional table (reserved for future use).
+    /// @return | table | Event node table for sequencer.load().
+    dialog_table.set(
+        "event",
+        lua.create_function(|lua, (name, data, _opts): (String, Option<String>, Option<LuaTable>)| {
+            let node = lua.create_table()?;
+            node.set("type", "event")?;
+            node.set("name", name)?;
+            if let Some(d) = data {
+                node.set("data", d)?;
+            }
+            Ok(node)
+        })?,
+    )?;
+
+    // -- call --
+    /// Creates a Call node (invokes a Lua function by name).
+    /// @param | fn_name | string | Lua function name to call.
+    /// @param | opts | table? | Optional table (reserved for future use).
+    /// @return | table | Call node table for sequencer.load().
+    dialog_table.set(
+        "call",
+        lua.create_function(|lua, (name, _opts): (String, Option<LuaTable>)| {
+            let node = lua.create_table()?;
+            node.set("type", "call")?;
+            node.set("name", name)?;
+            Ok(node)
+        })?,
+    )?;
+
+    // -- jump --
+    /// Creates a Jump node (branches to a labeled position).
+    /// @param | target | string | Label name to jump to.
+    /// @param | opts | table? | Optional table (reserved for future use).
+    /// @return | table | Jump node table for sequencer.load().
+    dialog_table.set(
+        "jump",
+        lua.create_function(|lua, (target, _opts): (String, Option<LuaTable>)| {
+            let node = lua.create_table()?;
+            node.set("type", "jump")?;
+            node.set("target", target)?;
+            Ok(node)
         })?,
     )?;
 

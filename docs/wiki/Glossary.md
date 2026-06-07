@@ -69,12 +69,15 @@ The glossary collects terms that appear across module and API pages.
 - `LByteData` ([lurek.binary](Module-binary)) - Exposes byte-buffer inspection and bit editing methods to Lua.
 - `LCamera` ([lurek.camera](Module-camera)) - Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
 - `LCameraRig` ([lurek.camera](Module-camera)) - Lua-side camera rig that manages named cameras and viewport layouts.
+- `LCameraWalker` ([lurek.camera](Module-camera)) - Lua-side walker combining tile-grid movement with camera following.
 - `LCanvas` ([lurek.render](Module-render)) - Off-screen render target that can be drawn to and then composited onto the screen.
 - `LCatmullRom` ([lurek.math](Module-math)) - Lua-side wrapper for a Catmull-Rom spline.
 - `LCellular` ([lurek.procgen](Module-procgen)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
 - `LChannel` ([lurek.thread](Module-thread)) - Creates a new unbounded channel for sending typed values between threads.
 - `LCheckbox` ([lurek.ui](Module-ui)) - Adds checkbox-specific methods to a checkbox widget table.
 - `LChunkMap` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
+- `LCinematic` ([lurek.cinematic](Module-cinematic)) - Lua userdata handle wrapping a [`Cinematic`] timeline.
+- `LCinematicTimeline` ([lurek.cinematic](Module-cinematic)) - Lua userdata handle wrapping a [`CinematicTimeline`] for multi-track playback.
 - `LCircle` ([lurek.math](Module-math)) - Lua-side wrapper for a circle primitive.
 - `LColorPicker` ([lurek.ui](Module-ui)) - Adds color-picker-specific methods to a color picker widget table.
 - `LCombo` ([lurek.input](Module-input)) - Lua-side combo detector handle tracking ordered key sequences.
@@ -97,6 +100,7 @@ The glossary collects terms that appear across module and API pages.
 - `LDecoder` ([lurek.audio](Module-audio)) - Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
 - `LDepthSorter` ([lurek.scene](Module-scene)) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
 - `LDialog` ([lurek.ui](Module-ui)) - Adds dialog-specific methods to a dialog widget table.
+- `LDialogSequencer` ([lurek.dialog](Module-dialog)) - Lua handle for a dialog sequencer with typewriter-reveal playback.
 - `LDialogueAI` ([lurek.dialog](Module-dialog)) - Lua handle for topic and branch selection driven by dialogue AI state.
 - `LDialogueState` ([lurek.dialog](Module-dialog)) - Lua handle for dialog conversation state tracking.
 - `LDocEntry` ([lurek.docs](Module-docs)) - Provides Lua accessors for documentation entry metadata.
@@ -140,7 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LHtmlDocument` ([lurek.html](Module-html)) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
 - `LHtmlElement` ([lurek.html](Module-html)) - Lua-side DOM element handle with stale-generation detection.
 - `LHTNDomain` ([lurek.ai](Module-ai)) - Lua handle for a hierarchical task network domain.
-- `LImage` ([lurek.render](Module-render)) - GPU-backed texture handle used for drawing images to screen.
-- `LImageData` ([lurek.image](Module-image)) - Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
-- `LImageData` ([lurek.render](Module-render)) - Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
-- `LImageEffect` ([lurek.effect](Module-effect)) - Lua-side handle for an image effect chain detached from live post-effect capture.

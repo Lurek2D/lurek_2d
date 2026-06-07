@@ -1,42 +1,37 @@
 ---
-description: "Create one Lua or game example that demonstrates a concrete lurek.* API, pattern, or gameplay concept."
-agent: "Content-Maker"
+name: create-example
+description: Create new example or update example for specific module.
 ---
-# Create Example
 
-## Goal
-- Add one runnable example in `content/examples/` with clear, single-concept teaching value.
+# GOAL
+- Create a clear, concise example script in `content/examples/` illustrating a specific module's API.
 
-## Inputs
-- Example name.
-- What to teach: either `target=<API or pattern>` (API-focused) or `concept=<gameplay concept>` (gameplay-focused).
-- Audience level.
-- Required assets or setup.
+# INPUTS REQUIRED
+- Target module
+- API function or concept to demonstrate
+= User must specify which part of the API needs an example
+- Agent must collect the exact API signatures from `docs/api/lurek.lua`
 
-## Steps
-1. Load [skill: examples-management](../skills/examples-management/SKILL.md), [skill: lua-scripting](../skills/lua-scripting/SKILL.md), and [skill: documentation](../skills/documentation/SKILL.md) before acting.
-2. Read `content/examples/`, nearby examples, the matching API docs or spec (`docs/specs/`), and any asset constraints before writing anything.
-3. Choose scope: if `target=` was given, the example shows exactly one API call or pattern; if `concept=` was given, the example shows one gameplay mechanic using the minimum set of `lurek.*` systems it actually needs. One example, one teaching goal.
-4. Use the real API exactly as shipped, keep the file small, and add only the README text needed for discovery and running. Do not scaffold toward a library or demo — use `/create-demo` for that.
-5. Run `cargo test --test examples_load_test` and confirm any required registration or doc cross-links stay in sync.
+# STEPS TO DO
+1. Load skills: examples-management, lua-scripting.
+2. Execute `python tools/audit/example_coverage.py --module <target>` to confirm which API signatures are currently un-exampled.
+3. Write a self-contained Lua script in `content/examples/` that sets up and invokes the targeted API cleanly.
+4. Execute `python tools/validate/validate_example_coverage.py`. If it fails or shows unlinked examples, fix the registration metadata in the script.
+5. Execute `python tools/audit/example_coverage.py --module <target>`. If the target API coverage is still <100%, return to step 3 and ensure the example properly hits the missing methods.
 
-## Success Criteria
-- [ ] The example runs without errors via the examples load test.
-- [ ] The example teaches exactly one API call, pattern, or gameplay concept.
-- [ ] Required sync files (README, registration, cross-links) were updated.
-- [ ] No generated artifacts were edited by hand.
+# OUTPUTS PROVIDED
+- New or modified example script
+- Example coverage report
 
-## Anti-patterns
-- Teaching two or more concepts in one example — split into two `/create-example` calls instead.
-- Expanding a Lua example into a demo or mini-game — use `/create-demo` instead.
-- Skipping the load test because the example looks correct visually.
-- Editing `docs/api/lurek.lua` or other generated outputs by hand.
+# SUCCESS CRITERIA
+- `python tools/validate/validate_example_coverage.py` exits with code 0.
+- `python tools/audit/example_coverage.py` reports exactly 100% example coverage for the targeted API method.
 
-## Example Invocation
-- /create-example name=timers target=timer.after
-- /create-example name=camera_follow concept=smooth_follow_camera
+# ANIT PATTERNS
+- Writing overly complex examples that obscure the actual API being demonstrated.
+- Failing to document the code with clear comments.
 
-## CAG Metadata
-Mode: agent
-Loads skills: examples-management, lua-scripting, documentation
-Inputs required: Example name., What to teach (target= or concept=)., Audience level., Required assets or setup.
+# REFERENCES
+- skills: examples-management, lua-scripting, documentation
+- tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py
+- agent: Content-Maker

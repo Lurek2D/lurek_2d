@@ -11,7 +11,7 @@
 - Source path: `src/network/`
 - Binding: `src/lua_api/network_api.rs`
 - Namespace: `lurek.network`
-- Lua API surface: `21` functions, `17` types, `49` methods
+- Lua API surface: `30` functions, `17` types, `61` methods
 - Rust test path(s): tests/rust/unit/network_tests.rs
 - Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua, tests/lua/unit/test_network_pack_unpack.lua, tests/lua/unit/test_network_roles.lua, tests/lua/unit/test_network_runtimer.lua, tests/lua/security/test_network_security.lua
 
@@ -99,11 +99,31 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - Routes completed results back with correlation ids for outstanding work.
 - Keeps the blocking transport surface off the main loop.
 
+### netstat.rs
+
+- Engine module for network statistics.
+- Provides runtime metrics such as bytes sent/received and latency.
+- This is a generic, genre‑agnostic API.
+
+### netstate.rs
+
+- Network state synchronization manager for replicated state across peers.
+- Provides `LNetworkState` userdata wrapping the pure-Lua netstate protocol.
+- Supports authority-based writes, per-key versioning, turn-based coordination,
+- and callback-driven change notifications.
+
 ### relay.rs
 
 - Relay ticket encoding and decoding for room and peer identification.
 - Builds UDP hole-punch probe payloads with a magic prefix.
 - Provides lightweight helpers for relay-based NAT traversal signalling.
+
+### rpc.rs
+
+- Remote Procedure Call (RPC) manager for networked function invocation.
+- Provides request/response patterns, fire-and-forget notifications, and broadcasts
+- over network connections. Manages pending calls with timeout, automatic request ID
+- generation, and response callback dispatch.
 
 ### sse.rs
 
@@ -138,13 +158,18 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - `lurek.network.createLobby(name, port, player_count?, max_players?) -> table`: Broadcasts lobby information and returns it as a table.
 - `lurek.network.createRoom(name, host, max_players?) -> table`: Creates a local room record. This function is exposed to Lua scripts.
 - `lurek.network.discoverLobbies(timeout_ms?) -> table`: Discovers broadcast lobbies. This function is exposed to Lua scripts.
+- `lurek.network.getPlayerList(room_name) -> table`: Returns list of peer IDs currently in a room.
+- `lurek.network.getRoom(room_name) -> table`: Returns room metadata including host peer and player count.
+- `lurek.network.isAllReady(room_name) -> boolean`: Checks if all players in a room are ready. Requires at least 2 players.
 - `lurek.network.joinRoom(id) -> table`: Joins a room by id when available. This function is exposed to Lua scripts.
 - `lurek.network.leaveRoom(id) -> table`: Leaves a room by id when available. This function is exposed to Lua scripts.
 - `lurek.network.listRooms() -> table`: Lists known local room records. This function is exposed to Lua scripts.
 - `lurek.network.makePunchProbe(peer_id) -> string`: Creates a relay punch probe payload for a peer id.
 - `lurek.network.newClient(opts) -> LNetworkHost`: Creates a client host and connects to an address.
 - `lurek.network.newHost(opts) -> LNetworkHost`: Creates a network host from an options table.
+- `lurek.network.newNetState(host?, opts?) -> LNetworkState`: Creates a network state synchronization manager.
 - `lurek.network.newRelayTicket(room_id, peer_id) -> string`: Creates an encoded relay ticket. This function is exposed to Lua scripts.
+- `lurek.network.newRpc(host, channel?, timeout_ms?) -> LNetworkRpc`: Creates a network RPC manager attached to a host.
 - `lurek.network.newRuntime() -> LNetworkRuntime`: Creates a background network runtime.
 - `lurek.network.newServer(opts) -> LNetworkHost`: Creates a server host from an options table.
 - `lurek.network.pack(value) -> string`: Packs a supported Lua value into a binary network message string.
@@ -154,11 +179,12 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - `lurek.network.predictLinear(snapshot, dt) -> table`: Predicts an entity snapshot forward by linear velocity.
 - `lurek.network.reconcileSnapshot(pred, auth, alpha) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot.
 - `lurek.network.reconcileWithPolicy(pred, auth, alpha, soft_threshold, hard_threshold) -> table`: Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
-- `lurek.network.unpackSnapshot(data) -> table`: Unpacks a binary network message string into a sync snapshot table.
+- `lurek.network.setReady(room_name, peer_id, ready) -> nil`: Marks a player as ready or not ready in a room.
 - `lurek.network.sseCollect(url, n, timeout_secs?) -> table`: Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 - `lurek.network.sseConnect(url, callback) -> LSseStream`: Opens an SSE stream to `url` and returns an `LSseStream` handle.
 - `lurek.network.syncEntity(host_ud, entity_id, data_tbl, channel?, reliable?) -> nil`: Broadcasts a packed entity sync payload through a network host.
 - `lurek.network.unpack(data) -> table`: Unpacks a binary network message string into a Lua value.
+- `lurek.network.unpackSnapshot(data) -> table`: Unpacks a binary network message string into a sync snapshot table.
 
 ### Callbacks
 
@@ -417,9 +443,9 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 
 ##### Methods
 
-- `LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) -> integer`: Starts non-blocking authentication bootstrap.
+- `LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) -> integer`: Start authenticating with a backend.
 - `LNetworkRuntime:authCancel() -> nil`: Cancels active authentication.
-- `LNetworkRuntime:getAuthStatus() -> string`: Returns the current auth status.
+- `LNetworkRuntime:getAuthStatus() -> string`: Returns the current active authentication status.
 - `LNetworkRuntime:getAuthToken() -> string?`: Returns the current active access token.
 - `LNetworkRuntime:getMetrics() -> table`: Returns network runtime metrics.
 - `LNetworkRuntime:httpGet(url, headers?) -> integer`: Starts an HTTP GET request. This method is available to Lua scripts.
@@ -427,8 +453,8 @@ Lobby discovery and NAT traversal facilitate session-matching workflows. Discove
 - `LNetworkRuntime:httpPost(url, body, headers?) -> integer`: Starts an HTTP POST request. This method is available to Lua scripts.
 - `LNetworkRuntime:httpRequest(opts) -> integer`: Starts an HTTP request from an options table and returns its request id.
 - `LNetworkRuntime:httpStream(url, headers?, timeout_secs?) -> integer`: Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
-- `LNetworkRuntime:matchmakeCancel(id) -> nil`: Cancels active matchmaking request.
-- `LNetworkRuntime:matchmakeStart(url, payload) -> integer`: Starts non-blocking matchmaking request.
+- `LNetworkRuntime:matchmakeCancel(id) -> nil`: Cancel matchmaking request.
+- `LNetworkRuntime:matchmakeStart(url, payload) -> integer`: Start matchmaking request.
 - `LNetworkRuntime:poll() -> table`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
 - `LNetworkRuntime:shutdown() -> nil`: Shuts down the network runtime and cancels pending requests.
 - `LNetworkRuntime:tcpClose(id) -> nil`: Closes a TCP connection. This method is available to Lua scripts.

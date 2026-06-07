@@ -17,14 +17,14 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8627 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (30777 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8828 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31293 lines)
 
 ## Coverage
 
-- 68 modules
-- 5629 functions and methods
-- 100.0% documented
+- 70 modules
+- 5758 functions and methods
+- 99.9% documented
 
 ## API Module Index
 
@@ -34,18 +34,19 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [lurek.asset](Module-asset) | 23 | 1 | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
-| [lurek.audio](Module-audio) | 88 | 7 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
+| [lurek.audio](Module-audio) | 94 | 7 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
 | [lurek.automation](Module-automation) | 32 | 0 | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
-| [lurek.camera](Module-camera) | 3 | 2 | 2D camera and viewport types. Pure data; no GPU resources. |
+| [lurek.camera](Module-camera) | 4 | 3 | 2D camera and viewport types. Pure data; no GPU resources. |
 | [lurek.charts](Module-charts) | 7 | 5 | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
+| [lurek.cinematic](Module-cinematic) | 2 | 2 | This module provides scriptable cinematic timelines for orchestrating complex game sequences. |
 | [lurek.color](Module-color) | 19 | 0 | RGBA color primitives with color-space conversions, blending modes, and predefined palettes. |
 | [lurek.compute](Module-compute) | 13 | 1 | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
-| [lurek.cursor](Module-cursor) | 4 | 3 | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom. |
+| [lurek.cursor](Module-cursor) | 4 | 3 | The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. |
 | [lurek.dataframe](Module-dataframe) | 15 | 6 | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
 | [lurek.debugbridge](Module-debugbridge) | 16 | 0 | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [lurek.devtools](Module-devtools) | 50 | 2 | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
-| [lurek.dialog](Module-dialog) | 3 | 3 | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
+| [lurek.dialog](Module-dialog) | 10 | 4 | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
 | [lurek.docs](Module-docs) | 26 | 5 | In-engine API documentation catalog and lightweight schema validation for structured game data. |
 | [lurek.dsp](Module-dsp) | 28 | 7 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
 | [lurek.ecs](Module-ecs) | 1 | 1 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
@@ -70,7 +71,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.midi](Module-midi) | 4 | 0 | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
 | [lurek.minimap](Module-minimap) | 1 | 1 | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
 | [lurek.mods](Module-mods) | 4 | 3 | Mod-loading framework: virtual filesystem mounts + sandboxed runtime config. |
-| [lurek.network](Module-network) | 24 | 3 | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree. |
+| [lurek.network](Module-network) | 30 | 3 | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree. |
 | [lurek.overlay](Module-overlay) | 2 | 2 | Screen overlay system: weather, atmosphere, screen effects, and transitions. |
 | [lurek.parallax](Module-parallax) | 3 | 2 | Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes. |
 | [lurek.particle](Module-particle) | 5 | 2 | Emitter-based 2D particle systems with bounded pools and Euler integration. |
@@ -81,17 +82,18 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.procgen](Module-procgen) | 33 | 3 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
 | [lurek.province](Module-province) | 15 | 1 | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
 | [lurek.raycaster](Module-raycaster) | 9 | 5 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
-| [lurek.render](Module-render) | 118 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
+| [lurek.render](Module-render) | 117 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
-| [lurek.scene](Module-scene) | 59 | 1 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
+| [lurek.scene](Module-scene) | 60 | 2 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
 | [lurek.serialize](Module-serialize) | 15 | 0 | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
 | [lurek.spine](Module-spine) | 4 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
-| [lurek.sprite](Module-sprite) | 7 | 4 | Sprite and sprite-batch rendering above the render command queue. |
+| [lurek.sprite](Module-sprite) | 8 | 5 | Sprite and sprite-batch rendering above the render command queue. |
+| [lurek.svg](Module-svg) | 1 | 1 | Lua bindings for the vector SVG graphics module. |
 | [lurek.system](Module-system) | 28 | 0 | File: src/lua_api/system_api.rs |
 | [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
-| [lurek.tilemap](Module-tilemap) | 28 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [lurek.tilemap](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 15 | 6 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [lurek.ui](Module-ui) | 91 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |

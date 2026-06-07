@@ -13,7 +13,7 @@
 - Source path: `src/render/`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `130` functions, `14` types, `88` methods
+- Lua API surface: `117` functions, `14` types, `88` methods
 - Rust test path(s): src/render/ (inline #[cfg(test)] in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), src/render/renderer_tests.rs, src/render/postfx_pipeline_tests.rs
 - Lua test path(s): none found in the workspace
 
@@ -48,168 +48,392 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 
 ### canvas.rs
 
-- This file defines the lightweight canvas handle that describes an off-screen render target by size and identity.
-- It is metadata for the renderer rather than a GPU allocation, so higher layers can reason about canvas ownership cheaply.
-- The type exists to keep canvas-facing APIs stable while the renderer manages the actual backing resources elsewhere.
+- Canvas metadata representation for off-screen rendering targets.
+- Defines the dimensions (width and height) of paintable canvases.
+- Allows the game engine and Lua layers to query and specify render targets by ID.
+- Separates the logical target handle from actual backing GPU texture resources.
 
 ### decal_surface.rs
 
-- This file defines the persistent decal surface descriptor used when the engine needs a paintable texture space for marks and splats.
-- It keeps only the durable dimensions and identity needed for later GPU allocation and reuse across frames.
-- The descriptor stays intentionally small because the renderer owns the heavy texture lifecycle and attachment details.
+- Paint-target surface descriptor for persistent world decals.
+- Stores the durable dimensions (width and height) needed for later GPU texture allocation.
+- Represents canvas-like surfaces where impact marks, splats, and footprints can be drawn.
+- Minimizes overhead by keeping texture resource allocations managed by the central renderer.
+- Ensures decal targets are cleanly referenced and reused across frame lifecycles.
 
 ### draw_layer.rs
 
-- This file stores deferred draw-layer callbacks that should execute in a chosen depth order later in the frame.
-- Entries carry ordering intent without forcing immediate GPU work, which lets gameplay and UI enqueue layered drawing cheaply.
-- Sorting is centralized here so every queued callback follows the same layering rule before the renderer flushes it.
-- The result is a narrow scheduling buffer between scripting-time draw requests and render-time command emission.
+- Stores deferred draw-layer callbacks sorted by depth (Z-order).
+- Enables gameplay code and UI components to enqueue layered draw commands cheaply.
+- Postpones immediate GPU commands to allow sorting before final render dispatch.
+- Centralizes sorting rules to ensure consistent layering of all drawn elements.
+- Serves as a scheduling buffer between frame-level draw requests and GPU emission.
+- Provides methods to queue, flush, clear, and inspect pending callbacks.
+
+### extracted_blocks.rs
+
+- Implements procedural geometry generation and tessellation for all primitive 2D shapes.
+- Generates vertex/index lists for arcs, circles, ellipses, sectors, and rounded rectangles.
+- Translates abstract blending modes requested by Lua into explicit wgpu descriptors.
+- Handles thick-line calculations by expanding stroke segments to screen-aligned quads.
+- Uses adaptive step sizes for curved geometry to trade off segment count vs visual smoothness.
+- Implements custom geometry builders for solid shapes, hollow wireframes, and textured sprites.
+- Calculates optimal layouts (like triangle lists and fans) to minimize GPU vertex buffer size.
+- Manages mathematical fallbacks for degenerate geometry, preventing panic on zero-sized shapes.
+- Retains isolated, pure functions for vector math, shape intersection, and coordinate projections.
+- Provides utility structures for color mapping, color interpolation, and vertex transformations.
+- Feeds geometry data into the graphics pipeline without maintaining direct GPU state handles.
+- Supports multiple shading layouts, including flat colors, texture mapping, and vertex gradients.
+- Standardizes font character drawing by converting glyph boxes into independent texture quads.
+- Enforces bounds-checking and coordinate constraints for scissor rectangles and viewports.
+- Serves as the math engine under the scene builder before final GPU buffer writeback.
+- Enables fast rendering of grid arrays, particle layouts, and complex vector drawing chains.
 
 ### font.rs
 
-- This file handles the text asset side of rendering, from bundled bitmap atlases to dynamically rasterized font faces.
-- It keeps glyph metrics, atlas placement, and lookup behavior close together so layout and draw code share one text model.
-- Built-in faces give the engine predictable default text coverage even before user fonts are loaded from content.
-- Runtime rasterization feeds custom font files into the same practical atlas-oriented representation used by bundled resources.
-- Measurement helpers live here as well, which keeps wrapping, alignment, and cursor math consistent with the actual glyph data.
-- Character lookup includes compatibility behavior for terminal-style symbols and legacy code ranges that show up in retro UI work.
-- The file therefore sits between raw font assets and renderer-facing text quads, preserving both readability and runtime flexibility.
-- In effect it is the typography utility layer for every screen, HUD, console, and debug overlay that needs stable text metrics.
+- Handles text asset rendering from bundled bitmap atlases to dynamic font rasterization.
+- Packs glyph metrics, atlas placement, and UV offset maps under a unified interface.
+- Bundles Courier New regular and bold bitmap fonts at multiple point sizes for default text.
+- Uses fontdue to dynamically rasterize custom TTF/OTF font bytes at runtime.
+- Supports automatic word wrapping, alignment calculations, and pen advance metrics.
+- Extends character mapping to support retro drawing symbols and C1 box characters.
+- Bridges the gap between raw font files and ready-to-render texture quad geometry.
+- Provides text width measurement functions that are consistent with final GPU layouts.
+- Manages PNG atlas loading and parses texture cells with uniform dimensions.
+- Implements nearest-size matching for dynamic font scaling depending on pixel heights.
+- Tracks atlas dirty states to schedule GPU uploads when text structures change.
+- Isolates CPU-side text measurement logic from immediate graphics commands.
+- Integrates with slotmap resources via font keys to allow resource sharing across frames.
+- Standardizes font parameters including ascent, descent, and line height multiplier.
+- Facilitates debug text rendering and UI terminal overlays without custom asset setups.
+
+### gpu_light.rs
+
+- Enforces memory boundaries and layout constraints for the deferred shadow mapping pass.
+- Maximum capacity limits on light sources are defined here to guarantee stable frame times.
+- The structures defined here instruct the renderer how to process additive light passes.
+- Integrates with shadow compute parameters and vertex bindings for render passes.
+- Manages light texture resources, viewport dimensions, and bind group indices.
+- Specifies constants such as shadow map resolution and compute shader workgroup size.
+- Handles structures representing light metadata, positions, colors, and attenuation.
+- Restricts memory allocations by allocating fixed size buffers for light sources.
+
+### gpu_pipeline.rs
+
+- Manages creation and caching of wgpu render pipeline objects to prevent redundancy.
+- Groups pipelines by geometry layout, blend mode, and stencil operation flags.
+- Selects default built-in shaders when custom overrides are absent from keys.
+- Pays pipeline compilation cost only once per unique rendering configuration.
+- Configures stencil operations, depth-stencil states, and stencil mode mapping.
+- Standardizes blend states for alpha, additive, multiplicative, and replace modes.
+- Defines key lookups for flat, textured, lit, and post-processing pipelines.
+- Sets up color channel write masks mapped to native wgpu descriptors.
+- Controls vertex layout descriptors for various vertex types (color, texture, light).
+- Resolves pipeline state changes efficiently using caching maps.
+- Supports custom shader programs dynamically queried at draw time.
+- Adjusts multisample states and rasterization options dynamically.
+- Configures render passes with matching depth buffers and stencil tests.
+- Separates pipeline settings from actual drawing execution commands.
+- Provides methods to build pipeline keys, configure blend functions, and map targets.
+- Handles post-process passes by matching shaders to screen quad topologies.
 
 ### gpu_renderer.rs
 
-- This file is the concrete wgpu renderer that turns the engine command vocabulary into encoded GPU work and presented frames.
-- It owns device-facing state such as pipelines, bind groups, buffers, samplers, and the transient attachments needed during a frame.
-- Incoming draw commands are interpreted here into flat-color, textured, mesh, font, light, and post-effect passes that share one frame lifecycle.
-- Geometry for common 2D shapes is tessellated on demand so higher layers can speak in circles, lines, rounded boxes, and polygons instead of vertices.
-- Vertex and index buffers are resized as frame demand grows, which keeps command recording simple while still adapting to heavy scenes.
-- Textured drawing and flat drawing travel through separate but coordinated paths so color-only work does not inherit texture overhead by accident.
-- Off-screen canvas targets are managed beside the swapchain path, allowing the same renderer core to feed composition layers and final output.
-- Depth and stencil attachments are created only where needed, which keeps specialty passes available without forcing that cost onto every target.
-- User shaders can be compiled, cached, and driven with typed uniform values so scripted visual experiments fit into the same backend.
-- Post-processing hooks are integrated at the frame level instead of bolted on after presentation, enabling chained full-screen effects over rendered scenes.
-- Lighting support includes additive point contributions and shadow-related data preparation that enrich 2D scenes without leaving the renderer.
-- Screenshot readback and statistics gathering also happen here because this file has the authoritative picture of what the GPU just processed.
-- Font atlas uploads, texture writes, and canvas surface reuse are coordinated in one place so resource churn stays observable and bounded.
-- Visibility pruning happens before expensive draw expansion where possible, which helps large scenes skip obviously off-camera work.
-- Circle and ellipse draw commands use deterministic adaptive tessellation based on visual extent, clamped to stable minimum and maximum segment counts.
-- Blend, stencil, and depth modes are translated here into the exact pipeline variants the backend needs for compositing correctness.
-- The file also contains the glue that keeps meshes, particles, Spine output, and generic primitives flowing through one renderer abstraction.
-- Low-level vertex formats live here because they are backend contracts rather than reusable engine-domain types.
-- A large part of the file is practical translation work between ergonomic engine commands and the stricter shapes demanded by wgpu.
-- Frame setup and teardown logic are colocated with pass encoding so lifetime ordering for temporary GPU objects remains explicit.
-- Canvas rendering, main-surface rendering, and readback all depend on the same shared resource maps keyed by engine handles.
-- When a command sequence mixes text, textures, shapes, and custom shaders, this file is what turns that mixture into a coherent render graph.
-- It therefore serves as the mechanical heart of visual output rather than a thin wrapper around API calls.
-- Most engine rendering features eventually pass through this file, even when their public APIs live elsewhere.
-- The design favors one rich backend with many translation helpers over scattering GPU details across the rest of the codebase.
-- That centralization keeps GPU policy, caching, and pass ordering inspectable when rendering bugs appear.
-- It also makes new draw features cheaper to add because they can target an existing command pipeline instead of inventing a second renderer.
-- From the outside this file seems like a renderer implementation.
-- From the inside it is the point where command semantics, resource ownership, and frame orchestration are kept in sync.
-- It is the place where the engine decides how abstract 2D drawing intent becomes actual pixels on hardware.
-- Everything else in the render module exists largely to feed or shape the work that this backend executes.
+- Primary hardware-accelerated 2D rendering orchestrator for Lurek2D.
+- Integrates with wgpu to manage device, queue, swapchain, and graphics resources.
+- Translates Lua-side render commands into structured draw calls and pipeline states.
+- Controls multi-pass rendering flow including scenes, shadows, decals, and post-fx.
+- Aggressively coalesces contiguous draw calls sharing material parameters and textures.
+- Implements static geometry caching to bypass tessellation and CPU upload overhead.
+- Implements GPU-side instancing to render repetitive sprite grids and particle buffers.
+- Renders primitive vector shapes, dynamic outlines, rounded quads, and ellipses.
+- Resolves text rendering by drawing character quads lookup from font atlases.
+- Manages offscreen canvases as render targets to enable composite camera views.
+- Coordinates compute pass dispatches for hardware-accelerated distance-field shadows.
+- Resolves shadow atlas textures from compute results for lighting occlusion masks.
+- Emits screenshot captures via async buffer mapping without blocking frame updates.
+- Handles material definitions, diffuse textures, custom shader keys, and uniforms.
+- Orchestrates uniform buffer bindings for orthographic cameras and custom variables.
+- Pre-allocates exponential buffer arrays to reduce CPU-to-GPU synchronization stalls.
+- Drives post-processing pipeline chains, including CRT filters, bloom, and blur.
+- Employs default fallback shaders and placeholder textures for missing assets.
+- Implements depth sorting using sorted Z-layers to manage visual layering.
+- Optimizes state transitions by pre-sorting command pipelines before drawing.
+- Limits draw calls dynamically when zero-size target bounds are encountered.
+- Provides debug logging and performance counters to trace frame render times.
+- Configures color blending functions, including transparency, additive, and replace.
+- Enforces scissor rectangle tests to scissor GUI widgets and clipped sub-panels.
+- Operates texture samplers with configurable filter modes (nearest vs linear).
+- Generates stencil configurations to resolve masked shapes and stencil operations.
+- Manages decal surfaces, projecting stamp marks onto world tiles persistently.
+- Coordinates grid renders, particle arrays, and custom mesh draw commands.
+- Normalizes canvas transformations using unified 3x3 local coordinate systems.
+- Serves as the central interface connecting script buffers to native graphics APIs.
+- Releases unused textures, fonts, and target buffers during frame garbage collection.
+- Processes custom shader bind groups and mapping variables dynamically.
+- Implements adaptive LOD detail settings for curved shapes based on pixel radii.
+- Supports color vertex arrays, texture coordinate indices, and custom vertex inputs.
+- Ensures cross-platform compatibility across Windows and Linux Vulkan/DX12 backends.
+- Handles window resize events, adjusting swapchain sizes and depth targets.
+- Operates independent thread context checks for multi-threaded draw queues.
+- Prevents runtime memory leaks by managing slotmap indices for heavy assets.
+- Normalizes scissor boundaries to prevent out-of-bounds GPU validation errors.
+- Formats color values, alpha channels, and coordinate components for upload.
+- Feeds debug frame metrics to tracing tools to measure GPU execution bounds.
+- Maps texture coordinates, wrapping rules, and sampler details uniformly.
+- Drives final frame presentation to the swapchain surface texture view.
+- Reuses index and vertex buffers across consecutive frames to reduce allocations.
+- Rebuilds shadow atlas frames only when light sources or occluders change.
+- Supports multiple material channels, diffuse overlays, and blend configurations.
+- Translates render target IDs to select target attachments at runtime.
+- Isolates script parameters from raw graphics structures using binding converters.
+- Governs draw command validation, tracking error codes for invalid targets.
+- Controls viewport layouts, aspect ratios, and letterboxing setups for retro resolutions.
+
+### gpu_resources.rs
+
+- Manages persistent GPU resource lifetimes, allocations, and buffer uploads.
+- Handles dynamic capacity adjustment for growing vertex and index buffers.
+- Caches textures, fonts, and canvases inside slotmap collection structures.
+- Prunes unused graphics resources automatically to prevent GPU memory leaks.
+- Resizes vertex and index buffers exponentially to minimize pipeline stalls.
+- Uploads static draw geometries to permanent GPU buffers for cached rendering.
+- Registers textures and binds their sampler configurations at upload time.
+- Creates depth-stencil targets matching canvas dimensions.
+- Builds sampler descriptors using texture filtering parameters.
+- Initializes fallbacks like blank solid textures for loading assets.
+- Provides methods to fetch, update, insert, and remove textures and fonts.
+- Maps texture wrapping, repeat flags, and linear filtering state.
+- Validates texture format channels before uploading pixel buffers.
+- Integrates with shader resource keys to match draw commands to assets.
+- Tracks resource usage dirty flags to compile bind groups on demand.
+
+### gpu_shaders.rs
+
+- Defines raw binary structures and types representing compiled user WGSL shaders.
+- Maps uniform value types to their corresponding GPU buffer layout variants.
+- Caches compiled wgpu pipelines within shader structures to prevent reconstruction.
+- Key-indexes compiled shaders in the central registry for zero-cost search lookups.
+- Enforces static layout verification to validate uniform layouts at draw dispatch.
+- Defines uniform value mappings for scalars, vectors, matrices, and arrays.
+- Provides conversion helpers to bridge dynamic uniforms to byte arrays.
+- Translates compile errors into standard Lurek2D diagnostic logs.
+
+### gpu_shadows.rs
+
+- Manages 1D shadow map rendering, dynamic light lists, and compute dispatches.
+- Gathers occluder edge geometry and transforms it into GPU edge storage buffers.
+- Dispatches shadow compute shaders per light source to map distances into the shadow atlas.
+- Performs viewport culling on light sources before queuing commands.
+- Binds and manages GPU buffers, bind groups, and pipelines for light passes.
+- Filters occluding shapes by light bitmasks and culls lines outside light radii.
+- Allocates static compute pipelines, uniforms, and sampler structures.
+- Resolves shadows on screen using an additive light accumulation render pass.
+- Limits light quads capacity to ensure predictable frame render times.
+- Supports dynamic light placement, color, attenuation, and radius adjustments.
+- Transforms light positions to NDC coordinate space.
+- Renders geometry with shadows blending transparently into backgrounds.
+- Avoids duplicate shadow calculations by caching static edge buffers.
+- Exposes methods to build shadow render passes and dispatch compute queues.
+- Cooperates with the central GPU renderer to map pipeline configurations.
+- Enables retro 2D dynamic shadowing effects using hardware distance field shaders.
+
+### gpu_state.rs
+
+- Implements the GPU resource registry to track persistent mesh and buffer lifetimes.
+- Stores texture, canvas, and font allocations within structured slotmaps.
+- Caches static draw geometry descriptors, avoiding frame allocations.
+- Manages depth-stencil buffer views matching current canvas dimensions.
+- Feeds dynamic instance buffers to the GPU for batch transformations.
+- Supplies empty default targets and textures for resource fallbacks.
+- Retains bind groups pairing textures with active filter samplers.
+- Holds depth-stencil states, target formats, and multi-sampling options.
+- Facilitates frame resource reuse, minimizing CPU-GPU synchronization overhead.
+- Maps texture IDs to raw wgpu texture handles securely.
+
+### gpu_tess.rs
+
+- Tessellates 2D vector shapes, text glyphs, and sprite quads into triangle lists.
+- Expands stroke thick-lines into screen-aligned rectangular quads.
+- Adapts circle and ellipse segment counts to screen-space radii dynamically.
+- Packs position coordinates, UV parameters, and tint values into vertex buffers.
+- Transforms local coordinates using unified 3x3 model-view matrices.
+- Uses adaptive step sizes for arcs, segments, and hollow shapes.
+- Prepares dynamic draw commands matching various pipelines and geometry layouts.
+- Formats colors, indices, and transforms for direct graphics pipeline ingestion.
+- Implements rounded rectangle vertex computations with bezier-like arcs.
+- Translates texture coordinates and repeat flags into normalized layouts.
+- Builds scissor bounds, culling out-of-screen rendering commands.
+- Resolves drawing styles including filled shapes, outlines, and dashed borders.
+- Projects particle layouts, mesh triangles, and line strips dynamically.
+- Handles typography metrics, translating advancing pens into quad coords.
+- Normalizes stencil values, drawing modes, and texture parameters.
+- Supports linear gradient directions, computing vertex colors proportionally.
+- Manages mesh transformation indices and instance offsets.
+- Operates purely on mathematical vertices without keeping GPU buffer handles.
+
+### gpu_types.rs
+
+- Defines raw binary structures representing GPU vertex layouts.
+- Packs memory layouts tightly using bytemuck to ensure copy compliance.
+- Groups properties like position, texture coordinates, color tints, and normals.
+- Encapsulates command batching metadata for coalescing draw dispatches.
+- Tracks instance transformation data for hardware instancing buffers.
+- Defines data structures for flat-shaded, textured, and lit vertices.
+- Represents compute shader parameter layouts for shadow mapping passes.
+- Provides index type aliases and scissor viewport structures.
+- Integrates with slotmap resource keys for canvas, font, and texture IDs.
+- Standardizes buffer bindings, pipeline options, and draw batch tags.
+- Limits padding bytes to comply with GPU uniform block alignment rules.
+- Declares struct attributes suitable for standard graphics api input.
 
 ### image_effect.rs
 
-- This file defines the compact descriptor for one post-processing step in a larger image-effect chain.
-- Each record carries effect identity, parameter values, and enable state so pipelines can be configured without custom structs per effect.
-- The type is the small control surface between high-level effect selection and the GPU post-processing backend.
+- Compact descriptor for post-processing steps in a shader pipeline.
+- Stores effect names, enable flags, and float parameter values.
+- Allows post-fx filters to be dynamically updated without custom struct layouts.
+- Serves as the control interface for full-screen post-processing effects.
 
 ### mesh.rs
 
-- This file defines reusable 2D mesh data for renderable geometry that is richer than the engine's immediate-mode shape commands.
-- It keeps positions, UVs, colors, and topology choices together so imported content and generated geometry share one draw-ready format.
-- Indexed and non-indexed paths are both represented, which gives callers flexibility without forcing a single authoring style.
-- Triangulation helpers bridge higher-level topology choices into the triangles the backend ultimately needs.
-- The file is therefore the geometry interchange layer between content generation, importers, and the renderer.
+- Defines reusable 2D mesh data for complex vector drawing and models.
+- Stores vertex coordinates, UV maps, colors, and topology information.
+- Bridges custom loaded model assets and procedural vector geometries.
+- Supports multiple drawing topologies including triangle lists and fans.
+- Retains optional diffuse texture keys mapping meshes to atlas resources.
+- Integrates slotmap mesh keys for persistent vertex cache storage on GPU.
+- Handles both indexed geometry index arrays and simple vertex lists.
+- Exposes helper methods to construct meshes from flat vector buffers.
+- Allows gameplay layers to specify color overlays and texture offsets.
+- Acts as the primary shape container passed to the renderer dispatch queue.
 
 ### mod.rs
 
-- This module provides the engine render stack, from command definitions and asset-side helpers to the concrete GPU backend.
-- It covers shapes, text, textures, meshes, decals, canvas targets, shaders, and full-screen image effects under one rendering vocabulary.
-- At the highest level it is the subsystem that turns frame-local draw intent into ordered, composited visual output.
+- Unified entry point for the Lurek2D render module stack.
+- Exposes submodules for canvases, decal surfaces, shapes, and font managers.
+- Declares modules for the GPU-accelerated renderer and compiled pipelines.
+- Unifies draw interfaces, shader uniform mappings, and shader passes.
+- Bridges game runtime draw buffers to backend hardware rendering layers.
+- Conforms to the binding rules, exposing all public rendering APIs.
 
 ### obj_loader.rs
 
-- This file imports Wavefront OBJ content and converts it into forms that make sense inside a 2D engine rather than a full 3D renderer.
-- Parsed models can be projected into engine mesh data for GPU drawing or rasterized in software for previews and tooling images.
-- Material parsing keeps basic diffuse color and texture references close to the mesh data so projected results still carry authored surface intent.
-- Local vector and camera utilities are included here because the conversion work needs lightweight 3D math without spreading that concern across the engine.
-- Face handling normalizes OBJ indexing quirks such as relative references and mixed attribute indices into stable internal structures.
-- CPU rasterization gives the module a no-GPU path for thumbnails, validation, and other inspection-oriented workflows.
-- Projection support is tuned for systems like the raycaster and globe views that want 3D-authored silhouettes in a 2D presentation model.
-- The file is feature-gated because model import is useful but not fundamental to every game built on the runtime.
-- In design terms this is an adapter from common 3D content formats to the engine's 2D rendering language.
-- It preserves enough material and geometric structure to stay expressive without promising a general-purpose 3D pipeline.
-- That boundary is the point: authored 3D assets may inform a scene, but final display still obeys the engine's 2D rendering architecture.
-- This file is where that translation is made concrete and reusable.
+- Parses Wavefront OBJ and material MTL files for rendering projection.
+- Translates 3D geometric models into 2D canvas coordinates and meshes.
+- Projects vertices from world positions to viewport dimensions using virtual cameras.
+- Performs linear diffuse color mapping and resolves texture path assets.
+- Implements software-based CPU rasterization for thumbnail rendering and validation.
+- Normalizes OBJ face indices, resolving negative and 1-based index offsets.
+- Filters back-facing triangles to optimize rendering output.
+- Computes face normals to calculate light reflection and shading coefficients.
+- Handles scaling, translation, and Y-rotation parameters for custom model instances.
+- Evaluates barycentric coordinate edge functions to resolve CPU depth values.
+- Builds sorting buffers to render projected triangles back-to-front.
+- Restricts memory reallocations by processing geometries in flat vector buffers.
+- Culls triangle vertices lying behind the camera near clip plane.
+- Bridges external 3D assets to the engine's 2D game layout pipelines.
+- Reads text files in memory, tokenizing components like vertices, UVs, and normals.
+- Maps texture coordinates, reversing Y components to align with wgpu samplers.
+- Supports MTL diffuse texture overlays mapped to renderer texture keys.
+- Separates mathematical vector operations from direct GPU state modifications.
+- Minimizes import overhead by caching parsed materials across instances.
+- Serves as an asset loader adapter, converting 3D files to 2D draw commands.
 
 ### postfx_pipeline.rs
 
-- This file manages the full-screen post-processing chain that runs after ordinary scene drawing has produced a source image.
-- Pipeline-layout and render-pipeline construction are centralized in shared helpers so built-in and custom effects use one consistent GPU setup path.
-- Built-in effects cover blur, bloom, stylization, damage, distortion, and screen-surface treatments without requiring custom game shaders.
-- Custom fragment programs can also be registered so advanced projects can extend the effect catalog while staying inside the same pipeline shape.
-- Effect parameters are packed into a fixed uniform layout that is simple to feed from scripting and stable for GPU execution.
-- Shared fullscreen geometry and ping-pong render targets keep multi-pass execution practical without rebuilding the whole frame graph each time.
-- Disabled chains degrade gracefully to a plain copy, which keeps the backend simple when no visual treatment is active.
-- Time, frame count, and resolution are injected centrally so effect authors can rely on common runtime signals.
-- Pass order follows the configured chain order, making visual stacking explicit rather than implicit.
-- The file therefore acts as the image-finishing stage of the renderer, where an already rendered frame can be polished or stylized.
-- It is not about drawing scene geometry.
-- It is about transforming one finished image into another with controlled GPU shader passes.
-- In practice this is the renderer's color-grading room, distortion rack, and screen-material toolbox.
+- Manages post-processing effects and screen-space shader rendering passes.
+- Connects offscreen canvas textures to full-screen fragment shader operations.
+- Groups effect parameters, texture bindings, and samplers dynamically.
+- Renders multi-pass post-fx chains like blur, CRT warp, and color correction.
+- Coalesces texture swap passes, minimizing frame allocation overhead.
+- Configures pipeline states, blend modes, and write masks for screen passes.
+- Compiles and stores default fallback post-processing WGSL shaders.
+- Reuses texture descriptors, adapting resources to window dimensions.
+- Supports custom shader key registers to inject user filter passes.
+- Maps uniform variables dynamically using uniform value layout builders.
+- Handles color space correction, mapping outputs to the swapchain format.
+- Restricts memory reallocations by reusing double-buffered texture targets.
+- Enables retro pixelation, scanline overlays, and vignette shaders.
+- Integrates with slotmap resource keys for canvases and target textures.
+- Provides methods to build pipelines, dispatch passes, and update variables.
+- Coordinates drawing execution by mapping shader layouts to screen quads.
+- Minimizes state mutations by caching texture bind groups across passes.
+- Tracks pipeline invalidation state, rebuilding targets on screen resize.
+- Integrates with wgpu render passes to bind buffers and samplers.
+- Validates uniform variables, warning on mismatched parameter inputs.
+- Manages target depth views to allow stencil tests in screen shaders.
+- Feeds performance timing data to the engine trace collector.
 
 ### province_map_pipeline.rs
 
-- This file provides the specialized GPU pipeline used to render province-map views that need more than generic sprite or mesh drawing.
-- It binds province identity, borders, and distance-related data together so the shader can reason about map regions instead of plain pixels.
-- Viewport mapping and mode-dependent behavior are configured here because that logic belongs to this strategic map presentation path.
-- The pipeline is intentionally dedicated, reflecting that province rendering has distinct data needs from ordinary scene rendering.
-- It turns map-analysis textures and buffers into a coherent fullscreen visual layer.
-- This is the render-side home for province-specific screen synthesis.
+- Provides the specialized GPU pipeline for drawing detailed province maps.
+- Binds map-specific data like region IDs, border structures, and height fields.
+- Renders fullscreen map views using custom fragments WGSL shader passes.
+- Configures pipeline layout options, mapping texture samplers and buffers.
+- Packs viewport ranges, map size, zoom factor, and animation times into uniforms.
+- Implements uniform buffer updates, writing data directly to GPU resources.
+- Combines multi-sampled border maps with texture views of region identity maps.
+- Standardizes buffer bindings, visibility stages, and shader layout groups.
+- Adapts map details dynamically to strategic zoom and tactical display zoom.
+- Avoids redundant resource rebuilds by reusing pipeline templates.
+- Controls blend state settings to compile alpha-blended transparent layers.
+- Separates general scene logic from custom administrative map synthesis.
 
 ### renderer.rs
 
-- This file defines the renderer command language that the rest of the engine speaks when it wants something visual to happen this frame.
-- It gathers draw operations, state changes, auxiliary descriptors, and shared render-side enums into one canonical vocabulary.
-- Shapes, text, textures, particles, Spine output, layered sorting, stencil control, and depth behavior all meet here as data instead of immediate API calls.
-- The command set is broad because many subsystems submit visual intent before the GPU backend ever becomes involved.
-- Shared enums for alignment, blend, compare, and draw styles live beside the commands so callers agree on meaning without backend coupling.
-- Higher-level rendering helpers can build rich features simply by emitting combinations of these records.
-- Post-processing descriptors and upload payloads also sit here because they are part of the same frame command stream.
-- In practice this file is the renderer's grammar, not its execution engine.
-- It explains what can be said to the backend, in what shapes, and with what supporting metadata.
-- Keeping that grammar centralized is what lets Lua, gameplay systems, and specialized modules target one render pipeline.
-- The file therefore stabilizes render intent across the codebase even as the backend implementation grows more complex.
-- Almost every visible feature eventually passes through the types defined here.
+- Defines Lurek2D's front-end render command language and vocabulary.
+- Gathers draw operations, layout state structures, and drawing enum descriptors.
+- Encapsulates shapes, typography, sprites, and particle states into dynamic variants.
+- Declares enums for color blend modes, text alignment, and draw modes.
+- Specifies vertex colors, gradients, and custom outline thickness bounds.
+- Standardizes structures for texture repeat modes and sampler filters.
+- Integrates post-processing descriptors directly into the command queue.
+- Translates dynamic Lua drawing inputs into structured scene components.
+- Decouples gameplay modules from immediate wgpu graphics API operations.
+- Provides methods to construct circle segments and compute ellipse coordinates.
+- Standardizes font parameters including font size and bold weights.
+- Outlines layouts for particle render shapes, including circles, ellipses, and lines.
+- Manages mesh descriptors and texture coordinate maps uniformly.
+- Governs stencil buffer tests, compare options, and stencil action tags.
+- Handles scissor testing regions to mask sub-panels and GUI layout regions.
+- Facilitates offscreen canvas descriptors, keeping metadata clean.
+- Governs lighting inputs, containing parameters for position, color, and attenuation.
+- Serves as the central API vocabulary connecting all engine subsystems to rendering.
 
 ### shader.rs
 
-- This file handles user-facing shader ingestion so custom WGSL fragments can plug into the renderer without exposing raw backend setup everywhere.
-- Source code is parsed, constrained, and rewritten into the wrapper shape the engine expects for controlled pipeline generation.
-- Fragment inputs are inspected so only supported coordinate and color channels enter the custom shader path.
-- Uniform values are represented in typed form here, which keeps script-driven shader parameters explicit and serializable enough for per-frame upload.
-- Ordered uniform iteration matters because GPU buffer layout must stay stable once a shader is accepted.
-- Attribute markers are also normalized here so author-facing shader syntax can remain a little friendlier than raw internal conventions.
-- The file is therefore the contract layer between flexible user shader text and a renderer that still needs predictable pipeline inputs.
+- Manages user-facing shader compilation and parsing of WGSL sources.
+- Wraps WGSL source code into normalized pipeline templates for the renderer.
+- Inspects fragment inputs to ensure only supported attributes are bound.
+- Represents shader uniform values in typed forms for per-frame upload.
+- Preserves the ordering of uniform variables to guarantee stable GPU buffer layouts.
+- Simplifies user shader attributes, mapping them to raw backend formats.
+- Translates dynamic Lua shader configurations into concrete wgpu pipeline steps.
+- Reports shader compilation errors and validation diagnostics to logs.
+- Defines uniform value mappings for arrays, float matrices, vectors, and scalars.
+- Validates uniform variables by matching types against compiled layout schemas.
+- Prevents runtime shader validation panic through strict preprocessing.
+- Keeps shader compilation metrics and uniform metadata key-indexed.
 
 ### shape.rs
 
-- This file stores reusable vector shape definitions as replayable command sequences instead of immediate one-off draw calls.
-- A shape can therefore package many primitive strokes and fills into one named asset-like unit for later reuse.
-- Drawing state such as color and line width travels with the sequence so replays preserve intended appearance.
-- The file is useful wherever authored UI motifs or gameplay markers should be drawn repeatedly without rebuilding command lists.
-- It acts as a small retained-mode layer inside the otherwise command-driven renderer.
+- Stores reusable vector shape definitions as replayable command sequences.
+- Packages stroke and fill operations into named assets for UI reuse.
+- Retains color and outline thickness attributes along with path commands.
+- Minimizes scene building overhead by avoiding dynamic shape rebuilding.
+- Implements retain-mode drawings inside the immediate-mode renderer.
+- Defines shape commands for circles, arcs, lines, rectangles, and polygons.
+- Handles rounded corners using bevels and adaptive curvature step counts.
+- Resolves complex shapes into lists of primitive rasterization items.
+- Restricts memory reallocations using flat vector coordinates.
+- Integrates with compound shape registries for simple frame-level lookups.
 
-## Lua API Reference
+## Lua API Ref
 
 ### Functions
 
 - `lurek.render.applyTransform(mat) -> nil`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 - `lurek.render.arc(mode, x, y, radius, angle1, angle2, segments?) -> nil`: Draws a filled or outlined circular arc segment.
-- `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 - `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 - `lurek.render.captureScreenshot(callback) -> nil`: Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
 - `lurek.render.circle(mode, x, y, radius) -> nil`: Draws a filled or outlined circle at the given position.
@@ -219,26 +443,17 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `lurek.render.draw(drawable, x?, y?, r?, sx?, sy?, ox?, oy?) -> nil`: Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
 - `lurek.render.drawBatch(batch) -> nil`: Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
 - `lurek.render.drawBevelRect(x, y, w, h, bevelW?, style?, opts?) -> nil`: Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
-- `lurek.render.drawBevelRect(x, y, w, h, bevelW?, style?, opts?) -> nil`: Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 - `lurek.render.drawColoredPolygon(vertices, colors, mode?) -> nil`: Draws a polygon with per-vertex colors.
-- `lurek.render.drawColoredPolygon(vertices, colors, mode?) -> nil`: Draws a polygon with per-vertex colors.
-- `lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segs?) -> nil`: Draws a cubic Bezier curve through start, two control points, and end.
 - `lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments?) -> nil`: Draws a cubic Bezier curve through start, two control points, and end.
 - `lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir?) -> nil`: Draws a rectangle with a two-color gradient fill.
-- `lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir?) -> nil`: Draws a rectangle with a two-color gradient fill.
 - `lurek.render.drawHexTile(cx, cy, size, orientation?, mode?) -> nil`: Draws a regular hexagonal tile at the given center position.
-- `lurek.render.drawHexTile(cx, cy, size, orientation?, mode?) -> nil`: Draws a regular hexagonal tile at the given center position.
-- `lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts?) -> nil`: Draws an isometric cube tile with configurable face colors and optional textures.
 - `lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts?) -> nil`: Draws an isometric cube tile with configurable face colors and optional textures.
 - `lurek.render.drawMany(list) -> nil`: Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
 - `lurek.render.drawNineSlice(slice, x, y, w, h) -> nil`: Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
 - `lurek.render.drawPath(path, mode?, close?) -> nil`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
-- `lurek.render.drawPath(path, mode?, close?) -> nil`: Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
-- `lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segs?) -> nil`: Draws a quadratic Bezier curve through start, control, and end points.
 - `lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segments?) -> nil`: Draws a quadratic Bezier curve through start, control, and end points.
 - `lurek.render.drawq(image, quad, x?, y?, r?, sx?, sy?, ox?, oy?) -> nil`: Draws a sub-region of an image defined by a Quad, with optional transform.
 - `lurek.render.ellipse(mode, x, y, rx, ry) -> nil`: Draws a filled or outlined ellipse at the given position.
-- `lurek.render.flushSortGroup(id) -> nil`: Ends a sort group and emits all accumulated draw calls in sorted order.
 - `lurek.render.flushSortGroup(id) -> nil`: Ends a sort group and emits all accumulated draw calls in sorted order.
 - `lurek.render.getBackgroundColor() -> number, number, number, number`: Returns the current background clear color.
 - `lurek.render.getBlendMode() -> string`: Returns the current blend mode name.
@@ -274,8 +489,8 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `lurek.render.isLayerVisible(name) -> boolean`: Returns whether a named rendering layer is currently visible.
 - `lurek.render.isWireframe() -> boolean`: Returns whether wireframe rendering is currently active.
 - `lurek.render.line(...) -> nil`: Draws a line between two points, or a polyline through multiple points.
-- `lurek.render.loadModel(path) -> LObjModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
-- `lurek.render.loadObj(path) -> LObjModel`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
+- `lurek.render.loadModel(path) -> LuaObjModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
+- `lurek.render.loadObj(path) -> LuaObjModel`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 - `lurek.render.newCanvas(width, height) -> LCanvas`: Creates a new off-screen render target with the given dimensions.
 - `lurek.render.newDepthSorter() -> LDepthSorter`: Registers the depth-sorted drawing helper constructor in the render module.
 - `lurek.render.newDrawLayer() -> LDrawLayer`: Creates a new z-ordered draw layer for sorting draw callbacks by depth.
@@ -293,7 +508,6 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `lurek.render.polygon(mode, ...) -> nil`: Draws a polygon from a flat list of x,y vertex coordinates.
 - `lurek.render.pop() -> nil`: Pops the top transformation matrix from the transform stack, restoring the previous one.
 - `lurek.render.popLayer(id) -> nil`: Ends a compositing layer and composites it with the previous content.
-- `lurek.render.popLayer(id) -> nil`: Ends a compositing layer and composites it with the previous content.
 - `lurek.render.print(text, x?, y?, scale?) -> nil`: Draws text using the active font at the given position.
 - `lurek.render.printRich(spans, x, y) -> nil`: Draws rich text composed of individually styled spans at the given position.
 - `lurek.render.printRichWithFont(font, spans, x, y) -> nil`: Draws rich text using a specific font without changing the global active font.
@@ -304,8 +518,6 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `lurek.render.printfWithFont(font, text, x, y, limit, align?) -> nil`: Draws word-wrapped and aligned text with a specific font without changing the global active font.
 - `lurek.render.push() -> nil`: Pushes the current transformation matrix onto the transform stack.
 - `lurek.render.pushLayer(id, alpha?, blendMode?) -> nil`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
-- `lurek.render.pushLayer(id, alpha?, blendMode?) -> nil`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
-- `lurek.render.pushSortKey(depth) -> nil`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.pushSortKey(depth) -> nil`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.rectangle(mode, x, y, w, h, rx?, ry?) -> nil`: Draws a rectangle. If rx is provided, draws a rounded rectangle.
 - `lurek.render.resetCanvas(canvas) -> nil`: Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
@@ -598,201 +810,6 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - Batched sprite renderer for efficiently drawing many copies of the same texture.
 
 ##### Fields
-- `LFont:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LImage Type
-
-- GPU-backed texture handle used for drawing images to screen.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LImage:getDimensions() -> number, number`: Returns both width and height of this image.
-- `LImage:getHeight() -> number`: Returns the height of this image in pixels.
-- `LImage:getId() -> number`: Returns the internal numeric handle ID for this image.
-- `LImage:getWidth() -> number`: Returns the width of this image in pixels.
-- `LImage:release() -> boolean`: Releases the GPU memory for this image. The handle becomes invalid after this call.
-- `LImage:type() -> string`: Returns the type name string for this image object.
-- `LImage:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LImageData Type
-
-- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LImageData:blit(source, dstX, dstY) -> nil`: Copies pixel data from another ImageData onto this one at the specified position.
-- `LImageData:diff(other) -> number`: Computes a numeric difference score between this image and another of the same size.
-- `LImageData:getHeight() -> number`: Returns the height of this image data in pixels.
-- `LImageData:getRegion(x, y, w, h) -> LImageData`: Extracts a rectangular sub-region as a new ImageData.
-- `LImageData:getWidth() -> number`: Returns the width of this image data in pixels.
-- `LImageData:mapPixels(callback) -> nil`: Iterates over every pixel and replaces its color with the return value of the callback.
-- `LImageData:resize(w, h) -> LImageData`: Creates a new ImageData resized to the given dimensions using bilinear sampling.
-- `LImageData:type() -> string`: Returns the type name of this object.
-- `LImageData:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LMesh Type
-
-- Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LMesh:getVertex(index) -> number, number, number, number, number, number, number, number`: Returns the data for a single vertex by 1-based index.
-- `LMesh:getVertexCount() -> number`: Returns the number of vertices in this mesh.
-- `LMesh:release() -> boolean`: Releases the mesh GPU resource and invalidates the handle.
-- `LMesh:setTexture(image?) -> nil`: Assigns or removes a texture for this mesh. Pass nil to clear the texture.
-- `LMesh:setVertex(index, data) -> nil`: Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
-- `LMesh:type() -> string`: Returns the type name string for this mesh object.
-- `LMesh:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LNineSlice Type
-
-- Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LNineSlice:getInsets() -> number, number, number, number`: Returns the border insets (top, right, bottom, left) that define the stretchable regions.
-- `LNineSlice:getTextureSize() -> number, number`: Returns the pixel dimensions of the underlying source texture.
-- `LNineSlice:type() -> string`: Returns the type name of this object.
-- `LNineSlice:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LObjModel Type
-
-- Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LObjModel:getFaceCount() -> number`: Returns the number of faces (triangles) in this OBJ model.
-- `LObjModel:getNormalCount() -> number`: Returns the number of vertex normals in this OBJ model.
-- `LObjModel:getUvCount() -> number`: Returns the number of UV texture coordinates in this OBJ model.
-- `LObjModel:getVertexCount() -> number`: Returns the number of vertices in this OBJ model.
-- `LObjModel:projectToMesh(camera, screenW, screenH) -> table`: Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
-- `LObjModel:renderToImage(width, height, rotation?) -> LImage`: Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
-
-#### LObjModelProjectToMeshResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `a` (`number`): A.
-- `b` (`number`): B.
-- `g` (`number`): G.
-- `r` (`number`): R.
-- `u` (`number`): U.
-- `v` (`number`): V.
-- `x` (`number`): X.
-- `y` (`number`): Y.
-
-##### Methods
-
-- No documented methods.
-
-#### LQuad Type
-
-- Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LQuad:getTextureDimensions() -> number, number`: Returns the full dimensions of the source texture this quad references.
-- `LQuad:getViewport() -> number, number, number, number`: Returns the quad's viewport rectangle within the source texture.
-- `LQuad:setViewport(x, y, w, h) -> nil`: Updates the quad's viewport rectangle.
-- `LQuad:type() -> string`: Returns the type name string for this quad object.
-- `LQuad:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LRenderGetStatsResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `batched_draws` (`integer`): Batched draw count.
-- `canvas_switches` (`integer`): Canvas switch count.
-- `canvases` (`integer`): Active canvas count.
-- `cpu_render_ms` (`number`): CPU render time in milliseconds.
-- `drawcalls` (`integer`): Total draw call count.
-- `fonts` (`integer`): Loaded font count.
-- `gpu_draw_calls` (`integer`): GPU-side draw call count.
-- `shader_switches` (`integer`): Shader switch count.
-- `texture_memory` (`integer`): Texture memory in bytes.
-- `texture_switches` (`integer`): Texture switch count.
-- `textures` (`integer`): Loaded texture count.
-
-##### Methods
-
-- No documented methods.
-
-#### LShader Type
-
-- GPU shader program for custom rendering effects (post-processing, distortion, etc.).
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LShader:hasUniform(name) -> boolean`: Checks whether this shader declares a uniform with the given name.
-- `LShader:release() -> boolean`: Releases the shader resource. If active, the default shader is restored.
-- `LShader:send(name, value) -> nil`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
-- `LShader:type() -> string`: Returns the type name string for this shader object.
-- `LShader:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LShape Type
-
-- Retained compound shape that accumulates drawing commands and can be rendered in one call.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LShape:arc(mode, x, y, r, astart, aend, segments?) -> nil`: Adds a filled or outlined arc command to the shape.
-- `LShape:circle(mode, x, y, r) -> nil`: Adds a filled or outlined circle command to the shape.
-- `LShape:clear() -> nil`: Removes all drawing commands from this shape, making it empty.
-- `LShape:draw(x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Renders the accumulated shape commands to the screen with optional transform.
-- `LShape:ellipse(mode, x, y, rx, ry) -> nil`: Adds an ellipse command to the shape.
-- `LShape:getCommandCount() -> number`: Returns the number of drawing commands accumulated in this shape.
-- `LShape:line(x1, y1, x2, y2) -> nil`: Adds a line segment command to the shape.
-- `LShape:polygon(mode, ...) -> nil`: Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
-- `LShape:polyline(...) -> nil`: Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
-- `LShape:rectangle(mode, x, y, w, h) -> nil`: Adds a rectangle command to the shape.
-- `LShape:roundedRectangle(mode, x, y, w, h, rx, ry?) -> nil`: Adds a rounded rectangle command to the shape.
-- `LShape:setColor(r, g, b, a?) -> nil`: Sets the drawing color for subsequent shape commands.
-- `LShape:setLineWidth(w) -> nil`: Sets the line width for subsequent line-mode shape commands.
-- `LShape:triangle(mode, x1, y1, x2, y2, x3, y3) -> nil`: Adds a triangle command to the shape.
-- `LShape:type() -> string`: Returns the type name string for this shape object.
-- `LShape:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-#### LSpriteBatch Type
-
-- Batched sprite renderer for efficiently drawing many copies of the same texture.
-
-##### Fields
 
 - No documented fields.
 
@@ -805,13 +822,3 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `LSpriteBatch:release() -> boolean`: Releases the sprite batch resource.
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
-## References
-
-- [wgpu API documentation](https://wgpu.rs)
-- [LuaJIT documentation](https://luajit.org)
-
-## Notes
-
-- All rendering operations are recorded into a command buffer and executed at the end of the frame.
-- Off-screen canvases must be cleared explicitly before use to avoid visual artifacts.

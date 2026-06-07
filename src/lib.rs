@@ -33,6 +33,8 @@ pub mod camera;
 #[cfg(feature = "ui-charts")]
 /// Exposes the charts subsystem module when the feature is enabled.
 pub mod charts;
+/// Exposes the cinematic timeline subsystem module.
+pub mod cinematic;
 /// Exposes the color subsystem module.
 pub mod color;
 /// Exposes the compute subsystem module.
@@ -163,6 +165,8 @@ pub mod validator;
 pub mod visibility;
 /// Exposes the window subsystem module.
 pub mod window;
+/// Exposes the vector graphics SVG subsystem module.
+pub mod vector;
 
 /// Return true when `path` has the `.lurek` archive extension (case-insensitive).
 pub fn is_lurek_archive_path(path: &std::path::Path) -> bool {

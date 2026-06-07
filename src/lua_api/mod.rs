@@ -10,6 +10,7 @@ pub mod animation_api;
 /// Exposes the `lurek.asset` binding module.
 pub mod asset_api;
 /// Exposes the `lurek.audio` binding module.
+/// Includes sub-tables: lurek.audio.manager (music/SFX groups).
 pub mod audio_api;
 /// Exposes the `lurek.automation` binding module.
 #[cfg(feature = "automation-plugin")]
@@ -19,10 +20,13 @@ pub mod binary_api;
 /// Exposes shared callback registry helpers for Lua bindings.
 pub mod callback_registry;
 /// Exposes the `lurek.camera` binding module.
+/// Includes sub-tables: lurek.camera.follow.
 pub mod camera_api;
 /// Exposes the `lurek.charts` binding module.
 #[cfg(feature = "ui-charts")]
 pub mod charts_api;
+/// Exposes the `lurek.cinematic` binding module.
+pub mod cinematic_api;
 /// Exposes the `lurek.color` binding module.
 pub mod color_api;
 /// Exposes the `lurek.compute` binding module.
@@ -68,6 +72,7 @@ pub mod i18n_api;
 /// Exposes the `lurek.image` binding module.
 pub mod image_api;
 /// Exposes the `lurek.input` binding module.
+/// Includes sub-tables: lurek.input.actionMap.
 pub mod input_api;
 /// Exposes the `lurek.layout` binding module.
 pub mod layout_api;
@@ -77,7 +82,7 @@ pub mod learning_api;
 pub mod light_api;
 /// Exposes the `lurek.log` binding module.
 pub mod log_api;
-/// Exposes the `LuaModule` trait and module registry types.
+/// Exposes the [`ModuleEntry`] trait and module registry types.
 pub mod lua_module;
 /// Exposes shared Lua binding type helpers.
 pub mod lua_types;
@@ -92,6 +97,7 @@ pub mod minimap_api;
 /// Exposes the `lurek.mods` binding module.
 pub mod mods_api;
 /// Exposes the `lurek.network` binding module.
+/// Includes: lobby discovery, rooms, relay tickets.
 pub mod network_api;
 /// Exposes the `lurek.overlay` binding module.
 pub mod overlay_api;
@@ -131,6 +137,8 @@ pub mod serialize_api;
 pub mod spine_api;
 /// Exposes the `lurek.sprite` binding module.
 pub mod sprite_api;
+/// Exposes the `lurek.svg` binding module.
+pub mod svg_api;
 /// Exposes the `lurek.runtime` system binding module.
 pub mod system_api;
 /// Exposes the `lurek.terminal` binding module.

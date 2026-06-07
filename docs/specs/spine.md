@@ -8,13 +8,11 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/spine/`
-- Feature gate: `spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
 - Lua API surface: `4` functions, `5` types, `34` methods
 - Rust test path(s): tests/rust/unit/spine_tests.rs
 - Lua test path(s): tests/lua/unit/test_spine_core_unit.lua
-- Bench path(s): benches/spine_update_world_transforms.rs
 
 ## Summary
 
@@ -53,11 +51,16 @@ Current public behavior is covered through the Lua-facing spine test suite, incl
 - The file adds procedural responsiveness to otherwise keyframed skeletal motion.
 - It is the module's compact answer to target-seeking limb behavior.
 
+### importer.rs
+
+- Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data.
+- The importer focuses on common production fields for bones, slots, skins, and basic timelines.
+- It intentionally rejects malformed or unsupported structures with explicit, stable errors.
+
 ### mod.rs
 
 - This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
 - It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
-- The module is compiled only behind the `spine` feature gate, matching the optional nature of skeletal runtime support.
 - At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
 
 ### render.rs
@@ -74,7 +77,6 @@ Current public behavior is covered through the Lua-facing spine test suite, incl
 - Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
 - Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
 - World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
-- A dedicated no-harness benchmark measures repeated `update_world_transforms` runs against this hierarchy-update path.
 - Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
 - The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
 - It is where skeletal state becomes animated pose over time.
@@ -102,7 +104,7 @@ Current public behavior is covered through the Lua-facing spine test suite, incl
 - `lurek.spine.animationFromJson(json) -> LSkeletonAnimation`: Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
 - `lurek.spine.newSkeleton(name) -> LSkeleton`: Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
 - `lurek.spine.newSkeletonAnimation(name, duration) -> LSkeletonAnimation`: Creates a new empty animation with the given name and duration. Add keyframes to define motion.
-- `lurek.spine.skeletonFromJson(json) -> LSkeleton`: Parses Spine or DragonBones JSON into a runtime skeleton with bones, slots, skins, and animations.
+- `lurek.spine.skeletonFromJson(json) -> LSkeleton`: Parses a Spine or DragonBones JSON string into a full runtime skeleton.
 
 ### Callbacks
 

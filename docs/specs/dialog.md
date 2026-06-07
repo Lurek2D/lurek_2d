@@ -3,6 +3,7 @@
 ## TL;DR
 
 - Orchestrates branching narrative graphs using conditional gates.
+- Provides typewriter-style dialog sequencer for node-based playback with choices.
 
 ## General Info
 
@@ -10,15 +11,17 @@
 - Source path: `src/dialog/`
 - Binding: `src/lua_api/dialog_api.rs`
 - Namespace: `lurek.dialog`
-- Lua API surface: `3` functions, `3` types, `30` methods
+- Lua API surface: `10` functions, `4` types, `48` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua/unit/test_dialog_sequencer_unit.lua
 
 ## Summary
 
 This module provides the narrative scripting and conversation logic system, allowing gameplay scripts to choreograph complex dialogues. It handles multi-character conversation graphs, player choices, and conditional narrative gates. Conversations are built as dialogue trees where branches are evaluated and ranked dynamically using utility scoring, ensuring the engine can select contextually appropriate dialogue paths.
 
 To keep dialogue flows organized, the system separates narrative structure from presentation. It features a dedicated speaker registry that maps character IDs to display names, portraits, and audio properties. Additionally, a persistent state tracker maintains the history of visited nodes, active conversation nodes, and custom variable stores. This decouples visual layouts from script logic while ensuring progression stays coherent.
+
+The dialog sequencer adds a presentation layer on top of the tree system, enabling typewriter-style text reveal, choice selection, branching nodes, and playback control. Scripts can load node sequences, control reveal speed, advance through lines, and handle player choices through a unified interface.
 
 ## Imports
 
@@ -44,6 +47,15 @@ To keep dialogue flows organized, the system separates narrative structure from 
 - Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state.
 - Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer.
 - Delivers a stable module boundary that scripts and systems consume as the canonical dialogue orchestration entry point.
+
+### sequencer.rs
+
+- Cinematic dialog sequencer with typewriter reveal effect.
+- Provides node-based dialog playback with:
+- Typewriter character-by-character reveal
+- Choice branching with option selection
+- Lifecycle callbacks (line, choice, end, custom events)
+- Playback state tracking and control (play, pause, seek, skip)
 
 ### speaker.rs
 
@@ -72,9 +84,16 @@ To keep dialogue flows organized, the system separates narrative structure from 
 
 ### Functions
 
+- `lurek.dialog.call(fn_name, opts?) -> table`: Creates a Call node (invokes a Lua function by name).
+- `lurek.dialog.choice(prompt, options, opts?) -> table`: Creates a Choice node with selectable options.
+- `lurek.dialog.event(name, data?, opts?) -> table`: Creates an Event node (fires a named callback).
+- `lurek.dialog.jump(target, opts?) -> table`: Creates a Jump node (branches to a labeled position).
 - `lurek.dialog.newAI() -> LDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
+- `lurek.dialog.newSequencer() -> LDialogSequencer`: Creates an empty dialog sequencer for typewriter-style playback.
 - `lurek.dialog.newSpeakerRegistry() -> LSpeakerRegistry`: Creates an empty speaker registry for dialog participants.
 - `lurek.dialog.newState() -> LDialogueState`: Creates an empty dialogue state for tracking conversation progress.
+- `lurek.dialog.say(actor, text, opts?) -> table`: Creates a Say node for character dialog.
+- `lurek.dialog.wait(seconds, opts?) -> table`: Creates a Wait node (delay before continuing).
 
 ### Callbacks
 
@@ -85,6 +104,35 @@ To keep dialogue flows organized, the system separates narrative structure from 
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LDialogSequencer Type
+
+- Lua handle for a dialog sequencer with typewriter-reveal playback.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LDialogSequencer:advance() -> nil`: Skips to the next node (or instantly reveals current line if typing).
+- `LDialogSequencer:choose(index) -> nil`: Selects a choice option when waiting for choice input.
+- `LDialogSequencer:currentSpeaker() -> string`: Returns the actor name for the current line, or nil.
+- `LDialogSequencer:currentText() -> string`: Returns the full text of the current line.
+- `LDialogSequencer:getChoiceLabels() -> table`: Returns an array of choice option labels.
+- `LDialogSequencer:getChoiceText() -> string`: Returns the choice prompt text, or nil if not in a choice node.
+- `LDialogSequencer:getSpeed() -> number`: Gets the current typewriter speed in characters per second.
+- `LDialogSequencer:getState() -> string`: Returns the current playback state as a string.
+- `LDialogSequencer:isActive() -> boolean`: Checks if the sequencer is currently playing.
+- `LDialogSequencer:isWaitingForChoice() -> boolean`: Checks if the sequencer is waiting for a choice selection.
+- `LDialogSequencer:load(nodes) -> nil`: Loads a sequence of dialog nodes for playback.
+- `LDialogSequencer:revealedText() -> string`: Returns only the typewriter-revealed portion of the current line.
+- `LDialogSequencer:setSpeed(cps) -> nil`: Sets the typewriter reveal speed in characters per second.
+- `LDialogSequencer:skip() -> nil`: Instantly reveals the full current line without typewriter effect.
+- `LDialogSequencer:start() -> nil`: Starts playback from the beginning of the loaded sequence.
+- `LDialogSequencer:type() -> string`: Returns the Lua-visible type name.
+- `LDialogSequencer:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+- `LDialogSequencer:update(dt) -> nil`: Advances the sequencer by dt seconds, updating typewriter reveal.
 
 #### LDialogueAI Type
 

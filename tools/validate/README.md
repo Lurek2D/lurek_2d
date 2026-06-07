@@ -6,6 +6,7 @@
 - **`_cag_common.py`**: Common helpers shared by CAG validator and audit tools.
 - **`cag_validate.py`**: cag_validate.py — Lurek2D CAG layer validator.
 - **`check_callbacks.py`**: check_callbacks.py — Verify that gen_docs_lua.py _callbacks() output has no embedded newlines.
+- **`prompt_scope_report.py`**: prompt_scope_report.py — Report create-first prompt scope and deprecated analysis-style prompts.
 - **`validate_changelog.py`**: Validate docs/CHANGELOG.md structure and content.
 - **`validate_example_coverage.py`**: validate_example_coverage.py — Quality gate for example coverage.
 - **`validate_game.py`**: validate_game.py — Validate Lua game scripts against the Lurek2D API surface.

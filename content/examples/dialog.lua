@@ -259,3 +259,215 @@ do
     local ai = lurek.dialog.newAI()
     print("LDialogueAI:typeOf LDialogueAI=" .. tostring(ai:typeOf("LDialogueAI")))
 end
+
+--@api-stub: lurek.dialog.newSequencer
+do
+    local seq = lurek.dialog.newSequencer()
+    print("lurek.dialog.newSequencer type=" .. seq:type())
+    print("state=" .. seq:getState())
+end
+
+--@api-stub: lurek.dialog.say
+do
+    local node = lurek.dialog.say("Hero", "I'm ready!")
+    print("lurek.dialog.say type=" .. node.type)
+    print("actor=" .. node.actor)
+    print("text=" .. node.text)
+end
+
+--@api-stub: lurek.dialog.choice
+do
+    local node = lurek.dialog.choice("What do you do?", {"Fight", "Flee", "Talk"})
+    print("lurek.dialog.choice type=" .. node.type)
+    print("prompt=" .. node.prompt)
+    print("options=" .. #node.options)
+end
+
+--@api-stub: lurek.dialog.wait
+do
+    local node = lurek.dialog.wait(3.0)
+    print("lurek.dialog.wait type=" .. node.type)
+    print("seconds=" .. node.seconds)
+end
+
+--@api-stub: lurek.dialog.event
+do
+    local node = lurek.dialog.event("combat_end", "victory")
+    print("lurek.dialog.event type=" .. node.type)
+    print("name=" .. node.name)
+    print("data=" .. tostring(node.data))
+end
+
+--@api-stub: lurek.dialog.call
+do
+    local node = lurek.dialog.call("on_quest_accepted")
+    print("lurek.dialog.call type=" .. node.type)
+    print("name=" .. node.name)
+end
+
+--@api-stub: lurek.dialog.jump
+do
+    local node = lurek.dialog.jump("ending_good")
+    print("lurek.dialog.jump type=" .. node.type)
+    print("target=" .. node.target)
+end
+
+--@api-stub: LDialogSequencer:load
+do
+    local seq = lurek.dialog.newSequencer()
+    local nodes = {
+        lurek.dialog.say("NPC", "Hello there!"),
+        lurek.dialog.choice("How are you?", {"Good", "Bad"})
+    }
+    seq:load(nodes)
+    print("LDialogSequencer:load ok")
+end
+
+--@api-stub: LDialogSequencer:start
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Beginning...") })
+    seq:start()
+    print("LDialogSequencer:start state=" .. seq:getState())
+end
+
+--@api-stub: LDialogSequencer:update
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(10.0)
+    seq:load({ lurek.dialog.say("NPC", "Hello") })
+    seq:start()
+    seq:update(0.15)
+    print("LDialogSequencer:update revealed=" .. seq:revealedText())
+end
+
+--@api-stub: LDialogSequencer:advance
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(1.0)
+    seq:load({
+        lurek.dialog.say("NPC", "Line one"),
+        lurek.dialog.say("NPC", "Line two")
+    })
+    seq:start()
+    seq:advance()
+    seq:advance()
+    print("LDialogSequencer:advance text=" .. seq:currentText())
+end
+
+--@api-stub: LDialogSequencer:skip
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(1.0)
+    seq:load({ lurek.dialog.say("NPC", "Instant reveal") })
+    seq:start()
+    seq:skip()
+    print("LDialogSequencer:skip revealed=" .. seq:revealedText())
+end
+
+--@api-stub: LDialogSequencer:choose
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({
+        lurek.dialog.choice("Pick one:", {"A", "B", "C"}),
+        lurek.dialog.say("NPC", "You picked!")
+    })
+    seq:start()
+    seq:choose(2)
+    print("LDialogSequencer:choose state=" .. seq:getState())
+end
+
+--@api-stub: LDialogSequencer:setSpeed
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(50.0)
+    print("LDialogSequencer:setSpeed speed=" .. seq:getSpeed())
+end
+
+--@api-stub: LDialogSequencer:getSpeed
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(25.0)
+    print("LDialogSequencer:getSpeed=" .. seq:getSpeed())
+end
+
+--@api-stub: LDialogSequencer:getState
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "Text") })
+    seq:start()
+    print("LDialogSequencer:getState=" .. seq:getState())
+end
+
+--@api-stub: LDialogSequencer:isActive
+do
+    local seq = lurek.dialog.newSequencer()
+    print("idle active=" .. tostring(seq:isActive()))
+    seq:load({ lurek.dialog.say("NPC", "Started") })
+    seq:start()
+    print("started active=" .. tostring(seq:isActive()))
+end
+
+--@api-stub: LDialogSequencer:isWaitingForChoice
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.choice("Pick:", {"Yes", "No"}) })
+    seq:start()
+    print("LDialogSequencer:isWaitingForChoice=" .. tostring(seq:isWaitingForChoice()))
+end
+
+--@api-stub: LDialogSequencer:currentSpeaker
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("Warrior", "At last!") })
+    seq:start()
+    print("LDialogSequencer:currentSpeaker=" .. tostring(seq:currentSpeaker()))
+end
+
+--@api-stub: LDialogSequencer:currentText
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.say("NPC", "The full line here") })
+    seq:start()
+    print("LDialogSequencer:currentText=" .. seq:currentText())
+end
+
+--@api-stub: LDialogSequencer:revealedText
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:setSpeed(5.0)
+    seq:load({ lurek.dialog.say("NPC", "Slowly revealed") })
+    seq:start()
+    seq:update(0.2)
+    print("LDialogSequencer:revealedText=" .. seq:revealedText())
+end
+
+--@api-stub: LDialogSequencer:getChoiceText
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.choice("Your move?", {"Attack", "Defend"}) })
+    seq:start()
+    print("LDialogSequencer:getChoiceText=" .. tostring(seq:getChoiceText()))
+end
+
+--@api-stub: LDialogSequencer:getChoiceLabels
+do
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ lurek.dialog.choice("Pick:", {"Option A", "Option B", "Option C"}) })
+    seq:start()
+    local labels = seq:getChoiceLabels()
+    print("LDialogSequencer:getChoiceLabels count=" .. #labels)
+    print("first=" .. labels[1])
+end
+
+--@api-stub: LDialogSequencer:type
+do
+    local seq = lurek.dialog.newSequencer()
+    print("LDialogSequencer:type=" .. seq:type())
+end
+
+--@api-stub: LDialogSequencer:typeOf
+do
+    local seq = lurek.dialog.newSequencer()
+    print("LDialogSequencer:typeOf LDialogSequencer=" .. tostring(seq:typeOf("LDialogSequencer")))
+end

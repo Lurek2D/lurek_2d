@@ -11,9 +11,9 @@
 - Source path: `src/sprite/`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `6` functions, `11` types, `27` methods
-- Rust test path(s): `tests/rust/unit/sprite_tests.rs`
-- Lua test path(s): `tests/lua/unit/test_sprite_core_unit.lua`
+- Lua API surface: `8` functions, `13` types, `53` methods
+- Rust test path(s): tests/rust/unit/sprite_tests.rs
+- Lua test path(s): tests/lua/unit/test_sprite_core_unit.lua
 
 ## Summary
 
@@ -31,8 +31,11 @@ Individual sprites can also carry optional normal-map texture state and a streng
 
 The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
 
+Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite.newAnimator(clips)` creates `LSpriteAnimator`, which handles named clip playback (`play`, `pause`, `resume`, `stop`), frame stepping (`update`, `currentFrame`), clip editing (`addClip`), timing helpers, and loop/end/frame callbacks.
+
 ## Imports
 
+- `animation`: Imports or references `src/animation/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems.`` into `Platform Services`.
 - `math`: Imports or references `math` from `src/math/`.
@@ -45,7 +48,6 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 - This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
 - It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
 - Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
-- Aseprite atlas parsing delegates to the shared loader in `src/animation/aseprite.rs`, keeping frame validation and error paths consistent with the animation subsystem.
 - Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
 - Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
 - The file is the naming and region-mapping layer for packed sprite content.
@@ -66,8 +68,8 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 ### sprite.rs
 
 - This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
-- It also stores optional normal-map texture identity and intensity for lit-sprite rendering paths.
 - It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
+- Optional normal-map metadata lives here as sprite-owned lighting data even when the renderer path is handled elsewhere.
 - The type is the simplest textured presentation unit in the sprite subsystem.
 
 ### sprite_batch.rs
@@ -90,11 +92,12 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 
 ### Functions
 
-- `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
 - `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
+- `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
+- `lurek.sprite.newAnimator(clips?) -> LSpriteAnimator`: Creates a stateful clip animator from an optional clip-definition map.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
-- `lurek.sprite.newSprite(x, y, w, h) -> LSprite`: Creates a sprite instance with position and source-rect values.
+- `lurek.sprite.newSprite(texture_id, x, y) -> LSprite`: Creates a lightweight sprite record with transform and optional normal-map metadata.
 - `lurek.sprite.parseAsepriteAtlas(json_str) -> LSpriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 - `lurek.sprite.parseAtlas(json_str) -> LSpriteAtlas`: Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
 
@@ -110,7 +113,7 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 
 #### LAtlasPacker Type
 
-- Lua-visible wrapper around a runtime texture atlas allocator.
+- Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
 
 ##### Fields
 
@@ -119,8 +122,8 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 ##### Methods
 
 - `LAtlasPacker:clear() -> nil`: Removes all packed regions and resets packing shelves.
-- `LAtlasPacker:getDimensions() -> integer`: Returns atlas dimensions.
-- `LAtlasPacker:getRegion(name) -> table`: Returns a packed region by name.
+- `LAtlasPacker:getDimensions() -> integer`: Returns the current width and height of this atlas packer.
+- `LAtlasPacker:getRegion(name) -> table`: Returns the named packed atlas region, or nil if not found.
 - `LAtlasPacker:pack(name, w, h) -> boolean`: Packs a named region into this atlas and returns whether allocation succeeded.
 - `LAtlasPacker:regionCount() -> integer`: Returns the number of currently packed regions.
 - `LAtlasPacker:setNineSlice(name, left, right, top, bottom) -> boolean`: Sets nine-slice insets for a previously packed region.
@@ -143,6 +146,54 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 ##### Methods
 
 - No documented methods.
+
+#### LSpriteAnimator Type
+
+- Lua-visible wrapper around Rust-side clip animation playback state.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSpriteAnimator:addClip(name, def) -> nil`: Add or replace a named clip definition.
+- `LSpriteAnimator:clipDuration() -> number`: Return full one-pass duration for the current clip.
+- `LSpriteAnimator:currentClip() -> string`: Return the currently selected clip name.
+- `LSpriteAnimator:currentFrame() -> integer`: Return current draw frame as sprite-sheet row and column.
+- `LSpriteAnimator:frameDuration() -> number`: Return frame duration for the current clip.
+- `LSpriteAnimator:isPlaying() -> boolean`: Return whether the animator is currently playing.
+- `LSpriteAnimator:onEnd(fn) -> nil`: Set callback fired when a non-looping clip reaches its end.
+- `LSpriteAnimator:onFrame(fn) -> nil`: Set callback fired on each frame advance.
+- `LSpriteAnimator:onLoop(fn) -> nil`: Set callback fired when a looping clip wraps.
+- `LSpriteAnimator:pause() -> nil`: Pause playback without resetting frame state.
+- `LSpriteAnimator:play(name, restart?) -> nil`: Play or restart a named clip.
+- `LSpriteAnimator:resume() -> nil`: Resume playback from current frame when a clip is selected.
+- `LSpriteAnimator:stop() -> nil`: Stop playback and reset to the first frame of the current clip.
+- `LSpriteAnimator:type() -> string`: Returns the type name of this object.
+- `LSpriteAnimator:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LSpriteAnimator:update(dt) -> nil`: Advance playback by delta time and dispatch callback events.
+
+#### LSprite Type
+
+- Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSprite:clearNormalMap() -> nil`: Removes the assigned normal map from this sprite.
+- `LSprite:getNormalIntensity() -> number`: Returns the normal-map intensity multiplier.
+- `LSprite:getNormalMap() -> integer`: Returns the assigned normal-map texture handle, or nil when absent.
+- `LSprite:getPosition() -> number`: Returns the sprite anchor position in pixels.
+- `LSprite:hasNormalMap() -> boolean`: Returns whether the sprite currently has a normal map.
+- `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map intensity used by lit sprite workflows.
+- `LSprite:setNormalMap(texture_id) -> nil`: Assigns the texture used as this sprite's normal map for lit sprite workflows.
+- `LSprite:setPosition(x, y) -> nil`: Sets the sprite anchor position in pixels.
+- `LSprite:type() -> string`: Returns the type name of this object.
+- `LSprite:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LSpriteAtlas Type
 
@@ -299,22 +350,3 @@ The Lua API also provides a runtime atlas packer for dynamic content. `lurek.spr
 ##### Methods
 
 - No documented methods.
-
-#### LSprite Type
-
-- Lua-visible sprite wrapper for per-instance transform and optional normal-map state.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LSprite:clearNormalMap() -> nil`: Clears any normal map assignment from this sprite.
-- `LSprite:getNormalIntensity() -> number`: Returns the current normal-map lighting intensity scalar.
-- `LSprite:getNormalMap() -> integer`: Returns the normal-map texture id, or nil if unset.
-- `LSprite:getPosition() -> table`: Returns the sprite position as a table with x/y values.
-- `LSprite:hasNormalMap() -> boolean`: Returns true when a normal map is assigned.
-- `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map lighting intensity scalar.
-- `LSprite:setNormalMap(texture_id) -> nil`: Assigns a normal-map texture id for lit-sprite workflows.
-- `LSprite:setPosition(x, y) -> nil`: Sets the sprite world position.

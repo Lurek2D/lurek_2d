@@ -4,6 +4,8 @@
 
 /// Texture atlas region map and TexturePacker JSON parser.
 pub mod atlas;
+/// Stateful clip animator used by the `lurek.sprite` API.
+pub mod animator;
 /// Nine-slice panel geometry for scalable UI borders and boxes.
 pub mod nine_slice;
 /// Core Sprite type with transform, tint, and region data.
@@ -14,6 +16,7 @@ pub mod sprite_batch;
 /// SpriteSheet: uniform grid frame extraction from a single texture.
 pub mod sprite_sheet;
 pub use atlas::{parse_texturepacker_json, AtlasEntry, SpriteAtlas};
+pub use animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
 pub use nine_slice::NineSlice;
 pub use sprite::Sprite;
 pub use sprite_batch::SpriteBatch;

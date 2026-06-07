@@ -2,6 +2,7 @@
 
 use super::SharedState;
 use crate::scene::depth_sorter::DepthSorter;
+use crate::scene::object_container::LSceneObjectContainer;
 use crate::scene::stack::{SceneId, SceneStack};
 use crate::scene::transition::{EasingType, TransitionType};
 use mlua::prelude::*;
@@ -186,6 +187,89 @@ impl LuaUserData for LuaDepthSorter {
         });
     }
 }
+
+impl LuaUserData for LSceneObjectContainer {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Add an object to the container.
+        methods.add_method("add", |lua, this, obj: LuaTable| {
+            let container = this.get_container(lua)?;
+            let add_fn: LuaFunction = container.get("add")?;
+            add_fn.call::<_, ()>(obj)?;
+            Ok(())
+        });
+
+        /// Remove an object from the container (identity comparison).
+        methods.add_method("remove", |lua, this, obj: LuaTable| {
+            let container = this.get_container(lua)?;
+            let remove_fn: LuaFunction = container.get("remove")?;
+            remove_fn.call::<_, ()>(obj)?;
+            Ok(())
+        });
+
+        /// Remove all objects from the container.
+        methods.add_method("clear", |lua, this, ()| {
+            let container = this.get_container(lua)?;
+            let clear_fn: LuaFunction = container.get("clear")?;
+            clear_fn.call::<_, ()>(())?;
+            Ok(())
+        });
+
+        /// Call update(dt) on all objects that have an update method.
+        methods.add_method("update", |lua, this, dt: f64| {
+            let container = this.get_container(lua)?;
+            let update_fn: LuaFunction = container.get("update")?;
+            update_fn.call::<_, ()>(dt)?;
+            Ok(())
+        });
+
+        /// Call draw() on all objects that have a draw method, sorted by layer.
+        methods.add_method("draw", |lua, this, ()| {
+            let container = this.get_container(lua)?;
+            let draw_fn: LuaFunction = container.get("draw")?;
+            draw_fn.call::<_, ()>(())?;
+            Ok(())
+        });
+
+        /// Get the number of objects currently in the container.
+        methods.add_method("getCount", |lua, this, ()| {
+            let container = this.get_container(lua)?;
+            let count_fn: LuaFunction = container.get("count")?;
+            count_fn.call::<_, i32>(())
+        });
+
+        /// Get all objects as an array (layer-sorted).
+        methods.add_method("getObjects", |lua, this, ()| {
+            let container = this.get_container(lua)?;
+            let objects_field: LuaValue = container.get("_objects")?;
+            Ok(objects_field)
+        });
+
+        /// Get all objects whose layer equals `n`.
+        methods.add_method("getByLayer", |lua, this, n: i32| {
+            let container = this.get_container(lua)?;
+            let get_by_layer_fn: LuaFunction = container.get("getByLayer")?;
+            get_by_layer_fn.call::<_, LuaValue>(n)
+        });
+
+        /// Check whether an object is present in the container.
+        methods.add_method("has", |lua, this, obj: LuaTable| {
+            let container = this.get_container(lua)?;
+            let has_fn: LuaFunction = container.get("has")?;
+            has_fn.call::<_, bool>(obj)
+        });
+
+        /// Get the type name of this userdata.
+        methods.add_method("type", |_lua, _this, ()| {
+            Ok("LSceneObjectContainer")
+        });
+
+        /// Check type by name.
+        methods.add_method("typeOf", |_lua, _this, name: String| {
+            Ok(name == "LSceneObjectContainer")
+        });
+    }
+}
+
 /// Register the `lurek.scene` module table, all scene-stack functions, transition helpers, shared data API, and the `LDepthSorter` factory.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -1459,6 +1543,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             /// Performs the 'duration' operation.
             t.set("duration", duration.unwrap_or(0.6))?;
             Ok(t)
+        })?,
+    )?;
+    // -- newObjectContainer --
+    /// Create a new scene object container for managing object lifecycle and draw ordering.
+    /// @return | LSceneObjectContainer | New container handle.
+    tbl.set(
+        "newObjectContainer",
+        lua.create_function(|lua, ()| {
+            LSceneObjectContainer::new(lua)
         })?,
     )?;
     // transitions: subtable of built-in transition descriptor constructor functions.

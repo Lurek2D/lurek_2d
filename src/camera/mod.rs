@@ -16,10 +16,14 @@ pub mod types;
 pub mod viewport;
 /// Exposes viewport scaling state object used by resize flows.
 pub mod viewport_scale;
+/// Exposes tile-grid walker with smooth camera following.
+pub mod walker;
+
 pub use effects::{CameraBreathing, CameraSway, ZoomPulse};
 pub use multi::CameraRig2D;
 pub use path::{CameraPath, CameraTweenEasing, CameraZoomTween, ZoomTween};
 pub use types::{Camera, Camera2D, CameraEasing};
+pub use walker::CameraWalker;
 
 /// Re-export for backwards compatibility.
 pub type CameraFollowEasing = CameraEasing;

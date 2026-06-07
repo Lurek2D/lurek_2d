@@ -5,6 +5,8 @@ use crate::network::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_CHANNELS, M
 use crate::network::host::{HostRole, NetworkEvent, NetworkHost, PeerStats};
 use crate::network::message::NetValue;
 use crate::network::net_thread::NetworkRuntime;
+use crate::network::netstate::LNetworkState;
+use crate::network::rpc::LNetworkRpc;
 use crate::network::{SseEvent, SseStream};
 use mlua::prelude::*;
 use rusty_enet::PeerID;
@@ -1717,6 +1719,89 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 Ok(arr)
             },
         )?,
+    )?;
+    // -- setReady --
+    /// Marks a player as ready or not ready in a room.
+    /// @param | room_name | string | Room name.
+    /// @param | peer_id | integer | Peer identifier.
+    /// @param | ready | boolean | True to mark as ready, false to unmark.
+    tbl.set(
+        "setReady",
+        lua.create_function(|_, (room_name, peer_id, ready): (String, u32, bool)| {
+            crate::network::lobby::set_player_ready(&room_name, peer_id, ready);
+            Ok(())
+        })?,
+    )?;
+    // -- isAllReady --
+    /// Checks if all players in a room are ready. Requires at least 2 players.
+    /// @param | room_name | string | Room name.
+    /// @return | boolean | True if all players are ready and count >= 2.
+    tbl.set(
+        "isAllReady",
+        lua.create_function(|_, room_name: String| {
+            Ok(crate::network::lobby::is_all_ready(&room_name))
+        })?,
+    )?;
+    // -- getRoom --
+    /// Returns room metadata including host peer and player count.
+    /// @param | room_name | string | Room name.
+    /// @return | table | Room metadata table with fields: `name`, `host_peer`, `max_players`, `player_count`.
+    tbl.set(
+        "getRoom",
+        lua.create_function(|lua, room_name: String| {
+            if let Some(room) = crate::network::lobby::get_room_state(&room_name) {
+                let t = lua.create_table()?;
+                /// Performs the 'name' operation.
+                t.set("name", room.name)?;
+                /// Performs the 'host_peer' operation.
+                t.set("host_peer", room.host_peer)?;
+                /// Performs the 'max_players' operation.
+                t.set("max_players", room.max_players)?;
+                /// Performs the 'player_count' operation.
+                t.set("player_count", room.players.len() as u32)?;
+                Ok(t)
+            } else {
+                Ok(lua.create_table()?)
+            }
+        })?,
+    )?;
+    // -- getPlayerList --
+    /// Returns list of peer IDs currently in a room.
+    /// @param | room_name | string | Room name.
+    /// @return | table | Array of peer ID integers.
+    tbl.set(
+        "getPlayerList",
+        lua.create_function(|lua, room_name: String| {
+            let peers = crate::network::lobby::get_player_list(&room_name);
+            let arr = lua.create_table()?;
+            for (i, peer_id) in peers.iter().enumerate() {
+                arr.set(i + 1, *peer_id)?;
+            }
+            Ok(arr)
+        })?,
+    )?;
+    // -- newNetState --
+    /// Creates a network state synchronization manager.
+    /// @param | host | LNetworkHost? | Network host for state transport, or nil for offline mode.
+    /// @param | opts | table? | Configuration table with `channel`, `authority`, `turnBased`, `maxDirtyKeys`.
+    /// @return | LNetworkState | New state manager handle.
+    tbl.set(
+        "newNetState",
+        lua.create_function(|lua, (host, opts): (LuaValue, Option<LuaTable>)| {
+            LNetworkState::new(lua, host, opts)
+        })?,
+    )?;
+    // -- newRpc --
+    /// Creates a network RPC manager attached to a host.
+    /// @param | host | LNetworkHost | Network host for RPC transport.
+    /// @param | channel | integer? | Optional ENet channel for RPC traffic, defaults to 0.
+    /// @param | timeout_ms | number? | Optional timeout in milliseconds for pending calls, defaults to 30s.
+    /// @return | LNetworkRpc | New RPC manager handle.
+    tbl.set(
+        "newRpc",
+        lua.create_function(|lua, (host, channel, timeout_ms): (LuaValue, Option<u8>, Option<f64>)| {
+            LNetworkRpc::new(lua, host, channel, timeout_ms)
+        })?,
     )?;
     /// Performs the 'network' operation.
     lurek.set("network", tbl)?;

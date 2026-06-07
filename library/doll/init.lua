@@ -27,7 +27,7 @@ local function _logWarn(msg)  if _log then _log.warn("[doll] " .. msg) end end
 --- Create a new Part (visual element for attaching to a Doll socket).
 -- Parts carry texture, transform, colour, flip, draw-order, and arbitrary
 -- key-value attributes. Attach to a Doll socket with `doll:attach()`.
--- @treturn Part blank part with defaults
+-- @treturn DollPart blank part with defaults
 function M.newPart()
     local part = {}
 
@@ -383,7 +383,7 @@ function M.newDoll(template)
     --- Attach a Part to a named socket.
     -- Returns false if socket not found, type mismatch, or invalid args.
     -- @tparam string socketName socket to attach to
-    -- @tparam Part part part instance to attach
+    -- @tparam DollPart part part instance to attach
     -- @treturn boolean success
     function doll:attach(socketName, part)
         if type(socketName) ~= "string" or socketName == "" then
@@ -403,7 +403,7 @@ function M.newDoll(template)
 
     --- Detach the Part from a socket, returning it.
     -- @tparam string socketName socket to detach from
-    -- @treturn Part|nil detached part, or nil if socket was empty
+    -- @treturn DollPart|nil detached part, or nil if socket was empty
     function doll:detach(socketName)
         local part = _slots[socketName]
         _slots[socketName] = nil
@@ -415,13 +415,13 @@ function M.newDoll(template)
 
     --- Return the Part attached at `socketName`, or nil.
     -- @tparam string socketName socket to query
-    -- @treturn Part|nil
+    -- @treturn DollPart|nil
     function doll:getPartAt(socketName)
         return _slots[socketName]
     end
 
     --- Return the socket name the given Part is attached to, or nil.
-    -- @tparam Part part part to find
+    -- @tparam DollPart part part to find
     -- @treturn string|nil socket name
     function doll:findSocket(part)
         for name, p in pairs(_slots) do

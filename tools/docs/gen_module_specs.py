@@ -159,7 +159,9 @@ LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 # match docs/specs module stems. Merge them into the target spec module.
 LUA_API_MODULE_ALIASES: dict[str, list[str]] = {
     "runtime": ["system", "engine"],
+    "vector": ["svg"],
 }
+
 
 # `lua_api` is a thin wrapper layer and should not have a standalone module
 # spec; callback contracts are documented in docs/specs/callbacks.md generated

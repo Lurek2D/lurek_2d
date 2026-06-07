@@ -341,3 +341,140 @@ do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     print("typeOf LSprite = " .. tostring(sprite:typeOf("LSprite")))
 end
+
+--@api-stub: lurek.sprite.newAnimator
+do
+    local anim = lurek.sprite.newAnimator({
+        idle = { row = 1, from = 1, to = 3, fps = 10, loop = true }
+    })
+    print("animator type = " .. anim:type())
+end
+
+--@api-stub: LSpriteAnimator:play
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    print("clip after play = " .. tostring(anim:currentClip()))
+end
+
+--@api-stub: LSpriteAnimator:pause
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:pause()
+    print("is playing after pause = " .. tostring(anim:isPlaying()))
+end
+
+--@api-stub: LSpriteAnimator:resume
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:pause()
+    anim:resume()
+    print("is playing after resume = " .. tostring(anim:isPlaying()))
+end
+
+--@api-stub: LSpriteAnimator:stop
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:update(0.2)
+    anim:stop()
+    local _, col = anim:currentFrame()
+    print("frame after stop = " .. tostring(col))
+end
+
+--@api-stub: LSpriteAnimator:isPlaying
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    print("is playing = " .. tostring(anim:isPlaying()))
+end
+
+--@api-stub: LSpriteAnimator:currentClip
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    print("current clip = " .. tostring(anim:currentClip()))
+end
+
+--@api-stub: LSpriteAnimator:currentFrame
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 2, from = 3, to = 4, fps = 10, loop = true } })
+    anim:play("idle")
+    local row, col = anim:currentFrame()
+    print("frame = " .. row .. "," .. col)
+end
+
+--@api-stub: LSpriteAnimator:update
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:play("idle")
+    anim:update(0.11)
+    local _, col = anim:currentFrame()
+    print("frame after update = " .. tostring(col))
+end
+
+--@api-stub: LSpriteAnimator:onFrame
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
+    anim:onFrame(function(row, col, clip)
+        print("onFrame " .. clip .. " " .. row .. ":" .. col)
+    end)
+    anim:play("idle")
+    anim:update(0.11)
+end
+
+--@api-stub: LSpriteAnimator:onLoop
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 2, fps = 10, loop = true } })
+    anim:onLoop(function(clip)
+        print("onLoop " .. clip)
+    end)
+    anim:play("idle")
+    anim:update(0.25)
+end
+
+--@api-stub: LSpriteAnimator:onEnd
+do
+    local anim = lurek.sprite.newAnimator({ jump = { row = 1, from = 1, to = 2, fps = 10, loop = false } })
+    anim:onEnd(function(clip)
+        print("onEnd " .. clip)
+    end)
+    anim:play("jump")
+    anim:update(0.5)
+end
+
+--@api-stub: LSpriteAnimator:addClip
+do
+    local anim = lurek.sprite.newAnimator()
+    anim:addClip("run", { row = 3, from = 1, to = 4, fps = 12, loop = true })
+    anim:play("run")
+    print("current clip after add = " .. tostring(anim:currentClip()))
+end
+
+--@api-stub: LSpriteAnimator:frameDuration
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 20, loop = true } })
+    anim:play("idle")
+    print("frame duration = " .. tostring(anim:frameDuration()))
+end
+
+--@api-stub: LSpriteAnimator:clipDuration
+do
+    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 6, loop = true } })
+    anim:play("idle")
+    print("clip duration = " .. tostring(anim:clipDuration()))
+end
+
+--@api-stub: LSpriteAnimator:type
+do
+    local anim = lurek.sprite.newAnimator()
+    print("type = " .. anim:type())
+end
+
+--@api-stub: LSpriteAnimator:typeOf
+do
+    local anim = lurek.sprite.newAnimator()
+    print("typeOf LSpriteAnimator = " .. tostring(anim:typeOf("LSpriteAnimator")))
+end

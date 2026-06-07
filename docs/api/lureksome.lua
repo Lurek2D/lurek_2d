@@ -12,26 +12,52 @@ library = {}
 ---@class userdata
 ---@class nil
 
----@class AudioManager
-AudioManager = {}
-
 ---@class StatusEffect
+---@field public name any
+---@field public duration any
+---@field public stacks number
+---@field public data table
 StatusEffect = {}
 
 ---@class CombatAction
+---@field public name any
+---@field public damage_type string
+---@field public base_damage number
+---@field public accuracy number
+---@field public cooldown number
+---@field public current_cooldown number
+---@field public cost_hp number
+---@field public cost_mp number
+---@field public tags table
+---@field public metadata table
 CombatAction = {}
 
 ---@class Combatant
+---@field public name any
+---@field public team string
+---@field public hp number
+---@field public max_hp number
+---@field public mp number
+---@field public max_mp number
+---@field public speed number
+---@field public level number
+---@field public alive boolean
+---@field public stats table
+---@field public resistances table
+---@field public status_effects table
+---@field public actions table
+---@field public metadata table
 Combatant = {}
 
 ---@class CombatBattle
+---@field public name any
+---@field public combatants table
+---@field public turn_index number
+---@field public turn_count number
+---@field public over boolean
+---@field public winner_team any
+---@field public log table
 CombatBattle = {}
-
----@class CameraFollow
-CameraFollow = {}
-
----@class WalkerCamera
-WalkerCamera = {}
 
 ---@class Card
 Card = {}
@@ -56,12 +82,6 @@ StackHistory = {}
 
 ---@class CardGroup
 CardGroup = {}
-
----@class Track
-Track = {}
-
----@class Timeline
-Timeline = {}
 
 ---@class CollisionGroupSet
 CollisionGroupSet = {}
@@ -123,9 +143,6 @@ UpgradeTree = {}
 ---@class RecipeGroup
 RecipeGroup = {}
 
----@class Sequence
-Sequence = {}
-
 ---@class DollPart
 DollPart = {}
 
@@ -136,19 +153,49 @@ DollTemplate = {}
 Doll = {}
 
 ---@class Resource
+---@field public name any
+---@field public value number
+---@field public capacity any
+---@field public minimum number
+---@field public flow_rate number
+---@field public decay_rate number
+---@field public decay_percent number
+---@field public interest_rate number
+---@field public upkeep number
+---@field public overflow string
+---@field public group string
+---@field public enabled boolean
+---@field public visible boolean
+---@field public locked boolean
+---@field public reserved number
 Resource = {}
 
 ---@class Modifier
+---@field public mod_type any
+---@field public value any
+---@field public duration any
+---@field public remaining any
+---@field public source any
+---@field public target string
 Modifier = {}
 
 ---@class ConversionRule
+---@field public from any
+---@field public to any
+---@field public rate any
+---@field public fee number
+---@field public cooldown number
+---@field public cooldown_remaining number
+---@field public min_amount number
+---@field public max_amount any
+---@field public modifiers table
 ConversionRule = {}
 
 ---@class ResourceManager
+---@field public resources table
+---@field public conversion_rules table
+---@field public _event_bus any
 ResourceManager = {}
-
----@class ActionMap
-ActionMap = {}
 
 ---@class Item
 Item = {}
@@ -171,12 +218,6 @@ ItemPool = {}
 ---@class StackBuilder
 StackBuilder = {}
 
----@class Room
-Room = {}
-
----@class Lobby
-Lobby = {}
-
 ---@class LootTable
 LootTable = {}
 
@@ -189,9 +230,6 @@ Pity = {}
 ---@class Story
 Story = {}
 
----@class NetState
-NetState = {}
-
 ---@class Province
 Province = {}
 
@@ -202,15 +240,41 @@ ProvinceMap = {}
 EventBus = {}
 
 ---@class Objective
+---@field public id any
+---@field public description any
+---@field public current number
+---@field public required any
+---@field public mandatory boolean
+---@field public status string
+---@field public tags table
+---@field public visible boolean
 Objective = {}
 
 ---@class QuestStage
+---@field public id any
+---@field public name any
+---@field public objectives table
 QuestStage = {}
 
 ---@class Quest
+---@field public id any
+---@field public title any
+---@field public description string
+---@field public status string
+---@field public stages table
+---@field public current_stage number
+---@field public journal table
+---@field public metadata table
+---@field public visible boolean
+---@field public reward string
+---@field public _journal_counter number
+---@field public _max_journal any
 Quest = {}
 
 ---@class QuestLog
+---@field public _quests table
+---@field public _order table
+---@field public _event_bus any
 QuestLog = {}
 
 ---@class Clock
@@ -225,17 +289,8 @@ Scheduler = {}
 ---@class GoalMap
 GoalMap = {}
 
----@class RPC
-RPC = {}
-
 ---@class ObjectContainer
 ObjectContainer = {}
-
----@class sched
-sched = {}
-
----@class AnimController
-AnimController = {}
 
 ---@class Buff
 Buff = {}
@@ -247,16 +302,14 @@ LevelThresholds = {}
 Sheet = {}
 
 ---@class TilemapMinimap
+---@field public map any
+---@field public layer any
+---@field public width any
+---@field public height any
+---@field public solid_terrain any
+---@field public empty_terrain any
+---@field public minimap any
 TilemapMinimap = {}
-
----@class ParallelGroup
-ParallelGroup = {}
-
----@class Chain
-Chain = {}
-
----@class WindowConfig
-WindowConfig = {}
 
 ---@class ActionPoints
 ActionPoints = {}
@@ -276,9 +329,6 @@ ModifierEntry = {}
 ---@class Morale
 Morale = {}
 
----@class Part
-Part = {}
-
 ---@class Perk
 Perk = {}
 
@@ -287,116 +337,6 @@ RecipeOutput = {}
 
 ---@class Skill
 Skill = {}
-
----@class SpriteAnimator
-SpriteAnimator = {}
-
----@class library.audio_manager
-library.audio_manager = {}
-
---- Creates a new AudioManager instance. Each value is a table with a `volume` field (0.0–1.0).
----@param opts table
----@return AudioManager
-function library.audio_manager.new(opts) end
-
---- Computes effective volume for a group (group volume * master volume).
----@param group_name string
----@return number
-function AudioManager:_effectiveVolume(group_name) end
-
---- Applies current effective volume to a handle.
----@param handle any
----@param group_name string
----@return nil
-function AudioManager:_applyVolume(handle, group_name) end
-
---- Refreshes volume on all active handles in a group.
----@param group_name string
----@return nil
-function AudioManager:_refreshGroup(group_name) end
-
---- Refreshes volume on all active handles.
----@return nil
-function AudioManager:_refreshAll() end
-
---- Plays a music track, optionally fading in. Stops any currently playing music immediately (or use crossfade instead).
----@param path string
----@param opts table
----@return any
-function AudioManager:playMusic(path, opts) end
-
---- Stops the current music, optionally fading out.
----@param opts table
----@return nil
-function AudioManager:stopMusic(opts) end
-
---- Crossfades from current music to a new track.
----@param path string
----@param opts table
----@return nil
-function AudioManager:crossfade(path, opts) end
-
---- Plays a sound effect with optional pooling.
----@param path string
----@param opts table
----@return any|nil
-function AudioManager:playSfx(path, opts) end
-
---- Stops a specific SFX handle.
----@param handle any
----@return nil
-function AudioManager:stopSfx(handle) end
-
---- Sets the volume for a named group.
----@param group_name string
----@param volume number
----@return nil
-function AudioManager:setGroupVolume(group_name, volume) end
-
---- Gets the volume for a named group.
----@param group_name string
----@return number
-function AudioManager:getGroupVolume(group_name) end
-
---- Sets the master volume (multiplied with group volumes).
----@param volume number
----@return nil
-function AudioManager:setMasterVolume(volume) end
-
---- Gets the master volume.
----@return number
-function AudioManager:getMasterVolume() end
-
---- Mutes a specific volume group.
----@param group_name string
----@return nil
-function AudioManager:mute(group_name) end
-
---- Unmutes a specific volume group.
----@param group_name string
----@return nil
-function AudioManager:unmute(group_name) end
-
---- Mutes all audio (master mute).
----@return nil
-function AudioManager:muteAll() end
-
---- Unmutes all audio (restores master).
----@return nil
-function AudioManager:unmuteAll() end
-
---- Pauses all active audio handles.
----@return nil
-function AudioManager:pauseAll() end
-
---- Resumes all paused audio handles.
----@return nil
-function AudioManager:resumeAll() end
-
---- Updates fade states. Call once per frame.
----@param dt number
----@return nil
-function AudioManager:update(dt) end
 
 ---@class library.battle
 library.battle = {}
@@ -756,7 +696,7 @@ function CombatBattle:nextTurn() end
 ---@return nil
 function CombatBattle:_checkBattleOver() end
 
---- Resolve an attack. battle replays. Currently uses the global Lua RNG which makes saves non-deterministic across reloads.
+--- Resolve an attack.
 ---@param attacker_name string
 ---@param action_name string
 ---@param target_name string
@@ -844,125 +784,6 @@ function StatusEffect:getMetadata(key) end
 ---@param val any
 ---@return nil
 function StatusEffect:setMetadata(key, val) end
-
----@class library.camera_follow
-library.camera_follow = {}
-
---- Create a new camera follow controller.
----@param opts table
----@return CameraFollow
-function library.camera_follow.new(opts) end
-
---- Set the target position the camera should follow.
----@param x number
----@param y number
----@return nil
-function CameraFollow:setTarget(x, y) end
-
---- Update the camera position. Call once per frame.
----@param dt number
----@return nil
-function CameraFollow:update(dt) end
-
---- Get the current camera position (including shake offset).
----@return number
----@return number
-function CameraFollow:getPosition() end
-
---- Apply the camera position and zoom to lurek.camera. Calls lurek.camera.setPosition and lurek.camera.setZoom.
----@return nil
-function CameraFollow:apply() end
-
---- Start a screen shake effect.
----@param intensity number
----@param duration number
----@return nil
-function CameraFollow:shake(intensity, duration) end
-
---- Set the zoom level.
----@param z number
----@return nil
-function CameraFollow:setZoom(z) end
-
---- Get the current zoom level.
----@return number
-function CameraFollow:getZoom() end
-
---- Snap the camera immediately to the current target (no smoothing).
----@return nil
-function CameraFollow:snap() end
-
---- Override the camera to a fixed point over a duration (cutscene).
----@param x number
----@param y number
----@param duration number
----@return nil
-function CameraFollow:override(x, y, duration) end
-
---- Clear the cutscene override and resume following the target.
----@return nil
-function CameraFollow:clearOverride() end
-
---- Get the current world bounds.
----@return table|nil
-function CameraFollow:getBounds() end
-
---- Set new world bounds.
----@param minX number
----@param minY number
----@param maxX number
----@param maxY number
----@return nil
-function CameraFollow:setBounds(minX, minY, maxX, maxY) end
-
----@class library.camera_follow_walker
-library.camera_follow_walker = {}
-
---- Create a walker+camera helper.
----@param opts table
----@return any
-function library.camera_follow_walker.new(opts) end
-
---- Set walker world-space center position.
----@param x number
----@param y number
----@return nil
-function WalkerCamera:setPosition(x, y) end
-
---- Get walker world-space center position.
----@return any
-function WalkerCamera:getPosition() end
-
---- Place walker using 1-based tile coordinates.
----@param tx integer
----@param ty integer
----@return nil
-function WalkerCamera:setTilePosition(tx, ty) end
-
---- Get current walker tile coordinates (1-based).
----@return any
-function WalkerCamera:getTilePosition() end
-
---- Attempt movement in world space. Returns true if any axis moved.
----@param dx number
----@param dy number
----@param dt number|nil
----@return any
-function WalkerCamera:move(dx, dy, dt) end
-
---- Update internal camera controller and optionally apply to lurek.camera.
----@param dt number|nil
----@param apply_camera boolean|nil
----@return nil
-function WalkerCamera:update(dt, apply_camera) end
-
---- Return current camera position from camera_follow.
----@return any
-function WalkerCamera:getCameraPosition() end
-
---- Expose underlying camera_follow controller.
----@return any
-function WalkerCamera:getCameraController() end
 
 ---@class library.cardgame
 library.cardgame = {}
@@ -1823,170 +1644,6 @@ function library.cardgame.findNOfStat(items, stat, n) end
 ---@param min_run number
 ---@return table
 function library.cardgame.findSequences(items, stat, min_run) end
-
----@class library.cinematic
-library.cinematic = {}
-
---- Add a generic clip table.
----@param clip table
----@return nil
-function Track:add(clip) end
-
---- Tween clip. Wraps `lurek.tween` if available; always applies final value if the engine binding is missing (so logic-only tests still pass).
----@return nil
-function Track:tween(at, duration, target, props, easing) end
-
---- Camera move clip.
----@return nil
-function Track:cameraTo(at, duration, x, y, zoom, easing) end
-
---- Camera shake clip.
----@return nil
-function Track:shake(at, duration, intensity) end
-
---- Dialog clip — fires once forward only.
----@return nil
-function Track:dialog(at, line) end
-
---- Audio clip — fires once forward only.
----@return nil
-function Track:audio(at, source, opts) end
-
---- Signal clip — emits via `lurek.event.push` (or queues for later read).
----@return nil
-function Track:signal(at, name, ...) end
-
---- Generic Lua callback. Mark `reversible = true` to allow backward seeks.
----@return nil
-function Track:call(at, fn, opts) end
-
---- Wait clip — pauses the timeline until `predicate_fn()` returns true.
----@return nil
-function Track:wait(at, predicate_fn) end
-
---- Remove a clip by reference.
----@return nil
-function Track:remove(clip) end
-
---- Create a new timeline.
----@param opts table|nil
----@return Timeline
-function library.cinematic.newTimeline(opts) end
-
---- Load a timeline from a TOML file via `lurek.filesystem.read` + `lurek.serial.fromToml`.
----@return nil
-function library.cinematic.fromToml(path) end
-
---- Build a timeline from a declarative spec table.
----@return nil
-function library.cinematic.fromTable(spec) end
-
---- Get-or-create a track by name.
----@return nil
-function Timeline:track(name) end
-
---- Return an ordered array of all tracks in this timeline.
----@return table
-function Timeline:tracks() end
-
---- Recompute total duration from the latest clip end.
----@return nil
-function Timeline:_recompute_duration() end
-
---- Bind a dialog handler `fn(line)` invoked by `track:dialog` clips.
----@return nil
-function Timeline:setDialogHandler(fn) end
-
---- Start (or resume) playback of this timeline.
----@return Timeline
-function Timeline:play() end
-
---- Pause playback at the current time position.
----@return Timeline
-function Timeline:pause() end
-
---- Resume playback from the current time position.
----@return Timeline
-function Timeline:resume() end
-
---- Stop playback and reset the timeline to time zero.
----@return Timeline
-function Timeline:stop() end
-
---- Return true if the timeline is currently playing.
----@return boolean
-function Timeline:isPlaying() end
-
---- Return true if the timeline has reached its end and is not looping.
----@return boolean
-function Timeline:isFinished() end
-
---- Return the current playback time in seconds.
----@return number
-function Timeline:getTime() end
-
---- Return the total duration of the timeline in seconds.
----@return number
-function Timeline:getDuration() end
-
---- Set the playback speed multiplier (1.0 = real-time, 2.0 = double speed).
----@param s number
----@return Timeline
-function Timeline:setTimeScale(s) end
-
---- Add a labelled cue point.
----@return nil
-function Timeline:label(at, name) end
-
---- Add a branch — `child_timeline` runs at `at` only when `predicate(tl)` is true.
----@return nil
-function Timeline:branch(at, predicate, child) end
-
---- Advance timeline by `dt`. Call once per frame from `lurek.process`.
----@return nil
-function Timeline:update(dt) end
-
---- Reset fired/applied flags on all clips in all tracks (used after loop restart).
----@return nil
-function Timeline:_reset_clip_flags() end
-
---- Seek to absolute time.
----@return nil
-function Timeline:setTime(t) end
-
---- Seek forward or backward by `delta` seconds relative to current time.
----@param delta number
----@return Timeline
-function Timeline:scrub(delta) end
-
---- Rewind the timeline to time zero.
----@return Timeline
-function Timeline:rewind() end
-
---- Seek to the time position of a named label.
----@param label string
----@return Timeline
-function Timeline:skipTo(label) end
-
---- Register a callback invoked when the timeline finishes. Returns a handle that can be passed to `Timeline:offHandle`.
----@param fn function
----@return table
-function Timeline:onComplete(fn) end
-
---- Register a callback invoked whenever a clip on `name` track begins.
----@param name string
----@param fn function
----@return table
-function Timeline:onTrackEnter(name, fn) end
-
---- Deregister a callback handle previously returned by `onComplete` or `onTrackEnter`.
----@param handle table
----@return nil
-function Timeline:offHandle(handle) end
-
---- Export a lightweight snapshot of the timeline state for serialisation.
----@return table
-function Timeline:export() end
 
 ---@class library.combat
 library.combat = {}
@@ -3122,140 +2779,11 @@ function RecipeGroup:setOrder(order) end
 ---@return number
 function RecipeGroup:getOrder() end
 
----@class library.dialog
-library.dialog = {}
-
---- Create a new dialog sequencer. The sequencer runs a list of dialog nodes one at a time, revealing typewriter-style text, pausing for choices, and firing named callbacks. States: "idle"    - no script loaded or sequence ended, not started "typing"  - revealing the current line character by character "waiting" - current line fully revealed, waiting for advance() "choice"  - waiting for the player to call choose(index) "paused"  - a "wait" node is counting down "done"    - sequence finished
----@return table
-function library.dialog.newSequencer() end
-
---- Load a new script, replacing any existing one. Call start() afterwards to begin playback.
----@param nodes table
----@return nil
-function Sequence:load(nodes) end
-
---- Begin playback from the first node.
----@return nil
-function Sequence:start() end
-
---- Advance per-frame. Call every frame while isActive() is true.
----@param dt number
----@return nil
-function Sequence:update(dt) end
-
---- Advance past the current line (when state == "waiting" or "typing"). If typing, skips to full reveal first. If waiting, moves to next node.
----@return nil
-function Sequence:advance() end
-
---- Skip the entire current line instantly (advances to "waiting").
----@return nil
-function Sequence:skip() end
-
---- Select a choice option by 1-based index. Only valid when state == "choice".
----@param index number
----@return nil
-function Sequence:choose(index) end
-
---- Set the typewriter reveal speed.
----@param cps number
----@return nil
-function Sequence:setSpeed(cps) end
-
---- Get the current reveal speed.
----@return number
-function Sequence:getSpeed() end
-
---- Get the current state string.
----@return string
-function Sequence:getState() end
-
---- Returns true while the sequence is in progress (not idle or done).
----@return boolean
-function Sequence:isActive() end
-
---- Returns true when a choice is pending player input.
----@return boolean
-function Sequence:isWaitingForChoice() end
-
---- Returns the speaker name of the current "say" node.
----@return string
-function Sequence:currentSpeaker() end
-
---- Returns the full text of the current "say" node.
----@return string
-function Sequence:currentText() end
-
---- Returns only the revealed portion of the current text.
----@return string
-function Sequence:revealedText() end
-
---- Returns the prompt text of the current "choice" node.
----@return string
-function Sequence:getChoiceText() end
-
---- Returns an array of choice labels for the current "choice" node.
----@return table
-function Sequence:getChoiceLabels() end
-
---- Register a callback for a named event. Events: "line" (speaker, text), "choice" (), "finished" (), "done" (), "event" (name, data), "typewrite" (char, full_text).
----@param event string
----@param fn function
----@return nil
-function Sequence:on(event, fn) end
-
---- Unregister all callbacks for a named event.
----@param event string
----@return nil
-function Sequence:off(event) end
-
---- Return the optional `lurek.patterns` EventBus mirror, or nil when the engine is not present. External systems can subscribe to any of the sequencer's events through the bus without going through `seq:on()`. The canonical event delivery path remains the local handler table, so the bus is purely a parallel observer channel.
----@return table|nil
-function Sequence:getEventBus() end
-
---- Create a `say` dialog node (spoken line with typewriter reveal).
----@param actor string
----@param text string
----@param opts table
----@return table
-function library.dialog.say(actor, text, opts) end
-
---- Create a `choice` dialog node (branching prompt).
----@param prompt string
----@param options table
----@param opts table
----@return table
-function library.dialog.choice(prompt, options, opts) end
-
---- Create a `wait` dialog node (timed pause).
----@param seconds number
----@param opts table
----@return table
-function library.dialog.wait(seconds, opts) end
-
---- Create an `event` dialog node (named hook signal). When executed, fires `seq:on("event", fn)` with (name, data) then advances.
----@param name string
----@param data any
----@param opts table
----@return table
-function library.dialog.event(name, data, opts) end
-
---- Create a `call` dialog node (inline Lua callback). When executed, calls `fn()` immediately and advances without pausing.
----@param fn function
----@param opts table
----@return table
-function library.dialog.call(fn, opts) end
-
---- Create a `jump` dialog node (label-based control transfer). Execution resumes at the first node in the current script whose `.label` field equals `target`. Unknown targets are silently skipped.
----@param target string
----@param opts table
----@return table
-function library.dialog.jump(target, opts) end
-
 ---@class library.doll
 library.doll = {}
 
 --- Create a new Part (visual element for attaching to a Doll socket). Parts carry texture, transform, colour, flip, draw-order, and arbitrary key-value attributes. Attach to a Doll socket with `doll:attach()`.
----@return Part
+---@return DollPart
 function library.doll.newPart() end
 
 --- Texture / Quad Return the texture assigned to this part.
@@ -3529,22 +3057,22 @@ function Doll:setUserData(v) end
 
 --- Attach a Part to a named socket. Returns false if socket not found, type mismatch, or invalid args.
 ---@param socketName string
----@param part Part
+---@param part DollPart
 ---@return boolean
 function Doll:attach(socketName, part) end
 
 --- Detach the Part from a socket, returning it.
 ---@param socketName string
----@return Part|nil
+---@return DollPart|nil
 function Doll:detach(socketName) end
 
 --- Return the Part attached at `socketName`, or nil.
 ---@param socketName string
----@return Part|nil
+---@return DollPart|nil
 function Doll:getPartAt(socketName) end
 
 --- Return the socket name the given Part is attached to, or nil.
----@param part Part
+---@param part DollPart
 ---@return string|nil
 function Doll:findSocket(part) end
 
@@ -4172,64 +3700,6 @@ function ResourceManager:unreserveAmount(name, amount) end
 ---@param name string
 ---@return number
 function ResourceManager:getReserved(name) end
-
----@class library.input_action_map
-library.input_action_map = {}
-
---- Create a new action map instance.
----@return ActionMap
-function library.input_action_map.new() end
-
---- Bind a key to a named action. Multiple keys can be bound to the same action.
----@param action string
----@param key string
----@return nil
-function ActionMap:bind(action, key) end
-
---- Remove a specific key binding from an action.
----@param action string
----@param key string
----@return nil
-function ActionMap:unbind(action, key) end
-
---- Remove all bindings for a named action.
----@param action string
----@return nil
-function ActionMap:unbindAll(action) end
-
---- Poll input state. Call once per frame before querying actions. This method exists for forward-compatibility (e.g. buffered input, repeat detection). Currently the lurek.input API is frame-synchronous so this is a no-op, but consumers should always call it.
----@return nil
-function ActionMap:update() end
-
---- Check if an action was just pressed this frame. Returns true if ANY bound key for the action was pressed.
----@param action string
----@return boolean
-function ActionMap:pressed(action) end
-
---- Check if an action is currently held down. Returns true if ANY bound key for the action is held.
----@param action string
----@return boolean
-function ActionMap:held(action) end
-
---- Check if an action was just released this frame. Returns true if ANY bound key for the action was released.
----@param action string
----@return boolean
-function ActionMap:released(action) end
-
---- Compute a simple axis value from two opposing actions. Returns -1 if negative_action is held, +1 if positive_action is held, 0 if both or neither are held.
----@param negative_action string
----@param positive_action string
----@return number
-function ActionMap:axis(negative_action, positive_action) end
-
---- Get all keys bound to an action.
----@param action string
----@return table
-function ActionMap:getBindings(action) end
-
---- Remove all actions and bindings from this map.
----@return nil
-function ActionMap:clear() end
 
 ---@class library.inventory
 library.inventory = {}
@@ -5356,130 +4826,6 @@ function library.item.sortedIndicesByStat(items, stat, ascending) end
 ---@return table
 function library.item.sortedIndicesByCategory(items) end
 
----@class library.lobby
-library.lobby = {}
-
---- Create a new Room instance.
----@param name string
----@param opts table
----@return Room
-function library.lobby._new(name, opts) end
-
---- Add a player to the room.
----@param peer_id number
----@param name string
----@param data table
----@return boolean
----@return string|nil
-function Room:addPlayer(peer_id, name, data) end
-
---- Remove a player from the room.  Re-elects host deterministically by picking the earliest-joined remaining player.
----@param peer_id number
----@return nil
-function Room:removePlayer(peer_id) end
-
---- Return the number of players currently in this room.
----@return number
-function Room:getPlayerCount() end
-
---- Check whether all players are ready (minimum 2 players required).
----@return boolean
-function Room:isAllReady() end
-
---- Return the current host peer_id (or nil if empty).
----@return number|nil
-function Room:getHost() end
-
---- Create a new lobby manager. The lobby coordinates room creation, joining, leaving, ready-checks, and host election.  Pass a network host for online use, or `nil` for local-only / offline lobby management (e.g. tests). host.  May be `nil` for offline / test usage.
----@param host userdata
----@param channel number
----@return Lobby
-function library.lobby.new(host, channel) end
-
---- Return the underlying `EventBus` (optional, may be nil). When non-nil, `:on(event, callback)` lets multiple listeners subscribe to the same lifecycle event without overwriting each other.  Event names match the strings passed to `:onEvent(fn)` (`room_created`, `room_removed`, `player_joined`, `player_left`, `player_ready`, `host_changed`, `player_disconnected`). unavailable in this runtime.
----@return userdata|nil
-function Lobby:getEventBus() end
-
---- Set the local player name used when joining rooms.
----@param name string
----@return nil
-function Lobby:setPlayerName(name) end
-
---- Register a callback for lobby events. For multi-listener pub-sub, prefer `:getEventBus():on(event, fn)` when `lurek.patterns` is available. `"room_created"`, `"room_removed"`, `"player_joined"`, `"player_left"`, `"player_ready"`, `"host_changed"`, `"player_disconnected"`.
----@param fn function
----@return nil
-function Lobby:onEvent(fn) end
-
---- Create a new room (server-side).
----@param name string
----@param opts table
----@return boolean
----@return string|nil
-function Lobby:createRoom(name, opts) end
-
---- Remove a room (server-side).  All players in the room are evicted.
----@param name string
----@return nil
-function Lobby:removeRoom(name) end
-
---- Join a room by name (local or via network message). When `peer_id` is nil the local player joins (using peer 0 internally). When `peer_id` is provided the server records that remote peer.
----@param name string
----@param peer_id number
----@param player_name string
----@param password string
----@return boolean
----@return string|nil
-function Lobby:joinRoom(name, peer_id, player_name, password) end
-
---- Leave a room. When `peer_id` is nil the local player leaves their current room. When `peer_id` is provided the server removes that remote peer from whichever room they are in.
----@param peer_id number
----@return boolean
----@return string|nil
-function Lobby:leaveRoom(peer_id) end
-
---- List all available rooms.
----@return table
-function Lobby:listRooms() end
-
---- Get players in a specific room (or current room if name is nil).
----@param name string
----@return table
-function Lobby:getPlayers(name) end
-
---- Set ready state for a player. When `peer_id` is nil the local player's ready state is updated in their current room.  When `peer_id` is provided the server looks up that peer's room via the internal reverse map (unified code path).
----@param ready boolean
----@param peer_id number
----@return nil
-function Lobby:setReady(ready, peer_id) end
-
---- Check if all players in the current room are ready.
----@return boolean
-function Lobby:isAllReady() end
-
---- Get the current room name (client-side / local player).
----@return string|nil
-function Lobby:getCurrentRoom() end
-
---- Get the host peer_id for a room (or the local player's room).
----@param name string
----@return number|nil
-function Lobby:getHost(name) end
-
---- Get the number of rooms.
----@return number
-function Lobby:getRoomCount() end
-
---- Process incoming lobby network messages.  Call once per frame.
----@return table
-function Lobby:poll() end
-
---- Internal: handle a decoded lobby message from a peer.
----@param peer_id number
----@param data table
----@param events table
----@return nil
-function Lobby:_handle(peer_id, data, events) end
-
 ---@class library.loot
 library.loot = {}
 
@@ -5773,153 +5119,6 @@ function library.narrative.formatList(values, conjunction) end
 --- Attach a `{loc:KEY}` localisation pre-processor using `lurek.i18n.t`.
 ---@return nil
 function library.narrative.localiseStory(story, locale) end
-
----@class library.netstate
-library.netstate = {}
-
---- Enable or disable debug logging. When enabled, state changes, authority violations, sync events, and turn changes are logged via `lurek.log.debug` (if available) or a custom function. `lurek.log.debug` when available, otherwise logging is silently skipped.
----@param enabled boolean
----@param custom_log function
----@return nil
-function library.netstate.setLogging(enabled, custom_log) end
-
---- Create a new network state synchronization manager. The `host` parameter is a `lurek.network` host (server, client, or host). If `opts.authority` is not provided, authority defaults to `host:isServer()` when the host supports it, otherwise `false`. or nil for offline/testing mode (network operations become no-ops). - `channel` (number, default 0): Network channel for messages. - `authority` (boolean): Override authority detection. - `turnBased` (boolean, default false): Enable turn-based protocol. - `maxDirtyKeys` (number|nil): Maximum number of dirty keys tracked per sync cycle. When exceeded, oldest dirty keys are evicted. Nil = unlimited.
----@param host userdata|nil
----@param opts table
----@return NetState
-function library.netstate.new(host, opts) end
-
---- Set whether this instance is the authority (can write state).
----@param auth boolean
----@return nil
-function NetState:setAuthority(auth) end
-
---- Check if this instance is the authority.
----@return boolean
-function NetState:isAuthority() end
-
---- Set a global change callback fired for any key change.
----@param fn function
----@return nil
-function NetState:onChange(fn) end
-
---- Register a callback invoked if a full-state request times out. The caller is responsible for implementing timer logic and calling this callback from their own timeout handler.
----@param fn function
----@return nil
-function NetState:onFullStateTimeout(fn) end
-
---- Set a synced value. Only the authority can set values. Non-authority calls are rejected and return `false, "not authority"`. Keys must be non-empty strings.
----@param key string
----@param value any
----@return boolean
----@return string|nil
-function NetState:set(key, value) end
-
---- Get the current value of a synced key.
----@param key string
----@return any|nil
-function NetState:get(key) end
-
---- Get the per-key version number.
----@param key string
----@return number
-function NetState:getKeyVersion(key) end
-
---- Get all synced state as a flat table.
----@return table
-function NetState:getAll() end
-
---- Register a callback for changes to a specific key.
----@param key string
----@param fn function
----@return nil
-function NetState:onChanged(key, fn) end
-
---- Remove all callbacks for a key.
----@param key string
----@return nil
-function NetState:clearCallbacks(key) end
-
---- Get the highest version number across all keys.
----@return number
-function NetState:getVersion() end
-
---- Get the number of synced keys.
----@return number
-function NetState:getKeyCount() end
-
---- Get the number of dirty (unsent) keys.
----@return number
-function NetState:getDirtyCount() end
-
---- Check if a key exists in the state.
----@param key string
----@return boolean
-function NetState:hasKey(key) end
-
---- Remove a key from the synced state. Authority only.
----@param key string
----@return boolean
----@return string|nil
-function NetState:remove(key) end
-
---- Set the turn order (array of peer IDs). Resets the turn index to 1 and turn counter to 0. Each element must be a number. Invalid entries are silently filtered.
----@param order table
----@return nil
-function NetState:setTurnOrder(order) end
-
---- Begin a new turn. Advances to the next player in the turn order. Only the authority should call this. If the turn order is empty, the turn counter advances but `turn_peer` remains nil.
----@return number
----@return number|nil
-function NetState:beginTurn() end
-
---- End the current turn. Alias for `beginTurn()` — advances to next.
----@return number
----@return number|nil
-function NetState:endTurn() end
-
---- Get the current turn number.
----@return number
-function NetState:getCurrentTurn() end
-
---- Get the peer ID whose turn it currently is.
----@return number|nil
-function NetState:getTurnPeer() end
-
---- Register a callback for turn changes.
----@param fn function
----@return nil
-function NetState:onTurn(fn) end
-
---- Check if it is a specific peer's turn.
----@param peer_id number
----@return boolean
-function NetState:isTurn(peer_id) end
-
---- Broadcast all dirty state to connected peers. Call once per frame after all `set()` calls (e.g. at end of `lurek.process(dt)`). Requires a valid host; no-op if host is nil or instance is not authority.
----@return nil
-function NetState:sync() end
-
---- Process incoming state updates from the network. Call once per frame. Requires a valid host; returns empty table if host is nil.
----@return table
-function NetState:poll() end
-
---- Mark a key as dirty, respecting the maxDirtyKeys limit.
----@param key string
----@return nil
-function NetState:_markDirty(key) end
-
---- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
----@return number
-function NetState:hashState() end
-
---- Serialise the current state to a JSON string via `lurek.serial.toJson`. Suitable for human-readable persistence (NOT for the wire — use the normal `:sync()` MessagePack path for peer-to-peer traffic). Returns nil if `lurek.serial` is unavailable in this runtime.
----@return string|nil
-function NetState:toJson() end
-
---- Request a full state snapshot from the authority. Useful when a client joins mid-game. **Limitation**: This method has no built-in timeout. If the authority never responds, the client will not receive a snapshot. Callers should implement their own timer-based retry, e.g.: ns:requestFullState() local deadline = lurek.timer.getTime() + 5.0 -- In process loop: if lurek.timer.getTime() > deadline then retry or invoke --   ns:onFullStateTimeout callback
----@return boolean
-function NetState:requestFullState() end
 
 ---@class library.province_map
 library.province_map = {}
@@ -6917,94 +6116,6 @@ function library.roguelike.bresenham(x0, y0, x1, y1) end
 ---@return nil
 function library.roguelike.lineOfSight(fov, x0, y0, x1, y1) end
 
----@class library.rpc
-library.rpc = {}
-
---- Create a new RPC manager attached to a NetworkHost.
----@param host userdata
----@param channel number
----@param timeout number
----@return RPC
-function library.rpc.new(host, channel, timeout) end
-
---- Enable or disable debug logging via `lurek.log`. When enabled, RPC calls, responses, and errors are logged at debug level.
----@param enabled boolean
----@return nil
-function RPC:setLogging(enabled) end
-
---- Register a function callable from remote peers.
----@param name string
----@param fn function
----@return nil
-function RPC:register(name, fn) end
-
---- Unregister a previously registered function.
----@param name string
----@return nil
-function RPC:unregister(name) end
-
---- Set a global error handler for RPC processing errors. The callback receives a single string that includes error context (method name, peer ID) when available.
----@param fn function
----@return nil
-function RPC:onError(fn) end
-
---- Call a function on a specific remote peer (request/response pattern). When a matching `rpc_response` arrives in `poll()`, the `callback` is invoked with `(success, result_table)`.
----@param peer_id number
----@param name string
----@param callback function
----@param ... any
----@return number
-function RPC:call(peer_id, name, callback, ...) end
-
---- Fire-and-forget call: no response expected. Includes `peer_id` in the wire message so broadcast handlers on the receiving side can identify the originator.
----@param peer_id number
----@param name string
----@param ... any
----@return nil
-function RPC:notify(peer_id, name, ...) end
-
---- Broadcast an RPC call to all connected peers (fire-and-forget). Includes `peer_id = 0` in the wire message (server/broadcast origin).
----@param name string
----@param ... any
----@return nil
-function RPC:broadcast(name, ...) end
-
---- Reset the internal request ID counter back to 1. Useful for long-running servers to avoid exceeding the 2^53 integer precision limit of Lua numbers (LuaJIT doubles). **Warning**: Only call this when no pending calls are in flight.
----@return nil
-function RPC:resetIdCounter() end
-
---- Get the current request ID counter value.
----@return number
-function RPC:getNextId() end
-
---- Get the number of pending (unresolved) RPC calls.
----@return number
-function RPC:getPendingCount() end
-
---- Set the timeout for future pending calls (seconds). 0 = no timeout.
----@param seconds number
----@return nil
-function RPC:setTimeout(seconds) end
-
---- Process incoming RPC messages. Call once per frame in `lurek.process(dt)`. Dispatches received RPC calls to registered handlers and invokes pending call callbacks when matching responses arrive. Also expires timed-out pending calls.
----@return table
-function RPC:poll() end
-
---- Internal: expire pending calls that have exceeded their timeout.
----@return nil
-function RPC:_expireTimeouts() end
-
---- Internal: dispatch a decoded RPC message.
----@param peer_id number
----@param data table
----@param responses table
----@return nil
-function RPC:_dispatch(peer_id, data, responses) end
-
---- Get the number of registered RPC handlers.
----@return number
-function RPC:getHandlerCount() end
-
 ---@class library.scene-objects
 library.scene_objects = {}
 
@@ -7048,96 +6159,6 @@ function ObjectContainer:getByLayer(n) end
 ---@param obj table
 ---@return boolean
 function ObjectContainer:has(obj) end
-
----@class library.scheduler
-library.scheduler = {}
-
---- Create a new coroutine scheduler. Manages a pool of coroutine tasks; each task can `yield(seconds)` to pause itself. Completed, errored, and removed tasks are cleaned up automatically.
----@param opts table
----@return Scheduler
-function library.scheduler.newScheduler(opts) end
-
---- Add a new task function to the scheduler. The task receives a `yield` function as its first argument. Call `yield(seconds)` inside the task to pause for that many seconds.
----@param fn function
----@param name string
----@return number
-function sched:add(fn, name) end
-
---- Remove a task by id.
----@param id number
----@return boolean
-function sched:remove(id) end
-
---- Pause a task by id.  Paused tasks keep their remaining wait time but are not ticked until resumed.
----@param id number
----@return nil
-function sched:pause(id) end
-
---- Resume a paused task by id.
----@param id number
----@return nil
-function sched:resume(id) end
-
---- Return the status of a task.
----@param id number
----@return string|nil
----@return string|nil
-function sched:getStatus(id) end
-
---- Step all active tasks by dt seconds. Tasks whose wait time has elapsed are resumed. A per-call iteration guard prevents infinite loops when a task yields 0 repeatedly.
----@param dt number
----@return number
-function sched:update(dt) end
-
---- Return the number of active (non-done) tasks.
----@return number
-function sched:getCount() end
-
---- Return the list of errors captured since creation (or last `clearErrors()`). Each entry is `{ id = number, msg = string }`.
----@return table
-function sched:getErrors() end
-
---- Clear the captured error list.
----@return nil
-function sched:clearErrors() end
-
---- Remove all tasks immediately.
----@return nil
-function sched:clear() end
-
----@class library.sprite
-library.sprite = {}
-
---- Create a new AnimController that auto-switches animation clips based on rules. Rules are evaluated in order each frame; first matching rule wins.
----@param animator SpriteAnimator
----@param opts table
----@return AnimController
-function library.sprite.new(animator, opts) end
-
---- Update the controller: evaluate rules or tick forced state timer.
----@param dt number
----@param ctx table
----@return nil
-function AnimController:update(dt, ctx) end
-
---- Returns the current animation state name.
----@return string
-function AnimController:getState() end
-
---- Force a specific state for a duration, ignoring rules.
----@param state string
----@param duration number
----@return nil
-function AnimController:force(state, duration) end
-
---- Register a callback fired on state transitions. fn(oldState, newState)
----@param fn function
----@return nil
-function AnimController:onStateChange(fn) end
-
---- Returns the underlying SpriteAnimator.
----@return SpriteAnimator
-function AnimController:getAnimator() end
 
 ---@class library.stats
 library.stats = {}
@@ -7596,265 +6617,3 @@ function TilemapMinimap:clearViewport() end
 --- Expose underlying minimap handle.
 ---@return any
 function TilemapMinimap:getMinimap() end
-
----@class library.tween_chain
-library.tween_chain = {}
-
---- Linear interpolation (no easing).
----@param t number
----@return number
-function library.tween_chain.linear(t) end
-
---- Quadratic ease-in.
----@param t number
----@return number
-function library.tween_chain.easeInQuad(t) end
-
---- Quadratic ease-out.
----@param t number
----@return number
-function library.tween_chain.easeOutQuad(t) end
-
---- Quadratic ease-in-out.
----@param t number
----@return number
-function library.tween_chain.easeInOutQuad(t) end
-
---- Cubic ease-in.
----@param t number
----@return number
-function library.tween_chain.easeInCubic(t) end
-
---- Cubic ease-out.
----@param t number
----@return number
-function library.tween_chain.easeOutCubic(t) end
-
---- Cubic ease-in-out.
----@param t number
----@return number
-function library.tween_chain.easeInOutCubic(t) end
-
---- Back ease-in (slight overshoot at start).
----@param t number
----@return number
-function library.tween_chain.easeInBack(t) end
-
---- Back ease-out (slight overshoot at end).
----@param t number
----@return number
-function library.tween_chain.easeOutBack(t) end
-
---- Back ease-in-out.
----@param t number
----@return number
-function library.tween_chain.easeInOutBack(t) end
-
---- Bounce ease-out.
----@param t number
----@return number
-function library.tween_chain.easeOutBounce(t) end
-
---- Elastic ease-out.
----@param t number
----@return number
-function library.tween_chain.easeOutElastic(t) end
-
---- Create a parallel tween group. All sub-tweens run simultaneously. The group completes when the longest sub-tween finishes.
----@return ParallelGroup
-function library.tween_chain.parallel() end
-
---- Add a property tween to this parallel group.
----@param target table
----@param props table
----@param duration number
----@param ease_name ?string
----@return ParallelGroup
-function ParallelGroup:to(target, props, duration, ease_name) end
-
----@return nil
-function ParallelGroup:_as_step() end
-
---- Create a new sequential tween chain.
----@return Chain
-function library.tween_chain.new() end
-
---- Add a property tween step to the chain.
----@param target table
----@param props table
----@param duration number
----@param ease_name ?string
----@return Chain
-function Chain:to(target, props, duration, ease_name) end
-
---- Add a delay step to the chain.
----@param duration number
----@return Chain
-function Chain:wait(duration) end
-
---- Add an instant callback step to the chain.
----@param fn function
----@return Chain
-function Chain:call(fn) end
-
---- Add a parallel group (or any step-like object) to the chain.
----@param group ParallelGroup
----@return Chain
-function Chain:add(group) end
-
---- Set the loop count for the chain.
----@param count number
----@return Chain
-function Chain:loop(count) end
-
---- Register a callback fired when the chain starts playing.
----@param fn function
----@return Chain
-function Chain:onStart(fn) end
-
---- Register a callback fired when the chain fully completes (all loops done).
----@param fn function
----@return Chain
-function Chain:onComplete(fn) end
-
---- Register a callback fired at the end of each loop iteration.
----@param fn function
----@return Chain
-function Chain:onLoop(fn) end
-
---- Start (or restart) the chain from the beginning.
----@return nil
-function Chain:start() end
-
---- Advance the chain by dt seconds. Call once per frame.
----@param dt number
----@return nil
-function Chain:update(dt) end
-
---- Pause playback.
----@return nil
-function Chain:pause() end
-
---- Resume playback after pause.
----@return nil
-function Chain:resume() end
-
---- Stop playback and mark as complete.
----@return nil
-function Chain:stop() end
-
---- Reset the chain to its initial state (not playing).
----@return nil
-function Chain:reset() end
-
---- Check if the chain is currently playing (not paused, not complete).
----@return boolean
-function Chain:isPlaying() end
-
---- Check if the chain has finished all iterations.
----@return boolean
-function Chain:isComplete() end
-
---- Get overall progress through the current loop iteration.
----@return number
-function Chain:getProgress() end
-
----@class library.window_config
-library.window_config = {}
-
---- Create a new window configuration builder.
----@return WindowConfig
-function library.window_config.new() end
-
---- Set the window title.
----@param t string
----@return WindowConfig
-function WindowConfig:title(t) end
-
---- Set the window size in pixels.
----@param w number
----@param h number
----@return WindowConfig
-function WindowConfig:size(w, h) end
-
---- Set the minimum window size in pixels.
----@param w number
----@param h number
----@return WindowConfig
-function WindowConfig:minSize(w, h) end
-
---- Set whether the window is resizable.
----@param flag boolean
----@return WindowConfig
-function WindowConfig:resizable(flag) end
-
---- Set whether vsync is enabled.
----@param flag boolean
----@return WindowConfig
-function WindowConfig:vsync(flag) end
-
---- Set fullscreen mode.
----@param flag boolean
----@return WindowConfig
-function WindowConfig:fullscreen(flag) end
-
---- Set whether the window should be centered on screen.
----@param flag boolean
----@return WindowConfig
-function WindowConfig:centered(flag) end
-
---- Set the window icon from an image file path.
----@param path string
----@return WindowConfig
-function WindowConfig:icon(path) end
-
---- Set the scaling mode for rendering.
----@param mode string
----@return WindowConfig
-function WindowConfig:scalingMode(mode) end
-
---- Set the internal game resolution (for pixel_perfect and letterbox modes).
----@param w number
----@param h number
----@return WindowConfig
-function WindowConfig:gameSize(w, h) end
-
---- Apply the configuration to the actual window via lurek.window.* calls. Safe to call headlessly; will log warnings if the engine is unavailable.
----@return nil
-function WindowConfig:apply() end
-
---- Create a WindowConfig from a named preset.
----@param name string
----@return WindowConfig
-function library.window_config.preset(name) end
-
---- Toggle fullscreen mode on the live window.
----@return nil
-function WindowConfig:toggleFullscreen() end
-
---- Get the actual current window size from the engine.
----@return number
----@return number
-function WindowConfig:getActualSize() end
-
---- Get the current scale factor (actual size / game size).
----@return number
-function WindowConfig:getScaleFactor() end
-
---- Serialize the configuration to a plain table for persistence.
----@return table
-function WindowConfig:serialize() end
-
---- Restore configuration from a previously serialized table.
----@param data table
----@return WindowConfig
-function WindowConfig:deserialize(data) end
-
---- Serialize configuration to a JSON string. Uses lurek.serial.toJson if available; otherwise falls back to a simple encoder.
----@return string
-function WindowConfig:toJson() end
-
---- Create a WindowConfig from a JSON string.
----@param json_str string
----@return WindowConfig
-function library.window_config.fromJson(json_str) end

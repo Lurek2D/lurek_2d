@@ -54,7 +54,6 @@ The engine automatically adds the correct search paths so `require("library.*")`
 | `library.quest`        | Quest tracking, objectives, and branching completion states                   | Stub    |
 | `library.rpc`          | Remote procedure calls over `lurek.network`                                   | Full    |
 | `library.scheduler`    | Pure-Lua coroutine scheduler driven by `:update(dt)` (was `library.patterns`) | Full    |
-| library.sprite       | SpriteAnimator + AnimController state machine for clip-based animation        | Full    |
 | `library.stats`        | Character attributes, derived stats, and modifiers                            | Stub    |
 | library.window_config| Fluent window config builder — presets, serialization, scaling modes          | Full    |
 | library.tween_chain  | Chainable tween sequences — parallel groups, easing, looping, progress       | Full    |

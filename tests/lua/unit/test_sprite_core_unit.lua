@@ -34,6 +34,161 @@ describe("module interface", function()
     it("exposes newAtlasPacker factory", function()
         expect_type("function", lurek.sprite.newAtlasPacker)
     end)
+
+    -- @covers lurek.sprite.newAnimator
+    it("exposes newAnimator factory", function()
+        expect_type("function", lurek.sprite.newAnimator)
+    end)
+end)
+
+-- @describe sprite animator
+describe("sprite animator", function()
+    local clips = {
+        idle = { row = 1, from = 1, to = 3, fps = 10, loop = true },
+        jump = { row = 2, from = 4, to = 5, fps = 5, loop = false },
+    }
+
+    -- @covers lurek.sprite.newAnimator
+    it("creates animator userdata", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        expect_type("userdata", anim)
+    end)
+
+    -- @covers LSpriteAnimator:play
+    it("play selects named clip", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        expect_equal("idle", anim:currentClip())
+    end)
+
+    -- @covers LSpriteAnimator:currentClip
+    it("currentClip returns nil before play", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        expect_equal(nil, anim:currentClip())
+    end)
+
+    -- @covers LSpriteAnimator:currentFrame
+    it("currentFrame returns row and column", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        local row, col = anim:currentFrame()
+        expect_equal(1, row)
+        expect_equal(1, col)
+    end)
+
+    -- @covers LSpriteAnimator:update
+    it("update advances to next frame", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        anim:update(0.11)
+        local _, col = anim:currentFrame()
+        expect_equal(2, col)
+    end)
+
+    -- @covers LSpriteAnimator:isPlaying
+    it("isPlaying reflects running state", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        expect_equal(true, anim:isPlaying())
+    end)
+
+    -- @covers LSpriteAnimator:pause
+    it("pause stops playback", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        anim:pause()
+        expect_equal(false, anim:isPlaying())
+    end)
+
+    -- @covers LSpriteAnimator:resume
+    it("resume continues paused clip", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        anim:pause()
+        anim:resume()
+        expect_equal(true, anim:isPlaying())
+    end)
+
+    -- @covers LSpriteAnimator:stop
+    it("stop resets frame to clip start", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        anim:update(0.11)
+        anim:stop()
+        local _, col = anim:currentFrame()
+        expect_equal(1, col)
+    end)
+
+    -- @covers LSpriteAnimator:addClip
+    it("addClip appends a new playable clip", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:addClip("run", { row = 3, from = 1, to = 2, fps = 12, loop = true })
+        anim:play("run")
+        expect_equal("run", anim:currentClip())
+    end)
+
+    -- @covers LSpriteAnimator:frameDuration
+    it("frameDuration returns reciprocal fps", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("idle")
+        expect_near(0.1, anim:frameDuration(), 0.0001)
+    end)
+
+    -- @covers LSpriteAnimator:clipDuration
+    it("clipDuration returns full clip length", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        anim:play("jump")
+        expect_near(0.4, anim:clipDuration(), 0.0001)
+    end)
+
+    -- @covers LSpriteAnimator:onFrame
+    it("onFrame callback receives frame updates", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        local received = 0
+        anim:onFrame(function()
+            received = received + 1
+        end)
+        anim:play("idle")
+        anim:update(0.21)
+        expect_equal(true, received >= 2)
+    end)
+
+    -- @covers LSpriteAnimator:onLoop
+    it("onLoop callback fires when clip loops", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        local loops = 0
+        anim:onLoop(function()
+            loops = loops + 1
+        end)
+        anim:play("idle")
+        anim:update(0.31)
+        expect_equal(true, loops >= 1)
+    end)
+
+    -- @covers LSpriteAnimator:onEnd
+    it("onEnd callback fires for non-loop clip", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        local ended = false
+        anim:onEnd(function()
+            ended = true
+        end)
+        anim:play("jump")
+        anim:update(1.0)
+        expect_equal(true, ended)
+    end)
+
+    -- @covers LSpriteAnimator:type
+    it("type reports animator type", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        expect_equal("LSpriteAnimator", anim:type())
+    end)
+
+    -- @covers LSpriteAnimator:typeOf
+    it("typeOf recognizes animator type", function()
+        local anim = lurek.sprite.newAnimator(clips)
+        expect_equal(true, anim:typeOf("LSpriteAnimator"))
+        expect_equal(false, anim:typeOf("LSpriteSheet"))
+    end)
 end)
 
 -- @describe sprite lit sprite normal map support
@@ -65,6 +220,37 @@ describe("sprite lit sprite normal map support", function()
         sprite:setNormalMap(3)
         sprite:clearNormalMap()
         expect_false(sprite:hasNormalMap())
+    end)
+
+    -- @covers LSprite:setPosition
+    it("setPosition updates sprite coordinates", function()
+        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        sprite:setPosition(12, 34)
+        local x, y = sprite:getPosition()
+        expect_equal(12, x)
+        expect_equal(34, y)
+    end)
+
+    -- @covers LSprite:getPosition
+    it("getPosition returns constructor coordinates", function()
+        local sprite = lurek.sprite.newSprite(7, 5, 9)
+        local x, y = sprite:getPosition()
+        expect_equal(5, x)
+        expect_equal(9, y)
+    end)
+
+    -- @covers LSprite:type
+    it("type reports LSprite", function()
+        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        expect_equal("LSprite", sprite:type())
+    end)
+
+    -- @covers LSprite:typeOf
+    it("typeOf recognizes sprite type names", function()
+        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        expect_equal(true, sprite:typeOf("LSprite"))
+        expect_equal(true, sprite:typeOf("LObject"))
+        expect_equal(false, sprite:typeOf("LAtlasPacker"))
     end)
 end)
 

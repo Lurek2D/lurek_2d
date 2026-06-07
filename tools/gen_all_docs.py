@@ -8,7 +8,8 @@ Steps:
     4.  gen_luadoc.py                -> docs/api/lurek.lua                     (LuaCATS stubs)
     5.  gen_docs_lua.py              -> docs/api/lurek.md                      (Lua API reference)
     6.  gen_docs_lua_html.py         -> pages/lua-docs                         (Lua API HTML browser)
-    7.  gen_docs_rust.py             -> docs/api/rust.md                       (Rust API reference)
+    7.  gen_module_pages.py           -> docs/pages/<module>.md                (Lua module pages from specs)
+    8.  gen_docs_rust.py             -> docs/api/rust.md                       (Rust API reference)
     8.  gen_lib_docs.py              -> docs/api/lureksome.md + docs/api/lureksome.lua  (Lureksome library API)
     9.  gen_wiki.py                  -> docs/wiki/*.md                         (GitHub Wiki pages)
    10.  doc_coverage.py              -> logs/data/doc_coverage.json            (docstring coverage JSON)
@@ -41,6 +42,7 @@ SCRIPTS = [
     ("docs/gen_luadoc.py",        "LuaCATS Stubs (docs/api/lurek.lua)"),
     ("docs/gen_docs_lua.py",      "Lua API reference (docs/api/lurek.md)"),
     ("docs/gen_docs_lua_html.py", "Lua API HTML browser (pages/lua-docs)"),
+    ("docs/gen_module_pages.py",  "Lua module pages (docs/pages/<module>.md)"),
     ("docs/gen_docs_rust.py",     "Rust API reference (docs/api/rust.md)"),
     ("docs/gen_lib_docs.py",      "Library API (docs/api/lureksome.md + lureksome.lua)"),
     # gen_wiki.py is in SCRIPTS_WITH_ARGS below (needs --skip-module-pages)

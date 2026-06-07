@@ -1,44 +1,37 @@
 ---
-description: "Create a runnable demo in content/games/ with the required registration and smoke coverage."
-agent: "Content-Maker"
+name: create-demo
+description: Create or update new demo game using specific scope or specific modules.
 ---
-# Create Demo
 
-## Goal
-- Create one runnable demo that proves a concrete engine or content slice.
+# GOAL
+- Build a fully runnable demo game in the `content/games/` directory that showcases engine features.
 
-## Inputs
-- Demo name.
-- Theme or mechanic.
-- Target APIs.
-- Expected smoke-test coverage.
+# INPUTS REQUIRED
+- Demo name and concept
+- Target modules to highlight
+= User must provide the overall theme, mechanics, and required modules
+- Agent must collect layout structures for demos and necessary assets
 
-## Steps
-1. Load [skill: demo-creation](../skills/demo-creation/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
-2. Read content/games/, neighboring demos, tests/lua/content/games/, tests/demo_smoke_tests.rs, and harness registration before editing.
-3. Keep the demo focused, runnable, and honest about the current API; update conf, registration, and README files when the demo shape requires them.
-4. Apply Lurek API first for gameplay and presentation: use `lurek.scene`, `lurek.render`, `lurek.ecs`, and `lurek.ui` (with `ui.toml`) wherever those APIs already solve the problem.
-5. Avoid local fallback handlers, wrapper layers, and primitive-only rendering paths when an equivalent `lurek.*` API exists. Use local glue only for missing engine primitives.
-6. Run the narrowest demo load or smoke path available and confirm the demo registration and tests stay aligned.
+# STEPS TO DO
+1. Load skills: demo-creation, lua-scripting.
+2. Create a directory in `content/games/<demo_name>/` containing `main.lua`, `conf.toml`, and `README.md`.
+3. Write the main game loop, initialize the required subsystems, and add minimal representative gameplay logic.
+4. Write a rust integration test in `tests/demo_smoke_tests.rs` to ensure the demo is automatically verified on CI.
+5. Execute `python tools/validate/validate_game.py --path content/games/<demo_name>`. If the validation script returns errors, fix the demo structure and repeat step 5 until it exits with code 0.
 
-## Success Criteria
-- [ ] The prompt goal was completed: Create one runnable demo that proves a concrete engine or content slice.
-- [ ] Required sync files were updated for the touched slice.
-- [ ] The narrowest relevant validation passed.
-- [ ] The change stayed inside the intended scope.
-- [ ] The demo followed Lurek API first: scene/render/ecs/ui used directly where available.
+# OUTPUTS PROVIDED
+- A new folder in `content/games/` with a complete demo structure
+- Smoke test registration
 
-## Anti-patterns
-- Widen the change into adjacent layers with no new decision.
-- Edit generated artifacts by hand when the source should change instead.
-- Skip the first narrow validation and jump straight to a broad sweep.
-- Build custom local systems that duplicate existing `lurek.*` API behavior.
-- Use primitive-only rendering as default when higher-level Lurek APIs are available.
+# SUCCESS CRITERIA
+- `cargo test --test demo_smoke_tests` exits with code 0 (100% demo pass rate).
+- `python tools/validate/validate_game.py` exits with code 0 (0 validation errors).
 
-## Example Invocation
-- /create-demo name=lighting_lab theme=2d_lights
+# ANIT PATTERNS
+- Creating complex logic that overshadows the engine features being demonstrated.
+- Forgetting to include a `conf.toml` file or a `README.md`.
 
-## CAG Metadata
-Mode: agent
-Loads skills: demo-creation, documentation
-Inputs required: Demo name., Theme or mechanic., Target APIs., Expected smoke-test coverage.
+# REFERENCES
+- skills: demo-creation, lua-scripting
+- tools: python tools/validate/validate_game.py, cargo test
+- agent: Content-Maker

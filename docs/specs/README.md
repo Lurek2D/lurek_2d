@@ -133,8 +133,7 @@ Game-domain services. Imports Foundations + Core Runtime + Platform Services.
 | `asset`      | [asset.md](asset.md)           | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold `LAssetHandle` values to keep them alive. | — |
 | `agent`      | [agent.md](agent.md)           | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. | —            |
 | `automation` | [automation.md](automation.md) | Automated input simulation for headless tests, QA replay, recorded sessions.                           | â€”               |
-| `charts`     | [charts.md](charts.md)         | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers.            | `TIER-2-PLUGIN` |
-| `cursor`     | [cursor.md](cursor.md)         | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom.   | â€”               |
+| `charts`     | [charts.md](charts.md)         | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers.            | `TIER-2-PLUGIN` || `cinematic`  | [cinematic.md](cinematic.md)   | Multi-track timeline system: Tween, Camera, Audio, Signal tracks with frame-driven scheduling.         | â€"               || `cursor`     | [cursor.md](cursor.md)         | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom.   | â€”               |
 | `ecs`        | [ecs.md](ecs.md)               | Entity-Component-System: identity / data / behaviour separation for runtime composition.               | â€”               |
 | `grep`       | [grep.md](grep.md)             | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search.                | â€”               |
 | `i18n`       | [i18n.md](i18n.md)             | Internationalisation and localisation; user-facing text in locale data files (`lurek.i18n.*`). | â€”               |
@@ -170,7 +169,7 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG â�
 | `devtools`    | [devtools.md](devtools.md)       | In-process logger, frame profiler, rolling stats, hot-reload file watcher (`lurek.devtools.*`). | â€”           |
 | `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | â€”           |
 
-> Total module specs: **57** â€” one row per `*.md` file in `docs/specs/` excluding `README.md`.
+> Total module specs: **58** â€" one row per `*.md` file in `docs/specs/` excluding `README.md`.
 
 ---
 

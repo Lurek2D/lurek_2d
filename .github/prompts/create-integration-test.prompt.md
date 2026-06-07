@@ -1,39 +1,37 @@
 ---
-description: "Create one integration test in the correct repo layer for a concrete behavior."
-agent: "Tester"
+name: create-integration-test
+description: Create or update integration lua test combining 2 or more modules together.
 ---
-# Create Integration Test
 
-## Goal
-- Add one integration test in the right place with a clear purpose.
+# GOAL
+- Create comprehensive integration tests that verify the interaction and data flow between multiple modules.
 
-## Inputs
-- Behavior to cover.
-- Target module or API.
-- Correct test layer.
-- Expected validation command.
+# INPUTS REQUIRED
+- List of modules to integrate (e.g., `physics` and `graphics`)
+- Expected interaction behavior
+= User must define which modules are interacting and the expected outcome
+- Agent must collect API surfaces of all involved modules
 
-## Steps
-1. Load [skill: testing-rust](../skills/testing-rust/SKILL.md) and [skill: rust-coding](../skills/rust-coding/SKILL.md) before acting.
-2. Read the owning module, existing tests in the same layer, the test placement rules, and the current failing or missing behavior before editing.
-3. Choose the right home first, keep the test focused on externally visible behavior, and avoid hiding product bugs behind test-only scaffolding.
-4. Run the narrowest test target that includes the new test and confirm the test proves the intended behavior.
+# STEPS TO DO
+1. Load skills: testing-rust, lua-scripting.
+2. Execute `python tools/audit/integration_coverage.py` to identify missing links between the targeted modules.
+3. Write a Lua script under `tests/lua/integration/` that initializes and feeds output from Module A into Module B, asserting the final combined state.
+4. Execute `cargo test --test lua_tests` ensuring the integration folder is included in the test runner. If tests fail, fix the integration script.
+5. Re-run `python tools/audit/integration_coverage.py`. If the cross-module link still reports as uncovered (0%), return to step 3 and fix the test implementation.
 
-## Success Criteria
-- [ ] The prompt goal was completed: Add one integration test in the right place with a clear purpose.
-- [ ] Required sync files were updated for the touched slice.
-- [ ] The narrowest relevant validation passed.
-- [ ] The change stayed inside the intended scope.
+# OUTPUTS PROVIDED
+- Integration test scripts in `tests/lua/integration/` (or similar appropriate path)
+- Test execution summary
 
-## Anti-patterns
-- Widen the change into adjacent layers with no new decision.
-- Edit generated artifacts by hand when the source should change instead.
-- Skip the first narrow validation and jump straight to a broad sweep.
+# SUCCESS CRITERIA
+- `cargo test --test lua_tests` exits with code 0.
+- `python tools/audit/integration_coverage.py` reports exactly 100% integration coverage for the target module pair.
 
-## Example Invocation
-- /create-integration-test behavior=save_roundtrip layer=tests/rust
+# ANIT PATTERNS
+- Writing integration tests that mock the interaction layer.
+- Coupling the test too tightly to the internal implementation of either module.
 
-## CAG Metadata
-Mode: agent
-Loads skills: testing-rust, rust-coding
-Inputs required: Behavior to cover., Target module or API., Correct test layer., Expected validation command.
+# REFERENCES
+- skills: testing-rust, lua-scripting
+- tools: python tools/audit/integration_coverage.py
+- agent: Tester

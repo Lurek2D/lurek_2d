@@ -11,7 +11,7 @@
 - Source path: `src/camera/`
 - Binding: `src/lua_api/camera_api.rs`
 - Namespace: `lurek.camera`
-- Lua API surface: `3` functions, `2` types, `85` methods
+- Lua API surface: `4` functions, `3` types, `97` methods
 - Rust test path(s): tests/rust/unit/camera_tests.rs, tests/rust/stress/camera_fuzz_tests.rs
 - Lua test path(s): tests/lua/unit/test_camera.lua, tests/lua/stress/test_camera_stress.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_scene_camera.lua, tests/lua/integration/test_parallax_camera.lua, tests/lua/integration/test_input_camera.lua, tests/lua/integration/test_render_camera.lua
 
@@ -27,6 +27,7 @@ For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the
 
 - `math`: Imports or references `math` from `src/math/`.
 - `render`: Imports or references `render` from `src/render/`.
+- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 
 ## Files
 
@@ -95,6 +96,13 @@ For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the
 - Provides bidirectional conversion helpers between logical game space and screen pixel coordinates.
 - Serves as a compact scaling container for systems that need fast coordinate remapping.
 
+### walker.rs
+
+- Tile-grid walker with smooth camera following.
+- Provides a walker that moves on a tile-based grid with collision detection and
+- integrates camera following behavior. The walker tracks both world-space and tile-space positions,
+- supports directional movement with tile collision checks, and smoothly updates an associated camera.
+
 ## Lua API Ref
 
 ### Functions
@@ -102,6 +110,7 @@ For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the
 - `lurek.camera.new(vw?, vh?) -> LCamera`: Creates a 2D camera with optional virtual viewport size.
 - `lurek.camera.newCamera(vw?, vh?) -> LCamera`: Creates a 2D camera with optional virtual viewport size.
 - `lurek.camera.newRig() -> LCameraRig`: Creates an empty named camera rig. This function is exposed to Lua scripts.
+- `lurek.camera.newWalker(map, opts?) -> LCameraWalker`: Creates a tile-grid walker with smooth camera following.
 
 ### Callbacks
 
@@ -219,3 +228,26 @@ For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the
 - `LCameraRig:type() -> string`: Returns the Lua-visible type name for this camera rig handle.
 - `LCameraRig:typeOf(name) -> boolean`: Returns whether this camera rig handle matches a supported type name.
 - `LCameraRig:updateAll(dt) -> nil`: Advances every camera in this rig. This method is available to Lua scripts.
+
+#### LCameraWalker Type
+
+- Lua-side walker combining tile-grid movement with camera following.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LCameraWalker:getCamera() -> LCamera`: Returns the associated camera.
+- `LCameraWalker:getPosition() -> number, number`: Returns the walker world-space center position.
+- `LCameraWalker:getTilePosition() -> integer, integer`: Returns current walker tile coordinates (1-based).
+- `LCameraWalker:moveDown(dt?) -> nil`: Moves the walker down (positive Y) with collision checking.
+- `LCameraWalker:moveLeft(dt?) -> nil`: Moves the walker left (negative X) with collision checking.
+- `LCameraWalker:moveRight(dt?) -> nil`: Moves the walker right (positive X) with collision checking.
+- `LCameraWalker:moveUp(dt?) -> nil`: Moves the walker up (negative Y) with collision checking.
+- `LCameraWalker:setPosition(x, y) -> nil`: Sets the walker world-space center position.
+- `LCameraWalker:setTilePosition(tx, ty) -> nil`: Places walker using 1-based tile coordinates.
+- `LCameraWalker:type() -> string`: Returns the type name of this userdata.
+- `LCameraWalker:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LCameraWalker:update(dt?) -> nil`: Updates camera state and advances smooth interpolation.

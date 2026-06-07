@@ -210,6 +210,10 @@ function expect_no_error(fn, msg)
     end
 end
 
+package.preload["test_harness"] = function()
+    return require("tests.lua.harness")
+end
+
 -- Assertion: value is greater than threshold
 function expect_greater(val, threshold, msg)
     if val <= threshold then

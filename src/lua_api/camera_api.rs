@@ -1,7 +1,7 @@
 //! File: src/lua_api/camera_api.rs
 
 use super::SharedState;
-use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, ZoomTween};
+use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, ZoomTween, CameraWalker};
 use crate::render::renderer::RenderCommand;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -845,6 +845,101 @@ impl LuaUserData for LuaCameraRig {
         });
     }
 }
+/// Lua-side walker combining tile-grid movement with camera following.
+pub struct LuaCameraWalker {
+    /// Underlying camera walker struct.
+    inner: RefCell<CameraWalker>,
+    /// Reference to the camera for getCamera calls.
+    camera: Rc<RefCell<Camera2D>>,
+    /// Shared runtime state.
+    state: Rc<RefCell<SharedState>>,
+}
+impl LuaUserData for LuaCameraWalker {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setPosition --
+        /// Sets the walker world-space center position.
+        /// @param | x | number | Walker X position in world units.
+        /// @param | y | number | Walker Y position in world units.
+        methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            this.inner.borrow_mut().set_position(x, y);
+            Ok(())
+        });
+        // -- getPosition --
+        /// Returns the walker world-space center position.
+        /// @return | number, number | Walker X and Y position in world units.
+        methods.add_method("getPosition", |_, this, ()| {
+            let (x, y) = this.inner.borrow().get_position();
+            Ok((x, y))
+        });
+        // -- setTilePosition --
+        /// Places walker using 1-based tile coordinates.
+        /// @param | tx | integer | Tile column (1-based).
+        /// @param | ty | integer | Tile row (1-based).
+        methods.add_method("setTilePosition", |_, this, (tx, ty): (u32, u32)| {
+            this.inner.borrow_mut().set_tile_position(tx, ty);
+            Ok(())
+        });
+        // -- getTilePosition --
+        /// Returns current walker tile coordinates (1-based).
+        /// @return | integer, integer | Tile column and row (1-based).
+        methods.add_method("getTilePosition", |_, this, ()| {
+            let (tx, ty) = this.inner.borrow().get_tile_position();
+            Ok((tx, ty))
+        });
+        // -- moveUp --
+        /// Moves the walker up (negative Y) with collision checking.
+        /// @param | dt | number? | Time delta in seconds (defaults to 1/60).
+        methods.add_method("moveUp", |_, this, dt: Option<f32>| {
+            this.inner.borrow_mut().move_up(dt.unwrap_or(1.0 / 60.0));
+            Ok(())
+        });
+        // -- moveDown --
+        /// Moves the walker down (positive Y) with collision checking.
+        /// @param | dt | number? | Time delta in seconds (defaults to 1/60).
+        methods.add_method("moveDown", |_, this, dt: Option<f32>| {
+            this.inner.borrow_mut().move_down(dt.unwrap_or(1.0 / 60.0));
+            Ok(())
+        });
+        // -- moveLeft --
+        /// Moves the walker left (negative X) with collision checking.
+        /// @param | dt | number? | Time delta in seconds (defaults to 1/60).
+        methods.add_method("moveLeft", |_, this, dt: Option<f32>| {
+            this.inner.borrow_mut().move_left(dt.unwrap_or(1.0 / 60.0));
+            Ok(())
+        });
+        // -- moveRight --
+        /// Moves the walker right (positive X) with collision checking.
+        /// @param | dt | number? | Time delta in seconds (defaults to 1/60).
+        methods.add_method("moveRight", |_, this, dt: Option<f32>| {
+            this.inner.borrow_mut().move_right(dt.unwrap_or(1.0 / 60.0));
+            Ok(())
+        });
+        // -- update --
+        /// Updates camera state and advances smooth interpolation.
+        /// @param | dt | number? | Time delta in seconds (defaults to 1/60).
+        methods.add_method("update", |_, this, dt: Option<f32>| {
+            this.inner.borrow_mut().update(dt.unwrap_or(1.0 / 60.0));
+            Ok(())
+        });
+        // -- getCamera --
+        /// Returns the associated camera.
+        /// @return | LCamera | Camera that follows the walker.
+        methods.add_method("getCamera", |lua, this, ()| {
+            lua.create_userdata(make_lua_camera(Rc::clone(&this.camera), Rc::clone(&this.state)))
+        });
+        // -- type --
+        /// Returns the type name of this userdata.
+        /// @return | string | Always `"LCameraWalker"`.
+        methods.add_method("type", |_, _, ()| Ok("LCameraWalker"));
+        // -- typeOf --
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check against.
+        /// @return | boolean | True if `name` is `"LCameraWalker"` or `"Object"`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LCameraWalker" || name == "LObject")
+        });
+    }
+}
 /// Registers the `lurek.camera` API table with the Lua VM.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -895,7 +990,67 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
-    /// Performs the 'camera' operation.
+    // -- newWalker --
+    /// Creates a tile-grid walker with smooth camera following.
+    /// @param | map | LTileMap | Tilemap for collision detection.
+    /// @param | opts | table? | Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
+    /// @return | LCameraWalker | New walker handle.
+    let s = state.clone();
+    tbl.set(
+        "newWalker",
+        lua.create_function(move |lua, (map_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+            // Get LuaTileMap from userdata
+            let lua_tilemap = map_ud.borrow::<super::tilemap_api::LuaTileMap>()?;
+            let map_ref = Rc::clone(&lua_tilemap.inner);
+
+            // Parse options
+            let layer: usize = opts.as_ref().and_then(|t| t.get("layer").ok()).unwrap_or(1);
+            let tile_w: f32 = opts.as_ref().and_then(|t| t.get("tile_w").ok()).unwrap_or(32.0);
+            let tile_h: f32 = opts.as_ref().and_then(|t| t.get("tile_h").ok()).unwrap_or(32.0);
+            let body_w: f32 = opts.as_ref().and_then(|t| t.get("body_w").ok()).unwrap_or(tile_w * 0.8);
+            let body_h: f32 = opts.as_ref().and_then(|t| t.get("body_h").ok()).unwrap_or(tile_h * 0.8);
+            let speed: f32 = opts.as_ref().and_then(|t| t.get("speed").ok()).unwrap_or(tile_w);
+            let start_x: f32 = opts.as_ref().and_then(|t| t.get("x").ok()).unwrap_or(tile_w * 0.5);
+            let start_y: f32 = opts.as_ref().and_then(|t| t.get("y").ok()).unwrap_or(tile_h * 0.5);
+
+            // Get or create camera
+            let camera = if let Some(opts_table) = opts.as_ref() {
+                if let Ok(cam_ud) = opts_table.get::<_, LuaAnyUserData>("camera") {
+                    if let Ok(lua_cam) = cam_ud.borrow::<LuaCamera2D>() {
+                        Rc::clone(&lua_cam.inner)
+                    } else {
+                        Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
+                    }
+                } else {
+                    Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
+                }
+            } else {
+                Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
+            };
+
+            // Create walker
+            let walker = CameraWalker::new(
+                map_ref,
+                layer - 1, // Convert to 0-based
+                tile_w,
+                tile_h,
+                body_w,
+                body_h,
+                speed,
+                start_x,
+                start_y,
+                Rc::clone(&camera),
+            );
+
+            lua.create_userdata(LuaCameraWalker {
+                inner: RefCell::new(walker),
+                camera,
+                state: s.clone(),
+            })
+        })?,
+    )?;
+
+
     lurek.set("camera", tbl)?;
     Ok(())
 }

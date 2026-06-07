@@ -155,6 +155,12 @@ function lurek.visible(is_visible) end
 ---@param y number Vertical wheel delta.
 function lurek.wheelmoved(x, y) end
 
+---@class LNetworkRpc
+LNetworkRpc = {}
+
+---@class LNetworkState
+LNetworkState = {}
+
 ---@class LSpacer
 LSpacer = {}
 
@@ -1541,6 +1547,9 @@ lurek.asset = {}
 ---@class lurek.audio
 lurek.audio = {}
 
+---@class lurek.audio.manager
+lurek.audio.manager = {}
+
 ---@class lurek.automation
 lurek.automation = {}
 
@@ -1552,6 +1561,9 @@ lurek.camera = {}
 
 ---@class lurek.charts
 lurek.charts = {}
+
+---@class lurek.cinematic
+lurek.cinematic = {}
 
 ---@class lurek.color
 lurek.color = {}
@@ -1714,6 +1726,9 @@ lurek.spine = {}
 
 ---@class lurek.sprite
 lurek.sprite = {}
+
+---@class lurek.svg
+lurek.svg = {}
 
 ---@class lurek.system
 lurek.system = {}
@@ -1953,6 +1968,10 @@ LCamera = {}
 ---@class LCameraRig
 LCameraRig = {}
 
+--- Lua-side walker combining tile-grid movement with camera following.
+---@class LCameraWalker
+LCameraWalker = {}
+
 --- Lua userdata for rendering a stacked area series chart.
 ---@class LAreaChart
 LAreaChart = {}
@@ -1972,6 +1991,14 @@ LPieChart = {}
 --- Lua-visible scatter plot userdata.
 ---@class LScatterPlot
 LScatterPlot = {}
+
+--- Lua userdata handle wrapping a [`Cinematic`] timeline.
+---@class LCinematic
+LCinematic = {}
+
+--- Lua userdata handle wrapping a [`CinematicTimeline`] for multi-track playback.
+---@class LCinematicTimeline
+LCinematicTimeline = {}
 
 --- Lua-side multidimensional numeric array handle.
 ---@class LArray
@@ -2020,6 +2047,10 @@ LFileWatcher = {}
 --- Lua-side REPL console handle with bounded history.
 ---@class LReplConsole
 LReplConsole = {}
+
+--- Lua handle for a dialog sequencer with typewriter-reveal playback.
+---@class LDialogSequencer
+LDialogSequencer = {}
 
 --- Lua handle for topic and branch selection driven by dialogue AI state.
 ---@class LDialogueAI
@@ -2674,6 +2705,10 @@ LSaveManager = {}
 ---@class LDepthSorter
 LDepthSorter = {}
 
+--- Create a new scene object container for managing object lifecycle and draw ordering.
+---@class LSceneObjectContainer
+LSceneObjectContainer = {}
+
 --- Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
 ---@class LSkeleton
 LSkeleton = {}
@@ -2690,6 +2725,10 @@ LAtlasPacker = {}
 ---@class LSprite
 LSprite = {}
 
+--- Lua-visible wrapper around Rust-side clip animation playback state.
+---@class LSpriteAnimator
+LSpriteAnimator = {}
+
 --- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 ---@class LSpriteAtlas
 LSpriteAtlas = {}
@@ -2697,6 +2736,10 @@ LSpriteAtlas = {}
 --- Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 ---@class LSpriteSheet
 LSpriteSheet = {}
+
+--- Represents the Lua-visible LSvgImage object.
+---@class LSvgImage
+LSvgImage = {}
 
 --- Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
 ---@class LTerminal
@@ -6102,6 +6145,10 @@ lurek.audio.hasMidiSoundFont = function() end
 ---@return boolean True if looping is enabled.
 lurek.audio.isLooping = function(source) end
 
+--- Returns whether global audio is currently muted.
+---@return boolean True if muted (all sources paused).
+lurek.audio.isMuted = function() end
+
 --- Returns whether a source is currently paused.
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return boolean True if the source is paused.
@@ -6187,6 +6234,11 @@ lurek.audio.pause = function(source) end
 --- Pauses all currently playing audio sources.
 lurek.audio.pauseAll = function() end
 
+--- Plays a music track, routing through a named group with optional fade-in.
+---@param path string Path to audio file.
+---@param opts? table Optional: `group` (string), `fadeIn` (number seconds).
+lurek.audio.manager.pauseAll = function(path, opts) end
+
 --- Starts playback of a source by handle, optionally routing through a named bus.
 ---@param source LSource|number Audio source or numeric source ID.
 ---@param options? table Optional table with "bus" field for bus routing.
@@ -6200,6 +6252,12 @@ lurek.audio.playLooping = function(source) end
 --- Starts playback of a queueable audio source.
 ---@param qsource_id number Queueable source handle returned by newQueueableSource.
 lurek.audio.playQueueable = function(qsource_id) end
+
+--- Plays a one-shot sound effect from a file path with optional settings.
+---@param path string Path to audio file.
+---@param opts? table Optional: `bus` (string), `volume` (0.0-1.0), `loop` (bool).
+---@return LSource The audio source handle for the playing effect.
+lurek.audio.playSfx = function(path, opts) end
 
 --- Queues a decoded audio chunk for playback on a queueable source.
 ---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
@@ -6217,6 +6275,9 @@ lurek.audio.resume = function(source) end
 
 --- Resumes all paused audio sources. This function is exposed to Lua scripts.
 lurek.audio.resumeAll = function() end
+
+--- Resumes all paused audio sources.
+lurek.audio.manager.resumeAll = function() end
 
 --- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 ---@param sd_ud LSoundData The sound data to encode and save.
@@ -6277,6 +6338,10 @@ lurek.audio.setMeter = function(level) end
 --- Sets the SoundFont file used for MIDI synthesis.
 ---@param path string Relative path to the .sf2 SoundFont file.
 lurek.audio.setMidiSoundFont = function(path) end
+
+--- Globally mutes all audio (pauses all sources without stopping them).
+---@param muted boolean True to mute, false to unmute all audio.
+lurek.audio.setMuted = function(muted) end
 
 --- Sets the orientation of a source using forward and up vectors.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -6348,6 +6413,10 @@ lurek.audio.stop = function(source) end
 
 --- Stops all audio sources and resets their positions.
 lurek.audio.stopAll = function() end
+
+--- Stops all music sources with optional fade-out.
+---@param fade_duration? number Fade-out duration in seconds (default: 0.0).
+lurek.audio.stopMusic = function(fade_duration) end
 
 --- Stops playback of a queueable audio source.
 ---@param qsource_id number Queueable source handle returned by newQueueableSource.
@@ -7250,6 +7319,59 @@ function LCameraRig:typeOf(name) end
 ---@param dt number Elapsed time in seconds.
 function LCameraRig:updateAll(dt) end
 
+--- Returns the associated camera.
+---@return LCamera Camera that follows the walker.
+function LCameraWalker:getCamera() end
+
+--- Returns the walker world-space center position.
+---@return number Walker X and Y position in world units. (value 1).
+---@return number Walker X and Y position in world units. (value 2).
+function LCameraWalker:getPosition() end
+
+--- Returns current walker tile coordinates (1-based).
+---@return number Tile column and row (1-based). (value 1).
+---@return number Tile column and row (1-based). (value 2).
+function LCameraWalker:getTilePosition() end
+
+--- Moves the walker down (positive Y) with collision checking.
+---@param dt? number Time delta in seconds (defaults to 1/60).
+function LCameraWalker:moveDown(dt) end
+
+--- Moves the walker left (negative X) with collision checking.
+---@param dt? number Time delta in seconds (defaults to 1/60).
+function LCameraWalker:moveLeft(dt) end
+
+--- Moves the walker right (positive X) with collision checking.
+---@param dt? number Time delta in seconds (defaults to 1/60).
+function LCameraWalker:moveRight(dt) end
+
+--- Moves the walker up (negative Y) with collision checking.
+---@param dt? number Time delta in seconds (defaults to 1/60).
+function LCameraWalker:moveUp(dt) end
+
+--- Sets the walker world-space center position.
+---@param x number Walker X position in world units.
+---@param y number Walker Y position in world units.
+function LCameraWalker:setPosition(x, y) end
+
+--- Places walker using 1-based tile coordinates.
+---@param tx number Tile column (1-based).
+---@param ty number Tile row (1-based).
+function LCameraWalker:setTilePosition(tx, ty) end
+
+--- Returns the type name of this userdata.
+---@return string Always `"LCameraWalker"`.
+function LCameraWalker:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LCameraWalker"` or `"Object"`.
+function LCameraWalker:typeOf(name) end
+
+--- Updates camera state and advances smooth interpolation.
+---@param dt? number Time delta in seconds (defaults to 1/60).
+function LCameraWalker:update(dt) end
+
 --- Creates a 2D camera with optional virtual viewport size.
 ---@param vw? number Virtual viewport width; defaults to 800.
 ---@param vh? number Virtual viewport height; defaults to 600.
@@ -7265,6 +7387,12 @@ lurek.camera.newCamera = function(vw, vh) end
 --- Creates an empty named camera rig. This function is exposed to Lua scripts.
 ---@return LCameraRig New camera rig handle.
 lurek.camera.newRig = function() end
+
+--- Creates a tile-grid walker with smooth camera following.
+---@param map LTileMap Tilemap for collision detection.
+---@param opts? table Options table with keys: layer (default 1), tile_w, tile_h, body_w, body_h, speed, x, y, camera (optional custom camera).
+---@return LCameraWalker New walker handle.
+lurek.camera.newWalker = function(map, opts) end
 
 --- Add a named data series to the area chart (stacked above previous).
 ---@param name string Display name of the series.
@@ -7442,6 +7570,108 @@ lurek.charts.newScatter = function(config) end
 ---@param index number 1-based palette index.
 ---@return table Color table {r, g, b, a}.
 lurek.charts.seriesColor = function(index) end
+
+--- Appends a timed cut to the cinematic timeline.
+---@param time number Time in seconds when the cut fires.
+---@param description string Human-readable cut label.
+function LCinematic:addCut(time, description) end
+
+--- Removes all cuts from the timeline.
+function LCinematic:clear() end
+
+--- Returns the number of cuts in the timeline.
+---@return number Cut count.
+function LCinematic:cutCount() end
+
+--- Plays back the timeline by firing all cuts in order.
+function LCinematic:play() end
+
+--- Returns the Lua-visible type name.
+---@return string Always `"LCinematic"`.
+function LCinematic:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. `"LCinematic"`, `"Object"`).
+---@return boolean True when the name matches.
+function LCinematic:typeOf(name) end
+
+--- Adds a clip to a named track (creates track if missing).
+---@param track_name string Target track name.
+---@param at number Start time in seconds.
+---@param duration number Clip duration in seconds.
+---@param clip_table table Clip definition with type-specific data.
+function LCinematicTimeline:addClip(track_name, at, duration, clip_table) end
+
+--- Registers a named time position for branching.
+---@param name string Label name.
+---@param time number Time in seconds.
+function LCinematicTimeline:addLabel(name, time) end
+
+--- Adds a new track to the timeline.
+---@param name string Track name for identification.
+function LCinematicTimeline:addTrack(name) end
+
+--- Jumps to a named label position.
+---@param label string Label name to jump to.
+---@return boolean True if label was found and jumped to.
+function LCinematicTimeline:branch(label) end
+
+--- Returns the total duration of the timeline.
+---@return number Duration in seconds.
+function LCinematicTimeline:getDuration() end
+
+--- Returns the playback state as a string.
+---@return string One of "stopped", "playing", "paused".
+function LCinematicTimeline:getState() end
+
+--- Returns the current playback time.
+---@return number Current time in seconds.
+function LCinematicTimeline:getTime() end
+
+--- Checks if playback has reached the end.
+---@return boolean True if complete.
+function LCinematicTimeline:isComplete() end
+
+--- Checks if the timeline is currently playing.
+---@return boolean True if playing.
+function LCinematicTimeline:isPlaying() end
+
+--- Pauses playback without resetting time.
+function LCinematicTimeline:pause() end
+
+--- Starts playback from the current time.
+function LCinematicTimeline:play() end
+
+--- Jumps to a specific time.
+---@param time number Time in seconds.
+function LCinematicTimeline:seek(time) end
+
+--- Instantly jumps to the end of the timeline.
+function LCinematicTimeline:skipToEnd() end
+
+--- Stops playback and resets to time 0.
+function LCinematicTimeline:stop() end
+
+--- Returns the Lua-visible type name.
+---@return string Always `"LCinematicTimeline"`.
+function LCinematicTimeline:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check.
+---@return boolean True when the name matches.
+function LCinematicTimeline:typeOf(name) end
+
+--- Advances time by dt (only if playing).
+---@param dt number Delta time in seconds.
+function LCinematicTimeline:update(dt) end
+
+--- Creates a new empty cinematic timeline handle (legacy cut-based API).
+---@return LCinematic New cinematic handle.
+lurek.cinematic.new = function() end
+
+--- Creates a new multi-track timeline for modern cinematic support.
+---@return LCinematicTimeline New timeline handle.
+lurek.cinematic.newTimeline = function() end
 
 --- Additive blend of two colors (clamped to 0â€“1 per channel).
 ---@param c1 table First color {r, g, b, a}.
@@ -9334,6 +9564,76 @@ lurek.devtools.warn = function(message) end
 ---@return boolean True when the path was newly added; false when it was already watched.
 lurek.devtools.watch = function(path) end
 
+--- Skips to the next node (or instantly reveals current line if typing).
+function LDialogSequencer:advance() end
+
+--- Selects a choice option when waiting for choice input.
+---@param index number Option index (1-based) to select.
+function LDialogSequencer:choose(index) end
+
+--- Returns the actor name for the current line, or nil.
+---@return string Actor name, or nil.
+function LDialogSequencer:currentSpeaker() end
+
+--- Returns the full text of the current line.
+---@return string Full line text.
+function LDialogSequencer:currentText() end
+
+--- Returns an array of choice option labels.
+---@return table Array of choice strings.
+function LDialogSequencer:getChoiceLabels() end
+
+--- Returns the choice prompt text, or nil if not in a choice node.
+---@return string Choice prompt, or nil.
+function LDialogSequencer:getChoiceText() end
+
+--- Gets the current typewriter speed in characters per second.
+---@return number Characters per second.
+function LDialogSequencer:getSpeed() end
+
+--- Returns the current playback state as a string.
+---@return string One of: "idle", "typing", "waiting", "choice", "done".
+function LDialogSequencer:getState() end
+
+--- Checks if the sequencer is currently playing.
+---@return boolean True when not idle or done.
+function LDialogSequencer:isActive() end
+
+--- Checks if the sequencer is waiting for a choice selection.
+---@return boolean True when waiting for player choice.
+function LDialogSequencer:isWaitingForChoice() end
+
+--- Loads a sequence of dialog nodes for playback.
+---@param nodes table Array of node tables created via lurek.dialog.say(), choice(), etc.
+function LDialogSequencer:load(nodes) end
+
+--- Returns only the typewriter-revealed portion of the current line.
+---@return string Revealed text.
+function LDialogSequencer:revealedText() end
+
+--- Sets the typewriter reveal speed in characters per second.
+---@param cps number Characters per second.
+function LDialogSequencer:setSpeed(cps) end
+
+--- Instantly reveals the full current line without typewriter effect.
+function LDialogSequencer:skip() end
+
+--- Starts playback from the beginning of the loaded sequence.
+function LDialogSequencer:start() end
+
+--- Returns the Lua-visible type name.
+---@return string The string `LDialogSequencer`.
+function LDialogSequencer:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare.
+---@return boolean True when the type name matches.
+function LDialogSequencer:typeOf(name) end
+
+--- Advances the sequencer by dt seconds, updating typewriter reveal.
+---@param dt number Delta time in seconds.
+function LDialogSequencer:update(dt) end
+
 --- Adds a selectable branch under an existing dialogue topic.
 ---@param topic_id string Topic identifier that receives the branch.
 ---@param branch_id string Unique branch identifier within the topic.
@@ -9475,9 +9775,39 @@ function LSpeakerRegistry:type() end
 ---@return boolean True when the type name matches.
 function LSpeakerRegistry:typeOf(name) end
 
+--- Creates a Call node (invokes a Lua function by name).
+---@param fn_name string Lua function name to call.
+---@param opts? table Optional table (reserved for future use).
+---@return table Call node table for sequencer.load().
+lurek.dialog.call = function(fn_name, opts) end
+
+--- Creates a Choice node with selectable options.
+---@param prompt string Choice prompt text.
+---@param options table Array of option strings.
+---@param opts? table Optional table (reserved for future use).
+---@return table Choice node table for sequencer.load().
+lurek.dialog.choice = function(prompt, options, opts) end
+
+--- Creates an Event node (fires a named callback).
+---@param name string Event name.
+---@param data? string Optional event payload.
+---@param opts? table Optional table (reserved for future use).
+---@return table Event node table for sequencer.load().
+lurek.dialog.event = function(name, data, opts) end
+
+--- Creates a Jump node (branches to a labeled position).
+---@param target string Label name to jump to.
+---@param opts? table Optional table (reserved for future use).
+---@return table Jump node table for sequencer.load().
+lurek.dialog.jump = function(target, opts) end
+
 --- Creates an empty dialogue selector for weighted topics and branches.
 ---@return LDialogueAI New dialogue AI handle.
 lurek.dialog.newAI = function() end
+
+--- Creates an empty dialog sequencer for typewriter-style playback.
+---@return LDialogSequencer New sequencer handle.
+lurek.dialog.newSequencer = function() end
 
 --- Creates an empty speaker registry for dialog participants.
 ---@return LSpeakerRegistry New speaker registry handle.
@@ -9486,6 +9816,19 @@ lurek.dialog.newSpeakerRegistry = function() end
 --- Creates an empty dialogue state for tracking conversation progress.
 ---@return LDialogueState New dialogue state handle.
 lurek.dialog.newState = function() end
+
+--- Creates a Say node for character dialog.
+---@param actor string Character name.
+---@param text string Dialog text.
+---@param opts? table Optional table with duration field.
+---@return table Say node table for sequencer.load().
+lurek.dialog.say = function(actor, text, opts) end
+
+--- Creates a Wait node (delay before continuing).
+---@param seconds number Seconds to wait.
+---@param opts? table Optional table (reserved for future use).
+---@return table Wait node table for sequencer.load().
+lurek.dialog.wait = function(seconds, opts) end
 
 --- Counts entries in the catalog, optionally for one module.
 ---@param module? string Optional module name used to limit the count.
@@ -18073,6 +18416,21 @@ lurek.network.createRoom = function(name, host, max_players) end
 ---@return LNetworkDiscoverLobbiesResult Array table of lobby info tables.
 lurek.network.discoverLobbies = function(timeout_ms) end
 
+--- Returns list of peer IDs currently in a room.
+---@param room_name string Room name.
+---@return table Array of peer ID integers.
+lurek.network.getPlayerList = function(room_name) end
+
+--- Returns room metadata including host peer and player count.
+---@param room_name string Room name.
+---@return table Room metadata table with fields: `name`, `host_peer`, `max_players`, `player_count`.
+lurek.network.getRoom = function(room_name) end
+
+--- Checks if all players in a room are ready. Requires at least 2 players.
+---@param room_name string Room name.
+---@return boolean True if all players are ready and count >= 2.
+lurek.network.isAllReady = function(room_name) end
+
 --- Joins a room by id when available. This function is exposed to Lua scripts.
 ---@param id string Room id.
 ---@return LNetworkJoinRoomResult Room info table, or nil when missing.
@@ -18102,11 +18460,24 @@ lurek.network.newClient = function(opts) end
 ---@return LNetworkHost New network host handle.
 lurek.network.newHost = function(opts) end
 
+--- Creates a network state synchronization manager.
+---@param host? LNetworkHost Network host for state transport, or nil for offline mode.
+---@param opts? table Configuration table with `channel`, `authority`, `turnBased`, `maxDirtyKeys`.
+---@return LNetworkState New state manager handle.
+lurek.network.newNetState = function(host, opts) end
+
 --- Creates an encoded relay ticket. This function is exposed to Lua scripts.
 ---@param room_id string Room id.
 ---@param peer_id string Peer id.
 ---@return string Encoded relay ticket.
 lurek.network.newRelayTicket = function(room_id, peer_id) end
+
+--- Creates a network RPC manager attached to a host.
+---@param host LNetworkHost Network host for RPC transport.
+---@param channel? number Optional ENet channel for RPC traffic, defaults to 0.
+---@param timeout_ms? number Optional timeout in milliseconds for pending calls, defaults to 30s.
+---@return LNetworkRpc New RPC manager handle.
+lurek.network.newRpc = function(host, channel, timeout_ms) end
 
 --- Creates a background network runtime.
 ---@return LNetworkRuntime New network runtime handle.
@@ -18158,6 +18529,12 @@ lurek.network.reconcileSnapshot = function(pred, auth, alpha) end
 ---@param hard_threshold number Distance threshold above which a hard snap occurs.
 ---@return table Reconciled snapshot table.
 lurek.network.reconcileWithPolicy = function(pred, auth, alpha, soft_threshold, hard_threshold) end
+
+--- Marks a player as ready or not ready in a room.
+---@param room_name string Room name.
+---@param peer_id number Peer identifier.
+---@param ready boolean True to mark as ready, false to unmark.
+lurek.network.setReady = function(room_name, peer_id, ready) end
 
 --- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 ---@param url string SSE endpoint URL.
@@ -24190,10 +24567,6 @@ lurek.render.arc = function(mode, x, y, radius, angle1, angle2, segments) end
 ---@param id number Group identifier.
 lurek.render.beginSortGroup = function(id) end
 
---- Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
----@param id number Group identifier.
-lurek.render.beginSortGroup = function(id) end
-
 --- Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
 ---@param callback function Called with an LImageData argument.
 lurek.render.captureScreenshot = function(callback) end
@@ -24245,39 +24618,11 @@ lurek.render.drawBatch = function(batch) end
 ---@param opts? table Options: highlight, shadow, fillColor (each a {r,g,b,a} table).
 lurek.render.drawBevelRect = function(x, y, w, h, bevelW, style, opts) end
 
---- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
----@param x number Left edge X.
----@param y number Top edge Y.
----@param w number Width (must be positive).
----@param h number Height (must be positive).
----@param bevelW? number Bevel border width (default 2).
----@param style? string Bevel style: "raised" (default), "sunken", "ridge", "groove", "flat".
----@param opts? table Options: highlight, shadow, fillColor (each a {r,g,b,a} table).
-lurek.render.drawBevelRect = function(x, y, w, h, bevelW, style, opts) end
-
 --- Draws a polygon with per-vertex colors.
 ---@param vertices table Flat array of x,y coordinates: {x1, y1, x2, y2, ...}.
 ---@param colors table Array of color tables: {{r, g, b, a}, ...}, one per vertex.
 ---@param mode? string "fill" (default) or "line".
 lurek.render.drawColoredPolygon = function(vertices, colors, mode) end
-
---- Draws a polygon with per-vertex colors.
----@param vertices table Flat array of x,y coordinates: {x1, y1, x2, y2, ...}.
----@param colors table Array of color tables: {{r, g, b, a}, ...}, one per vertex.
----@param mode? string "fill" (default) or "line".
-lurek.render.drawColoredPolygon = function(vertices, colors, mode) end
-
---- Draws a cubic Bezier curve through start, two control points, and end.
----@param x1 number Start X.
----@param y1 number Start Y.
----@param cx1 number First control point X.
----@param cy1 number First control point Y.
----@param cx2 number Second control point X.
----@param cy2 number Second control point Y.
----@param x2 number End X.
----@param y2 number End Y.
----@param segs? number Number of line segments (default 16).
-lurek.render.drawCubicBezier = function(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segs) end
 
 --- Draws a cubic Bezier curve through start, two control points, and end.
 ---@param x1 number Start X.
@@ -24301,16 +24646,6 @@ lurek.render.drawCubicBezier = function(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segm
 ---@param dir? string Direction: "vertical" (default), "horizontal", "diagDown", "diagUp", "radial".
 lurek.render.drawGradientRect = function(x, y, w, h, c1, c2, dir) end
 
---- Draws a rectangle with a two-color gradient fill.
----@param x number Left edge X.
----@param y number Top edge Y.
----@param w number Width (must be positive).
----@param h number Height (must be positive).
----@param c1 table Start color {r, g, b [, a]}.
----@param c2 table End color {r, g, b [, a]}.
----@param dir? string Direction: "vertical" (default), "horizontal", "diagDown", "diagUp", "radial".
-lurek.render.drawGradientRect = function(x, y, w, h, c1, c2, dir) end
-
 --- Draws a regular hexagonal tile at the given center position.
 ---@param cx number Center X.
 ---@param cy number Center Y.
@@ -24318,22 +24653,6 @@ lurek.render.drawGradientRect = function(x, y, w, h, c1, c2, dir) end
 ---@param orientation? string "pointyTop" (default) or "flatTop".
 ---@param mode? string "line" (default) or "fill".
 lurek.render.drawHexTile = function(cx, cy, size, orientation, mode) end
-
---- Draws a regular hexagonal tile at the given center position.
----@param cx number Center X.
----@param cy number Center Y.
----@param size number Hex radius (must be positive).
----@param orientation? string "pointyTop" (default) or "flatTop".
----@param mode? string "line" (default) or "fill".
-lurek.render.drawHexTile = function(cx, cy, size, orientation, mode) end
-
---- Draws an isometric cube tile with configurable face colors and optional textures.
----@param sx number Screen X position of the tile center.
----@param sy number Screen Y position of the tile center.
----@param halfW number Half-width of the tile diamond.
----@param halfH number Half-height of the tile diamond.
----@param opts? table Options: depth, topColor, leftColor, rightColor, topTexture, leftTexture, rightTexture.
-lurek.render.drawIsoCubeTile = function(sx, sy, halfW, halfH, opts) end
 
 --- Draws an isometric cube tile with configurable face colors and optional textures.
 ---@param sx number Screen X position of the tile center.
@@ -24360,22 +24679,6 @@ lurek.render.drawNineSlice = function(slice, x, y, w, h) end
 ---@param mode? string "line" (default) or "fill".
 ---@param close? boolean Close the path back to start (default false).
 lurek.render.drawPath = function(path, mode, close) end
-
---- Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
----@param path table Array of segment tables, each with a "type" field and coordinates.
----@param mode? string "line" (default) or "fill".
----@param close? boolean Close the path back to start (default false).
-lurek.render.drawPath = function(path, mode, close) end
-
---- Draws a quadratic Bezier curve through start, control, and end points.
----@param x1 number Start X.
----@param y1 number Start Y.
----@param cx number Control point X.
----@param cy number Control point Y.
----@param x2 number End X.
----@param y2 number End Y.
----@param segs? number Number of line segments (default 16).
-lurek.render.drawQuadBezier = function(x1, y1, cx, cy, x2, y2, segs) end
 
 --- Draws a quadratic Bezier curve through start, control, and end points.
 ---@param x1 number Start X.
@@ -24406,10 +24709,6 @@ lurek.render.drawq = function(image, quad, x, y, r, sx, sy, ox, oy) end
 ---@param rx number Horizontal radius.
 ---@param ry number Vertical radius.
 lurek.render.ellipse = function(mode, x, y, rx, ry) end
-
---- Ends a sort group and emits all accumulated draw calls in sorted order.
----@param id number Group identifier matching the beginSortGroup call.
-lurek.render.flushSortGroup = function(id) end
 
 --- Ends a sort group and emits all accumulated draw calls in sorted order.
 ---@param id number Group identifier matching the beginSortGroup call.
@@ -24590,12 +24889,12 @@ lurek.render.line = function(...) end
 
 --- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 ---@param path string File path to the model file relative to the game directory.
----@return LuaObjModel The loaded model handle.
+---@return LObjModel The loaded model handle.
 lurek.render.loadModel = function(path) end
 
 --- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 ---@param path string File path to the .obj file relative to the game directory.
----@return LuaObjModel The loaded OBJ model handle.
+---@return LObjModel The loaded OBJ model handle.
 lurek.render.loadObj = function(path) end
 
 --- Creates a new off-screen render target with the given dimensions.
@@ -24688,10 +24987,6 @@ lurek.render.pop = function() end
 ---@param id number Layer identifier matching the pushLayer call.
 lurek.render.popLayer = function(id) end
 
---- Ends a compositing layer and composites it with the previous content.
----@param id number Layer identifier matching the pushLayer call.
-lurek.render.popLayer = function(id) end
-
 --- Draws text using the active font at the given position.
 ---@param text string Text to render.
 ---@param x? number X position (default 0).
@@ -24762,16 +25057,6 @@ lurek.render.push = function() end
 ---@param alpha? number Layer opacity (0â€“1, default 1).
 ---@param blendMode? string Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
 lurek.render.pushLayer = function(id, alpha, blendMode) end
-
---- Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
----@param id number Layer identifier (must match the popLayer call).
----@param alpha? number Layer opacity (0â€“1, default 1).
----@param blendMode? string Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
-lurek.render.pushLayer = function(id, alpha, blendMode) end
-
---- Sets the depth sort key for subsequent draw calls within the current sort group.
----@param depth number Sort depth value (lower draws first).
-lurek.render.pushSortKey = function(depth) end
 
 --- Sets the depth sort key for subsequent draw calls within the current sort group.
 ---@param depth number Sort depth value (lower draws first).
@@ -25130,6 +25415,45 @@ function LDepthSorter:type() end
 ---@return boolean True if the name matches.
 function LDepthSorter:typeOf(name) end
 
+--- Add an object to the container.
+---@param obj any
+function LSceneObjectContainer:add(obj) end
+
+--- Remove all objects from the container.
+function LSceneObjectContainer:clear() end
+
+--- Call draw() on all objects that have a draw method, sorted by layer.
+function LSceneObjectContainer:draw() end
+
+--- Get all objects whose layer equals `n`.
+---@param n any
+function LSceneObjectContainer:getByLayer(n) end
+
+--- Get the number of objects currently in the container.
+function LSceneObjectContainer:getCount() end
+
+--- Get all objects as an array (layer-sorted).
+function LSceneObjectContainer:getObjects() end
+
+--- Check whether an object is present in the container.
+---@param obj any
+function LSceneObjectContainer:has(obj) end
+
+--- Remove an object from the container (identity comparison).
+---@param obj any
+function LSceneObjectContainer:remove(obj) end
+
+--- Get the type name of this userdata.
+function LSceneObjectContainer:type() end
+
+--- Check type by name.
+---@param name any
+function LSceneObjectContainer:typeOf(name) end
+
+--- Call update(dt) on all objects that have an update method.
+---@param dt any
+function LSceneObjectContainer:update(dt) end
+
 --- Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After this call the stack is empty and `isEmpty()` returns true. Useful for returning to a title screen or tearing down the entire scene graph.
 lurek.scene.clear = function() end
 
@@ -25267,6 +25591,10 @@ lurek.scene.new = function(def) end
 --- Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order.
 ---@return LDepthSorter A fresh depth sorter with no queued entries.
 lurek.scene.newDepthSorter = function() end
+
+--- Create a new scene object container for managing object lifecycle and draw ordering.
+---@return LSceneObjectContainer New container handle.
+lurek.scene.newObjectContainer = function() end
 
 --- Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
 ---@param def? table A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
@@ -25775,6 +26103,71 @@ function LSprite:type() end
 ---@return boolean True if the object is the given type.
 function LSprite:typeOf(name) end
 
+--- Add or replace a named clip definition.
+---@param name string Clip name.
+---@param def table Clip definition table with `row`, `from`, `to`, `fps`, and optional `loop`.
+function LSpriteAnimator:addClip(name, def) end
+
+--- Return full one-pass duration for the current clip.
+---@return number Total clip duration in seconds.
+function LSpriteAnimator:clipDuration() end
+
+--- Return the currently selected clip name.
+---@return string Active clip name, or nil if none.
+function LSpriteAnimator:currentClip() end
+
+--- Return current draw frame as sprite-sheet row and column.
+---@return number Sprite-sheet row.
+---@return number Sprite-sheet column (frame index).
+function LSpriteAnimator:currentFrame() end
+
+--- Return frame duration for the current clip.
+---@return number Seconds per frame.
+function LSpriteAnimator:frameDuration() end
+
+--- Return whether the animator is currently playing.
+---@return boolean True when playing.
+function LSpriteAnimator:isPlaying() end
+
+--- Set callback fired when a non-looping clip reaches its end.
+---@param fn function Callback signature `(clip_name)`.
+function LSpriteAnimator:onEnd(fn) end
+
+--- Set callback fired on each frame advance.
+---@param fn function Callback signature `(row, col, clip_name)`.
+function LSpriteAnimator:onFrame(fn) end
+
+--- Set callback fired when a looping clip wraps.
+---@param fn function Callback signature `(clip_name)`.
+function LSpriteAnimator:onLoop(fn) end
+
+--- Pause playback without resetting frame state.
+function LSpriteAnimator:pause() end
+
+--- Play or restart a named clip.
+---@param name string Clip name.
+---@param restart? boolean Whether to restart when already playing this clip. Defaults to true.
+function LSpriteAnimator:play(name, restart) end
+
+--- Resume playback from current frame when a clip is selected.
+function LSpriteAnimator:resume() end
+
+--- Stop playback and reset to the first frame of the current clip.
+function LSpriteAnimator:stop() end
+
+--- Returns the type name of this object.
+---@return string Always `"LSpriteAnimator"`.
+function LSpriteAnimator:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check.
+---@return boolean True if the object is the given type.
+function LSpriteAnimator:typeOf(name) end
+
+--- Advance playback by delta time and dispatch callback events.
+---@param dt number Delta time in seconds.
+function LSpriteAnimator:update(dt) end
+
 --- Returns the total number of entries (sprite regions) in the atlas.
 ---@return number Entry count.
 function LSpriteAtlas:entryCount() end
@@ -25868,6 +26261,11 @@ function LSpriteSheet:type() end
 ---@return boolean True if the object is the given type.
 function LSpriteSheet:typeOf(name) end
 
+--- Creates a stateful sprite clip animator from an optional clip definition table.
+---@param clips? table Map `{ clip_name = { row, from, to, fps, loop? } }`.
+---@return LSpriteAnimator A new clip animator object.
+lurek.sprite.newAnimator = function(clips) end
+
 --- Creates a runtime atlas packer for dynamically allocating named sprite regions.
 ---@param width number Atlas width in pixels.
 ---@param height number Atlas height in pixels.
@@ -25912,6 +26310,117 @@ lurek.sprite.parseAsepriteAtlas = function(json_str) end
 ---@param json_str string Raw JSON content of the TexturePacker atlas file.
 ---@return LSpriteAtlas A new atlas with named sprite regions.
 lurek.sprite.parseAtlas = function(json_str) end
+
+--- Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
+---@param id any
+---@param w any
+---@param h any
+function LSvgImage:cacheToCanvas(id, w, h) end
+
+--- Renders the SVG document at the given position and transform overrides.
+---@param x any
+---@param y any
+---@param rotation? any
+---@param sx? any
+---@param sy? any
+---@param ox? any
+---@param oy? any
+function LSvgImage:draw(x, y, rotation, sx, sy, ox, oy) end
+
+--- Detects neighboring provinces using point-to-point proximity.
+---@param prefix any
+---@param epsilon? any
+function LSvgImage:getAdjacencies(prefix, epsilon) end
+
+--- Alias for getCanvasKey.
+---@param id any
+function LSvgImage:getCanvas(id) end
+
+--- Returns the LCanvas handle for a previously cached element/group.
+---@param id any
+function LSvgImage:getCanvasKey(id) end
+
+--- Returns both the document width and height as two values: `width, height`.
+function LSvgImage:getDimensions() end
+
+--- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
+---@param id any
+function LSvgImage:getElementBounds(id) end
+
+--- Returns a sequential table of direct child element IDs for the given group element.
+---@param id any
+function LSvgImage:getElementChildren(id) end
+
+--- Returns the current RGBA color override `{r, g, b, a}` table for the element.
+---@param id any
+function LSvgImage:getElementColor(id) end
+
+--- Returns the total number of parsed elements (paths and groups) in this SVG document.
+function LSvgImage:getElementCount() end
+
+--- Returns a list of all parsed element and group IDs.
+function LSvgImage:getElementIds() end
+
+--- Returns the parent element ID string, or `nil` when the element is the root or not found.
+---@param id any
+function LSvgImage:getElementParent(id) end
+
+--- Flattens the element path into a polygon array of LVec2 userdata.
+---@param id any
+---@param step_size? any
+function LSvgImage:getElementPoints(id, step_size) end
+
+--- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
+---@param id any
+function LSvgImage:getElementTransform(id) end
+
+--- Returns the current visibility flag for the element.
+---@param id any
+function LSvgImage:getElementVisible(id) end
+
+--- Returns the document height in points/pixels.
+function LSvgImage:getHeight() end
+
+--- Returns the document width in points/pixels.
+function LSvgImage:getWidth() end
+
+--- Clears the color override on the element, restoring original SVG path colors.
+---@param id any
+function LSvgImage:resetElementColor(id) end
+
+--- Resets the runtime translation, rotation, and scale of the element to identity.
+---@param id any
+function LSvgImage:resetElementTransform(id) end
+
+--- Overrides the fill/stroke color of a specific element/group by ID.
+---@param id any
+---@param r any
+---@param g any
+---@param b any
+---@param a any
+function LSvgImage:setElementColor(id, r, g, b, a) end
+
+--- Dynamically transforms a specific element/group by ID.
+---@param id any
+---@param tx any
+---@param ty any
+---@param rotation any
+---@param sx any
+---@param sy any
+function LSvgImage:setElementTransform(id, tx, ty, rotation, sx, sy) end
+
+--- Toggles the visibility of a specific element/group by ID.
+---@param id any
+---@param visible any
+function LSvgImage:setElementVisible(id, visible) end
+
+function LSvgImage:type() end
+
+---@param name any
+function LSvgImage:typeOf(name) end
+
+---@param path any
+lurek.svg.load = function(path) end
 
 --- Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
 ---@param msg string The error message to capture.
@@ -27687,6 +28196,13 @@ lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize) end
 ---@param margin? number Pixel margin around the atlas edge (default 0).
 ---@return LTileSet New tileset.
 lurek.tilemap.newTileSet = function(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin) end
+
+--- Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
+---@param map LTileMap Source tilemap.
+---@param layer number Layer index (1-based).
+---@param minimap LMinimap Target minimap.
+---@param opts? table Options with keys: solid_terrain (default 2), empty_terrain (default 1).
+lurek.tilemap.syncMinimap = function(map, layer, minimap, opts) end
 
 --- Converts axial hex coordinates to screen-space pixel position.
 ---@param q number Axial Q coordinate.

@@ -18,6 +18,10 @@ pub mod message;
 pub mod net_sync;
 /// Background Tokio thread that owns the async socket runtime; started at engine init.
 pub mod net_thread;
+/// Network state synchronization manager for replicated state across peers.
+pub mod netstate;
+/// Remote Procedure Call (RPC) manager for networked function invocation.
+pub mod rpc;
 /// Relay server client: punch-through, forwarding, and relay session lifecycle.
 pub mod relay;
 /// Server-Sent Events (SSE) stream reader backed by a background thread.

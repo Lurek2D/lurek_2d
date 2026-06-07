@@ -103,6 +103,7 @@
   - [scene_demo](#scenedemo)
   - [signal_demo](#signaldemo)
   - [sprites](#sprites)
+  - [svg_provinces](#svgprovinces)
   - [terminal_demo](#terminaldemo)
   - [tween_demo](#tweendemo)
   - [vending_lights](#vendinglights)
@@ -881,6 +882,12 @@ Complete pub-sub event signal system showcase demonstrating the publisher-subscr
 **Category:** showcase
 
 **Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [image](Module-image), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), +2
+
+### [svg_provinces](../tree/main/content/games/showcase/svg_provinces)
+
+No description available.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [svg](Module-svg), [timer](Module-timer)
 
 ### [terminal_demo](../tree/main/content/games/showcase/terminal_demo)
 

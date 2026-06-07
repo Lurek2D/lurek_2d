@@ -740,3 +740,41 @@ do
     lurek.scene.clear()
     print("depth 0=" .. d0 .. " 1=" .. d1)
 end
+
+--@api-stub: lurek.scene.newObjectContainer
+do
+    local container = lurek.scene.newObjectContainer()
+
+    local player = {
+        layer = 1,
+        x = 10,
+        y = 20,
+        update = function(self, dt)
+            self.x = self.x + dt * 100
+        end,
+        draw = function(self)
+            print("Drawing player at x=" .. self.x .. ", y=" .. self.y)
+        end
+    }
+
+    local background = {
+        layer = 0,
+        draw = function(self)
+            print("Drawing background")
+        end
+    }
+
+    container:add(background)
+    container:add(player)
+
+    print("object_count=" .. container:getCount())
+
+    container:update(0.016)
+    container:draw()
+
+    container:remove(player)
+    print("after_remove=" .. container:getCount())
+
+    container:clear()
+    print("after_clear=" .. container:getCount())
+end

@@ -10,7 +10,6 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/pipeline/`
-- Feature gate: `pipeline`
 - Binding: `src/lua_api/pipeline_api.rs`
 - Namespace: `lurek.pipeline`
 - Lua API surface: `3` functions, `5` types, `63` methods
@@ -53,7 +52,6 @@ Internal runtime note: hot-path dependency checks and async scheduler readiness 
 
 - Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
 - It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
-- The entry points are compiled only when the `pipeline` feature is enabled, matching the opt-in nature of the orchestration stack.
 - Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
 
 ### result.rs
@@ -67,7 +65,7 @@ Internal runtime note: hot-path dependency checks and async scheduler readiness 
 
 - Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
 - The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
-- Readiness reporting uses borrowed step-name references internally so async updates keep compatibility with existing scheduling semantics without cloning step identifiers each frame.
+- Waiting membership is tracked explicitly in scheduler-owned timers, so async readiness does not depend on mutating pipeline definition structs at runtime.
 - Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
 - Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 

@@ -25,6 +25,8 @@ local particles = {}
 local tweens = {}
 ---@type any
 local _cam = nil
+---@type any
+local app_ui = {}
 
 -- Per-sport scores
 local scores = { 0, 0, 0, 0 }
@@ -690,7 +692,8 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.1, 0.1, 0.15)
     _cam = lurek.camera.new()
 
-    local ui_root = lurek.ui.loadLayoutFile("content/games/sports/trajectory_sports/ui.toml")
+    lurek.ui.loadLayoutFile("content/games/sports/trajectory_sports/ui.toml")
+    local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")

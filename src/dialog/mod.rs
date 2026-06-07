@@ -12,9 +12,12 @@ pub mod speaker;
 pub mod state;
 /// Dialog tree engine: nodes, weighted branches, and topic selection.
 pub mod tree;
+/// Dialog sequencer: typewriter-reveal playback with choices and callbacks.
+pub mod sequencer;
 
 pub use condition::{DialogueCondition, GateContext};
 pub use events::DialogueEvent;
 pub use speaker::{Speaker, SpeakerRegistry};
 pub use state::DialogueState;
 pub use tree::{DialogueAI, DialogueBranch, DialogueNode, DialogueTopic};
+pub use sequencer::{DialogSequencer, DialogNode as SequencerNode, SequencerState};

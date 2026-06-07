@@ -17,7 +17,7 @@
 - **`gen_lua_docstring_skeletons.py`**: gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
 - **`gen_lua_library_api.py`**: gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
 - **`gen_luadoc.py`**: gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
-- **`gen_module_pages.py`**: Generate per-module MkDocs pages in docs/modules/ from:
+- **`gen_module_pages.py`**: Generate per-module MkDocs pages in docs/pages/ from:
 - **`gen_module_specs.py`**: Generate merged docs/specs/<module>.md files for top-level src modules.
 - **`gen_rust_api_data.py`**: gen_rust_api_data.py — Generate Lurek2D master API data file.
 - **`gen_rust_docstrings.py`**: gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).

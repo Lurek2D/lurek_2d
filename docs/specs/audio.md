@@ -13,7 +13,7 @@
 - Source path: `src/audio/`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
-- Lua API surface: `88` functions, `7` types, `157` methods
+- Lua API surface: `94` functions, `7` types, `157` methods
 - Rust test path(s): tests/rust/unit/audio_tests.rs, tests/rust/unit/audio_sound_tests.rs
 - Lua test path(s): tests/lua/unit/test_audio.lua, tests/lua/unit/test_audio_bus.lua, tests/lua/unit/test_audio_dsp.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_audio_event.lua, tests/lua/evidence/test_evidence_audio.lua, tests/lua/evidence/test_evidence_audio_bus.lua
 
@@ -162,10 +162,13 @@ Frequency shaping and procedural audio are supported through built-in digital si
 - `lurek.audio.getVolume(source) -> number`: Returns the current volume of a source.
 - `lurek.audio.hasMidiSoundFont() -> boolean`: Returns whether a SoundFont file has been loaded for MIDI synthesis.
 - `lurek.audio.isLooping(source) -> boolean`: Returns whether a source has looping enabled.
+- `lurek.audio.isMuted() -> boolean`: Returns whether global audio is currently muted.
 - `lurek.audio.isPaused(source) -> boolean`: Returns whether a source is currently paused.
 - `lurek.audio.isPlaying(source) -> boolean`: Returns whether a source is currently playing.
 - `lurek.audio.isStopped(source) -> boolean`: Returns whether a source is currently stopped.
 - `lurek.audio.judgeBeat(clock, division?, hit_offset?) -> string`: Judges timing against the nearest beat grid for a beat clock.
+- `lurek.audio.manager.pauseAll(path, opts?) -> nil`: Plays a music track, routing through a named group with optional fade-in.
+- `lurek.audio.manager.resumeAll() -> nil`: Resumes all paused audio sources.
 - `lurek.audio.mixInto(dest_ud, src_ud) -> nil`: Mixes the samples of `src` into `dest` in-place (both must have the same format).
 - `lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts?) -> LBeatClock`: Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
 - `lurek.audio.newBus(name) -> LBus`: Creates a new audio mixing bus for grouping and controlling sources.
@@ -180,6 +183,7 @@ Frequency shaping and procedural audio are supported through built-in digital si
 - `lurek.audio.play(source, options?) -> integer`: Starts playback of a source by handle, optionally routing through a named bus.
 - `lurek.audio.playLooping(source) -> nil`: Starts playback of a source with looping enabled in one call.
 - `lurek.audio.playQueueable(qsource_id) -> nil`: Starts playback of a queueable audio source.
+- `lurek.audio.playSfx(path, opts?) -> LSource`: Plays a one-shot sound effect from a file path with optional settings.
 - `lurek.audio.queueSource(qsource_id, sd) -> nil`: Queues a decoded audio chunk for playback on a queueable source.
 - `lurek.audio.release(source) -> boolean`: Releases an audio source, freeing its memory and stopping playback.
 - `lurek.audio.resume(source) -> nil`: Resumes playback of a paused source.
@@ -197,6 +201,7 @@ Frequency shaping and procedural audio are supported through built-in digital si
 - `lurek.audio.setMasterVolume(vol) -> nil`: Sets the global master volume affecting all audio output.
 - `lurek.audio.setMeter(level) -> nil`: Sets the master peak level for metering purposes.
 - `lurek.audio.setMidiSoundFont(path) -> nil`: Sets the SoundFont file used for MIDI synthesis.
+- `lurek.audio.setMuted(muted) -> nil`: Globally mutes all audio (pauses all sources without stopping them).
 - `lurek.audio.setOrientation(source, fx, fy, fz, ux, uy, uz) -> nil`: Sets the orientation of a source using forward and up vectors.
 - `lurek.audio.setPan(source, pan) -> nil`: Sets the stereo panning of a source.
 - `lurek.audio.setPitch(source, pitch) -> nil`: Sets the pitch multiplier of a source, affecting playback speed and tone.
@@ -210,6 +215,7 @@ Frequency shaping and procedural audio are supported through built-in digital si
 - `lurek.audio.set_bus_volume(name, volume) -> nil`: Sets the volume of a named audio bus.
 - `lurek.audio.stop(source) -> nil`: Stops playback of a source and resets its position to the beginning.
 - `lurek.audio.stopAll() -> nil`: Stops all audio sources and resets their positions.
+- `lurek.audio.stopMusic(fade_duration?) -> nil`: Stops all music sources with optional fade-out.
 - `lurek.audio.stopQueueable(qsource_id) -> nil`: Stops playback of a queueable audio source.
 - `lurek.audio.tell(source) -> number`: Returns the current playback position of a source in seconds.
 

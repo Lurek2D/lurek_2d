@@ -82,6 +82,7 @@ CLASS_NAME_MAP = {
     "builder": "StackBuilder",
     "history": "StackHistory",
     "manager": "StackManager",
+    "sched": "Scheduler",
 }
 
 
@@ -108,6 +109,7 @@ def _new_module_info() -> dict:
         "fields": [],       # [{name,type,desc}]
         "see": [],          # [str]
         "functions": [],    # [function dict]
+        "class_fields": {}, # {PublicClassName: [{name, type}]} — extracted from ctors
     }
 
 
@@ -131,6 +133,109 @@ def _new_function() -> dict:
 
 _FUNC_RE = re.compile(r"^\s*function\s+([\w.:]+)\s*\((.*?)\)")
 _M_ASSIGN_RE = re.compile(r"^\s*M\.([A-Za-z_][\w]*)\s*=")
+
+# Matches: <ident>.<field> = <value>  (constructor body assignments)
+_FIELD_ASSIGN_RE = re.compile(
+    r"^\s*([A-Za-z_][\w]*)\.(\w+)\s*=\s*(.+?)\s*$"
+)
+# Matches: local <ident> = setmetatable({}, <Class>)
+_SETMETA_RE = re.compile(
+    r"^\s*local\s+([A-Za-z_][\w]*)\s*=\s*setmetatable\s*\(\s*\{\s*\}\s*,\s*([A-Za-z_][\w]*)\s*\)"
+)
+# "function" that closes a constructor block (any function keyword resets context)
+_FUNC_BEGIN_RE = re.compile(r"^\s*(?:local\s+)?function\b")
+
+
+_LUA_TYPE_HINTS = {
+    "true": "boolean", "false": "boolean",
+    "{}": "table",
+}
+
+
+def _infer_field_type(value_str: str) -> str:
+    """Best-effort type inference from a Lua literal RHS."""
+    v = value_str.strip().split("--")[0].strip()  # strip inline comments
+    if v in _LUA_TYPE_HINTS:
+        return _LUA_TYPE_HINTS[v]
+    if v.startswith('"') or v.startswith("'"):
+        return "string"
+    if re.match(r"^-?[0-9]", v):
+        return "number"
+    if v in ("nil",):
+        return "any"
+    if v.startswith("{"):
+        return "table"
+    if v.startswith("function"):
+        return "function"
+    # boolean literals and expressions
+    if re.match(r"^(true|false)$", v):
+        return "boolean"
+    return "any"
+
+
+def _extract_class_fields(source: str) -> dict[str, list[dict]]:
+    """Scan constructor bodies for instance field assignments.
+
+    Detects the pattern::
+
+        local inst = setmetatable({}, ClassName)
+        inst.field = value
+        ...
+        return inst
+
+    Returns a dict mapping public class names (after CLASS_NAME_MAP) to a
+    list of ``{name: str, type: str}`` dicts, preserving first-seen order
+    and de-duplicating by field name.
+    """
+    result: dict[str, list[dict]] = {}
+    lines = source.splitlines()
+
+    # current constructor context: (local_var_name, class_name)
+    ctx_var: str | None = None
+    ctx_cls: str | None = None
+    in_ctor = False
+
+    for raw in lines:
+        stripped = raw.strip()
+
+        # A new function keyword resets constructor context.
+        if _FUNC_BEGIN_RE.match(stripped):
+            # But first check if this line itself opens setmetatable later…
+            # (rare; treat as reset then re-check below)
+            ctx_var = None
+            ctx_cls = None
+            in_ctor = False
+
+        # Detect: local inst = setmetatable({}, ClassName)
+        m = _SETMETA_RE.match(stripped)
+        if m:
+            ctx_var = m.group(1)
+            raw_cls = m.group(2)
+            ctx_cls = _public_class_name(raw_cls)
+            in_ctor = True
+            continue
+
+        if not in_ctor or ctx_var is None:
+            continue
+
+        # End of constructor: return statement
+        if stripped.startswith("return ") and ctx_var in stripped:
+            ctx_var = None
+            ctx_cls = None
+            in_ctor = False
+            continue
+
+        # Detect: inst.field = value
+        m2 = _FIELD_ASSIGN_RE.match(stripped)
+        if m2 and m2.group(1) == ctx_var:
+            field_name = m2.group(2)
+            field_type = _infer_field_type(m2.group(3))
+            cls_fields = result.setdefault(ctx_cls, [])
+            # deduplicate by name, keep first occurrence
+            if not any(f["name"] == field_name for f in cls_fields):
+                cls_fields.append({"name": field_name, "type": field_type})
+
+    return result
 
 
 def parse_ldoc(source: str) -> dict:
@@ -206,6 +311,9 @@ def parse_ldoc(source: str) -> dict:
             i = end_i
             continue
         i += 1
+
+    # Third pass: extract instance fields from constructor bodies.
+    info["class_fields"] = _extract_class_fields(source)
 
     return info
 
@@ -919,15 +1027,33 @@ def render_luacats(modules: dict) -> str:
 
     declared_classes: set[str] = {"number", "string", "boolean", "table", "function", "thread", "userdata", "nil"}
     referenced_types: set[str] = set()
+    # Collect all class_fields from every module so we can emit them in both passes.
+    all_class_fields: dict[str, list[dict]] = {}
+    for _, info in modules.values():
+        for cls, fields in info.get("class_fields", {}).items():
+            existing = all_class_fields.setdefault(cls, [])
+            seen_names = {f["name"] for f in existing}
+            for f in fields:
+                if f["name"] not in seen_names:
+                    existing.append(f)
+                    seen_names.add(f["name"])
+
+    def _emit_class(cls_name: str) -> None:
+        """Emit a ---@class block with ---@field public lines if fields are known."""
+        fields = all_class_fields.get(cls_name, [])
+        out.append(f"---@class {cls_name}")
+        for f in fields:
+            out.append(f"---@field public {f['name']} {f['type']}")
+        out.append(f"{cls_name} = {{}}")
+        out.append("")
+
     for _, info in modules.values():
         for fn in info["functions"]:
             raw_name = fn["name"]
             if ":" in raw_name:
                 cls = _public_class_name(raw_name.split(":", 1)[0])
                 if cls not in declared_classes:
-                    out.append(f"---@class {cls}")
-                    out.append(f"{cls} = {{}}")
-                    out.append("")
+                    _emit_class(cls)
                     declared_classes.add(cls)
             for p in fn.get("params", []):
                 for token in re.findall(r"[A-Z][A-Za-z0-9_]*", _luacats_type(p.get("type", ""))):
@@ -937,9 +1063,7 @@ def render_luacats(modules: dict) -> str:
                     referenced_types.add(token)
 
     for type_name in sorted(referenced_types - declared_classes):
-        out.append(f"---@class {type_name}")
-        out.append(f"{type_name} = {{}}")
-        out.append("")
+        _emit_class(type_name)
 
     for module_name in sorted(modules.keys()):
         _, info = modules[module_name]

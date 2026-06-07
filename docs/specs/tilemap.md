@@ -12,8 +12,8 @@
 - Module group: `Feature Systems`
 - Source path: `src/tilemap/`
 - Binding: `src/lua_api/tilemap_api.rs`
-- Namespace: `lurek.tilemap`
-- Lua API surface: `28` functions, `22` types, `162` methods
+- Namespace: `lurek.physics`
+- Lua API surface: `29` functions, `23` types, `162` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
 - Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
 
@@ -119,9 +119,7 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ### mapgen_model.rs
 
-- This file holds shared procedural-generation model types extracted from `mapgen.rs` so generation data structures can evolve without keeping every concern in one source file.
-- It keeps orientation, zone, edge, and script-shape metadata reusable across generator logic and callers.
-- The split is structural only; the public map-generation contract stays under `lurek.tilemap`.
+- Shared model types for map generation.
 
 ### mod.rs
 
@@ -144,7 +142,7 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 - This file provides tilemap render-command emission with camera-aware culling across map layers.
 - It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling.
 - It applies per-layer visibility and tint state when composing command output for the renderer.
-- It respects orthogonal, isometric, and hexagonal map orientation so debug rendering matches the map's coordinate system.
+- It respects orthogonal, isometric, and hexagonal map orientation so debug rendering matches map space.
 - It keeps draw generation predictable so map visualization remains stable during updates.
 - It provides a stable debug visualization path when textured rendering is unavailable.
 
@@ -167,7 +165,6 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 - It advances tile animation timelines from tileset frame data during runtime updates.
 - It converts world and tile coordinates in both directions using map geometry settings.
 - It emits culled draw commands for viewport-scoped visualization and debug rendering.
-- It tracks visible animated GIDs and dirty viewport state so animated tiles update only where the current view requires it.
 - It exports walkability structures so pathfinding systems can consume map topology directly.
 - It maintains reverse lookup caches from tile IDs to positions for fast spatial queries.
 - It supports image-based debug outputs for inspection, tooling, and regression validation.
@@ -175,13 +172,11 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ### tilemap_collision.rs
 
-- This file contains tilemap collision helpers extracted from `tilemap.rs` so sweep and overlap math can stay isolated from storage concerns.
-- It keeps the tile-grid collision query path explicit without changing the public `TileMap` collision surface.
+- Narrow-phase collision helpers for tilemap sweeps.
 
 ### tilemap_index.rs
 
-- This file contains reverse-index cache helpers extracted from `tilemap.rs`.
-- It centralizes GID-to-position cache maintenance so lookup performance stays predictable while the core map type remains easier to navigate.
+- Reverse-index cache helpers for tilemap tile lookups.
 
 ### tileset.rs
 
@@ -208,7 +203,7 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ### Functions
 
-- `lurek.tilemap.fromLDtk(jsonStr, levelName?) -> LTileMap, table?`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level. On import failure it returns `nil, err` where `err` contains `format`, `code`, and `message` (`line`/`column` are nil for LDtk).
+- `lurek.tilemap.fromLDtk(jsonStr, levelName?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
 - `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
@@ -223,7 +218,7 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 - `lurek.tilemap.isoDirectionFromAngle(angle) -> integer`: Converts an angle in degrees to the nearest isometric direction index.
 - `lurek.tilemap.isoDirectionName(direction) -> string`: Returns a human-readable name for an isometric direction index.
 - `lurek.tilemap.isoRotate(direction, steps) -> integer`: Rotates an isometric direction index by a number of 90-degree steps.
-- `lurek.tilemap.loadTMX(xml) -> table?, table?`: Parses a TMX (Tiled XML) string. On success returns `map, nil`; on parse failure returns `nil, err` where `err` contains `format`, `code`, `message`, and optional `line`/`column`.
+- `lurek.tilemap.loadTMX(xml) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 - `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
 - `lurek.tilemap.newChunkMap(chunkSize?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
 - `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
@@ -234,6 +229,7 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 - `lurek.tilemap.newMapScript() -> LMapScript`: Creates a new empty map-generation script.
 - `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
 - `lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing?, margin?) -> LTileSet`: Creates a new tileset from atlas parameters.
+- `lurek.tilemap.syncMinimap(map, layer, minimap, opts?) -> nil`: Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
 - `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
 - `lurek.tilemap.toScreenIso(tx, ty, tw, th) -> number`: Converts tile coordinates to screen-space position for isometric projection.
 
@@ -498,7 +494,7 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 - `LTileMap:onTileEnter(gid, func) -> nil`: Registers a callback invoked when an entity enters a tile with the given GID.
 - `LTileMap:onTileExit(gid, func) -> nil`: Registers a callback invoked when an entity leaves a tile with the given GID.
 - `LTileMap:onTileStep(gid, func) -> nil`: Registers a callback invoked each frame an entity remains on a tile with the given GID.
-- `LTileMap:rectOverlapsSolid(layer, x, y, w, h) -> boolean`: Tests whether a world-space rectangle overlaps any solid tile on a layer. This is a tilemap query only and does not create or update `lurek.physics` colliders.
+- `LTileMap:rectOverlapsSolid(layer, x, y, w, h) -> boolean`: Tests whether a world-space rectangle overlaps any solid tile on a layer.
 - `LTileMap:render(ox?, oy?) -> nil`: Submits render commands for all visible tiles, optionally offset by a scroll position.
 - `LTileMap:setLayerColor(idx, r, g, b, a) -> nil`: Sets the tint color for an entire layer.
 - `LTileMap:setLayerOffset(idx, ox, oy) -> nil`: Sets the pixel offset for a layer, shifting all tiles during rendering.
@@ -601,6 +597,22 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 - No documented methods.
 
+#### LTilemapFromLDtkResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `code` (`string`): Stable machine-readable error code.
+- `column` (`integer?`): Always nil for LDtk parser errors.
+- `format` (`string`): Source format identifier (`"ldtk"`).
+- `line` (`integer?`): Always nil for LDtk parser errors.
+- `message` (`string`): Human-readable parser message.
+
+##### Methods
+
+- No documented methods.
+
 #### LTilemapHexAreaResult Type
 
 - Generated result shape from @field tags.
@@ -672,8 +684,13 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ##### Fields
 
+- `code` (`string`): Stable machine-readable error code.
+- `column` (`integer?`): 1-based source column when available.
+- `format` (`string`): Source format identifier (`"tmx"`).
 - `height` (`number`): Height.
 - `layers` (`table`): Layers array.
+- `line` (`integer?`): 1-based source line when available.
+- `message` (`string`): Human-readable parser message.
 - `orientation` (`string`): Map orientation.
 - `tileHeight` (`integer`): Tile height in pixels.
 - `tileWidth` (`integer`): Tile width in pixels.

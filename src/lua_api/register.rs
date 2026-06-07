@@ -14,15 +14,15 @@ use super::pipeline_api;
 #[cfg(feature = "spine")]
 use super::spine_api;
 use super::{
-    agent_api, ai_api, animation_api, asset_api, audio_api, binary_api, camera_api, color_api,
-    compute_api, cursor_api, dataframe_api, debugbridge_api, dialog_api, docs_api, dsp_api,
-    ecs_api, effect_api, engine_api, event_api, filesystem_api, font_api, globe_api, grep_api,
-    html_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api, log_api,
-    mapblock_api, math_api, midi_api, minimap_api, mods_api, network_api, overlay_api,
+    agent_api, ai_api, animation_api, asset_api, audio_api, binary_api, camera_api, cinematic_api,
+    color_api, compute_api, cursor_api, dataframe_api, debugbridge_api, dialog_api, docs_api,
+    dsp_api, ecs_api, effect_api, engine_api, event_api, filesystem_api, font_api, globe_api,
+    grep_api, html_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api,
+    log_api, mapblock_api, math_api, midi_api, minimap_api, mods_api, network_api, overlay_api,
     parallax_api, particle_api, pathfind_api, patterns_api, physics_api, procgen_api, province_api,
     raycaster_api, render_api, repl_api, save_api, scene_api, serialize_api, sprite_api,
-    system_api, terminal_api, thread_api, tilemap_api, timer_api, tween_api, ui_api, validator_api,
-    visibility_api, window_api,
+    svg_api, system_api, terminal_api, thread_api, tilemap_api, timer_api, tween_api, ui_api,
+    validator_api, visibility_api, window_api,
 };
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;
@@ -56,8 +56,12 @@ macro_rules! gated {
 ///
 /// Order is preserved from the original registration sequence.
 /// Always-on modules have `is_enabled` returning `true` unconditionally.
+///
+/// Note: sub-module integrations (audio.manager, camera.follow, input.actionMap,
+/// network lobby) are registered inside their parent module's `register()` call
+/// and do NOT appear as separate entries here.
 static MODULES: &[ModuleEntry] = &[
-    // â”€â”€ Always-on core modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ——— Always-on core modules —————————————————————————————————————————————————
     always!(agent_api),
     always!(asset_api),
     always!(event_api),
@@ -76,16 +80,21 @@ static MODULES: &[ModuleEntry] = &[
     always!(math_api),
     always!(color_api),
     always!(system_api),
+    always!(svg_api),
     always!(font_api),
-    // â”€â”€ Config-gated modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    gated!(timer_api, timer),
-    gated!(image_api, image),
+    always!(cinematic_api),
+    always!(patterns_api),
+    // ——— Config-gated modules ————————————————————————————————————————————————————
+    // audio_api registers lurek.audio.* including lurek.audio.manager internally.
+    gated!(audio_api, audio),
+    // camera_api registers lurek.camera.* including lurek.camera.follow internally.
     gated!(camera_api, camera),
     gated!(animation_api, animation),
     gated!(tween_api, tween),
     gated!(thread_api, thread),
     gated!(debugbridge_api, debug),
     gated!(i18n_api, i18n),
+    // input_api registers lurek.input.* including lurek.input.actionMap internally.
     gated!(input_api, input),
     gated!(filesystem_api, filesystem),
     gated!(ecs_api, ecs),
@@ -96,6 +105,7 @@ static MODULES: &[ModuleEntry] = &[
     #[cfg(feature = "spine")]
     gated!(spine_api, spine),
     gated!(procgen_api, procgen),
+    // network_api registers lurek.network.* including lobby functions internally.
     gated!(network_api, network),
     gated!(minimap_api, minimap),
     gated!(province_api, province),
@@ -104,12 +114,10 @@ static MODULES: &[ModuleEntry] = &[
     gated!(terminal_api, terminal),
     #[cfg(feature = "pipeline")]
     gated!(pipeline_api, pipeline),
-    always!(patterns_api),
     gated!(globe_api, globe),
     gated!(ai_api, ai),
     gated!(dialog_api, ai),
     gated!(learning_api, learning),
-    gated!(audio_api, audio),
     gated!(dsp_api, dsp),
     gated!(midi_api, audio),
     gated!(effect_api, effect),
@@ -124,12 +132,15 @@ static MODULES: &[ModuleEntry] = &[
     gated!(grep_api, grep),
     gated!(mapblock_api, mapblock),
     gated!(validator_api, validator),
+    gated!(image_api, image),
+    gated!(timer_api, timer),
     gated!(render_api, render),
 ];
 
-// â”€â”€â”€ VM constructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ——— VM constructors ————————————————————————————————————————————————————————
 
-/// Creates a Lua VM, locks down unsafe standard-library entry points, installs the `lurek` table, and registers enabled modules.
+/// Creates a Lua VM, locks down unsafe standard-library entry points, installs
+/// the `lurek` table, and registers enabled modules.
 pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -> LuaResult<Lua> {
     let lua = Lua::new();
     lockdown_stdlib(&lua)?;
@@ -169,7 +180,7 @@ pub fn create_test_vm() -> LuaResult<Lua> {
     create_lua_vm(state, &modules)
 }
 
-// â”€â”€â”€ Internal helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ——— Internal helpers ————————————————————————————————————————————————————————
 
 /// Removes unsafe standard-library functions from the Lua global environment.
 fn lockdown_stdlib(lua: &Lua) -> LuaResult<()> {
@@ -203,7 +214,7 @@ fn register_modules(
         }
     }
 
-    // Feature-gated modules require compile-time #[cfg] â€” cannot be in MODULES.
+    // Feature-gated modules require compile-time #[cfg] — cannot be in MODULES.
     #[cfg(feature = "automation-plugin")]
     if modules.debug {
         automation_api::register(lua, lurek, state.clone())?;

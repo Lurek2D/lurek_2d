@@ -23,6 +23,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [binary.lua](../blob/main/content/examples/binary.lua) | `lurek.binary` | API example |
 | [camera.lua](../blob/main/content/examples/camera.lua) | `lurek.camera` | API example |
 | [charts.lua](../blob/main/content/examples/charts.lua) | `lurek.charts` | API example |
+| [cinematic.lua](../blob/main/content/examples/cinematic.lua) | `lurek.cinematic` | API example |
 | [color.lua](../blob/main/content/examples/color.lua) | `lurek.color` | API example |
 | [compute.lua](../blob/main/content/examples/compute.lua) | `lurek.compute` | API example |
 | [cursor.lua](../blob/main/content/examples/cursor.lua) | `lurek.cursor` | API example |
@@ -73,6 +74,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [serialize.lua](../blob/main/content/examples/serialize.lua) | `lurek.serial` | API example |
 | [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | API example |
 | [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | API example |
+| [svg.lua](../blob/main/content/examples/svg.lua) | `lurek.svg` | API example |
 | [terminal.lua](../blob/main/content/examples/terminal.lua) | `lurek.terminal` | API example |
 | [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | API example |
 | [tilemap.lua](../blob/main/content/examples/tilemap.lua) | `lurek.tilemap` | API example |

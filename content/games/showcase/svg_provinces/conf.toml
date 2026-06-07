@@ -1,0 +1,10 @@
+[window]
+width = 800
+height = 600
+title = "SVG Provinces Map Adjacency & Hit-Testing Demo"
+
+[modules]
+render = true
+input = true
+timer = true
+math = true

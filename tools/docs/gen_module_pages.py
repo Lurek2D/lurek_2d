@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-module MkDocs pages in docs/modules/ from:
+"""Generate per-module MkDocs pages in docs/pages/ from:
   - docs/specs/<module>.md  -> description (TL;DR + Summary)
   - docs/api/lurek.lua      -> function/method signatures + param/return docs
   - content/examples/<module>.lua -> code examples per symbol
@@ -18,10 +18,8 @@ SPECS_DIR = ROOT / "docs" / "specs"
 STUB_FILE = ROOT / "docs" / "api" / "lurek.lua"
 LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 EXAMPLES_DIR = ROOT / "content" / "examples"
-OUT_DIR = ROOT / "docs" / "modules"
-RUST_API_MD = ROOT / "docs" / "rust-api.md"
-RUST_MODULES_DIR = ROOT / "docs" / "rust_modules"
-CALLBACKS_MD = ROOT / "docs" / "callbacks.md"
+OUT_DIR = ROOT / "docs" / "pages"  # GitHub Pages - Lua module documentation
+CALLBACKS_MD = ROOT / "docs" / "api" / "callbacks.md"
 
 # ---------------------------------------------------------------------------
 # Spec description extraction
@@ -573,122 +571,6 @@ def build_page(
     return "\n".join(out)
 
 
-def build_rust_api_page(modules: list[str]) -> str:
-    out: list[str] = []
-    out.append("# Rust API Browser")
-    out.append("")
-    out.append("Krótki indeks modułów Rust generowany ze specek.")
-    out.append("")
-    out.append("")
-
-    rows: list[tuple[str, str, int, str]] = []
-    for module in modules:
-        spec_path = SPECS_DIR / f"{module}.md"
-        if not spec_path.exists():
-            continue
-        spec = extract_spec_sections(spec_path)
-        summary = (spec.get("summary") or "").strip().split("\n\n")[0].strip()
-        general_info = (spec.get("general_info") or "")
-        source_path = _extract_source_path(general_info)
-        files = (spec.get("files") or "")
-        file_count = len(re.findall(r"^###\s+", files, flags=re.M))
-        rows.append((module, source_path, file_count, summary))
-
-    out.append("## Module table")
-    out.append("")
-    out.append("| Module | Source path | Files |")
-    out.append("|--------|-------------|-------|")
-    for module, source_path, file_count, _ in rows:
-        mod_link = f"[`{module}`](rust_modules/{module}.md)"
-        src = f"`{source_path}`" if source_path else "-"
-        out.append(f"| {mod_link} | {src} | {file_count} |")
-    out.append("")
-
-    out.append("## Modules")
-    out.append("")
-    out.append("Każdy moduł ma osobną stronę z `General Info`, `Summary` i `Files`.")
-    out.append("")
-
-    has_any = bool(rows)
-    for module, _, _, summary in rows:
-        out.append(f"- [`{module}`](rust_modules/{module}.md)")
-        if summary:
-            out.append(f"  - {summary}")
-        out.append("")
-
-    if not has_any:
-        out.append("*No module specs found.*")
-        out.append("")
-
-    out.append("## Powiązane")
-    out.append("")
-    out.append("- [Architecture](architecture/engine-core.md)")
-    out.append("- [Generated Rust API (Markdown)](api/rust.md)")
-    out.append("")
-
-    return "\n".join(out)
-
-
-def _repo_source_url(source_path: str, file_name: str) -> str:
-    source_path = source_path.strip().strip("`")
-    if not source_path:
-        return ""
-    if not source_path.endswith("/"):
-        source_path += "/"
-    rel = f"{source_path}{file_name}".replace("\\", "/")
-    return f"https://github.com/Lurek2D/lurek_2d/blob/main/{rel}"
-
-
-def _extract_source_path(general_info: str) -> str:
-    m = re.search(r"-\s*Source path:\s*`?([^`\n]+)`?", general_info or "")
-    return (m.group(1).strip() if m else "")
-
-
-def _link_file_headings(files_section: str, source_path: str) -> str:
-    if not files_section:
-        return ""
-
-    def repl(match: re.Match[str]) -> str:
-        fname = match.group(1).strip()
-        url = _repo_source_url(source_path, fname)
-        if url:
-            return f"### [{fname}]({url})"
-        return f"### {fname}"
-
-    return re.sub(r"^###\s+([^\n]+)$", repl, files_section, flags=re.M)
-
-
-def build_rust_module_page(module: str) -> str:
-    spec_path = SPECS_DIR / f"{module}.md"
-    spec = extract_spec_sections(spec_path)
-    general_info = (spec.get("general_info") or "").strip()
-    summary = (spec.get("summary") or "").strip()
-    files = (spec.get("files") or "").strip()
-    source_path = _extract_source_path(general_info)
-    files = _link_file_headings(files, source_path)
-
-    out: list[str] = []
-    out.append(f"# {module}")
-    out.append("")
-
-    out.append("## General Info")
-    out.append("")
-    out.append(general_info if general_info else "*No `General Info` section found in spec.*")
-    out.append("")
-
-    out.append("## Summary")
-    out.append("")
-    out.append(summary if summary else "*No `Summary` section found in spec.*")
-    out.append("")
-
-    out.append("## Files")
-    out.append("")
-    out.append(files if files else "*No `Files` section found in spec.*")
-    out.append("")
-
-    return "\n".join(out)
-
-
 def build_callbacks_page() -> str:
     spec = extract_spec_sections(SPECS_DIR / "callbacks.md")
     general_info = (spec.get("general_info") or "").strip()
@@ -837,27 +719,11 @@ def main():
         print(f"  {module}.md  ({fn_count} functions)")
         generated.append(module)
 
-    print(f"\nDone — {len(generated)} module pages in docs/modules/")
-
-    # Keep Rust API landing synchronized with specs (module list + file descriptions).
-    rust_api_md = build_rust_api_page(KNOWN_MODULES)
-    RUST_API_MD.write_text(rust_api_md, encoding="utf-8")
-    print("Updated docs/rust-api.md from specs")
-
-    RUST_MODULES_DIR.mkdir(parents=True, exist_ok=True)
-    rust_written = 0
-    for module in KNOWN_MODULES:
-        spec_path = SPECS_DIR / f"{module}.md"
-        if not spec_path.exists():
-            continue
-        page = build_rust_module_page(module)
-        (RUST_MODULES_DIR / f"{module}.md").write_text(page, encoding="utf-8")
-        rust_written += 1
-    print(f"Updated docs/rust_modules/*.md from specs ({rust_written} files)")
+    print(f"\nDone — {len(generated)} Lua module pages in docs/pages/")
 
     callbacks_md = build_callbacks_page()
     CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
-    print("Updated docs/callbacks.md from callbacks spec/json")
+    print("Updated docs/api/callbacks.md from callbacks spec/json")
 
     return generated
 

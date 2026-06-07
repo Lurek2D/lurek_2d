@@ -1025,6 +1025,12 @@ fn lua_evidence_light_advanced_evidence() {
     run_lua_test("evidence/test_light_advanced_evidence.lua");
 }
 
+#[test]
+fn lua_evidence_svg_evidence() {
+    run_lua_test("evidence/test_svg_evidence.lua");
+}
+
+
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ golden layer Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
 
 #[test]
@@ -1559,11 +1565,6 @@ fn lua_library_scene_objects() {
 }
 
 #[test]
-fn lua_library_sprite() {
-    run_lua_test("library/test_library_sprite.lua");
-}
-
-#[test]
 fn lua_library_tilemap_minimap() {
     run_lua_test("library/test_library_tilemap_minimap.lua");
 }
@@ -1582,3 +1583,9 @@ fn lua_unit_system_unit() {
 fn lua_unit_collision_unit() {
     run_lua_test("unit/test_collision_core_unit.lua");
 }
+
+#[test]
+fn lua_unit_svg_unit() {
+    run_lua_test("unit/test_svg_unit.lua");
+}
+

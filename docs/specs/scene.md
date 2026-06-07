@@ -12,7 +12,7 @@
 - Source path: `src/scene/`
 - Binding: `src/lua_api/scene_api.rs`
 - Namespace: `lurek.scene`
-- Lua API surface: `59` functions, `9` types, `10` methods
+- Lua API surface: `60` functions, `9` types, `10` methods
 - Rust test path(s): none found in the workspace
 - Lua test path(s): none found in the workspace
 
@@ -50,6 +50,18 @@ Finally, the system integrates a z-ordered painter-style depth sorter to handle 
 - This module provides scene-stack flow control, scene rendering helpers, transition behavior, and depth ordering support for multi-state games.
 - It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states.
 - At the highest level this is the feature layer that organizes game flow over time rather than individual world entities.
+
+### object.rs
+
+- Scene object component – generic visible entity.
+
+### object_container.rs
+
+- Scene object container for managing object lifecycle, updates, and layered rendering.
+- Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects
+- library. Supports add/remove/clear operations, per-frame update and draw cycles,
+- layer-based depth sorting for painter-style rendering, and object query helpers
+- `has(obj)` and `getByLayer(layer)`.
 
 ### render.rs
 
@@ -110,6 +122,7 @@ Finally, the system integrates a z-ordered painter-style depth sorter to handle 
 - `lurek.scene.isUpdateEnabled(target?) -> boolean`: Returns whether `update` is enabled for a selected scene.
 - `lurek.scene.new(def?) -> table`: Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits methods from the prototype. Use this for one-off scene creation; use `define` when you need a reusable scene constructor.
 - `lurek.scene.newDepthSorter() -> LDepthSorter`: Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order.
+- `lurek.scene.newObjectContainer() -> LSceneObjectContainer`: Create a new scene object container for managing object lifecycle and draw ordering.
 - `lurek.scene.newScene(def?) -> table`: Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
 - `lurek.scene.pop(transition?, duration?, easing?) -> nil`: Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the revealed scene receives `resume()` (unless the popped scene was an overlay, in which case the underlying scene was never paused). Use this for "back" navigation, closing menus, or exiting sub-screens.
 - `lurek.scene.popTo(name) -> boolean`: Pop scenes off the stack until the named registered scene is on top. Every popped scene receives `leave()` and the target scene receives `resume()`. The target scene must have been previously added via `registerScene`. Returns false if no scene with that name exists on the stack.
@@ -150,6 +163,28 @@ Finally, the system integrates a z-ordered painter-style depth sorter to handle 
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LSceneObjectContainer Type
+
+- Scene object container userdata for object lifecycle, update/draw dispatch, and layer-based queries.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSceneObjectContainer:add(obj) -> nil`: Add an object to the container.
+- `LSceneObjectContainer:clear() -> nil`: Remove all objects from the container.
+- `LSceneObjectContainer:draw() -> nil`: Call draw on sorted objects.
+- `LSceneObjectContainer:getByLayer(layer) -> table`: Return all objects with matching layer.
+- `LSceneObjectContainer:getCount() -> number`: Return current object count.
+- `LSceneObjectContainer:getObjects() -> table`: Return internal object array.
+- `LSceneObjectContainer:has(obj) -> boolean`: Return true when object exists in container.
+- `LSceneObjectContainer:remove(obj) -> nil`: Remove one object by identity.
+- `LSceneObjectContainer:type() -> string`: Return userdata type name.
+- `LSceneObjectContainer:typeOf(name) -> boolean`: Check userdata type.
+- `LSceneObjectContainer:update(dt) -> nil`: Call update on objects that provide it.
 
 #### LDepthSorter Type
 

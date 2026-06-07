@@ -4,6 +4,8 @@
 
 /// Depth-sorted entity ordering for scene draw calls.
 pub mod depth_sorter;
+/// Scene object container for managing object lifecycle, updates, and layered rendering.
+pub mod object_container;
 /// Scene-level render assembly: collects draw commands for the active scene.
 pub mod render;
 /// SceneStack and SceneId: push/pop lifecycle for game scenes.

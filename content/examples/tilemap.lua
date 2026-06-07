@@ -1752,3 +1752,22 @@ do
     script:addStep({ type = "rect", x = 1, y = 1, w = 2, h = 2, gid = 2 })
     print("getStepCount = " .. tostring(script:getStepCount()))
 end
+
+--@api-stub: lurek.tilemap.syncMinimap
+do
+    local tilemap = lurek.tilemap.newTileMap(16, 16, 32)
+    local minimap = lurek.minimap.new(16, 16)
+
+    -- Sync the tilemap's collision layer to minimap terrain with options
+    lurek.tilemap.syncMinimap(tilemap, 1, minimap, {
+        solid_terrain = 2,
+        empty_terrain = 1
+    })
+    print("minimap synced from tilemap with options")
+
+    -- Also show sync with default terrain values
+    local tilemap2 = lurek.tilemap.newTileMap(10, 10, 32)
+    local minimap2 = lurek.minimap.new(10, 10)
+    lurek.tilemap.syncMinimap(tilemap2, 1, minimap2)
+    print("minimap synced with defaults")
+end

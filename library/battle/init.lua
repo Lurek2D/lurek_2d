@@ -654,9 +654,6 @@ function CombatBattle:_checkBattleOver()
 end
 
 --- Resolve an attack.
--- TODO(P4 lift): switch to lurek.math.newRng() for seedable, deterministic
--- battle replays. Currently uses the global Lua RNG which makes saves
--- non-deterministic across reloads.
 -- @see lurek.math
 -- @tparam string attacker_name
 -- @tparam string action_name
@@ -666,6 +663,9 @@ end
 --   local r = battle:attack("hero", "slash", "goblin")
 --   if r and r.hit then print(r.message) end
 function CombatBattle:attack(attacker_name, action_name, target_name)
+    -- TODO(P4 lift): switch to lurek.math.newRng() for seedable, deterministic
+    -- battle replays. Currently uses the global Lua RNG which makes saves
+    -- non-deterministic across reloads.
     local atk = self:getCombatant(attacker_name)
     if not atk then return nil end
     local action = atk:getAction(action_name)

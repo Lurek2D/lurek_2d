@@ -782,6 +782,8 @@ impl Default for PhysicsDebugConfig {
 pub struct SpineSlotDraw {
     /// Texture referenced by this slot attachment.
     pub texture_key: TextureKey,
+    /// Optional dynamic canvas key for SVG/vector slots.
+    pub canvas_key: Option<CanvasKey>,
     /// World-space corner positions for the slot quad.
     pub corners: [Vec2; 4],
     /// UV coordinates at each corner.

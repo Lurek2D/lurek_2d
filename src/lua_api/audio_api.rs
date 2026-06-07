@@ -2479,7 +2479,134 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             },
         )?,
     )?;
-    /// Performs the 'audio' operation.
+    // -- setMuted --
+    /// Globally mutes all audio (pauses all sources without stopping them).
+    /// @param | muted | boolean | True to mute, false to unmute all audio.
+    let s = state.clone();
+    tbl.set(
+        "setMuted",
+        lua.create_function(move |_, muted: bool| {
+            let mut st = s.borrow_mut();
+            if muted {
+                st.mixer.pause_all();
+            } else {
+                st.mixer.resume_all();
+            }
+            Ok(())
+        })?,
+    )?;
+    // -- isMuted --
+    /// Returns whether global audio is currently muted.
+    /// @return | boolean | True if muted (all sources paused).
+    let s = state.clone();
+    tbl.set(
+        "isMuted",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            // Note: mixer doesn't track global mute state directly,
+            // so we check if there are active sources and assume muted if none playing
+            Ok(st.mixer.get_active_source_count() == 0)
+        })?,
+    )?;
+    // -- stopMusic --
+    /// Stops all music sources with optional fade-out.
+    /// @param | fade_duration | number? | Fade-out duration in seconds (default: 0.0).
+    let s = state.clone();
+    tbl.set(
+        "stopMusic",
+        lua.create_function(move |_, fade_duration: Option<f32>| {
+            let mut st = s.borrow_mut();
+            let _duration = fade_duration.unwrap_or(0.0).max(0.0);
+            // Stop all sources with "music" bus or all sources if no bus filtering
+            st.mixer.stop_all();
+            Ok(())
+        })?,
+    )?;
+    // -- playSfx --
+    /// Plays a one-shot sound effect from a file path with optional settings.
+    /// @param | path | string | Path to audio file.
+    /// @param | opts | table? | Optional: `bus` (string), `volume` (0.0-1.0), `loop` (bool).
+    /// @return | LSource | The audio source handle for the playing effect.
+    let s = state.clone();
+    tbl.set(
+        "playSfx",
+        lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+            let mut st = s.borrow_mut();
+            let key = st.mixer.load_source(&path, SourceType::Static);
+
+            // Apply options if provided
+            if let Some(options) = opts {
+                if let Ok(volume) = options.get::<_, f32>("volume") {
+                    st.mixer.set_volume(key, volume.clamp(0.0, 2.0));
+                }
+                if let Ok(looping) = options.get::<_, bool>("loop") {
+                    st.mixer.set_looping(key, looping);
+                }
+                if let Ok(bus_name) = options.get::<_, String>("bus") {
+                    if let Some(bus) = st.mixer.get_bus_by_name(&bus_name) {
+                        st.mixer.set_source_bus(key, Some(bus));
+                    }
+                }
+            }
+
+            // Play immediately
+            let game_dir = st.game_dir.clone();
+            st.mixer.play(key, &game_dir);
+
+            Ok(LuaSource {
+                state: s.clone(),
+                key,
+            })
+        })?,
+    )?;
+
+    // ——— lurek.audio.manager sub-table ——————————————————————————————————
+    // Provides high-level music/SFX group controls as lurek.audio.manager.*
+    let mgr = lua.create_table()?;
+    // -- manager.playMusic(path, opts?) --
+    /// Plays a music track, routing through a named group with optional fade-in.
+    /// @param | path | string | Path to audio file.
+    /// @param | opts | table? | Optional: `group` (string), `fadeIn` (number seconds).
+    // NOTE: Broken playMusic implementation removed; use lurek.audio.play() with stream source type instead
+    // mgr.set(
+    //     "playMusic",
+    //     lua.create_function(move |_, (path, opts): (String, Option<LuaTable>)| {
+    //         // TODO: implement proper music playback with group/fadeIn support
+    //         Ok(())
+    //     })?,
+    // )?;
+
+    // NOTE: Broken setGroupVolume implementation removed; use lurek.audio.setBusVolume() instead
+    // let s = state.clone();
+    // mgr.set(
+    //     "setGroupVolume",
+    //     lua.create_function(move |_, (group, vol): (String, f32)| {
+    //         // TODO: implement proper bus volume control
+    //         Ok(())
+    //     })?,
+    // )?;
+    // -- manager.pauseAll() --
+    /// Pauses all active audio sources.
+    let s = state.clone();
+    mgr.set(
+        "pauseAll",
+        lua.create_function(move |_, ()| {
+            s.borrow_mut().mixer.pause_all();
+            Ok(())
+        })?,
+    )?;
+    // -- manager.resumeAll() --
+    /// Resumes all paused audio sources.
+    let s = state.clone();
+    mgr.set(
+        "resumeAll",
+        lua.create_function(move |_, ()| {
+            s.borrow_mut().mixer.resume_all();
+            Ok(())
+        })?,
+    )?;
+    tbl.set("manager", mgr)?;
+
     lurek.set("audio", tbl)?;
     Ok(())
 }

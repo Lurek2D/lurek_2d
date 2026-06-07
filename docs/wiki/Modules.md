@@ -67,7 +67,6 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [asset](Module-asset) | `lurek.asset` | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
 | [automation](Module-automation) | `lurek.automation` | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [charts](Module-charts) | `lurek.charts` | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
-| [cursor](Module-cursor) | `lurek.cursor` | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom. |
 | [dialog](Module-dialog) | `lurek.dialog` | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
 | [ecs](Module-ecs) | `lurek.ecs` | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
 | [grep](Module-grep) | `lurek.grep` | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search. |
@@ -89,7 +88,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [spine](Module-spine) | `lurek.spine` | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [sprite](Module-sprite) | `lurek.sprite` | Sprite and sprite-batch rendering above the render command queue. |
 | [terminal](Module-terminal) | `lurek.terminal` | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
-| [tilemap](Module-tilemap) | `lurek.tilemap` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [tilemap](Module-tilemap) | `lurek.physics` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [tween](Module-tween) | `lurek.tween` | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [ui](Module-ui) | `lurek.ui` | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [validator](Module-validator) | `lurek.validator` | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
@@ -108,4 +107,5 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | Module | Namespace | Purpose |
 |---|---|---|
 | [engine](Module-engine) | `lurek.engine` | File: src/lua_api/engine_api.rs |
+| [svg](Module-svg) | `lurek.svg` | Lua bindings for the vector SVG graphics module. |
 | [system](Module-system) | `lurek.system` | File: src/lua_api/system_api.rs |

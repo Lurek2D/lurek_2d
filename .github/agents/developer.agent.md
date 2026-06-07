@@ -1,7 +1,7 @@
 ---
 name: Developer
 description: "Write and fix Rust engine code: runtime, renderer, physics, audio, assets. Find root causes. No lurek.* API design."
-tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/sendToTerminal, execute/runInTerminal, execute/runTests, read/readFile, read/skill, edit/createFile, edit/editFiles, search/codebase, search/usages, todo]
+tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runInTerminal, execute/runTests, read/readFile, read/skill, edit/createFile, edit/editFiles, search/codebase, search/usages, todo]
 ---
 
 # Developer

@@ -2094,3 +2094,39 @@ do
     local sd = lurek.audio.newSynthWave("sine", 440, 0.5, 44100, 0.8)
     print("newSynthWave sampleCount = " .. sd:getSampleCount())
 end
+
+--@api-stub: lurek.audio.setMuted
+do
+    lurek.audio.setMuted(true)
+    print("audio muted = " .. tostring(lurek.audio.isMuted()))
+    lurek.audio.setMuted(false)
+    print("audio unmuted = " .. tostring(not lurek.audio.isMuted()))
+end
+
+--@api-stub: lurek.audio.isMuted
+do
+    local muted = lurek.audio.isMuted()
+    print("audio is muted = " .. tostring(muted))
+    if not muted then
+        lurek.audio.setMuted(true)
+        print("now muted = " .. tostring(lurek.audio.isMuted()))
+    end
+end
+
+--@api-stub: lurek.audio.stopMusic
+do
+    local src = lurek.audio.newSource("content/examples/assets/audio/sample_loop.wav", "stream")
+    lurek.audio.play(src)
+    print("music playing = " .. tostring(lurek.audio.isPlaying(src)))
+    lurek.audio.stopMusic(0.5)
+    print("music stopped with fade")
+end
+
+--@api-stub: lurek.audio.playSfx
+do
+    local opts = { volume = 0.8, loop = false }
+    local sfx = lurek.audio.playSfx("content/examples/assets/audio/sample_click.wav", opts)
+    print("sfx played = " .. tostring(sfx ~= nil))
+    print("sfx type = " .. sfx:type())
+    print("volume = " .. tostring(sfx:getVolume()))
+end

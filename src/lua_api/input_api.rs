@@ -1708,7 +1708,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(tbl)
         })?,
     )?;
-    /// Performs the 'input' operation.
+
     lurek.set("input", input_tbl)?;
     Ok(())
 }

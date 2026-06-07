@@ -624,6 +624,95 @@ do
     print("PiP layout applied")
 end
 
+--@api-stub: lurek.camera.newWalker
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, {
+        layer = 1,
+        tile_w = 32,
+        tile_h = 32,
+        body_w = 24,
+        body_h = 24,
+        speed = 100,
+        x = 64,
+        y = 64
+    })
+    print("walker created = " .. tostring(walker ~= nil))
+    print("walker type = " .. walker:type())
+end
+
+--@api-stub: LCameraWalker:setPosition
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    walker:setPosition(128, 96)
+    local x, y = walker:getPosition()
+    print("walker pos = " .. x .. ", " .. y)
+end
+
+--@api-stub: LCameraWalker:getTilePosition
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
+    walker:setTilePosition(3, 2)
+    local tx, ty = walker:getTilePosition()
+    print("walker tile = " .. tx .. ", " .. ty)
+end
+
+--@api-stub: LCameraWalker:moveUp
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveUp(1.0)
+    local _, y = walker:getPosition()
+    print("moved up, new y = " .. y)
+end
+
+--@api-stub: LCameraWalker:moveDown
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveDown(1.0)
+    local _, y = walker:getPosition()
+    print("moved down, new y = " .. y)
+end
+
+--@api-stub: LCameraWalker:moveLeft
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveLeft(1.0)
+    local x, _ = walker:getPosition()
+    print("moved left, new x = " .. x)
+end
+
+--@api-stub: LCameraWalker:moveRight
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
+    walker:moveRight(1.0)
+    local x, _ = walker:getPosition()
+    print("moved right, new x = " .. x)
+end
+
+--@api-stub: LCameraWalker:update
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    walker:setPosition(50, 50)
+    walker:update(0.016)  -- Update at ~60 FPS
+    local x, y = walker:getPosition()
+    print("walker updated, pos = " .. x .. ", " .. y)
+end
+
+--@api-stub: LCameraWalker:getCamera
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    local cam = walker:getCamera()
+    print("camera type = " .. cam:type())
+end
+
 --@api-stub: LCameraRig:setPosition
 do
     local rig = lurek.camera.newRig()

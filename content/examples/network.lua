@@ -832,3 +832,77 @@ do
     local result = lurek.network.reconcileWithPolicy(pred, auth, 0.5, 0.2, 5.0)
     print("reconciled_x=" .. result.x)
 end
+
+--@api-stub: lurek.network.setReady
+do
+    lurek.network.setReady("game_room", 1, true)
+    lurek.network.setReady("game_room", 2, false)
+    print("set_player_1_ready=true")
+    print("set_player_2_ready=false")
+end
+
+--@api-stub: lurek.network.isAllReady
+do
+    lurek.network.setReady("lobby_room", 1, true)
+    lurek.network.setReady("lobby_room", 2, true)
+    local all_ready = lurek.network.isAllReady("lobby_room")
+    print("all_ready=" .. tostring(all_ready))
+end
+
+--@api-stub: lurek.network.getRoom
+do
+    lurek.network.setReady("session_room", 1, true)
+    lurek.network.setReady("session_room", 2, false)
+    local room = lurek.network.getRoom("session_room")
+    print("room_name=" .. room.name)
+    print("room_host=" .. room.host_peer)
+    print("room_players=" .. room.player_count)
+end
+
+--@api-stub: lurek.network.getPlayerList
+do
+    lurek.network.setReady("match_room", 1, true)
+    lurek.network.setReady("match_room", 3, true)
+    lurek.network.setReady("match_room", 2, false)
+    local players = lurek.network.getPlayerList("match_room")
+    print("player_list_count=" .. #players)
+    for i, pid in ipairs(players) do
+        print("player_" .. i .. "=" .. pid)
+    end
+end
+
+--@api-stub: lurek.network.newRpc
+do
+    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
+    local rpc = lurek.network.newRpc(host, 0, 30.0)
+
+    rpc:register("ping", function(peer_id)
+        return "pong"
+    end)
+
+    local responses = rpc:poll()
+    print("rpc_responses=" .. #responses)
+end
+
+--@api-stub: lurek.network.newNetState
+do
+    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
+    local state = lurek.network.newNetState(host, { authority = true })
+
+    state:set("player_x", 100)
+    state:set("player_y", 50)
+
+    local x = state:get("player_x")
+    print("player_x=" .. x)
+
+    state:onChange("player_x", function(value, old_value, peer_id)
+        print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+    end)
+
+    local all_state = state:getAll()
+    print("state_keys=" .. #all_state)
+
+    state:poll()
+
+    host:destroy()
+end

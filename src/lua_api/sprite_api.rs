@@ -3,12 +3,14 @@
 use super::SharedState;
 use crate::image::{NineSliceInsets, TextureAtlas};
 use crate::math::{Rect, Vec2};
+use crate::sprite::animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
 use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
 use crate::sprite::sprite::Sprite;
 use crate::sprite::sprite_sheet::SpriteSheet;
 use mlua::prelude::*;
 use std::borrow::Borrow;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 /// Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
@@ -464,6 +466,165 @@ impl LuaUserData for LuaAtlasPacker {
     }
 }
 
+/// Lua-visible wrapper around Rust-side clip animation playback state.
+pub struct LuaSpriteAnimator {
+    inner: SpriteAnimator,
+    on_frame: Option<LuaRegistryKey>,
+    on_loop: Option<LuaRegistryKey>,
+    on_end: Option<LuaRegistryKey>,
+}
+
+impl LuaUserData for LuaSpriteAnimator {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- play --
+        /// Play or restart a named clip.
+        /// @param | name | string | Clip name.
+        /// @param | restart | boolean? | Whether to restart when already playing this clip. Defaults to true.
+        methods.add_method_mut("play", |_, this, (name, restart): (String, Option<bool>)| {
+            this.inner.play(&name, restart.unwrap_or(true));
+            Ok(())
+        });
+
+        // -- pause --
+        /// Pause playback without resetting frame state.
+        methods.add_method_mut("pause", |_, this, ()| {
+            this.inner.pause();
+            Ok(())
+        });
+
+        // -- resume --
+        /// Resume playback from current frame when a clip is selected.
+        methods.add_method_mut("resume", |_, this, ()| {
+            this.inner.resume();
+            Ok(())
+        });
+
+        // -- stop --
+        /// Stop playback and reset to the first frame of the current clip.
+        methods.add_method_mut("stop", |_, this, ()| {
+            this.inner.stop();
+            Ok(())
+        });
+
+        // -- isPlaying --
+        /// Return whether the animator is currently playing.
+        /// @return | boolean | True when playing.
+        methods.add_method("isPlaying", |_, this, ()| Ok(this.inner.is_playing()));
+
+        // -- currentClip --
+        /// Return the currently selected clip name.
+        /// @return | string | Active clip name, or nil if none.
+        methods.add_method("currentClip", |_, this, ()| {
+            Ok(this.inner.current_clip().map(|name| name.to_string()))
+        });
+
+        // -- currentFrame --
+        /// Return current draw frame as sprite-sheet row and column.
+        /// @return | integer | Sprite-sheet row.
+        /// @return | integer | Sprite-sheet column (frame index).
+        methods.add_method("currentFrame", |_, this, ()| Ok(this.inner.current_frame()));
+
+        // -- update --
+        /// Advance playback by delta time and dispatch callback events.
+        /// @param | dt | number | Delta time in seconds.
+        methods.add_method_mut("update", |lua, this, dt: f32| {
+            let frame_cb = match this.on_frame.as_ref() {
+                Some(key) => Some(lua.registry_value::<LuaFunction>(key)?),
+                None => None,
+            };
+            let loop_cb = match this.on_loop.as_ref() {
+                Some(key) => Some(lua.registry_value::<LuaFunction>(key)?),
+                None => None,
+            };
+            let end_cb = match this.on_end.as_ref() {
+                Some(key) => Some(lua.registry_value::<LuaFunction>(key)?),
+                None => None,
+            };
+
+            let events = this.inner.update(dt);
+            for event in events {
+                match event {
+                    AnimatorEvent::Frame { row, col, clip } => {
+                        if let Some(cb) = frame_cb.as_ref() {
+                            cb.call::<_, ()>((row, col, clip))?;
+                        }
+                    }
+                    AnimatorEvent::Loop { clip } => {
+                        if let Some(cb) = loop_cb.as_ref() {
+                            cb.call::<_, ()>(clip)?;
+                        }
+                    }
+                    AnimatorEvent::End { clip } => {
+                        if let Some(cb) = end_cb.as_ref() {
+                            cb.call::<_, ()>(clip)?;
+                        }
+                    }
+                }
+            }
+            Ok(())
+        });
+
+        // -- onFrame --
+        /// Set callback fired on each frame advance.
+        /// @param | fn | function | Callback signature `(row, col, clip_name)`.
+        methods.add_method_mut("onFrame", |lua, this, callback: LuaFunction| {
+            this.on_frame = Some(lua.create_registry_value(callback)?);
+            Ok(())
+        });
+
+        // -- onLoop --
+        /// Set callback fired when a looping clip wraps.
+        /// @param | fn | function | Callback signature `(clip_name)`.
+        methods.add_method_mut("onLoop", |lua, this, callback: LuaFunction| {
+            this.on_loop = Some(lua.create_registry_value(callback)?);
+            Ok(())
+        });
+
+        // -- onEnd --
+        /// Set callback fired when a non-looping clip reaches its end.
+        /// @param | fn | function | Callback signature `(clip_name)`.
+        methods.add_method_mut("onEnd", |lua, this, callback: LuaFunction| {
+            this.on_end = Some(lua.create_registry_value(callback)?);
+            Ok(())
+        });
+
+        // -- addClip --
+        /// Add or replace a named clip definition.
+        /// @param | name | string | Clip name.
+        /// @param | def | table | Clip definition table with `row`, `from`, `to`, `fps`, and optional `loop`.
+        methods.add_method_mut("addClip", |_, this, (name, def): (String, LuaTable)| {
+            let clip = clip_from_lua(def)?;
+            this.inner.add_clip(name, clip);
+            Ok(())
+        });
+
+        // -- frameDuration --
+        /// Return frame duration for the current clip.
+        /// @return | number | Seconds per frame.
+        methods.add_method("frameDuration", |_, this, ()| {
+            Ok(this.inner.frame_duration())
+        });
+
+        // -- clipDuration --
+        /// Return full one-pass duration for the current clip.
+        /// @return | number | Total clip duration in seconds.
+        methods.add_method("clipDuration", |_, this, ()| Ok(this.inner.clip_duration()));
+
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return | string | Always `"LSpriteAnimator"`.
+        methods.add_method("type", |_, _, ()| Ok("LSpriteAnimator"));
+
+        // -- typeOf --
+        /// Checks whether this object matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True if the object is the given type.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LSpriteAnimator" || name == "LObject")
+        });
+    }
+}
+
 /// Registers the `lurek.sprite` module, exposing sprite sheet and texture atlas constructors.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -479,6 +640,30 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|lua, (texture_id, x, y): (usize, f32, f32)| {
             lua.create_userdata(LuaSprite {
                 inner: Sprite::new(texture_id, Vec2::new(x, y)),
+            })
+        })?,
+    )?;
+
+    // -- newAnimator --
+    /// Creates a stateful sprite clip animator from an optional clip definition table.
+    /// @param | clips | table? | Map `{ clip_name = { row, from, to, fps, loop? } }`.
+    /// @return | LSpriteAnimator | A new clip animator object.
+    tbl.set(
+        "newAnimator",
+        lua.create_function(|lua, clips: Option<LuaTable>| {
+            let mut parsed = HashMap::new();
+            if let Some(clips_table) = clips {
+                for pair in clips_table.pairs::<String, LuaTable>() {
+                    let (name, def) = pair?;
+                    parsed.insert(name, clip_from_lua(def)?);
+                }
+            }
+
+            lua.create_userdata(LuaSpriteAnimator {
+                inner: SpriteAnimator::new(parsed),
+                on_frame: None,
+                on_loop: None,
+                on_end: None,
             })
         })?,
     )?;
@@ -604,4 +789,21 @@ where
         t.set(i + 1, quad_table(lua, *r.borrow())?)?;
     }
     Ok(t)
+}
+
+/// Convert one Lua clip-definition table into a normalized Rust clip.
+fn clip_from_lua(def: LuaTable) -> LuaResult<SpriteClip> {
+    let row = def.get::<_, Option<u32>>("row")?.unwrap_or(1);
+    let from = def.get::<_, Option<u32>>("from")?.unwrap_or(1);
+    let to = def.get::<_, Option<u32>>("to")?.unwrap_or(from);
+    let fps = def.get::<_, Option<f32>>("fps")?.unwrap_or(8.0);
+    let looping = def.get::<_, Option<bool>>("loop")?.unwrap_or(true);
+    Ok(SpriteClip {
+        row,
+        from,
+        to,
+        fps,
+        looping,
+    }
+    .normalized())
 }

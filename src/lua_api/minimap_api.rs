@@ -55,7 +55,7 @@ fn parse_lua_image_icon(
 /// Lua-side wrapper for a minimap instance and access to render command state.
 pub struct LuaMinimap {
     /// Wrapped minimap model exposed by the lurek engine.
-    inner: Minimap,
+    pub(crate) inner: Minimap,
     /// Shared runtime state used to enqueue render commands.
     state: Rc<RefCell<SharedState>>,
 }

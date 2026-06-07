@@ -64,6 +64,8 @@ image = { version = "0.24", default-features = false, features = ["png"] }
 fontdue = "0.9"
 # DDS compressed texture format parsing
 ddsfile = "0.5"
+# SVG parsing for vector graphics support
+usvg = { version = "0.36", default-features = false }
 
 # Audio playback — OGG Vorbis + WAV only. FLAC (claxon) and MP3 (minimp3) decoders removed.
 # To re-enable: add "flac" or "mp3" back to features array.

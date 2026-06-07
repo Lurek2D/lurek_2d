@@ -3019,7 +3019,19 @@ RenderCommand::SetColor(r, g, b, a) => {
                     let (tw, th) = self.target_dimensions(current_target, canvases);
                     let scissor = normalize_scissor(current_scissor, tw, th);
                     for slot in slots {
-                        if self.gpu_textures.contains_key(slot.texture_key) {
+                        let tex_ref = if let Some(canvas_key) = slot.canvas_key {
+                            if canvases.contains_key(canvas_key) {
+                                Some(TexRef::Canvas(canvas_key))
+                            } else {
+                                None
+                            }
+                        } else if self.gpu_textures.contains_key(slot.texture_key) {
+                            Some(TexRef::Texture(slot.texture_key))
+                        } else {
+                            None
+                        };
+
+                        if let Some(resolved_tex) = tex_ref {
                             let mut tv: Vec<TexVertex> = Vec::with_capacity(4);
                             let mut ti: Vec<u32> = Vec::with_capacity(6);
                             push_tex_quad_corners(
@@ -3036,7 +3048,7 @@ RenderCommand::SetColor(r, g, b, a) => {
                                 &mut all_tex_verts,
                                 &mut all_tex_idxs,
                                 current_target,
-                                TexRef::Texture(slot.texture_key),
+                                resolved_tex,
                                 slot.blend_mode,
                                 scissor,
                                 color_mask_bits,

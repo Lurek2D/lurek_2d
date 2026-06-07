@@ -68,12 +68,16 @@
 - [lurek.camera](#lurekcamera)
   - [LCamera](#lcamera)
   - [LCameraRig](#lcamerarig)
+  - [LCameraWalker](#lcamerawalker)
 - [lurek.charts](#lurekcharts)
   - [LAreaChart](#lareachart)
   - [LBarChart](#lbarchart)
   - [LLineChart](#llinechart)
   - [LPieChart](#lpiechart)
   - [LScatterPlot](#lscatterplot)
+- [lurek.cinematic](#lurekcinematic)
+  - [LCinematic](#lcinematic)
+  - [LCinematicTimeline](#lcinematictimeline)
 - [lurek.color](#lurekcolor)
 - [lurek.compute](#lurekcompute)
   - [LArray](#larray)
@@ -93,6 +97,7 @@
   - [LFileWatcher](#lfilewatcher)
   - [LReplConsole](#lreplconsole)
 - [lurek.dialog](#lurekdialog)
+  - [LDialogSequencer](#ldialogsequencer)
   - [LDialogueAI](#ldialogueai)
   - [LDialogueState](#ldialoguestate)
   - [LSpeakerRegistry](#lspeakerregistry)
@@ -294,6 +299,7 @@
   - [LSaveManager](#lsavemanager)
 - [lurek.scene](#lurekscene)
   - [LDepthSorter](#ldepthsorter)
+  - [LSceneObjectContainer](#lsceneobjectcontainer)
 - [lurek.serialize](#lurekserialize)
 - [lurek.spine](#lurekspine)
   - [LSkeleton](#lskeleton)
@@ -301,8 +307,11 @@
 - [lurek.sprite](#lureksprite)
   - [LAtlasPacker](#latlaspacker)
   - [LSprite](#lsprite)
+  - [LSpriteAnimator](#lspriteanimator)
   - [LSpriteAtlas](#lspriteatlas)
   - [LSpriteSheet](#lspritesheet)
+- [lurek.svg](#lureksvg)
+  - [LSvgImage](#lsvgimage)
 - [lurek.system](#lureksystem)
 - [lurek.terminal](#lurekterminal)
   - [LTerminal](#lterminal)
@@ -1121,6 +1130,7 @@ lurek.audio.getVelocity(source: LSource|integer) -> number, number, number -- Re
 lurek.audio.getVolume(source: LSource|integer) -> number -- Returns the current volume of a source.
 lurek.audio.hasMidiSoundFont() -> boolean -- Returns whether a SoundFont file has been loaded for MIDI synthesis.
 lurek.audio.isLooping(source: LSource|integer) -> boolean -- Returns whether a source has looping enabled.
+lurek.audio.isMuted() -> boolean -- Returns whether global audio is currently muted.
 lurek.audio.isPaused(source: LSource|integer) -> boolean -- Returns whether a source is currently paused.
 lurek.audio.isPlaying(source: LSource|integer) -> boolean -- Returns whether a source is currently playing.
 lurek.audio.isStopped(source: LSource|integer) -> boolean -- Returns whether a source is currently stopped.
@@ -1135,13 +1145,16 @@ lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channel
 lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 lurek.audio.newSource(path: string, [sourceType]: string) -> LSource -- Creates a new audio source from a file path, either fully loaded or streaming.
 lurek.audio.pause(source: LSource|integer) -- Pauses playback of a source at its current position.
+lurek.audio.manager.pauseAll(path: string, [opts]: table) -- Plays a music track, routing through a named group with optional fade-in.
 lurek.audio.pauseAll() -- Pauses all currently playing audio sources.
 lurek.audio.play(source: LSource|integer, [options]: table) -> integer -- Starts playback of a source by handle, optionally routing through a named bus.
 lurek.audio.playLooping(source: LSource|integer) -- Starts playback of a source with looping enabled in one call.
 lurek.audio.playQueueable(qsource_id: integer) -- Starts playback of a queueable audio source.
+lurek.audio.playSfx(path: string, [opts]: table) -> LSource -- Plays a one-shot sound effect from a file path with optional settings.
 lurek.audio.queueSource(qsource_id: integer, sd: LSoundData) -- Queues a decoded audio chunk for playback on a queueable source.
 lurek.audio.release(source: LSource|integer) -> boolean -- Releases an audio source, freeing its memory and stopping playback.
 lurek.audio.resume(source: LSource|integer) -- Resumes playback of a paused source.
+lurek.audio.manager.resumeAll() -- Resumes all paused audio sources.
 lurek.audio.resumeAll() -- Resumes all paused audio sources. This function is exposed to Lua scripts.
 lurek.audio.saveWAV(sd_ud: LSoundData, filename: string) -- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 lurek.audio.seek(source: LSource|integer, pos: number) -- Seeks a source to a specific position in seconds.
@@ -1157,6 +1170,7 @@ lurek.audio.setLowpass(source: LSource|integer, cutoff_hz: integer) -- Applies a
 lurek.audio.setMasterVolume(vol: number) -- Sets the global master volume affecting all audio output.
 lurek.audio.setMeter(level: number) -- Sets the master peak level for metering purposes.
 lurek.audio.setMidiSoundFont(path: string) -- Sets the SoundFont file used for MIDI synthesis.
+lurek.audio.setMuted(muted: boolean) -- Globally mutes all audio (pauses all sources without stopping them).
 lurek.audio.setOrientation(source: LSource|integer, fx: number, fy: number, fz: number, ux: number, uy: number, uz: number) -- Sets the orientation of a source using forward and up vectors.
 lurek.audio.setPan(source: LSource|integer, pan: number) -- Sets the stereo panning of a source.
 lurek.audio.setPitch(source: LSource|integer, pitch: number) -- Sets the pitch multiplier of a source, affecting playback speed and tone.
@@ -1169,6 +1183,7 @@ lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: numb
 lurek.audio.setVolume(source: LSource|integer, vol: number) -- Sets the volume of a source by handle.
 lurek.audio.stop(source: LSource|integer) -- Stops playback of a source and resets its position to the beginning.
 lurek.audio.stopAll() -- Stops all audio sources and resets their positions.
+lurek.audio.stopMusic([fade_duration]: number) -- Stops all music sources with optional fade-out.
 lurek.audio.stopQueueable(qsource_id: integer) -- Stops playback of a queueable audio source.
 lurek.audio.tell(source: LSource|integer) -> number -- Returns the current playback position of a source in seconds.
 ```
@@ -1511,6 +1526,7 @@ LRingBuffer:typeOf(name: string) -> boolean -- Returns whether this ring buffer 
 lurek.camera.new([vw]: number, [vh]: number) -> LCamera -- Creates a 2D camera with optional virtual viewport size.
 lurek.camera.newCamera([vw]: number, [vh]: number) -> LCamera -- Creates a 2D camera with optional virtual viewport size.
 lurek.camera.newRig() -> LCameraRig -- Creates an empty named camera rig. This function is exposed to Lua scripts.
+lurek.camera.newWalker(map: LTileMap, [opts]: table) -> LCameraWalker -- Creates a tile-grid walker with smooth camera following.
 ```
 
 ### LCamera
@@ -1608,6 +1624,23 @@ LCameraRig:typeOf(name: string) -> boolean -- Returns whether this camera rig ha
 LCameraRig:updateAll(dt: number) -- Advances every camera in this rig. This method is available to Lua scripts.
 ```
 
+### LCameraWalker
+
+```lua
+LCameraWalker:getCamera() -> LCamera -- Returns the associated camera.
+LCameraWalker:getPosition() -> number, number -- Returns the walker world-space center position.
+LCameraWalker:getTilePosition() -> integer, integer -- Returns current walker tile coordinates (1-based).
+LCameraWalker:moveDown([dt]: number) -- Moves the walker down (positive Y) with collision checking.
+LCameraWalker:moveLeft([dt]: number) -- Moves the walker left (negative X) with collision checking.
+LCameraWalker:moveRight([dt]: number) -- Moves the walker right (positive X) with collision checking.
+LCameraWalker:moveUp([dt]: number) -- Moves the walker up (negative Y) with collision checking.
+LCameraWalker:setPosition(x: number, y: number) -- Sets the walker world-space center position.
+LCameraWalker:setTilePosition(tx: integer, ty: integer) -- Places walker using 1-based tile coordinates.
+LCameraWalker:type() -> string -- Returns the type name of this userdata.
+LCameraWalker:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+LCameraWalker:update([dt]: number) -- Updates camera state and advances smooth interpolation.
+```
+
 ## lurek.charts
 
 [Module page](Module-charts)
@@ -1677,6 +1710,48 @@ LScatterPlot:getWidth() -> number -- Get the chart output width in pixels.
 LScatterPlot:render() -> number -- Renders the chart contents into a new pixel buffer.
 LScatterPlot:setDotRadius(r: number) -- Set the radius of the dot drawn for each data point.
 LScatterPlot:setTitle(title: string) -- Set or update the chart's displayed title.
+```
+
+## lurek.cinematic
+
+[Module page](Module-cinematic)
+
+```lua
+lurek.cinematic.new() -> LCinematic -- Creates a new empty cinematic timeline handle (legacy cut-based API).
+lurek.cinematic.newTimeline() -> LCinematicTimeline -- Creates a new multi-track timeline for modern cinematic support.
+```
+
+### LCinematic
+
+```lua
+LCinematic:addCut(time: number, description: string) -- Appends a timed cut to the cinematic timeline.
+LCinematic:clear() -- Removes all cuts from the timeline.
+LCinematic:cutCount() -> integer -- Returns the number of cuts in the timeline.
+LCinematic:play() -- Plays back the timeline by firing all cuts in order.
+LCinematic:type() -> string -- Returns the Lua-visible type name.
+LCinematic:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+```
+
+### LCinematicTimeline
+
+```lua
+LCinematicTimeline:addClip(track_name: string, at: number, duration: number, clip_table: table) -- Adds a clip to a named track (creates track if missing).
+LCinematicTimeline:addLabel(name: string, time: number) -- Registers a named time position for branching.
+LCinematicTimeline:addTrack(name: string) -- Adds a new track to the timeline.
+LCinematicTimeline:branch(label: string) -> boolean -- Jumps to a named label position.
+LCinematicTimeline:getDuration() -> number -- Returns the total duration of the timeline.
+LCinematicTimeline:getState() -> string -- Returns the playback state as a string.
+LCinematicTimeline:getTime() -> number -- Returns the current playback time.
+LCinematicTimeline:isComplete() -> boolean -- Checks if playback has reached the end.
+LCinematicTimeline:isPlaying() -> boolean -- Checks if the timeline is currently playing.
+LCinematicTimeline:pause() -- Pauses playback without resetting time.
+LCinematicTimeline:play() -- Starts playback from the current time.
+LCinematicTimeline:seek(time: number) -- Jumps to a specific time.
+LCinematicTimeline:skipToEnd() -- Instantly jumps to the end of the timeline.
+LCinematicTimeline:stop() -- Stops playback and resets to time 0.
+LCinematicTimeline:type() -> string -- Returns the Lua-visible type name.
+LCinematicTimeline:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+LCinematicTimeline:update(dt: number) -- Advances time by dt (only if playing).
 ```
 
 ## lurek.color
@@ -2168,9 +2243,39 @@ LReplConsole:typeOf(name: string) -> boolean -- Returns whether this REPL consol
 [Module page](Module-dialog)
 
 ```lua
+lurek.dialog.call(fn_name: string, [opts]: table) -> table -- Creates a Call node (invokes a Lua function by name).
+lurek.dialog.choice(prompt: string, options: table, [opts]: table) -> table -- Creates a Choice node with selectable options.
+lurek.dialog.event(name: string, [data]: string, [opts]: table) -> table -- Creates an Event node (fires a named callback).
+lurek.dialog.jump(target: string, [opts]: table) -> table -- Creates a Jump node (branches to a labeled position).
 lurek.dialog.newAI() -> LDialogueAI -- Creates an empty dialogue selector for weighted topics and branches.
+lurek.dialog.newSequencer() -> LDialogSequencer -- Creates an empty dialog sequencer for typewriter-style playback.
 lurek.dialog.newSpeakerRegistry() -> LSpeakerRegistry -- Creates an empty speaker registry for dialog participants.
 lurek.dialog.newState() -> LDialogueState -- Creates an empty dialogue state for tracking conversation progress.
+lurek.dialog.say(actor: string, text: string, [opts]: table) -> table -- Creates a Say node for character dialog.
+lurek.dialog.wait(seconds: number, [opts]: table) -> table -- Creates a Wait node (delay before continuing).
+```
+
+### LDialogSequencer
+
+```lua
+LDialogSequencer:advance() -- Skips to the next node (or instantly reveals current line if typing).
+LDialogSequencer:choose(index: integer) -- Selects a choice option when waiting for choice input.
+LDialogSequencer:currentSpeaker() -> string -- Returns the actor name for the current line, or nil.
+LDialogSequencer:currentText() -> string -- Returns the full text of the current line.
+LDialogSequencer:getChoiceLabels() -> table -- Returns an array of choice option labels.
+LDialogSequencer:getChoiceText() -> string -- Returns the choice prompt text, or nil if not in a choice node.
+LDialogSequencer:getSpeed() -> number -- Gets the current typewriter speed in characters per second.
+LDialogSequencer:getState() -> string -- Returns the current playback state as a string.
+LDialogSequencer:isActive() -> boolean -- Checks if the sequencer is currently playing.
+LDialogSequencer:isWaitingForChoice() -> boolean -- Checks if the sequencer is waiting for a choice selection.
+LDialogSequencer:load(nodes: table) -- Loads a sequence of dialog nodes for playback.
+LDialogSequencer:revealedText() -> string -- Returns only the typewriter-revealed portion of the current line.
+LDialogSequencer:setSpeed(cps: number) -- Sets the typewriter reveal speed in characters per second.
+LDialogSequencer:skip() -- Instantly reveals the full current line without typewriter effect.
+LDialogSequencer:start() -- Starts playback from the beginning of the loaded sequence.
+LDialogSequencer:type() -> string -- Returns the Lua-visible type name.
+LDialogSequencer:typeOf(name: string) -> boolean -- Returns whether this handle matches a supported type name.
+LDialogSequencer:update(dt: number) -- Advances the sequencer by dt seconds, updating typewriter reveal.
 ```
 
 ### LDialogueAI
@@ -4507,13 +4612,18 @@ LModManager:validateDependencies() -> string[] -- Returns dependency validation 
 lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table -- Broadcasts lobby information and returns it as a table.
 lurek.network.createRoom(name: string, host: string, [max_players]: integer) -> table -- Creates a local room record. This function is exposed to Lua scripts.
 lurek.network.discoverLobbies([timeout_ms]: integer) -> table -- Discovers broadcast lobbies. This function is exposed to Lua scripts.
+lurek.network.getPlayerList(room_name: string) -> table -- Returns list of peer IDs currently in a room.
+lurek.network.getRoom(room_name: string) -> table -- Returns room metadata including host peer and player count.
+lurek.network.isAllReady(room_name: string) -> boolean -- Checks if all players in a room are ready. Requires at least 2 players.
 lurek.network.joinRoom(id: string) -> table -- Joins a room by id when available. This function is exposed to Lua scripts.
 lurek.network.leaveRoom(id: string) -> table -- Leaves a room by id when available. This function is exposed to Lua scripts.
 lurek.network.listRooms() -> table -- Lists known local room records. This function is exposed to Lua scripts.
 lurek.network.makePunchProbe(peer_id: string) -> string -- Creates a relay punch probe payload for a peer id.
 lurek.network.newClient(opts: table) -> LNetworkHost -- Creates a client host and connects to an address.
 lurek.network.newHost(opts: table) -> LNetworkHost -- Creates a network host from an options table.
+lurek.network.newNetState([host]: LNetworkHost, [opts]: table) -> LNetworkState -- Creates a network state synchronization manager.
 lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string -- Creates an encoded relay ticket. This function is exposed to Lua scripts.
+lurek.network.newRpc(host: LNetworkHost, [channel]: integer, [timeout_ms]: number) -> LNetworkRpc -- Creates a network RPC manager attached to a host.
 lurek.network.newRuntime() -> LNetworkRuntime -- Creates a background network runtime.
 lurek.network.newServer(opts: table) -> LNetworkHost -- Creates a server host from an options table.
 lurek.network.pack(value: any) -> string -- Packs a supported Lua value into a binary network message string.
@@ -4523,6 +4633,7 @@ lurek.network.parseRelayTicket(token: string) -> table -- Parses an encoded rela
 lurek.network.predictLinear(snapshot: table, dt: number) -> table -- Predicts an entity snapshot forward by linear velocity.
 lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table -- Reconciles a predicted snapshot toward an authoritative snapshot.
 lurek.network.reconcileWithPolicy(pred: table, auth: table, alpha: number, soft_threshold: number, hard_threshold: number) -> table -- Reconciles a predicted snapshot toward an authoritative snapshot using a distance-based policy.
+lurek.network.setReady(room_name: string, peer_id: integer, ready: boolean) -- Marks a player as ready or not ready in a room.
 lurek.network.sseCollect(url: string, n: integer, [timeout_secs]: number) -> table -- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
 lurek.network.sseConnect(url: string, callback: function) -> LSseStream -- Opens an SSE stream to `url` and returns an `LSseStream` handle.
 lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean) -- Broadcasts a packed entity sync payload through a network host.
@@ -6040,7 +6151,7 @@ lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, [x]: number, [y]:
 lurek.render.drawBatch(batch: LSpriteBatch) -- Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
 lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, [bevelW]: number, [style]: string, [opts]: table) -- Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 lurek.render.drawColoredPolygon(vertices: table, colors: table, [mode]: string) -- Draws a polygon with per-vertex colors.
-lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segs]: number) -- Draws a cubic Bezier curve through start, two control points, and end.
+lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segments]: number) -- Draws a cubic Bezier curve through start, two control points, and end.
 lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, [dir]: string) -- Draws a rectangle with a two-color gradient fill.
 lurek.render.drawHexTile(cx: number, cy: number, size: number, [orientation]: string, [mode]: string) -- Draws a regular hexagonal tile at the given center position.
 lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, [opts]: table) -- Draws an isometric cube tile with configurable face colors and optional textures.
@@ -6049,7 +6160,6 @@ lurek.render.drawNineSlice(slice: LNineSlice, x: number, y: number, w: number, h
 lurek.render.drawPath(path: table, [mode]: string, [close]: boolean) -- Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
 lurek.render.drawq(image: LImage, quad: LQuad, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -- Draws a sub-region of an image defined by a Quad, with optional transform.
 lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segments]: number) -- Draws a quadratic Bezier curve through start, control, and end points.
-lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segs]: integer) -- Draws a quadratic Bezier curve through start, control, and end points.
 lurek.render.ellipse(mode: string, x: number, y: number, rx: number, ry: number) -- Draws a filled or outlined ellipse at the given position.
 lurek.render.flushSortGroup(id: integer) -- Ends a sort group and emits all accumulated draw calls in sorted order.
 lurek.render.getBackgroundColor() -> number, number, number, number -- Returns the current background clear color.
@@ -6086,8 +6196,8 @@ lurek.render.isBold() -> boolean -- Returns true if the current default font sel
 lurek.render.isLayerVisible(name: string) -> boolean -- Returns whether a named rendering layer is currently visible.
 lurek.render.isWireframe() -> boolean -- Returns whether wireframe rendering is currently active.
 lurek.render.line(...: number) -- Draws a line between two points, or a polyline through multiple points.
-lurek.render.loadModel(path: string) -> LuaObjModel -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
-lurek.render.loadObj(path: string) -> LuaObjModel -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
+lurek.render.loadModel(path: string) -> LObjModel -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
+lurek.render.loadObj(path: string) -> LObjModel -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 lurek.render.newCanvas(width: integer, height: integer) -> LCanvas -- Creates a new off-screen render target with the given dimensions.
 lurek.render.newDepthSorter() -> LDepthSorter -- Registers the depth-sorted drawing helper constructor in the render module.
 lurek.render.newDrawLayer() -> LDrawLayer -- Creates a new z-ordered draw layer for sorting draw callbacks by depth.
@@ -6393,6 +6503,7 @@ lurek.scene.isTransitioning() -> boolean -- Returns true if a scene transition a
 lurek.scene.isUpdateEnabled([target]: any) -> boolean -- Returns whether `update` is enabled for a selected scene.
 lurek.scene.new([def]: table) -> table -- Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits m...
 lurek.scene.newDepthSorter() -> LDepthSorter -- Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (paint...
+lurek.scene.newObjectContainer() -> LSceneObjectContainer -- Create a new scene object container for managing object lifecycle and draw ordering.
 lurek.scene.newScene([def]: table) -> table -- Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving...
 lurek.scene.pop([transition]: string, [duration]: number, [easing]: string) -- Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the...
 lurek.scene.popTo(name: string) -> boolean -- Pop scenes off the stack until the named registered scene is on top. Every popped scene receives `leave()`...
@@ -6435,6 +6546,22 @@ LDepthSorter:setStable(stable: boolean) -- Enable or disable stable sorting. Whe
 LDepthSorter:sort() -- Sort all registered entries by depth without executing any callbacks. Call this only if you need to inspect...
 LDepthSorter:type() -> string -- Returns the type name string `"LDepthSorter"`.
 LDepthSorter:typeOf(name: string) -> boolean -- Check whether this object matches a given type name. Accepts `"LDepthSorter"` or `"Object"`.
+```
+
+### LSceneObjectContainer
+
+```lua
+LSceneObjectContainer:add(obj: any) -- Add an object to the container.
+LSceneObjectContainer:clear() -- Remove all objects from the container.
+LSceneObjectContainer:draw() -- Call draw() on all objects that have a draw method, sorted by layer.
+LSceneObjectContainer:getByLayer(n: any) -- Get all objects whose layer equals `n`.
+LSceneObjectContainer:getCount() -- Get the number of objects currently in the container.
+LSceneObjectContainer:getObjects() -- Get all objects as an array (layer-sorted).
+LSceneObjectContainer:has(obj: any) -- Check whether an object is present in the container.
+LSceneObjectContainer:remove(obj: any) -- Remove an object from the container (identity comparison).
+LSceneObjectContainer:type() -- Get the type name of this userdata.
+LSceneObjectContainer:typeOf(name: any) -- Check type by name.
+LSceneObjectContainer:update(dt: any) -- Call update(dt) on all objects that have an update method.
 ```
 
 ## lurek.serialize
@@ -6519,6 +6646,7 @@ LSkeletonAnimation:typeOf(name: string) -> boolean -- Checks whether this object
 [Module page](Module-sprite)
 
 ```lua
+lurek.sprite.newAnimator([clips]: table) -> LSpriteAnimator -- Creates a stateful sprite clip animator from an optional clip definition table.
 lurek.sprite.newAtlasPacker(width: integer, height: integer, padding: integer) -> LAtlasPacker -- Creates a runtime atlas packer for dynamically allocating named sprite regions.
 lurek.sprite.newAtlasSheet(atlas: LSpriteAtlas, sw: integer, sh: integer) -> LSpriteSheet -- Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet...
 lurek.sprite.newRPGMakerSheet(tw: integer, th: integer) -> LSpriteSheet -- Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
@@ -6556,6 +6684,27 @@ LSprite:type() -> string -- Returns the type name of this object.
 LSprite:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
+### LSpriteAnimator
+
+```lua
+LSpriteAnimator:addClip(name: string, def: table) -- Add or replace a named clip definition.
+LSpriteAnimator:clipDuration() -> number -- Return full one-pass duration for the current clip.
+LSpriteAnimator:currentClip() -> string -- Return the currently selected clip name.
+LSpriteAnimator:currentFrame() -> integer -- Return current draw frame as sprite-sheet row and column.
+LSpriteAnimator:frameDuration() -> number -- Return frame duration for the current clip.
+LSpriteAnimator:isPlaying() -> boolean -- Return whether the animator is currently playing.
+LSpriteAnimator:onEnd(fn: function) -- Set callback fired when a non-looping clip reaches its end.
+LSpriteAnimator:onFrame(fn: function) -- Set callback fired on each frame advance.
+LSpriteAnimator:onLoop(fn: function) -- Set callback fired when a looping clip wraps.
+LSpriteAnimator:pause() -- Pause playback without resetting frame state.
+LSpriteAnimator:play(name: string, [restart]: boolean) -- Play or restart a named clip.
+LSpriteAnimator:resume() -- Resume playback from current frame when a clip is selected.
+LSpriteAnimator:stop() -- Stop playback and reset to the first frame of the current clip.
+LSpriteAnimator:type() -> string -- Returns the type name of this object.
+LSpriteAnimator:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+LSpriteAnimator:update(dt: number) -- Advance playback by delta time and dispatch callback events.
+```
+
 ### LSpriteAtlas
 
 ```lua
@@ -6583,6 +6732,43 @@ LSpriteSheet:getRow(row: integer) -> table -- Returns all frame quads in the giv
 LSpriteSheet:nameGroup(name: string, start: integer, count: integer) -- Defines a named animation group as a contiguous range of frames.
 LSpriteSheet:type() -> string -- Returns the type name of this object.
 LSpriteSheet:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+```
+
+## lurek.svg
+
+[Module page](Module-svg)
+
+```lua
+lurek.svg.load(path: any)
+```
+
+### LSvgImage
+
+```lua
+LSvgImage:cacheToCanvas(id: any, w: any, h: any) -- Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
+LSvgImage:draw(x: any, y: any, [rotation]: any, [sx]: any, [sy]: any, [ox]: any, [oy]: any) -- Renders the SVG document at the given position and transform overrides.
+LSvgImage:getAdjacencies(prefix: any, [epsilon]: any) -- Detects neighboring provinces using point-to-point proximity.
+LSvgImage:getCanvas(id: any) -- Alias for getCanvasKey.
+LSvgImage:getCanvasKey(id: any) -- Returns the LCanvas handle for a previously cached element/group.
+LSvgImage:getDimensions() -- Returns both the document width and height as two values: `width, height`.
+LSvgImage:getElementBounds(id: any) -- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
+LSvgImage:getElementChildren(id: any) -- Returns a sequential table of direct child element IDs for the given group element.
+LSvgImage:getElementColor(id: any) -- Returns the current RGBA color override `{r, g, b, a}` table for the element.
+LSvgImage:getElementCount() -- Returns the total number of parsed elements (paths and groups) in this SVG document.
+LSvgImage:getElementIds() -- Returns a list of all parsed element and group IDs.
+LSvgImage:getElementParent(id: any) -- Returns the parent element ID string, or `nil` when the element is the root or not found.
+LSvgImage:getElementPoints(id: any, [step_size]: any) -- Flattens the element path into a polygon array of LVec2 userdata.
+LSvgImage:getElementTransform(id: any) -- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
+LSvgImage:getElementVisible(id: any) -- Returns the current visibility flag for the element.
+LSvgImage:getHeight() -- Returns the document height in points/pixels.
+LSvgImage:getWidth() -- Returns the document width in points/pixels.
+LSvgImage:resetElementColor(id: any) -- Clears the color override on the element, restoring original SVG path colors.
+LSvgImage:resetElementTransform(id: any) -- Resets the runtime translation, rotation, and scale of the element to identity.
+LSvgImage:setElementColor(id: any, r: any, g: any, b: any, a: any) -- Overrides the fill/stroke color of a specific element/group by ID.
+LSvgImage:setElementTransform(id: any, tx: any, ty: any, rotation: any, sx: any, sy: any) -- Dynamically transforms a specific element/group by ID.
+LSvgImage:setElementVisible(id: any, visible: any) -- Toggles the visibility of a specific element/group by ID.
+LSvgImage:type()
+LSvgImage:typeOf(name: any)
 ```
 
 ## lurek.system
@@ -6824,6 +7010,7 @@ lurek.tilemap.newMapGroup(name: string) -> LMapGroup -- Creates a new map group 
 lurek.tilemap.newMapScript() -> LMapScript -- Creates a new empty map-generation script.
 lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer) -> LTileMap -- Creates a new empty tilemap with the given tile dimensions.
 lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, [spacing]: integer, [margin]: integer) -> LTileSet -- Creates a new tileset from atlas parameters.
+lurek.tilemap.syncMinimap(map: LTileMap, layer: integer, minimap: LMinimap, [opts]: table) -- Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
 lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -> number -- Converts axial hex coordinates to screen-space pixel position.
 lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -> number -- Converts tile coordinates to screen-space position for isometric projection.
 ```

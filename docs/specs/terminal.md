@@ -79,12 +79,6 @@ The widget interaction contract is also locked down more explicitly by regressio
 - Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
 - The file is therefore the terminal subsystem's final visual export layer.
 
-### text_utils.rs
-
-- This file centralizes UTF-8-safe text helpers shared across terminal internals.
-- It provides character counting, character-to-byte indexing, truncation, and leading-byte UTF-8 length decoding.
-- The file reduces duplicate text logic between ANSI parsing, widget operations, and terminal state input/render paths.
-
 ### terminal_state.rs
 
 - This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
@@ -95,7 +89,6 @@ The widget interaction contract is also locked down more explicitly by regressio
 - Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
 - Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
 - Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
-- A reusable composition buffer lives here so render-oriented code can flatten widgets over the grid without repeatedly cloning the backing cell buffer.
 - Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
 - The file is intentionally large because it is not one helper.
 - It is the living behavior model of the entire terminal subsystem.
@@ -103,6 +96,11 @@ The widget interaction contract is also locked down more explicitly by regressio
 - Without this file the module would have isolated utilities but no unified terminal behavior.
 - In practice this is the runtime home of text-mode interaction inside the engine.
 - It is where a passive grid becomes a usable terminal environment.
+
+### text_utils.rs
+
+- Shared text helpers used across the terminal subsystem.
+- These helpers centralize UTF-8-safe character counting, truncation, and indexing logic.
 
 ### widget.rs
 
@@ -182,7 +180,7 @@ The widget interaction contract is also locked down more explicitly by regressio
 - `LTerminal:getDimensions() -> integer, integer`: Returns the number of columns and rows in the terminal grid.
 - `LTerminal:getFocused() -> LWidget`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
 - `LTerminal:getWidgetCount() -> integer`: Returns the number of widgets currently attached to this terminal.
-- `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing, including TextBox shortcuts like `ctrl+a`, `ctrl+c`, `ctrl+x`, `ctrl+v`, `ctrl+backspace`, and `ctrl+delete`.
+- `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing.
 - `LTerminal:mousepressed(px, py, button?) -> nil`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
 - `LTerminal:print(col, row, text) -> nil`: Writes text to the terminal grid starting at a specific cell.
 - `LTerminal:removeWidget(widget) -> nil`: Detaches a widget from this terminal, removing it from rendering and input handling.

@@ -2632,4 +2632,43 @@ describe("tile type index helpers", function()
     end)
 end)
 
+-- =========================================================================
+-- syncMinimap function
+-- =========================================================================
+-- @describe lurek.tilemap.syncMinimap
+
+-- @covers lurek.tilemap.syncMinimap
+it("syncMinimap syncs tilemap solidity to minimap terrain", function()
+    local tilemap = lurek.tilemap.newTileMap(10, 10, 32)
+    local minimap = lurek.minimap.new(10, 10)
+
+    -- Create a tilemap layer and mark some cells as solid
+    tilemap:addLayer("collision", 4, 4)
+
+    -- Mark some tiles as solid by setting collision data
+    tilemap:setSolid(1, 1, 1, true)   -- (layer, x, y, solid)
+    tilemap:setSolid(1, 2, 2, true)
+    tilemap:setSolid(1, 3, 3, true)
+
+    -- Sync minimap from tilemap
+    lurek.tilemap.syncMinimap(tilemap, 1, minimap, { solid_terrain = 2, empty_terrain = 1 })
+
+    -- minimap should now have terrain values set
+    expect_type("userdata", minimap)
+end)
+
+-- @covers lurek.tilemap.syncMinimap
+it("syncMinimap uses default terrain values", function()
+    local tilemap = lurek.tilemap.newTileMap(10, 10, 32)
+    local minimap = lurek.minimap.new(10, 10)
+
+    tilemap:addLayer("collision", 4, 4)
+    tilemap:setSolid(1, 1, 1, true)
+
+    -- Call without opts - should use solid_terrain=2, empty_terrain=1
+    lurek.tilemap.syncMinimap(tilemap, 1, minimap)
+
+    expect_type("userdata", minimap)
+end)
+
 test_summary()
