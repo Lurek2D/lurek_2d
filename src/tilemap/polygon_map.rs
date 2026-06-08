@@ -1,9 +1,9 @@
-//! This file provides named polygon regions for zone semantics layered over tile-based worlds.
-//! It supports convex and concave shapes with fill styling and optional in-region text labels.
-//! It answers point-in-region queries for selection, triggers, and gameplay ownership checks.
-//! It maintains shared outline and highlight styling to keep region feedback visually consistent.
-//! It includes region lifecycle operations so zones can be created, updated, and removed at runtime.
-//! It computes bounds and centroids to support layout decisions, framing, and camera behaviors.
+//! Named polygon region storage supporting convex and concave shapes for zone-based gameplay overlaying tile maps (capture zones, provinces, trigger regions).
+//! Stores vertex lists with per-region fill colors, optional text labels, and shared outline styling enabling visual consistency across all regions.
+//! Implements efficient point-in-polygon queries using ray-casting algorithm supporting selection, trigger detection, and ownership checks per frame.
+//! Computes region centroids and bounding boxes enabling camera framing, layout decisions, and spatial analysis for AI and gameplay systems.
+//! Provides dynamic lifecycle operations (add, remove, update) allowing runtime zone modification without map reload or editor access.
+//! Exposes highlight state tracking for UI feedback showing selected or active regions with override fill color during player interaction.
 
 use crate::color::Color;
 use std::collections::HashMap;

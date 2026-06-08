@@ -1,21 +1,11 @@
-//! - Tessellates 2D vector shapes, text glyphs, and sprite quads into triangle lists.
-//! - Expands stroke thick-lines into screen-aligned rectangular quads.
-//! - Adapts circle and ellipse segment counts to screen-space radii dynamically.
-//! - Packs position coordinates, UV parameters, and tint values into vertex buffers.
-//! - Transforms local coordinates using unified 3x3 model-view matrices.
-//! - Uses adaptive step sizes for arcs, segments, and hollow shapes.
-//! - Prepares dynamic draw commands matching various pipelines and geometry layouts.
-//! - Formats colors, indices, and transforms for direct graphics pipeline ingestion.
-//! - Implements rounded rectangle vertex computations with bezier-like arcs.
-//! - Translates texture coordinates and repeat flags into normalized layouts.
-//! - Builds scissor bounds, culling out-of-screen rendering commands.
-//! - Resolves drawing styles including filled shapes, outlines, and dashed borders.
-//! - Projects particle layouts, mesh triangles, and line strips dynamically.
-//! - Handles typography metrics, translating advancing pens into quad coords.
-//! - Normalizes stencil values, drawing modes, and texture parameters.
-//! - Supports linear gradient directions, computing vertex colors proportionally.
-//! - Manages mesh transformation indices and instance offsets.
-//! - Operates purely on mathematical vertices without keeping GPU buffer handles.
+//! GPU tessellator converting high-level 2D vector shapes (rectangles, circles, arcs, text glyphs, sprites, meshes) into vertex and index buffers.
+//! Implements dynamic segment-count adaptation for circles and ellipses based on screen-space radius ensuring smooth curves at any zoom level.
+//! Tessellates stroked lines as screen-aligned rectangular quads with configurable line width supporting dashed borders and outline styles.
+//! Packs ColorVertex and TexVertex buffers with positions, UV coordinates, tint colors, and transform data for unified pipeline ingestion.
+//! Applies 3x3 model-view transformations per vertex enabling local coordinate systems and nested transform hierarchies.
+//! Computes scissor rectangles and culls geometry outside viewport bounds reducing GPU workload and preventing render artifacts.
+//! Supports rounded rectangles through adaptive arc segment tessellation, linear gradients through proportional vertex color interpolation.
+//! Generates flattened index lists and primitive batches ready for direct graphics API consumption without additional GPU processing.
 
 use crate::math::{Mat3, Vec2};
 use crate::render::gpu_types::{ColorVertex, TexVertex, TexRef, ScissorRect, RenderTargetId, PreparedDraw};

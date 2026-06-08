@@ -1,7 +1,7 @@
 ---
 name: Content-Maker
 description: "Game Designer for content/games/ demos, library/ Lua modules, and config templates. No engine Rust."
-tools: [vscode/memory, vscode/askQuestions, read/readFile, read/skill, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, todo]
+tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/runInTerminal, read/readFile, read/skill, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, todo]
 ---
 
 # Content-Maker

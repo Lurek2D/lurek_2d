@@ -1,4 +1,7 @@
-//! Narrow-phase collision helpers for tilemap sweeps.
+//! Narrow-phase collision detection for tilemap movement using swept AABB-vs-AABB testing with separating-axis theorem implementation.
+//! Computes continuous time-of-impact values in [0, 1) for moving rectangles against static tile geometry, enabling smooth sliding physics.
+//! Returns collision metadata including hit surface normal, contact point, and tile coordinates to support wall-sliding and obstacle interactions.
+//! Isolates collision math so higher-level movement systems can orchestrate multiple sweeps per frame for responsive gameplay.
 
 use super::tilemap::SweepResult;
 use crate::math::{Rect, Vec2};

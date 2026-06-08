@@ -1,5 +1,6 @@
-//! Generic province map implementation.
-//! Provides data structures for provinces, adjacency and ownership.
+//! Province graph data structure storing named territorial regions with ownership, neighbor adjacency lists enabling territorial strategy gameplay.
+//! Supports dynamic owner assignment and neighbor linking enabling territorial mechanics like conquest, inheritance, and vassal relationships.
+//! Provides lookup, iteration, and modification methods for managing province territories and diplomatic relationships during campaign gameplay.
 
 use std::collections::HashMap;
 

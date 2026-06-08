@@ -1,7 +1,7 @@
-//! Grid-based and graph-based pathfinding algorithms for cells, graphs, and flow fields.
-//! Collects A*, bidirectional search, JPS, HPA*, goal maps, and influence maps under one namespace.
-//! Includes grid, hex, isometric, and navmesh navigation surfaces.
-//! Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
+//! Unified pathfinding module collecting grid-based (A*, Dijkstra, BFS, JPS) and graph-based (topological, bidirectional, HPA*) algorithms with unified API.
+//! Supports multiple navigation surface types (rectangular grids, hexagonal, isometric, navmeshes, province graphs) enabling diverse game world representations.
+//! Provides async path-request dispatch through thread pool enabling long-running queries without blocking game loop or frame timing.
+//! Includes debug rendering utilities for visualizing pathfinding structures, computed distances, flow fields, and path results during development.
 
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;

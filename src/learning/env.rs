@@ -1,7 +1,7 @@
-//! Provides reinforcement-learning environment wrappers modeled after common Gym-like conventions.
-//! Describes action and observation spaces with bounded metadata suitable for generic agents.
-//! Includes frame-stack helpers that accumulate temporal context for history-dependent policies.
-//! Standardizes reset and step-style interaction shapes for training and evaluation loops.
+//! Reinforcement learning environment abstractions following Gym-style conventions enabling training of generic agents on Lurek2D game tasks.
+//! Defines SpaceSpec descriptors for action and observation spaces with shape, bounds, and discrete action counts supporting policy network design.
+//! Implements FrameStack buffer accumulating historical observations into temporal context vectors required by recurrent and attention-based policies.
+//! Standardizes reset() and step() interaction contracts matching OpenAI Gym patterns for seamless integration with popular RL frameworks.
 
 /// Space descriptor shared by observation and action spaces.
 #[derive(Debug, Clone)]

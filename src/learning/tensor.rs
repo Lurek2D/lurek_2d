@@ -1,7 +1,7 @@
-//! Defines lightweight tensor containers and helpers used by learning components.
-//! Stores shape metadata and flat row-major data for predictable indexing behavior.
-//! Provides indexing, flattening, and conversion utilities needed by model layers.
-//! Includes compact numeric operations that support CPU learning pipelines.
+//! Lightweight tensor container with explicit row-major shape metadata and flat f32 data layout for CPU-based learning pipeline operations.
+//! Supports multi-dimensional indexing through flat_index() with shape validation and zero-based coordinate conversion for safe element access.
+//! Converts to tract Tensor format enabling interop with ONNX model inference engines for neural network evaluation on game tasks.
+//! Provides flatten(), gemm() operations enabling tensor transformations and basic linear algebra needed by learning layer computations.
 
 use ndarray::ArrayD;
 use tract_onnx::prelude::{IntoTensor, Tensor};

@@ -1,10 +1,9 @@
-//! Provides graph algorithm utilities for connectivity, ordering, coloring, and optimization analyses.
-//! Implements traversal and cycle checks that reveal structural health of directed flow networks.
-//! Supplies deterministic topological and spanning computations for planning and diagnostics workflows.
-//! Includes coloring and bipartite checks for partitioning and compatibility reasoning.
-//! Offers heuristic shortest-path search to support efficient route estimation over node geometry.
-//! Operates directly on shared graph adjacency state to avoid duplicate model translations.
-//! Delivers the analytical toolkit used to inspect and tune flownet topology behavior.
+//! Graph algorithm implementations for directed flow networks including connectivity analysis, cycle detection, topological sorting, and minimum spanning trees.
+//! Implements white-gray-black DFS cycle detection, Kruskal MST construction, greedy graph coloring, and connected component enumeration for structural analysis.
+//! Provides O(V+E) traversals and ordering computations used by planning systems, diagnostics workflows, and topology validation on large flownet models.
+//! Operates directly on shared graph adjacency state without duplicating node or edge data, ensuring efficient memory usage and performance.
+//! Enables inspection and tuning of flownet topology behavior through bipartite detection, reachability checks, and deterministic node ordering guarantees.
+//! Supports both directed and undirected graph semantics through flexible edge enumeration and neighbor iteration strategies.
 
 use super::core::Graph;
 use std::collections::{HashMap, HashSet, VecDeque};

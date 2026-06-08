@@ -1,4 +1,6 @@
-//! Reverse-index cache helpers for tilemap tile lookups.
+//! Reverse-index mapping from Global Tile ID (GID) to list of (x, y) grid coordinates for fast spatial tile lookups in tilemaps.
+//! Supports efficient batch updates and removal when tiles change, automatically pruning empty GID entries to maintain compact memory footprint.
+//! Enables "find all tiles of type X" queries in O(1) lookup time, critical for finding spawn zones, triggers, and obstacle regions.
 
 use std::collections::HashMap;
 

@@ -1,10 +1,9 @@
-//! Curated easing family for animation curves and tween response shaping.
-//! Covers the standard in, out, and in-out variants across common motion families.
-//! Handles edge clamping for curves that need explicit start and end behavior.
-//! Exposes name-based resolution for data-driven animation systems.
-//! Includes linear passthrough for identity interpolation.
-//! Keeps the API focused on normalized t in [0,1] inputs and outputs.
-//! Lets higher-level systems drive motion with consistent curve semantics.
+//! Comprehensive easing function library supporting in/out/in-out variants across quadratic, cubic, quartic, sine, exponential, and elastic motion families.
+//! Implements normalized [0,1] input parameter curves producing normalized output ranges enabling composition into tween and animation systems.
+//! Handles edge clamping for exponential and elastic curves preventing invalid outputs at boundaries while supporting smooth S-curve acceleration patterns.
+//! Provides linear identity passthrough and symmetric in-out variants enabling data-driven animation selection from configuration files.
+//! Standardizes easing semantics across animation interpolation enabling consistent motion timing and response characteristics in gameplay animations.
+//! Supports all common Easing.net function families used by game engines and animation libraries for broad compatibility and predictable behavior.
 
 use std::f32::consts::PI;
 

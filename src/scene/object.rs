@@ -1,5 +1,7 @@
-//! Scene object component – generic visible entity.
-// Provides position, sprite reference, visibility flag.
+//! Simple 2D scene object entity storing position, sprite reference, and visibility state for basic game drawable management.
+//! Provides mutation methods to update position, sprite name, and visibility flag during gameplay without reconstructing the object.
+//! Integrates with Lua through `register()` to expose constructor and property setters so scripts can create and control scene objects.
+//! Designed as a lightweight alternative to full entity-component systems for games needing basic positioned, sprite-based objects.
 
 use std::cell::RefCell;
 use std::rc::Rc;

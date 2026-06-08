@@ -1,8 +1,8 @@
-//! Provides shared CPU rasterization helpers used by all chart renderer implementations.
-//! Includes primitive pixel operations for points, lines, circles, rectangles, and full-buffer fills.
-//! Converts chart data coordinates to screen-space pixels through normalized range mapping utilities.
-//! Computes automatic value ranges across multiple series for default axis domain selection.
-//! Serves as the low-level drawing toolkit for consistent chart image generation behavior.
+//! CPU-based rasterization toolkit providing pixel-level drawing operations (points, lines, circles, filled rectangles, buffer fills) for software chart rendering.
+//! Implements Bresenham line algorithm, per-pixel distance-based circle fill, and normalized coordinate mapping from data-space to screen-space pixels.
+//! Computes automatic value range bounds across multiple series to establish default axis domains avoiding degenerate zero-width ranges.
+//! Maintains consistent low-level drawing semantics across all chart renderer implementations enabling uniform image generation behavior.
+//! Clamps coordinates to buffer bounds, handling edge cases like zero-sized ranges and out-of-bounds pixel access silently.
 
 use crate::charts::config::ChartSeries;
 
