@@ -2452,5 +2452,4 @@ describe("Graph addEdgeUnchecked", function()
         expect_equal("pipe", e:getType())
     end)
 end)
-
 test_summary()

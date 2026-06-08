@@ -1845,5 +1845,4 @@ describe("scene strict: LDepthSorter type/typeOf", function()
         expect_type("boolean", ds:typeOf("LObject"))
     end)
 end)
-
 test_summary()

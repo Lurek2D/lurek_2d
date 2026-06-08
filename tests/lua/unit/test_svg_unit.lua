@@ -415,5 +415,4 @@ describe("LSvgImage Hierarchy Navigation", function()
         expect_nil(c)
     end)
 end)
-
 test_summary()

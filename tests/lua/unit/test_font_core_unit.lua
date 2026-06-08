@@ -301,5 +301,4 @@ describe("lurek.font.getDefault methods", function()
         expect_true(h > 0, "height > 0")
     end)
 end)
-
 test_summary()

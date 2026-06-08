@@ -1602,5 +1602,4 @@ describe("property: data pack/unpack invariants", function()
             end
         end)
 end)
-
 test_summary()

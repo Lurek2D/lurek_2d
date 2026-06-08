@@ -1,10 +1,5 @@
 -- Integration: lurek.physics contact callbacks bridged through lurek.event signals
 -- @describe one-way platform integration
--- @covers lurek.event.newSignal
--- @covers lurek.physics.newBody
--- @covers lurek.physics.newWorld
-
-
 describe("one-way platform integration", function()
     local world, floor, player
 
@@ -150,5 +145,3 @@ describe("physics contact bridged through lurek.event signal", function()
 
 end)
 test_summary()
-
-

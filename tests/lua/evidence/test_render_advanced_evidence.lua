@@ -157,5 +157,4 @@ describe("Evidence: advanced lurek.render API", function()
         capture_png("r10_color_mask.png")
     end)
 end)
-
 test_summary()

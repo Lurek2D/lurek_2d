@@ -150,5 +150,4 @@ t.test("typeOf returns true for LGoalMap and LObject", function()
 end)
 
 t.finish()
-
 test_summary()

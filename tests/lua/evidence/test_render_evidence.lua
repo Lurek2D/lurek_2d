@@ -1150,5 +1150,4 @@ describe("evidence: render summary dashboard", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

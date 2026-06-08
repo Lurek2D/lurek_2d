@@ -1,10 +1,5 @@
 -- Integration: effect stack setup and camera transforms can be configured together.
 -- @describe integration: effect + camera
--- @covers lurek.camera.newCamera
--- @covers lurek.effect.newEffect
--- @covers lurek.effect.newStack
-
-
 describe("integration: effect + camera", function()
     -- @integration LCamera:getZoom
     -- @integration LCamera:setZoom
@@ -24,5 +19,4 @@ describe("integration: effect + camera", function()
         expect_near(1.25, z, 0.001, "camera zoom should be applied")
     end)
 end)
-
 test_summary()

@@ -51,5 +51,4 @@ describe("lurek.midi.hasSoundFont", function()
         T.assertEqual(type(has), "boolean")
     end)
 end)
-
 test_summary()

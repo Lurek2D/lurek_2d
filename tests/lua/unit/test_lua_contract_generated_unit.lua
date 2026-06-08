@@ -6969,5 +6969,4 @@ describe("generated: top-level lurek contract", function()
     end)
 
 end)
-
 test_summary()

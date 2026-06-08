@@ -241,5 +241,4 @@ describe("lurek.math.newPityTracker", function()
         T.assert_false(pt:typeOf("LBeatClock"))
     end)
 end)
-
 test_summary()

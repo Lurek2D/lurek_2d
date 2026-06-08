@@ -137,5 +137,4 @@ describe("sandbox: dangerous globals are nil", function()
         expect_equal(result, true, "io.popen should not be accessible")
     end)
 end)
-
 test_summary()

@@ -4725,5 +4725,4 @@ describe("lurek.ui theme token exact values", function()
         end
     end)
 end)
-
 test_summary()

@@ -3,6 +3,7 @@
 
 local harness = require("tests.lua.harness")
 
+-- @describe lurek.audio
 describe("lurek.audio", function()
     -- Source loading and creation
     -- @covers lurek.audio.newSource
@@ -422,5 +423,4 @@ describe("lurek.audio", function()
         assert_equal("LSoundPool", pool:type())
     end)
 end)
-
 test_summary()

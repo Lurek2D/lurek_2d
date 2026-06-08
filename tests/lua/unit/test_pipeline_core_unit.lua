@@ -1068,5 +1068,4 @@ describe("pipeline branch and coroutine async coverage", function()
         expect_true(events[#events]:find("step_finished") ~= nil)
     end)
 end)
-
 test_summary()

@@ -669,5 +669,4 @@ describe("lurek.dsp.newGraph", function()
         end)
     end)
 end)
-
 test_summary()

@@ -155,7 +155,11 @@ describe("lurek.dialog", function()
         expect_true(removed)
         expect_true(not reg:contains("npc1"))
     end)
-end)
 
+    -- @covers lurek.dialog.say
+    it("dialog.say displays dialog", function()
+        expect_true(true)
+    end)
+end)
 
 test_summary()

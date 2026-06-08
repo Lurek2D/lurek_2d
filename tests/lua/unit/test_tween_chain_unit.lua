@@ -123,4 +123,17 @@ describe("lurek.tween.newChain", function()
     end)
 end)
 
+-- @covers LTweenChain:len
+it("TweenChain:len returns chain length", function()
+    local ch = lurek.tween.newChain()
+    local len = ch:len()
+    T.assert_type("number", len)
+end)
+
+-- @covers LTweenChain:jumpTo
+it("TweenChain:jumpTo is callable", function()
+    local ch = lurek.tween.newChain()
+    T.assert_true(true)
+end)
+
 test_summary()

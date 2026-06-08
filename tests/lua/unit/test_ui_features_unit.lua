@@ -129,5 +129,4 @@ describe("ui extended animations", function()
         expect_true(result, "should accept nil easing (defaults to linear)")
     end)
 end)
-
 test_summary()

@@ -131,5 +131,4 @@ describe("LReplSession", function()
         expect_false(repl:typeOf("LOther"))
     end)
 end)
-
 test_summary()

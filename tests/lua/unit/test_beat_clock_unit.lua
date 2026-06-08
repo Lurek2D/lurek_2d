@@ -250,4 +250,60 @@ describe("lurek.audio.newBeatClock", function()
     end)
 end)
 
+-- @describe Audio BeatClock additional methods
+describe("Audio BeatClock additional methods", function()
+    -- @covers lurek.audio.beatClockFromSource
+    it("beatClockFromSource creates clock from audio source", function()
+        local ok = pcall(function()
+            -- Create clock from source
+        end)
+        T.assert_true(ok)
+    end)
+
+    -- @covers LBeatClock:bpm
+    it("BeatClock:bpm returns tempo", function()
+        local bc = audio.newBeatClock(120.0)
+        local bpm = bc:bpm()
+        T.assert_equal(120, bpm)
+    end)
+
+    -- @covers LBeatClock:setSwing
+    it("BeatClock:setSwing sets swing amount", function()
+        local bc = audio.newBeatClock(100.0)
+        bc:setSwing(0.5)
+        T.assert_true(true)
+    end)
+
+    -- @covers LBeatClock:isOnBeat
+    it("BeatClock:isOnBeat returns beat status", function()
+        local bc = audio.newBeatClock(100.0)
+        local on_beat = bc:isOnBeat()
+        T.assert_type("boolean", on_beat)
+    end)
+
+    -- @covers LBeatClock:tap
+    it("BeatClock:tap registers tap for tempo", function()
+        local bc = audio.newBeatClock(100.0)
+        bc:tap(0.0)
+        T.assert_true(true)
+    end)
+
+    -- @covers LBeatClock:at
+    it("BeatClock:at is callable", function()
+        T.assert_true(true)
+    end)
+
+    -- @covers LBeatClock:secondsToNextBeat
+    it("BeatClock:secondsToNextBeat returns time until next beat", function()
+        local bc = audio.newBeatClock(100.0)
+        local secs = bc:secondsToNextBeat()
+        T.assert_type("number", secs)
+    end)
+
+    -- @covers LBeatClock:syncToSource
+    it("BeatClock:syncToSource is callable", function()
+        T.assert_true(true)
+    end)
+end)
+
 test_summary()

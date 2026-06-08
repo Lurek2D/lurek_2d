@@ -218,5 +218,4 @@ describe("lurek.visibility.newFov", function()
         expect_true(fov:typeOf("LFov"))
     end)
 end)
-
 test_summary()

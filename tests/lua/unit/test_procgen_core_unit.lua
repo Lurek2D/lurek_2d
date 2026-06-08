@@ -867,5 +867,4 @@ describe("wfcFromPrompt(prompt, config)", function()
         expect_equal(7, result.height)
     end)
 end)
-
 test_summary()

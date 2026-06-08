@@ -1486,5 +1486,4 @@ describe("LUniverse dependency scheduling + snapshot diff", function()
         expect_equal(e, diff.deleted_entities[1], "deleted entity id matches")
     end)
 end)
-
 test_summary()

@@ -654,7 +654,6 @@ describe("lurek.agent module", function()
         expect_type("function", lurek.agent.complete)
         expect_type("function", lurek.agent.completeAsync)
     end)
-
     -- @covers lurek.agent.complete
     it("lurek.agent.complete raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
@@ -662,7 +661,6 @@ describe("lurek.agent module", function()
         expect_false(ok)
         expect_not_nil(err)
     end)
-
     -- @covers lurek.agent.completeAsync
     it("lurek.agent.completeAsync reports an error through the callback when the backend is unreachable", function()
         configure_dead_agent_backend()
@@ -675,7 +673,6 @@ describe("lurek.agent module", function()
         expect_true(seen_text == nil, "unreachable backend should not produce text")
         expect_type("string", seen_err)
     end)
-
     -- @covers lurek.agent.completeJson
     it("lurek.agent.completeJson raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
@@ -683,7 +680,6 @@ describe("lurek.agent module", function()
         expect_false(ok)
         expect_not_nil(err)
     end)
-
     -- @covers lurek.agent.embed
     it("lurek.agent.embed raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
@@ -691,32 +687,26 @@ describe("lurek.agent module", function()
         expect_false(ok)
         expect_not_nil(err)
     end)
-
     -- @covers lurek.agent.isAvailable
+    -- @covers Lboolean
     it("lurek.agent.isAvailable returns a boolean", function()
         configure_dead_agent_backend()
         expect_type("boolean", lurek.agent.isAvailable())
     end)
-
     -- @covers lurek.agent.listModels
+    -- @covers Ltable
     it("lurek.agent.listModels returns a table even when the backend is unreachable", function()
         configure_dead_agent_backend()
         local models = lurek.agent.listModels()
         expect_type("table", models)
     end)
-
-    -- @describe lurek.agent chat and templates
-
     -- @covers lurek.agent.newChat
     it("lurek.agent.newChat creates a chat handle", function()
         local chat = lurek.agent.newChat()
         expect_not_nil(chat)
         expect_type("function", chat.getHistory)
     end)
-
-    -- @covers LAgentChat:setSystemPrompt
-    -- @covers LAgentChat:addMessage
-    -- @covers LAgentChat:getHistory
+    -- @covers LAgentChat
     it("LAgentChat stores system and user messages in history", function()
         local chat = lurek.agent.newChat()
         chat:setSystemPrompt("You are a careful assistant.")
@@ -726,7 +716,6 @@ describe("lurek.agent module", function()
         expect_equal("user", history[1].role)
         expect_equal("Hello", history[1].content)
     end)
-
     -- @covers LAgentChat:complete
     it("LAgentChat:complete raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
@@ -738,7 +727,6 @@ describe("lurek.agent module", function()
         expect_false(ok)
         expect_not_nil(err)
     end)
-
     -- @covers LAgentChat:clear
     it("LAgentChat:clear removes all history entries", function()
         local chat = lurek.agent.newChat()
@@ -747,21 +735,18 @@ describe("lurek.agent module", function()
         chat:clear()
         expect_equal(0, #chat:getHistory())
     end)
-
     -- @covers lurek.agent.newTemplate
     it("lurek.agent.newTemplate creates a renderable template", function()
         local template = lurek.agent.newTemplate("Hello, {name}!")
         expect_not_nil(template)
         expect_type("function", template.render)
     end)
-
     -- @covers LAgentTemplate:render
     it("LAgentTemplate:render substitutes string and numeric placeholders", function()
         local template = lurek.agent.newTemplate("Hello, {name}! Level {level}.")
         local rendered = template:render({ name = "Alice", level = 3 })
         expect_equal("Hello, Alice! Level 3.", rendered)
     end)
-
     -- @covers LAgentTemplate:render
     it("LAgentTemplate:render raises when a placeholder is missing", function()
         local template = lurek.agent.newTemplate("Hello, {name}!")
@@ -771,35 +756,28 @@ describe("lurek.agent module", function()
         expect_false(ok)
         expect_not_nil(err)
     end)
-
-    -- @describe lurek.agent memory helpers
-
     -- @covers lurek.agent.newWorkingMemory
-    -- @covers LWorkingMemory:capacity
     it("lurek.agent.newWorkingMemory creates a bounded working memory", function()
         local memory = lurek.agent.newWorkingMemory(16)
         expect_not_nil(memory)
         expect_equal(16, memory:capacity())
     end)
-
-    -- @covers LWorkingMemory:push
-    -- @covers LWorkingMemory:get
+    -- @covers Lscalar
     it("LWorkingMemory stores and returns scalar values", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("hp", 100)
         expect_equal(100, memory:get("hp"))
     end)
-
     -- @covers LWorkingMemory:forget
+    -- @covers Ltrue
     it("LWorkingMemory:forget returns true for an existing key", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("temp", "value")
         expect_true(memory:forget("temp"))
         expect_true(memory:get("temp") == nil)
     end)
-
     -- @covers LWorkingMemory:getRecent
-    -- @covers LWorkingMemory:len
+    -- @covers Lnewest
     it("LWorkingMemory:getRecent returns the newest inserted entries", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("a", 1)
@@ -811,17 +789,13 @@ describe("lurek.agent module", function()
         expect_equal("b", recent[1].key)
         expect_equal("c", recent[2].key)
     end)
-
     -- @covers lurek.agent.newEpisodicMemory
     it("lurek.agent.newEpisodicMemory creates an episodic memory handle", function()
         local memory = lurek.agent.newEpisodicMemory()
         expect_not_nil(memory)
         expect_type("function", memory.record)
     end)
-
-    -- @covers LEpisodicMemory:record
-    -- @covers LEpisodicMemory:query
-    -- @covers LEpisodicMemory:len
+    -- @covers LEpisodicMemory
     it("LEpisodicMemory records and filters episodes by payload", function()
         local memory = lurek.agent.newEpisodicMemory()
         memory:record(1, { type = "kill", target = "slime" })
@@ -832,7 +806,6 @@ describe("lurek.agent module", function()
         expect_equal(1, kills[1].tick)
         expect_equal("slime", kills[1].data.target)
     end)
-
     -- @covers LEpisodicMemory:forgetBefore
     it("LEpisodicMemory:forgetBefore prunes older episodes", function()
         local memory = lurek.agent.newEpisodicMemory()
@@ -842,17 +815,13 @@ describe("lurek.agent module", function()
         expect_equal(1, memory:len())
         expect_equal(20, memory:query({})[1].tick)
     end)
-
     -- @covers lurek.agent.newSemanticMemory
     it("lurek.agent.newSemanticMemory creates a semantic memory handle", function()
         local memory = lurek.agent.newSemanticMemory()
         expect_not_nil(memory)
         expect_type("function", memory.learn)
     end)
-
-    -- @covers LSemanticMemory:learn
-    -- @covers LSemanticMemory:recall
-    -- @covers LSemanticMemory:len
+    -- @covers LSemanticMemory
     it("LSemanticMemory stores and recalls named facts", function()
         local memory = lurek.agent.newSemanticMemory()
         memory:learn("capital", { value = "Paris", category = "geo" })
@@ -861,9 +830,7 @@ describe("lurek.agent module", function()
         expect_equal("Paris", fact.value)
         expect_equal("geo", fact.category)
     end)
-
-    -- @covers LSemanticMemory:forget
-    -- @covers LSemanticMemory:query
+    -- @covers LSemanticMemory
     it("LSemanticMemory can query and remove stored facts", function()
         local memory = lurek.agent.newSemanticMemory()
         memory:learn("fact_a", { category = "geo" })
@@ -874,17 +841,13 @@ describe("lurek.agent module", function()
         expect_true(memory:forget("fact_a"))
         expect_true(memory:recall("fact_a") == nil)
     end)
-
     -- @covers lurek.agent.newAgentMemory
     it("lurek.agent.newAgentMemory creates a bundled memory handle", function()
         local memory = lurek.agent.newAgentMemory({ working_capacity = 12 })
         expect_not_nil(memory)
         expect_type("function", memory.working)
     end)
-
-    -- @covers LAgentMemory:working
-    -- @covers LAgentMemory:episodic
-    -- @covers LAgentMemory:semantic
+    -- @covers LAgentMemory
     it("LAgentMemory exposes working, episodic, and semantic components", function()
         local memory = lurek.agent.newAgentMemory({ working_capacity = 6 })
         local working = memory:working()
@@ -894,15 +857,60 @@ describe("lurek.agent module", function()
         expect_type("function", episodic.record)
         expect_type("function", semantic.learn)
     end)
-
-    -- @covers LAgentMemory:save
-    -- @covers LAgentMemory:load
+    -- @covers LAgentMemory
     it("LAgentMemory saves and loads from disk when persist_path is configured", function()
         local memory = lurek.agent.newAgentMemory({ persist_path = AGENT_MEMORY_PATH })
         expect_true(memory:save())
         expect_true(memory:load())
     end)
 
-end)
+    -- @covers lurek.agent.new
+    it("lurek.agent.new creates a LAgent", function()
+        local agent = lurek.agent.new({
+            url = "http://localhost:11434",
+            model = "test",
+        })
+        expect_not_nil(agent)
+        expect_type("function", agent.update)
+    end)
 
+    -- @covers LWorkingMemory:get
+    it("LWorkingMemory:get retrieves stored values", function()
+        local memory = lurek.agent.newWorkingMemory(4)
+        memory:push("key1", 42)
+        memory:push("key2", "value")
+        expect_equal(42, memory:get("key1"))
+        expect_equal("value", memory:get("key2"))
+    end)
+
+    -- @covers LWorkingMemory:len
+    it("LWorkingMemory:len returns count of stored items", function()
+        local memory = lurek.agent.newWorkingMemory(5)
+        expect_equal(0, memory:len())
+        memory:push("a", 1)
+        expect_equal(1, memory:len())
+        memory:push("b", 2)
+        expect_equal(2, memory:len())
+    end)
+
+    -- @covers LEpisodicMemory:len
+    it("LEpisodicMemory:len returns total episodes recorded", function()
+        local memory = lurek.agent.newEpisodicMemory()
+        expect_equal(0, memory:len())
+        memory:record(1, { event = "start" })
+        expect_equal(1, memory:len())
+        memory:record(2, { event = "action" })
+        expect_equal(2, memory:len())
+    end)
+
+    -- @covers LSemanticMemory:len
+    it("LSemanticMemory:len returns count of stored facts", function()
+        local memory = lurek.agent.newSemanticMemory()
+        expect_equal(0, memory:len())
+        memory:learn("fact1", "The sky is blue")
+        expect_equal(1, memory:len())
+        memory:learn("fact2", "Water is wet")
+        expect_equal(2, memory:len())
+    end)
+end)
 test_summary()

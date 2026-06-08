@@ -53,5 +53,4 @@ describe("evidence: gui", function()
         expect_true(rendered > 0, "should render at least one TOML layout from content/layouts")
     end)
 end)
-
 test_summary()

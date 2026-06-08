@@ -1,12 +1,5 @@
 -- Integration: compute statistics fed into dataframe reports
 -- @describe integration: compute statistics to dataframe
--- @covers lurek.compute.fromTable
--- @covers lurek.compute.ones
--- @covers lurek.compute.range
--- @covers lurek.dataframe.newDataFrame
--- @covers lurek.image.newImageData
-
-
 describe("integration: compute statistics to dataframe", function()
     -- @integration LDataFrame:addColumn
     -- @integration LDataFrame:addRow
@@ -100,5 +93,4 @@ describe("integration: image data to compute array", function()
         expect_near(240, arr:max(), 0.01, "max red is 240")
     end)
 end)
-
 test_summary()

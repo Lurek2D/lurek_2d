@@ -178,5 +178,3 @@ describe("lurek.ecs.spawnBulk", function()
     end)
 end)
 test_summary()
-
-

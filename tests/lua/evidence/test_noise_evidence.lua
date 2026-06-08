@@ -67,5 +67,4 @@ describe("evidence: noise", function()
         write_text(path, "[" .. table.concat(rows, ",") .. "]")
     end)
 end)
-
 test_summary()

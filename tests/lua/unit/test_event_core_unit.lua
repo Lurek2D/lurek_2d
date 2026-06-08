@@ -1138,5 +1138,4 @@ describe("lurek.event.quit", function()
     expect_equal(true, ok, err)
   end)
 end)
-
 test_summary()

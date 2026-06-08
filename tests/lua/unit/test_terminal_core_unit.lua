@@ -1477,5 +1477,4 @@ describe("focus behaviour: mouse and widget removal", function()
         expect_true(term:getFocused() == nil)
     end)
 end)
-
 test_summary()

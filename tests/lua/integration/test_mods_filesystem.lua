@@ -1,12 +1,5 @@
 -- Integration: mod discovery via ModManager combined with filesystem operations
 -- @describe mods + filesystem integration
--- @covers lurek.filesystem.createDirectory
--- @covers lurek.filesystem.exists
--- @covers lurek.filesystem.removeDir
--- @covers lurek.filesystem.write
--- @covers lurek.mods.newModManager
-
-
 describe("mods + filesystem integration", function()
     -- @integration LModManager:hasMod
     -- @integration LModManager:scanFolder
@@ -41,5 +34,4 @@ describe("mods + filesystem integration", function()
         lurek.filesystem.removeDir(root)
     end)
 end)
-
 test_summary()

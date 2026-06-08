@@ -3,6 +3,7 @@
 
 local harness = require("tests.lua.harness")
 
+-- @describe lurek.tween
 describe("lurek.tween", function()
     -- @covers lurek.tween.newChain
     it("creates a new tween chain", function()
@@ -153,5 +154,4 @@ describe("lurek.tween", function()
         assert_near(obj.x, 10, 5)  -- Should have moved ~10 units in 0.1s of 1s tween
     end)
 end)
-
 test_summary()

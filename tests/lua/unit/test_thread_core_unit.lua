@@ -634,7 +634,6 @@ describe("unit: migrated from integration/test_thread_data.lua", function()
 end)
 
 -- @describe Bounded channel API
-
 describe("Bounded channel API", function()
     -- @covers lurek.thread.newBoundedChannel
     it("newBoundedChannel creates bounded channel", function()
@@ -657,7 +656,6 @@ describe("Bounded channel API", function()
 end)
 
 -- @describe Worker capability introspection
-
 describe("Worker capability introspection", function()
     -- @covers lurek.thread.getWorkerCapabilities
     it("returns non-empty capability list", function()
@@ -669,7 +667,6 @@ describe("Worker capability introspection", function()
 end)
 
 -- @describe Async helpers
-
 describe("Async helpers", function()
     -- @covers lurek.thread.async
     it("async accepts Lua function as first argument", function()
@@ -715,5 +712,4 @@ describe("Async helpers", function()
         expect_equal(15, p2:result())
     end)
 end)
-
 test_summary()

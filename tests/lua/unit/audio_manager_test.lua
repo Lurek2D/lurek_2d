@@ -36,3 +36,4 @@ end)
 assert(ok, err)
 
 print('audio_manager_test passed')
+test_summary()

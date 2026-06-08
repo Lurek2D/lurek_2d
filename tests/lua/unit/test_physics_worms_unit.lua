@@ -60,5 +60,3 @@ describe("worms terrain + physics integration", function()
     end)
 end)
 test_summary()
-
-

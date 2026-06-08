@@ -108,5 +108,4 @@ describe("Evidence: additional lurek.tilemap API", function()
         save_tm(tm, 12, "tm05_staggered.png")
     end)
 end)
-
 test_summary()

@@ -869,7 +869,6 @@ describe("lurek.window.isResizable", function()
     end)
 end)
 -- @describe windowConfig helper
-
 describe("windowConfig helper", function()
     -- @covers lurek.window.windowConfig
     it("windowConfig is a function", function()
@@ -895,5 +894,4 @@ describe("windowConfig helper", function()
         expect_equal(false, flags.fullscreen)
     end)
 end)
-
 test_summary()

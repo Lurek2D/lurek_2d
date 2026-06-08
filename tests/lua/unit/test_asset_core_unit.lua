@@ -711,5 +711,4 @@ describe("lurek.asset module", function()
     end)
 
 end)
-
 test_summary()

@@ -215,5 +215,4 @@ describe("camera + parallax integration", function()
         expect_true(ok, "render succeeds after visibility transition")
     end)
 end)
-
 test_summary()

@@ -1089,7 +1089,4 @@ describe("Globe addRegion and removeRegion", function()
         expect_equal(0, g:regionCount())
     end)
 end)
-
 test_summary()
-
-

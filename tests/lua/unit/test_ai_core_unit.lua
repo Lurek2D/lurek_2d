@@ -6490,6 +6490,4 @@ describe("ai strict: missing type methods", function()
         expect_type("boolean", l:typeOf("LObject"))
     end)
 end)
-
 test_summary()
-

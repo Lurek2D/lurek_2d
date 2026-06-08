@@ -2245,5 +2245,4 @@ describe("patterns generic collections extensions", function()
         expect_true(m:isEmpty())
     end)
 end)
-
 test_summary()

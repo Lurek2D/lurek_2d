@@ -100,5 +100,4 @@ describe("lurek.province properties", function()
         expect_near(75.0, lurek.province.getProperty(31, "gold"), 0.001)
     end)
 end)
-
 test_summary()

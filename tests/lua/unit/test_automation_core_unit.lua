@@ -1338,5 +1338,4 @@ describe("lurek.automation conditions and failures", function()
         lurek.automation.setCondition("expr_invalid_ready", false)
     end)
 end)
-
 test_summary()

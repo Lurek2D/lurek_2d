@@ -157,5 +157,3 @@ describe("filesystem security: mount traversal", function()
     end)
 end)
 test_summary()
-
-

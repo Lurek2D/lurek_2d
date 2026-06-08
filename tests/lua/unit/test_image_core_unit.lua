@@ -2072,6 +2072,4 @@ describe("property: image resize invariants", function()
             end
         end)
 end)
-
 test_summary()
-

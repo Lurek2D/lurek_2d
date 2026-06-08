@@ -1,39 +1,33 @@
 -- tests/lua/unit/test_cinematic_timeline_unit.lua
 -- @describe Cinematic Timeline
-
 local it = IT
 local expect_equal = EXPECT_EQUAL
 local expect_true = EXPECT_TRUE
 local expect_false = EXPECT_FALSE
-
 local function test_timeline_creation()
-  -- @covers lurek.cinematic.newTimeline
+  -- @covers lurek.cinematic
   it("creates a new timeline", function()
     local tl = lurek.cinematic.newTimeline()
     expect_true(tl:typeOf("LCinematicTimeline"))
   end)
-
-  -- @covers lurek.cinematic.newTimeline
+  -- @covers lurek.cinematic
   it("starts in stopped state", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:getState(), "stopped")
   end)
-
-  -- @covers lurek.cinematic.newTimeline
+  -- @covers lurek.cinematic
   it("has zero duration on creation", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:getDuration(), 0.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline
+  -- @covers lurek.cinematic
   it("starts at time zero", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:getTime(), 0.0)
   end)
 end
-
 local function test_track_management()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:addTrack
+  -- @covers lurek.cinematic
   it("can add tracks", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addTrack("camera")
@@ -41,9 +35,8 @@ local function test_track_management()
     expect_equal(tl:getDuration(), 0.0) -- no clips yet
   end)
 end
-
 local function test_clip_addition()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:addClip
+  -- @covers lurek.cinematic
   it("adds camera clip to track", function()
     local tl = lurek.cinematic.newTimeline()
     local clip = {
@@ -55,8 +48,7 @@ local function test_clip_addition()
     tl:addClip("camera", 0.0, 1.0, clip)
     expect_equal(tl:getDuration(), 1.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:addClip
+  -- @covers lurek.cinematic
   it("adds signal clip", function()
     local tl = lurek.cinematic.newTimeline()
     local clip = {
@@ -67,8 +59,7 @@ local function test_clip_addition()
     tl:addClip("signals", 2.0, 0.1, clip)
     expect_equal(tl:getDuration(), 2.1)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:addClip
+  -- @covers lurek.cinematic
   it("adds audio clip", function()
     local tl = lurek.cinematic.newTimeline()
     local clip = {
@@ -78,8 +69,7 @@ local function test_clip_addition()
     tl:addClip("sfx", 5.0, 2.0, clip)
     expect_equal(tl:getDuration(), 7.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:addClip
+  -- @covers lurek.cinematic
   it("adds tween clip with properties", function()
     local tl = lurek.cinematic.newTimeline()
     local clip = {
@@ -92,17 +82,15 @@ local function test_clip_addition()
     expect_equal(tl:getDuration(), 4.0)
   end)
 end
-
 local function test_playback_control()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:play
+  -- @covers lurek.cinematic
   it("transitions to playing state", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 1.0, { type = "signal", name = "test" })
     tl:play()
     expect_equal(tl:getState(), "playing")
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:pause
+  -- @covers lurek.cinematic
   it("pauses playback", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 1.0, { type = "signal", name = "test" })
@@ -110,8 +98,7 @@ local function test_playback_control()
     tl:pause()
     expect_equal(tl:getState(), "paused")
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:stop
+  -- @covers lurek.cinematic
   it("stops and resets to zero", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
@@ -121,8 +108,7 @@ local function test_playback_control()
     expect_equal(tl:getState(), "stopped")
     expect_equal(tl:getTime(), 0.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:isPlaying
+  -- @covers Lcorrect
   it("isPlaying returns correct state", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 1.0, { type = "signal", name = "test" })
@@ -131,17 +117,15 @@ local function test_playback_control()
     expect_true(tl:isPlaying())
   end)
 end
-
 local function test_time_control()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:seek
+  -- @covers lurek.cinematic
   it("seeks to specified time", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
     tl:seek(5.5)
     expect_equal(tl:getTime(), 5.5)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:update
+  -- @covers lurek.cinematic
   it("advances time when playing", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
@@ -149,16 +133,14 @@ local function test_time_control()
     tl:update(2.5)
     expect_equal(tl:getTime(), 2.5)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:skipToEnd
+  -- @covers lurek.cinematic
   it("instantly jumps to end", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
     tl:skipToEnd()
     expect_equal(tl:getTime(), 10.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:isComplete
+  -- @covers lurek.cinematic
   it("detects completion", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 3.0, { type = "signal", name = "test" })
@@ -167,9 +149,8 @@ local function test_time_control()
     expect_true(tl:isComplete())
   end)
 end
-
 local function test_labels_and_branching()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:addLabel
+  -- @covers lurek.cinematic
   it("can add labeled positions", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addLabel("scene_start", 0.0)
@@ -177,8 +158,7 @@ local function test_labels_and_branching()
     tl:addLabel("ending", 10.0)
     expect_equal(tl:getTime(), 0.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:branch
+  -- @covers lurek.cinematic
   it("branches to label", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 15.0, { type = "signal", name = "test" })
@@ -187,25 +167,22 @@ local function test_labels_and_branching()
     expect_true(ok)
     expect_equal(tl:getTime(), 7.5)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:branch
+  -- @covers lurek.cinematic
   it("branch fails for missing label", function()
     local tl = lurek.cinematic.newTimeline()
     local ok = tl:branch("nonexistent")
     expect_false(ok)
   end)
 end
-
 local function test_timeline_queries()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:getState
+  -- @covers Lcurrent
   it("getState returns current state", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:getState(), "stopped")
     tl:play()
     expect_true(tl:getState() == "playing")
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:getDuration
+  -- @covers lurek.cinematic
   it("getDuration reflects clip lengths", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:getDuration(), 0.0)
@@ -214,8 +191,7 @@ local function test_timeline_queries()
     tl:addClip("track2", 2.0, 8.0, { type = "signal", name = "b" })
     expect_equal(tl:getDuration(), 10.0)
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:getTime
+  -- @covers lurek.cinematic
   it("getTime reflects current playback position", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
@@ -224,19 +200,42 @@ local function test_timeline_queries()
     expect_equal(tl:getTime(), 3.2)
   end)
 end
-
 local function test_type_methods()
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:type
+  -- @covers LCinematicTimeline
   it("type returns LCinematicTimeline", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:type(), "LCinematicTimeline")
   end)
-
-  -- @covers lurek.cinematic.newTimeline lurek.cinematic.newTimeline:typeOf
+  -- @covers lurek.cinematic
   it("typeOf recognizes type name", function()
     local tl = lurek.cinematic.newTimeline()
     expect_true(tl:typeOf("LCinematicTimeline"))
     expect_true(tl:typeOf("Object"))
+  end)
+end
+local function test_cinematic_creation()
+  -- @covers lurek.cinematic.new
+  it("creates a new cinematic", function()
+    local cin = lurek.cinematic.new()
+    expect_true(cin:typeOf("LCinematic"))
+  end)
+end
+
+local function test_cinematic_cuts()
+  -- @covers LCinematic:addCut
+  it("adds a cut to cinematic", function()
+    local cin = lurek.cinematic.new()
+    cin:addCut(0.0, "scene_start")
+    expect_equal(cin:cutCount(), 1)
+  end)
+  -- @covers LCinematic:cutCount
+  it("returns cut count", function()
+    local cin = lurek.cinematic.new()
+    expect_equal(cin:cutCount(), 0)
+    cin:addCut(0.0, "intro")
+    expect_equal(cin:cutCount(), 1)
+    cin:addCut(2.0, "action_start")
+    expect_equal(cin:cutCount(), 2)
   end)
 end
 
@@ -248,5 +247,6 @@ test_time_control()
 test_labels_and_branching()
 test_timeline_queries()
 test_type_methods()
-
+test_cinematic_creation()
+test_cinematic_cuts()
 test_summary()

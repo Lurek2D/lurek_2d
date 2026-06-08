@@ -1,10 +1,5 @@
 -- Integration: save manager snapshots serialized and sent as network packets
 -- @describe network + save integration
--- @covers lurek.network.pack
--- @covers lurek.network.unpack
--- @covers lurek.save.newSaveManager
-
-
 describe("network + save integration", function()
     -- @integration LSaveManager:collect
     -- @integration LSaveManager:register
@@ -81,4 +76,3 @@ describe("network + save integration", function()
     end)
 end)
 test_summary()
-

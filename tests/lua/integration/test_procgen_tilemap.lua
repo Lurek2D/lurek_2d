@@ -1,9 +1,5 @@
 -- Integration: procedural generation output placed into tilemap layers
 -- @describe procgen + tilemap integration
--- @covers lurek.procgen.perlinNoise
--- @covers lurek.tilemap.newTileMap
-
-
 describe("procgen + tilemap integration", function()
     -- @integration LTileMap:addLayer
     -- @integration LTileMap:getTile
@@ -68,5 +64,4 @@ describe("procgen + tilemap integration", function()
     end)
 
 end)
-
 test_summary()

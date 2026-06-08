@@ -228,6 +228,4 @@ describe("automation + event integration", function()
         automation.unload("expr_assert")
     end)
 end)
-
 test_summary()
-

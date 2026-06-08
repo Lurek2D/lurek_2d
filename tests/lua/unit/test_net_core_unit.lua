@@ -158,5 +158,4 @@ if global_env.enet then
     end)
   end)
 end
-
 test_summary()

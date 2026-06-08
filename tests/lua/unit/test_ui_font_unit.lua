@@ -27,5 +27,4 @@ describe("lurek.ui font selection", function()
         expect_equal(nil, lurek.ui.getWidgetFont(widget))
     end)
 end)
-
 test_summary()

@@ -3,6 +3,7 @@
 
 local harness = require("tests.lua.harness")
 
+-- @describe lurek.input
 describe("lurek.input", function()
     -- @covers lurek.input.bind
     it("binds an input to an action", function()
@@ -167,5 +168,4 @@ describe("lurek.input", function()
         assert_equal("userdata", type(lurek.input))
     end)
 end)
-
 test_summary()

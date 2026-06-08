@@ -127,5 +127,4 @@ describe("window_config library     getScaleFactor", function()
         expect_equal(scale, 1.0, "scale must be 1.0 without game size")
     end)
 end)
-
 test_summary()

@@ -75,5 +75,4 @@ describe("evidence: html", function()
         write_text(path, json)
     end)
 end)
-
 test_summary()

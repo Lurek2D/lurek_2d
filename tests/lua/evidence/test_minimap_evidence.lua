@@ -389,5 +389,4 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
 end)
-
 test_summary()

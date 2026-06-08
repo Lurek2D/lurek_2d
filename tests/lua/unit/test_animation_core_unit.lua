@@ -1498,5 +1498,4 @@ describe("setImage() / draw without explicit image (LAnimStateMachine)", functio
         end)
     end)
 end)
-
 test_summary()

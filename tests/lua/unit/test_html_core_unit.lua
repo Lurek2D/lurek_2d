@@ -733,5 +733,4 @@ describe("html strict: document render method", function()
         expect_type("boolean", ok)
     end)
 end)
-
 test_summary()

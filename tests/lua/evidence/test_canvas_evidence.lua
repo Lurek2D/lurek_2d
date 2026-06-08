@@ -73,5 +73,4 @@ describe("evidence: canvas", function()
         write_text(path, json)
     end)
 end)
-
 test_summary()

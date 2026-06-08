@@ -463,6 +463,4 @@ describe("MapBlockConfig:removeSlot", function()
         expect_equal(0, cfg:getSlotCount())
     end)
 end)
-
 test_summary()
-

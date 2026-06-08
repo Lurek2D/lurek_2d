@@ -193,5 +193,4 @@ describe("tween_chain library     onComplete callback", function()
         expect_true(fired, "onComplete must fire when chain completes")
     end)
 end)
-
 test_summary()

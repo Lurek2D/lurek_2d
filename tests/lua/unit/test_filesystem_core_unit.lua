@@ -1124,5 +1124,4 @@ describe("unit: migrated from integration/test_serial_filesystem.lua", function(
         end)
 
 end)
-
 test_summary()

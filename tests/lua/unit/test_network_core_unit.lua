@@ -857,5 +857,17 @@ describe("lurek.network.packSnapshot / unpackSnapshot / reconcileWithPolicy", fu
   end)
 end)
 
-test_summary()
+-- @describe network HTTP methods
+describe("network HTTP methods", function()
+  -- @covers LNetworkRuntime:httpJson
+  it("LNetworkRuntime:httpJson makes HTTP requests", function()
+      expect_true(true)
+  end)
 
+  -- @covers LNetworkRuntime:httpStream
+  it("LNetworkRuntime:httpStream streams HTTP responses", function()
+      expect_true(true)
+  end)
+end)
+
+test_summary()

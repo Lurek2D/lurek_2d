@@ -1,6 +1,7 @@
 -- Test file: tests/lua/unit/test_network_netstate.lua
 -- Tests for lurek.network.newNetState (NetState state synchronization manager)
 
+-- @describe lurek.network.newNetState
 describe("lurek.network.newNetState", function()
     -- @covers lurek.network.newNetState
     it("creates a network state manager from a host", function()
@@ -141,5 +142,4 @@ describe("lurek.network.newNetState", function()
         assert(true, "requestFullState should work")
     end)
 end)
-
 test_summary()

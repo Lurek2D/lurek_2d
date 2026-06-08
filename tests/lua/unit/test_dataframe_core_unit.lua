@@ -4249,5 +4249,4 @@ describe("parallel operations", function()
         expect_equal(2, result:nrows())
     end)
 end)
-
 test_summary()

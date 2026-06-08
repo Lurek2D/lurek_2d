@@ -488,5 +488,4 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
     end)
 
 end)
-
 test_summary()

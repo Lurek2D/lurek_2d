@@ -116,5 +116,4 @@ describe("lurek.layout", function()
         expect_equal(5, #result.nodes)
     end)
 end)
-
 test_summary()

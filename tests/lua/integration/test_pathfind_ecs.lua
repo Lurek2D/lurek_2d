@@ -1,10 +1,5 @@
 -- Integration: pathfinding results driving entity positioning via ECS
 -- @describe pathfinding + entity integration
--- @covers lurek.ecs.newUniverse
--- @covers lurek.pathfind.newNavGrid
--- @covers lurek.pathfind.newPathfinder
-
-
 describe("pathfinding + entity integration", function()
     -- @integration LUnitPathfinder:findPath
     -- @integration LUniverse:get

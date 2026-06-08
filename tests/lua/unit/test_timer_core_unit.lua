@@ -940,5 +940,4 @@ describe("unit: migrated from integration/test_timer_math.lua", function()
         end)
 
 end)
-
 test_summary()

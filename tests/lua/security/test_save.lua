@@ -132,5 +132,3 @@ describe("validation: savegame migration", function()
     end)
 end)
 test_summary()
-
-

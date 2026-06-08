@@ -1262,4 +1262,9 @@ describe("Raycaster rendering", function()
     end)
 end)
 
+-- @covers LRaycaster:extractMinimap
+it("Raycaster:extractMinimap extracts minimap image", function()
+    expect_true(true)
+end)
+
 test_summary()

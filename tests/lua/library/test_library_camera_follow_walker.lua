@@ -44,6 +44,7 @@ local function build_map()
     return map
 end
 
+-- @describe camera_follow_walker library
 describe("camera_follow_walker library", function()
     -- @library lurek.library_camera_follow_walker
     it("creates helper and resolves tile position", function()
@@ -92,5 +93,4 @@ describe("camera_follow_walker library", function()
         expect_equal(ty, 3, "tile y should move to next row")
     end)
 end)
-
 test_summary()

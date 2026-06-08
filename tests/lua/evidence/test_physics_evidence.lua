@@ -219,7 +219,4 @@ describe("Evidence: lurek.physics visual scenarios", function()
         lurek.physics.destroyWorld(world)
     end)
 end)
-
 test_summary()
-
-

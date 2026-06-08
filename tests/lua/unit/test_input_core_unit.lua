@@ -1403,5 +1403,4 @@ describe("lurek.input extended action binding (NM-04)", function()
     end)
 
 end)
-
 test_summary()

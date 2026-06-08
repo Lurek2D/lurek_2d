@@ -81,5 +81,4 @@ describe("Evidence: lurek.scene DepthSorter", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

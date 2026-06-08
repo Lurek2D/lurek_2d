@@ -259,5 +259,4 @@ describe("Evidence: advanced lurek.light scenarios", function()
     end)
 
 end)
-
 test_summary()

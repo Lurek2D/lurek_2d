@@ -110,5 +110,3 @@ describe("physics multi-body + math", function()
     end)
 end)
 test_summary()
-
-

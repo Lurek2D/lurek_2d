@@ -1437,5 +1437,4 @@ describe("render strict: batch text and OBJ APIs", function()
         lurek.render.setBold(prev)
     end)
 end)
-
 test_summary()

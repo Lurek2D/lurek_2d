@@ -2677,6 +2677,4 @@ describe("lurek.effect.newImageEffect invalid effect name", function()
         end)
     end)
 end)
-
 test_summary()
-

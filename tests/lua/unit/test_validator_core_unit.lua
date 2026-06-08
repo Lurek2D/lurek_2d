@@ -193,6 +193,4 @@ describe("ValidationEngine:run", function()
         expect_type("table", report.violations)
     end)
 end)
-
 test_summary()
-

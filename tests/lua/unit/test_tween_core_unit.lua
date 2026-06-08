@@ -1390,7 +1390,6 @@ describe("unit: migrated from integration/test_tween_ecs.lua", function()
 end)
 
 -- @describe Relative and introspection
-
 describe("Relative and introspection", function()
     -- @covers LTween:relative
     -- @covers lurek.tween.tween
@@ -1422,7 +1421,6 @@ describe("Relative and introspection", function()
 end)
 
 -- @describe Await support
-
 describe("Await support", function()
     -- @covers LTween:await
     -- @covers lurek.tween.update
@@ -1472,7 +1470,6 @@ describe("Await support", function()
 end)
 
 -- @describe Helper APIs
-
 describe("Helper APIs", function()
     -- @covers lurek.tween.tweenColor
     -- @covers lurek.tween.update
@@ -1501,5 +1498,4 @@ describe("Helper APIs", function()
         expect_near(10.0, obj.x, 0.001)
     end)
 end)
-
 test_summary()

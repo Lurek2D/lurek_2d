@@ -293,4 +293,24 @@ describe("lurek.scene.newObjectContainer", function()
     end)
 end)
 
+-- @describe SceneObjectContainer add and has methods
+describe("SceneObjectContainer add and has", function()
+    -- @covers LSceneObjectContainer:add
+    it("adds object to container", function()
+        local container = lurek.scene.newObjectContainer()
+        local obj = { layer = 1, x = 0, y = 0 }
+        container:add(obj)
+        assert(container:getCount() == 1)
+    end)
+
+    -- @covers LSceneObjectContainer:has
+    it("checks if container has object", function()
+        local container = lurek.scene.newObjectContainer()
+        local obj = { layer = 1 }
+        container:add(obj)
+        local has_obj = container:has(obj)
+        assert(has_obj == true)
+    end)
+end)
+
 test_summary()

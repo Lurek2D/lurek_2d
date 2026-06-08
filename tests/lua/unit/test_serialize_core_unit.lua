@@ -925,5 +925,4 @@ describe("property: serial json invariants", function()
             end
         end)
 end)
-
 test_summary()

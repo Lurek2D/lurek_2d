@@ -777,5 +777,4 @@ end)
             expect_type("table", pose)
         end)
     end)
-
 test_summary()

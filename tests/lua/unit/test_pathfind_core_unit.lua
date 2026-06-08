@@ -1961,4 +1961,77 @@ describe("NavMesh", function()
     end)
 end)
 
+-- @describe pathfind GoalMap and newGoalMap
+describe("pathfind GoalMap and newGoalMap", function()
+    -- @covers lurek.pathfind.newGoalMap
+    it("newGoalMap constructs with dimensions", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        expect_type("userdata", goalMap)
+    end)
+
+    -- @covers LGoalMap:addSource
+    it("addSource adds a source to goal map", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        expect_type("userdata", goalMap)
+    end)
+
+    -- @covers LGoalMap:setSources
+    it("setSources replaces all sources", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:setSources({{x = 10, y = 10}, {x = 15, y = 15}})
+        expect_type("userdata", goalMap)
+    end)
+
+    -- @covers LGoalMap:clearSources
+    it("clearSources removes all sources", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:clearSources()
+        expect_type("userdata", goalMap)
+    end)
+
+    -- @covers LGoalMap:bake
+    it("bake computes distances", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:bake()
+        expect_type("userdata", goalMap)
+    end)
+
+    -- @covers LGoalMap:isReady
+    it("isReady returns bake status", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        local ready = goalMap:isReady()
+        expect_type("boolean", ready)
+    end)
+
+    -- @covers LGoalMap:distanceAt
+    it("distanceAt returns distance from cell", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:bake()
+        local dist = goalMap:distanceAt(6, 5)
+        expect_type("number", dist)
+    end)
+
+    -- @covers LGoalMap:gradientAt
+    it("gradientAt returns gradient vector", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:bake()
+        local gx, gy = goalMap:gradientAt(6, 5)
+        expect_type("number", gx)
+        expect_type("number", gy)
+    end)
+
+    -- @covers LNavGrid:findHpaPath
+    it("findHpaPath uses HPA* to find path", function()
+        local grid = lurek.pathfind.newNavGrid(20, 20)
+        local path = grid:findHpaPath(1, 1, 10, 10)
+        expect_type("table", path)
+    end)
+end)
+
 test_summary()

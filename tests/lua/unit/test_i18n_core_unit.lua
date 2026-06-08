@@ -839,5 +839,4 @@ describe("lurek.i18n.localeCoverage", function()
         clear_loaded_locales()
     end)
 end)
-
 test_summary()

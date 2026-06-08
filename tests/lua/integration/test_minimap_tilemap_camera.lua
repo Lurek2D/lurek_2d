@@ -1,10 +1,5 @@
 -- Integration: minimap reflects logical tilemap coordinates and camera movement.
 -- @describe integration: minimap + tilemap + camera
--- @covers lurek.camera.newCamera
--- @covers lurek.minimap.newMinimap
--- @covers lurek.tilemap.newTileMap
-
-
 describe("integration: minimap + tilemap + camera", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
@@ -33,5 +28,4 @@ describe("integration: minimap + tilemap + camera", function()
         expect_true(mx >= 0 and my >= 0, "mini coordinates should be non-negative")
     end)
 end)
-
 test_summary()

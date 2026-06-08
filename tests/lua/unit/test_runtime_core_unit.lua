@@ -574,5 +574,4 @@ describe("lurek.runtime.getConfig", function()
         expect_true(cfg.config_reload_revision >= 0, "revision must be non-negative")
     end)
 end)
-
 test_summary()

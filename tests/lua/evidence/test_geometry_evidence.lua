@@ -78,5 +78,4 @@ describe("evidence: geometry", function()
         write_text(path, json)
     end)
 end)
-
 test_summary()

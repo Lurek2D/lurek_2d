@@ -103,5 +103,4 @@ describe("lurek.overlay", function()
         expect_true(t ~= nil, "transition should be created")
     end)
 end)
-
 test_summary()

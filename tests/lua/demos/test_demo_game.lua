@@ -17,5 +17,4 @@ describe("demo: demo_game", function()
         demo_check_no_direct_present(DEMO)
     end)
 end)
-
 test_summary()

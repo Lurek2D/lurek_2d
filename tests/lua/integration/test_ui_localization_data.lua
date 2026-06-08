@@ -1,13 +1,5 @@
 -- Integration: i18n text source serialized with data and consumed by UI layout.
 -- @describe integration: ui + i18n + data
--- @covers lurek.binary.pack
--- @covers lurek.binary.unpack
--- @covers lurek.i18n.loadTable
--- @covers lurek.i18n.setLanguage
--- @covers lurek.i18n.t
--- @covers lurek.ui.loadLayout
-
-
 describe("integration: ui + i18n + data", function()
     -- @integration lurek.binary.pack
     -- @integration lurek.binary.unpack
@@ -36,5 +28,4 @@ describe("integration: ui + i18n + data", function()
         expect_type("number", root, "ui layout should return root id")
     end)
 end)
-
 test_summary()

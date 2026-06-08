@@ -1,9 +1,5 @@
 -- Integration: raycaster per-cell texture overrides and render image userdata
 -- @describe raycaster + render integration
--- @covers lurek.raycaster.new
--- @covers lurek.render.newImage
-
-
 describe("raycaster + render integration", function()
     -- @integration LImage:getId
     -- @integration LRaycaster:getFloorTextureCell
@@ -24,5 +20,4 @@ describe("raycaster + render integration", function()
         expect_equal(ceil_img:getId(), rc:getCeilingTextureCell(1, 1))
     end)
 end)
-
 test_summary()

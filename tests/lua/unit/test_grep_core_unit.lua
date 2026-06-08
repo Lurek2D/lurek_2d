@@ -201,5 +201,4 @@ describe("GrepEngine searchFiles", function()
         expect_equal(0, result.total_matches)
     end)
 end)
-
 test_summary()

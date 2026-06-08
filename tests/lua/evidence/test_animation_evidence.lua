@@ -66,5 +66,4 @@ describe("Evidence: lurek.animation API", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

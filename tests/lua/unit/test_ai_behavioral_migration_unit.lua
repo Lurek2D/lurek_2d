@@ -300,5 +300,4 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_near(10.0, y, 0.01)
     end)
 end)
-
 test_summary()

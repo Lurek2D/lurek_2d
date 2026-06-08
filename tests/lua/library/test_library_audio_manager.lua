@@ -113,5 +113,4 @@ describe("audio_manager library     playMusic stopMusic lifecycle", function()
         expect_true(ok, "stopMusic must not error when no music is playing")
     end)
 end)
-
 test_summary()

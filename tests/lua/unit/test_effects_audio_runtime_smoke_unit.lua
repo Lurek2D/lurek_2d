@@ -50,5 +50,4 @@ describe("effects/audio runtime smoke via lurek API", function()
         expect_equal(vol >= 0.0 and vol <= 1.0, true)
     end)
 end)
-
 test_summary()

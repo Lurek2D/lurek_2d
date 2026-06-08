@@ -571,8 +571,3 @@ describe("fuzz: P0 modules nil type extreme", function()
     end)
 end)
 test_summary()
-
-
-
-
-

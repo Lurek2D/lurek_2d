@@ -130,5 +130,3 @@ describe("validation: TOML edge cases", function()
     end)
 end)
 test_summary()
-
-

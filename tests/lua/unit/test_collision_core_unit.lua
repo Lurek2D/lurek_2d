@@ -60,5 +60,4 @@ describe("collision surface available via lurek.physics", function()
         expect_equal(7, body:getMask())
     end)
 end)
-
 test_summary()

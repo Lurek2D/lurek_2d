@@ -1,9 +1,5 @@
 -- Integration: ECS entities driven by AI state machines
 -- @describe integration: entity with AI state machine
--- @covers lurek.ai.newStateMachine
--- @covers lurek.ecs.newUniverse
-
-
 describe("integration: entity with AI state machine", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition
@@ -56,5 +52,4 @@ describe("integration: entity with AI state machine", function()
         expect_equal(10, universe:getEntityCount(), "10 entities exist")
     end)
 end)
-
 test_summary()

@@ -22,7 +22,4 @@ function make_test_grid(cols, rows, tile_size)
     tile_size = tile_size or 16
     return cols, rows, tile_size
 end
-
 test_summary()
-
-

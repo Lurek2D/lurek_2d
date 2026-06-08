@@ -526,7 +526,3 @@ describe("stress: physics zones throughput", function()
     end)
 end)
 test_summary()
-
-
-
-

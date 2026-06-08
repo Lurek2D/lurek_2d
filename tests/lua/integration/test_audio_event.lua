@@ -1,10 +1,5 @@
 -- Integration: audio volume controlled via event signals
 -- @describe audio + event integration
--- @covers lurek.audio.getMasterVolume
--- @covers lurek.audio.setMasterVolume
--- @covers lurek.event.newSignal
-
-
 describe("audio + event integration", function()
     -- @integration LSignal:connect
     -- @integration LSignal:emit

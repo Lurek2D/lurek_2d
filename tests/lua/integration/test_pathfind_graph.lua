@@ -2,10 +2,6 @@
 
 -- JPS Grid + WorldGraph produced by procgen
 -- @describe procgen worldGraph + JPS grid integration
--- @covers lurek.pathfind.newJpsGrid
--- @covers lurek.procgen.roomsDungeon
-
-
 describe("procgen worldGraph + JPS grid integration", function()
 
     -- @integration LJpsGrid:findPath

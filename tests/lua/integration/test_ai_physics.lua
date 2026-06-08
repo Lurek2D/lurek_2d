@@ -1,13 +1,5 @@
 -- Integration: AI steering forces applied to physics bodies
 -- @describe integration: AI steering with physics bodies
--- @covers lurek.ai.newSteeringManager
--- @covers lurek.physics.getBody
--- @covers lurek.physics.newBody
--- @covers lurek.physics.newWorld
--- @covers lurek.physics.setBodyVelocity
--- @covers lurek.physics.step
-
-
 describe("integration: AI steering with physics bodies", function()
     -- @integration LSteeringManager:addSeek
     -- @integration LSteeringManager:calculate
@@ -45,5 +37,3 @@ describe("integration: AI steering with physics bodies", function()
     end)
 end)
 test_summary()
-
-

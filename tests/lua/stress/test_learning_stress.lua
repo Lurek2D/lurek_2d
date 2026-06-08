@@ -97,5 +97,4 @@ describe("lurek.learning stress", function()
         expect_not_nil(best_net, "bestNetwork should return a net after evolution")
     end)
 end)
-
 test_summary()

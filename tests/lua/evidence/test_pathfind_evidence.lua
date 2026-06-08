@@ -88,5 +88,4 @@ describe("evidence: pathfind", function()
         write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
 end)
-
 test_summary()

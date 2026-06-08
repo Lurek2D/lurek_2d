@@ -1158,5 +1158,4 @@ describe("minimap migrated from render unit", function()
         expect_type("function", lurek.minimap.newMinimap)
     end)
 end)
-
 test_summary()

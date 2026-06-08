@@ -367,5 +367,4 @@ describe("Evidence: light + occluder shadows (vending machine scene)", function(
         lurek.light.clear()
     end)
 end)
-
 test_summary()

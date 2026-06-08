@@ -1,48 +1,41 @@
 -- tests/lua/unit/test_dialog_sequencer_unit.lua
 -- @describe Dialog Sequencer
-
 local it = IT
 local expect_equal = EXPECT_EQUAL
 local expect_true = EXPECT_TRUE
 local expect_false = EXPECT_FALSE
 local assert_error = ASSERT_ERROR
-
 local function test_sequencer_creation()
-  -- @covers lurek.dialog.newSequencer
+  -- @covers lurek.dialog
   it("creates a new sequencer", function()
     local seq = lurek.dialog.newSequencer()
     expect_true(seq:typeOf("LDialogSequencer"))
   end)
-
-  -- @covers lurek.dialog.newSequencer
+  -- @covers lurek.dialog
   it("has idle state on creation", function()
     local seq = lurek.dialog.newSequencer()
     expect_equal(seq:getState(), "idle")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.newSequencer
+  -- @covers lurek.dialog
   it("is not active on creation", function()
     local seq = lurek.dialog.newSequencer()
     expect_false(seq:isActive())
   end)
 end
-
 local function test_say_nodes()
-  -- @covers lurek.dialog.say
+  -- @covers lurek.dialog
   it("creates a say node", function()
     local node = lurek.dialog.say("Hero", "Hello!")
     expect_equal(node.type, "say")
     expect_equal(node.actor, "Hero")
     expect_equal(node.text, "Hello!")
   end)
-
-  -- @covers lurek.dialog.say
+  -- @covers lurek.dialog
   it("say node accepts optional duration", function()
     local node = lurek.dialog.say("Hero", "Hello!", { duration = 2.0 })
     expect_equal(node.duration, 2.0)
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say
+  -- @covers lurek.dialog
   it("loads a single say node", function()
     local seq = lurek.dialog.newSequencer()
     local nodes = {
@@ -52,8 +45,7 @@ local function test_say_nodes()
     seq:start()
     expect_equal(seq:getState(), "typing")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say
+  -- @covers lurek.dialog
   it("typewriter reveals text over time", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(10.0) -- 10 chars/sec
@@ -66,8 +58,7 @@ local function test_say_nodes()
     seq:update(0.1) -- 1 more character
     expect_equal(string.len(seq:revealedText()), 2)
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say
+  -- @covers lurek.dialog
   it("transition to waiting when typing complete", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(100.0) -- very fast
@@ -79,17 +70,15 @@ local function test_say_nodes()
     expect_equal(seq:getState(), "waiting")
   end)
 end
-
 local function test_choice_nodes()
-  -- @covers lurek.dialog.choice
+  -- @covers lurek.dialog
   it("creates a choice node", function()
     local node = lurek.dialog.choice("Pick one:", {"Option A", "Option B"})
     expect_equal(node.type, "choice")
     expect_equal(node.prompt, "Pick one:")
     expect_equal(#node.options, 2)
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.choice
+  -- @covers lurek.dialog
   it("transitions to choice state when loading choice", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -98,8 +87,7 @@ local function test_choice_nodes()
     seq:start()
     expect_equal(seq:getState(), "choice")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.choice
+  -- @covers lurek.dialog
   it("can select a choice option", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -110,8 +98,7 @@ local function test_choice_nodes()
     seq:choose(2) -- select option 2 (1-based)
     expect_equal(seq:getState(), "typing")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.choice
+  -- @covers Loptions
   it("getChoiceLabels returns options", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -124,8 +111,7 @@ local function test_choice_nodes()
     expect_equal(labels[2], "Option B")
     expect_equal(labels[3], "Option C")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.choice
+  -- @covers Lprompt
   it("getChoiceText returns prompt", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -134,8 +120,7 @@ local function test_choice_nodes()
     seq:start()
     expect_equal(seq:getChoiceText(), "What now?")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.choice
+  -- @covers Ltrue
   it("isWaitingForChoice returns true in choice state", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -145,9 +130,8 @@ local function test_choice_nodes()
     expect_true(seq:isWaitingForChoice())
   end)
 end
-
 local function test_advance_and_skip()
-  -- @covers lurek.dialog.newSequencer lurek.dialog.advance
+  -- @covers lurek.dialog
   it("advance() skips typing to next node", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(1.0) -- slow reveal
@@ -163,8 +147,7 @@ local function test_advance_and_skip()
     expect_equal(seq:currentSpeaker(), "Hero")
     expect_equal(seq:currentText(), "Next line.")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say lurek.dialog.skip
+  -- @covers lurek.dialog
   it("skip() instantly reveals text", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(1.0)
@@ -177,16 +160,14 @@ local function test_advance_and_skip()
     expect_equal(seq:currentText(), "Full text")
   end)
 end
-
 local function test_speed_control()
-  -- @covers lurek.dialog.newSequencer lurek.dialog.setSpeed
+  -- @covers lurek.dialog
   it("setSpeed changes reveal speed", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(20.0) -- 20 chars/sec
     expect_equal(seq:getSpeed(), 20.0)
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.setSpeed
+  -- @covers lurek.dialog
   it("faster speed reveals more chars per update", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(100.0) -- very fast
@@ -196,7 +177,6 @@ local function test_speed_control()
     seq:start()
     seq:update(0.1)
     local fast_reveal = string.len(seq:revealedText())
-
     seq = lurek.dialog.newSequencer()
     seq:setSpeed(10.0) -- slower
     seq:load({
@@ -205,44 +185,38 @@ local function test_speed_control()
     seq:start()
     seq:update(0.1)
     local slow_reveal = string.len(seq:revealedText())
-
     expect_true(fast_reveal > slow_reveal)
   end)
 end
-
 local function test_node_helpers()
-  -- @covers lurek.dialog.wait
+  -- @covers lurek.dialog
   it("creates a wait node", function()
     local node = lurek.dialog.wait(2.5)
     expect_equal(node.type, "wait")
     expect_equal(node.seconds, 2.5)
   end)
-
-  -- @covers lurek.dialog.event
+  -- @covers lurek.dialog
   it("creates an event node", function()
     local node = lurek.dialog.event("combat_start", "goblin")
     expect_equal(node.type, "event")
     expect_equal(node.name, "combat_start")
     expect_equal(node.data, "goblin")
   end)
-
-  -- @covers lurek.dialog.call
+  -- @covers lurek.dialog
   it("creates a call node", function()
     local node = lurek.dialog.call("on_dialog_end")
     expect_equal(node.type, "call")
     expect_equal(node.name, "on_dialog_end")
   end)
-
-  -- @covers lurek.dialog.jump
+  -- @covers lurek.dialog
   it("creates a jump node", function()
     local node = lurek.dialog.jump("ending_a")
     expect_equal(node.type, "jump")
     expect_equal(node.target, "ending_a")
   end)
 end
-
 local function test_sequence_flow()
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say lurek.dialog.choice
+  -- @covers lurek.dialog
   it("flows through say -> choice -> say", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(100.0)
@@ -251,24 +225,19 @@ local function test_sequence_flow()
       lurek.dialog.choice("What do you do?", {"Fight", "Flee"}),
       lurek.dialog.say("Narrator", "You chose flee.")
     })
-
     seq:start()
     expect_equal(seq:getState(), "typing")
-
     seq:update(1.0) -- reveal complete
     expect_equal(seq:getState(), "waiting")
-
     seq:advance()
     expect_equal(seq:getState(), "choice")
-
     seq:choose(1)
     expect_equal(seq:getState(), "typing")
     expect_equal(seq:currentText(), "You chose flee.")
   end)
 end
-
 local function test_speaker_and_text_queries()
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say lurek.dialog.currentSpeaker
+  -- @covers Lactor
   it("currentSpeaker returns actor name", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -277,8 +246,7 @@ local function test_speaker_and_text_queries()
     seq:start()
     expect_equal(seq:currentSpeaker(), "Villain")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say lurek.dialog.currentText
+  -- @covers Lfull
   it("currentText returns full line", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -287,8 +255,7 @@ local function test_speaker_and_text_queries()
     seq:start()
     expect_equal(seq:currentText(), "The complete sentence")
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.say lurek.dialog.revealedText
+  -- @covers lurek.dialog
   it("revealedText reflects typewriter progress", function()
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(10.0) -- 10 chars/sec
@@ -300,15 +267,13 @@ local function test_speaker_and_text_queries()
     expect_equal(seq:revealedText(), "Te")
   end)
 end
-
 local function test_state_tracking()
-  -- @covers lurek.dialog.newSequencer lurek.dialog.isActive
+  -- @covers lurek.dialog
   it("isActive false when idle", function()
     local seq = lurek.dialog.newSequencer()
     expect_false(seq:isActive())
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.isActive
+  -- @covers lurek.dialog
   it("isActive true when typing", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -317,8 +282,7 @@ local function test_state_tracking()
     seq:start()
     expect_true(seq:isActive())
   end)
-
-  -- @covers lurek.dialog.newSequencer lurek.dialog.getState
+  -- @covers Lcurrent
   it("getState returns current state string", function()
     local seq = lurek.dialog.newSequencer()
     expect_equal(seq:getState(), "idle")
@@ -327,7 +291,6 @@ local function test_state_tracking()
     expect_true(seq:getState() == "typing" or seq:getState() == "waiting")
   end)
 end
-
 test_sequencer_creation()
 test_say_nodes()
 test_choice_nodes()
@@ -337,5 +300,4 @@ test_node_helpers()
 test_sequence_flow()
 test_speaker_and_text_queries()
 test_state_tracking()
-
 test_summary()

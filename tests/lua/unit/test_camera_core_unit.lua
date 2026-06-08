@@ -1334,5 +1334,4 @@ describe("unit: migrated from integration/test_input_camera.lua", function()
         end)
 
 end)
-
 test_summary()

@@ -3,6 +3,7 @@
 
 local harness = require("tests.lua.harness")
 
+-- @describe lurek.camera
 describe("lurek.camera", function()
     -- @covers lurek.camera.new
     it("creates a camera with default dimensions", function()
@@ -300,5 +301,4 @@ describe("lurek.camera", function()
         assert_true(y > 0)
     end)
 end)
-
 test_summary()

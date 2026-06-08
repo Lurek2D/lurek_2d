@@ -2,7 +2,6 @@
 -- lurek.province routing helper unit tests (TST-06)
 
 -- @describe province routing helpers
-
 describe("province routing helpers", function()
     -- @covers LProvinceRegistry:findRoute
     -- @covers LProvinceRegistry:isConnected
@@ -84,5 +83,4 @@ describe("province routing helpers", function()
         expect_true(total_player >= 12.5)
     end)
 end)
-
 test_summary()

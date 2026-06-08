@@ -2990,7 +2990,4 @@ describe("lurek.physics.step", function()
         expect_true(y > 0, "body should have moved downward under positive gravity")
     end)
 end)
-
 test_summary()
-
-

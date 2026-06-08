@@ -386,5 +386,4 @@ describe("chart config", function()
         expect_equal(300, chart:getHeight())
     end)
 end)
-
 test_summary()

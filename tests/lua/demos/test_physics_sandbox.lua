@@ -17,5 +17,4 @@ describe("demo: physics_sandbox", function()
         demo_check_no_direct_present(DEMO)
     end)
 end)
-
 test_summary()

@@ -963,5 +963,4 @@ describe("parallax migrated from render unit", function()
         expect_type("function", lurek.parallax.newSet)
     end)
 end)
-
 test_summary()

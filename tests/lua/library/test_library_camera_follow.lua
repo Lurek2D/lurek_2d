@@ -130,5 +130,4 @@ describe("camera_follow library     update movement", function()
         expect_true(x < 100, "camera must not overshoot target in one step")
     end)
 end)
-
 test_summary()

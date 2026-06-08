@@ -257,5 +257,4 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
 end)
-
 test_summary()

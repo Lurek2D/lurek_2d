@@ -2560,6 +2560,4 @@ describe("lurek.dsp.newSynthWave", function()
         expect_type("userdata", sd)
     end)
 end)
-
 test_summary()
-

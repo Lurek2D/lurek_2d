@@ -78,5 +78,4 @@ describe("evidence: cellular_sand", function()
         save_map_png(data, w, h, OUT .. "dense_map.png")
     end)
 end)
-
 test_summary()

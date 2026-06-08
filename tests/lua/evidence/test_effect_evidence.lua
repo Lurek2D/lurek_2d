@@ -94,5 +94,4 @@ describe("evidence: effect", function()
         lurek.image.savePNG(strip, path)
     end)
 end)
-
 test_summary()

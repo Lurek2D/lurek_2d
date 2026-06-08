@@ -261,5 +261,4 @@ describe("Evidence: lurek.procgen API + PNG visualizations", function()
         expect_evidence_created(OUT .. "procgen_wfc_lsystem_names.png")
     end)
 end)
-
 test_summary()

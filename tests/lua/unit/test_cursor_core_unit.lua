@@ -318,6 +318,4 @@ describe("CursorManager setAnimated and enableLineTrail", function()
     end)
 
 end)
-
 test_summary()
-

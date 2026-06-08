@@ -275,5 +275,4 @@ describe("map mode system", function()
         expect_false(reg:setMapMode("nonexistent"))
     end)
 end)
-
 test_summary()

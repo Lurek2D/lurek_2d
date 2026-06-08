@@ -2,6 +2,7 @@
 -- Tests for lurek.network module functions
 -- Covers: pack, unpack, setReady, isAllReady, getRoom, getPlayerList
 
+-- @describe lurek.network
 describe("lurek.network", function()
     -- @covers lurek.network.pack
     it("packs a table into binary message", function()
@@ -293,5 +294,4 @@ describe("lurek.network", function()
         assert(true, "onError should not error")
     end)
 end)
-
 test_summary()

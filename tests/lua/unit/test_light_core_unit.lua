@@ -2024,5 +2024,4 @@ describe("light strict: LOccluder type/typeOf", function()
         end
     end)
 end)
-
 test_summary()

@@ -24,6 +24,7 @@ local function build_map()
     return map
 end
 
+-- @describe tilemap_minimap library
 describe("tilemap_minimap library", function()
     -- @library lurek.library_tilemap_minimap
     it("syncs solidity into minimap terrain values", function()
@@ -72,5 +73,4 @@ describe("tilemap_minimap library", function()
         expect_true(ok_clear, "clearViewport should not fail")
     end)
 end)
-
 test_summary()

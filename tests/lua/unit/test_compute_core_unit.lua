@@ -2403,5 +2403,4 @@ describe("lurek.compute parallelization configuration", function()
         expect_equal(3, #result.vector)
     end)
 end)
-
 test_summary()

@@ -131,5 +131,4 @@ describe("input_action_map library     pressed held released", function()
         expect_true(m:released("jump") == false, "released must return false without engine input")
     end)
 end)
-
 test_summary()

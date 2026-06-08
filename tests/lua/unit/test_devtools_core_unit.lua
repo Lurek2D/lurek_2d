@@ -843,5 +843,4 @@ describe("devtools strict: LReplConsole type / typeOf", function()
         end
     end)
 end)
-
 test_summary()

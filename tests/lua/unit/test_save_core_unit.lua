@@ -438,5 +438,4 @@ describe("save migrated from integration/save_tilemap", function()
         expect_true(ver >= 0)
     end)
 end)
-
 test_summary()

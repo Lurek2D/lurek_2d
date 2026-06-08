@@ -97,5 +97,4 @@ describe("lurek.procgen noise", function()
         expect_not_equal(v1, v2, "different seeds should produce different values")
     end)
 end)
-
 test_summary()

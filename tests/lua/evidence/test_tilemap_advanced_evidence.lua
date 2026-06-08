@@ -298,5 +298,4 @@ describe("Evidence: advanced lurek.tilemap scenarios", function()
     end)
 
 end)
-
 test_summary()

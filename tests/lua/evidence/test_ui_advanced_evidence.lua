@@ -195,5 +195,4 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         save_chart(chart, 560, 320, "ui15_area_4layers.png")
     end)
 end)
-
 test_summary()

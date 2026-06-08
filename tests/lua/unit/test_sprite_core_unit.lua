@@ -870,5 +870,4 @@ describe("sprite strict: LSpriteAtlas type/typeOf", function()
         end
     end)
 end)
-
 test_summary()

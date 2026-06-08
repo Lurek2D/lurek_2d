@@ -111,5 +111,4 @@ describe("Evidence: additional lurek.minimap API", function()
         save_mm(mm, 8, "mm05_marker_animation.png")
     end)
 end)
-
 test_summary()

@@ -148,5 +148,3 @@ describe("lurek.network security", function()
 
 end)
 test_summary()
-
-

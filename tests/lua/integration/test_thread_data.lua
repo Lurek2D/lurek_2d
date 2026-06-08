@@ -1,10 +1,5 @@
 -- Integration: typed Channel passing JSON-serialized data between thread contexts
 -- @describe integration: thread channel with serialized data
--- @covers lurek.serial.fromJson
--- @covers lurek.serial.toJson
--- @covers lurek.thread.newChannel
-
-
 describe("integration: thread channel with serialized data", function()
 
     -- @integration LChannel:pop

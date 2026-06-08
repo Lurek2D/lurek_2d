@@ -389,5 +389,4 @@ describe("Evidence: lurek.raycaster API contracts", function()
     end)
 
 end)
-
 test_summary()

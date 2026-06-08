@@ -1,9 +1,5 @@
 -- Integration: raycaster grid cell values align with tilemap occupancy setup.
 -- @describe integration: raycaster + tilemap
--- @covers lurek.raycaster.new
--- @covers lurek.tilemap.newTileMap
-
-
 describe("integration: raycaster + tilemap", function()
     -- @integration LRaycaster:getCell
     -- @integration LRaycaster:setCell
@@ -22,5 +18,4 @@ describe("integration: raycaster + tilemap", function()
         expect_equal(1, rc:getCell(4, 4), "raycaster wall cell should be marked")
     end)
 end)
-
 test_summary()

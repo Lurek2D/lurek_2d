@@ -1095,5 +1095,4 @@ describe("mods strict: LMod / LModManager / LContentRegistry type/typeOf", funct
         expect_type("boolean", cr:typeOf("LObject"))
     end)
 end)
-
 test_summary()

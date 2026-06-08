@@ -352,5 +352,4 @@ describe("draw cache invalidation", function()
         expect_equal(drawn[1], "b")
     end)
 end)
-
 test_summary()

@@ -932,5 +932,4 @@ describe("docs strict: LQualityReport toTable / type / typeOf", function()
         expect_type("boolean", q:typeOf("LObject"))
     end)
 end)
-
 test_summary()

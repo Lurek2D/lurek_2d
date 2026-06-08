@@ -420,5 +420,4 @@ describe("lurek.color.palette", function()
         expect_equal(0, #pal)
     end)
 end)
-
 test_summary()

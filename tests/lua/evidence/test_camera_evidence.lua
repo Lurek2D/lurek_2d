@@ -81,5 +81,4 @@ describe("evidence: camera", function()
         write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
 end)
-
 test_summary()

@@ -3,6 +3,7 @@
 
 local harness = require("tests.lua.harness")
 
+-- @describe lurek.window
 describe("lurek.window", function()
     -- Title management
     -- @covers lurek.window.setTitle
@@ -138,5 +139,4 @@ describe("lurek.window", function()
     end)
 
 end)
-
 test_summary()

@@ -1403,5 +1403,4 @@ describe("particle presets and physics collision", function()
         expect_false(ps:hasCollidesWithPhysics())
     end)
 end)
-
 test_summary()

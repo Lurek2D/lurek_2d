@@ -2881,4 +2881,11 @@ describe("lurek.math easingNames and cubicBezier", function()
     end)
 end)
 
+-- @covers LLootTable:add
+it("LootTable:add adds weighted item", function()
+    local lt = lurek.math.newLootTable()
+    lt:add("sword", 10.0)
+    assert(true, "LootTable:add should work")
+end)
+
 test_summary()

@@ -357,5 +357,4 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 end)
-
 test_summary()

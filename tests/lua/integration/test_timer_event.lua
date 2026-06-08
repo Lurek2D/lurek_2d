@@ -1,9 +1,5 @@
 -- Integration: timer scheduler callbacks emitting event signals
 -- @describe timer + event integration
--- @covers lurek.event.newSignal
--- @covers lurek.timer.newScheduler
-
-
 describe("timer + event integration", function()
 
     -- @integration LScheduler:after
