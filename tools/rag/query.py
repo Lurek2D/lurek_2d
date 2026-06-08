@@ -53,7 +53,7 @@ def search_index(query, profile="all", limit=10, db_path_override=None):
         if profile == "game":
             sql_select += " AND (type = 'api' OR path LIKE 'content/%' OR path LIKE 'docs/%' OR path LIKE 'library/%') "
         elif profile == "engine":
-            sql_select += " AND (path LIKE 'src/%' OR path LIKE 'tests/%' OR path LIKE '.github/%' OR path LIKE 'tools/%') "
+            sql_select += " AND (path LIKE '.codex/%' OR path LIKE '.github/%' OR path LIKE 'extension/%' OR path LIKE 'src/%' OR path LIKE 'tests/%' OR path LIKE 'tools/%') "
             
         sql_select += " ORDER BY (type = 'api') DESC, rank LIMIT ?"
         

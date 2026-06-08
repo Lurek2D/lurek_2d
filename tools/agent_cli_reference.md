@@ -7,6 +7,8 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `assets/gen_courier_new_bitmap_fonts.py` - Generate Courier New bitmap font sprite sheets for ASCII 32..255 (Latin-1).
 
 ### /audit
+- `audit/api_occurrence_validator.py` - API Occurrence Validator -- Check that each lurek.* API has examples.
+- `audit/api_stub_validator.py` - API Stub Validator -- Validate --@api-stub: block structure and content.
 - `audit/audit_module.py` - audit_module.py — Lurek2D module quality audit tool.
 - `audit/cag_coverage.py` - cag_coverage.py — required-section coverage analytics for CAG files.
 - `audit/cag_link_check.py` - cag_link_check.py — broken-link checker for the CAG layer.
@@ -15,6 +17,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `audit/doc_audit.py` - doc_audit.py — Lurek2D unified docs-general audit.
 - `audit/doc_coverage.py` - doc_coverage.py — Lurek2D docs-general coverage analytics.
 - `audit/docstring_audit.py` - docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
+- `audit/docstring_quality_audit.py` - Audit docstring quality - identifies files with poor/unclear module documentation.
 - `audit/example_add_missing.py` - Append stub sections to content/examples/ for uncovered lurek.* API items.
 - `audit/example_coverage.py` - Cross-reference Lua example scripts against the lurek.* Lua API.
 - `audit/extract_constructors.py` - Extract all lurek.module.function signatures from docs/api/lurek.lua
@@ -74,12 +77,13 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `docs/gen_lib_docs.py` - gen_lib_docs.py — Generate API docs from Lurek2D library Lua files.
 - `docs/gen_lua_api.py` - gen_lua_api.py â€” Lurek2D Lua API parser library.
 - `docs/gen_lua_api_data.py` - gen_lua_api_data.py — Generate Lurek2D master API data file.
+- `docs/gen_lua_api_html_wrapper.py` - gen_lua_api_html_wrapper.py — Generate HTML index wrapper for Lua API docs-general in pages/lua-docs/.
 - `docs/gen_lua_binding_reports.py` - Generate source-derived Lua binding snapshots from src/lua_api/*.rs.
 - `docs/gen_lua_dev_docs.py` - gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files.
 - `docs/gen_lua_docstring_skeletons.py` - gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
 - `docs/gen_lua_library_api.py` - gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
 - `docs/gen_luadoc.py` - gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
-- `docs/gen_module_pages.py` - Generate per-module MkDocs pages in docs/pages/ from:
+- `docs/gen_module_pages.py` - Generate per-module MkDocs pages in docs/lua/ from:
 - `docs/gen_module_specs.py` - Generate merged docs/specs/<module>.md files for top-level src modules.
 - `docs/gen_rust_api_data.py` - gen_rust_api_data.py — Generate Lurek2D master API data file.
 - `docs/gen_rust_docstrings.py` - gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
@@ -94,6 +98,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `fix/add_test_markers.py` - Add @covers / @stress / @golden / @security markers to Lurek2D Lua test files.
 - `fix/docstring_fix.py` - docstring_fix.py -- Auto-inject missing @param/@return tags into Lua API docstrings.
 - `fix/expand_examples.py` - tools/fix/expand_examples.py
+- `fix/fix_file_docstrings.py` - Fix file-level //! docstrings to meet size and length requirements.
 - `fix/fix_param_types.py` - fix_param_types.py — Auto-fix @param type tags where documented ``number`` should be ``integer``.
 - `fix/format_examples.py` - tools/fix/format_examples.py
 - `fix/improve_examples.py` - tools/fix/improve_examples.py
@@ -106,6 +111,9 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `github/ideas_to_github_issues.py` - Create GitHub issues from each markdown file in docs/ideas/.
 - `github/sync_agent_rules.py` - sync_agent_rules.py — Synchronize workspace rules files with Lurek2D system prompt.
 
+### /mcp
+- `mcp/lurek_mcp_server.py` - Expose Lurek2D RAG and Lua API quality audits as a minimal stdio MCP server.
+
 ### /mods
 - `mods/mod_init.py` - mod_init.py — Scaffold a minimal Lurek2D mod project.
 
@@ -114,7 +122,10 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `rag/query.py` - query.py — Queries the local SQLite FTS5 RAG index for Lurek2D API examples and usage.
 
 ### /root
-- `gen_all_docs.py` - Convenience runner: regenerate the full Lurek2D docs-general pipeline in one command.
+- `fix_remaining_markers.py` - Add missing @covers markers to specific it() blocks.
+- `fix_test_markers.py` - Add missing @covers markers to it() blocks in Lua tests.
+- `fix_test_structure.py` - Fix Lua test structure violations.
+- `gen_all_docs.py` - Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
 
 ### /snippets
 - `snippets/gen_vscode_snippets.py` - Build extension/vscode/data/snippets.json from content/snippets/*.lua.
@@ -128,6 +139,8 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `validate/_cag_common.py` - Common helpers shared by CAG validator and audit tools.
 - `validate/cag_validate.py` - cag_validate.py — Lurek2D CAG layer validator.
 - `validate/check_callbacks.py` - check_callbacks.py — Verify that gen_docs_lua.py _callbacks() output has no embedded newlines.
+- `validate/cleanup_prompt_catalog.py` - Remove deprecated prompts and rename remaining create-oriented prompts.
+- `validate/prompt_scope_report.py` - Report active prompt scope and flag deprecated analysis-style prompts.
 - `validate/validate_changelog.py` - Validate docs/CHANGELOG.md structure and content.
 - `validate/validate_example_coverage.py` - validate_example_coverage.py — Quality gate for example coverage.
 - `validate/validate_game.py` - validate_game.py — Validate Lua game scripts against the Lurek2D API surface.

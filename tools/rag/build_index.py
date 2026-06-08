@@ -19,7 +19,10 @@ with open(CONFIG_PATH, "rb") as f:
 
 MAX_CHUNK_SIZE = config.get("indexing", {}).get("max_chunk_size", 1500)
 ALLOWED_EXTENSIONS = set(config.get("indexing", {}).get("allowed_extensions", [".md", ".lua", ".rs"]))
-DEFAULT_TARGET_DIRS = config.get("indexing", {}).get("default_target_dirs", [".github", "content", "docs", "library", "src", "tests"])
+DEFAULT_TARGET_DIRS = config.get("indexing", {}).get(
+    "default_target_dirs",
+    [".codex", ".github", "content", "docs", "extension", "library", "src", "tests", "tools"],
+)
 
 def init_db(db_path):
     conn = sqlite3.connect(db_path)

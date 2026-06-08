@@ -31,6 +31,7 @@ MASTER_README = TOOLS_DIR / "README.md"
 TOOL_SUBFOLDERS = [
     "validate", "audit", "fix", "docs", "dev",
     "dist", "github", "demos", "ui", "mods",
+    "mcp",
 ]
 
 # Files that are helpers, not standalone tools

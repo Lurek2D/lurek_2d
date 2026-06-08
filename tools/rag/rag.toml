@@ -1,7 +1,7 @@
 [indexing]
 max_chunk_size = 1500
 allowed_extensions = [".md", ".lua", ".rs"]
-default_target_dirs = [".github", "content", "docs", "library", "src", "tests"]
+default_target_dirs = [".codex", ".github", "content", "docs", "extension", "library", "src", "tests", "tools"]
 
 [search]
 # Weights for BM25 ranking (path, title, content)

@@ -1,0 +1,7 @@
+name = "developer"
+description = "Developer role for Rust engine work in src/ and src/lua_api/."
+model = "gpt-5.2-codex"
+model_reasoning_effort = "medium"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"

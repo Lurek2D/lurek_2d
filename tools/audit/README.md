@@ -3,6 +3,8 @@
 > [!NOTE]
 > Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.
 
+- **`api_occurrence_validator.py`**: API Occurrence Validator -- Check that each lurek.* API has examples.
+- **`api_stub_validator.py`**: API Stub Validator -- Validate --@api-stub: block structure and content.
 - **`audit_module.py`**: audit_module.py — Lurek2D module quality audit tool.
 - **`cag_coverage.py`**: cag_coverage.py — required-section coverage analytics for CAG files.
 - **`cag_link_check.py`**: cag_link_check.py — broken-link checker for the CAG layer.
@@ -11,6 +13,7 @@
 - **`doc_audit.py`**: doc_audit.py — Lurek2D unified docs-general audit.
 - **`doc_coverage.py`**: doc_coverage.py — Lurek2D docs-general coverage analytics.
 - **`docstring_audit.py`**: docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
+- **`docstring_quality_audit.py`**: Audit docstring quality - identifies files with poor/unclear module documentation.
 - **`example_add_missing.py`**: Append stub sections to content/examples/ for uncovered lurek.* API items.
 - **`example_coverage.py`**: Cross-reference Lua example scripts against the lurek.* Lua API.
 - **`extract_constructors.py`**: Extract all lurek.module.function signatures from docs/api/lurek.lua

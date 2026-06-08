@@ -1,0 +1,43 @@
+[features]
+multi_agent = true
+child_agents_md = true
+
+[mcp_servers.lurek_tools]
+command = "python"
+args = ["tools/mcp/lurek_mcp_server.py"]
+startup_timeout_sec = 120
+
+[mcp_servers.lurek_tools.env]
+PYTHONUTF8 = "1"
+
+[agents.developer]
+description = "Developer role for Rust engine work in src/ and src/lua_api/."
+config_file = "agents/developer.toml"
+
+[agents.tester]
+description = "Tester role for work in tests/ and harness registration."
+config_file = "agents/tester.toml"
+
+[agents.reviewer]
+description = "Read-only reviewer role for repo-wide validation, opinions, and verification."
+config_file = "agents/reviewer.toml"
+
+[agents.architect]
+description = "Architect role for docs, especially docs/architecture/ and other markdown contracts."
+config_file = "agents/architect.toml"
+
+[agents.content]
+description = "Content role for content/ and library/ Lua-based assets and examples."
+config_file = "agents/content.toml"
+
+[agents.extension]
+description = "Extension role for extension/ and VS Code integration work."
+config_file = "agents/extension.toml"
+
+[agents.builder]
+description = "Builder role for tools/ scripts, packaging, CI, and release workflow work."
+config_file = "agents/builder.toml"
+
+[agents.manager]
+description = "Manager role for long-running multi-step tasks, orchestration, and handoffs."
+config_file = "agents/manager.toml"

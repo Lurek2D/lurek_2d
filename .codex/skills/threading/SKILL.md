@@ -1,0 +1,36 @@
+﻿---
+name: threading
+description: "Load this skill when using lurek.thread, worker VMs, Channel messaging, or Lua work across threads. Skip it for Rust thread internals or general game scripts."
+---
+# threading
+
+## Use when
+- Use worker VMs.
+- Send messages across Channels.
+- Design Lua work across threads.
+- Review thread lifecycle and blocking behavior.
+
+## Avoid when
+- Rust thread internals.
+- General game scripting.
+
+## Repo rules
+- Worker VMs are strictly isolated Lua states. No global tables, no shared userdata handles, no shared metatables cross VM boundaries.
+- Worker-safe `lurek.*` surface: rendering, input, windowing, and audio APIs are main-thread-only. A worker VM can use `lurek.math`, `lurek.data`, `lurek.fs`, `lurek.log`, and `lurek.thread.channel`.
+- Channel message payloads must be serializable: booleans, numbers, strings, and flat tables of those types. No functions, no userdata, no metatables.
+- Polling pattern: `local msg = chan:try_recv()` returns nil immediately if no message is available. Check it inside `on_process(dt)`.
+- Worker lifecycle: `lurek.thread.spawn(script_path, init_data)` creates and starts a worker. The worker runs until its script returns or until the main thread calls `worker:terminate()`.
+- Backpressure: if a channel's send queue fills, `chan:send(msg)` blocks or returns false depending on the channel mode. Design protocols to drain the queue or drop stale messages rather than relying on unbounded buffering.
+- `src/thread/` owns: `Channel<T>`, `WorkerPool`, `Promise<T>`, and worker VM spawn/join logic. Lua-facing bindings are in `src/lua_api/thread_api.rs`.
+- Shutdown sequencing: always terminate workers before the main VM shuts down. A worker holding an open channel to a dropped receiver panics at the Rust level.
+- Debugging thread bugs: because each VM is isolated, a failing worker does not produce a Rust stack trace on the main thread â€” it sends an error message through its channel or silently stops. Add explicit error-status messages to every worker protocol and log them in `on_process`.
+- Do not use Rust `std::thread::spawn` directly in game scripts or library modules. Worker VMs are the only supported Lua-level concurrency model.
+
+## Checks
+- `Run the narrowest relevant validation for the touched files or workflow.`
+
+## References
+- `src/thread/`
+- `src/lua_api/thread_api.rs`
+- `docs/specs/thread.md`
+

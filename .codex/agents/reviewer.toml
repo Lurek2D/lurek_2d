@@ -1,0 +1,7 @@
+name = "reviewer"
+description = "Read-only reviewer role for repo-wide validation, opinions, and verification."
+model = "gpt-5.2-codex"
+model_reasoning_effort = "high"
+approval_policy = "never"
+sandbox_mode = "read-only"
+personality = "pragmatic"

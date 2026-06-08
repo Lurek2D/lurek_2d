@@ -1,0 +1,7 @@
+name = "content"
+description = "Content role for content/ and library/ Lua-based assets and examples."
+model = "gpt-5.2-codex"
+model_reasoning_effort = "medium"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
