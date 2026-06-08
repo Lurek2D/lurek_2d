@@ -19,19 +19,42 @@
 
 ## Summary
 
-This module provides a classic grid-based first-person raycasting subsystem, turning 2D maps into immersive pseudo-3D environments. At its computational core, a Digital Differential Analysis marcher shoots rays across the map grid to detect wall collisions, calculating corrected perpendicular distances to prevent perspective distortion. This allows developers to present textured first-person viewpoints while preserving the low-overhead structure of a 2D engine runtime.
-
-To support complex layouts, the subsystem extends beyond simple flat maps. The DDA marcher handles layered transparent walls, allowing players to peer through windows. Heightmaps define variable floor and ceiling offsets to model pits, raised steps, and tall chambers. Multilevel slices stack individual storeys horizontally, enabling multi-storey dungeons with vertical shafts, overhead walkways, and smooth transitions between vertical levels.
-
-Moving boundaries and gameplay actors are integrated directly into the spatial model. Sliding doors are represented as stateful grid occupants that animate open or closed over time. This keeps movement and collision in sync without hardcoding transitions. For locomotion, the module provides a grid-motion controller that snaps travel cleanly from tile to tile, which fits classic dungeon exploration games and ensures predictable grid boundaries.
-
-Dynamic props, pickups, and enemies are managed as billboard sprites that face the camera. The sprite manager registers world-space objects, projects them using the camera pose, and sorts them by distance. This depth-aware ordering prevents sprites from bleeding through solid walls, and ensures they blend with the environment, matching the perspective of adjacent wall columns and corridor depths.
-
-The scene builder compiles these spatial hits into a textured 3D environment. It maps wall hits to screen quads and expands floor and ceiling rows into perspective-correct textured strips. A lighting engine applies ambient fill, distance falloff, and colored point lights that respect wall blockages. Half-pixel snapping is also applied to reduce texture shimmering along long wall seams, producing a stable visual space.
-
-Rasterization is handled by both CPU and GPU paths. A per-column depth buffer tracks wall distances, enabling subsequent passes to reject hidden fragments. For GPU rendering, the system generates textured quad draw lists that are easily consumed by the main renderer. Alternatively, a CPU-side software draw pass rasterizes scenes directly into raw image buffers, facilitating offline image generation and tool-facing previews.
-
-Finally, the module provides interactive tile pickers and diagnostic tools. The picker casts rays from cursor clicks to select wall and floor cells, reporting which side was targeted. Line-of-sight and visibility fan utilities calculate field-of-view masks for fog-of-war systems. Software visualizers paint top-down overhead maps, camera sweeps, and depth previews, offering high visibility over the entire raycasting pipeline during development.
+- The raycaster module projects 2D grid maps into pseudo-3D first-person scenes.
+- Core traversal uses DDA ray marching for reliable tile intersection.
+- Perpendicular distance correction reduces fish-eye distortion artifacts.
+- Layered hit traversal supports transparent or partially passable surfaces.
+- Heightmaps support variable floor and ceiling profiles.
+- Multilevel support enables stacked slices and vertical transition logic.
+- Sliding doors are tracked as stateful animated grid occupants.
+- Grid-motion helpers support classic tile-snapped dungeon movement.
+- Billboard sprites represent dynamic entities in camera-facing projection.
+- Depth-aware ordering prevents billboard leakage through wall columns.
+- Scene building composes walls, floors, ceilings, sprites, and optional mesh inserts.
+- Lighting combines ambient and point-light effects with occlusion checks.
+- Depth buffers track wall ownership per screen column.
+- GPU path emits render commands for shared backend composition.
+- CPU software path supports snapshots, tests, and tool previews.
+- Tile picking maps screen coordinates back to hit tile and side semantics.
+- Visibility helpers support line-of-sight and fan-style query tooling.
+- Visualization utilities generate diagnostic images for rays and depth behavior.
+- Column batch structures provide compact transport of cast results.
+- Scene structs define a stable handoff between cast and draw phases.
+- Camera semantics are kept consistent across cast, pick, and render paths.
+- The module is 2D-first and does not implement full 3D physics.
+- It owns projection and scene composition for first-person map experiences.
+- Dependencies remain aligned with Lurek2D architecture boundaries.
+- Invariants emphasize deterministic cast output for fixed camera/map input.
+- Ordering invariants preserve coherent depth between walls and billboards.
+- APIs support both gameplay runtime and authoring/debug workflows.
+- The module is suitable for retro FPS and dungeon crawler experiences.
+- It provides strong observability through explicit diagnostics.
+- Performance is controlled by bounded per-column processing and culling assumptions.
+- Integration with render is direct through shared quad-oriented command language.
+- Overall, raycaster is a dedicated Feature Systems view pipeline.
+- It delivers practical first-person rendering without a full 3D stack.
+- This keeps implementation affordable while preserving gameplay readability.
+- The module is robust enough for production maps and iterative prototypes.
+- It supports deterministic behavior needed by evidence-style tests.
 
 ## Imports
 
@@ -146,9 +169,9 @@ Finally, the module provides interactive tile pickers and diagnostic tools. The 
 
 ### projection.rs
 
-- This file contains the compact projection math that turns a ray distance into a visible wall span on screen.
-- It also derives distance falloff values so farther geometry can darken smoothly as space recedes from the camera.
-- The formulas here keep screen bounds clamped and predictable for the rest of the raycaster pipeline.
+- Projection mathematics converting ray-cast distance values into screen-space wall column heights and vertical draw bounds for 3D raycaster rendering.
+- Implements distance-based perspective projection computing wall_height from camera FOV and ray distance, then clamps draw coordinates to screen bounds.
+- Computes distance falloff multipliers enabling progressive darkening of farther geometry creating atmospheric depth and preventing visual pops.
 
 ### ray_hit.rs
 

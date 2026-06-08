@@ -19,17 +19,41 @@
 
 ## Summary
 
-The audio module delivers a comprehensive sound and music engine for Lurek2D, managing device enumeration and streaming output lifecycles. It provides dual playback surfaces: static sources cached fully in memory for immediate sound triggers, and streaming or queueable sources designed for music and procedural PCM buffer feeds. The playback engine handles fading ramps, cloned voices, and round-robin voice pools that distribute low-latency triggering load across pre-allocated voices.
-
-To manage complex soundscapes, the module implements a named mixing bus hierarchy. Individual sources route through buses to share high-level pitch, pause, and volume controls. Buses support dynamic sidechain ducking relationships, allowing priority audio streams—such as dialogue—to automatically attenuate background channels. Real-time metering captures peak and RMS amplitude values across channels for in-game diagnostic metering and audio-driven visualizers.
-
-Positional simulation is governed by a spatialized audio engine that maps coordinates in 2D and 3D space. It calculates panning, distance-model attenuation, and Doppler shifts by tracking relative coordinates, velocity vectors, and orientation arrays for both sound sources and listeners. This creates immersive motion cues, which are highly customizable through global scale limits and selectable distance-decay curves, integrating spatial movement with physics.
-
-Rhythm-heavy games and synchronized gameplay elements are driven by a musical beat clock. The clock maps wall time to beats, bars, and subdivisions, accommodating linear tempo ramps without phase jumps. Scripts can schedule timed callbacks, tap tempo beats, apply rhythmic swing offsets for syncopation, and evaluate user-input timing accuracy against adjustable judgment windows, allowing gameplay mechanics to align perfectly with musical structures.
-
-For complex sequenced soundtracks, the module includes a dedicated MIDI player and synthesis system. It parses standard MIDI tracks, providing master volume scaling, per-channel instruments, and individual track muting. Tempos can scale dynamically relative to original speeds, while synthesis parameters are driven by selectable SoundFont files. This enables responsive and memory-efficient musical scoring that scales and changes tempo programmatically.
-
-Frequency shaping and procedural audio are supported through built-in digital signal processing and sample-level access. Sound sources can apply highpass and lowpass filters to attenuate specific frequency bands, alongside stereo width modifications and random pitch fluctuations. For direct sample manipulation, the sound data container exposes interleaved PCM buffers, allowing scripts to read, edit, mix buffers, draw waveform images, and export audio as WAV files.
+- Lets gameplay scripts play one-shot effects, looped ambience, dialogue, and long-form music from one runtime surface.
+- Gives designers two practical loading paths: instant static sounds for low-latency triggers and streaming queues for long tracks.
+- Supports robust voice management so repeated events do not cut each other off during combat, UI spam, or particle-heavy scenes.
+- Exposes fade-in, crossfade, seek, and stop controls that make scene transitions feel polished instead of abrupt.
+- Provides source routing through named buses so teams can control music, SFX, VO, and ambience as separate loudness groups.
+- Enables sidechain ducking workflows where critical channels stay audible while background layers automatically step down.
+- Offers metering outputs for peak and RMS so HUD widgets and dev overlays can react to real loudness values.
+- Adds spatial placement in 2D/3D so players hear direction, distance, and movement cues instead of flat stereo playback.
+- Lets games tune attenuation models and Doppler intensity to match arcade, cinematic, or simulation-style movement feel.
+- Gives scripts listener positioning APIs that tie audio perspective directly to camera, character, or spectator modes.
+- Includes a beat-clock workflow for rhythm timing, beat callbacks, and judgment windows for music-driven gameplay loops.
+- Supports tempo ramps and sync-safe scheduling so timeline events remain musically aligned during speed changes.
+- Includes MIDI playback and SoundFont control for adaptive scoring without shipping large rendered audio stems.
+- Allows per-track muting and tempo scaling so music can react to game states, difficulty, and encounter phases.
+- Exposes lowpass/highpass controls for occlusion-like effects, underwater states, and menu muffling transitions.
+- Supports stereo width and random pitch variation to reduce repetition fatigue in rapidly repeated sound effects.
+- Provides a queueable PCM path for generated audio, voice streaming, and other runtime-produced sample content.
+- Lets scripts inspect and edit sample buffers for procedural synthesis, waveform tools, or offline preprocessing.
+- Includes buffer mixing helpers that simplify layering and signal baking without external audio middleware.
+- Supports WAV export for captured takes, generated assets, and automated content pipelines.
+- Keeps device selection scriptable so QA can reproduce issues against specific output hardware.
+- Exposes global mute and master volume controls for user settings menus and accessibility presets.
+- Reports active and total source counts, helping teams budget channel usage under stress.
+- Enables pooled playback patterns that keep trigger latency stable during bursty gameplay.
+- Works as the user-facing audio control plane while deeper DSP modules handle specialized processing.
+- Gives one coherent API for sound effects, music systems, rhythm mechanics, and runtime audio diagnostics.
+- Reduces ad-hoc audio glue code by centralizing lifecycle, routing, timing, and spatial behavior in one module.
+- Helps teams ship mix-consistent experiences across scenes by standardizing bus-level and source-level controls.
+- Improves iteration speed because gameplay scripts can tweak sonic behavior live without engine restarts.
+- Scales from small 2D projects to content-heavy games that need layered, reactive, and inspectable audio behavior.
+- Delivers a practical bridge between creative audio authoring intent and deterministic runtime playback control.
+- Keeps advanced capabilities optional so simple projects can start with play/stop and grow into full mixing workflows.
+- Supports robust testing by exposing deterministic timing and state query surfaces used by automation and QA.
+- Helps user-facing features like subtitles timing and hit feedback stay synchronized with actual playback state.
+- Serves as the core module for making game audio responsive, legible, and production-ready from script level.
 
 ## Imports
 
@@ -167,7 +191,7 @@ Frequency shaping and procedural audio are supported through built-in digital si
 - `lurek.audio.isPlaying(source) -> boolean`: Returns whether a source is currently playing.
 - `lurek.audio.isStopped(source) -> boolean`: Returns whether a source is currently stopped.
 - `lurek.audio.judgeBeat(clock, division?, hit_offset?) -> string`: Judges timing against the nearest beat grid for a beat clock.
-- `lurek.audio.manager.pauseAll(path, opts?) -> nil`: Plays a music track, routing through a named group with optional fade-in.
+- `lurek.audio.manager.pauseAll() -> nil`: Pauses all active audio sources.
 - `lurek.audio.manager.resumeAll() -> nil`: Resumes all paused audio sources.
 - `lurek.audio.mixInto(dest_ud, src_ud) -> nil`: Mixes the samples of `src` into `dest` in-place (both must have the same format).
 - `lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts?) -> LBeatClock`: Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.

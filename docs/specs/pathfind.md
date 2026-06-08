@@ -18,15 +18,41 @@
 
 ## Summary
 
-This module provides a navigation and spatial pathfinding subsystem designed to handle diverse 2D grid and graph environments. It supports standard grid surfaces, hex grids with pointy or flat orientations, rectangular isometric cell structures, and polygon-based navigation meshes for large open spaces. Additionally, adjacency graphs represent province-level connections, giving developers a comprehensive toolkit to manage paths across strategic maps, tactical grids, or complex geometric zones.
-
-For single-agent navigation, the system implements several stateful search algorithms optimized for performance and quality. It executes standard A* searches using octile or Manhattan heuristics, JPS to rapidly traverse open regions, and bidirectional A* searches that explore from both endpoints to find routes quickly. Waypoint smoothing through line-of-sight analysis cleans up redundant steps, while budget-limited A* queries return partial progress to keep frame rates stable.
-
-To scale up to massive maps, the system features hierarchical and asynchronous pathfinding architectures. Hierarchical A* divides large grids into local chunks, caching boundary doorways to solve long-distance paths over an abstract graph before refining them locally. To prevent main-thread stuttering under heavy search loads, a thread-safe asynchronous work pool runs queries in parallel on background worker threads, automatically skipping canceled requests.
-
-Group steering and tactical behaviors are managed via cost fields and distance maps. Dijkstra-based flow fields propagate movement directions from target goals, allowing massive crowds of units of varying sizes to steer smoothly around terrain obstacles. Multi-source goal maps define reachability and fleeing gradients, while layered influence maps stamp, diffuse, and decay tactical pressure over time, providing valuable spatial datasets for AI strategic scoring.
-
-Finally, the module integrates dynamic diagnostic visualizations to facilitate developer iteration. It compiles live path grids, flow direction arrows, and influence heatmaps into colorized render commands and CPU-side image snapshots. This allows developers to inspect pathfinding search corridors, obstacle boundaries, and influence values directly inside the game world, ensuring high visibility over AI spatial reasoning and map configuration.
+- This module gives users a unified navigation toolkit across grid, hex, isometric, navmesh, and graph-based worlds.
+- Standard grid pathfinding supports A*, Dijkstra, BFS, and related movement-query workflows.
+- JPS support accelerates open-grid shortest-path searches.
+- Bidirectional A* support improves long-distance query efficiency in many layouts.
+- Hierarchical pathfinding support scales large-map queries through abstracted chunk-level routing.
+- NavGrid APIs support walkability, cost weights, and variable-unit-size navigation constraints.
+- Path smoothing helpers reduce noisy waypoint chains through line-of-sight checks.
+- Partial-path and budgeted search modes support frame-time-safe fallback behavior.
+- Async path pool support offloads heavy queries to worker threads.
+- Cancellation support helps avoid wasting work on stale async requests.
+- Flow-field support enables crowd movement toward goals with per-cell direction guidance.
+- Goal-map support enables multi-source distance and flee-style gradient queries.
+- Influence-map support enables tactical pressure fields with stamp, blur, and decay behaviors.
+- Graph-nav support enables non-grid routing for province and abstract node networks.
+- Province/path graph helpers support strategic map movement and region-level planning.
+- Hex and isometric grid variants support non-rectangular movement models.
+- Navmesh support enables polygonal traversal for open-area navigation.
+- Range-map utilities support movement radius and reachable-area previews.
+- Unit-pathfinder wrappers support per-agent cached path behavior.
+- Debug rendering support visualizes paths, fields, and influence layers for tuning.
+- Image export debug paths support snapshot-based validation workflows.
+- The module is useful for AI locomotion, tactical planning, and player movement assistance.
+- It centralizes navigation behaviors that are often fragmented across game systems.
+- For users, this means consistent path semantics across very different map representations.
+- It reduces bespoke path code and improves runtime observability.
+- The practical result is more reliable movement behavior under scale.
+- It also supports iteration speed through rich debugging surfaces.
+- Overall, users get a comprehensive pathfinding and spatial-reasoning runtime.
+- This makes advanced navigation systems feasible without custom engine rewrites.
+- It bridges low-level search algorithms and gameplay-facing movement decisions.
+- That bridge is critical in projects combining tactical AI, large worlds, and real-time constraints.
+- Users can start simple and scale toward hierarchical and async strategies as complexity grows.
+- The module keeps those strategies within one coherent API family.
+- It supports both direct movement and higher-level strategic navigation logic.
+- In short, it is the engine's navigation backbone for diverse world topologies.
 
 ## Imports
 
@@ -108,13 +134,12 @@ Finally, the module integrates dynamic diagnostic visualizations to facilitate d
 
 ### grid.rs
 
-- Flat 2-D grid with per-cell walkability and movement-cost storage.
-- Provides A* with optional diagonal movement and selectable heuristics.
-- Includes Dijkstra and BFS variants for weighted and uniform-cost search.
-- Builds flow fields from a single goal cell for steering behavior.
-- Keeps internal heap and path reconstruction helpers close to the grid model.
-- Supports movement-cost lookups suitable for tile-based gameplay maps.
-- Acts as the basic navigation surface for cell-level routing.
+- Flat 2D grid storage with per-cell walkability flags and movement-cost values enabling pathfinding and navigation queries on tile-based maps.
+- Implements A* algorithm with optional 8-connected diagonal movement, configurable Euclidean/Manhattan heuristics, and cached distance scoring.
+- Supports Dijkstra and BFS variants for weighted multi-target distance fields and uniform-cost search enabling flow field and range queries.
+- Provides efficient indexing, neighbor enumeration, and reconstruction helpers supporting O(log N) priority-queue based pathfinding.
+- Integrates cell walkability validation preventing path generation through obstacles while respecting per-cell terrain movement costs.
+- Serves as the fundamental navigation surface for grid-based game AI, unit movement, and tactical route planning across tile maps.
 
 ### hex_grid.rs
 
@@ -168,10 +193,10 @@ Finally, the module integrates dynamic diagnostic visualizations to facilitate d
 
 ### mod.rs
 
-- Grid-based and graph-based pathfinding algorithms for cells, graphs, and flow fields.
-- Collects A*, bidirectional search, JPS, HPA*, goal maps, and influence maps under one namespace.
-- Includes grid, hex, isometric, and navmesh navigation surfaces.
-- Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
+- Unified pathfinding module collecting grid-based (A*, Dijkstra, BFS, JPS) and graph-based (topological, bidirectional, HPA*) algorithms with unified API.
+- Supports multiple navigation surface types (rectangular grids, hexagonal, isometric, navmeshes, province graphs) enabling diverse game world representations.
+- Provides async path-request dispatch through thread pool enabling long-running queries without blocking game loop or frame timing.
+- Includes debug rendering utilities for visualizing pathfinding structures, computed distances, flow fields, and path results during development.
 
 ### nav_grid.rs
 

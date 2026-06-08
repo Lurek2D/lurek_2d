@@ -16,11 +16,20 @@
 
 ## Summary
 
-This module serves as the primary gateway for controlling the OS-level application window and managing multi-monitor systems. By abstracting the operating system's display APIs, it lets developers query connected monitors, retrieve desktop resolutions, and transition the game window across screens seamlessly. The window manager targets startup monitors dynamically while exposing centering and window-movement operations.
-
-To ensure seamless gameplay interactions, the window subsystem implements a deferred state-change pipeline. Title updates, resolution shifts, custom icons, and min/max window states are queued and applied safely during event-loop ticks. This manager also regulates synchronization behaviors, allowing users to toggle between VSync configurations and borderless or exclusive fullscreen modes.
-
-Finally, the viewport system maps logical game coordinates to physical screens, computing scale factors and letterbox offsets automatically. This translation guarantees consistent mouse mapping and render scaling under varied window dimensions. The module also wraps OS dialog systems, offering native message boxes, blocking file pickers, and DPI-change callbacks for seamless integration.
+- This module gives users runtime control over the application window, displays, scaling, and desktop integration features.
+- Display APIs expose monitor inventory, resolution data, and current-screen placement.
+- Window lifecycle controls cover position, size, minimize, maximize, restore, and close behavior.
+- Fullscreen controls support desktop and exclusive modes with VSync configuration options.
+- Deferred state application keeps mode changes safe within event-loop boundaries.
+- Title, icon, and attention APIs support polished desktop application behavior.
+- DPI and pixel conversion helpers support high-DPI-aware coordinate handling.
+- Scale-mode and viewport helpers keep logical game space consistent across window sizes.
+- Screen/game coordinate mapping supports reliable pointer-to-world interactions.
+- Native dialogs support message boxes and file-picking integration.
+- Theme and focus visibility queries support adaptive UI behavior.
+- The module is useful for desktop UX quality, settings menus, and multi-monitor workflows.
+- For users, it centralizes OS window interactions behind one scriptable API surface.
+- It reduces platform-quirk handling in gameplay and UI scripts.
 
 ## Imports
 

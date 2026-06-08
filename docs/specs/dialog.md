@@ -17,11 +17,18 @@
 
 ## Summary
 
-This module provides the narrative scripting and conversation logic system, allowing gameplay scripts to choreograph complex dialogues. It handles multi-character conversation graphs, player choices, and conditional narrative gates. Conversations are built as dialogue trees where branches are evaluated and ranked dynamically using utility scoring, ensuring the engine can select contextually appropriate dialogue paths.
-
-To keep dialogue flows organized, the system separates narrative structure from presentation. It features a dedicated speaker registry that maps character IDs to display names, portraits, and audio properties. Additionally, a persistent state tracker maintains the history of visited nodes, active conversation nodes, and custom variable stores. This decouples visual layouts from script logic while ensuring progression stays coherent.
-
-The dialog sequencer adds a presentation layer on top of the tree system, enabling typewriter-style text reveal, choice selection, branching nodes, and playback control. Scripts can load node sequences, control reveal speed, advance through lines, and handle player choices through a unified interface.
+- This module gives users a structured dialogue runtime for branching conversations and narrative progression.
+- Dialogue trees support conditional gates, weighted branch selection, and context-sensitive topic choice.
+- Speaker registries decouple character metadata from authored dialogue content.
+- State tracking preserves visited nodes, active position, and runtime variables across interactions.
+- Sequencer support enables typewriter reveal, line advance, and choice-based branching playback.
+- Event hooks allow scripts to react to narrative milestones and user selections.
+- Utility-style branch scoring supports dynamic conversational behavior.
+- Callback nodes support embedding scripted side effects within dialogue flow.
+- Jump and wait nodes allow cinematic pacing and control-flow shaping.
+- The module is useful for RPG conversations, tutorials, and story-driven UI interactions.
+- For users, it centralizes narrative logic instead of scattering dialogue state across scripts.
+- It supports both authored story content and reactive systems-driven chatter.
 
 ## Imports
 

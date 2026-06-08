@@ -16,9 +16,14 @@
 
 ## Summary
 
-This module serves as the runtime messaging hub, decoupling subsystems through asynchronous signaling. It implements a dual-priority queue ensuring critical tasks process ahead of standard events. The system handles data marshalling between Rust and Lua, supporting both immediate pushes and deferred buffering to coordinate events across frames.
-
-Additionally, the system manages a signal registry supporting exact and wildcard subscriber patterns. Listeners connect to named signals with lifecycle controls. To aid diagnostics, the module retains a configurable history of pushed events, allowing developers to inspect past messages to trace game flows and simplify debugging.
+- The event module provides a central messaging layer so systems can communicate without tight coupling.
+- Priority-aware queueing lets critical events run ahead of routine traffic when timing matters.
+- Deferred push paths help schedule cross-frame dispatch cleanly.
+- Signal subscriptions support exact names and wildcard patterns for flexible event routing.
+- Listener lifecycle controls keep registration and cleanup explicit.
+- Optional history retention helps trace event flow during debugging.
+- Rust-Lua marshalling keeps payload transfer practical across the boundary.
+- The module delivers deterministic, inspectable runtime event orchestration.
 
 ## Imports
 

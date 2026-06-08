@@ -1,4 +1,4 @@
----
+﻿---
 name: create-integration-test
 description: Create or update integration lua test combining 2 or more modules together.
 ---
@@ -24,14 +24,20 @@ description: Create or update integration lua test combining 2 or more modules t
 - Test execution summary
 
 # SUCCESS CRITERIA
-- `cargo test --test lua_tests` exits with code 0.
-- `python tools/audit/integration_coverage.py` reports exactly 100% integration coverage for the target module pair.
+- [ ] `cargo test --test lua_tests` exits with code 0.
+- [ ] `python tools/audit/integration_coverage.py` reports exactly 100% integration coverage for the target module pair.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Writing integration tests that mock the interaction layer.
 - Coupling the test too tightly to the internal implementation of either module.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: testing-ecosystem, lua-scripting
 - tools: python tools/audit/integration_coverage.py
 - agent: Tester
+
+

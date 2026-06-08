@@ -19,25 +19,56 @@
 
 ## Summary
 
-This module serves as the primary system for building, simulating, and visualizing rich, grid-based game worlds. It unifies orthogonal, isometric, and hexagonal structures under a single set of spatial operations, enabling developers to map virtual grid coordinates directly into screen-space projections. The system manages conversions, diamond layout ordering, diagonal sorting, and hexadecimal neighborhood navigations for gameplay logic.
-
-For massive sandbox and role-playing worlds, the module employs sparse chunk-based storage to handle vast environments without overwhelming memory allocations. This representation connects to a chunk-oriented rendering engine that groups layers and tiles into blocks for camera-aware view culling. Viewport-scoped culling keeps frame rates high, while dirty-chunk tracking guarantees that modified tiles update immediately.
-
-To accommodate mainstream workflows, the tilemap engine supports direct imports from industry-standard editor formats. It parses XML-based Tiled files and LDtk JSON documents on the fly, decoding base64-compressed layers and preserving custom properties. The importer strips auxiliary packaging flags to isolate native cell identities, reconstructing layers, object entities, and visual settings into engine-native structures.
-
-In addition to hand-crafted environments, the subsystem provides a procedural generation pipeline built on repeatable seed values. By combining reusable block templates with procedural scripts, developers can orchestrate operations like flood fills, path carving, and noise scattering. Seed-driven randomness guarantees identical world outputs across runs, making procedural layouts stable and testable.
-
-Terrain continuity is managed dynamically via an autotiling system that checks tile neighborhoods to select matching sprites automatically. Supporting both four-neighbor and eight-neighbor diagonal rules, this system maps structural bitmasks directly to tileset transitions. Developers can paint paths, organic borders, and water flows, letting the runtime patch corner seams and transition quads smoothly.
-
-Beyond visual representation, the tilemap forms the bedrock of spatial collision detection and pathfinding. Individual tiles convey solidity properties that feed swept bounding-box tests, giving platformers and top-down entities collision responses. The system also exports raw layers into navigation grids, making it simple for pathfinding algorithms to query obstacle placements and plan routes.
-
-Finally, the module provides specialized spatial tools for tactical strategy games, including hex ring traversals, spiral patterns, and line-of-sight traversals. Hexagonal maps now travel through the same render-command path as other orientations, so hex coordinate helpers and tilemap drawing stay aligned. It also manages arbitrary polygon regions layered on top of the grid to define zone semantics, ownership areas, and visual outlines. These regions support selection testing and compute bounds to coordinate dynamic camera positioning and trigger regions.
-
-Interactive elements are rounded out by event-driven callbacks triggered as entities step across tile boundaries. These hooks notify gameplay scripts during entries and exits, facilitating pressure plates, hazards, and portals. Supported by coordinate interpolations for smooth movement ticks, this complete framework bridges static world data with reactive, dynamic gameplay simulation.
-
-Internal layout note: the module surface is now split more explicitly by concern. Procedural-generation model types live in `mapgen_model.rs`, collision helpers in `tilemap_collision.rs`, and reverse-index maintenance in `tilemap_index.rs`, while the public `tilemap` API remains unchanged.
-
-Animation update note: animated tile advancement is now tied to visible GIDs and viewport invalidation state, so on-screen animated cells refresh through the dirty/visible path without disturbing the active viewport configuration.
+- The tilemap module provides map data, import, rendering support, and grid query tools for 2D worlds.
+- It supports orthogonal, isometric, and hex map orientations under one API surface.
+- Core map data includes layered tile IDs, tint, parallax, and visibility metadata.
+- Coordinate conversion utilities provide deterministic world-to-tile mapping.
+- Chunked storage supports large maps without monolithic memory updates.
+- Dirty-region tracking enables localized updates rather than full-map rebuilds.
+- Large-map rendering helpers cull work to the current camera viewport.
+- TMX import supports XML, CSV, and base64 tile payload decoding.
+- TMX import normalizes flip-flag handling for consistent GID semantics.
+- LDtk import maps level/layer JSON into native runtime structures.
+- Tileset metadata maps GID ranges to atlas UV geometry and tile properties.
+- Animated tile timelines are advanced in deterministic update flow.
+- Autotile logic derives transitions from neighborhood bitmask context.
+- Autotile supports both four-way and eight-way neighborhood policies.
+- Iso and hex coordinate helpers support tactical and projection-oriented workflows.
+- Hex utilities include line, ring, area, and spiral traversal helpers.
+- Tile walker helpers support stepwise movement and directional orientation.
+- Swept collision supports continuous rectangle-vs-solid-tile checks.
+- Collision output includes hit normal, contact point, and tile coordinates.
+- Reverse index structures support fast lookup by global tile ID.
+- Walkability export supports direct pathfinding integration.
+- Procedural mapgen supports block-based assembly and scripted operations.
+- Seeded generation keeps outputs reproducible for tests and saves.
+- Isometric map structures support diagonal draw ordering.
+- Polygon map overlays support irregular zones over grid terrain.
+- Polygon zones support hit tests, bounds, and highlight state.
+- Crossing events support tile transition callbacks for gameplay triggers.
+- Minimap sync helpers project map solidity into simplified overlays.
+- Render emission produces commands compatible with shared render backend.
+- Hex rendering uses the same command path as other map orientations.
+- Animated tile invalidation is integrated with visibility and dirty-state logic.
+- Data model boundaries separate map state from rigid-body simulation ownership.
+- Integration with runtime, render, image, math, and color remains explicit.
+- The module owns map semantics and grid-level queries.
+- Deterministic GID mapping is a core invariant.
+- Locality of update cost is another core invariant.
+- Reproducible generator behavior is a third core invariant.
+- The module supports authored, imported, and procedural map workflows.
+- It scales from small levels to large chunked worlds.
+- APIs support both gameplay runtime and tooling diagnostics.
+- The architecture keeps subconcerns separated across focused files.
+- Tilemap is a major Feature Systems foundation for world-space gameplay.
+- It avoids hidden coupling by exposing explicit conversion and query contracts.
+- Overall, tilemap is the canonical map runtime in Lurek2D.
+- It bridges level authoring formats with deterministic in-engine behavior.
+- The module is designed for both flexibility and predictable performance.
+- It is suitable for action, tactics, sandbox, and exploration game styles.
+- Clear ownership boundaries make it maintainable as map features expand.
+- This keeps long-term evolution practical without API fragmentation.
+- Tilemap remains a high-value subsystem across many game genres.
 
 ## Imports
 
@@ -119,7 +150,9 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ### mapgen_model.rs
 
-- Shared model types for map generation.
+- Core data types for procedural map generation, centered on the Edge enum representing cardinal block boundaries (North, East, South, West).
+- Supports bidirectional Edge-to-string conversion enabling parsing from config files and serialization for save persistence.
+- Enables consistent edge-matching logic across procedural generators that tile blocks based on edge constraints and adjacency rules.
 
 ### mod.rs
 
@@ -130,12 +163,12 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ### polygon_map.rs
 
-- This file provides named polygon regions for zone semantics layered over tile-based worlds.
-- It supports convex and concave shapes with fill styling and optional in-region text labels.
-- It answers point-in-region queries for selection, triggers, and gameplay ownership checks.
-- It maintains shared outline and highlight styling to keep region feedback visually consistent.
-- It includes region lifecycle operations so zones can be created, updated, and removed at runtime.
-- It computes bounds and centroids to support layout decisions, framing, and camera behaviors.
+- Named polygon region storage supporting convex and concave shapes for zone-based gameplay overlaying tile maps (capture zones, provinces, trigger regions).
+- Stores vertex lists with per-region fill colors, optional text labels, and shared outline styling enabling visual consistency across all regions.
+- Implements efficient point-in-polygon queries using ray-casting algorithm supporting selection, trigger detection, and ownership checks per frame.
+- Computes region centroids and bounding boxes enabling camera framing, layout decisions, and spatial analysis for AI and gameplay systems.
+- Provides dynamic lifecycle operations (add, remove, update) allowing runtime zone modification without map reload or editor access.
+- Exposes highlight state tracking for UI feedback showing selected or active regions with override fill color during player interaction.
 
 ### render.rs
 
@@ -172,11 +205,16 @@ Animation update note: animated tile advancement is now tied to visible GIDs and
 
 ### tilemap_collision.rs
 
-- Narrow-phase collision helpers for tilemap sweeps.
+- Narrow-phase collision detection for tilemap movement using swept AABB-vs-AABB testing with separating-axis theorem implementation.
+- Computes continuous time-of-impact values in [0, 1) for moving rectangles against static tile geometry, enabling smooth sliding physics.
+- Returns collision metadata including hit surface normal, contact point, and tile coordinates to support wall-sliding and obstacle interactions.
+- Isolates collision math so higher-level movement systems can orchestrate multiple sweeps per frame for responsive gameplay.
 
 ### tilemap_index.rs
 
-- Reverse-index cache helpers for tilemap tile lookups.
+- Reverse-index mapping from Global Tile ID (GID) to list of (x, y) grid coordinates for fast spatial tile lookups in tilemaps.
+- Supports efficient batch updates and removal when tiles change, automatically pruning empty GID entries to maintain compact memory footprint.
+- Enables "find all tiles of type X" queries in O(1) lookup time, critical for finding spawn zones, triggers, and obstacle regions.
 
 ### tileset.rs
 

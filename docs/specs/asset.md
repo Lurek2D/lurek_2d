@@ -16,9 +16,14 @@
 
 ## Summary
 
-The asset module provides the shared asset registry and cache management system for Lurek2D, coordinating the lifecycle of loaded media resources. Its purpose is to offer a central container where scripts load, query, and release resources using reference-counted handles. This ensures that assets are automatically evicted from the cache when active reference counts drop to zero. The module supports dynamic tagging, group categorization, batch preloading, and robust queries to locate assets by name, type, group, or tag, delivering efficient and stable runtime resource management.
-
-This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The asset module provides shared, ref-counted resource lifetime management for scripts and runtime systems.
+- Stable handles prevent duplicate loads and make ownership explicit across subsystems.
+- Metadata supports naming, grouping, and tagging for structured content management.
+- Query helpers support lookup by name fragment, type, tag, and group.
+- Batch preload paths support startup and streaming workflows.
+- Ref-counted unload behavior removes entries only when the last user releases them.
+- Cache identity and discovery are centralized here for predictable sharing.
+- Decoding and rendering stay in feature-specific modules instead of the cache layer.
 
 ## Imports
 

@@ -19,21 +19,66 @@
 
 ## Summary
 
-This module serves as the primary visual execution backend for Lurek2D, orchestrating all deferred draw operations to produce final frame outputs. It establishes a robust 2D rendering pipeline that supports basic vector shapes, dynamically rasterized text, custom vertex meshes, and complex fullscreen post-processing layers. By acting as a central gateway, it unifies diverse presentation requests from scripting and internal systems into a single frame lifecycle.
-
-At the mechanical heart of this pipeline is a device-facing wgpu renderer. This backend translates the engine's high-level command vocabulary into encoded GPU commands, managing pipelines, buffers, and shader attachments. It tessellates shapes like circles, arcs, and rounded rectangles on demand, and maintains separate flat and textured render paths to ensure that color-only operations do not incur unwanted texture overhead.
-
-For structured and high-frequency rendering, the toolkit supports both retained-mode shapes and instanced batches. Retained compound shapes package multiple vector strokes into named assets for fast replay. Sprite batches collect massive sets of identical texture references to draw thousands of particles or tiles in a single draw call. Additionally, off-screen canvases and splat surfaces facilitate layered compositions.
-
-The typography engine bridges raw text assets with GPU-rendered quads. It handles bundled bitmap atlases alongside custom font files dynamically rasterized at runtime. The system tracks precise glyph metrics, atlas placements, and text wraps, ensuring that multi-line formatting remains visually stable. It also supports terminal-style retro symbols and character lookups to accommodate classic user interface grids.
-
-Advanced graphic styling is achieved through custom shader programs. Developers can compile user-authored fragment programs, sending typed parameters such as vectors or textures directly to the GPU. The engine automatically inspects shader inputs to ensure coordinate compatibility, and ordered uniform uploads at the start of each frame, providing a safe, script-driven environment for custom visual filters.
-
-Chained visual finishes are managed by a dedicated post-processing pipeline. By utilizing fullscreen geometry and ping-pong render targets, it applies multi-pass effects like bloom, blur, depth-of-field, color grading, and screen distortion. The pipeline automatically feeds dynamic time, frame count, and resolution variables into the active fragment shaders, degrading gracefully to a direct copy when no treatments are enabled.
-
-For intricate scene layouts, the subsystem exposes fine-grained layering and stencil controls. Z-depth sorted groups schedule draw callbacks in priority order, preventing visual conflicts when enqueuing overlays. The stencil engine configures comparison tests, masks, and write actions, allowing developers to implement circular portals, clipping boundaries, and masked user interface frames with hardware-accelerated precision.
-
-Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This utility projects 3D mesh coordinates through a virtual camera into 2D triangles, drawing detailed silhouettes and animated mesh structures without requiring a full 3D pipeline. It also supports CPU-side software rasterization stubs, allowing tools to generate thumbnails, save screenshots, and gather rendering stats in headless environments.
+- The render module is the central GPU execution backend for all visual output in Lurek2D.
+- It receives deferred draw intent and resolves it into deterministic frame submission.
+- The backend is implemented on wgpu and manages device, queue, and surface lifecycle.
+- Primitive rendering covers lines, circles, ellipses, rectangles, and rounded rectangles.
+- CPU-side tessellation builds vertex and index data for dynamic geometry.
+- Flat-color and textured paths are separated to reduce unnecessary state churn.
+- Command batching groups compatible draws to lower submission overhead.
+- Pipeline caching avoids repeat creation for equivalent render configurations.
+- Pipeline keys include blend mode, vertex layout, stencil mode, and shader variant.
+- GPU resource management tracks textures, samplers, fonts, and buffer lifetimes.
+- Buffer growth policy favors amortized resizing for throughput stability.
+- Slotmap-based IDs keep resource handles stable across frames.
+- Off-screen canvases support layered composition and intermediate render targets.
+- Decal surfaces support persistent paint-like world overlays.
+- Draw-layer scheduling preserves deterministic z-ordered callback execution.
+- Mesh paths support custom geometry beyond built-in primitives.
+- Text rendering supports bitmap atlases and runtime font rasterization.
+- Glyph metrics and wrapping remain consistent with final draw output.
+- Font atlas dirty tracking minimizes upload work to changed regions.
+- Shader integration supports custom WGSL with typed uniform mapping.
+- Shader compilation and registry caching are isolated from command generation logic.
+- Runtime uniforms can include frame time, resolution, and frame index values.
+- Post-processing uses ping-pong fullscreen passes for chained effects.
+- Effects include blur, bloom, CRT-like passes, grading, and distortion variants.
+- No-effect paths degrade to fast copy behavior for minimal overhead.
+- Stencil support enables masks, portals, and constrained draw regions.
+- Scissor and viewport normalization reduce validation and bounds errors.
+- Blend mode support includes alpha, additive, multiply, and replace behavior.
+- Sampler control supports nearest/linear filtering and wrap behavior.
+- Lighting integration includes bounded GPU-side light buffer handling.
+- Shadow pass resources are integrated with frame scheduling.
+- Screenshot readback supports tooling and regression workflows.
+- Resize handling recreates swapchain-dependent resources safely.
+- Draw command validation catches invalid resource/target usage early.
+- Fallback textures and shaders avoid hard failures on missing assets.
+- Diagnostics expose draw-call and render-phase timing information.
+- Renderer tests cover key pipeline and postfx contracts.
+- Integration with image/font/light/runtime remains explicit and acyclic.
+- The module owns visual execution, not gameplay policy.
+- It is the authoritative source for frame composition behavior.
+- Deterministic command ordering is a core invariant.
+- Safe GPU resource lifetime management is another core invariant.
+- Graceful fallback behavior is required for robustness under partial content.
+- The module supports iGPU-focused performance goals at 60 FPS targets.
+- API breadth is centralized in one backend to avoid duplicated render logic.
+- Feature modules emit intent; render executes it.
+- This separation keeps architecture clean and testable.
+- CPU and GPU diagnostic paths remain aligned with core semantics.
+- The render boundary is stable for integration with future feature modules.
+- It enables sophisticated visuals without forcing feature modules to own GPU details.
+- Overall, render is the Platform Services visual foundation.
+- It is the final convergence point of scene, UI, effects, and text pipelines.
+- The module is performance-critical and observability-oriented by design.
+- Reliability under dynamic content churn is prioritized in its contracts.
+- This makes it suitable for both gameplay and tooling presentation workloads.
+- Render remains a first-class subsystem, not a thin adapter.
+- It carries the execution responsibility for the full visual stack.
+- Its interfaces are built for long-term maintainability and extensibility.
+- In practice, every frame quality issue eventually converges here.
+- The module provides the controls needed to diagnose and fix those issues.
 
 ## Imports
 
@@ -253,24 +298,14 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 
 ### gpu_tess.rs
 
-- Tessellates 2D vector shapes, text glyphs, and sprite quads into triangle lists.
-- Expands stroke thick-lines into screen-aligned rectangular quads.
-- Adapts circle and ellipse segment counts to screen-space radii dynamically.
-- Packs position coordinates, UV parameters, and tint values into vertex buffers.
-- Transforms local coordinates using unified 3x3 model-view matrices.
-- Uses adaptive step sizes for arcs, segments, and hollow shapes.
-- Prepares dynamic draw commands matching various pipelines and geometry layouts.
-- Formats colors, indices, and transforms for direct graphics pipeline ingestion.
-- Implements rounded rectangle vertex computations with bezier-like arcs.
-- Translates texture coordinates and repeat flags into normalized layouts.
-- Builds scissor bounds, culling out-of-screen rendering commands.
-- Resolves drawing styles including filled shapes, outlines, and dashed borders.
-- Projects particle layouts, mesh triangles, and line strips dynamically.
-- Handles typography metrics, translating advancing pens into quad coords.
-- Normalizes stencil values, drawing modes, and texture parameters.
-- Supports linear gradient directions, computing vertex colors proportionally.
-- Manages mesh transformation indices and instance offsets.
-- Operates purely on mathematical vertices without keeping GPU buffer handles.
+- GPU tessellator converting high-level 2D vector shapes (rectangles, circles, arcs, text glyphs, sprites, meshes) into vertex and index buffers.
+- Implements dynamic segment-count adaptation for circles and ellipses based on screen-space radius ensuring smooth curves at any zoom level.
+- Tessellates stroked lines as screen-aligned rectangular quads with configurable line width supporting dashed borders and outline styles.
+- Packs ColorVertex and TexVertex buffers with positions, UV coordinates, tint colors, and transform data for unified pipeline ingestion.
+- Applies 3x3 model-view transformations per vertex enabling local coordinate systems and nested transform hierarchies.
+- Computes scissor rectangles and culls geometry outside viewport bounds reducing GPU workload and preventing render artifacts.
+- Supports rounded rectangles through adaptive arc segment tessellation, linear gradients through proportional vertex color interpolation.
+- Generates flattened index lists and primitive batches ready for direct graphics API consumption without additional GPU processing.
 
 ### gpu_types.rs
 
@@ -489,8 +524,8 @@ Finally, the module provides a specialized Wavefront OBJ 3D model adapter. This 
 - `lurek.render.isLayerVisible(name) -> boolean`: Returns whether a named rendering layer is currently visible.
 - `lurek.render.isWireframe() -> boolean`: Returns whether wireframe rendering is currently active.
 - `lurek.render.line(...) -> nil`: Draws a line between two points, or a polyline through multiple points.
-- `lurek.render.loadModel(path) -> LuaObjModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
-- `lurek.render.loadObj(path) -> LuaObjModel`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
+- `lurek.render.loadModel(path) -> LObjModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
+- `lurek.render.loadObj(path) -> LObjModel`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 - `lurek.render.newCanvas(width, height) -> LCanvas`: Creates a new off-screen render target with the given dimensions.
 - `lurek.render.newDepthSorter() -> LDepthSorter`: Registers the depth-sorted drawing helper constructor in the render module.
 - `lurek.render.newDrawLayer() -> LDrawLayer`: Creates a new z-ordered draw layer for sorting draw callbacks by depth.

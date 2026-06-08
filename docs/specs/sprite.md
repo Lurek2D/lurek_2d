@@ -17,21 +17,25 @@
 
 ## Summary
 
-This module turns raw textures into reusable sprites, sheets, and UI panels. It supports named texture atlases parsed from TexturePacker and Aseprite JSON data, mapping semantic names to specific regions while handling rotation and flip flags. This allows scripts to query packed sprites by name instead of raw coordinates.
-
-Atlas parsing now shares the engine's common Aseprite loader with the animation module. This keeps frame-shape validation and malformed-export error behavior aligned across sprite-atlas import and Aseprite animation ingest, instead of maintaining separate parsers for the same source format.
-
-For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
-
-Row and column extraction on `SpriteSheet` are implemented with allocation-light internal paths (row slices and column iterators), while Lua still receives the same table-shaped frame arrays via `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`.
-
-To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
-
-Individual sprites can also carry optional normal-map texture state and a strength scalar for lit-sprite workflows. This extends the sprite data model without changing atlas, sheet, or batch APIs for unlit content.
-
-The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
-
-Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite.newAnimator(clips)` creates `LSpriteAnimator`, which handles named clip playback (`play`, `pause`, `resume`, `stop`), frame stepping (`update`, `currentFrame`), clip editing (`addClip`), timing helpers, and loop/end/frame callbacks.
+- This module gives users reusable 2D sprite primitives for atlases, sheets, batches, and UI panel slicing.
+- Atlas support maps semantic names to texture regions from common export formats.
+- Rotation and flip metadata handling keeps packed-atlas imports accurate.
+- Sprite-sheet utilities precompute frame regions for fast animation frame access.
+- Row/column access helpers support character-sheet and strip-based animation workflows.
+- Nine-slice support enables scalable UI panels without border distortion.
+- Lightweight sprite records support transform and tint usage with low overhead.
+- Batch support groups shared-texture quads for more efficient draw submission.
+- Normal-map fields allow lit-sprite workflows without changing base sprite usage.
+- Runtime atlas packing supports dynamic region allocation and optional nine-slice metadata.
+- Animator support provides named clip playback, stepping, and callback hooks.
+- This module is useful for character rendering, VFX sprites, and UI skinning.
+- For users, it centralizes texture-region management and sprite playback logic.
+- It reduces manual UV bookkeeping and per-frame draw boilerplate.
+- Overall, users get a practical 2D sprite toolkit with both runtime and pipeline integration.
+- The module helps bridge authored assets and efficient in-engine rendering behavior.
+- It supports both simple sprite use cases and advanced packed-content workflows.
+- This makes sprite-heavy projects easier to scale and maintain.
+- Users gain consistent APIs from import through playback to batching.
 
 ## Imports
 
@@ -42,6 +46,12 @@ Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
+
+### animator.rs
+
+- Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API.
+- This module owns playback state transitions and frame stepping rules. Lua
+- bindings should stay thin and delegate update logic to this type.
 
 ### atlas.rs
 
@@ -92,9 +102,9 @@ Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite
 
 ### Functions
 
+- `lurek.sprite.newAnimator(clips?) -> LSpriteAnimator`: Creates a stateful sprite clip animator from an optional clip definition table.
 - `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
 - `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
-- `lurek.sprite.newAnimator(clips?) -> LSpriteAnimator`: Creates a stateful clip animator from an optional clip-definition map.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 - `lurek.sprite.newSprite(texture_id, x, y) -> LSprite`: Creates a lightweight sprite record with transform and optional normal-map metadata.
@@ -103,7 +113,9 @@ Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite
 
 ### Callbacks
 
-- No documented callback parameters in this module.
+- `LSpriteAnimator:onEnd` param `fn` (`function`): Callback signature `(clip_name)`.
+- `LSpriteAnimator:onFrame` param `fn` (`function`): Callback signature `(row, col, clip_name)`.
+- `LSpriteAnimator:onLoop` param `fn` (`function`): Callback signature `(clip_name)`.
 
 ### Enums
 
@@ -147,6 +159,27 @@ Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite
 
 - No documented methods.
 
+#### LSprite Type
+
+- Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSprite:clearNormalMap() -> nil`: Removes the assigned normal map from this sprite.
+- `LSprite:getNormalIntensity() -> number`: Returns the normal-map intensity multiplier.
+- `LSprite:getNormalMap() -> integer`: Returns the assigned normal-map texture handle, or nil when absent.
+- `LSprite:getPosition() -> number`: Returns the sprite anchor position in pixels.
+- `LSprite:hasNormalMap() -> boolean`: Returns whether the sprite currently has a normal map.
+- `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map intensity used by lit sprite workflows.
+- `LSprite:setNormalMap(texture_id) -> nil`: Assigns the texture used as this sprite's normal map for lit sprite workflows.
+- `LSprite:setPosition(x, y) -> nil`: Sets the sprite anchor position in pixels.
+- `LSprite:type() -> string`: Returns the type name of this object.
+- `LSprite:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
 #### LSpriteAnimator Type
 
 - Lua-visible wrapper around Rust-side clip animation playback state.
@@ -173,27 +206,6 @@ Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite
 - `LSpriteAnimator:type() -> string`: Returns the type name of this object.
 - `LSpriteAnimator:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LSpriteAnimator:update(dt) -> nil`: Advance playback by delta time and dispatch callback events.
-
-#### LSprite Type
-
-- Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LSprite:clearNormalMap() -> nil`: Removes the assigned normal map from this sprite.
-- `LSprite:getNormalIntensity() -> number`: Returns the normal-map intensity multiplier.
-- `LSprite:getNormalMap() -> integer`: Returns the assigned normal-map texture handle, or nil when absent.
-- `LSprite:getPosition() -> number`: Returns the sprite anchor position in pixels.
-- `LSprite:hasNormalMap() -> boolean`: Returns whether the sprite currently has a normal map.
-- `LSprite:setNormalIntensity(intensity) -> nil`: Sets the normal-map intensity used by lit sprite workflows.
-- `LSprite:setNormalMap(texture_id) -> nil`: Assigns the texture used as this sprite's normal map for lit sprite workflows.
-- `LSprite:setPosition(x, y) -> nil`: Sets the sprite anchor position in pixels.
-- `LSprite:type() -> string`: Returns the type name of this object.
-- `LSprite:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LSpriteAtlas Type
 

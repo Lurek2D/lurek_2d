@@ -17,13 +17,25 @@
 
 ## Summary
 
-This module delivers a robust particle simulation subsystem designed to model dynamic visual effects like fire, smoke, rain, and explosions. At its core, the system utilizes high-performance pooling to recycle and manage thousands of active particles efficiently. Emitters control the lifecycle, spawning particles continuously or in sudden bursts, updating their positions, velocities, rotations, and lifetimes over each frame, and supporting warm-up cycles to start scenes in a fully settled state.
-
-Visual behavior is highly configurable through detailed shape distributions and environmental forces. Emitters spawn particles from diverse spatial shapes, including circles, cones, spirals, and custom user callbacks, and direct their paths using linear, radial, and tangential acceleration. The simulation integrates physical forces such as gravity, drag, orbit, and wind turbulence, and can apply gravity-based attractors or axis-aligned bounce boundaries to steer particle trajectories.
-
-For advanced presentations, the module features color and size keyframe interpolation, ribbon trails, and nested hierarchies. Particles animate their size, opacity, and color over their lifespan, rendering as textured or untextured batches. Ribbon trails track motion paths with tapered widths and smooth color gradients. Emitters can also spawn nested sub-emitters on particle death, enabling complex chain reactions like exploding firework sparks.
-
-The subsystem also integrates with physics colliders and offline visualization utilities. Particles can collide and bounce off solid shapes in the physics world, reflecting velocity with custom bounce parameters. Additionally, diagnostic tools let developers export particle snapshots and lifetime charts directly into CPU-side image buffers. This simplifies testing, tuning, and asset design processes without affecting the active simulation loops.
+- This module gives users a high-volume particle simulation system for gameplay VFX and atmospheric effects.
+- Pool-based runtime management keeps large particle counts efficient and stable.
+- Emitters support continuous, burst, and warm-up driven spawning patterns.
+- Shape controls support varied spawn distributions, including custom callback-defined emission.
+- Force models include gravity, drag, turbulence, orbit, and attractor behavior.
+- Bounce and bounds controls shape movement within scene constraints.
+- Keyframe-driven color, alpha, and size interpolation support expressive lifetime animation.
+- Trail systems provide ribbon-style motion accents for fast-moving effects.
+- Sub-emitter support enables chained effects like secondary bursts on particle death.
+- Physics collision integration supports particle responses to world colliders.
+- Preset constructors speed up authoring for common effects such as fire, smoke, and rain.
+- Render paths support textured and non-textured particle output.
+- Debug draw-to-image tools help tune effects and capture evidence artifacts.
+- Lifecycle chart output improves observability of spawn and decay dynamics.
+- The module is useful for combat impacts, weather, ambient motion, and UI accents.
+- For users, it centralizes particle behavior rather than scattering custom emitter logic.
+- It balances artistic flexibility with deterministic, test-friendly controls.
+- Overall, users get a production-ready VFX runtime in one script API.
+- This enables richer scenes with less effect-specific boilerplate.
 
 ## Imports
 

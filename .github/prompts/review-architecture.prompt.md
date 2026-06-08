@@ -1,4 +1,4 @@
----
+﻿---
 name: review-architecture
 description: Review if docs in architecture are in sync with specs and lurek api, fix all gaps.
 ---
@@ -22,13 +22,19 @@ description: Review if docs in architecture are in sync with specs and lurek api
 - Gap analysis summary
 
 # SUCCESS CRITERIA
-- `python tools/audit/cag_link_check.py --strict` reports exactly 0 broken links.
+- [ ] `python tools/audit/cag_link_check.py --strict` reports exactly 0 broken links.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Modifying code to fit outdated architecture docs (docs should follow code reality).
 - Adding overly granular implementation details to high-level architecture docs.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: enterprise-architecture, docs-general
 - tools: python tools/audit/cag_link_check.py
 - agent: Architect
+
+

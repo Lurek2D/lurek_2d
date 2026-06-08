@@ -1,4 +1,4 @@
----
+﻿---
 name: create-engine-feature
 description: End to end workflow to new new feature to engine of lurek in rust, should run set of other prompts.
 ---
@@ -25,15 +25,21 @@ description: End to end workflow to new new feature to engine of lurek in rust, 
 - Tests, examples, and docs-general updates
 
 # SUCCESS CRITERIA
-- `cargo test` exits with code 0 (100% pass rate).
-- `cargo clippy -- -D warnings` exits with code 0 (exactly 0 warnings).
-- `python tools/validate/cag_validate.py` exits with code 0 (0 architectural violations).
+- [ ] `cargo test` exits with code 0 (100% pass rate).
+- [ ] `cargo clippy -- -D warnings` exits with code 0 (exactly 0 warnings).
+- [ ] `python tools/validate/cag_validate.py` exits with code 0 (0 architectural violations).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Implementing massive features in a single commit without breaking them down.
 - Skipping the Lua API design phase before implementing Rust code.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: rust-coding, lua-api-design, testing-ecosystem, docs-general
 - tools: cargo test, python tools/validate/cag_validate.py, cargo clippy
 - agent: Manager
+
+

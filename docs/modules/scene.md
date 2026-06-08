@@ -2155,7 +2155,18 @@ LSceneObjectContainer:add(obj)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `obj` | any |  |
+| `obj` | table | Object table to append to the scene container. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    local obj = { layer = 2 }
+    container:add(obj)
+    print("count after add = " .. container:getCount())
+end
+```
 
 ---
 
@@ -2167,6 +2178,17 @@ Remove all objects from the container.
 LSceneObjectContainer:clear()
 ```
 
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1 })
+    container:clear()
+    print("count after clear = " .. container:getCount())
+end
+```
+
 ---
 
 #### `LSceneObjectContainer:draw`
@@ -2175,6 +2197,17 @@ Call draw() on all objects that have a draw method, sorted by layer.
 
 ```lua
 LSceneObjectContainer:draw()
+```
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1, draw = function() print("draw layer 1") end })
+    container:draw()
+    print("container draw called")
+end
 ```
 
 ---
@@ -2191,7 +2224,24 @@ LSceneObjectContainer:getByLayer(n)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `n` | any |  |
+| `n` | number | Target layer value. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Sequential table of objects on the given layer. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 3 })
+    local objects = container:getByLayer(3)
+    print("layer 3 count = " .. tostring(#objects))
+end
+```
 
 ---
 
@@ -2203,6 +2253,17 @@ Get the number of objects currently in the container.
 LSceneObjectContainer:getCount()
 ```
 
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1 })
+    container:add({ layer = 2 })
+    print("container count = " .. container:getCount())
+end
+```
+
 ---
 
 #### `LSceneObjectContainer:getObjects`
@@ -2211,6 +2272,23 @@ Get all objects as an array (layer-sorted).
 
 ```lua
 LSceneObjectContainer:getObjects()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Sequential table containing current objects. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1 })
+    local objects = container:getObjects()
+    print("objects count = " .. tostring(#objects))
+end
 ```
 
 ---
@@ -2227,7 +2305,24 @@ LSceneObjectContainer:has(obj)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `obj` | any |  |
+| `obj` | table | Object table to test. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the exact object exists in the container. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    local obj = { layer = 1 }
+    container:add(obj)
+    print("has obj = " .. tostring(container:has(obj)))
+end
+```
 
 ---
 
@@ -2243,7 +2338,19 @@ LSceneObjectContainer:remove(obj)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `obj` | any |  |
+| `obj` | table | Object table reference to remove. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    local obj = { layer = 1 }
+    container:add(obj)
+    container:remove(obj)
+    print("count after remove = " .. container:getCount())
+end
+```
 
 ---
 
@@ -2253,6 +2360,21 @@ Get the type name of this userdata.
 
 ```lua
 LSceneObjectContainer:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The literal `"[LSceneObjectContainer](#lsceneobjectcontainer)"`. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    print("container type = " .. container:type())
+end
 ```
 
 ---
@@ -2269,7 +2391,22 @@ LSceneObjectContainer:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Type name to compare against. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when `name` matches `"[LSceneObjectContainer](#lsceneobjectcontainer)"`. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    print("is LSceneObjectContainer = " .. tostring(container:typeOf("LSceneObjectContainer")))
+end
+```
 
 ---
 
@@ -2285,6 +2422,25 @@ LSceneObjectContainer:update(dt)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `dt` | any |  |
+| `dt` | number | Delta time in seconds for this frame. |
+
+**Example**
+
+```lua
+do
+    local container = lurek.scene.newObjectContainer()
+    local ticks = 0
+    container:add({
+        layer = 1,
+        update = function(_, dt)
+            if dt > 0 then
+                ticks = ticks + 1
+            end
+        end,
+    })
+    container:update(1 / 60)
+    print("updates called = " .. tostring(ticks))
+end
+```
 
 ---

@@ -1,7 +1,7 @@
 ---
 name: Doc-Writer
 description: "Write and maintain all Lurek2D docs: guides, specs, API reference, wiki. Fix docs-spec drift. No engine code."
-tools: [vscode/memory, vscode/askQuestions, read/readFile, read/skill, edit/createFile, edit/editFiles, search/textSearch, todo]
+tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/killTerminal, execute/runInTerminal, read/readFile, read/skill, edit/createFile, edit/editFiles, search/textSearch, todo]
 ---
 
 # Doc-Writer

@@ -1,4 +1,4 @@
----
+﻿---
 name: create-library
 description: Create or update new lua pure library part of lureksome.
 ---
@@ -26,14 +26,20 @@ description: Create or update new lua pure library part of lureksome.
 - Coverage report
 
 # SUCCESS CRITERIA
-- `python tools/validate/validate_library.py` exits with code 0.
-- `python tools/audit/library_coverage.py` reports exactly 100% coverage for the new library.
+- [ ] `python tools/validate/validate_library.py` exits with code 0.
+- [ ] `python tools/audit/library_coverage.py` reports exactly 100% coverage for the new library.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Introducing global variables into the Lua environment.
 - Using non-standard Lua paradigms that clash with LuaJIT performance.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: library-authoring, lua-scripting
 - tools: python tools/audit/library_coverage.py, python tools/validate/validate_library.py
 - agent: Content-Maker
+
+

@@ -17,11 +17,27 @@
 
 ## Summary
 
-The compute module serves as the primary high-performance numeric processing engine for Lurek2D. Its core purpose is to provide scripts with dense, multi-dimensional array structures, enabling heavy mathematical calculations directly within game loops. It centers around a robust NdArray model that stores typed scalar buffers with explicit shape strides, supporting initializations for zeros, ones, or custom ranges. It manages sub-regions and supports parallel multithreaded calculation thresholds for massive array blocks.
-
-For scientific computing and complex transformations, the module exposes rich algebraic, geometric, and spectral operations. It provides linear-algebra tools including vector cross products, unit normalizations, Gaussian solvers with pivoting, LU matrix decompositions, and eigenpair estimators. It also includes radix-2 fast Fourier transforms and inverse transforms, allowing scripts to map real-valued waveforms into complex frequency spectra and back for audio or signal-processing tasks.
-
-Spatial data processing and statistical analysis are supported through spatial grid and analytics layers. The spatial engine delivers zero-padded convolutions, Sobel gradient calculations, flood-fill propagation, and morphological dilation or erosion filters over coordinate grids. In parallel, the analytics layer computes cumulative sums, percentile distributions, histogram binning, range scaling, and Pearson correlations, supplying comprehensive telemetry capabilities.
+- Gives users a dense numeric workspace for array-heavy gameplay, simulation, AI, and analysis tasks.
+- Exposes multidimensional arrays that make matrix and tensor-like logic practical from Lua.
+- Supports common constructors and shape operations so data pipelines start quickly and stay explicit.
+- Enables element-wise arithmetic, comparisons, reductions, and logical transforms for fast feature engineering.
+- Provides in-place operations for performance-sensitive loops where allocation churn must stay low.
+- Includes axis-aware aggregates for summarizing large datasets without custom iteration code.
+- Supports linear algebra workflows for transforms, constraints, and solver-driven mechanics.
+- Offers matrix decomposition and linear-system tools useful in optimization and simulation scenarios.
+- Adds eigen and vector utilities for directional analysis and advanced math features.
+- Includes FFT and inverse FFT paths for spectral analysis, rhythm tools, and signal-oriented gameplay.
+- Provides convolution and Sobel operations for image-like or grid-based processing.
+- Supports morphology and flood-fill style operations for map processing and mask refinement tasks.
+- Delivers histogram, percentile, z-score, and correlation analytics for telemetry and balancing.
+- Gives one pipeline from raw numeric data to derived insights without leaving engine runtime.
+- Supports configurable parallel thresholds so heavy workloads can scale better on larger inputs.
+- Helps teams avoid reimplementing math kernels in ad-hoc Lua loops.
+- Acts as the user-facing compute backbone for projects that need more than scalar scripting.
+- Balances high-level ergonomics with deterministic behavior required by tests and reproducible runs.
+- Bridges gameplay scripting and scientific-style data operations in one cohesive module surface.
+- Improves iteration speed by keeping experimentation, diagnostics, and math-heavy logic in-engine.
+- Serves as the practical foundation for data-driven systems that depend on robust numeric primitives.
 
 ## Imports
 

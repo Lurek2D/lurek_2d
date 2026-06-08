@@ -18,13 +18,32 @@
 
 ## Summary
 
-This module serves as the central coordination nucleus of the Lurek2D engine, orchestrating shared state, configurations, and system-wide behaviors. At its core, the subsystem manages a global borrowable state container that unites windowing, timing, and inputs under one unified hub. It provides authoritative ownership for essential asset pools—including textures, canvases, fonts, shaders, and meshes—preventing duplicate resource allocation and managing global memory budgets.
-
-Engine startup and execution policies are driven by a typed configuration schema loaded from human-edited TOML data. This configuration validates active features to ensure stable setups, and supports dynamic runtime reloading. The system determines entry paths using a robust mode enums system, distinguishing between full graphics-oriented window loops and lightweight, non-visual headless modes suitable for automated testing and command-line execution.
-
-To support deep system integration, the module exposes detailed host diagnostic queries and unified error reporting layers. It queries platform-specific environment variables, clipboard text, operating system details, CPU counts, and system power statuses. When failures occur, the engine standardizes error reporting through stable diagnostic codes, capturing detailed error snapshots that are easy for both developers and automated tools to interpret.
-
-Performance telemetry and lifecycle tracking are processed through specialized frame profiles and type-safe handle keys. The runtime measures precise frame intervals across diverse engine phases (like physics, ticking, and rendering), reporting active resource counts and memory usage. Additionally, a lazy embedded message catalog flattens and translates string lookups, providing diagnostic and localized feedback throughout the game session.
+- The runtime module is the shared execution core that coordinates engine state across systems.
+- It owns the central mutable state container used during startup and per-frame updates.
+- Shared state includes timing, input snapshots, window-related state, and feature handles.
+- Resource pools for textures, fonts, canvases, shaders, and meshes are coordinated here.
+- Resource budgets and usage stats are tracked to support observability and policy.
+- Configuration models are typed and loaded from TOML with controlled defaults.
+- Runtime modes separate windowed execution from headless execution paths.
+- Reload revision tracking supports controlled runtime configuration refresh.
+- Error contracts provide stable codes and snapshot-oriented diagnostics.
+- Log message identifiers standardize machine-readable diagnostics across modules.
+- Message catalogs support lazy lookup and fallback behavior.
+- Frame profiling captures phase timing for update/render callback visibility.
+- Typed resource keys provide stable cross-module handles.
+- Host/environment queries expose platform and process context to script APIs.
+- Runtime services include clipboard and locale integration points.
+- Higher-level modules depend on runtime as source-of-truth.
+- The module avoids owning game-domain policy.
+- It owns lifecycle policy, state ownership, and core diagnostics.
+- Deterministic state progression is a central invariant.
+- Stable error/reporting contracts are another core invariant.
+- Runtime is the root integration layer for engine execution behavior.
+- It defines common contracts that keep module interactions coherent.
+- The module is essential for startup, frame loop, and host-facing integration stability.
+- Overall, runtime is the Core Runtime anchor for the dependency graph.
+- It keeps shared execution behavior explicit, observable, and maintainable.
+- Without it, resource and lifecycle ownership would fragment across subsystems.
 
 ## Imports
 

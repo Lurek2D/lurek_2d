@@ -16,9 +16,16 @@
 
 ## Summary
 
-This module delivers a highly flexible, geometry-agnostic visibility and fog-of-war system that integrates seamlessly with varied world models. By decoupling layout metrics from visibility calculations through a generic adjacency interface, the system can track exploration across tile grids, hex maps, province networks, and global spheres. It tracks hidden, discovered, and visible statuses separately across factions.
-
-For tactical environments, the module features a recursive shadowcasting engine that calculates field-of-view masks with custom obstacle predicates. It supports exploration-sharing alliances, customizable discovery costs, and compact state serialization for game saves. When visibility updates occur, the system dispatches transition events, letting scripts react to changes dynamically.
+- The visibility module provides geometry-agnostic fog-of-war and discovery state simulation.
+- Topology is abstracted through adjacency contracts rather than a fixed map representation.
+- Per-player region state tracks hidden, discovered, and currently visible layers.
+- Alliance grouping supports shared visibility between cooperating actors.
+- Cost and flag channels support configurable reveal progression rules.
+- Visibility transitions are emitted as structured events for script systems.
+- Fog rendering parameters map state to visual intensity outputs.
+- Shadowcasting FOV provides efficient tile-grid line-of-sight computation.
+- State export/import supports save persistence of visibility history.
+- The module owns visibility semantics, not renderer or AI policy.
 
 ## Imports
 

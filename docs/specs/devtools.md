@@ -17,13 +17,25 @@
 
 ## Summary
 
-This module provides a comprehensive diagnostics toolkit built directly into the engine, giving developers visibility and control over active session behavior. The system constantly gathers frame-timing statistics for both processing unit and graphics hardware workflows. This supports real-time calculations of performance indicators, such as render rates, average durations, and percentile profiles, helping to quickly identify performance drops.
-
-To pinpoint bottlenecks within code pathways, the module supplies a hierarchical zone profiler operating on stack semantics. Developers can instrument execution paths with named blocks, and the engine computes both the total and exclusive durations spent in each. These measurements are compiled into tree structures that can be projected as diagnostic overlays or exported as structured optimization reports.
-
-For interactive analysis, the module integrates a structured log filtering subsystem covering severity ranks from trace events to critical failures. Log outputs are mirrored to files or console streams based on settings. This features a dynamic evaluation environment for executing code on the fly, alongside a registry that watches specific variables for real-time inspection.
-
-A major utility is the built-in file watching mechanism. It tracks specified directory paths, checking modification timestamps and organizing change notifications. This allows live asset loading systems to instantly react to updated source files or graphics without resetting active gameplay, which drastically reduces iteration times and speeds up the overall test cycle.
+- This module gives users a built-in diagnostics console for performance, logging, profiling, and live inspection.
+- Frame statistics expose FPS and timing percentiles so regressions are visible during normal play sessions.
+- CPU and GPU timing capture helps separate render bottlenecks from gameplay-script bottlenecks.
+- Hierarchical profiling zones let teams measure nested code paths instead of guessing hotspots.
+- Structured log controls support severity filtering and optional file mirroring for reproducible debug traces.
+- REPL-style evaluation enables quick runtime checks and small fixes without full restart cycles.
+- Watch expressions provide lightweight observability for high-value variables during tuning.
+- File watching helps hot-reload loops react quickly to changed assets or scripts.
+- Snapshot APIs combine multiple debug signals into one pull for overlays and tooling panes.
+- The module improves iteration speed by shortening the observe-change-verify loop.
+- It is useful for both solo debugging and team workflows where traceability matters.
+- Script-level access keeps diagnostics close to gameplay code instead of hidden in engine internals.
+- Users can gate profiling collection to control overhead when needed.
+- For QA, retained history surfaces support post-failure triage without immediate repro.
+- For content teams, watch-based updates reduce restart fatigue during frequent edits.
+- Overall, this module turns diagnostics into a routine workflow rather than an emergency tool.
+- It helps projects stay performance-aware throughout development, not only at the end.
+- The practical result is faster root-cause discovery and cleaner release stabilization.
+- Users gain visibility, control, and repeatable evidence from one integrated debug surface.
 
 ## Imports
 

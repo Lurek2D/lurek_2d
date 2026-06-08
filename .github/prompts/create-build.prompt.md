@@ -1,4 +1,4 @@
----
+﻿---
 name: create-build
 description: Create or update build (release, debug, dist) settings.
 ---
@@ -24,14 +24,20 @@ description: Create or update build (release, debug, dist) settings.
 - Build metrics report
 
 # SUCCESS CRITERIA
-- `cargo build --profile <target>` exits with code 0.
-- Binary size or compilation time metric shows an improvement >0% compared to baseline.
+- [ ] `cargo build --profile <target>` exits with code 0.
+- [ ] Binary size or compilation time metric shows an improvement >0% compared to baseline.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Enabling features that break cross-platform compatibility.
 - Using unstable Rust features that require nightly.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: build-system, ci-cd-pipeline
 - tools: cargo build --profile
 - agent: Build-Engineer
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 name: review-api
 description: Review lua api coverage (if public rust methods are covered by lua api wrapper, if they have properly thin layer, have proper paramers, returns, description all setup in code in lua_api module), fix all the gaps.
 ---
@@ -23,14 +23,20 @@ description: Review lua api coverage (if public rust methods are covered by lua 
 - Clean audit tool reports
 
 # SUCCESS CRITERIA
-- `python tools/audit/lua_covers_lurek_api_audit.py` reports exactly 100% API coverage.
-- `python tools/audit/thin_wrapper_audit.py` reports exactly 0 fat wrapper violations.
+- [ ] `python tools/audit/lua_covers_lurek_api_audit.py` reports exactly 100% API coverage.
+- [ ] `python tools/audit/thin_wrapper_audit.py` reports exactly 0 fat wrapper violations.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Implementing complex state logic inside `*_api.rs` files.
 - Exposing unsafe Rust internals directly to Lua without safe abstractions.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: lua-api-design, lua-rust-bridge
 - tools: python tools/audit/lua_covers_lurek_api_audit.py, python tools/audit/thin_wrapper_audit.py
 - agent: Lua-Designer
+
+

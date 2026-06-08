@@ -20,29 +20,84 @@
 
 ## Summary
 
-This module provides a robust, retained-mode user interface toolkit designed to support both in-game graphical HUDs and complex editor-style workspaces. At its core, a centralized context manager manages the complete widget lifecycle, allocating every node inside an indexed arena to guarantee memory stability and fast lookups. The context monitors root-level viewport scales and base resolutions to ensure widgets scale cleanly across high-DPI displays.
-
-The toolkit structures layout compositions using horizontal, vertical, and grid arrangement container nodes. Rather than manually positioning elements, developers specify alignment, cross-axis rules, spacing, and cell justification to distribute nodes automatically. Recursive layout passes compute absolute screen-space bounds based on parent configurations, supporting wrapping options when elements overflow.
-
-Every user interface element inherits from a highly standardized base widget prototype. This prototype packages layout bounds, transformation matrices, visibility states, and style references into one record. The widget base tracks active interaction states like hover, focus, press, and drag operations, driving a spatial keyboard navigation system that handles focus direction queries deterministically.
-
-The module supplies a comprehensive catalog of standard interactive controls for data entry and triggers. These controls include action buttons, checkboxes, radio groups, switches, numeric spinboxes, and combo-box drop-downs. Each control type implements internal validation rules, clamping inputs and firing change events only when states mutate, ensuring scripts receive sanitised inputs.
-
-Visual layout structures are organized via flexible panel containers, resizable split views, and dock panels. These containers let developers construct complex, split-screen interfaces, sidebars, and hierarchical dashboards. A specialized nine-slice layout helper preserves corner proportions, stretching only center segments to ensure borders remain crisp when containers resize dynamically.
-
-For desktop-like tools, the system provides draggable, resizable window shells alongside modal dialog wrappers. Windows capture drag events on their header bars to translate layout positions, while modal dialogs temporarily trap keyboard and mouse focus to isolate interactions during critical gameplay choices. These floating shells support manual close triggers and custom title overlays.
-
-To streamline development, the module integrates a declarative layout loader that parses external TOML files and Lua table definitions. This system converts text-based definitions into fully configured runtime widget hierarchies, applying predefined defaults and property bindings automatically. By separating markup from scripting, the loader allows developers to tweak layouts without reloading.
-
-A robust styling engine drives consistent look-and-feel modifications across the entire widget catalog. The system maps widget states to reusable theme records containing color palettes, margins, font styles, drop shadows, and border widths. Fallback rules ensure that incomplete themes remain fully functional by falling back to defaults, while semantic tokens allow uniform color skins.
-
-For telemetry dashboards and statistics panels, the module bundles an analytical data graph renderer. It supports line, bar, pie, and area charts that map series lists onto visual axes. The graph engine translates virtual coordinates, calculates optimal viewing ranges, and outputs rasterized charts. Furthermore, it binds directly to DataFrame structures to plot tabular databases.
-
-Advanced interface interactions are powered by alpha transitions, spatial transformations, and script-bound key synchronizers. Widgets can bind directly to global data keys, updating their labels or selections automatically when underlying states shift. Concurrently, context-driven transitions animate scale, rotation, and opacity changes to keep visual transitions responsive and dynamic.
-
-Complex input workflows are resolved through drag-and-drop operations and a thread-safe event queue. The context coordinates drag cycles, checking parent-child relationships to prevent cycles, and dispatches events like clicks and selections into a clean, frame-coherent queue. This allows game loops to dequeue and process user inputs deterministically at the start of each execution frame.
-
-Finally, the UI module provides a headless rendering pipeline that rasterizes active widget configurations into static image buffers and PNG files. This software rasterization path is independent of GPU render passes, making it ideal for offline automated testing, screenshot checks, and visual regression testing. It measures and aligns text sizes beforehand, ensuring accurate typography layout.
+- The ui module provides a retained-mode interface system for HUDs, menus, overlays, and tool screens.
+- It centralizes widget ownership in a context-managed arena with stable handles.
+- Stable IDs make per-frame mutation safe for large interactive trees.
+- The context owns lifecycle, layout, input routing, and event queue behavior.
+- Root scaling controls support DPI-aware rendering across resolutions.
+- Layout is recursive and deterministic from root to leaf bounds.
+- Container primitives include vertical, horizontal, grid, split, and dock arrangements.
+- Scrollable containers support overflow while preserving parent layout contracts.
+- Window containers support dragging and resizing interactions.
+- Nine-patch support preserves border fidelity under scale changes.
+- Widget base state captures visibility, interaction flags, and style links.
+- Shared state semantics keep hover, focus, and press behavior consistent.
+- Focus traversal supports sequential and geometric navigation modes.
+- Keyboard-driven UI is supported without mouse-only assumptions.
+- Input events are normalized into frame-coherent dispatch.
+- Event queues allow deterministic script-side consumption order.
+- Drag-and-drop lifecycle is explicit from begin to drop/cancel.
+- Parent-child safety checks prevent cyclic widget relationships.
+- Core controls include button, label, input, checkbox, radio, slider, and spinbox.
+- Additional controls include list, combo, progress, separator, and spacer variants.
+- Extended widgets include dialogs, menus, tree views, toolbars, and badges.
+- Notification/toast systems provide transient user feedback primitives.
+- Data visualization widgets support line, bar, pie, area, and scatter charts.
+- Chart rendering maps abstract data series to viewport-aware geometry.
+- DataFrame integration supports direct table-to-chart workflows.
+- Theming maps widget type/state to style records and semantic tokens.
+- Style records include colors, borders, shadows, spacing, and typography knobs.
+- Fallback style resolution keeps partial themes functional.
+- Theme tokenization supports global skin changes with low churn.
+- Rendering converts widget tree state into shared draw command primitives.
+- Headless software rendering supports screenshot and regression test flows.
+- Headless output allows CI verification without a window backend.
+- Text measurement is integrated with active font context and alignment rules.
+- Global and per-widget font overrides are both supported.
+- Animation channels include alpha, scale, rotation, and color transitions.
+- Animation updates are integrated in context progression each frame.
+- Data bindings synchronize widget values with script-managed keys.
+- Binding utilities reduce repetitive synchronization code.
+- Layout loading supports TOML-defined UI structures.
+- Lua table definitions can also be loaded into runtime widget trees.
+- Data-driven layouts speed iteration without Rust-side recompilation.
+- Render signatures and cache controls reduce unnecessary full recomputation.
+- Widget count and cache APIs support runtime diagnostics.
+- Clear/reset APIs support controlled tree rebuild scenarios.
+- The module supports both lightweight HUDs and complex editor-like screens.
+- It is designed for predictable behavior under heavy UI mutation.
+- Ownership boundaries separate widget semantics from gameplay domain logic.
+- Integration with runtime and render remains explicit and acyclic.
+- Geometry and color helpers are consumed through math/color modules.
+- The module does not own business logic; it owns presentation and interaction contracts.
+- Deterministic traversal order is a core invariant.
+- Stable widget handle lifetime is a core invariant.
+- Layout consistency across scale changes is a core invariant.
+- Style fallback correctness is a core invariant.
+- Event ordering guarantees are required for reproducible interaction behavior.
+- The API surface is broad but internally structured by focused submodules.
+- Context, controls, containers, theme, and render layers remain separated.
+- This separation keeps maintenance practical as feature count grows.
+- The module supports accessibility-oriented keyboard navigation paths.
+- It supports tool-facing UI and in-game UI with one runtime model.
+- It enables rapid prototyping while staying production-capable.
+- Headless rendering makes visual QA automatable in test pipelines.
+- Theme tokens make large-scale visual changes manageable.
+- Drag/drop support enables inventory and editor workflows.
+- Chart widgets make telemetry and debugging views first-class.
+- The retained model reduces imperative draw boilerplate in scripts.
+- It improves readability and maintainability of complex interface flows.
+- The module is a key user-facing layer in Feature Systems.
+- It bridges gameplay state and player interaction with deterministic contracts.
+- It is designed for reliability under both runtime and tooling workloads.
+- Overall, ui is the canonical interface subsystem in Lurek2D.
+- It closes the full loop of definition, layout, input, animation, and rendering.
+- It provides the structure needed to scale UI complexity without architectural drift.
+- The subsystem remains testable, observable, and extensible by design.
+- This balance of flexibility and control is its primary architectural value.
+- It is intended to remain the long-term UI foundation across project types.
+- The module's contracts prioritize stability as screen complexity grows.
+- It gives teams one consistent UI language for game and tool surfaces.
 
 ## Imports
 

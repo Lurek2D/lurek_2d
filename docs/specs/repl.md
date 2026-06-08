@@ -16,9 +16,11 @@
 
 ## Summary
 
-This module provides a headless, embeddable interactive Lua session that evaluates code against the running VM. It operates independently of rendering layers, maintaining a bounded history and executing colon-prefixed console commands.
-
-To assist users, a completer scans live globals and keywords to suggest autocomplete candidates, resolving dot-paths. Raw values are formatted into readable text for interactive debugging feedback.
+- The repl module gives users an embeddable headless Lua REPL for live runtime inspection and quick experimentation.
+- Session state includes bounded history so command context stays manageable over long usage.
+- Colon-prefixed commands support console-style control behavior alongside Lua evaluation.
+- Completion scans keywords and live globals, including dot-path suggestions.
+- Value formatting produces readable output suited to interactive debugging sessions.
 
 ## Imports
 

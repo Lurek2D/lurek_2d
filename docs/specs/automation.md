@@ -16,9 +16,14 @@
 
 ## Summary
 
-The automation module delivers a deterministic input replay and scripted verification pipeline for Lurek2D. Its core purpose is to programmatically simulate human player interactions—including keyboard, mouse, and text inputs—to test gameplay behaviors. It parses ordered step sequences from TOML or Lua tables, expanding repeat directives and time intervals into concrete playback schedules.
-
-Simulation playback supports real-time pausing, resuming, speed scaling, and macro reuse. Scripts can wait for predicates, run conditional steps gated by boolean flags, and execute visual assertions with configurable error tolerances, enabling robust regression verification.
+- The automation module replays scripted input and validates gameplay flows deterministically.
+- It converts Lua/TOML steps into time-ordered actions so scenarios run the same on every machine.
+- Supported inputs include keyboard, mouse, wheel, text, and macro playback.
+- Pause, resume, speed scaling, and wait predicates make failures easier to reproduce and inspect.
+- Visual assertions with tolerance thresholds catch rendering regressions in CI-style runs.
+- Progress, failure state, and last-error queries provide actionable harness diagnostics.
+- Script replay reduces manual smoke testing across gameplay, UI, and input-heavy systems.
+- The module exists as the user-facing foundation for regression automation.
 
 ## Imports
 

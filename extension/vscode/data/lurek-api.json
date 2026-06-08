@@ -26175,12 +26175,12 @@
           "name": "load",
           "fullPath": "lurek.svg.load",
           "signature": "(path)",
-          "description": "",
+          "description": "Load and parse an SVG file from the game directory.",
           "parameters": [
             {
               "name": "path",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Relative path to an SVG file.",
               "optional": false
             }
           ],
@@ -113168,8 +113168,8 @@
           "parameters": [
             {
               "name": "obj",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Object table to append to the scene container.",
               "optional": false
             }
           ],
@@ -113186,8 +113186,8 @@
           "parameters": [
             {
               "name": "obj",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Object table reference to remove.",
               "optional": false
             }
           ],
@@ -113215,8 +113215,8 @@
           "parameters": [
             {
               "name": "dt",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Delta time in seconds for this frame.",
               "optional": false
             }
           ],
@@ -113253,8 +113253,8 @@
           "signature": "()",
           "description": "Get all objects as an array (layer-sorted).",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSceneObjectContainer"
         },
@@ -113266,13 +113266,13 @@
           "parameters": [
             {
               "name": "n",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target layer value.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSceneObjectContainer"
         },
@@ -113284,13 +113284,13 @@
           "parameters": [
             {
               "name": "obj",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Object table to test.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LSceneObjectContainer"
         },
@@ -113300,8 +113300,8 @@
           "signature": "()",
           "description": "Get the type name of this userdata.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSceneObjectContainer"
         },
@@ -113313,13 +113313,13 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type name to compare against.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LSceneObjectContainer"
         }
@@ -130708,8 +130708,8 @@
           "signature": "()",
           "description": "Returns the document width in points/pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130719,8 +130719,8 @@
           "signature": "()",
           "description": "Returns the document height in points/pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130730,8 +130730,8 @@
           "signature": "()",
           "description": "Returns both the document width and height as two values: `width, height`.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number, number",
+          "returnType": "number, number",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130743,44 +130743,44 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "World X position.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "World Y position.",
               "optional": false
             },
             {
               "name": "rotation",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Rotation in radians. Defaults to 0.",
               "optional": true
             },
             {
               "name": "sx",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Scale on X axis. Defaults to 1.",
               "optional": true
             },
             {
               "name": "sy",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Scale on Y axis. Defaults to `sx`.",
               "optional": true
             },
             {
               "name": "ox",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Origin X offset. Defaults to 0.",
               "optional": true
             },
             {
               "name": "oy",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Origin Y offset. Defaults to 0.",
               "optional": true
             }
           ],
@@ -130795,8 +130795,8 @@
           "signature": "()",
           "description": "Returns a list of all parsed element and group IDs.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130806,8 +130806,8 @@
           "signature": "()",
           "description": "Returns the total number of parsed elements (paths and groups) in this SVG document.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130819,14 +130819,14 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             },
             {
               "name": "visible",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "New visibility state.",
               "optional": false
             }
           ],
@@ -130843,13 +130843,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean?",
+          "returnType": "boolean?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130861,32 +130861,32 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             },
             {
               "name": "r",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Red channel in range 0..1.",
               "optional": false
             },
             {
               "name": "g",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Green channel in range 0..1.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Blue channel in range 0..1.",
               "optional": false
             },
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Alpha channel in range 0..1.",
               "optional": false
             }
           ],
@@ -130903,13 +130903,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -130921,8 +130921,8 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
@@ -130939,38 +130939,38 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             },
             {
               "name": "tx",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Translation on X axis.",
               "optional": false
             },
             {
               "name": "ty",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Translation on Y axis.",
               "optional": false
             },
             {
               "name": "rotation",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Rotation in radians.",
               "optional": false
             },
             {
               "name": "sx",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Scale on X axis.",
               "optional": false
             },
             {
               "name": "sy",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Scale on Y axis.",
               "optional": false
             }
           ],
@@ -130987,13 +130987,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131005,8 +131005,8 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
@@ -131023,13 +131023,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131041,13 +131041,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string?",
+          "returnType": "string?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131059,13 +131059,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131077,19 +131077,19 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             },
             {
               "name": "step_size",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Optional curve sampling step. Lower values increase point density.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table?",
+          "returnType": "table?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131101,19 +131101,19 @@
           "parameters": [
             {
               "name": "prefix",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "ID prefix used to filter candidate elements.",
               "optional": false
             },
             {
               "name": "epsilon",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Distance tolerance for adjacency detection.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131125,20 +131125,20 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             },
             {
               "name": "w",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target canvas width in pixels.",
               "optional": false
             },
             {
               "name": "h",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target canvas height in pixels.",
               "optional": false
             }
           ],
@@ -131155,13 +131155,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LCanvas?",
+          "returnType": "LCanvas?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131173,13 +131173,13 @@
           "parameters": [
             {
               "name": "id",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Element or group ID.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LCanvas?",
+          "returnType": "LCanvas?",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131187,10 +131187,10 @@
           "name": "type",
           "fullPath": "LSvgImage:type",
           "signature": "()",
-          "description": "",
+          "description": "Returns the fixed type name for this userdata.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131198,17 +131198,17 @@
           "name": "typeOf",
           "fullPath": "LSvgImage:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Check whether this object matches a given type name.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type name to compare against.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LSvgImage"
         }

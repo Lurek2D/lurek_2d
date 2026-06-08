@@ -16,13 +16,20 @@
 
 ## Summary
 
-This module provides the HTML/CSS user interface subsystem, letting developers build interactive menus and HUDs. It parses markup and CSS stylesheets into dynamic DOM trees. The layout engine computes bounds using a box model, resolving cascades into precise pixel coordinates for rendering.
-
-The document orchestrator manages the UI lifecycle, handling layout passes, styling cascades, and viewport resizes. It converts CSS declarations into normalized color vectors and size scales. Styles are resolved deterministically across elements, allowing developers to manage visuals through stylesheets.
-
-For user interactions, the module handles clicks, keyboard focus, and text inputs. Input events are dispatched down the element tree, triggering hover states or text changes. DOM elements can be mutated at runtime by toggling classes, editing attributes, or replacing inner HTML fragments.
-
-Additionally, selector queries support class, ID, and ancestry matching to locate elements. The completed layout output compiles into draw command streams containing render rectangles and text blocks ready for GPU rendering.
+- This module gives users an in-engine HTML/CSS UI layer for menus, HUDs, and tool panels.
+- Markup and stylesheet parsing produce a runtime DOM model that can be queried and mutated from scripts.
+- Layout computation applies box-model style rules to generate deterministic element geometry.
+- Selector support allows class/id/ancestry targeting for dynamic UI behavior.
+- Runtime style and attribute mutation makes reactive interfaces practical without rebuilding documents.
+- Input routing handles clicks, focus, keyboard, wheel, and text events on document and element scopes.
+- Event hooks support component-style interaction patterns directly in Lua.
+- Dirty/reflow management keeps relayout explicit when content or style changes.
+- Viewport APIs support responsive behavior across window sizes.
+- Render-command generation bridges computed layout into the engine draw pipeline.
+- The module is useful for interactive overlays, launcher-style screens, and debug UIs.
+- For users, it brings familiar web-style authoring ergonomics into game runtime workflows.
+- It reduces boilerplate for complex UI state handling and DOM-like interaction logic.
+- Overall, users get a script-controllable UI stack with both declarative styling and imperative control.
 
 ## Imports
 

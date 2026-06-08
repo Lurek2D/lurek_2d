@@ -1,4 +1,4 @@
----
+﻿---
 name: review-performance
 description: Review performance using tools/audit/perf_regression_gate.py.
 ---
@@ -23,13 +23,19 @@ description: Review performance using tools/audit/perf_regression_gate.py.
 - Before/after performance metrics report
 
 # SUCCESS CRITERIA
-- `python tools/audit/perf_regression_gate.py` exits with code 0 (exactly 0 performance regressions detected).
+- [ ] `python tools/audit/perf_regression_gate.py` exits with code 0 (exactly 0 performance regressions detected).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Micro-optimizing non-critical paths while ignoring major algorithmic bottlenecks.
 - Breaking architectural boundaries to achieve a minor speedup.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: performance-profiling
 - tools: python tools/audit/perf_regression_gate.py, cargo flamegraph
 - agent: Verifier
+
+

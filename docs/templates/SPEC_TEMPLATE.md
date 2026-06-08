@@ -23,8 +23,9 @@
 
 ## Summary
 
-- Several sentences describing the module's purpose, design, and public interface.
-- Describe the module's scope boundary and how it interacts with other modules.
+- Several sentences describing what the module delivers for the user and which problems it helps solve.
+- Use wording that is distinct from file, type, method, and function descriptions elsewhere in the spec.
+- Describe scope boundaries only in terms of what the module owns versus what the user must get from other modules.
 
 ## Imports
 

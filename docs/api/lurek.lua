@@ -25414,7 +25414,7 @@ function LDepthSorter:type() end
 function LDepthSorter:typeOf(name) end
 
 --- Add an object to the container.
----@param obj any
+---@param obj table Object table to append to the scene container.
 function LSceneObjectContainer:add(obj) end
 
 --- Remove all objects from the container.
@@ -25424,32 +25424,37 @@ function LSceneObjectContainer:clear() end
 function LSceneObjectContainer:draw() end
 
 --- Get all objects whose layer equals `n`.
----@param n any
+---@param n number Target layer value.
+---@return table Sequential table of objects on the given layer.
 function LSceneObjectContainer:getByLayer(n) end
 
 --- Get the number of objects currently in the container.
 function LSceneObjectContainer:getCount() end
 
 --- Get all objects as an array (layer-sorted).
+---@return table Sequential table containing current objects.
 function LSceneObjectContainer:getObjects() end
 
 --- Check whether an object is present in the container.
----@param obj any
+---@param obj table Object table to test.
+---@return boolean True when the exact object exists in the container.
 function LSceneObjectContainer:has(obj) end
 
 --- Remove an object from the container (identity comparison).
----@param obj any
+---@param obj table Object table reference to remove.
 function LSceneObjectContainer:remove(obj) end
 
 --- Get the type name of this userdata.
+---@return string The literal `"LSceneObjectContainer"`.
 function LSceneObjectContainer:type() end
 
 --- Check type by name.
----@param name any
+---@param name string Type name to compare against.
+---@return boolean True when `name` matches `"LSceneObjectContainer"`.
 function LSceneObjectContainer:typeOf(name) end
 
 --- Call update(dt) on all objects that have an update method.
----@param dt any
+---@param dt number Delta time in seconds for this frame.
 function LSceneObjectContainer:update(dt) end
 
 --- Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After this call the stack is empty and `isEmpty()` returns true. Useful for returning to a title screen or tearing down the entire scene graph.
@@ -26310,114 +26315,135 @@ lurek.sprite.parseAsepriteAtlas = function(json_str) end
 lurek.sprite.parseAtlas = function(json_str) end
 
 --- Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
----@param id any
----@param w any
----@param h any
+---@param id string Element or group ID.
+---@param w number Target canvas width in pixels.
+---@param h number Target canvas height in pixels.
 function LSvgImage:cacheToCanvas(id, w, h) end
 
 --- Renders the SVG document at the given position and transform overrides.
----@param x any
----@param y any
----@param rotation? any
----@param sx? any
----@param sy? any
----@param ox? any
----@param oy? any
+---@param x number World X position.
+---@param y number World Y position.
+---@param rotation? number Rotation in radians. Defaults to 0.
+---@param sx? number Scale on X axis. Defaults to 1.
+---@param sy? number Scale on Y axis. Defaults to `sx`.
+---@param ox? number Origin X offset. Defaults to 0.
+---@param oy? number Origin Y offset. Defaults to 0.
 function LSvgImage:draw(x, y, rotation, sx, sy, ox, oy) end
 
 --- Detects neighboring provinces using point-to-point proximity.
----@param prefix any
----@param epsilon? any
+---@param prefix string ID prefix used to filter candidate elements.
+---@param epsilon? number Distance tolerance for adjacency detection.
+---@return table Map table: element ID -> sequential neighbor ID list.
 function LSvgImage:getAdjacencies(prefix, epsilon) end
 
 --- Alias for getCanvasKey.
----@param id any
+---@param id string Element or group ID.
+---@return LCanvas? Cached canvas handle, or `nil` if not cached.
 function LSvgImage:getCanvas(id) end
 
 --- Returns the LCanvas handle for a previously cached element/group.
----@param id any
+---@param id string Element or group ID.
+---@return LCanvas? Cached canvas handle, or `nil` if not cached.
 function LSvgImage:getCanvasKey(id) end
 
 --- Returns both the document width and height as two values: `width, height`.
+---@return number Width and height values. (value 1).
+---@return number Width and height values. (value 2).
 function LSvgImage:getDimensions() end
 
 --- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
----@param id any
+---@param id string Element or group ID.
+---@return table? Bounds table with keys `min_x`, `min_y`, `max_x`, `max_y`, or `nil`.
 function LSvgImage:getElementBounds(id) end
 
 --- Returns a sequential table of direct child element IDs for the given group element.
----@param id any
+---@param id string Element or group ID.
+---@return table? Sequential table of child IDs, or `nil`.
 function LSvgImage:getElementChildren(id) end
 
 --- Returns the current RGBA color override `{r, g, b, a}` table for the element.
----@param id any
+---@param id string Element or group ID.
+---@return table? RGBA array table, or `nil`.
 function LSvgImage:getElementColor(id) end
 
 --- Returns the total number of parsed elements (paths and groups) in this SVG document.
+---@return number Total parsed element count.
 function LSvgImage:getElementCount() end
 
 --- Returns a list of all parsed element and group IDs.
+---@return table Sequential table of element ID strings.
 function LSvgImage:getElementIds() end
 
 --- Returns the parent element ID string, or `nil` when the element is the root or not found.
----@param id any
+---@param id string Element or group ID.
+---@return string? Parent ID, or `nil`.
 function LSvgImage:getElementParent(id) end
 
 --- Flattens the element path into a polygon array of LVec2 userdata.
----@param id any
----@param step_size? any
+---@param id string Element or group ID.
+---@param step_size? number Optional curve sampling step. Lower values increase point density.
+---@return table? Sequential table of `LVec2` points, or `nil`.
 function LSvgImage:getElementPoints(id, step_size) end
 
 --- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
----@param id any
+---@param id string Element or group ID.
+---@return table? Transform table `{tx, ty, rotation, sx, sy}`, or `nil`.
 function LSvgImage:getElementTransform(id) end
 
 --- Returns the current visibility flag for the element.
----@param id any
+---@param id string Element or group ID.
+---@return boolean? Visibility flag, or `nil` when ID is unknown.
 function LSvgImage:getElementVisible(id) end
 
 --- Returns the document height in points/pixels.
+---@return number SVG viewport height.
 function LSvgImage:getHeight() end
 
 --- Returns the document width in points/pixels.
+---@return number SVG viewport width.
 function LSvgImage:getWidth() end
 
 --- Clears the color override on the element, restoring original SVG path colors.
----@param id any
+---@param id string Element or group ID.
 function LSvgImage:resetElementColor(id) end
 
 --- Resets the runtime translation, rotation, and scale of the element to identity.
----@param id any
+---@param id string Element or group ID.
 function LSvgImage:resetElementTransform(id) end
 
 --- Overrides the fill/stroke color of a specific element/group by ID.
----@param id any
----@param r any
----@param g any
----@param b any
----@param a any
+---@param id string Element or group ID.
+---@param r number Red channel in range 0..1.
+---@param g number Green channel in range 0..1.
+---@param b number Blue channel in range 0..1.
+---@param a number Alpha channel in range 0..1.
 function LSvgImage:setElementColor(id, r, g, b, a) end
 
 --- Dynamically transforms a specific element/group by ID.
----@param id any
----@param tx any
----@param ty any
----@param rotation any
----@param sx any
----@param sy any
+---@param id string Element or group ID.
+---@param tx number Translation on X axis.
+---@param ty number Translation on Y axis.
+---@param rotation number Rotation in radians.
+---@param sx number Scale on X axis.
+---@param sy number Scale on Y axis.
 function LSvgImage:setElementTransform(id, tx, ty, rotation, sx, sy) end
 
 --- Toggles the visibility of a specific element/group by ID.
----@param id any
----@param visible any
+---@param id string Element or group ID.
+---@param visible boolean New visibility state.
 function LSvgImage:setElementVisible(id, visible) end
 
+--- Returns the fixed type name for this userdata.
+---@return string The literal `"LSvgImage"`.
 function LSvgImage:type() end
 
----@param name any
+--- Check whether this object matches a given type name.
+---@param name string Type name to compare against.
+---@return boolean True when `name` is `"LSvgImage"` or `"LObject"`.
 function LSvgImage:typeOf(name) end
 
----@param path any
+--- Load and parse an SVG file from the game directory.
+---@param path string Relative path to an SVG file.
 lurek.svg.load = function(path) end
 
 --- Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.

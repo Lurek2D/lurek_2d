@@ -17,11 +17,22 @@
 
 ## Summary
 
-This module serves as the primary engine layer for screen-space presentation, offering a suite of visual techniques that enhance environmental storytelling and mood. It orchestrates long-lived atmospheric layers, including clouds, fog, and grain, and handles dynamic particle weather systems that respond to simulated wind direction and speed. This enables realistic settings such as falling snow or dust storms, giving developers precise artistic control over depth and visibility.
-
-To support dramatic gameplay cues, the system processes rapid camera and screen-wide interactions. It coordinates timed camera shake animations that utilize deterministic offsets, alongside colorized screen flashes, fades, and complex full-screen transitions. These transitions, including iris wipes, wipes, and dissolves, allow smooth phase changes between game states with configurable progress, duration, and color curves.
-
-Environmental progression is achieved through ambient lighting curves and water simulation. A time-of-day system maps day phases to scene-wide tint adjustments, which can be shared with light world systems to ensure light and shadow harmony. The module also features water distortion effects, utilizing configurable wave dynamics, shallow tints, and depth shifts to create moving surface details.
+- This module gives users screen-space atmosphere and transition tools for visual mood and gameplay feedback.
+- Weather overlays support effects like rain, snow, dust, and related wind-driven presentation cues.
+- Fog, cloud shadow, heat haze, vignette, and grain controls allow layered environmental styling.
+- Flash, fade, and shake effects provide impact signaling for combat, damage, and state changes.
+- Transition support includes wipe, iris, dissolve, and fade-style full-screen changes.
+- Time-of-day ambient tinting helps scenes communicate progression and context.
+- Ambient synchronization with lighting systems keeps presentation coherent.
+- Water distortion and tint controls support stylized surface-screen effects.
+- Overlay state updates run as one controller, reducing per-feature timing glue.
+- Render-command generation keeps overlay composition aligned with the main render path.
+- Image output support enables overlay previews and debug evidence generation.
+- The module is useful for cutscenes, weather systems, UX transitions, and dramatic pacing.
+- For users, it centralizes post-world presentation behavior in one script API.
+- It reduces bespoke effect orchestration code across scenes.
+- Overall, users get a practical visual polish toolkit tightly integrated with runtime control.
+- This helps teams ship more consistent and expressive scene transitions.
 
 ## Imports
 

@@ -245,6 +245,27 @@ do
     print("sample source playing = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
+--@api-stub: lurek.audio.manager.pauseAll
+do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    lurek.audio.manager.pauseAll()
+    print("manager.pauseAll called")
+    print("sample source paused = " .. tostring(lurek.audio.isPaused(src)))
+end
+
+--@api-stub: lurek.audio.manager.resumeAll
+do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    lurek.audio.manager.pauseAll()
+    lurek.audio.manager.resumeAll()
+    print("manager.resumeAll called")
+    print("sample source playing = " .. tostring(lurek.audio.isPlaying(src)))
+end
+
 --@api-stub: lurek.audio.release
 do
     local path = "content/examples/assets/audio/sample_click.wav"

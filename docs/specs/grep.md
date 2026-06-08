@@ -16,9 +16,17 @@
 
 ## Summary
 
-This module represents the high-performance content-search and text-scanning subsystem, supplying systems with tools to query files. It supports multiple search strategies including exact literals, regular expressions, shell globs, and edit-distance fuzzy matching. By checking search configurations, the scanning engine bounds processing loads by enforcing maximum file size limits, whole-word constraints, and case filters.
-
-To scan directory structures efficiently, the engine distributes matching tasks across a parallel thread pool. Small files are parsed using buffered streams, while large assets leverage zero-copy memory mapping for fast scanning. Path filters narrow scopes by excluding hidden directories or checking extensions. Special search workflows extract data from JSON files and structured logs.
+- This module gives users fast text and content search across project files from one scriptable API.
+- It supports literal, regex, glob, fuzzy, and multi-pattern matching for different search needs.
+- File filters and extension controls help narrow scope before scanning begins.
+- Parallel execution improves throughput on large code and content trees.
+- Large-file handling with mmap paths keeps heavy searches practical.
+- JSON-path and structured-log search helpers support data-oriented workflows beyond plain text.
+- Configurable limits and flags keep scans predictable and safer for mixed asset repositories.
+- Result objects include match context suitable for tooling, diagnostics, and automated audits.
+- For users, this module turns ad-hoc grep logic into a reusable, high-performance search subsystem.
+- It is useful for validation scripts, content checks, migration tools, and runtime diagnostics.
+- The practical value is faster discovery and less custom search boilerplate.
 
 ## Imports
 

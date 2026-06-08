@@ -16,11 +16,22 @@
 
 ## Summary
 
-This module represents the modular extension and package management subsystem, supplying tools to discover, validate, and orchestrate user-created packages. It processes manifest declarations to register mods with the manager, tracking metadata such as versions, authors, and configuration schemas. This decouples core engine operations from custom content folders while guaranteeing stable load pathways at runtime.
-
-To ensure stable execution, the manager resolves mod priorities and dependencies using a topological sorting algorithm. This sorting detects circular dependencies, handles missing requirements early, and prevents file path collisions across loaded packages. Furthermore, a hot-reload queue coordinates atomic re-registration of modified mod packages during active gameplay, making it easy to test changes on the fly.
-
-Security and containment are managed by a capability-based sandbox framework. It tracks API registries and schemas, mapping permitted engine methods to mod permissions to restrict access to the core namespaces. Mod execution is sandboxed, converting unauthorized API requests into non-fatal scripting errors. This sandbox confinement also limits file access to each mod's own directory, maintaining sandbox guarantees after hot reloads.
+- This module gives users a managed mod runtime for discovering, validating, loading, and reloading extension packages.
+- Manifest processing captures metadata, dependencies, capabilities, and config schema requirements.
+- Dependency ordering ensures mods initialize in a stable sequence without circular dependency breakage.
+- Collision checks help prevent conflicting resource paths across concurrently loaded mods.
+- Hot-reload queues support iterative mod development without full runtime restart.
+- Capability-based sandboxing limits mod API access to declared permissions.
+- Registry/schema checks validate requested APIs before mod logic executes.
+- Unauthorized operations are surfaced as script errors instead of hard runtime crashes.
+- File-access boundaries keep mods confined to their own content scope.
+- Mod manager APIs support querying by capability, load order, and lifecycle status.
+- Content registry support enables typed content registration by mods.
+- For users, this module balances openness to modding with runtime safety and control.
+- It reduces brittle manual load scripting in mod-heavy projects.
+- The practical result is more reliable extension ecosystems and faster iteration for creators.
+- Overall, users get a structured, scriptable mod platform inside the engine.
+- This makes third-party content integration much easier to govern.
 
 ## Imports
 

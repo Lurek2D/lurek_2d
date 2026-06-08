@@ -16,9 +16,13 @@
 
 ## Summary
 
-This module provides typography runtime services to load, resolve, and manage fonts. It operates a central registry caching styles and point sizes for TTF, OTF, and pre-rasterized bitmap fonts. This ensures that UI and render steps can query consistent font metrics on demand to size components.
-
-For text layouts, the module handles kerning-aware measurements and shaping operations. It supports multiple wrapping strategies to fit text strings within pixel width limits, computing line placements and glyph advances to produce formatted, multi-line layouts for rendering.
+- The font module gives users a stable typography layer for loading fonts and measuring text reliably.
+- It supports vector and bitmap font workflows, making UI and retro text rendering equally practical.
+- Registry-based lookup keeps font usage consistent across menus, HUDs, and overlays.
+- Measurement and shaping helpers provide kerning-aware dimensions for accurate layout decisions.
+- Wrap modes support fitting long text into constrained UI regions without manual splitting.
+- Script APIs expose line height, glyph availability, and metadata for fallback logic.
+- The module keeps text layout predictable and easier to iterate on.
 
 ## Imports
 

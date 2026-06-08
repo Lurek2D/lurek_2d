@@ -8,7 +8,7 @@ def fix_agent_core_test():
     """Fix test_agent_core_unit.lua by adding missing @covers markers."""
     file = Path('tests/lua/unit/test_agent_core_unit.lua')
     content = file.read_text(encoding='utf-8')
-    
+
     # Map of line numbers (approx) -> @covers markers to add
     # These are extracted from the error messages
     fixes = {
@@ -20,14 +20,14 @@ def fix_agent_core_test():
         844: "LAgentMemory",
         853: "LAgentMemory",
     }
-    
+
     lines = content.split('\n')
     result = []
-    
+
     for i, line in enumerate(lines):
         # Check if this line matches one of the problematic it() calls
         line_num = i + 1  # 1-based line numbers
-        
+
         # Look for matches in nearby range (within 5 lines)
         for target_line in fixes:
             if abs(line_num - target_line) <= 3 and re.match(r'\s*it\s*\(\s*["\']', line):
@@ -37,9 +37,9 @@ def fix_agent_core_test():
                     indent = len(line) - len(line.lstrip())
                     result.append(' ' * indent + f"-- @covers {fixes[target_line]}")
                 break
-        
+
         result.append(line)
-    
+
     file.write_text('\n'.join(result), encoding='utf-8')
     print(f"Fixed test_agent_core_unit.lua")
 
@@ -47,11 +47,11 @@ def fix_camera_walker_test():
     """Fix test_camera_walker.lua by adding missing @covers markers."""
     file = Path('tests/lua/unit/test_camera_walker.lua')
     content = file.read_text(encoding='utf-8')
-    
+
     # These blocks need @covers lurek.camera.newWalker or similar
     lines = content.split('\n')
     result = []
-    
+
     for i, line in enumerate(lines):
         # Add @covers before any it() that doesn't already have a marker
         if re.match(r'\s*it\s*\(\s*["\']', line):
@@ -60,9 +60,9 @@ def fix_camera_walker_test():
                 # Add generic marker
                 indent = len(line) - len(line.lstrip())
                 result.append(' ' * indent + "-- @covers lurek.camera")
-        
+
         result.append(line)
-    
+
     file.write_text('\n'.join(result), encoding='utf-8')
     print(f"Fixed test_camera_walker.lua")
 
@@ -70,10 +70,10 @@ def fix_cinematic_test():
     """Fix test_cinematic_timeline_unit.lua by adding missing @covers markers."""
     file = Path('tests/lua/unit/test_cinematic_timeline_unit.lua')
     content = file.read_text(encoding='utf-8')
-    
+
     lines = content.split('\n')
     result = []
-    
+
     for i, line in enumerate(lines):
         # Add @covers before any it() that doesn't already have a marker
         if re.match(r'\s*it\s*\(\s*["\']', line):
@@ -82,9 +82,9 @@ def fix_cinematic_test():
                 # Add generic marker
                 indent = len(line) - len(line.lstrip())
                 result.append(' ' * indent + "-- @covers lurek.cinematic")
-        
+
         result.append(line)
-    
+
     file.write_text('\n'.join(result), encoding='utf-8')
     print(f"Fixed test_cinematic_timeline_unit.lua")
 

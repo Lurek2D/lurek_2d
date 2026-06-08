@@ -778,3 +778,96 @@ do
     container:clear()
     print("after_clear=" .. container:getCount())
 end
+
+--@api-stub: LSceneObjectContainer:add
+do
+    local container = lurek.scene.newObjectContainer()
+    local obj = { layer = 2 }
+    container:add(obj)
+    print("count after add = " .. container:getCount())
+end
+
+--@api-stub: LSceneObjectContainer:clear
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1 })
+    container:clear()
+    print("count after clear = " .. container:getCount())
+end
+
+--@api-stub: LSceneObjectContainer:draw
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1, draw = function() print("draw layer 1") end })
+    container:draw()
+    print("container draw called")
+end
+
+--@api-stub: LSceneObjectContainer:getByLayer
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 3 })
+    local objects = container:getByLayer(3)
+    print("layer 3 count = " .. tostring(#objects))
+end
+
+--@api-stub: LSceneObjectContainer:getCount
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1 })
+    container:add({ layer = 2 })
+    print("container count = " .. container:getCount())
+end
+
+--@api-stub: LSceneObjectContainer:getObjects
+do
+    local container = lurek.scene.newObjectContainer()
+    container:add({ layer = 1 })
+    local objects = container:getObjects()
+    print("objects count = " .. tostring(#objects))
+end
+
+--@api-stub: LSceneObjectContainer:has
+do
+    local container = lurek.scene.newObjectContainer()
+    local obj = { layer = 1 }
+    container:add(obj)
+    print("has obj = " .. tostring(container:has(obj)))
+end
+
+--@api-stub: LSceneObjectContainer:remove
+do
+    local container = lurek.scene.newObjectContainer()
+    local obj = { layer = 1 }
+    container:add(obj)
+    container:remove(obj)
+    print("count after remove = " .. container:getCount())
+end
+
+--@api-stub: LSceneObjectContainer:type
+do
+    local container = lurek.scene.newObjectContainer()
+    print("container type = " .. container:type())
+end
+
+--@api-stub: LSceneObjectContainer:typeOf
+do
+    local container = lurek.scene.newObjectContainer()
+    print("is LSceneObjectContainer = " .. tostring(container:typeOf("LSceneObjectContainer")))
+end
+
+--@api-stub: LSceneObjectContainer:update
+do
+    local container = lurek.scene.newObjectContainer()
+    local ticks = 0
+    container:add({
+        layer = 1,
+        update = function(_, dt)
+            if dt > 0 then
+                ticks = ticks + 1
+            end
+        end,
+    })
+    container:update(1 / 60)
+    print("updates called = " .. tostring(ticks))
+end

@@ -1,4 +1,4 @@
----
+﻿---
 name: review-quality
 description: Review overall code quality using tools/audit/quality_report.py.
 ---
@@ -23,14 +23,20 @@ description: Review overall code quality using tools/audit/quality_report.py.
 - Cleaned quality report output
 
 # SUCCESS CRITERIA
-- `python tools/audit/quality_report.py` reports exactly 0 critical warnings.
-- `cargo clippy -- -D warnings` exits with code 0 (exactly 0 warnings).
+- [ ] `python tools/audit/quality_report.py` reports exactly 0 critical warnings.
+- [ ] `cargo clippy -- -D warnings` exits with code 0 (exactly 0 warnings).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Suppressing lints or warnings instead of fixing the underlying issue.
 - Conducting mass refactors that break existing stable APIs.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: quality-pipeline, rust-coding
 - tools: python tools/audit/quality_report.py, cargo clippy
 - agent: Verifier
+
+

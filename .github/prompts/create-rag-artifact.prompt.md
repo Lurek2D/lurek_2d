@@ -1,4 +1,4 @@
----
+﻿---
 name: create-rag-artifact
 description: Create or update how RAG system works, new feature or something, reindex it.
 ---
@@ -23,14 +23,20 @@ description: Create or update how RAG system works, new feature or something, re
 - Newly generated RAG index/corpus database
 
 # SUCCESS CRITERIA
-- `python tools/rag/reindex.py` exits with code 0 (0 indexing failures).
-- Query recall tests return >= 95% accuracy.
+- [ ] `python tools/rag/reindex.py` exits with code 0 (0 indexing failures).
+- [ ] Query recall tests return >= 95% accuracy.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Indexing massive binary files or unhelpful raw logs.
 - Over-chunking documents so context is lost.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: retrieval-architecture, cag-workflow
 - tools: RAG indexing scripts inside `tools/rag/`
 - agent: CAG-Architect
+
+

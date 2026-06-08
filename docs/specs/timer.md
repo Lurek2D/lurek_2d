@@ -16,11 +16,17 @@
 
 ## Summary
 
-This module serves as the core timing backbone for the game runtime, ensuring that delta times, elapsed sessions, and frame-rate calculations remain highly stable and precise. By integrating a drift-safe microsecond accumulator that retains fractional carry between updates, the system eliminates rounding errors over long sessions. Clocking metrics provide both raw delta times and smoothed averages, reducing frame jitter for movement interpolations.
-
-For game physics and performance diagnostics, the module exposes robust timestep configurations and diagnostic tools. It manages fixed physics intervals alongside step limits to prevent performance degradations under heavy rendering loads. High-resolution benchmarking timers and rolling average FPS counters offer precise performance telemetry, while safe thread-sleeping wrappers block execution without wasting CPU cycles.
-
-Finally, the subsystem includes a powerful scheduler for coordinating timed and frame-based callbacks. Developers can register one-shot, repeating, or named debouncing events, and control them using local time-scaling factors, pauses, and cancellations. This scheduling engine also coordinates coroutine yielding, letting gameplay scripts pause task execution for a specific duration or frame count before resuming.
+- This module gives users core runtime timing for frame deltas, elapsed time, and scheduler-driven callbacks.
+- Drift-safe accumulation keeps long-session timing stable and reduces rounding artifacts.
+- APIs expose raw delta, smoothed delta, average delta, FPS, and frame counters.
+- Physics timestep controls support fixed-step tuning and max-step safety limits.
+- Sleep and high-resolution time helpers support profiling and synchronization use cases.
+- Scheduler APIs support one-shot, repeating, named, and frame-based events.
+- Pause/resume/cancel controls support runtime-safe timer lifecycle management.
+- Time-scale controls support localized speed adjustments for scheduled events.
+- Coroutine wait helpers support frame or second delays in script flows.
+- Real-time timer paths support out-of-timescale callback scheduling.
+- For users, this module centralizes timing semantics and deferred execution behavior.
 
 ## Imports
 

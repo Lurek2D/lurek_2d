@@ -12,21 +12,30 @@
 - Source path: `src/scene/`
 - Binding: `src/lua_api/scene_api.rs`
 - Namespace: `lurek.scene`
-- Lua API surface: `60` functions, `9` types, `10` methods
+- Lua API surface: `60` functions, `10` types, `21` methods
 - Rust test path(s): none found in the workspace
 - Lua test path(s): none found in the workspace
 
 ## Summary
 
-This module provides a robust game flow and state control subsystem built on a structured scene stack model. It organizes game progression across major runtime states, such as menus, levels, and popup screens, through standard push, pop, and switch operations. The stack supports overlay layouts that can run alongside underlying states, and utilizes prototype metatable factories to define and instantiate custom scene classes dynamically.
-
-State navigation is governed by a predictable lifecycle callback pipeline. Pushed, popped, or transitioned scenes receive timely enter, leave, pause, resume, and ready callbacks in strict stack order, ensuring consistent state setups. To prevent startup stutters under heavy loads, developers can register deferred preload functions, lazy-loading heavy asset pools only when a scene is first pushed to the stack.
-
-To bridge state changes smoothly, the module implements timed visual transition queues. Scene switches can trigger animated slides, fades, sweeps, or iris wipes with configurable easing curves. Easing parameters convert name descriptors into dynamic progress values, while a first-in-first-out transition queue schedules sequential animations automatically to support complex cinematic reveal loops.
-
-Frictions during transition and save-state routing are resolved using shared contexts and serialization engines. The module maintains a shared key-value data register that lets adjacent scenes pass parameters cleanly without global namespace sprawl. Additionally, it compiles the active scene stack and its shared context into a serializable snapshot table, enabling quick save and reload workflows.
-
-Finally, the system integrates a z-ordered painter-style depth sorter to handle visual overlays. The sorter collects raw draw callbacks or drawable game tables, sorting them in a back-to-front order before rendering. It supports both high-performance sorting and stable sorting configurations; enabling stable sorting prevents visual flickering for overlapping objects that share identical z-depths.
+- This module gives users stack-based scene flow control for menus, gameplay states, overlays, and transitions.
+- Push/pop/switch operations provide explicit runtime state navigation primitives.
+- Overlay support allows stacked scene behavior without fully replacing underlying context.
+- Lifecycle callbacks coordinate enter, leave, pause, resume, and ready phases consistently.
+- Preload hooks support deferred scene initialization to reduce transition stutter.
+- Shared scene data APIs support parameter passing without global-variable sprawl.
+- Registered scene names support lookup, reuse, and navigation by symbolic identifiers.
+- Transition helpers support fade, slide, wipe, and iris style visual changes.
+- Transition queues allow staged cinematic scene changes.
+- Serialization helpers capture stack and shared data snapshots for save/load workflows.
+- Process/update/render toggle controls support selective scene execution policies.
+- Active-scene and layer queries support debug overlays and tooling integration.
+- Built-in depth sorter supports painter-order rendering for mixed drawables.
+- Stable-sort support prevents equal-depth flicker artifacts.
+- This module is useful for game-state architecture, UI layering, and narrative flow systems.
+- For users, it centralizes scene lifecycle semantics instead of scattered ad-hoc table swaps.
+- It improves maintainability of complex navigation and transition behavior.
+- Overall, users get a robust orchestration layer for stateful game flow.
 
 ## Imports
 
@@ -53,15 +62,17 @@ Finally, the system integrates a z-ordered painter-style depth sorter to handle 
 
 ### object.rs
 
-- Scene object component – generic visible entity.
+- Simple 2D scene object entity storing position, sprite reference, and visibility state for basic game drawable management.
+- Provides mutation methods to update position, sprite name, and visibility flag during gameplay without reconstructing the object.
+- Integrates with Lua through `register()` to expose constructor and property setters so scripts can create and control scene objects.
+- Designed as a lightweight alternative to full entity-component systems for games needing basic positioned, sprite-based objects.
 
 ### object_container.rs
 
-- Scene object container for managing object lifecycle, updates, and layered rendering.
 - Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects
 - library. Supports add/remove/clear operations, per-frame update and draw cycles,
-- layer-based depth sorting for painter-style rendering, and object query helpers
-- `has(obj)` and `getByLayer(layer)`.
+- and layer-based depth sorting for painter-style rendering, plus object query
+- helpers (`getByLayer`, `has`).
 
 ### render.rs
 
@@ -164,28 +175,6 @@ Finally, the system integrates a z-ordered painter-style depth sorter to handle 
 
 ### Types
 
-#### LSceneObjectContainer Type
-
-- Scene object container userdata for object lifecycle, update/draw dispatch, and layer-based queries.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LSceneObjectContainer:add(obj) -> nil`: Add an object to the container.
-- `LSceneObjectContainer:clear() -> nil`: Remove all objects from the container.
-- `LSceneObjectContainer:draw() -> nil`: Call draw on sorted objects.
-- `LSceneObjectContainer:getByLayer(layer) -> table`: Return all objects with matching layer.
-- `LSceneObjectContainer:getCount() -> number`: Return current object count.
-- `LSceneObjectContainer:getObjects() -> table`: Return internal object array.
-- `LSceneObjectContainer:has(obj) -> boolean`: Return true when object exists in container.
-- `LSceneObjectContainer:remove(obj) -> nil`: Remove one object by identity.
-- `LSceneObjectContainer:type() -> string`: Return userdata type name.
-- `LSceneObjectContainer:typeOf(name) -> boolean`: Check userdata type.
-- `LSceneObjectContainer:update(dt) -> nil`: Call update on objects that provide it.
-
 #### LDepthSorter Type
 
 - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
@@ -242,6 +231,28 @@ Finally, the system integrates a z-ordered painter-style depth sorter to handle 
 ##### Methods
 
 - No documented methods.
+
+#### LSceneObjectContainer Type
+
+- Create a new scene object container for managing object lifecycle and draw ordering.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSceneObjectContainer:add(obj) -> nil`: Add an object to the container.
+- `LSceneObjectContainer:clear() -> nil`: Remove all objects from the container.
+- `LSceneObjectContainer:draw() -> nil`: Call draw() on all objects that have a draw method, sorted by layer.
+- `LSceneObjectContainer:getByLayer(n) -> table`: Get all objects whose layer equals `n`.
+- `LSceneObjectContainer:getCount() -> nil`: Get the number of objects currently in the container.
+- `LSceneObjectContainer:getObjects() -> table`: Get all objects as an array (layer-sorted).
+- `LSceneObjectContainer:has(obj) -> boolean`: Check whether an object is present in the container.
+- `LSceneObjectContainer:remove(obj) -> nil`: Remove an object from the container (identity comparison).
+- `LSceneObjectContainer:type() -> string`: Get the type name of this userdata.
+- `LSceneObjectContainer:typeOf(name) -> boolean`: Check type by name.
+- `LSceneObjectContainer:update(dt) -> nil`: Call update(dt) on all objects that have an update method.
 
 #### LSceneSerializeSceneResult Type
 

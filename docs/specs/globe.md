@@ -17,15 +17,30 @@
 
 ## Summary
 
-This module represents the interactive planetary globe simulation and rendering subsystem, providing rich interfaces to model and display spherical world maps. It operates on region topologies representing territories, provinces, or coordinates mapped onto a unit sphere. By combining coordinate math and orbital projections, it manages interactive camera controls like panning, panning bounds, and variable zooms, translating screen inputs into latitude and longitude coordinates.
-
-Visual styling and presentation are managed through a layered rendering system. The module draws projected regions with configurable lighting, borders, atmosphere, and visual overlays like thematic heatmaps. Illumination calculations determine local day-night cycles and terminator lines dynamically. Additionally, the system supports multi-view compositions, allowing developers to present side-by-side or comparative map screens under unified camera matrices.
-
-To display tactical information, the system includes marker and label managers. Pins, labels, and routes are placed directly onto the globe surface using spherical coordinates. The drawing pipeline manages these overlays dynamically, applying level-of-detail visibility gates that scale annotation densities based on camera zoom. This prevents text overlap, keeping text annotations and indicators readable when viewing large geographic spans.
-
-Strategic gameplay is supported by customizable fog-of-war masks and topological pathfinding. Fog states track visibility tiers like explored or hidden, allowing different viewers to maintain separate maps. The underlying topology graph links region centroids with adjacency lists, exposing reachability matrices and routes across regions. Finally, adapter adapters translate political ownership into colored visual boundaries in real-time.
-
-Ingestion and export pathways allow developers to seed and extract map data easily. Globes can be built from TOML descriptors, PNG images, or generated procedurally from Voronoi seed coordinates. Geometry export tools serialize region shapes directly into standard mesh formats for inspection or offline editing. This bridges design tooling with the active runtime world, ensuring maps remain fully customizable.
+- This module gives users an interactive globe runtime for strategy maps, world overviews, and geospatial gameplay systems.
+- It models regions on a sphere and exposes camera controls tuned for planetary navigation.
+- Screen interactions can be translated into latitude/longitude space for picking and map actions.
+- Region topology support enables adjacency-aware mechanics such as routing, influence spread, and traversal rules.
+- Layer systems let teams overlay thematic data like ownership, heatmaps, and tactical signals.
+- Dynamic lighting supports day-night visualization cues that improve world readability.
+- Atmosphere, borders, and style controls make globe presentation customizable for different game aesthetics.
+- Marker and label tools allow rich annotation of cities, missions, routes, and points of interest.
+- LOD-aware overlay behavior helps keep dense maps readable across zoom levels.
+- Fog-of-war masks support per-viewer visibility, which is useful for multiplayer and asymmetric information gameplay.
+- Reachability and pathfinding helpers support strategic route planning across region graphs.
+- Province adapter support keeps political ownership systems synchronized with globe visuals.
+- Multi-view composition allows side-by-side map views for compare, split command, or overview panels.
+- Ingestion from TOML, image data, and generated seeds supports diverse authoring pipelines.
+- Voronoi generation workflows enable procedural world partitioning directly in runtime tools.
+- Export helpers let users move geometry out for offline editing or analysis.
+- Sync utilities support cross-thread and system-to-system globe state updates.
+- This module is useful for grand strategy, campaign maps, simulation dashboards, and educational geo interfaces.
+- For users, it unifies rendering, interaction, topology, and overlays in one coherent spherical map system.
+- It reduces custom math and glue code required to build globe-centric gameplay.
+- The practical value is faster iteration on map mechanics and map presentation together.
+- It also improves observability by exposing map state and interactions through script-friendly APIs.
+- Overall, users get a complete planetary map feature stack rather than isolated rendering primitives.
+- That makes globe-driven experiences feasible without external GIS-style toolchains.
 
 ## Imports
 
@@ -61,12 +76,12 @@ Ingestion and export pathways allow developers to seed and extract map data easi
 
 ### fog.rs
 
-- Provides compact per-region fog state storage with hidden, explored, and visible visibility tiers.
-- Supports per-viewer mask ownership so different observers can maintain independent map knowledge.
-- Exposes reveal, hide, explore, and toggle operations for direct gameplay-state updates.
-- Includes serialization-friendly encoding to persist fog state across save and restore cycles.
-- Supplies query helpers that report visible and explored subsets for UI and logic consumers.
-- Delivers the fog-of-war backbone used by globe rendering and strategic information gating.
+- Fog-of-war state storage with per-region two-bit visibility tiers (Hidden, Explored, Visible) enabling strategic information gating and map knowledge.
+- Maintains per-viewer FogMask instances so different observers independently track map revelation, supporting multiplayer scenarios and split-screen views.
+- Provides reveal(), hide(), explore(), and toggle() operations for direct gameplay events plus batch reveal for efficient region updates.
+- Encodes fog state as base64-packed two-bit values enabling compact save-file persistence and safe transmission across network boundaries.
+- Exposes visibility and explored subset queries returning region IDs for UI rendering, camera targeting, and game logic decision systems.
+- Forms the backbone of fog-of-war rendering and strategic visibility constraints across globe rendering and campaign gameplay mechanics.
 
 ### label.rs
 

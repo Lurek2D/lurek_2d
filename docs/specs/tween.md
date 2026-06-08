@@ -16,13 +16,23 @@
 
 ## Summary
 
-This module serves as the primary animation engine for driving timed value changes and fluid transitions across table properties. By combining mathematical easing curves with physical dynamics, it enables developers to craft expressive motion patterns without manual tracking. The system translates raw time deltas into normalized progress ratios, applying built-in or custom-registered easing curves to produce organic visual responses.
-
-To accommodate both scripted and physical movement, the system includes a comprehensive easing catalog alongside a damped spring simulator. The easing dictionary supports case-insensitive aliases and custom math formulations, while the spring physics model simulates realistic bounce and settle behaviors. By configuring custom stiffness and damping values, developers can implement elastic interface transitions that automatically snap to avoid pixel-level jitter.
-
-For complex cinematic timing, the engine offers rich composition primitives like sequences, chains, and parallel blocks. Sequences chain property animations and timed delays sequentially, using microsecond carry-over calculations to avoid gaps between stages. Parallel blocks group multiple simultaneous tracks, completing only when all lanes settle. This structural choreography makes multi-step scripts easy to coordinate.
-
-Finally, the central tween engine handles the runtime updates and lifecycle of all active handles. It resolves property mutations directly onto target tables, automatically freeing completed animations to maintain memory hygiene. In addition to repeat, relative target bindings, and yoyo modes, the system allows waiting coroutines to yield until animations complete, bridging timeline choreography with scripting flows.
+- This module gives users timed interpolation tools for animating numeric table fields with expressive motion behavior.
+- Built-in easing functions support common UI and gameplay transition curves.
+- Custom easing registration allows project-specific motion signatures.
+- Spring simulation support enables physics-like settle and overshoot behavior.
+- Property tweens write directly onto target tables during engine update ticks.
+- Tween handles support pause, resume, cancel, repeat, yoyo, and relative modes.
+- Sequence APIs support ordered multi-step animation choreography.
+- Parallel APIs support synchronized multi-lane motion blocks.
+- Chain APIs support fluent step composition for cinematic timing flows.
+- Delay and callback steps support mixed timing-and-action sequences.
+- Await support lets coroutines pause until tween completion.
+- Engine-level update paths manage lifecycle and cleanup of active tween structures.
+- This module is useful for UI transitions, camera motion, gameplay effects, and scripted cutscenes.
+- For users, it centralizes animation timing logic instead of ad-hoc per-system interpolation code.
+- It improves consistency of motion feel across the project.
+- Overall, users get a full motion orchestration toolkit in one runtime module.
+- The practical value is faster iteration on polished, deterministic animation behavior.
 
 ## Imports
 

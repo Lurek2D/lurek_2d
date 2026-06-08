@@ -16,13 +16,20 @@
 
 ## Summary
 
-This module provides a grid-based tactical minimap subsystem for HUD views. It maintains a map model tracking cells, terrain types, and display layers. These layers can be stacked to combine different map representations (like terrain and political views) or show varied vertical elevations, offering highly customizable tactical HUD feedback.
-
-To represent gameplay, the module displays dynamic indicators on the map. It supports pins, markers, and colored path overlays. Markers are managed by type and can carry custom textures or timed animations, while temporary pings alert players to events. Viewport rectangles show camera bounds, keeping overlay rendering highly organized.
-
-Visibility is managed via fog-of-war systems, tracking explored cells and revealing sections inside a radius. A specialized raycaster overlay builds visibility grids from wall, floor, and light layouts, using Bresenham line traversal to compute line-of-sight profiles and render player indicators in real-time.
-
-For user interfaces, the system tracks active cameras, keeping the minimap centered on targets. Grid-to-screen and screen-to-grid coordinate conversions support pointer hover checks and click targeting. Finally, completed map states can be rendered as HUD overlays or exported directly into CPU image buffers.
+- This module gives users a tactical minimap system for HUD-level world awareness and navigation support.
+- Grid layers allow multiple map views such as terrain, ownership, and special tactical overlays.
+- Marker, ping, and path features provide live event cues and route visualization.
+- Object-type controls support per-category visibility and styling behavior.
+- Fog-of-war handling tracks explored versus hidden cells for information-driven gameplay.
+- Radius reveal helpers support scouting, sensor, and exploration mechanics.
+- Viewport overlays show active camera framing relative to map content.
+- Camera tracking keeps minimap focus aligned with moving targets.
+- Grid/screen conversion APIs support clickable minimaps and hover tooltips.
+- Raycaster overlay support enables visibility-aware minimaps for tile raycast games.
+- Image export paths make minimap state reusable in tooling and test evidence.
+- For users, this module centralizes map awareness UI in one scriptable system.
+- It reduces custom HUD glue and keeps tactical overlays consistent.
+- Overall, it turns minimaps into interactive gameplay surfaces rather than static decorations.
 
 ## Imports
 

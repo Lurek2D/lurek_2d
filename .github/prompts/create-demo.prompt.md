@@ -1,4 +1,4 @@
----
+﻿---
 name: create-demo
 description: Create or update new demo game using specific scope or specific modules.
 ---
@@ -24,14 +24,20 @@ description: Create or update new demo game using specific scope or specific mod
 - Smoke test registration
 
 # SUCCESS CRITERIA
-- `cargo test --test demo_smoke_tests` exits with code 0 (100% demo pass rate).
-- `python tools/validate/validate_game.py` exits with code 0 (0 validation errors).
+- [ ] `cargo test --test demo_smoke_tests` exits with code 0 (100% demo pass rate).
+- [ ] `python tools/validate/validate_game.py` exits with code 0 (0 validation errors).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Creating complex logic that overshadows the engine features being demonstrated.
 - Forgetting to include a `conf.toml` file or a `README.md`.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: demo-creation, lua-scripting
 - tools: python tools/validate/validate_game.py, cargo test
 - agent: Content-Maker
+
+

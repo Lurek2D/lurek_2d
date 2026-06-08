@@ -1,4 +1,4 @@
----
+﻿---
 name: review-tests
 description: Review unit lua test coverage and fix all gaps, ensure all practices are followed.
 ---
@@ -24,15 +24,21 @@ description: Review unit lua test coverage and fix all gaps, ensure all practice
 - Complete test coverage and structure reports
 
 # SUCCESS CRITERIA
-- `cargo test --test lua_tests` exits with code 0.
-- `python tools/audit/lua_test_structure_audit.py` reports exactly 0 structural violations.
-- `python tools/audit/lua_api_test_coverage.py` reports exactly 100% test coverage.
+- [ ] `cargo test --test lua_tests` exits with code 0.
+- [ ] `python tools/audit/lua_test_structure_audit.py` reports exactly 0 structural violations.
+- [ ] `python tools/audit/lua_api_test_coverage.py` reports exactly 100% test coverage.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Using mocked internal states instead of testing via the public Lua API.
 - Ignoring structural rules and placing tests in random directories.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: testing-ecosystem, quality-pipeline, lua-scripting
 - tools: python tools/audit/lua_api_test_coverage.py, python tools/audit/lua_test_structure_audit.py, cargo test
 - agent: Tester
+
+

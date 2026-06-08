@@ -187,3 +187,53 @@ do
     print("typeOf LCinematicTimeline=" .. tostring(tl:typeOf("LCinematicTimeline")))
     print("typeOf Object=" .. tostring(tl:typeOf("Object")))
 end
+
+--@api-stub: lurek.cinematic.new
+do
+    local cinematic = lurek.cinematic.new()
+    print("lurek.cinematic.new type=" .. cinematic:type())
+end
+
+--@api-stub: LCinematic:addCut
+do
+    local cinematic = lurek.cinematic.new()
+    cinematic:addCut(0.0, "Intro pan")
+    cinematic:addCut(1.5, "Player reveal")
+    print("cuts after add = " .. tostring(cinematic:cutCount()))
+end
+
+--@api-stub: LCinematic:cutCount
+do
+    local cinematic = lurek.cinematic.new()
+    cinematic:addCut(0.0, "single cut")
+    print("cut count = " .. tostring(cinematic:cutCount()))
+end
+
+--@api-stub: LCinematic:play
+do
+    local cinematic = lurek.cinematic.new()
+    cinematic:addCut(0.0, "start")
+    cinematic:play()
+    print("cinematic play invoked")
+end
+
+--@api-stub: LCinematic:clear
+do
+    local cinematic = lurek.cinematic.new()
+    cinematic:addCut(0.0, "to clear")
+    cinematic:clear()
+    print("cut count after clear = " .. tostring(cinematic:cutCount()))
+end
+
+--@api-stub: LCinematic:type
+do
+    local cinematic = lurek.cinematic.new()
+    print("LCinematic:type = " .. cinematic:type())
+end
+
+--@api-stub: LCinematic:typeOf
+do
+    local cinematic = lurek.cinematic.new()
+    print("is LCinematic = " .. tostring(cinematic:typeOf("LCinematic")))
+    print("is Object = " .. tostring(cinematic:typeOf("Object")))
+end

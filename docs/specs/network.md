@@ -17,13 +17,35 @@
 
 ## Summary
 
-This module represents the network communication and multiplayer transport subsystem, enabling real-time game coordination across host sessions. It wraps ENet bindings to handle low-level UDP sockets, connection lifecycles, and multi-channel packet delivery. By abstracting host behaviors into server, client, or combined host configurations, the engine manages connection slotting, disconnect sequences, and round-trip statistics seamlessly.
-
-To isolate network latency from main-loop timings, the module operates on a background network thread. MPSC queues isolate message transfers, ensuring the game loop remains responsive during socket blockages. This thread drives non-blocking TCP connections and WebSocket pools, managing secure handshakes and frame exchanges. Additionally, ureq-backed HTTP agents handle synchronous queries and Server-Sent Event push streams in parallel.
-
-Multiplayer states are synchronized using authoritative entity snapshots and client reconciliation. The system captures object positions, stepping simulations forward using linear dead-reckoning prediction between ticks. It resolves differences using configurable blending factors, keeping replicated entities aligned across clients. MessagePack serialization provides packed, zero-allocation sizing estimates before transport.
-
-Lobby discovery and NAT traversal facilitate session-matching workflows. Discovered games are advertised on local networks using UDP broadcasts, and the room registry handles creation, listing, and membership. Dynamic UDP hole punching and ticket generation support NAT traversal, allowing clients to establish direct connections through relay boundaries without manual port configurations or server-side setups.
+- This module gives users multiplayer transport and networking utilities for real-time and service-backed game features.
+- ENet host support covers server, client, and mixed-host runtime roles.
+- Peer lifecycle handling includes connect, disconnect, channel messaging, and round-trip diagnostics.
+- Background runtime threading keeps blocking network operations off the frame-critical loop.
+- MPSC queues support safe handoff between game logic and transport workers.
+- TCP and WebSocket pools support persistent connection workflows.
+- HTTP helpers support request-response integrations for backend service calls.
+- SSE support enables long-lived push-style event ingestion from remote endpoints.
+- MessagePack support provides compact serialization for runtime payloads.
+- Snapshot helpers support entity-state packing and unpacking workflows.
+- Prediction helpers support dead-reckoning style client smoothing.
+- Reconciliation helpers support blending predicted and authoritative states.
+- Lobby discovery supports LAN game discovery flows.
+- Room management helpers support create/list/join/leave coordination.
+- Relay ticket and punch-probe helpers support NAT traversal signaling.
+- Runtime APIs expose thread counts, status, and event polling surfaces.
+- RPC layer support enables request-response and notify-style message patterns.
+- Network state sync helpers support authority-aware replicated key/value updates.
+- The module is useful for co-op gameplay, dedicated servers, and tool-to-runtime communication.
+- For users, it centralizes diverse transports under one consistent Lua-facing namespace.
+- It reduces custom socket plumbing and integration duplication.
+- It supports both low-latency gameplay channels and web-service integrations.
+- The practical result is faster multiplayer feature implementation.
+- It also improves observability of network behavior and failure modes.
+- Overall, users get a broad, production-oriented networking toolkit.
+- This makes scaling from local tests to internet sessions more manageable.
+- It aligns transport, serialization, synchronization, and lobby concerns in one module.
+- That alignment reduces cross-layer mismatch bugs in multiplayer stacks.
+- Users gain flexibility to mix UDP gameplay and HTTP/WebSocket service traffic.
 
 ## Imports
 

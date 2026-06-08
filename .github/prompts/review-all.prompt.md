@@ -1,4 +1,4 @@
----
+﻿---
 name: review-all
 description: Perform all below reviews one by one.
 ---
@@ -24,14 +24,20 @@ description: Perform all below reviews one by one.
 - Execution logs of all sub-reviews
 
 # SUCCESS CRITERIA
-- All 8 underlying audit and validation scripts exit with code 0.
-- Test coverage and example coverage reports hit exactly 100%.
+- [ ] All 8 underlying audit and validation scripts exit with code 0.
+- [ ] Test coverage and example coverage reports hit exactly 100%.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Skipping a failing review stage instead of recording the failure.
 - Generating an overwhelmingly large report without prioritizing critical issues.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: quality-pipeline
 - tools: All audit tools
 - agent: Verifier
+
+

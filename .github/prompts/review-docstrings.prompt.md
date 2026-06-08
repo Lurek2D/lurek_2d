@@ -1,4 +1,4 @@
----
+﻿---
 name: review-docstrings
 description: Review docstrings for specific module, on rust level evreything on methods, classes, objects, file level, ensure this follows practices and is being collected by scripts / tools.
 ---
@@ -23,14 +23,20 @@ description: Review docstrings for specific module, on rust level evreything on 
 - Clean `docstring_audit.py` report
 
 # SUCCESS CRITERIA
-- `python tools/audit/docstring_audit.py` reports exactly 0 missing docstrings.
-- `cargo test --doc` exits with code 0 (100% doc test pass rate).
+- [ ] `python tools/audit/docstring_audit.py` reports exactly 0 missing docstrings.
+- [ ] `cargo test --doc` exits with code 0 (100% doc test pass rate).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Writing "dummy" docstrings just to pass the tool check.
 - Documenting private items extensively while neglecting public APIs.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: rust-coding, docs-general
 - tools: python tools/audit/docstring_audit.py, cargo test
 - agent: Doc-Writer
+
+

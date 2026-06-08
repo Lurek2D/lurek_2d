@@ -19,19 +19,47 @@
 
 ## Summary
 
-This module delivers a high-performance 2D rigid-body physics simulation subsystem that drives motion, collision, and mechanical interactions. It manages rigid bodies under distinct behavioral roles, including dynamic movers, fixed solid obstacles, script-driven kinematics, and trigger sensors. To ensure deterministic results regardless of rendering frame rate, the engine utilizes fixed-timestep updates, automatically reconciling screen pixels with physics meters.
-
-Colliders define the physical boundaries and surface characteristics of bodies, utilizing a range of shapes from circles and rectangles to convex polygons and chained polyline boundaries. Each shape stores dedicated physical properties, such as mass density, friction, and restitution bounciness. For fast-moving bodies, continuous collision detection can be enabled, preventing objects from tunneling through thin solid obstacles in the environment.
-
-The simulation world supports mechanical assemblies through joints that bind body pairs together. Developers can establish distance rods, friction dampers, revolute hinges, slider axes, pulleys, ropes, and weld points, giving each joint unique motor settings and break-force thresholds. These constraints enable interactive features like swinging ropes, mechanical gears, suspension wheels, and motorized platforms that react dynamically to player forces.
-
-Trigger zones expand the world into interactive fields that override physics rules within designated areas. Zones apply gravity modifiers such as constant directional currents, point attractors, point repulsors, or zero-gravity environments. They can also override linear and angular damping to simulate underwater currents, deep mud, or low-friction ice fields. Priority levels and layer masks resolve overlapping zones to ensure logical behaviors.
-
-For tactical queries, the subsystem exposes spatial intersection utilities. It handles raycasts to detect sightlines and collision points, including comprehensive searches that return all intersected colliders along a path. Additionally, developers can perform fast axis-aligned bounding box and circular search queries to locate nearby bodies, alongside allocation-free collision check helpers for high-frequency testing outside the active physics world.
-
-The module also integrates a destructible terrain system that bridges static cell grids with dynamic physical colliders. The terrain is tracked in chunks to optimize updates, allowing solid blocks to be filled or cleared in real time. It merges vertically adjacent cells to keep the collider footprint small, spawns debris on collapse, and serializes cell layouts into binary streams, supporting real-time ground destruction and terraforming mechanics.
-
-To assist with debugging, the system translates live body coordinates, joint links, contact manifolds, and collision events into post-step reports. Developers can hook into begin-contact and end-contact event loops, or retrieve comprehensive contact pairs at frame boundaries. Furthermore, debug rendering utilities draw color-coded shapes, contact normals, and velocity vectors, making invisible simulation states easy to analyze.
+- The physics module provides 2D rigid-body simulation, collision, and query services for gameplay systems.
+- It supports dynamic, static, kinematic, and sensor body roles.
+- The world steps on a fixed timestep to keep simulation deterministic across frame rates.
+- Bodies carry type, transform, collision filtering, and motion configuration.
+- Shape support includes circles, rectangles, polygons, edges, and chain boundaries.
+- Shape material settings include density, friction, and restitution.
+- Continuous collision detection is available for fast-moving bodies.
+- Broad and narrow phase collision processing is owned by the world runtime.
+- Contact events are captured and exposed as stable post-step records.
+- Lua callbacks can subscribe to begin-contact and end-contact transitions.
+- Spatial queries include raycast, point test, and area overlap helpers.
+- Lightweight geometry helpers are available outside the full world object.
+- Joint support enables hinges, sliders, ropes, welds, and motorized constraints.
+- Joint limits and break thresholds support mechanical gameplay behaviors.
+- Sleeping policies reduce CPU load for resting bodies.
+- Wake/sleep controls are script-accessible when deterministic activation is required.
+- Layer/mask filtering controls collision participation between groups.
+- Zone systems apply local gravity and damping overrides by area.
+- Zone priorities and masks resolve overlapping environmental effects.
+- Terrain integration supports destructible cell maps linked to collider rebuilds.
+- Chunk-local terrain updates avoid global rebuild cost.
+- Merged terrain spans reduce static collider count.
+- Terrain supports serialization and diagnostic image export.
+- Debug rendering exposes bodies, vectors, and contact-oriented visuals.
+- Diagnostic colors help separate body categories in dense scenes.
+- Pixels-to-meters mapping keeps gameplay and solver scales coherent.
+- The module owns physical simulation and queries, not game-domain policy.
+- It collaborates with render/runtime/math/image through bounded interfaces.
+- Error handling and validation protect against invalid shape/world inputs.
+- APIs support both high-level helpers and detailed body control.
+- The module is suitable for platformers, top-down motion, and destructible worlds.
+- Contracts are tuned for deterministic tests and reproducible runtime behavior.
+- Physics remains a Platform Services backend used by many feature modules.
+- Overall, physics is the authoritative source of movement and collision truth.
+- It provides performance-aware simulation with practical debugging support.
+- It is designed for production stability under mixed gameplay workloads.
+- The module keeps integration explicit to reduce hidden side effects.
+- Invariants prioritize stable step ordering and predictable contact semantics.
+- Query results are aligned with the same world state used by solver progression.
+- This consistency is critical for AI, gameplay, and tool integrations.
+- Physics is a core technical pillar for interactive 2D experiences.
 
 ## Imports
 

@@ -1,4 +1,4 @@
----
+﻿---
 name: create-example
 description: Create new example or update example for specific module.
 ---
@@ -24,14 +24,20 @@ description: Create new example or update example for specific module.
 - Example coverage report
 
 # SUCCESS CRITERIA
-- `python tools/validate/validate_example_coverage.py` exits with code 0.
-- `python tools/audit/example_coverage.py` reports exactly 100% example coverage for the targeted API method.
+- [ ] `python tools/validate/validate_example_coverage.py` exits with code 0.
+- [ ] `python tools/audit/example_coverage.py` reports exactly 100% example coverage for the targeted API method.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Writing overly complex examples that obscure the actual API being demonstrated.
 - Failing to document the code with clear comments.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: examples-management, lua-scripting, docs-general
 - tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py
 - agent: Content-Maker
+
+

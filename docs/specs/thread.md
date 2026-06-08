@@ -16,9 +16,16 @@
 
 ## Summary
 
-This module delivers a safe and robust concurrency framework for executing asynchronous Lua jobs outside the main frame loop. Because separate virtual machines do not share state, the runtime guarantees thread safety by spinning up isolated workers on dedicated operating system threads. Background tasks run within a restricted environment, which prevents hazardous cross-thread memory sharing while keeping gameplay operations fluid.
-
-To facilitate communication, the module utilizes typed channels that safely copy scalars, nested tables, and binary blobs between active threads. Callers can choose bounded or unbounded queues to manage backpressure, or employ one-shot promises to monitor deferred computations. Furthermore, a thread-pool system coordinates multiple workers through shared pipelines, enabling heavy-duty background tasks.
+- This module gives users safe background Lua execution through isolated worker VMs.
+- Worker isolation prevents unsafe shared-state mutation across threads.
+- Typed channels provide message-passing for scalars, tables, and byte blobs.
+- Bounded and unbounded channel modes support different backpressure strategies.
+- Promise APIs support one-shot async result tracking and chaining.
+- Thread handles support start, join, status, and error retrieval workflows.
+- Thread pools support parallel job processing with shared input/output channels.
+- Named channels support convenient cross-worker communication topologies.
+- For users, this module provides practical concurrency without exposing unsafe memory sharing.
+- It helps offload heavy tasks while keeping frame loop responsiveness.
 
 ## Imports
 

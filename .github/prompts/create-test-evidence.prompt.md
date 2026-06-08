@@ -1,4 +1,4 @@
----
+﻿---
 name: create-test-evidence
 description: Create or update lua tests with evidences/artifacts for a specific module and check test coverage.
 ---
@@ -25,14 +25,20 @@ description: Create or update lua tests with evidences/artifacts for a specific 
 - Coverage report
 
 # SUCCESS CRITERIA
-- `python tools/audit/golden_test.py` exits with code 0 (0 differences detected between output and baseline).
-- `python tools/audit/lua_evidence_golden_contract_audit.py` reports exactly 0 missing contracts.
+- [ ] `python tools/audit/golden_test.py` exits with code 0 (0 differences detected between output and baseline).
+- [ ] `python tools/audit/lua_evidence_golden_contract_audit.py` reports exactly 0 missing contracts.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Creating non-deterministic tests that produce varying evidence on each run.
 - Overwriting baseline golden files without explicit user approval.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: testing-ecosystem, lua-scripting, demo-creation
 - tools: python tools/audit/lua_evidence_golden_contract_audit.py, python tools/audit/golden_test.py
 - agent: Tester
+
+

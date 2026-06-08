@@ -2579,6 +2579,18 @@ LCameraWalker:getPosition()
 | number | Walker X and Y position in world units. (value 1). |
 | number | Walker X and Y position in world units. (value 2). |
 
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    walker:setPosition(96, 128)
+    local x, y = walker:getPosition()
+    print("walker pos = " .. x .. ", " .. y)
+end
+```
+
 ---
 
 #### `LCameraWalker:getTilePosition`
@@ -2766,6 +2778,18 @@ LCameraWalker:setTilePosition(tx, ty)
 | `tx` | number | Tile column (1-based). |
 | `ty` | number | Tile row (1-based). |
 
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
+    walker:setTilePosition(5, 4)
+    local tx, ty = walker:getTilePosition()
+    print("walker tile = " .. tx .. ", " .. ty)
+end
+```
+
 ---
 
 #### `LCameraWalker:type`
@@ -2781,6 +2805,16 @@ LCameraWalker:type()
 | Type | Description |
 |------|-------------|
 | string | Always `"[LCameraWalker](#lcamerawalker)"`. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    print("walker type = " .. walker:type())
+end
+```
 
 ---
 
@@ -2803,6 +2837,16 @@ LCameraWalker:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LCameraWalker](#lcamerawalker)"` or `"Object"`. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    print("is LCameraWalker = " .. tostring(walker:typeOf("LCameraWalker")))
+end
+```
 
 ---
 

@@ -16,9 +16,10 @@
 
 ## Summary
 
-This module handles MIDI playback and software synthesis by managing SoundFont resources. It implements a stateful transport player to control files, seeking, and loops. Additionally, it exposes per-channel mix properties like instrument selection, volume, mute, and solo controls, routing audio to the mixer.
-
-This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
+- The midi module provides MIDI-focused playback and synthesis control backed by SoundFont rendering.
+- It exposes transport operations such as load, play, pause, stop, seek, and loop.
+- Channel and track controls support mute, solo, volume shaping, and instrument-level adjustment.
+- The module gives users scriptable MIDI sequencing that plugs cleanly into the engine audio runtime.
 
 ## Imports
 

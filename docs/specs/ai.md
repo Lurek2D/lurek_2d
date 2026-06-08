@@ -20,23 +20,56 @@
 
 ## Summary
 
-The AI module provides a rich array of decision-making, planning, spatial navigation, and learning tools for Lurek2D agents. At its foundation, it manages isolated virtual worlds with shared global and agent-specific blackboards, enabling actors to record and query typed local facts. Sensory input is processed through a persistent multi-channel perception system that tracks visual and auditory stimuli in the environment, simulating attention fade and sensory reliability based on range.
-
-For agent locomotion, the module separates high-level choices from micro-navigation and steering mechanics. Planners output abstract targets, which are fed into steering managers that synthesize continuous movement forces like seeking, fleeing, arriving, wandering, pursuing, and evading. This is enhanced by local collision avoidance algorithms such as reciprocal velocity obstacle solvers and slot-based angular context steering to ensure safe, natural path navigation.
-
-Multi-agent tactical scenarios are organized using dedicated group structures and spatial mapping utilities. Squad managers synchronize several agents around a leader, calculating precise formation offsets and sharing tactical context. In parallel, grid-based influence maps allow the AI to represent spatial data as decaying, blended layers, propagating threat or reward values to detect tactical hotspots, safe pathways, and optimal spawn locations across the game world.
-
-To support complex reasoning horizons, the module implements multiple high-level deliberative planners. Goal-Oriented Action Planning allows agents to search symbolic action-effect state spaces to assemble plans under frame budgets. For structured behaviors, Hierarchical Task Networks recursively decompose abstract goals into primitive actions under constraints. For branching spaces, a Monte Carlo Tree Search engine evaluates action preference through simulated trials.
-
-Intermediate action dispatching and execution rhythms are coordinated by a suite of reactive controllers. Composed behavior trees manage complex task structures with sequenced, parallel, or decorated control nodes, preserving action status across frames. Simple state transitions are handled by finite state machines tracking dwell time, while command queues buffer executable actions with callback-backed completion hooks and immediate reactive overrides.
-
-Agents exhibit unique characters using trait, emotion, and internal need models. Drive-based need systems decay and recover normalized internal pressures like hunger to produce situational motivations. These motivations are shaped by trait profiles containing personality dimensions and active modifiers, which feed into utility AI systems that arbitrate actions using non-linear consideration curves. Decaying emotion values further color final decision weightings.
-
-Beyond hand-authored algorithms, the module houses learning capabilities, including neural networks, genetic algorithms, and reinforcement learning machines. Scripts can create Q-learners for experience-based action scoring, multi-armed bandits with selectable exploration strategies, and feed-forward neural nets. These nets can evolve over generations using neuroevolution systems, letting agents adapt, optimize behavioral strategies, and learn live during game sessions.
-
-Global encounters and performance scaling are managed through drama and resource directors. An AI director models game tension as a cyclic decay waveform, adjusting pacing factors like spawn rates and loot multipliers to match player stress. To ensure stable frame rates in populated games, level-of-detail selectors scale computation by mapping distance-based update tiers, throttling distant actors while keeping near interactions highly responsive.
-
-Finally, the module provides specialized game systems like dialogue AIs for weighted conversational branching, alongside diagnostic renderers that translate live AI decision trees, finite-state configurations, and steering forces into spatial debug visual overlays. This complete array of capabilities makes the AI module the primary cognitive engine where individual perceptions, personality dynamics, spatial navigation, and structural choices unify.
+- The ai module is the engine's gameplay intelligence surface for actors that must perceive, decide, and react.
+- It unifies reactive and deliberative techniques so teams can choose control style per unit archetype.
+- Behavior trees provide deterministic branching flow for moment-to-moment tactical reactions.
+- Finite state machines provide explicit phase transitions for authored mode-based behaviors.
+- Utility scoring supports weighted action selection when many options are simultaneously valid.
+- GOAP supports goal-driven planning over symbolic world state with executable action chains.
+- HTN supports hierarchical decomposition of authored plans into runtime-ready primitive tasks.
+- MCTS supports sampled search for high-branching choices under bounded compute budgets.
+- The module lets projects mix these methods instead of committing to a single AI doctrine.
+- Agent runtime state is centralized so planning, movement, mood, and memory stay coherent.
+- Command queues turn selected intent into ordered execution that can be interrupted safely.
+- Perception channels capture visual and audio-like stimuli as graded, time-evolving signals.
+- Awareness can fade, refresh, and compete instead of behaving as a binary omniscient flag.
+- Blackboard-like state sharing allows local and shared memory models across AI participants.
+- Steering layers translate high-level intent into continuous movement vectors.
+- Steering includes seek, flee, wander, arrive, separation, and context-sensitive heading choice.
+- ORCA-style local avoidance keeps crowds stable in dense movement scenarios.
+- Tactical influence maps encode area pressure for threat, control, and reward bias.
+- Squad and formation tools coordinate multiple agents as cohesive tactical groups.
+- Needs and motives add internal pressure that influences behavior prioritization.
+- Emotion channels add short-term affect modulation without replacing core planner logic.
+- Trait systems let similar agents diverge in risk profile and reaction style.
+- Director pacing tools shape encounter pressure through escalation and release windows.
+- LOD policy scales AI update cadence by distance and relevance to control frame cost.
+- Nearby entities can update richly while distant entities use cheaper evaluation intervals.
+- The module includes observability tools because complex AI must remain inspectable.
+- Debug rendering can expose decision state, steering intent, and planning diagnostics.
+- Deterministic update order is prioritized for replayability and reproducible tests.
+- Data surfaces are designed to be script-friendly while preserving Rust-side invariants.
+- Integration points exist for learning systems without forcing ML into every project.
+- Reinforcement learning and bandit patterns can adapt action preferences over time.
+- Neural and evolutionary hooks support simulation-heavy experimentation workflows.
+- The module owns cognition and behavior policy, not rendering or asset decoding logic.
+- It collaborates with runtime, render, patterns, dialog, and learning modules through boundaries.
+- It supports enemies, companions, civilians, traffic, and strategy-unit behaviors.
+- It reduces duplicated AI architecture across combat, navigation, and group coordination.
+- It allows incremental complexity growth instead of mid-project AI rewrites.
+- It keeps behavior authoring inspectable rather than opaque.
+- The API is broad but organized around stable AI contracts.
+- Planning systems operate under bounded budgets to protect frame stability.
+- Movement systems are layered so local avoidance does not invalidate strategic intent.
+- Perception and memory are explicit, making sensory assumptions testable.
+- Group behavior is first-class rather than bolted on from single-agent logic.
+- Emotional and motivational layers are optional but integrated coherently.
+- Debug surfaces are practical for tuning and regression verification.
+- The module is suitable for both scripted and adaptive AI stacks.
+- It is designed for systemic gameplay where behavior quality must scale with content.
+- Invariants emphasize deterministic progression under identical input conditions.
+- Contracts emphasize explicit ownership of AI state and transition rules.
+- Overall, ai is the Feature Systems intelligence platform for production gameplay behavior.
 
 ## Imports
 

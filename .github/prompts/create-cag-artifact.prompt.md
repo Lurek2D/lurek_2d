@@ -1,4 +1,4 @@
----
+﻿---
 name: create-cag-artifact
 description: Create or update new prompt, agent, skill or update them, revalidate CAG after it.
 ---
@@ -23,14 +23,20 @@ description: Create or update new prompt, agent, skill or update them, revalidat
 - Clean validation output
 
 # SUCCESS CRITERIA
-- `python tools/validate/cag_validate.py` exits with code 0 (exactly 0 validation errors).
-- `python tools/audit/cag_link_check.py --strict` exits with code 0 (exactly 0 broken links).
+- [ ] `python tools/validate/cag_validate.py` exits with code 0 (exactly 0 validation errors).
+- [ ] `python tools/audit/cag_link_check.py --strict` exits with code 0 (exactly 0 broken links).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Creating overlapping skills or agents that confuse the routing logic.
 - Failing to include the mandatory `CAG Metadata` block.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: cag-workflow, cag-validation
 - tools: python tools/validate/cag_validate.py, python tools/audit/cag_link_check.py
 - agent: CAG-Architect
+
+

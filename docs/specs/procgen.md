@@ -18,17 +18,39 @@
 
 ## Summary
 
-This module provides a deterministic procedural generation subsystem that powers the repeatable synthesis of terrain, layouts, names, and networks. All operations revolve around a compact, seeded linear congruential generator that provides dependable randomness. The core noise engines deliver multi-dimensional Perlin, Simplex, and cellular Worley noise. They support fractal octave combinators for rugged textures, domain warping, tileable loops, and multi-threaded parallel generation for massive maps.
-
-Terrain elevation and climate systems are built from these raw scalar fields. The heightmap generator stacks noise octaves and simulates simple hydraulic erosion to form realistic hills and river basins. These heightmaps feed into a stateless biome classifier, which maps temperature, elevation, and moisture thresholds onto geographical regions like forests, deserts, and oceans. The classifier supports palette color mappings to facilitate direct visual previews.
-
-For indoor environments, the toolkit features structured dungeon layouts. The Binary Space Partitioning algorithm splits rectangular zones recursively, placing rooms inside qualifying leaves and carving connecting corridors. In contrast, the scatter dungeon generator arranges independent rooms randomly before connecting them. Both generators support seeded reproducibility and stamp handcrafted prefab templates into qualifying rooms.
-
-Natural and emergent simulations are modeled using cellular systems. Organic cave-in rules use flat-grid cellular automata to refine noisy initial states into smooth caverns. Additionally, a stateful sandbox material simulator simulates falling sand, spreading fire, rising gas, and flowing liquids. This simulator uses alternating directional sweeps to avoid structural bias, and supports direct grid painting, byte serialization, and image exports.
-
-Branching growth and spatial placements are handled by grammatical and sampling models. The L-system engine expands symbolic axioms through production rules, interpreting strings as turtle-graphics instructions to generate trees or rivers. Poisson disk sampling generates evenly spaced coordinate points to place foliage or loot without clustering. A Voronoi field generator partitions grids into regional cells based on nearest feature points, which is useful for political borders.
-
-Finally, the module provides constraint-based collapses, overworld graph synthesis, and name generators. The Wave Function Collapse engine generates intricate tile matrices based on adjacency constraints and tile frequencies. Overworld graphs map regional nodes, wire travel links, and calculate minimum spanning trees to organize quests. For narrative flavor, a Markov chain name generator learns character transitions from source corpora to invent novel, stable names.
+- The procgen module provides deterministic synthesis of maps, structures, names, and procedural data fields.
+- Seeded randomness is centralized so outputs are reproducible across runs and test pipelines.
+- Noise primitives include Perlin, Simplex, and Worley generation.
+- Fractal combinations support richer terrain and texture-like scalar fields.
+- Domain warping and tileable variants support seamless looping and stylized maps.
+- Parallel generation paths support large grid workloads.
+- Heightmap generation converts sampled fields into usable elevation surfaces.
+- Optional erosion passes add terrain smoothing and channel-like shaping.
+- Biome classification maps elevation, moisture, and temperature into discrete categories.
+- Biome outputs include visual-friendly color mapping.
+- BSP dungeon generation creates partitioned room-and-corridor structures.
+- Room-scatter generation provides alternative stochastic dungeon layouts.
+- Prefab stamping blends authored motifs into procedural results.
+- Cellular automata generation supports cave-like map structures.
+- Cellular worlds support emergent sand/liquid/gas/fire style simulations.
+- Flood-fill helpers support region extraction and connectivity tooling.
+- Poisson disk sampling supports evenly spaced placement patterns.
+- Voronoi support partitions space into nearest-seed regions.
+- L-systems support grammar-based branching structures and turtle output.
+- Wave Function Collapse supports adjacency-constrained tile synthesis.
+- WFC includes weighted tile selection and contradiction retry behavior.
+- World graph generation supports region topology and route analysis.
+- Graph tools include shortest-path and spanning-tree utilities.
+- Markov name generation supports synthetic naming from sample corpora.
+- The module exposes both low-level primitives and high-level generators.
+- It is designed for both rapid prototyping and production content pipelines.
+- The module owns generation logic, not gameplay interpretation.
+- It does not own renderer policy, but supports preview-oriented outputs.
+- Determinism and parameterization are core quality goals.
+- APIs are script-friendly and suitable for automated regression checks.
+- The module remains in Foundations for broad reuse across genres.
+- Overall, procgen is the data-synthesis backbone for procedural world workflows.
+- It lets teams scale content variety without proportional authoring cost.
 
 ## Imports
 

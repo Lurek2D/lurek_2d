@@ -17,14 +17,13 @@
 
 ## Summary
 
-This module provides scriptable cinematic timelines for orchestrating complex game sequences. It supports multiple tracks running in parallel, each containing clips with different behaviors:
-
-- **Tween tracks**: animate Lua object properties over time with easing functions
-- **Camera tracks**: move and zoom cameras along scripted paths
-- **Audio tracks**: schedule music and sound effects with precise timing
-- **Signal tracks**: fire named events at specific times for game logic triggers
-
-The timeline can be played, paused, seeked, and looped. Labels allow named branching points for interactive sequences. Playback is frame-driven via `update(dt)`, making it responsive to runtime decisions.
+- The cinematic module provides scriptable timelines for cutscenes and other authored sequences.
+- It supports parallel tracks so motion, camera movement, audio, and signal events can progress together.
+- Tween tracks animate Lua object properties over time with easing functions.
+- Camera tracks move and zoom cameras along scripted paths.
+- Audio tracks schedule music and sound effects with precise timing.
+- Signal tracks fire named events at specific times for gameplay triggers and branching logic.
+- Playback can be played, paused, seeked, looped, and branched through labels.
 
 ## Imports
 

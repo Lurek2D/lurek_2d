@@ -713,6 +713,38 @@ do
     print("camera type = " .. cam:type())
 end
 
+--@api-stub: LCameraWalker:getPosition
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    walker:setPosition(96, 128)
+    local x, y = walker:getPosition()
+    print("walker pos = " .. x .. ", " .. y)
+end
+
+--@api-stub: LCameraWalker:setTilePosition
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
+    walker:setTilePosition(5, 4)
+    local tx, ty = walker:getTilePosition()
+    print("walker tile = " .. tx .. ", " .. ty)
+end
+
+--@api-stub: LCameraWalker:type
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    print("walker type = " .. walker:type())
+end
+
+--@api-stub: LCameraWalker:typeOf
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local walker = lurek.camera.newWalker(map)
+    print("is LCameraWalker = " .. tostring(walker:typeOf("LCameraWalker")))
+end
+
 --@api-stub: LCameraRig:setPosition
 do
     local rig = lurek.camera.newRig()

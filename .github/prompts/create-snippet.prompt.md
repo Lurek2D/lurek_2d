@@ -1,4 +1,4 @@
----
+﻿---
 name: create-snippet
 description: Create or update new snippet code for specific module with API.
 ---
@@ -24,14 +24,20 @@ description: Create or update new snippet code for specific module with API.
 - Snippet coverage validation
 
 # SUCCESS CRITERIA
-- `python tools/validate/validate_snippets.py` exits with code 0.
-- `python tools/audit/snippet_coverage.py` reports exactly 100% coverage for the targeted snippet scope.
+- [ ] `python tools/validate/validate_snippets.py` exits with code 0.
+- [ ] `python tools/audit/snippet_coverage.py` reports exactly 100% coverage for the targeted snippet scope.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Creating snippets that use deprecated APIs.
 - Writing overly long snippets that should be full examples instead.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: docs-general, lua-scripting
 - tools: python tools/audit/snippet_coverage.py, python tools/validate/validate_snippets.py
 - agent: Doc-Writer
+
+

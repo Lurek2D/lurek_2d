@@ -191,6 +191,7 @@ impl LuaUserData for LuaDepthSorter {
 impl LuaUserData for LSceneObjectContainer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Add an object to the container.
+        /// @param | obj | table | Object table to append to the scene container.
         methods.add_method("add", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
             let add_fn: LuaFunction = container.get("add")?;
@@ -199,6 +200,7 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Remove an object from the container (identity comparison).
+        /// @param | obj | table | Object table reference to remove.
         methods.add_method("remove", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
             let remove_fn: LuaFunction = container.get("remove")?;
@@ -215,6 +217,7 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Call update(dt) on all objects that have an update method.
+        /// @param | dt | number | Delta time in seconds for this frame.
         methods.add_method("update", |lua, this, dt: f64| {
             let container = this.get_container(lua)?;
             let update_fn: LuaFunction = container.get("update")?;
@@ -238,6 +241,7 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Get all objects as an array (layer-sorted).
+        /// @return | table | Sequential table containing current objects.
         methods.add_method("getObjects", |lua, this, ()| {
             let container = this.get_container(lua)?;
             let objects_field: LuaValue = container.get("_objects")?;
@@ -245,6 +249,8 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Get all objects whose layer equals `n`.
+        /// @param | n | integer | Target layer value.
+        /// @return | table | Sequential table of objects on the given layer.
         methods.add_method("getByLayer", |lua, this, n: i32| {
             let container = this.get_container(lua)?;
             let get_by_layer_fn: LuaFunction = container.get("getByLayer")?;
@@ -252,6 +258,8 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Check whether an object is present in the container.
+        /// @param | obj | table | Object table to test.
+        /// @return | boolean | True when the exact object exists in the container.
         methods.add_method("has", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
             let has_fn: LuaFunction = container.get("has")?;
@@ -259,11 +267,14 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Get the type name of this userdata.
+        /// @return | string | The literal `"LSceneObjectContainer"`.
         methods.add_method("type", |_lua, _this, ()| {
             Ok("LSceneObjectContainer")
         });
 
         /// Check type by name.
+        /// @param | name | string | Type name to compare against.
+        /// @return | boolean | True when `name` matches `"LSceneObjectContainer"`.
         methods.add_method("typeOf", |_lua, _this, name: String| {
             Ok(name == "LSceneObjectContainer")
         });

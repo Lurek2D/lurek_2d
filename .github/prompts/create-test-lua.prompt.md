@@ -1,4 +1,4 @@
----
+﻿---
 name: create-test-lua
 description: Create or update lua test for specific module and check test coverage.
 ---
@@ -26,16 +26,22 @@ description: Create or update lua test for specific module and check test covera
 - Console output showing passed tests and updated coverage report
 
 # SUCCESS CRITERIA
-- `cargo test --test lua_tests` exits with code 0 (0 failed tests).
-- `python tools/audit/test_coverage.py` reports exactly 100% test coverage for the target module.
-- `python tools/validate/cag_validate.py` returns exactly 0 validation errors.
+- [ ] `cargo test --test lua_tests` exits with code 0 (0 failed tests).
+- [ ] `python tools/audit/test_coverage.py` reports exactly 100% test coverage for the target module.
+- [ ] `python tools/validate/cag_validate.py` returns exactly 0 validation errors.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Writing tests that test implementation details instead of the public API.
 - Skipping negative or boundary condition tests.
 - Modifying module source code within this prompt.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: testing-ecosystem, lua-scripting, quality-pipeline
 - tools: python tools/validate/cag_validate.py, python tools/audit/test_coverage.py
 - agent: Tester
+
+

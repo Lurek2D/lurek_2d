@@ -18,13 +18,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
 - Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8827 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31291 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31317 lines)
 
 ## Coverage
 
 - 70 modules
 - 5758 functions and methods
-- 99.9% documented
+- 100.0% documented
 
 ## API Module Index
 

@@ -1,4 +1,4 @@
----
+﻿---
 name: create-pages
 description: Create or modify feature in gitub pages folder, then regnerate all content for modules lua.
 ---
@@ -22,14 +22,20 @@ description: Create or modify feature in gitub pages folder, then regnerate all 
 - Regenerated HTML content
 
 # SUCCESS CRITERIA
-- `python tools/gen_all_docs.py` exits with code 0.
-- `python tools/audit/cag_link_check.py --strict` reports exactly 0 broken links.
+- [ ] `python tools/gen_all_docs.py` exits with code 0.
+- [ ] `python tools/audit/cag_link_check.py --strict` reports exactly 0 broken links.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Hand-editing generated HTML files instead of their templates.
 - Introducing heavy JavaScript that impacts doc load times.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: ui-html, docs-general
 - tools: python tools/gen_all_docs.py, python tools/audit/cag_link_check.py
 - agent: Doc-Writer
+
+

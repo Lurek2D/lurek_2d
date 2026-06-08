@@ -18,13 +18,24 @@
 
 ## Summary
 
-The animation module provides a complete control and playback layer for sprite-based and skeletal animations. It acts as the import and execution pipeline for asset files, translating grid layouts, manual rectangles, and Aseprite JSON metadata into optimized runtime clips. The frame-animation engine supports diverse playback behaviors, including loop, reverse, ping-pong, and one-shot progression, while scaling speeds dynamically.
-
-To coordinate character states, the module implements a parameter-driven animation state machine. This framework permits organizers to arrange individual clips into state networks, governing transitions using parameter checks and timeline triggers. Transitions are softened by automated crossfades that calculate blend states and transition weights, preventing visual jerks and ensuring fluid behavior across state boundaries.
-
-For complex movements, the module features a layered animation blending architecture. Multiple clip streams can combine dynamically using ordered layering, stacking weights, and custom bone masks that restrict blend influences to specific skeletal sub-regions. Skeletal animations are supported by a Spine integration bridge that keeps skeleton hierarchies and coordinate transformations synchronized with state transitions.
-
-Coordinated elements can be grouped into synchronization groups to enforce identical playback phases across entities. Additionally, the system provides standalone parameter curves that interpolate values over keyframed timelines using stepped, linear, or custom ease callbacks. These systems bridge abstract timing states with textured coordinates, generating render-ready draw payloads for visual execution.
+- Use `lurek.animation` when runtime animation needs to be controlled as a system, not frame swapping.
+- The module turns authored timelines into deterministic playback and transition behavior.
+- It supports frame clips, state-machine switching, blend layers, and Spine bridging in one API.
+- Clip sources include grid slicing, explicit frame rectangles, and Aseprite JSON imports.
+- Imported durations, tags, and clip metadata map directly to runtime controllers.
+- Playback supports loop, reverse, ping-pong, pause, restart, and one-shot modes.
+- Timeline milestones emit events for gameplay synchronization points.
+- This makes animation useful for combat timing, effects, and state transitions, not only visuals.
+- State-machine control supports named states and parameter-driven transition rules.
+- Crossfades smooth clip handoffs and preserve readability during fast state changes.
+- Blend layers allow multiple animation streams to compose into one result.
+- Bone masks support partial-body overrides like upper-body aim and additive reactions.
+- Curves provide keyed numeric animation beyond sprite frames.
+- Interpolation modes include stepped, linear, eased, and custom callback-driven easing.
+- Sync groups keep multiple instances phase-aligned for crowds and linked props.
+- The module owns playback, transition governance, blending, import normalization, and frame sampling.
+- It collaborates with image/render/runtime/spine, but animation state policy lives here.
+- Use it when animation must be authorable, queryable, synchronized, and blendable at runtime.
 
 ## Imports
 

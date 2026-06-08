@@ -1,4 +1,4 @@
----
+﻿---
 name: create-shader
 description: Create or update shader code which is used by GPU to render things.
 ---
@@ -26,14 +26,20 @@ description: Create or update shader code which is used by GPU to render things.
 - Lua test script
 
 # SUCCESS CRITERIA
-- `cargo check` exits with code 0 (0 compilation/WGSL validation errors).
-- `cargo test` exits with code 0 (0 broken render pipelines).
+- [ ] `cargo check` exits with code 0 (0 compilation/WGSL validation errors).
+- [ ] `cargo test` exits with code 0 (0 broken render pipelines).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Using features not supported by wgpu 22 or the target WebGPU standard.
 - Hardcoding uniforms that should be configurable via the Lua API.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: gpu-programming, visual-effects, rust-coding
 - tools: cargo check, cargo test
 - agent: Developer
+
+

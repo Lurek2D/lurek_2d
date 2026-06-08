@@ -19,25 +19,56 @@
 
 ## Summary
 
-This module serves as a foundational gameplay-architecture toolkit, offering an array of reusable coordination, state-flow, and data-structure patterns. By packaging complex logic routing, decision architectures, and communication networks into lightweight primitives, the system enables highly decoupled game designs. These components bridge Lua scripting and Rust systems, ensuring that developers can coordinate state across distinct gameplay layers safely and deterministically.
-
-For AI decision-making, the module provides a hierarchical behavior tree runtime. This allows developers to compose structured node networks using sequences, selectors, parallels, repeaters, and inverters. The tree ticks leaf actions in a predictable left-to-right order, storing execution progress and loop counts without relying on opaque callbacks. This results in highly legible branching behaviors that are simple to debug, expand, and reset at runtime.
-
-State tracking is supported through both simple mode switches and complete finite state machines. Simple trackers manage mutually exclusive phases, making them ideal for UI menus or basic actor states. In contrast, the full state machine runtime enforces transition rules and guards to prevent illegal mode switches. It also records a chronological history of state changes, providing crucial tracking data for complex game flows and chronological analytics.
-
-To decouple system communications, the toolkit implements event buses and mediator registries. The event bus routes named signals to prioritised listeners, supporting wildcard patterns and one-shot triggers to simplify broad-spectrum notifications. The mediator registry facilitates channel-based messaging through central brokers. This prevents individual systems from referencing each other directly, ensuring modularity across systems.
-
-Shared memory and reactive state updates are coordinated through blackboards and observers. Blackboards act as common data registers with built-in revision tracking, enabling local boards to inherit from parent registers while overriding specific facts. The observer system watches named properties and broadcasts changes to key-specific or wildcard subscribers, driving reactive user interfaces and quest trackers with minimal wiring.
-
-Chronological history and player actions are managed via command stacks. The stack records a linear history of reversible operations, letting developers implement complex undo and redo systems with hard size limits and automatic pruning. Support for atomic batching groups multi-step operations together, ensuring that strategic transactions or editor modifications can be rolled back safely without leaving behind half-finished edits.
-
-Timing and input cadences are regulated using throttle and debounce utilities. Throttles enforce a minimum time interval between action triggers, while debounces delay firing until a specified period of silence has elapsed. Together, these pacing utilities smooth out noisy inputs, govern combat cooldowns, and prevent duplicate interface click events, ensuring that execution frequencies remain within expected boundaries.
-
-For resource management and scheduling, the module provides object pools, priority queues, and ring buffers. Object pools recycle stable identities to minimize dynamic allocation overhead, which is useful for bullet or particle pools. Priority queues organize tasks using deterministic insertion order for matching scores. Ring buffers store rolling telemetry and history timelines, automatically discarding the oldest entries.
-
-Dynamic instantiations and algorithm swapping are managed by factories, strategy registers, and service locators. Factories register constructor associations to spawn game objects from data-driven templates. Strategy containers hold hot-swappable algorithm implementations, letting systems alter processing modes at runtime. Service locators provide a central directory to locate shared capabilities across independent modules.
-
-Finally, the toolkit includes relational data structures like graphs, bidirectional maps, and prefix tries. Graphs represent complex networks using integer-addressed nodes and weighted edges, supporting breadth-first and depth-first traversals. Bidirectional maps maintain mirrored forward and reverse entries to ensure rapid reversible indexing. Prefix tries index text keys, facilitating command palettes and search filters.
+- The patterns module is a Foundations toolbox for coordination, control flow, and reusable architecture primitives.
+- It focuses on decoupling systems and making game logic easier to compose and test.
+- Behavior trees provide deterministic reactive decision flow with explicit node semantics.
+- Trees support sequence, selector, inverter, repeater, and parallel execution patterns.
+- Runtime tree state is preserved across ticks for long-running action continuity.
+- Simple state tracking supports lightweight single-mode workflows.
+- Full state machines provide guarded transitions and bounded transition history.
+- Transition history enables debugging and analytics of behavior progression.
+- Event buses provide publish-subscribe routing with priorities and wildcard listeners.
+- One-shot listeners reduce boilerplate for temporary event reactions.
+- Mediator routing supports broker-style communication channels between decoupled systems.
+- Blackboard storage supports shared facts with revision-aware reads.
+- Hierarchical blackboards allow local override with parent fallback.
+- Observer primitives provide key-based reactive notifications.
+- Wildcard observers support broad state-change monitoring.
+- Command stacks implement undo and redo with bounded history policies.
+- Batch commands support atomic rollback of multi-step operations.
+- Throttle and debounce utilities control cadence for noisy inputs and triggers.
+- Object pools support stable identity reuse in allocation-sensitive loops.
+- Priority queues support deterministic ordering for equal-priority entries.
+- Ring buffers retain rolling windows of recent values or events.
+- Bi-directional maps support reversible key-value lookup.
+- Tries support efficient prefix search for command palettes and filters.
+- Factory registries support data-driven construction by symbolic names.
+- Strategy registries support runtime algorithm swapping without callsite rewrites.
+- Service locators expose shared capability lookup for loosely-coupled modules.
+- Graph primitives support node-edge modeling with traversal helpers.
+- Weighted random selection supports repeat-aware probabilistic choice.
+- Funnel buffering supports time-windowed accumulation and controlled flush behavior.
+- Collection capacity helpers keep bounded/unbounded semantics consistent.
+- The module favors explicit IDs and stable iteration order.
+- That design improves reproducibility across runs and test environments.
+- Primitives are intentionally small and orthogonal for composability.
+- The module does not own gameplay domain rules.
+- It does not own rendering, audio, filesystem, or host runtime concerns.
+- It is intended to be reused by many higher-level feature modules.
+- Typical AI stacks combine behavior trees, blackboards, and event buses.
+- Typical tooling stacks combine command stacks with observers.
+- Typical input pipelines combine debounce/throttle with ring diagnostics.
+- Contracts are script-friendly while keeping behavior deterministic.
+- APIs are designed for incremental adoption in existing systems.
+- Cross-module dependencies remain acyclic at the Foundations level.
+- The module improves maintainability by reducing orchestration duplication.
+- It improves testability by making side effects and transitions explicit.
+- It improves readability by encoding common control patterns directly.
+- The toolbox is broad but consistently structured.
+- It scales from small prototypes to production systems.
+- It remains architecture-focused rather than feature-domain specific.
+- Overall, patterns is the reusable orchestration layer beneath gameplay features.
+- It exists to help teams ship complex behavior with less structural debt.
 
 ## Imports
 

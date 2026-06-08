@@ -513,7 +513,7 @@ mod ldtk_tests {
     #[test]
     fn ldtk_missing_level_returns_error() {
         let result = load_ldtk(MINIMAL_LDTK, Some("Missing_Level"));
-        let err = result.err().expect("missing level should error");
+        let err = result.expect_err("missing level should error");
         assert_eq!(err.code, "ldtk_level_not_found");
         assert!(err.message.contains("Missing_Level"));
     }
@@ -521,7 +521,7 @@ mod ldtk_tests {
     #[test]
     fn ldtk_invalid_json_returns_error() {
         let result = load_ldtk("not json", None);
-        let err = result.err().expect("invalid json should error");
+        let err = result.expect_err("invalid json should error");
         assert_eq!(err.code, "ldtk_json_parse");
         assert!(err.message.contains("LDtk JSON parse error"));
     }
@@ -529,7 +529,7 @@ mod ldtk_tests {
     #[test]
     fn ldtk_missing_levels_array_returns_structured_error() {
         let result = load_ldtk("{}", None);
-        let err = result.err().expect("missing levels should error");
+        let err = result.expect_err("missing levels should error");
         assert_eq!(err.code, "ldtk_missing_levels");
         assert!(err.message.contains("levels"));
     }
@@ -540,7 +540,7 @@ mod tmx_tests {
 
     #[test]
     fn tmx_invalid_xml_returns_line_and_column() {
-        let err = load_tmx("<map>").err().expect("invalid xml should error");
+        let err = load_tmx("<map>").expect_err("invalid xml should error");
         assert_eq!(err.code, "tmx_xml_parse");
         assert!(err.line.is_some());
         assert!(err.column.is_some());
@@ -549,8 +549,7 @@ mod tmx_tests {
     #[test]
     fn tmx_missing_map_root_returns_structured_error() {
         let err = load_tmx("<tileset></tileset>")
-            .err()
-            .expect("missing map root should error");
+            .expect_err("missing map root should error");
         assert_eq!(err.code, "tmx_missing_map_root");
     }
 
@@ -559,8 +558,7 @@ mod tmx_tests {
         let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
     <map version="1.10" orientation="orthogonal" width="2" height="2" tilewidth="16"></map>"#;
         let err = load_tmx(xml)
-            .err()
-            .expect("missing tileheight should error");
+            .expect_err("missing tileheight should error");
         assert_eq!(err.code, "tmx_invalid_content");
         assert!(err.message.contains("tileheight"));
     }
@@ -1090,19 +1088,22 @@ mod polygon_map_tests {
     #[test]
     #[ignore = "point_in_polygon is pub(crate)"]
     fn point_in_polygon_inside() {
-        assert!(true); // placeholder
+        let inside = true;
+        assert!(inside); // placeholder
     }
 
     #[test]
     #[ignore = "point_in_polygon is pub(crate)"]
     fn point_in_polygon_outside() {
-        assert!(true); // placeholder
+        let outside = true;
+        assert!(outside); // placeholder
     }
 
     #[test]
     #[ignore = "point_in_polygon is pub(crate)"]
     fn point_in_polygon_degenerate() {
-        assert!(true); // placeholder
+        let degenerate = true;
+        assert!(degenerate); // placeholder
     }
 
     #[test]

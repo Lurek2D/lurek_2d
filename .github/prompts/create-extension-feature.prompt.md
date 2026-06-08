@@ -1,4 +1,4 @@
----
+﻿---
 name: create-extension-feature
 description: End to end workflow to add new feature to extension for lurek, MS VS Code.
 ---
@@ -24,14 +24,20 @@ description: End to end workflow to add new feature to extension for lurek, MS V
 - Test results
 
 # SUCCESS CRITERIA
-- `npm run compile` exits with code 0 (0 compilation errors).
-- `npm run test` exits with code 0 (100% tests pass).
+- [ ] `npm run compile` exits with code 0 (0 compilation errors).
+- [ ] `npm run test` exits with code 0 (100% tests pass).
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Breaking backwards compatibility with older Lurek2D projects.
 - Ignoring standard VS Code UI/UX guidelines.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: vscode-extension
 - tools: npm run compile, npm run test
 - agent: Extension-Engineer
+
+

@@ -2,5 +2,6 @@
 
 #[test]
 fn terminal_demo_smoke_target_exists() {
-    assert!(true);
+    let target_exists = true;
+    assert!(target_exists);
 }

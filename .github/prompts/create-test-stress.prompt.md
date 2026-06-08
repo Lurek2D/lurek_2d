@@ -1,4 +1,4 @@
----
+﻿---
 name: create-test-stress
 description: Create or update heavy stress test for specific module and check test coverage.
 ---
@@ -24,14 +24,20 @@ description: Create or update heavy stress test for specific module and check te
 - Performance/Stress report output
 
 # SUCCESS CRITERIA
-- Engine crash count is exactly 0 under load.
-- `python tools/audit/stress_report.py` generates a report showing the load ceiling is >= the user's expected target.
+- [ ] Engine crash count is exactly 0 under load.
+- [ ] `python tools/audit/stress_report.py` generates a report showing the load ceiling is >= the user's expected target.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Writing stress tests that don't clean up resources, leading to artificial OOMs.
 - Making stress tests part of the standard CI pipeline without isolating them.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: testing-ecosystem, performance-profiling
 - tools: python tools/audit/stress_report.py
 - agent: Tester
+
+

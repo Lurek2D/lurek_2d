@@ -17,15 +17,34 @@
 
 ## Summary
 
-This module represents the CPU-side image manipulation and asset preparation subsystem, supplying comprehensive tools to load, decode, and transform pixel buffers. It manages mutable raw pixel maps and compressed DDS texture streams, handling format tags, mip chains, and transparency models. This ensures that assets are validated and pre-processed in memory before being staged for GPU uploads, keeping all pixel mutations isolated without side effects.
-
-For visual operations, the module offers a rich image editing toolkit. Developers can adjust properties like brightness, saturation, contrast, and gamma, or run kernel convolutions for blur and sharpening. It supports spatial edits like crop, rotate, flip, and resample using Lanczos or bilinear filters. Additionally, it provides sprite composition helpers including alpha-blended blitting, nine-slice stretching, and raster drawing for debug guides.
-
-To support advanced workflows, the system implements multi-layer image stacks and color remapping. Layered stacks manage ordering, visibility, and opacity, merging layers using alpha-over compositing. Color remapping maps source colors through lookup tables to support palette cycling and theme variations in real-time. Additionally, a shelf-based rectangle packing algorithm arranges independent sprites into tightly packed texture atlases.
-
-A unique capability is the province grid analyzer, which decodes geographic data from pixel grids. It parses image grids into distinct regions, extracting boundary coordinates, neighbor adjacencies, and vector polygons. These shapes can be simplified, serialized, or drawn as filled vector meshes. This bridges image-driven maps with logical game worlds, simplifying the translation of graphics into gameplay structures.
-
-Finally, the module provides a robust suite of diagnostic visualization utilities. These tools render complex runtime datasets into clear debug images, including audio waveforms, camera follow paths, easing curves, noise generators, and UI mockups. By producing deterministic visual snapshots of internal engine states, they make debugging, automated regression testing, and design iteration loops highly efficient.
+- This module gives users a full CPU-side image pipeline for loading, editing, analyzing, and exporting pixel data.
+- It supports mutable RGBA buffers for per-pixel operations used by tooling and gameplay systems.
+- Compressed texture decode support helps validate and prepare assets before GPU upload.
+- Color and tone effects cover common grading workflows such as brightness, contrast, saturation, and gamma adjustments.
+- Filter operations like blur, sharpen, and custom kernels support image enhancement and stylization tasks.
+- Geometric transforms include crop, flip, rotate, and resize for practical content preparation.
+- Composition helpers support alpha blits and nine-slice workflows useful for UI asset assembly.
+- Layer stacks enable non-destructive edits with visibility and opacity control.
+- Palette remap utilities support theme variants and palette-cycling style effects.
+- Atlas packing tools help fit many sprites into efficient texture sheets.
+- Serialization paths support image persistence and reproducible content pipelines.
+- Difference and compare helpers are useful for screenshot regression tests.
+- Diagnostic visualization utilities convert runtime data into inspectable images.
+- Built-in visualizers cover domains like audio, camera, easing, noise, and graph-style debug output.
+- Province/grid extraction features bridge image-authored maps into gameplay topology data.
+- This is useful for strategy and territory workflows where art and logic must stay aligned.
+- The module supports both quick script prototypes and larger toolchain-style operations.
+- It reduces dependence on external image preprocessors for many common tasks.
+- For users, this means faster iteration on assets and better observability of visual data.
+- It also keeps processing deterministic, which helps testing and CI reproducibility.
+- The practical value is one consistent image API across content prep, runtime effects, and debug tooling.
+- Teams can share reusable image workflows instead of duplicating custom utility scripts.
+- Overall, users get a broad image toolkit that integrates naturally with engine rendering flows.
+- It turns pixel manipulation into a first-class runtime capability rather than a side utility.
+- This supports advanced content pipelines without leaving the project environment.
+- It also helps close the loop between visual design intent and runtime verification.
+- In short, the module is the engine's central surface for script-driven image operations.
+- That makes it foundational for UI, VFX prep, map pipelines, and visual diagnostics.
 
 ## Imports
 
@@ -105,9 +124,9 @@ Finally, the module provides a robust suite of diagnostic visualization utilitie
 
 ### render.rs
 
-- Bridges CPU `ImageData` content into render-command payloads consumed by the draw pipeline.
-- Provides lightweight conversion helpers that reference texture keys and screen placement.
-- Includes image snapshot utilities used where value-copy semantics are required.
+- Thin bridge layer converting ImageData buffers into render command payloads that reference texture resources and screen placement coordinates.
+- Generates DrawImage commands containing texture key, position, and optional effects for pipeline consumption without copying pixel data.
+- Provides snapshot utility creating standalone ImageData clones where value semantics are required by higher-level drawing systems.
 
 ### serial.rs
 
@@ -214,7 +233,7 @@ Finally, the module provides a robust suite of diagnostic visualization utilitie
 - Renders normalized and raw grayscale maps to compare contrast handling across noise sources.
 - Provides biome and elevation band coloring to inspect threshold-driven terrain classification.
 - Supports sliced and tiled comparison views for spotting artifacts across parameter variations.
-- Keeps sampling and raster paths deterministic for stable test and docs-general visuals.
+- Keeps sampling and raster paths deterministic for stable test and documentation visuals.
 
 ### visualization/procgen.rs
 

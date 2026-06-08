@@ -7116,13 +7116,13 @@ end
 -- Duplicate coverage lives in content/examples/charts.lua.
 do
     local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
-    chart:addSeries("sales", { 1, 4, 2, 7, 3 })
+    chart:addSeries("sales", { {1, 1}, {2, 4}, {3, 2}, {4, 7}, {5, 3} }, 0.2, 0.7, 1.0)
     print("line series added")
 end
 
 -- Duplicate coverage lives in content/examples/charts.lua.
 do
     local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
-    chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })
+    chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} }, 1.0, 0.4, 0.2)
     print("scatter series added")
 end

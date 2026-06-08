@@ -89,7 +89,7 @@ def brace_track(line: str, depth: int) -> int:
         else:
             if c == '"':
                 in_str = True
-            elif c == "//":
+            elif c == "/" and i + 1 < len(line) and line[i + 1] == "/":
                 break
             elif c == "{":
                 depth += 1
@@ -175,42 +175,37 @@ def scan_file(path: Path) -> dict:
 
     long_fns = [f for f in free_fns if f["body_lines"] > 40 and not f["registration"]]
 
-    # Count hotspots outside of `add_method`/`add_function`/`create_function` closures.
-    # Heuristic: count hotspots in lines NOT between a line containing
-    # `add_method`/`add_function`/`create_function` and its matching closure end.
-    # Simpler: count hotspots in the whole file, minus those inside any
-    # closure block started by `|...|` right after one of those helpers.
-    # Much simpler: mark each line as "inside closure" based on a running
-    # depth counter that increments on helper-closure openers.
-    closure_depth = 0
+    # Count hotspots only inside non-registration free functions.
+    # This avoids penalizing large binding files purely for size while still
+    # flagging wrapper helpers that trend toward domain logic.
     hotspot_count = 0
     closure_opener_re = re.compile(
         r"(?:add_method|add_method_mut|add_function|add_function_mut|add_meta_method|create_function|create_function_mut)\b"
     )
-    for ln in lines:
-        if closure_depth > 0:
-            # Track open/close of the closure block
-            before = closure_depth
-            closure_depth = brace_track(ln, closure_depth)
-            if closure_depth <= 0:
-                closure_depth = 0
+    for fn in free_fns:
+        if fn["registration"]:
             continue
-        # Not currently inside a helper closure: count hotspots
-        for rx in HOTSPOT_RES:
-            if rx.search(ln):
-                hotspot_count += 1
-        # If this line opens a helper closure, start tracking
-        if closure_opener_re.search(ln) and "{" in ln:
-            d = brace_track(ln, 0)
-            if d > 0:
-                closure_depth = d
+        closure_depth = 0
+        for ln in lines[fn["start"] - 1 : fn["end"]]:
+            if closure_depth > 0:
+                closure_depth = brace_track(ln, closure_depth)
+                if closure_depth <= 0:
+                    closure_depth = 0
+                continue
+            for rx in HOTSPOT_RES:
+                if rx.search(ln):
+                    hotspot_count += 1
+            if closure_opener_re.search(ln) and "{" in ln:
+                d = brace_track(ln, 0)
+                if d > 0:
+                    closure_depth = d
 
     stdcoll_imports = sum(1 for ln in lines if STDCOLL_RE.match(ln))
 
     score = 0
     if long_fns:
         score += 2
-    if hotspot_count >= 5:
+    if hotspot_count >= 20:
         score += 2
     if stdcoll_imports >= 2:
         score += 1

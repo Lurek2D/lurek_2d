@@ -1,4 +1,4 @@
----
+﻿---
 name: create-tool
 description: Create or update python or powershell tool in tools, review if all are properly documented and registered as CLI for agent to use.
 ---
@@ -24,14 +24,20 @@ description: Create or update python or powershell tool in tools, review if all 
 - Updated CLI reference docs-general
 
 # SUCCESS CRITERIA
-- `python tools/audit/tool_registry_audit.py` exits with code 0 (exactly 0 unregistered tools).
-- The new tool exits with code 0 on standard execution.
+- [ ] `python tools/audit/tool_registry_audit.py` exits with code 0 (exactly 0 unregistered tools).
+- [ ] The new tool exits with code 0 on standard execution.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Writing scripts without `--help` docs-general.
 - Hardcoding paths instead of using relative repository roots.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: build-system, scripting
 - tools: python tools/audit/tool_registry_audit.py
 - agent: Build-Engineer
+
+

@@ -16,9 +16,12 @@
 
 ## Summary
 
-This module provides graph and hierarchy layouts to compute 2D coordinates for nodes. It offers layered placement for directed graphs to reduce crossings, recursive allocations for compact trees, and force-directed simulations that arrange relation webs organically.
-
-For visual polish, the system features grid snapping and centering. These snap coordinates to consistent grids and center diagrams inside view targets without altering topology, ensuring clean, readable node arrangements.
+- The layout module gives users automatic 2D node placement for graph-like and tree-like visuals.
+- It supports layered DAG layout, recursive tree layout, and force layout for organic relation maps.
+- Shared result formats make it easy to swap strategies without changing integration code.
+- Grid snapping and centering helpers polish raw coordinates for editor and HUD presentation.
+- The module is useful for tech trees, dialog graphs, dependency maps, and debug topology views.
+- It replaces manual positioning with repeatable, scriptable layout computation.
 
 ## Imports
 

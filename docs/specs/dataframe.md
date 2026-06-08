@@ -18,15 +18,34 @@
 
 ## Summary
 
-The dataframe module delivers a complete tabular data workspace and in-memory relational database framework for Lurek2D. Its core purpose is to provide scripts and engine subsystems with high-performance table management, enabling tabular gameplay data, analytics, and diagnostic reporting. It centers around a dual model: DataFrames storing structured columns and typed cell values, and Databases grouping multiple tables under one logical schema boundary for relational queries and frame joins.
-
-To retrieve and transform tabular datasets efficiently, the module supports declarative and pipeline-based query designs. It incorporates a SQL-style parsing engine that executes structured query text—including table joins, multi-column filters, having clauses, projection arithmetic with aliasing, and aggregate groupings—over database tables. Alternatively, developers can chain sorting, slicing, and column selections into lazy query pipelines that defer execution, optimizing resources by only materializing data when collected.
-
-For heavy statistical calculations over large tables, the module integrates a vectorized column storage layer. It stores raw column vectors with validity masks, executing mathematical reductions and binary operations in parallel using a Rayon thread pool. To keep gameplay loops responsive and frame rates stable, it provides background task managers that run file parsing and complex SQL queries on asynchronous worker threads, returning results through pollable handles and thread-safe snapshots.
-
-Tabular analysis is bolstered by advanced statistical windowing and reshaping operations. The engine computes rolling aggregates like rolling means, sums, minimums, and maximums across chronological rows, along with dense rankings, cumulative running totals, and percentage changes for trend analysis. This is complemented by pivot-table reshaping, min-max normalizations, z-score transformations, Pearson correlation matrices, and duplicate-row diagnostic reports for data validation.
-
-Data persistence and interchange are handled through a robust serialization system. The module parses and encodes tables across multiple standard formats, offering CSV file loading with automatic type inference, JSON data mapping for nested database structures, and a compact proprietary binary format (LVDF) for optimized storage on disk. It also includes automatic text-table formatting utilities that render data tables into highly legible diagnostic logs for session debugging.
+- This module gives users an in-engine data workspace for tables, analytics, and report-style processing.
+- You can load, build, and transform tabular datasets without moving data into external tools.
+- It supports both DataFrame-style column operations and multi-table database-style organization.
+- SQL-like query support enables joins, filters, grouping, and projections in a familiar declarative form.
+- Lazy query pipelines allow staging transformations before collecting results, which helps control runtime cost.
+- Vectorized execution accelerates numeric-heavy column operations for larger datasets.
+- Background task APIs keep expensive parsing or query work off the frame-critical path.
+- Window functions support rolling metrics, ranking, cumulative totals, and percent-change analysis.
+- Pivot and grouping features make it practical to reshape gameplay telemetry into decision-ready views.
+- Statistical helpers like correlation, percentile, and normalization support balancing and anomaly detection.
+- Duplicate and missing-value diagnostics help validate imported content before it drives gameplay systems.
+- The module can serialize and parse common formats, including CSV and JSON, for workflow interoperability.
+- LVDF binary support gives teams a compact storage format for faster load and smaller disk footprint.
+- Text-table rendering helps users inspect results quickly in logs and debug consoles.
+- Database containers allow related tables to be queried together instead of manually merged in script code.
+- Typed value handling reduces brittle parsing and conversion logic in downstream gameplay scripts.
+- This module is useful for economy simulation, quest metrics, AI telemetry, and content QA pipelines.
+- It supports both exploratory analysis during development and deterministic processing in shipped logic.
+- Users can move from raw records to actionable summaries without leaving the runtime.
+- The practical value is fewer custom table utilities and more consistent data operations across teams.
+- It also shortens iteration loops by keeping ingest, transform, validate, and export in one namespace.
+- For performance-sensitive projects, parallel/vectorized paths reduce pressure on plain Lua loops.
+- For tool-facing scripts, async handles provide predictable status polling and error capture.
+- In short, the module turns tabular data work into a first-class gameplay and tooling capability.
+- It bridges content pipelines and runtime behavior with one coherent API model.
+- This makes data-driven development easier to maintain as project complexity grows.
+- Users gain both expressiveness and operational control for serious in-engine analytics workloads.
+- The outcome is better observability, cleaner pipelines, and faster balancing decisions.
 
 ## Imports
 

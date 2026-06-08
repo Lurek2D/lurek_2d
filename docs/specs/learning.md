@@ -17,15 +17,34 @@
 
 ## Summary
 
-This module represents the machine-learning runtime and artificial intelligence modeling subsystem, providing a rich collection of CPU-side training and inference blocks. It allows developers to build, organize, and evaluate various learning architectures directly in active game sessions. These models run without external runtime dependencies, utilizing flat, row-major tensor buffers for fast and predictable numeric calculations on the main CPU thread.
-
-At the core of the neural modeling system is a dynamic network engine that chains diverse layer types into unified model pipelines. It supports feed-forward dense layers, spatial Conv2D grids, downsampling MaxPool2D layers, and stateful GRU or LSTM recurrent sequence blocks. Additionally, advanced sequence blocks like multi-head attention and transformer blocks are supported, complete with sinusoidal positional encodings for temporal context modeling.
-
-To optimize weights, the module implements population-based genetic algorithms and neuroevolution workflows. Trainable parameters are exported and imported as flat floating-point buffers, allowing evolutionary search tools to manipulate layer architectures uniformly. The neuroevolution orchestrator rebuilds neural nets from flat chromosomes and tracks generation metadata, making it easy to evolve behavioral policies and prototype gameplay agents.
-
-For decision-making tasks under uncertainty, the module integrates reinforcement learning components. A multi-armed bandit selector supports epsilon-greedy, Thompson sampling, and upper confidence bound strategies. This is paired with tabular Q-learning over discrete state-action spaces, supporting epsilon decay and Bellman updates. Environment wrappers standardize reward step structures and observation limits to streamline training loops.
-
-Finally, the module provides a seamless path for integrating externally trained models via ONNX format loading. By converting native tensor descriptors into plan structures, it performs optimized CPU inference on pre-trained networks. This enables developers to deploy complex, industry-standard neural network policies directly into game scripts, combining local training, evolutionary prototyping, and external inference in one cohesive system.
+- This module gives users a script-accessible ML toolkit for inference, lightweight training loops, and policy experimentation.
+- It supports tensor-based numeric workflows with deterministic CPU-side execution.
+- Neural building blocks include dense, convolutional, recurrent, attention, and transformer-style components.
+- Mixed architectures can be assembled through a unified engine rather than hardcoded model pipelines.
+- Parameter import/export support enables model mutation, checkpointing, and external optimization workflows.
+- Genetic algorithm support provides population-based optimization for parameter search.
+- Neuroevolution helpers connect genomes to model structures for evolving behavior policies.
+- Bandit strategies support online decision tuning under uncertainty.
+- Tabular Q-learning support enables classic reinforcement-learning experiments in discrete spaces.
+- Environment wrappers standardize observations, rewards, and termination controls.
+- Frame-stack and time-limit wrappers help shape training contexts for temporal tasks.
+- ONNX loading enables reuse of externally trained models for runtime inference.
+- This bridges in-engine experimentation with broader ML tool ecosystems.
+- The module supports prototyping AI behavior without requiring separate external runtimes.
+- For users, this means shorter loops from idea to tested gameplay policy.
+- It is useful for adaptive NPC logic, balancing agents, and simulation decision support.
+- Deterministic tensor and model operations make behavior easier to test and debug.
+- Script-level APIs keep model control close to gameplay systems that consume predictions.
+- The practical value is flexible AI capability without committing to one single algorithm family.
+- Users can combine supervised-style inference, RL, and evolutionary methods in one environment.
+- This enables comparative experimentation before locking production strategy.
+- It also lowers integration friction by sharing one data model across learning components.
+- Overall, the module turns ML from an external dependency into an integrated engine feature set.
+- Teams gain both rapid prototyping tools and deployable runtime inference paths.
+- It helps bridge research ideas and shippable behavior systems with fewer rewrites.
+- In short, users get a broad, scriptable learning sandbox aligned with game-runtime constraints.
+- That makes AI development more iterative, observable, and maintainable.
+- The module also supports long-term evolution as project AI needs grow in complexity.
 
 ## Imports
 
@@ -69,10 +88,10 @@ Finally, the module provides a seamless path for integrating externally trained 
 
 ### env.rs
 
-- Provides reinforcement-learning environment wrappers modeled after common Gym-like conventions.
-- Describes action and observation spaces with bounded metadata suitable for generic agents.
-- Includes frame-stack helpers that accumulate temporal context for history-dependent policies.
-- Standardizes reset and step-style interaction shapes for training and evaluation loops.
+- Reinforcement learning environment abstractions following Gym-style conventions enabling training of generic agents on Lurek2D game tasks.
+- Defines SpaceSpec descriptors for action and observation spaces with shape, bounds, and discrete action counts supporting policy network design.
+- Implements FrameStack buffer accumulating historical observations into temporal context vectors required by recurrent and attention-based policies.
+- Standardizes reset() and step() interaction contracts matching OpenAI Gym patterns for seamless integration with popular RL frameworks.
 
 ### evolutionary.rs
 
@@ -137,10 +156,10 @@ Finally, the module provides a seamless path for integrating externally trained 
 
 ### tensor.rs
 
-- Defines lightweight tensor containers and helpers used by learning components.
-- Stores shape metadata and flat row-major data for predictable indexing behavior.
-- Provides indexing, flattening, and conversion utilities needed by model layers.
-- Includes compact numeric operations that support CPU learning pipelines.
+- Lightweight tensor container with explicit row-major shape metadata and flat f32 data layout for CPU-based learning pipeline operations.
+- Supports multi-dimensional indexing through flat_index() with shape validation and zero-based coordinate conversion for safe element access.
+- Converts to tract Tensor format enabling interop with ONNX model inference engines for neural network evaluation on game tasks.
+- Provides flatten(), gemm() operations enabling tensor transformations and basic linear algebra needed by learning layer computations.
 
 ### transformer.rs
 

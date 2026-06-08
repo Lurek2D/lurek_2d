@@ -6551,17 +6551,17 @@ LDepthSorter:typeOf(name: string) -> boolean -- Check whether this object matche
 ### LSceneObjectContainer
 
 ```lua
-LSceneObjectContainer:add(obj: any) -- Add an object to the container.
+LSceneObjectContainer:add(obj: table) -- Add an object to the container.
 LSceneObjectContainer:clear() -- Remove all objects from the container.
 LSceneObjectContainer:draw() -- Call draw() on all objects that have a draw method, sorted by layer.
-LSceneObjectContainer:getByLayer(n: any) -- Get all objects whose layer equals `n`.
+LSceneObjectContainer:getByLayer(n: integer) -> table -- Get all objects whose layer equals `n`.
 LSceneObjectContainer:getCount() -- Get the number of objects currently in the container.
-LSceneObjectContainer:getObjects() -- Get all objects as an array (layer-sorted).
-LSceneObjectContainer:has(obj: any) -- Check whether an object is present in the container.
-LSceneObjectContainer:remove(obj: any) -- Remove an object from the container (identity comparison).
-LSceneObjectContainer:type() -- Get the type name of this userdata.
-LSceneObjectContainer:typeOf(name: any) -- Check type by name.
-LSceneObjectContainer:update(dt: any) -- Call update(dt) on all objects that have an update method.
+LSceneObjectContainer:getObjects() -> table -- Get all objects as an array (layer-sorted).
+LSceneObjectContainer:has(obj: table) -> boolean -- Check whether an object is present in the container.
+LSceneObjectContainer:remove(obj: table) -- Remove an object from the container (identity comparison).
+LSceneObjectContainer:type() -> string -- Get the type name of this userdata.
+LSceneObjectContainer:typeOf(name: string) -> boolean -- Check type by name.
+LSceneObjectContainer:update(dt: number) -- Call update(dt) on all objects that have an update method.
 ```
 
 ## lurek.serialize
@@ -6739,36 +6739,36 @@ LSpriteSheet:typeOf(name: string) -> boolean -- Checks whether this object match
 [Module page](Module-svg)
 
 ```lua
-lurek.svg.load(path: any)
+lurek.svg.load(path: string) -- Load and parse an SVG file from the game directory.
 ```
 
 ### LSvgImage
 
 ```lua
-LSvgImage:cacheToCanvas(id: any, w: any, h: any) -- Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
-LSvgImage:draw(x: any, y: any, [rotation]: any, [sx]: any, [sy]: any, [ox]: any, [oy]: any) -- Renders the SVG document at the given position and transform overrides.
-LSvgImage:getAdjacencies(prefix: any, [epsilon]: any) -- Detects neighboring provinces using point-to-point proximity.
-LSvgImage:getCanvas(id: any) -- Alias for getCanvasKey.
-LSvgImage:getCanvasKey(id: any) -- Returns the LCanvas handle for a previously cached element/group.
-LSvgImage:getDimensions() -- Returns both the document width and height as two values: `width, height`.
-LSvgImage:getElementBounds(id: any) -- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
-LSvgImage:getElementChildren(id: any) -- Returns a sequential table of direct child element IDs for the given group element.
-LSvgImage:getElementColor(id: any) -- Returns the current RGBA color override `{r, g, b, a}` table for the element.
-LSvgImage:getElementCount() -- Returns the total number of parsed elements (paths and groups) in this SVG document.
-LSvgImage:getElementIds() -- Returns a list of all parsed element and group IDs.
-LSvgImage:getElementParent(id: any) -- Returns the parent element ID string, or `nil` when the element is the root or not found.
-LSvgImage:getElementPoints(id: any, [step_size]: any) -- Flattens the element path into a polygon array of LVec2 userdata.
-LSvgImage:getElementTransform(id: any) -- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
-LSvgImage:getElementVisible(id: any) -- Returns the current visibility flag for the element.
-LSvgImage:getHeight() -- Returns the document height in points/pixels.
-LSvgImage:getWidth() -- Returns the document width in points/pixels.
-LSvgImage:resetElementColor(id: any) -- Clears the color override on the element, restoring original SVG path colors.
-LSvgImage:resetElementTransform(id: any) -- Resets the runtime translation, rotation, and scale of the element to identity.
-LSvgImage:setElementColor(id: any, r: any, g: any, b: any, a: any) -- Overrides the fill/stroke color of a specific element/group by ID.
-LSvgImage:setElementTransform(id: any, tx: any, ty: any, rotation: any, sx: any, sy: any) -- Dynamically transforms a specific element/group by ID.
-LSvgImage:setElementVisible(id: any, visible: any) -- Toggles the visibility of a specific element/group by ID.
-LSvgImage:type()
-LSvgImage:typeOf(name: any)
+LSvgImage:cacheToCanvas(id: string, w: integer, h: integer) -- Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
+LSvgImage:draw(x: number, y: number, [rotation]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -- Renders the SVG document at the given position and transform overrides.
+LSvgImage:getAdjacencies(prefix: string, [epsilon]: number) -> table -- Detects neighboring provinces using point-to-point proximity.
+LSvgImage:getCanvas(id: string) -> LCanvas? -- Alias for getCanvasKey.
+LSvgImage:getCanvasKey(id: string) -> LCanvas? -- Returns the LCanvas handle for a previously cached element/group.
+LSvgImage:getDimensions() -> number, number -- Returns both the document width and height as two values: `width, height`.
+LSvgImage:getElementBounds(id: string) -> table? -- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
+LSvgImage:getElementChildren(id: string) -> table? -- Returns a sequential table of direct child element IDs for the given group element.
+LSvgImage:getElementColor(id: string) -> table? -- Returns the current RGBA color override `{r, g, b, a}` table for the element.
+LSvgImage:getElementCount() -> integer -- Returns the total number of parsed elements (paths and groups) in this SVG document.
+LSvgImage:getElementIds() -> table -- Returns a list of all parsed element and group IDs.
+LSvgImage:getElementParent(id: string) -> string? -- Returns the parent element ID string, or `nil` when the element is the root or not found.
+LSvgImage:getElementPoints(id: string, [step_size]: number) -> table? -- Flattens the element path into a polygon array of LVec2 userdata.
+LSvgImage:getElementTransform(id: string) -> table? -- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
+LSvgImage:getElementVisible(id: string) -> boolean? -- Returns the current visibility flag for the element.
+LSvgImage:getHeight() -> number -- Returns the document height in points/pixels.
+LSvgImage:getWidth() -> number -- Returns the document width in points/pixels.
+LSvgImage:resetElementColor(id: string) -- Clears the color override on the element, restoring original SVG path colors.
+LSvgImage:resetElementTransform(id: string) -- Resets the runtime translation, rotation, and scale of the element to identity.
+LSvgImage:setElementColor(id: string, r: number, g: number, b: number, a: number) -- Overrides the fill/stroke color of a specific element/group by ID.
+LSvgImage:setElementTransform(id: string, tx: number, ty: number, rotation: number, sx: number, sy: number) -- Dynamically transforms a specific element/group by ID.
+LSvgImage:setElementVisible(id: string, visible: boolean) -- Toggles the visibility of a specific element/group by ID.
+LSvgImage:type() -> string -- Returns the fixed type name for this userdata.
+LSvgImage:typeOf(name: string) -> boolean -- Check whether this object matches a given type name.
 ```
 
 ## lurek.system

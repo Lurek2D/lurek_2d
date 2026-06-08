@@ -1,4 +1,4 @@
----
+﻿---
 name: review-examples
 description: Review example coverage and fix all the gaps, ensure all practices are followed.
 ---
@@ -23,14 +23,20 @@ description: Review example coverage and fix all the gaps, ensure all practices 
 - Updated coverage report
 
 # SUCCESS CRITERIA
-- `python tools/validate/validate_example_coverage.py` exits with code 0.
-- `python tools/audit/example_coverage.py` reports exactly 100% example coverage.
+- [ ] `python tools/validate/validate_example_coverage.py` exits with code 0.
+- [ ] `python tools/audit/example_coverage.py` reports exactly 100% example coverage.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Copy-pasting the same generic example for different API endpoints.
 - Writing examples that depend on external, unprovided assets.
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: examples-management, docs-general, lua-scripting
 - tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py
 - agent: Content-Maker
+
+

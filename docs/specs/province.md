@@ -19,19 +19,33 @@
 
 ## Summary
 
-This module provides a province-based cartography and region simulation subsystem that manages irregular region maps as semantic gameplay entities. Unlike cell-based tilemaps, provinces represent cohesive territories parsed from color-coded map graphics. The system maintains an authoritative registry that decodes raster pixels into stable province identities, establishing an adjacency network that acts as the topological foundation for map-wide routing and borders.
-
-To ingest custom worlds, the module implements an asset import pipeline. It parses color-coded PNG files, sanitizes capital markers, and extracts label baselines. A neighbor-searching algorithm resolves capital and label hint pixels to surrounding provinces by checking local context, bridging the gap between graphical assets and active game registries. Extracted regions are mapped to CSV color tables and TOML definitions.
-
-To keep large strategic maps running efficiently, the engine optimizes and caches region geometry. It decodes irregular shapes into horizontal cell runs that are highly efficient for rendering and bounds testing. Traced border contours are simplified to remove staircase pixel artifacts, and the resulting structures are stored in a binary geometry cache, letting imported maps load almost instantly without expensive pixel rescans.
-
-Visual presentation is driven by extensible styles and map modes. The rendering system can draw political overlays, terrain fills, and visibility layers over the same province geometry. Each province tracks styling parameters, including political colors, terrain indices, and fog-of-war bytes. Specific borders between neighboring provinces can be customized with distinct thicknesses, colors, and relationship styles.
-
-Spatial reasoning is supported through precomputed depth and positioning metrics. The system generates multi-source inward-depth distance fields to measure how far any coordinate lies from its regional boundary, providing visual shading signals. Centroid calculators find actual geometric centers for label placement, and transform maps allow interactive mouse picks, anchors, and zooms.
-
-Strategic pathfinding is handled by routing tools that operate over the adjacency graph. The module provides unweighted neighbor search and cost-aware Dijkstra algorithms, allowing agents to plot optimal paths across strategic regions. The routing engine checks map connectivity, detects isolated province clusters, and returns topological groupings without cluttering the central registry.
-
-Finally, the registry implements change-tracking mechanics. Monotonic revision counters increment on every styling, visibility, or political update, generating detailed chronological change logs. This incrementally observable database lets Lua scripts and external shaders sync state efficiently, driving reactive user interfaces and tactical map updates without expensive map diff calculations.
+- The province module manages irregular region maps as semantic territories rather than tile cells.
+- It provides authoritative province identity, topology, style, and metadata state.
+- PNG color-map import converts authored raster maps into province ownership grids.
+- Marker sanitation handles capital and label helper pixels during import.
+- CSV/TOML integration maps external metadata into runtime province records.
+- Geometry extraction converts ownership maps into spans, borders, and contour products.
+- Adjacency graph construction provides stable province-neighbor topology.
+- The registry is the source of truth for mutable province runtime state.
+- Revision counters and change logs support incremental synchronization flows.
+- Map modes project the same geometry into different semantic visual views.
+- Pair-specific border overrides support relationship-aware edge styling.
+- Distance fields encode inward depth from borders for shaders and heuristics.
+- Label anchoring uses geometric centers derived from actual region coverage.
+- Routing utilities provide BFS and weighted path search over adjacency.
+- Connected-component analysis supports strategic map diagnostics.
+- Per-province properties support extensible game-specific metadata.
+- Cache layers persist geometry products for fast reload in large maps.
+- GPU bridge/upload paths convert state into shader-ready texture/buffer formats.
+- View transforms support robust screen-map coordinate conversion.
+- Render integration supports culling, highlighting, labels, and capitals.
+- The module owns province map state and topology, not strategy gameplay policy.
+- It collaborates with image, render, and runtime through explicit boundaries.
+- Invariants emphasize stable identity and deterministic topology reconstruction.
+- It is the canonical runtime substrate for region-based strategy features.
+- Overall, province turns authored map art into queryable and renderable territorial data.
+- It balances import flexibility with strict runtime state ownership.
+- The module supports both game presentation and tooling workflows.
 
 ## Imports
 

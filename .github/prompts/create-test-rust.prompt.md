@@ -1,4 +1,4 @@
----
+﻿---
 name: create-test-rust
 description: Create or update rust test for specific module and check test coverage.
 ---
@@ -24,15 +24,21 @@ description: Create or update rust test for specific module and check test cover
 - Successful `cargo test` execution log
 
 # SUCCESS CRITERIA
-- `cargo test` exits with code 0 (100% of the unit tests pass).
-- `cargo clippy -- -D warnings` exits with code 0 (0 warnings or errors).
-- 0 instances of `#[cfg(test)]` are found inside `src/`.
+- [ ] `cargo test` exits with code 0 (100% of the unit tests pass).
+- [ ] `cargo clippy -- -D warnings` exits with code 0 (0 warnings or errors).
+- [ ] 0 instances of `#[cfg(test)]` are found inside `src/`.
 
-# ANIT PATTERNS
+# ANTI-PATTERNS
 - Placing tests inside `src/` modules using `#[cfg(test)]`.
 - Testing Lua APIs via Rust unit tests (Lua APIs should be tested via Lua).
+
+# EXAMPLE INVOCATION
+- User: "request for this prompt"
+- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
 
 # REFERENCES
 - skills: testing-ecosystem, rust-coding
 - tools: cargo test, cargo clippy
 - agent: Tester
+
+
