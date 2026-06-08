@@ -55,7 +55,6 @@ describe("contact callbacks and sleeping integration", function()
         end)
     end)
 
-    -- @covers LWorld:setBeginContact
     -- @covers LWorld:step
     -- @covers lurek.physics.newBody
     it("registered callbacks can observe contact activity", function()

@@ -1,7 +1,5 @@
 -- Evidence tests: layers module
 -- Evidence is generated from lurek.image.newLayeredImage compositing APIs.
--- @covers lurek.image.newLayeredImage
--- @covers lurek.image.savePNG
 
 
 
@@ -14,6 +12,8 @@ describe("evidence: layers", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newLayeredImage
     it("PNG: merged three-layer scene", function()
         local w, h = 160, 120
         local layers = lurek.image.newLayeredImage(w, h)

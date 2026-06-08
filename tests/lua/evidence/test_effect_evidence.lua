@@ -1,8 +1,5 @@
 -- Evidence tests: effect module
 -- Output-only evidence from direct lurek.effect APIs.
--- @covers lurek.effect.newOverlay
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
 
 
 
@@ -21,6 +18,7 @@ describe("evidence: effect", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.effect.newOverlay
     it("exports overlay flash/fade/lightning state timeline", function()
         local dir = evidence_output_dir("effect")
         local path = dir .. "overlay_timeline.json"
@@ -55,6 +53,8 @@ describe("evidence: effect", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("exports image postfx strip PNG", function()
         local dir = evidence_output_dir("effect")
         local path = dir .. "image_postfx_strip.png"

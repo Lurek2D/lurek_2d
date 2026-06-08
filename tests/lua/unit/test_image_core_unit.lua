@@ -190,7 +190,6 @@ describe("ImageData color/tone effects: brightness", function()
         expect_equal(b >= 200, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:brightness
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -205,7 +204,6 @@ describe("ImageData color/tone effects: brightness", function()
         expect_equal(b, 200)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:brightness
     -- @covers lurek.image.newImageData
     it("brightness returns nil (in-place)", function()
@@ -232,7 +230,6 @@ describe("ImageData color/tone effects: contrast", function()
         expect_equal(b, 50)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:contrast
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -245,7 +242,6 @@ describe("ImageData color/tone effects: contrast", function()
         -- ((200 - 128)*2 + 128) = 72*2 + 128 = 272, clamped to 255
         expect_equal(r, 255)
     end)
-
     -- @covers LImageData:contrast
     -- @covers lurek.image.newImageData
     it("contrast returns nil (in-place)", function()
@@ -271,7 +267,6 @@ describe("ImageData color/tone effects: saturation", function()
         expect_equal(math.abs(g - b) <= 2, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:saturation
     -- @covers LImageData:setPixel
@@ -286,7 +281,6 @@ describe("ImageData color/tone effects: saturation", function()
         expect_equal(b, 200)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:saturation
     -- @covers lurek.image.newImageData
     it("saturation returns nil (in-place)", function()
@@ -313,7 +307,6 @@ describe("ImageData color/tone effects: gamma", function()
         expect_equal(math.abs(b - 200) <= 1, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:gamma
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -326,7 +319,6 @@ describe("ImageData color/tone effects: gamma", function()
         -- (128/255)^0.5 * 255  180; must be brighter than 128
         expect_equal(r > 128, true)
     end)
-
     -- @covers LImageData:gamma
     -- @covers lurek.image.newImageData
     it("gamma returns nil (in-place)", function()
@@ -353,7 +345,6 @@ describe("ImageData color/tone effects: tint", function()
         expect_equal(b, 0)
         expect_equal(a, 200)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
     -- @covers LImageData:tint
@@ -368,7 +359,6 @@ describe("ImageData color/tone effects: tint", function()
         expect_equal(b, 200)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:tint
     -- @covers lurek.image.newImageData
     it("tint returns nil (in-place)", function()
@@ -397,7 +387,6 @@ describe("ImageData filter effects: grayscale", function()
         expect_equal(g, b)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:grayscale
     -- @covers LImageData:setPixel
@@ -410,7 +399,6 @@ describe("ImageData filter effects: grayscale", function()
         expect_equal(r, g)
         expect_equal(g, b)
     end)
-
     -- @covers LImageData:grayscale
     -- @covers lurek.image.newImageData
     it("grayscale returns nil (in-place)", function()
@@ -455,7 +443,6 @@ end)
 describe("ImageData helper: drawNineSlice", function()
     -- @covers LImageData:drawNineSlice
     -- @covers LImageData:getPixel
-    -- @covers LImageData:setPixel
     -- @covers lurek.image.newImageData
     it("draws stretched center area from source patch", function()
         local src = lurek.image.newImageData(6, 6)
@@ -494,7 +481,6 @@ describe("ImageData filter effects: sepia", function()
         expect_equal(g >= b, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:sepia
     -- @covers LImageData:setPixel
@@ -506,7 +492,6 @@ describe("ImageData filter effects: sepia", function()
         local _, _, _, a = img:getPixel(0, 0)
         expect_equal(a, 128)
     end)
-
     -- @covers LImageData:sepia
     -- @covers lurek.image.newImageData
     it("sepia returns nil (in-place)", function()
@@ -533,7 +518,6 @@ describe("ImageData filter effects: invert", function()
         expect_equal(math.abs(b - 55) <= 2, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:invert
     -- @covers LImageData:setPixel
@@ -549,7 +533,6 @@ describe("ImageData filter effects: invert", function()
         expect_equal(b, 200)
         expect_equal(a, 200)
     end)
-
     -- @covers LImageData:invert
     -- @covers lurek.image.newImageData
     it("invert returns nil (in-place)", function()
@@ -574,7 +557,6 @@ describe("ImageData filter effects: threshold", function()
         expect_equal(g, 255)
         expect_equal(b, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
     -- @covers LImageData:threshold
@@ -588,7 +570,6 @@ describe("ImageData filter effects: threshold", function()
         expect_equal(g, 0)
         expect_equal(b, 0)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
     -- @covers LImageData:threshold
@@ -600,7 +581,6 @@ describe("ImageData filter effects: threshold", function()
         local _, _, _, a = img:getPixel(0, 0)
         expect_equal(a, 99)
     end)
-
     -- @covers LImageData:threshold
     -- @covers lurek.image.newImageData
     it("threshold returns nil (in-place)", function()
@@ -626,7 +606,6 @@ describe("ImageData filter effects: posterize", function()
         expect_equal(b == 0 or b == 255, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:posterize
     -- @covers LImageData:setPixel
@@ -638,7 +617,6 @@ describe("ImageData filter effects: posterize", function()
         local _, _, _, a = img:getPixel(0, 0)
         expect_equal(a, 77)
     end)
-
     -- @covers LImageData:posterize
     -- @covers lurek.image.newImageData
     it("posterize returns nil (in-place)", function()
@@ -662,7 +640,6 @@ describe("ImageData filter effects: fill", function()
         expect_equal(b, 0)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers lurek.image.newImageData
@@ -675,7 +652,6 @@ describe("ImageData filter effects: fill", function()
         expect_equal(b, 255)
         expect_equal(a, 200)
     end)
-
     -- @covers LImageData:fill
     -- @covers lurek.image.newImageData
     it("fill returns nil (in-place)", function()
@@ -701,7 +677,6 @@ describe("ImageData filter effects: noise", function()
         expect_equal(b, 200)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:noise
     -- @covers LImageData:setPixel
@@ -713,7 +688,6 @@ describe("ImageData filter effects: noise", function()
         local _, _, _, a = img:getPixel(0, 0)
         expect_equal(a, 128)
     end)
-
     -- @covers LImageData:noise
     -- @covers lurek.image.newImageData
     it("noise returns nil (in-place)", function()
@@ -740,7 +714,6 @@ describe("ImageData filter effects: alphaMask", function()
         expect_equal(g, 64)
         expect_equal(b, 255)
     end)
-
     -- @covers LImageData:alphaMask
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -752,7 +725,6 @@ describe("ImageData filter effects: alphaMask", function()
         local _, _, _, a = img:getPixel(0, 0)
         expect_equal(a, 180)
     end)
-
     -- @covers LImageData:alphaMask
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -764,7 +736,6 @@ describe("ImageData filter effects: alphaMask", function()
         local _, _, _, a = img:getPixel(0, 0)
         expect_equal(a, 0)
     end)
-
     -- @covers LImageData:alphaMask
     -- @covers lurek.image.newImageData
     it("alphaMask returns nil (in-place)", function()
@@ -794,7 +765,6 @@ describe("ImageData geometric in-place: flipHorizontal", function()
         expect_equal(b0, 255)
         expect_equal(r3, 255)
     end)
-
     -- @covers LImageData:flipHorizontal
     -- @covers LImageData:getHeight
     -- @covers LImageData:getWidth
@@ -805,7 +775,6 @@ describe("ImageData geometric in-place: flipHorizontal", function()
         expect_equal(img:getWidth(), 4)
         expect_equal(img:getHeight(), 2)
     end)
-
     -- @covers LImageData:flipHorizontal
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -821,7 +790,6 @@ describe("ImageData geometric in-place: flipHorizontal", function()
         expect_equal(b, 50)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:flipHorizontal
     -- @covers lurek.image.newImageData
     it("flipHorizontal returns nil (in-place)", function()
@@ -847,7 +815,6 @@ describe("ImageData geometric in-place: flipVertical", function()
         expect_equal(b0, 255)
         expect_equal(r3, 255)
     end)
-
     -- @covers LImageData:flipVertical
     -- @covers LImageData:getHeight
     -- @covers LImageData:getWidth
@@ -858,7 +825,6 @@ describe("ImageData geometric in-place: flipVertical", function()
         expect_equal(img:getWidth(), 2)
         expect_equal(img:getHeight(), 4)
     end)
-
     -- @covers LImageData:flipVertical
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -874,7 +840,6 @@ describe("ImageData geometric in-place: flipVertical", function()
         expect_equal(b, 50)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:flipVertical
     -- @covers lurek.image.newImageData
     it("flipVertical returns nil (in-place)", function()
@@ -897,7 +862,6 @@ describe("ImageData geometric new-image: rotate90cw", function()
         local out = img:rotate90cw()
         expect_type("userdata", out)
     end)
-
     -- @covers LImageData:rotate90cw
     -- @covers lurek.image.newImageData
     it("rotate90cw swaps dimensions (4x2  2x4)", function()
@@ -906,7 +870,6 @@ describe("ImageData geometric new-image: rotate90cw", function()
         expect_equal(out:getWidth(), 2)
         expect_equal(out:getHeight(), 4)
     end)
-
     -- @covers LImageData:rotate90cw
     -- @covers lurek.image.newImageData
     it("rotate90cw on a square returns the same dimensions", function()
@@ -915,7 +878,6 @@ describe("ImageData geometric new-image: rotate90cw", function()
         expect_equal(out:getWidth(), 4)
         expect_equal(out:getHeight(), 4)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LImageData:rotate90cw
@@ -939,7 +901,6 @@ describe("ImageData geometric new-image: crop", function()
         local out = img:crop(0, 0, 2, 2)
         expect_type("userdata", out)
     end)
-
     -- @covers LImageData:crop
     -- @covers lurek.image.newImageData
     it("crop(0,0,2,2) on a 4x4 image produces a 2x2 image", function()
@@ -948,7 +909,6 @@ describe("ImageData geometric new-image: crop", function()
         expect_equal(out:getWidth(), 2)
         expect_equal(out:getHeight(), 2)
     end)
-
     -- @covers LImageData:crop
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -963,10 +923,16 @@ describe("ImageData geometric new-image: crop", function()
         expect_equal(b, 50)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:crop
+    it("crop out-of-bounds raises an error [LImageData:crop]", function()
+        local img = lurek.image.newImageData(4, 4)
+        expect_error(function()
+            img:crop(3, 3, 5, 5)  -- 3+5=8 > 4, out of bounds
+        end)
+    end)
+
     -- @covers lurek.image.newImageData
-    it("crop out-of-bounds raises an error", function()
+    it("crop out-of-bounds raises an error [lurek.image.newImageData]", function()
         local img = lurek.image.newImageData(4, 4)
         expect_error(function()
             img:crop(3, 3, 5, 5)  -- 3+5=8 > 4, out of bounds
@@ -974,8 +940,15 @@ describe("ImageData geometric new-image: crop", function()
     end)
 
     -- @covers LImageData:crop
+    it("crop zero-width raises an error [LImageData:crop]", function()
+        local img = lurek.image.newImageData(4, 4)
+        expect_error(function()
+            img:crop(0, 0, 0, 2)  -- w=0 is invalid
+        end)
+    end)
+
     -- @covers lurek.image.newImageData
-    it("crop zero-width raises an error", function()
+    it("crop zero-width raises an error [lurek.image.newImageData]", function()
         local img = lurek.image.newImageData(4, 4)
         expect_error(function()
             img:crop(0, 0, 0, 2)  -- w=0 is invalid
@@ -992,7 +965,6 @@ describe("ImageData geometric new-image: resizeNearest", function()
         local out = img:resizeNearest(2, 2)
         expect_type("userdata", out)
     end)
-
     -- @covers LImageData:resizeNearest
     -- @covers lurek.image.newImageData
     it("resizeNearest(2,2) downscales a 4x4 to 2x2", function()
@@ -1001,7 +973,6 @@ describe("ImageData geometric new-image: resizeNearest", function()
         expect_equal(out:getWidth(), 2)
         expect_equal(out:getHeight(), 2)
     end)
-
     -- @covers LImageData:resizeNearest
     -- @covers lurek.image.newImageData
     it("resizeNearest(8,8) upscales a 4x4 to 8x8", function()
@@ -1010,7 +981,6 @@ describe("ImageData geometric new-image: resizeNearest", function()
         expect_equal(out:getWidth(), 8)
         expect_equal(out:getHeight(), 8)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:resizeNearest
     -- @covers LImageData:setPixel
@@ -1040,7 +1010,6 @@ describe("ImageData convolution: blur", function()
         local out = img:blur(0)
         expect_type("userdata", out)
     end)
-
     -- @covers LImageData:blur
     -- @covers lurek.image.newImageData
     it("blur(0) returns an image with the same dimensions", function()
@@ -1049,7 +1018,6 @@ describe("ImageData convolution: blur", function()
         expect_equal(out:getWidth(), 4)
         expect_equal(out:getHeight(), 4)
     end)
-
     -- @covers LImageData:blur
     -- @covers lurek.image.newImageData
     it("blur(1) returns an image with the same dimensions", function()
@@ -1058,7 +1026,6 @@ describe("ImageData convolution: blur", function()
         expect_equal(out:getWidth(), 4)
         expect_equal(out:getHeight(), 4)
     end)
-
     -- @covers LImageData:blur
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
@@ -1073,7 +1040,6 @@ describe("ImageData convolution: blur", function()
         expect_equal(b, 200)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:blur
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
@@ -1100,7 +1066,6 @@ describe("ImageData convolution: sharpen", function()
         local out = img:sharpen()
         expect_type("userdata", out)
     end)
-
     -- @covers LImageData:sharpen
     -- @covers lurek.image.newImageData
     it("sharpen returns an image with the same dimensions", function()
@@ -1109,7 +1074,6 @@ describe("ImageData convolution: sharpen", function()
         expect_equal(out:getWidth(), 4)
         expect_equal(out:getHeight(), 4)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LImageData:sharpen
@@ -1125,7 +1089,6 @@ describe("ImageData convolution: sharpen", function()
         expect_equal(math.abs(b - 32) <= 2, true)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LImageData:sharpen
@@ -1160,7 +1123,6 @@ describe("lurek.image.newLayeredImage", function()
         expect_equal(stack:getWidth(), 32)
         expect_equal(stack:getHeight(), 48)
     end)
-
     -- @covers LLayeredImage:layerCount
     -- @covers lurek.image.newLayeredImage
     it("layerCount starts at zero", function()
@@ -1178,7 +1140,6 @@ describe("LayeredImage:addLayer", function()
         local idx = stack:addLayer("background")
         expect_equal(idx, 1)
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:layerCount
     -- @covers lurek.image.newLayeredImage
@@ -1190,7 +1151,6 @@ describe("LayeredImage:addLayer", function()
         expect_equal(b, 2)
         expect_equal(stack:layerCount(), 2)
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:getName
     -- @covers lurek.image.newLayeredImage
@@ -1215,7 +1175,6 @@ describe("LayeredImage:removeLayer", function()
         expect_equal(stack:removeLayer(1), true)
         expect_equal(stack:layerCount(), 0)
     end)
-
     -- @covers LLayeredImage:removeLayer
     -- @covers lurek.image.newLayeredImage
     it("returns false for out-of-range index", function()
@@ -1237,7 +1196,6 @@ describe("LayeredImage opacity and visibility", function()
         local op = stack:getOpacity(1)
         expect_equal(math.abs(op - 0.5) < 0.01, true)
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:getOpacity
     -- @covers LLayeredImage:setOpacity
@@ -1248,7 +1206,6 @@ describe("LayeredImage opacity and visibility", function()
         stack:setOpacity(1, 5.0)
         expect_equal(math.abs(stack:getOpacity(1) - 1.0) < 0.01, true)
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:isVisible
     -- @covers LLayeredImage:setVisible
@@ -1261,7 +1218,6 @@ describe("LayeredImage opacity and visibility", function()
         stack:setVisible(1, true)
         expect_equal(stack:isVisible(1), true)
     end)
-
     -- @covers LLayeredImage:getOpacity
     -- @covers lurek.image.newLayeredImage
     it("invalid index returns error from getOpacity", function()
@@ -1280,7 +1236,6 @@ describe("LayeredImage name operations", function()
         stack:addLayer("myName")
         expect_equal(stack:getName(1), "myName")
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:getName
     -- @covers LLayeredImage:setName
@@ -1307,7 +1262,6 @@ describe("LayeredImage layer reordering", function()
         expect_equal(stack:getName(1), "second")
         expect_equal(stack:getName(2), "first")
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:swapLayers
     -- @covers lurek.image.newLayeredImage
@@ -1316,7 +1270,6 @@ describe("LayeredImage layer reordering", function()
         stack:addLayer("x")
         expect_equal(stack:swapLayers(1, 99), false)
     end)
-
     -- @covers LLayeredImage:addLayer
     -- @covers LLayeredImage:getName
     -- @covers LLayeredImage:moveLayer
@@ -1346,7 +1299,6 @@ describe("LayeredImage pixel editing via getLayer/setLayer", function()
         expect_equal(img:getWidth(), 4)
         expect_equal(img:getHeight(), 4)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LLayeredImage:addLayer
@@ -1367,7 +1319,6 @@ describe("LayeredImage pixel editing via getLayer/setLayer", function()
         expect_equal(b, 0)
         expect_equal(a, 255)
     end)
-
     -- @covers LLayeredImage:getLayer
     -- @covers lurek.image.newLayeredImage
     it("getLayer with invalid index throws", function()
@@ -1387,7 +1338,6 @@ describe("LayeredImage:merge", function()
         local r, g, b, a = flat:getPixel(0, 0)
         expect_equal(a, 0)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LLayeredImage:addLayer
@@ -1408,7 +1358,6 @@ describe("LayeredImage:merge", function()
         expect_equal(b, 50)
         expect_equal(a, 255)
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LLayeredImage:addLayer
@@ -1432,7 +1381,6 @@ describe("LayeredImage:merge", function()
         local r, _, _, _ = flat:getPixel(0, 0)
         expect_equal(r, 255)  -- red from bg; blue fg invisible
     end)
-
     -- @covers LImageData:fill
     -- @covers LImageData:getPixel
     -- @covers LLayeredImage:addLayer
@@ -1455,7 +1403,6 @@ describe("LayeredImage:merge", function()
         expect_equal(b, 255)
         expect_equal(r, 0)
     end)
-
     -- @covers LLayeredImage:merge
     -- @covers lurek.image.newLayeredImage
     it("merge returns an ImageData of the same dimensions", function()
@@ -1526,7 +1473,6 @@ describe("ImageData:resize", function()
         expect_equal(copy:getWidth(), 4)
         expect_equal(copy:getHeight(), 4)
     end)
-
     -- @covers lurek.image
     -- @covers LImageData:resize
     it("resize returns correct dimensions", function()
@@ -1535,7 +1481,6 @@ describe("ImageData:resize", function()
         expect_equal(small:getWidth(), 2)
         expect_equal(small:getHeight(), 3)
     end)
-
     -- @covers lurek.image
     it("resize to zero returns nil", function()
         local img = make_solid(4, 4, 0, 0, 0, 255)
@@ -1580,7 +1525,6 @@ describe("ImageData:getRegion", function()
         expect_equal(region:getWidth(), 6)
         expect_equal(region:getHeight(), 4)
     end)
-
     -- @covers lurek.image
     -- @covers LImageData:getRegion
     it("getRegion of sub-rectangle returns correct dimensions", function()
@@ -1589,7 +1533,6 @@ describe("ImageData:getRegion", function()
         expect_equal(region:getWidth(), 4)
         expect_equal(region:getHeight(), 3)
     end)
-
     -- @covers lurek.image
     it("getRegion outside bounds returns nil", function()
         local img = make_solid(4, 4, 0, 0, 0, 255)
@@ -1608,7 +1551,6 @@ describe("ImageData:diff", function()
         local d = a:diff(b)
         expect_equal(d, 0)
     end)
-
     -- @covers lurek.image
     -- @covers LImageData:diff
     it("diff of different images is > 0", function()
@@ -1617,7 +1559,6 @@ describe("ImageData:diff", function()
         local d = a:diff(b)
         expect_equal(d > 0, true)
     end)
-
     -- @covers lurek.image
     -- @covers LImageData:diff
     it("diff of images with different dimensions is > 0", function()
@@ -1673,7 +1614,6 @@ describe("image palette and province coverage", function()
         lut:setColor(0, 0, 255, 255, 255, 255, 0, 255)
         expect_equal(2, lut:getColorCount())
     end)
-
     -- @covers LImageData:applyPaletteLut
     -- @covers LImageData:getPixel
     -- @covers LImageData:setPixel
@@ -1700,7 +1640,6 @@ describe("image palette and province coverage", function()
         expect_equal(255, b2)
         expect_equal(255, a2)
     end)
-
     -- @covers LImageData:setPixel
     -- @covers LProvinceGrid:adjacencies
     -- @covers LProvinceGrid:getAt
@@ -1772,7 +1711,6 @@ describe("image remaining explicit coverage", function()
         expect_type("string", compressed:getFormat())
         expect_true(#compressed:getFormat() > 0)
     end)
-
     -- @covers LImageData:getPixel
     -- @covers LImageData:setRawData
     -- @covers lurek.image.newImageData
@@ -1786,7 +1724,6 @@ describe("image remaining explicit coverage", function()
         expect_equal(b, 9)
         expect_equal(a, 255)
     end)
-
     -- @covers LPaletteLUT:clear
     -- @covers LPaletteLUT:getColorCount
     -- @covers LPaletteLUT:setColor
@@ -1825,7 +1762,6 @@ describe("image strict: LImageData extra methods", function()
         expect_equal(4, w)
         expect_equal(6, h)
     end)
-
     -- @covers LImageData:encode
     -- @covers lurek.image.newImageData
     it("LImageData encode returns string data for png", function()
@@ -1833,7 +1769,6 @@ describe("image strict: LImageData extra methods", function()
         local data = img:encode("png")
         expect_true(data ~= nil)
     end)
-
     -- @covers LImageData:getString
     -- @covers lurek.image.newImageData
     it("LImageData getString returns string or table", function()
@@ -1841,10 +1776,19 @@ describe("image strict: LImageData extra methods", function()
         local s = img:getString()
         expect_true(type(s) == "string" or type(s) == "table")
     end)
-
     -- @covers LImageData:mapPixel
+    it("LImageData mapPixel is callable [LImageData:mapPixel]", function()
+        local img = lurek.image.newImageData(2, 2)
+        local ok = pcall(function()
+            img:mapPixel(function(x, y, r, g, b, a)
+                return r, g, b, a
+            end)
+        end)
+        expect_true(ok)
+    end)
+
     -- @covers lurek.image.newImageData
-    it("LImageData mapPixel is callable", function()
+    it("LImageData mapPixel is callable [lurek.image.newImageData]", function()
         local img = lurek.image.newImageData(2, 2)
         local ok = pcall(function()
             img:mapPixel(function(x, y, r, g, b, a)
@@ -1861,7 +1805,6 @@ describe("image strict: LImageData extra methods", function()
         local ok = pcall(function() img:drawRect(1, 1, 4, 4, 255, 0, 0, 255) end)
         expect_true(ok)
     end)
-
     -- @covers LImageData:drawCircle
     -- @covers lurek.image.newImageData
     it("LImageData drawCircle is callable", function()
@@ -1869,7 +1812,6 @@ describe("image strict: LImageData extra methods", function()
         local ok = pcall(function() img:drawCircle(4, 4, 2, 0, 255, 0, 255) end)
         expect_true(ok)
     end)
-
     -- @covers LImageData:drawLine
     -- @covers lurek.image.newImageData
     it("LImageData drawLine is callable", function()
@@ -1877,7 +1819,6 @@ describe("image strict: LImageData extra methods", function()
         local ok = pcall(function() img:drawLine(0, 0, 7, 7, 0, 0, 255, 255) end)
         expect_true(ok)
     end)
-
     -- @covers LImageData:convolve
     -- @covers lurek.image.newImageData
     it("LImageData convolve is callable with 3x3 kernel", function()
@@ -1887,7 +1828,6 @@ describe("image strict: LImageData extra methods", function()
         local ok = pcall(function() img:convolve(kernel, 3) end)
         expect_true(ok)
     end)
-
     -- @covers LImageData:paste
     -- @covers lurek.image.newImageData
     it("LImageData paste is callable", function()
@@ -1908,7 +1848,6 @@ describe("image strict: LLayeredImage type/typeOf/save", function()
         expect_type("string", li:type())
         expect_type("boolean", li:typeOf("LObject"))
     end)
-
     -- @covers LLayeredImage:save
     -- @covers lurek.image.newLayeredImage
     it("LLayeredImage save is callable", function()
@@ -1967,7 +1906,6 @@ describe("image strict: byte constructors and province geometry helpers", functi
         expect_type("string", raw)
         expect_equal(16, #raw)
     end)
-
     -- @covers LProvinceGrid:provinceSpans
     -- @covers LProvinceGrid:borderSegments
     -- @covers LProvinceGrid:getPolygons
@@ -2028,10 +1966,18 @@ describe("image strict: readback polling and resize filters", function()
         expect_equal(3, w)
         expect_equal(5, h)
     end)
-
     -- @covers LImageData:resize
+    it("resize rejects unknown filter names [LImageData:resize]", function()
+        local img = lurek.image.newImageData(4, 4)
+        local resize_fn = img["resize"]
+        local ok = pcall(function()
+            resize_fn(img, 2, 2, "nearest")
+        end)
+        expect_equal(false, ok)
+    end)
+
     -- @covers lurek.image.newImageData
-    it("resize rejects unknown filter names", function()
+    it("resize rejects unknown filter names [lurek.image.newImageData]", function()
         local img = lurek.image.newImageData(4, 4)
         local resize_fn = img["resize"]
         local ok = pcall(function()
@@ -2051,7 +1997,6 @@ describe("unit: migrated from integration/test_image_dataframe.lua", function()
             expect_equal(img:getWidth(), 32, "width is 32")
             expect_equal(img:getHeight(), 16, "height is 16")
         end)
-
 end)
 
 -- @describe property: image resize invariants

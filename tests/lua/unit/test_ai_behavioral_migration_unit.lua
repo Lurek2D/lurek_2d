@@ -22,7 +22,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_near(0.0, vy, 0.001)
         expect_equal("fsm", a:getDecisionModel())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -37,7 +36,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
             expect_equal(model, a:getDecisionModel())
         end
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
@@ -47,7 +45,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         a:setDecisionModel("bogus")
         expect_equal("fsm", a:getDecisionModel())
     end)
-
     -- @covers LBehaviorTree:getDebugState
     -- @covers lurek.ai.newBehaviorTree
     it("behavior_tree_tests.rs parity: new behavior tree has no nodes", function()
@@ -55,14 +52,12 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         local dbg = bt:getDebugState()
         expect_equal(0, dbg.node_count)
     end)
-
     -- @covers LCommandQueue:getCount
     -- @covers lurek.ai.newCommandQueue
     it("command_queue_tests.rs parity: new queue is empty", function()
         local q = lurek.ai.newCommandQueue()
         expect_equal(0, q:getCount())
     end)
-
     -- @covers LCommandQueue:clear
     -- @covers LCommandQueue:getCount
     -- @covers LCommandQueue:enqueue
@@ -73,14 +68,12 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         q:clear()
         expect_equal(0, q:getCount())
     end)
-
     -- @covers LContextSteering:slotCount
     -- @covers lurek.ai.newContextSteering
     it("context_steering_tests.rs parity: slot count follows constructor", function()
         local cs = lurek.ai.newContextSteering(8)
         expect_equal(8, cs:slotCount())
     end)
-
     -- @covers LStateMachine:addState
     -- @covers LStateMachine:getCurrentState
     -- @covers LStateMachine:setInitialState
@@ -91,7 +84,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         fsm:setInitialState("idle")
         expect_equal("idle", fsm:getCurrentState())
     end)
-
     -- @covers LGeneticAlgorithm:bestGenes
     -- @covers LGeneticAlgorithm:evolve
     -- @covers LGeneticAlgorithm:popSize
@@ -104,7 +96,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_equal(6, ga:popSize())
         expect_type("table", ga:bestGenes())
     end)
-
     -- @covers LGOAPPlanner:getMaxIterations
     -- @covers LGOAPPlanner:setMaxIterations
     -- @covers lurek.ai.newGOAPPlanner
@@ -113,7 +104,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         p:setMaxIterations(500)
         expect_equal(500, p:getMaxIterations())
     end)
-
     -- @covers LHTNDomain:addCompound
     -- @covers LHTNDomain:addPrimitive
     -- @covers LHTNDomain:plan
@@ -133,7 +123,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
             expect_equal("eat", p[1])
         end
     end)
-
     -- @covers LMCTSEngine:search
     -- @covers lurek.ai.newMCTSEngine
     it("mcts_tests.rs parity: search executes and returns action", function()
@@ -153,7 +142,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         )
         expect_type("number", action)
     end)
-
     -- @covers LNeedSystem:addNeed
     -- @covers LNeedSystem:mostUrgent
     -- @covers LNeedSystem:update
@@ -167,7 +155,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_equal(ns:valueOf("hunger") < before, true)
         expect_type("string", ns:mostUrgent())
     end)
-
     -- @covers LNeuralNet:forward
     -- @covers LNeuralNet:layerCount
     -- @covers lurek.ai.newNeuralNet
@@ -179,7 +166,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_equal(2, net:layerCount())
         expect_type("table", out)
     end)
-
     -- @covers LNeuroevolution:evolve
     -- @covers LNeuroevolution:popSize
     -- @covers LNeuroevolution:setFitness
@@ -190,7 +176,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         ne:evolve()
         expect_equal(6, ne:popSize())
     end)
-
     -- @covers LORCASolver:addAgent
     -- @covers LORCASolver:agentCount
     -- @covers lurek.ai.newORCASolver
@@ -199,7 +184,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         s:addAgent(0, 0, 0.5, 3.0)
         expect_equal(1, s:agentCount())
     end)
-
     -- @covers LStimulusWorld:addVisual
     -- @covers LStimulusWorld:count
     -- @covers lurek.ai.newStimulusWorld
@@ -208,7 +192,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         sw:addVisual(10, 20, 0.9, 1.0, "enemy")
         expect_equal(1, sw:count())
     end)
-
     -- @covers LSquad:addMember
     -- @covers LSquad:getFormationPosition
     -- @covers LSquad:setFormation
@@ -223,7 +206,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         local x1, _ = sq:getFormationPosition(2, 0, 0)
         expect_equal(x0 ~= x1, true)
     end)
-
     -- @covers LSteeringManager:getCombineMode
     -- @covers LSteeringManager:setCombineMode
     -- @covers lurek.ai.newSteeringManager
@@ -234,13 +216,64 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         sm:setCombineMode("weighted")
         expect_equal("weighted", sm:getCombineMode())
     end)
-
     -- @covers LStrategyAI:addGoal
+    it("strategy_tests.rs parity: goals can be evaluated and interval is exposed [LStrategyAI:addGoal]", function()
+        local s = lurek.ai.newStrategyAI(2.0)
+        s:addGoal("attack")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then
+                return 1.0
+            end
+            return 0.0
+        end)
+        expect_equal("attack", s:activeGoal())
+        expect_near(2.0, s:timeUntilNext(), 0.001)
+    end)
+
     -- @covers LStrategyAI:activeGoal
+    it("strategy_tests.rs parity: goals can be evaluated and interval is exposed [LStrategyAI:activeGoal]", function()
+        local s = lurek.ai.newStrategyAI(2.0)
+        s:addGoal("attack")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then
+                return 1.0
+            end
+            return 0.0
+        end)
+        expect_equal("attack", s:activeGoal())
+        expect_near(2.0, s:timeUntilNext(), 0.001)
+    end)
+
     -- @covers LStrategyAI:forceEvaluate
+    it("strategy_tests.rs parity: goals can be evaluated and interval is exposed [LStrategyAI:forceEvaluate]", function()
+        local s = lurek.ai.newStrategyAI(2.0)
+        s:addGoal("attack")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then
+                return 1.0
+            end
+            return 0.0
+        end)
+        expect_equal("attack", s:activeGoal())
+        expect_near(2.0, s:timeUntilNext(), 0.001)
+    end)
+
     -- @covers LStrategyAI:timeUntilNext
+    it("strategy_tests.rs parity: goals can be evaluated and interval is exposed [LStrategyAI:timeUntilNext]", function()
+        local s = lurek.ai.newStrategyAI(2.0)
+        s:addGoal("attack")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then
+                return 1.0
+            end
+            return 0.0
+        end)
+        expect_equal("attack", s:activeGoal())
+        expect_near(2.0, s:timeUntilNext(), 0.001)
+    end)
+
     -- @covers lurek.ai.newStrategyAI
-    it("strategy_tests.rs parity: goals can be evaluated and interval is exposed", function()
+    it("strategy_tests.rs parity: goals can be evaluated and interval is exposed [lurek.ai.newStrategyAI]", function()
         local s = lurek.ai.newStrategyAI(2.0)
         s:addGoal("attack")
         s:forceEvaluate(function(goal)
@@ -270,7 +303,6 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_type("number", v)
         expect_equal(v >= 0.7, true)
     end)
-
     -- @covers LUtilityAI:addAction
     -- @covers LUtilityAI:evaluate
     -- @covers LUtilityAI:getLastAction
@@ -283,9 +315,7 @@ describe("AI behavioral parity migrated from Rust unit tests", function()
         expect_equal("fight", action)
         expect_equal("fight", ua:getLastAction())
     end)
-
     -- @covers LAIWorld:addAgent
-    -- @covers LAIWorld:getAgentCount
     -- @covers LAIWorld:update
     -- @covers lurek.ai.newWorld
     it("world_tests.rs parity: world updates agent position from velocity", function()

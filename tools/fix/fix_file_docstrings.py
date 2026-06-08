@@ -65,12 +65,12 @@ def load_audit_report(json_path: Path) -> List[Dict]:
 
 def expand_line_to_length(base_text: str, target_length: int = MIN_LINE_LENGTH) -> str:
     """Expand text to reach target length by adding description.
-    
+
     IMPORTANT: Never truncate! Return full strings >= target_length.
     """
     if len(base_text) >= target_length:
         return base_text  # Already long enough
-    
+
     suffixes = [
         " within the Lurek2D engine framework for game development.",
         " providing comprehensive implementation for Lurek2D game systems.",
@@ -81,26 +81,26 @@ def expand_line_to_length(base_text: str, target_length: int = MIN_LINE_LENGTH) 
         " for advanced game engine functionality and integration.",
         " enabling complete module operations within the framework.",
     ]
-    
+
     # Try to extend with suffixes until reaching target length
     for suffix in suffixes:
         extended = base_text + suffix
         if len(extended) >= target_length:
             # IMPORTANT: Return full string WITHOUT truncation
             return extended
-    
+
     # Fallback: add generic description until reaching length
     text = base_text
     while len(text) < target_length:
         text += " module implementation core functionality operations."
-    
+
     # Return FULL string without truncation
     return text
 
 
 def fix_file_docstring(file_path: Path, lines_needed: int) -> bool:
     """Fix file-level //! docstring to meet line count and 120-char minimum per line.
-    
+
     Returns True if successful, False otherwise.
     """
     try:
@@ -109,12 +109,12 @@ def fix_file_docstring(file_path: Path, lines_needed: int) -> bool:
     except Exception as e:
         print(f"ERROR reading {file_path}: {e}", file=sys.stderr)
         return False
-    
+
     # Find all //! lines at the start of the file
     docstring_start = None
     docstring_end = None
     docstring_content_lines = []  # (line_index, line_text, content)
-    
+
     for i, line in enumerate(lines):
         stripped = line.strip()
         if stripped.startswith('//!'):
@@ -127,21 +127,21 @@ def fix_file_docstring(file_path: Path, lines_needed: int) -> bool:
             docstring_end = i
         elif docstring_start is not None:
             break
-    
+
     if docstring_start is None:
         print(f"WARNING: No //! docstring found in {file_path}", file=sys.stderr)
         return False
-    
+
     # Expand existing lines to 120 chars
     expanded_lines = []
     for idx, orig_line, content in docstring_content_lines:
         expanded_content = expand_line_to_length(content, MIN_LINE_LENGTH)
         expanded_lines.append(f"//! {expanded_content}\n")
-    
+
     # Add new lines if needed
     current_count = len(expanded_lines)
     lines_to_add = lines_needed - current_count
-    
+
     if lines_to_add > 0:
         descriptions = [
             "Core module operations and state management for the game engine.",
@@ -150,19 +150,19 @@ def fix_file_docstring(file_path: Path, lines_needed: int) -> bool:
             "Detailed implementation supporting enterprise-level game development.",
             "Extended support for complex game engine scenarios and edge cases.",
         ]
-        
+
         for j in range(lines_to_add):
             desc = descriptions[j % len(descriptions)]
             expanded_desc = expand_line_to_length(desc, MIN_LINE_LENGTH)
             expanded_lines.append(f"//! {expanded_desc}\n")
-    
+
     # Rebuild: new expanded lines + rest of file
     lines_to_write = lines[:docstring_start] + expanded_lines + lines[docstring_end + 1:]
-    
+
     try:
         content_new = ''.join(lines_to_write)
         file_path.write_text(content_new, encoding='utf-8')
-        
+
         added = max(0, lines_to_add)
         if added > 0 or current_count > 0:
             print(f"Fixed: {file_path.relative_to(ROOT)} (expanded to {len(expanded_lines)} lines)")
@@ -180,31 +180,31 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--audit-report", metavar="PATH",
                         help=f"Path to docstring_audit.json (default: {DEFAULT_AUDIT_REPORT})")
     args = parser.parse_args(argv)
-    
+
     audit_report = Path(args.audit_report) if args.audit_report else DEFAULT_AUDIT_REPORT
-    
+
     if not audit_report.is_file():
         print(f"ERROR: audit report not found: {audit_report}", file=sys.stderr)
         return 2
-    
+
     violations = load_audit_report(audit_report)
     if not violations:
         print("No file-level docstring violations found.")
         return 0
-    
+
     print(f"Fixing {len(violations)} files...")
     fixed = 0
     failed = 0
-    
+
     for v in violations:
         file_rel = v['file']
         file_path = ROOT / file_rel
-        
+
         if not file_path.is_file():
             print(f"ERROR: file not found: {file_rel}", file=sys.stderr)
             failed += 1
             continue
-        
+
         # Get file size to determine required lines
         try:
             file_lines = file_path.read_text(encoding='utf-8').splitlines()
@@ -214,12 +214,12 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"ERROR reading {file_rel}: {e}", file=sys.stderr)
             failed += 1
             continue
-        
+
         if fix_file_docstring(file_path, required_lines):
             fixed += 1
         else:
             failed += 1
-    
+
     print(f"\nResults: {fixed} fixed, {failed} failed")
     return 0 if failed == 0 else 1
 

@@ -688,13 +688,11 @@ describe("lurek.agent module", function()
         expect_not_nil(err)
     end)
     -- @covers lurek.agent.isAvailable
-    -- @covers Lboolean
     it("lurek.agent.isAvailable returns a boolean", function()
         configure_dead_agent_backend()
         expect_type("boolean", lurek.agent.isAvailable())
     end)
     -- @covers lurek.agent.listModels
-    -- @covers Ltable
     it("lurek.agent.listModels returns a table even when the backend is unreachable", function()
         configure_dead_agent_backend()
         local models = lurek.agent.listModels()
@@ -762,14 +760,12 @@ describe("lurek.agent module", function()
         expect_not_nil(memory)
         expect_equal(16, memory:capacity())
     end)
-    -- @covers Lscalar
     it("LWorkingMemory stores and returns scalar values", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("hp", 100)
         expect_equal(100, memory:get("hp"))
     end)
     -- @covers LWorkingMemory:forget
-    -- @covers Ltrue
     it("LWorkingMemory:forget returns true for an existing key", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("temp", "value")
@@ -777,7 +773,6 @@ describe("lurek.agent module", function()
         expect_true(memory:get("temp") == nil)
     end)
     -- @covers LWorkingMemory:getRecent
-    -- @covers Lnewest
     it("LWorkingMemory:getRecent returns the newest inserted entries", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("a", 1)

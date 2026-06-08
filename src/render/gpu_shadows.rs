@@ -468,6 +468,7 @@ impl GpuRenderer {
         );
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn aabb_visible_2d(
         x: f32,
         y: f32,

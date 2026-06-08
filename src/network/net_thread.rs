@@ -336,10 +336,10 @@ impl NetworkRuntime {
                     }
                 }
                 NetworkResponse::MatchmakeEvent { event, .. } => {
-                    if event.as_str() == "matched" || event.as_str() == "error" || event.as_str() == "cancelled" {
-                        if self.http_active_count > 0 {
-                            self.http_active_count -= 1;
-                        }
+                    if (event.as_str() == "matched" || event.as_str() == "error" || event.as_str() == "cancelled")
+                        && self.http_active_count > 0
+                    {
+                        self.http_active_count -= 1;
                     }
                 }
                 NetworkResponse::TcpEvent { event, .. } => {

@@ -7,7 +7,7 @@ describe("evidence: charts", function()
         ensure_evidence_dir("charts")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("produces a line chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "line_chart.png"
@@ -26,7 +26,7 @@ describe("evidence: charts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("produces a bar chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "bar_chart.png"
@@ -44,7 +44,7 @@ describe("evidence: charts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("produces a scatter plot PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "scatter_plot.png"
@@ -65,7 +65,7 @@ describe("evidence: charts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("produces a pie chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "pie_chart.png"
@@ -81,7 +81,7 @@ describe("evidence: charts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("produces an area chart PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "area_chart.png"
@@ -96,7 +96,7 @@ describe("evidence: charts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("produces a dual-series trend line PNG", function()
         local dir = evidence_output_dir("charts")
         local path = dir .. "trend_dual_series.png"

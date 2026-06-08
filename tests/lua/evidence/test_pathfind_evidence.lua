@@ -1,8 +1,5 @@
 -- Evidence tests: pathfind module
 -- Output-only evidence from direct lurek.pathfind API calls.
--- @covers lurek.pathfind.newFlowField
--- @covers lurek.pathfind.newNavGrid
--- @covers lurek.pathfind.newPathfinder
 
 
 
@@ -21,6 +18,8 @@ describe("evidence: pathfind", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.pathfind.newPathfinder
+    -- @covers lurek.pathfind.newNavGrid
     it("exports astar path through obstacle gap", function()
         local dir = evidence_output_dir("pathfind")
         local path = dir .. "astar_gap.json"
@@ -68,6 +67,7 @@ describe("evidence: pathfind", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.pathfind.newFlowField
     it("exports flow-field direction samples", function()
         local dir = evidence_output_dir("pathfind")
         local path = dir .. "flow_field.json"

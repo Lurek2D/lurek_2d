@@ -128,7 +128,6 @@ describe("lurek.automation - script management", function()
         expect_equal(lurek.automation.hasScript("single_key"), true)
         lurek.automation.unload("single_key")
     end)
-
     -- @covers lurek.automation.hasScript
     -- @covers lurek.automation.load
     -- @covers lurek.automation.unload
@@ -148,7 +147,6 @@ describe("lurek.automation - script management", function()
         expect_equal(lurek.automation.hasScript("multi"), true)
         lurek.automation.unload("multi")
     end)
-
     -- @covers lurek.automation.hasScript
     -- @covers lurek.automation.load
     -- @covers lurek.automation.unload
@@ -160,7 +158,6 @@ describe("lurek.automation - script management", function()
         expect_equal(lurek.automation.hasScript("described"), true)
         lurek.automation.unload("described")
     end)
-
     -- @covers lurek.automation.hasScript
     it("should report hasScript false for unknown scripts", function()
         expect_equal(lurek.automation.hasScript("nonexistent"), false)
@@ -177,7 +174,6 @@ describe("lurek.automation - script management", function()
         expect_equal(result, true)
         expect_equal(lurek.automation.hasScript("to_remove"), false)
     end)
-
     -- @covers lurek.automation.unload
     it("should return false when unloading nonexistent script", function()
         local result = lurek.automation.unload("does_not_exist")
@@ -208,7 +204,6 @@ describe("lurek.automation - script management", function()
         lurek.automation.unload("alpha")
         lurek.automation.unload("beta")
     end)
-
     -- @covers lurek.automation.getScripts
     -- @covers lurek.automation.unload
     it("should return empty table when no scripts loaded", function()
@@ -219,7 +214,6 @@ describe("lurek.automation - script management", function()
         local names = lurek.automation.getScripts()
         expect_equal(#names, 0)
     end)
-
     -- @covers lurek.automation.getStepCount
     -- @covers lurek.automation.hasScript
     -- @covers lurek.automation.load
@@ -263,7 +257,6 @@ describe("lurek.automation - playback control", function()
         lurek.automation.stop()
         lurek.automation.unload("play")
     end)
-
     -- @covers lurek.automation.start
     it("should error when starting nonexistent script", function()
         expect_error(function()
@@ -289,7 +282,6 @@ describe("lurek.automation - playback control", function()
         expect_equal(lurek.automation.getCurrentStep(), 0)
         lurek.automation.unload("stop_test")
     end)
-
     -- @covers lurek.automation.isPaused
     -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.load
@@ -308,7 +300,6 @@ describe("lurek.automation - playback control", function()
         lurek.automation.stop()
         lurek.automation.unload("pause_test")
     end)
-
     -- @covers lurek.automation.isPaused
     -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.load
@@ -329,21 +320,18 @@ describe("lurek.automation - playback control", function()
         lurek.automation.stop()
         lurek.automation.unload("resume_test")
     end)
-
     -- @covers lurek.automation.isPaused
     -- @covers lurek.automation.pause
     it("should be safe to pause when idle", function()
         lurek.automation.pause()
         expect_equal(lurek.automation.isPaused(), false)
     end)
-
     -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.stop
     it("should be safe to stop when idle", function()
         lurek.automation.stop()
         expect_equal(lurek.automation.isRunning(), false)
     end)
-
     -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.load
     -- @covers lurek.automation.resume
@@ -420,7 +408,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("time_test")
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.load
@@ -442,7 +429,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("complete_test")
     end)
-
     -- @covers lurek.automation.getCurrentStep
     -- @covers lurek.automation.getStepCount
     -- @covers lurek.automation.load
@@ -470,7 +456,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("step_advance")
     end)
-
     -- @covers lurek.automation.getCurrentStep
     -- @covers lurek.automation.getElapsedTime
     -- @covers lurek.automation.load
@@ -491,7 +476,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("pause_hold")
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -511,7 +495,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("key_test")
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -533,7 +516,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("mouse_test")
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -550,7 +532,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("text_test")
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -565,7 +546,6 @@ describe("lurek.automation - update and completion", function()
         lurek.automation.stop()
         lurek.automation.unload("empty")
     end)
-
     -- @covers lurek.automation.getElapsedTime
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
@@ -650,7 +630,6 @@ time = 0.2
         lurek.automation.stop()
         lurek.automation.unload("toml_demo")
     end)
-
     -- @covers lurek.automation.getStepCount
     -- @covers lurek.automation.hasScript
     -- @covers lurek.automation.loadFromToml
@@ -681,7 +660,6 @@ time = 0.1
         lurek.automation.stop()
         lurek.automation.unload("mouse_toml")
     end)
-
     -- @covers lurek.automation.getStepCount
     -- @covers lurek.automation.hasScript
     -- @covers lurek.automation.loadFromToml
@@ -730,7 +708,6 @@ describe("lurek.automation - complex scenarios", function()
         end
         lurek.automation.unload("cycle")
     end)
-
     -- @covers lurek.automation.hasScript
     -- @covers lurek.automation.load
     -- @covers lurek.automation.unload
@@ -745,7 +722,6 @@ describe("lurek.automation - complex scenarios", function()
             expect_equal(lurek.automation.hasScript(name), false)
         end
     end)
-
     -- @covers lurek.automation.getScripts
     -- @covers lurek.automation.load
     -- @covers lurek.automation.unload
@@ -761,7 +737,6 @@ describe("lurek.automation - complex scenarios", function()
             lurek.automation.unload("multi_" .. i)
         end
     end)
-
     -- @covers lurek.automation.getCurrentScript
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -785,7 +760,6 @@ describe("lurek.automation - complex scenarios", function()
         lurek.automation.unload("script_a")
         lurek.automation.unload("script_b")
     end)
-
     -- @covers lurek.automation.getCurrentStep
     -- @covers lurek.automation.getStepCount
     -- @covers lurek.automation.isComplete
@@ -821,7 +795,6 @@ describe("lurek.automation - complex scenarios", function()
         lurek.automation.stop()
         lurek.automation.unload("full_sequence")
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.start
@@ -855,7 +828,6 @@ describe("lurek.automation named macros", function()
         expect_equal(lurek.automation.hasMacro("missing"), false)
         lurek.automation.unload("m_src")
     end)
-
     -- @covers lurek.automation.listMacros
     -- @covers lurek.automation.load
     -- @covers lurek.automation.saveMacro
@@ -871,7 +843,6 @@ describe("lurek.automation named macros", function()
         expect_equal(found, true)
         lurek.automation.unload("m_src2")
     end)
-
     -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.load
     -- @covers lurek.automation.playMacro
@@ -897,7 +868,6 @@ describe("lurek.automation variable playback speed", function()
         expect_near(lurek.automation.getPlaybackSpeed(), 2.0, 0.001)
         lurek.automation.setPlaybackSpeed(1.0)
     end)
-
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.load
     -- @covers lurek.automation.setPlaybackSpeed
@@ -975,7 +945,6 @@ describe("lurek.automation step limit", function()
         expect_equal(50, lurek.automation.getStepLimit("step_limit_test"))
         lurek.automation.unload("step_limit_test")
     end)
-
     -- @covers lurek.automation.setStepLimit
     it("setStepLimit_returns_false_for_unknown_script", function()
         local ok = lurek.automation.setStepLimit("no_such_script", 10)
@@ -1034,7 +1003,6 @@ describe("lurek.automation setHighlightMode / isHighlightMode roundtrip", functi
     -- clean up
     lurek.automation.setHighlightMode(false)
   end)
-
   -- @covers lurek.automation.isHighlightMode
   -- @covers lurek.automation.setHighlightMode
   it("disable after enable returns false", function()
@@ -1042,7 +1010,6 @@ describe("lurek.automation setHighlightMode / isHighlightMode roundtrip", functi
     lurek.automation.setHighlightMode(false)
     expect_equal(false, lurek.automation.isHighlightMode())
   end)
-
   -- @covers lurek.automation.isHighlightMode
   -- @covers lurek.automation.setHighlightMode
   it("setting true twice still returns true", function()
@@ -1051,7 +1018,6 @@ describe("lurek.automation setHighlightMode / isHighlightMode roundtrip", functi
     expect_equal(true, lurek.automation.isHighlightMode())
     lurek.automation.setHighlightMode(false)
   end)
-
   -- @covers lurek.automation.isHighlightMode
   it("isHighlightMode returns a boolean", function()
     local result = lurek.automation.isHighlightMode()
@@ -1115,12 +1081,9 @@ describe("lurek.automation extended actions", function()
         lurek.automation.stop()
         lurek.automation.unload("repeat_steps")
     end)
-
     -- @covers lurek.event.clear
     -- @covers lurek.event.poll
-    -- @covers lurek.automation.isRunning
     -- @covers lurek.automation.load
-    -- @covers lurek.automation.playMacro
     -- @covers lurek.automation.saveMacro
     -- @covers lurek.automation.start
     -- @covers lurek.automation.stop
@@ -1149,8 +1112,6 @@ describe("lurek.automation extended actions", function()
         lurek.automation.unload("macro_src_ext")
         lurek.automation.unload("macro_call")
     end)
-
-    -- @covers LImageData:setPixel
     -- @covers lurek.automation.getLastError
     -- @covers lurek.automation.isComplete
     -- @covers lurek.automation.isFailed
@@ -1159,8 +1120,6 @@ describe("lurek.automation extended actions", function()
     -- @covers lurek.automation.stop
     -- @covers lurek.automation.unload
     -- @covers lurek.automation.update
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.image.savePNG
     it("visualassert accepts identical generated images", function()
         local baseline_path = "save/_automation_visualassert_baseline.png"
         local actual_path = "save/_automation_visualassert_actual.png"
@@ -1267,7 +1226,6 @@ describe("lurek.automation conditions and failures", function()
         lurek.automation.setCondition("expr_when_ready", false)
         lurek.automation.setCondition("expr_when_paused", false)
     end)
-
     -- @covers lurek.automation.getLastError
     -- @covers lurek.automation.isFailed
     -- @covers lurek.automation.load
@@ -1304,7 +1262,6 @@ describe("lurek.automation conditions and failures", function()
         lurek.automation.setCondition("expr_boss_dead", false)
         lurek.automation.setCondition("expr_phase2", false)
     end)
-
     -- @covers lurek.automation.getLastError
     -- @covers lurek.automation.isFailed
     -- @covers lurek.automation.load

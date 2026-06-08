@@ -1,7 +1,4 @@
 -- Integration: pathfinding results reflected on minimap overlays
--- @covers lurek.minimap.newMinimap
--- @covers lurek.pathfind.newNavGrid
--- @covers lurek.pathfind.newPathfinder
 
 
 
@@ -49,6 +46,9 @@ describe("minimap + pathfind integration", function()
     -- @integration lurek.minimap.newMinimap
     -- @integration lurek.pathfind.newNavGrid
     -- @integration lurek.pathfind.newPathfinder
+    -- @covers lurek.pathfind.newPathfinder
+    -- @covers lurek.pathfind.newNavGrid
+    -- @covers lurek.minimap.newMinimap
     it("computed path nodes can be pushed to the minimap as a route overlay", function()
         local grid = lurek.pathfind.newNavGrid(8, 8)
         local pf = lurek.pathfind.newPathfinder(grid)

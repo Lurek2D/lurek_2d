@@ -1,23 +1,5 @@
 -- test_physics_evidence.lua
 -- Clean evidence suite for physics module visual outputs.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.physics.attachShape
--- @covers lurek.physics.destroyWorld
--- @covers lurek.physics.getBody
--- @covers lurek.physics.getCollisions
--- @covers lurek.physics.isSleepingAllowed
--- @covers lurek.physics.newBody
--- @covers lurek.physics.newCircleShape
--- @covers lurek.physics.newRectangleShape
--- @covers lurek.physics.newWorld
--- @covers lurek.physics.setBodyVelocity
--- @covers lurek.physics.setSleepingAllowed
--- @covers lurek.physics.step
--- @covers lurek.physics.testAABB
--- @covers lurek.physics.testCircleAABB
--- @covers lurek.physics.testCircles
--- @covers lurek.physics.testPoint
 
 
 
@@ -53,7 +35,16 @@ describe("Evidence: lurek.physics visual scenarios", function()
         ensure_evidence_dir("physics")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.physics.step
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newRectangleShape
+    -- @covers lurek.physics.newCircleShape
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.destroyWorld
+    -- @covers lurek.physics.attachShape
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: physics_gravity_drop.png -- dynamic bodies falling onto static ground", function()
         local world = lurek.physics.newWorld(0, 90)
         local ground = lurek.physics.newBody(world, 160, 182, "static")
@@ -81,7 +72,9 @@ describe("Evidence: lurek.physics visual scenarios", function()
         lurek.physics.destroyWorld(world)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.physics.setBodyVelocity
+    -- @covers lurek.physics.getBody
     it("PNG: physics_velocity_tracks.png -- velocity vectors sampled over time", function()
         local world = lurek.physics.newWorld(0, 0)
         local body = lurek.physics.newBody(world, 36, 44, "dynamic")
@@ -115,7 +108,8 @@ describe("Evidence: lurek.physics visual scenarios", function()
         lurek.physics.destroyWorld(world)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.physics.getCollisions
     it("PNG: physics_collision_bands.png -- collision event intensity over simulation", function()
         local world = lurek.physics.newWorld(0, 0)
 
@@ -150,7 +144,11 @@ describe("Evidence: lurek.physics visual scenarios", function()
         lurek.physics.destroyWorld(world)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.physics.testPoint
+    -- @covers lurek.physics.testCircles
+    -- @covers lurek.physics.testCircleAABB
+    -- @covers lurek.physics.testAABB
     it("PNG: physics_query_map.png -- AABB, circle and point query map", function()
         local img = lurek.image.newImageData(320, 200)
         img:fill(24, 24, 28, 255)
@@ -188,7 +186,9 @@ describe("Evidence: lurek.physics visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.physics.setSleepingAllowed
+    -- @covers lurek.physics.isSleepingAllowed
     it("PNG: physics_sleep_flags.png -- sleeping permission states visualized", function()
         local world = lurek.physics.newWorld(0, 20)
         local a = lurek.physics.newBody(world, 90, 80, "dynamic")

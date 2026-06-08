@@ -98,7 +98,6 @@ local function test_choice_nodes()
     seq:choose(2) -- select option 2 (1-based)
     expect_equal(seq:getState(), "typing")
   end)
-  -- @covers Loptions
   it("getChoiceLabels returns options", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -111,7 +110,6 @@ local function test_choice_nodes()
     expect_equal(labels[2], "Option B")
     expect_equal(labels[3], "Option C")
   end)
-  -- @covers Lprompt
   it("getChoiceText returns prompt", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -120,7 +118,6 @@ local function test_choice_nodes()
     seq:start()
     expect_equal(seq:getChoiceText(), "What now?")
   end)
-  -- @covers Ltrue
   it("isWaitingForChoice returns true in choice state", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -237,7 +234,6 @@ local function test_sequence_flow()
   end)
 end
 local function test_speaker_and_text_queries()
-  -- @covers Lactor
   it("currentSpeaker returns actor name", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -246,7 +242,6 @@ local function test_speaker_and_text_queries()
     seq:start()
     expect_equal(seq:currentSpeaker(), "Villain")
   end)
-  -- @covers Lfull
   it("currentText returns full line", function()
     local seq = lurek.dialog.newSequencer()
     seq:load({
@@ -282,7 +277,6 @@ local function test_state_tracking()
     seq:start()
     expect_true(seq:isActive())
   end)
-  -- @covers Lcurrent
   it("getState returns current state string", function()
     local seq = lurek.dialog.newSequencer()
     expect_equal(seq:getState(), "idle")

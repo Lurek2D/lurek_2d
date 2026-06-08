@@ -103,7 +103,6 @@ describe("lurek.ai AIWorld", function()
         expect_not_nil(w, "world exists")
         expect_equal("LAIWorld", w:type(), "type check")
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:getAgentCount
     -- @covers lurek.ai.newWorld
@@ -113,7 +112,6 @@ describe("lurek.ai AIWorld", function()
         expect_not_nil(a, "agent returned")
         expect_equal(1, w:getAgentCount(), "agent count")
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:getAgent
     -- @covers lurek.ai.newWorld
@@ -125,14 +123,12 @@ describe("lurek.ai AIWorld", function()
         assert(a)
         expect_equal("hero", a:getName())
     end)
-
     -- @covers LAIWorld:getAgent
     -- @covers lurek.ai.newWorld
     it("returns nil for unknown agent", function()
         local w = lurek.ai.newWorld()
         expect_nil(w:getAgent("nonexistent"))
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:getAgentCount
     -- @covers LAIWorld:removeAgent
@@ -143,7 +139,6 @@ describe("lurek.ai AIWorld", function()
         w:removeAgent(a)
         expect_equal(0, w:getAgentCount())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:update
     -- @covers lurek.ai.newWorld
@@ -157,7 +152,6 @@ describe("lurek.ai AIWorld", function()
         expect_near(5.0, x, 0.01, "x after update")
         expect_near(10.0, y, 0.01, "y after update")
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("errors on duplicate agent name", function()
@@ -165,7 +159,6 @@ describe("lurek.ai AIWorld", function()
         w:addAgent("hero")
         expect_error(function() w:addAgent("hero") end, "duplicate agent")
     end)
-
     -- @covers LAIWorld:getGlobalBlackboard
     -- @covers lurek.ai.newWorld
     it("provides global blackboard", function()
@@ -174,7 +167,6 @@ describe("lurek.ai AIWorld", function()
         expect_not_nil(bb, "global bb exists")
         expect_equal("LAIBlackboard", bb:type())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:getAgentCount
     -- @covers lurek.ai.newWorld
@@ -185,7 +177,6 @@ describe("lurek.ai AIWorld", function()
         w:addAgent("gamma")
         expect_equal(3, w:getAgentCount())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:getAgentCount
     -- @covers LAIWorld:removeAgent
@@ -212,7 +203,6 @@ describe("lurek.ai Agent", function()
         local a = w:addAgent("hero")
         expect_equal("LBot", a:type())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("getName returns name", function()
@@ -220,7 +210,6 @@ describe("lurek.ai Agent", function()
         local a = w:addAgent("warrior")
         expect_equal("warrior", a:getName())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("setPosition / getPosition roundtrip", function()
@@ -231,7 +220,6 @@ describe("lurek.ai Agent", function()
         expect_near(100, x, 0.01)
         expect_near(200, y, 0.01)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("setVelocity / getVelocity roundtrip", function()
@@ -242,7 +230,6 @@ describe("lurek.ai Agent", function()
         expect_near(5, vx, 0.01)
         expect_near(-3, vy, 0.01)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getMaxSpeed
     -- @covers LBot:setMaxSpeed
@@ -253,7 +240,6 @@ describe("lurek.ai Agent", function()
         a:setMaxSpeed(250)
         expect_near(250, a:getMaxSpeed(), 0.01)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getMaxForce
     -- @covers LBot:setMaxForce
@@ -264,7 +250,6 @@ describe("lurek.ai Agent", function()
         a:setMaxForce(500)
         expect_near(500, a:getMaxForce(), 0.01)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("setPriority / getPriority", function()
@@ -273,7 +258,6 @@ describe("lurek.ai Agent", function()
         a:setPriority(7)
         expect_equal(7, a:getPriority())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -284,7 +268,6 @@ describe("lurek.ai Agent", function()
         a:setDecisionModel("fsm")
         expect_equal("fsm", a:getDecisionModel())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -295,7 +278,6 @@ describe("lurek.ai Agent", function()
         a:setDecisionModel("bt")
         expect_equal("bt", a:getDecisionModel())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -306,7 +288,6 @@ describe("lurek.ai Agent", function()
         a:setDecisionModel("steering")
         expect_equal("steering", a:getDecisionModel())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -317,7 +298,6 @@ describe("lurek.ai Agent", function()
         a:setDecisionModel("fsm+steering")
         expect_equal("fsm+steering", a:getDecisionModel())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -328,7 +308,6 @@ describe("lurek.ai Agent", function()
         a:setDecisionModel("bt+steering")
         expect_equal("bt+steering", a:getDecisionModel())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("addTag / hasTag / removeTag", function()
@@ -340,7 +319,6 @@ describe("lurek.ai Agent", function()
         a:removeTag("enemy")
         expect_false(a:hasTag("enemy"), "tag removed")
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("multiple tags", function()
@@ -352,7 +330,6 @@ describe("lurek.ai Agent", function()
         expect_true(a:hasTag("flying"))
         expect_false(a:hasTag("slow"))
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("getBlackboard returns Blackboard", function()
@@ -362,7 +339,6 @@ describe("lurek.ai Agent", function()
         expect_not_nil(bb)
         expect_equal("LAIBlackboard", bb:type())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("default position is zero", function()
@@ -372,7 +348,6 @@ describe("lurek.ai Agent", function()
         expect_near(0, x, 0.01)
         expect_near(0, y, 0.01)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getVelocity
     -- @covers lurek.ai.newWorld
@@ -383,7 +358,6 @@ describe("lurek.ai Agent", function()
         expect_near(0, vx, 0.01)
         expect_near(0, vy, 0.01)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getDecisionModel
     -- @covers LBot:setDecisionModel
@@ -408,7 +382,6 @@ describe("lurek.ai Blackboard", function()
         local bb = lurek.ai.newBlackboard()
         expect_equal("LAIBlackboard", bb:type())
     end)
-
     -- @covers LAIBlackboard:getNumber
     -- @covers LAIBlackboard:setNumber
     -- @covers lurek.ai.newBlackboard
@@ -417,21 +390,18 @@ describe("lurek.ai Blackboard", function()
         bb:setNumber("health", 42.5)
         expect_near(42.5, bb:getNumber("health"), 0.001)
     end)
-
     -- @covers LAIBlackboard:getNumber
     -- @covers lurek.ai.newBlackboard
     it("getNumber returns default when key missing", function()
         local bb = lurek.ai.newBlackboard()
         expect_near(99, bb:getNumber("missing", 99), 0.001)
     end)
-
     -- @covers LAIBlackboard:getNumber
     -- @covers lurek.ai.newBlackboard
     it("getNumber returns 0 without explicit default", function()
         local bb = lurek.ai.newBlackboard()
         expect_near(0, bb:getNumber("missing"), 0.001)
     end)
-
     -- @covers LAIBlackboard:getBool
     -- @covers LAIBlackboard:setBool
     -- @covers lurek.ai.newBlackboard
@@ -440,21 +410,18 @@ describe("lurek.ai Blackboard", function()
         bb:setBool("alive", true)
         expect_true(bb:getBool("alive"))
     end)
-
     -- @covers LAIBlackboard:getBool
     -- @covers lurek.ai.newBlackboard
     it("getBool returns default when key missing", function()
         local bb = lurek.ai.newBlackboard()
         expect_true(bb:getBool("missing", true))
     end)
-
     -- @covers LAIBlackboard:getBool
     -- @covers lurek.ai.newBlackboard
     it("getBool returns false without explicit default", function()
         local bb = lurek.ai.newBlackboard()
         expect_false(bb:getBool("missing"))
     end)
-
     -- @covers LAIBlackboard:getString
     -- @covers LAIBlackboard:setString
     -- @covers lurek.ai.newBlackboard
@@ -463,21 +430,18 @@ describe("lurek.ai Blackboard", function()
         bb:setString("name", "hero")
         expect_equal("hero", bb:getString("name"))
     end)
-
     -- @covers LAIBlackboard:getString
     -- @covers lurek.ai.newBlackboard
     it("getString returns default when key missing", function()
         local bb = lurek.ai.newBlackboard()
         expect_equal("none", bb:getString("missing", "none"))
     end)
-
     -- @covers LAIBlackboard:getString
     -- @covers lurek.ai.newBlackboard
     it("getString returns empty without explicit default", function()
         local bb = lurek.ai.newBlackboard()
         expect_equal("", bb:getString("missing"))
     end)
-
     -- @covers LAIBlackboard:has
     -- @covers LAIBlackboard:setNumber
     -- @covers lurek.ai.newBlackboard
@@ -486,14 +450,12 @@ describe("lurek.ai Blackboard", function()
         bb:setNumber("hp", 10)
         expect_true(bb:has("hp"))
     end)
-
     -- @covers LAIBlackboard:has
     -- @covers lurek.ai.newBlackboard
     it("has returns false when key absent", function()
         local bb = lurek.ai.newBlackboard()
         expect_false(bb:has("missing"))
     end)
-
     -- @covers LAIBlackboard:has
     -- @covers LAIBlackboard:remove
     -- @covers LAIBlackboard:setNumber
@@ -504,7 +466,6 @@ describe("lurek.ai Blackboard", function()
         bb:remove("hp")
         expect_false(bb:has("hp"))
     end)
-
     -- @covers LAIBlackboard:clear
     -- @covers LAIBlackboard:getSize
     -- @covers LAIBlackboard:setBool
@@ -519,7 +480,6 @@ describe("lurek.ai Blackboard", function()
         bb:clear()
         expect_equal(0, bb:getSize())
     end)
-
     -- @covers LAIBlackboard:getSize
     -- @covers LAIBlackboard:setBool
     -- @covers LAIBlackboard:setNumber
@@ -532,7 +492,6 @@ describe("lurek.ai Blackboard", function()
         bb:setBool("b", true)
         expect_equal(2, bb:getSize())
     end)
-
     -- @covers LAIBlackboard:getKeys
     -- @covers LAIBlackboard:setNumber
     -- @covers LAIBlackboard:setString
@@ -558,10 +517,16 @@ describe("lurek.ai StateMachine", function()
         local fsm = lurek.ai.newStateMachine()
         expect_equal("LStateMachine", fsm:type())
     end)
-
     -- @covers LStateMachine:addState
+    it("addState does not error [LStateMachine:addState]", function()
+        local fsm = lurek.ai.newStateMachine()
+        expect_no_error(function()
+            fsm:addState("idle", { onEnter = function() end })
+        end)
+    end)
+
     -- @covers lurek.ai.newStateMachine
-    it("addState does not error", function()
+    it("addState does not error [lurek.ai.newStateMachine]", function()
         local fsm = lurek.ai.newStateMachine()
         expect_no_error(function()
             fsm:addState("idle", { onEnter = function() end })
@@ -569,8 +534,19 @@ describe("lurek.ai StateMachine", function()
     end)
 
     -- @covers LStateMachine:addState
+    it("addState with all callbacks [LStateMachine:addState]", function()
+        local fsm = lurek.ai.newStateMachine()
+        expect_no_error(function()
+            fsm:addState("patrol", {
+                onEnter = function() end,
+                onUpdate = function() end,
+                onExit = function() end,
+            })
+        end)
+    end)
+
     -- @covers lurek.ai.newStateMachine
-    it("addState with all callbacks", function()
+    it("addState with all callbacks [lurek.ai.newStateMachine]", function()
         local fsm = lurek.ai.newStateMachine()
         expect_no_error(function()
             fsm:addState("patrol", {
@@ -591,14 +567,12 @@ describe("lurek.ai StateMachine", function()
         fsm:setInitialState("idle")
         expect_equal("idle", fsm:getCurrentState())
     end)
-
     -- @covers LStateMachine:getCurrentState
     -- @covers lurek.ai.newStateMachine
     it("getCurrentState returns nil before setting", function()
         local fsm = lurek.ai.newStateMachine()
         expect_nil(fsm:getCurrentState())
     end)
-
     -- @covers LStateMachine:addState
     -- @covers LStateMachine:forceState
     -- @covers LStateMachine:getCurrentState
@@ -612,7 +586,6 @@ describe("lurek.ai StateMachine", function()
         fsm:forceState("attack")
         expect_equal("attack", fsm:getCurrentState())
     end)
-
     -- @covers LStateMachine:addState
     -- @covers LStateMachine:forceState
     -- @covers LStateMachine:getTimeInState
@@ -625,11 +598,28 @@ describe("lurek.ai StateMachine", function()
         fsm:forceState("idle")
         expect_near(0, fsm:getTimeInState(), 0.01)
     end)
-
     -- @covers LStateMachine:addState
+    it("addTransition does not error [LStateMachine:addState]", function()
+        local fsm = lurek.ai.newStateMachine()
+        fsm:addState("idle", {})
+        fsm:addState("walk", {})
+        expect_no_error(function()
+            fsm:addTransition("idle", "walk", nil, 0)
+        end)
+    end)
+
     -- @covers LStateMachine:addTransition
+    it("addTransition does not error [LStateMachine:addTransition]", function()
+        local fsm = lurek.ai.newStateMachine()
+        fsm:addState("idle", {})
+        fsm:addState("walk", {})
+        expect_no_error(function()
+            fsm:addTransition("idle", "walk", nil, 0)
+        end)
+    end)
+
     -- @covers lurek.ai.newStateMachine
-    it("addTransition does not error", function()
+    it("addTransition does not error [lurek.ai.newStateMachine]", function()
         local fsm = lurek.ai.newStateMachine()
         fsm:addState("idle", {})
         fsm:addState("walk", {})
@@ -639,9 +629,27 @@ describe("lurek.ai StateMachine", function()
     end)
 
     -- @covers LStateMachine:addState
+    it("addTransition with guard function [LStateMachine:addState]", function()
+        local fsm = lurek.ai.newStateMachine()
+        fsm:addState("idle", {})
+        fsm:addState("run", {})
+        expect_no_error(function()
+            fsm:addTransition("idle", "run", function() return true end, 1)
+        end)
+    end)
+
     -- @covers LStateMachine:addTransition
+    it("addTransition with guard function [LStateMachine:addTransition]", function()
+        local fsm = lurek.ai.newStateMachine()
+        fsm:addState("idle", {})
+        fsm:addState("run", {})
+        expect_no_error(function()
+            fsm:addTransition("idle", "run", function() return true end, 1)
+        end)
+    end)
+
     -- @covers lurek.ai.newStateMachine
-    it("addTransition with guard function", function()
+    it("addTransition with guard function [lurek.ai.newStateMachine]", function()
         local fsm = lurek.ai.newStateMachine()
         fsm:addState("idle", {})
         fsm:addState("run", {})
@@ -662,18 +670,32 @@ describe("lurek.ai BehaviorTree", function()
         local bt = lurek.ai.newBehaviorTree()
         expect_equal("LBehaviorTree", bt:type())
     end)
-
     -- @covers LBehaviorTree:getLastStatus
     -- @covers lurek.ai.newBehaviorTree
     it("getLastStatus returns success initially", function()
         local bt = lurek.ai.newBehaviorTree()
         expect_equal("success", bt:getLastStatus())
     end)
-
     -- @covers LBehaviorTree:setRoot
+    it("setRoot accepts a BTNode [LBehaviorTree:setRoot]", function()
+        local bt = lurek.ai.newBehaviorTree()
+        local seq = lurek.ai.newSequence()
+        expect_no_error(function()
+            bt:setRoot(seq)
+        end)
+    end)
+
     -- @covers lurek.ai.newBehaviorTree
+    it("setRoot accepts a BTNode [lurek.ai.newBehaviorTree]", function()
+        local bt = lurek.ai.newBehaviorTree()
+        local seq = lurek.ai.newSequence()
+        expect_no_error(function()
+            bt:setRoot(seq)
+        end)
+    end)
+
     -- @covers lurek.ai.newSequence
-    it("setRoot accepts a BTNode", function()
+    it("setRoot accepts a BTNode [lurek.ai.newSequence]", function()
         local bt = lurek.ai.newBehaviorTree()
         local seq = lurek.ai.newSequence()
         expect_no_error(function()
@@ -693,104 +715,88 @@ describe("lurek.ai BTNode", function()
         local n = lurek.ai.newSelector()
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newSequence
     it("newSequence returns BTNode type", function()
         local n = lurek.ai.newSequence()
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newParallel
     it("newParallel returns BTNode type", function()
         local n = lurek.ai.newParallel()
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newInverter
     it("newInverter returns BTNode type", function()
         local n = lurek.ai.newInverter()
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newRepeater
     it("newRepeater returns BTNode type", function()
         local n = lurek.ai.newRepeater()
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newSucceeder
     it("newSucceeder returns BTNode type", function()
         local n = lurek.ai.newSucceeder()
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newAction
     it("newAction returns BTNode type", function()
         local n = lurek.ai.newAction(function() return "success" end)
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newCondition
     it("newCondition returns BTNode type", function()
         local n = lurek.ai.newCondition(function() return true end)
         expect_equal("LBTNode", n:type())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newSelector
     it("getNodeType returns selector", function()
         expect_equal("selector", lurek.ai.newSelector():getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newSequence
     it("getNodeType returns sequence", function()
         expect_equal("sequence", lurek.ai.newSequence():getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newParallel
     it("getNodeType returns parallel", function()
         expect_equal("parallel", lurek.ai.newParallel():getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newInverter
     it("getNodeType returns inverter", function()
         expect_equal("inverter", lurek.ai.newInverter():getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newRepeater
     it("getNodeType returns repeater", function()
         expect_equal("repeater", lurek.ai.newRepeater():getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newSucceeder
     it("getNodeType returns succeeder", function()
         expect_equal("succeeder", lurek.ai.newSucceeder():getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newAction
     it("getNodeType returns action", function()
         expect_equal("action", lurek.ai.newAction(function() end):getNodeType())
     end)
-
     -- @covers LBTNode:getNodeType
     -- @covers lurek.ai.newCondition
     it("getNodeType returns condition", function()
         expect_equal("condition", lurek.ai.newCondition(function() end):getNodeType())
     end)
-
     -- @covers LBTNode:addChild
     -- @covers LBTNode:getChildCount
     -- @covers lurek.ai.newAction
@@ -802,7 +808,6 @@ describe("lurek.ai BTNode", function()
         sel:addChild(act)
         expect_equal(1, sel:getChildCount())
     end)
-
     -- @covers LBTNode:addChild
     -- @covers LBTNode:getChildCount
     -- @covers lurek.ai.newAction
@@ -815,7 +820,6 @@ describe("lurek.ai BTNode", function()
         seq:addChild(a2)
         expect_equal(2, seq:getChildCount())
     end)
-
     -- @covers LBTNode:addChild
     -- @covers LBTNode:getChildCount
     -- @covers lurek.ai.newAction
@@ -825,7 +829,6 @@ describe("lurek.ai BTNode", function()
         par:addChild(lurek.ai.newAction(function() end))
         expect_equal(1, par:getChildCount())
     end)
-
     -- @covers LBTNode:addChild
     -- @covers lurek.ai.newAction
     it("addChild on Action errors", function()
@@ -835,7 +838,6 @@ describe("lurek.ai BTNode", function()
             act:addChild(child)
         end, "addChild on Action should error")
     end)
-
     -- @covers LBTNode:addChild
     -- @covers lurek.ai.newAction
     -- @covers lurek.ai.newCondition
@@ -846,11 +848,26 @@ describe("lurek.ai BTNode", function()
             cond:addChild(child)
         end, "addChild on Condition should error")
     end)
-
     -- @covers LBTNode:setChild
+    it("setChild on Inverter [LBTNode:setChild]", function()
+        local inv = lurek.ai.newInverter()
+        local act = lurek.ai.newAction(function() end)
+        expect_no_error(function()
+            inv:setChild(act)
+        end)
+    end)
+
     -- @covers lurek.ai.newAction
+    it("setChild on Inverter [lurek.ai.newAction]", function()
+        local inv = lurek.ai.newInverter()
+        local act = lurek.ai.newAction(function() end)
+        expect_no_error(function()
+            inv:setChild(act)
+        end)
+    end)
+
     -- @covers lurek.ai.newInverter
-    it("setChild on Inverter", function()
+    it("setChild on Inverter [lurek.ai.newInverter]", function()
         local inv = lurek.ai.newInverter()
         local act = lurek.ai.newAction(function() end)
         expect_no_error(function()
@@ -859,9 +876,25 @@ describe("lurek.ai BTNode", function()
     end)
 
     -- @covers LBTNode:setChild
+    it("setChild on Repeater [LBTNode:setChild]", function()
+        local rep = lurek.ai.newRepeater(3)
+        local act = lurek.ai.newAction(function() end)
+        expect_no_error(function()
+            rep:setChild(act)
+        end)
+    end)
+
     -- @covers lurek.ai.newAction
+    it("setChild on Repeater [lurek.ai.newAction]", function()
+        local rep = lurek.ai.newRepeater(3)
+        local act = lurek.ai.newAction(function() end)
+        expect_no_error(function()
+            rep:setChild(act)
+        end)
+    end)
+
     -- @covers lurek.ai.newRepeater
-    it("setChild on Repeater", function()
+    it("setChild on Repeater [lurek.ai.newRepeater]", function()
         local rep = lurek.ai.newRepeater(3)
         local act = lurek.ai.newAction(function() end)
         expect_no_error(function()
@@ -870,9 +903,25 @@ describe("lurek.ai BTNode", function()
     end)
 
     -- @covers LBTNode:setChild
+    it("setChild on Succeeder [LBTNode:setChild]", function()
+        local suc = lurek.ai.newSucceeder()
+        local act = lurek.ai.newAction(function() end)
+        expect_no_error(function()
+            suc:setChild(act)
+        end)
+    end)
+
     -- @covers lurek.ai.newAction
+    it("setChild on Succeeder [lurek.ai.newAction]", function()
+        local suc = lurek.ai.newSucceeder()
+        local act = lurek.ai.newAction(function() end)
+        expect_no_error(function()
+            suc:setChild(act)
+        end)
+    end)
+
     -- @covers lurek.ai.newSucceeder
-    it("setChild on Succeeder", function()
+    it("setChild on Succeeder [lurek.ai.newSucceeder]", function()
         local suc = lurek.ai.newSucceeder()
         local act = lurek.ai.newAction(function() end)
         expect_no_error(function()
@@ -889,17 +938,22 @@ describe("lurek.ai BTNode", function()
         rep:setCount(10)
         expect_equal(10, rep:getCount())
     end)
-
     -- @covers LBTNode:getCount
     -- @covers lurek.ai.newSelector
     it("getCount on non-Repeater returns 0", function()
         local sel = lurek.ai.newSelector()
         expect_equal(0, sel:getCount())
     end)
-
     -- @covers LBTNode:setSuccessPolicy
+    it("setSuccessPolicy on Parallel does not error [LBTNode:setSuccessPolicy]", function()
+        local par = lurek.ai.newParallel()
+        expect_no_error(function()
+            par:setSuccessPolicy("require_all")
+        end)
+    end)
+
     -- @covers lurek.ai.newParallel
-    it("setSuccessPolicy on Parallel does not error", function()
+    it("setSuccessPolicy on Parallel does not error [lurek.ai.newParallel]", function()
         local par = lurek.ai.newParallel()
         expect_no_error(function()
             par:setSuccessPolicy("require_all")
@@ -907,8 +961,15 @@ describe("lurek.ai BTNode", function()
     end)
 
     -- @covers LBTNode:setFailurePolicy
+    it("setFailurePolicy on Parallel does not error [LBTNode:setFailurePolicy]", function()
+        local par = lurek.ai.newParallel()
+        expect_no_error(function()
+            par:setFailurePolicy("require_all")
+        end)
+    end)
+
     -- @covers lurek.ai.newParallel
-    it("setFailurePolicy on Parallel does not error", function()
+    it("setFailurePolicy on Parallel does not error [lurek.ai.newParallel]", function()
         local par = lurek.ai.newParallel()
         expect_no_error(function()
             par:setFailurePolicy("require_all")
@@ -935,7 +996,6 @@ describe("lurek.ai SteeringManager", function()
         local sm = lurek.ai.newSteeringManager()
         expect_equal("LSteeringManager", sm:type())
     end)
-
     -- @covers LSteeringManager:addSeek
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -945,7 +1005,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addSeek(100, 200)
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addFlee
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -954,7 +1013,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addFlee(0, 0)
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addArrive
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -963,7 +1021,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addArrive(50, 50)
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addWander
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -972,7 +1029,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addWander()
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addPursue
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -981,7 +1037,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addPursue("target")
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addEvade
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -990,7 +1045,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addEvade("threat")
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addFlock
     -- @covers LSteeringManager:getBehaviorCount
     -- @covers lurek.ai.newSteeringManager
@@ -999,7 +1053,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addFlock()
         expect_equal(1, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:addFlee
     -- @covers LSteeringManager:addSeek
     -- @covers LSteeringManager:addWander
@@ -1012,7 +1065,6 @@ describe("lurek.ai SteeringManager", function()
         sm:addWander()
         expect_equal(3, sm:getBehaviorCount())
     end)
-
     -- @covers LSteeringManager:getCombineMode
     -- @covers LSteeringManager:setCombineMode
     -- @covers lurek.ai.newSteeringManager
@@ -1023,7 +1075,6 @@ describe("lurek.ai SteeringManager", function()
         sm:setCombineMode("weighted")
         expect_equal("weighted", sm:getCombineMode())
     end)
-
     -- @covers LSteeringManager:addSeek
     -- @covers LSteeringManager:calculate
     -- @covers lurek.ai.newSteeringManager
@@ -1034,7 +1085,6 @@ describe("lurek.ai SteeringManager", function()
         expect_type("number", fx)
         expect_type("number", fy)
     end)
-
     -- @covers LSteeringManager:addSeek
     -- @covers LSteeringManager:calculate
     -- @covers LSteeringManager:getLastSteering
@@ -1047,11 +1097,26 @@ describe("lurek.ai SteeringManager", function()
         expect_type("number", fx)
         expect_type("number", fy)
     end)
-
     -- @covers LSteeringManager:addSeek
+    it("addSeek with custom weight [LSteeringManager:addSeek]", function()
+        local sm = lurek.ai.newSteeringManager()
+        expect_no_error(function()
+            sm:addSeek(100, 100, 2.0)
+        end)
+        expect_equal(1, sm:getBehaviorCount())
+    end)
+
     -- @covers LSteeringManager:getBehaviorCount
+    it("addSeek with custom weight [LSteeringManager:getBehaviorCount]", function()
+        local sm = lurek.ai.newSteeringManager()
+        expect_no_error(function()
+            sm:addSeek(100, 100, 2.0)
+        end)
+        expect_equal(1, sm:getBehaviorCount())
+    end)
+
     -- @covers lurek.ai.newSteeringManager
-    it("addSeek with custom weight", function()
+    it("addSeek with custom weight [lurek.ai.newSteeringManager]", function()
         local sm = lurek.ai.newSteeringManager()
         expect_no_error(function()
             sm:addSeek(100, 100, 2.0)
@@ -1071,7 +1136,6 @@ describe("lurek.ai SteeringManager", function()
         sm:setPath(path, 8.0, 1.0)
         expect_true(sm:hasPath())
     end)
-
     -- @covers LSteeringManager:clearPath
     -- @covers LSteeringManager:hasPath
     -- @covers LSteeringManager:setPath
@@ -1083,7 +1147,6 @@ describe("lurek.ai SteeringManager", function()
         sm:clearPath()
         expect_false(sm:hasPath())
     end)
-
     -- @covers LSteeringManager:getPathProgress
     -- @covers LSteeringManager:setPath
     -- @covers lurek.ai.newSteeringManager
@@ -1094,7 +1157,6 @@ describe("lurek.ai SteeringManager", function()
         expect_equal(1, idx)
         expect_equal(2, total)
     end)
-
     -- @covers LSteeringManager:calculate
     -- @covers LSteeringManager:getPathProgress
     -- @covers LSteeringManager:setPath
@@ -1107,7 +1169,6 @@ describe("lurek.ai SteeringManager", function()
         expect_equal(2, total)
         expect_equal(2, idx)
     end)
-
     -- @covers LSteeringManager:calculate
     -- @covers LSteeringManager:hasPath
     -- @covers LSteeringManager:setPath
@@ -1132,7 +1193,6 @@ describe("lurek.ai QLearner", function()
         local q = lurek.ai.newQLearner(4, 3)
         expect_equal("LQLearner", q:type())
     end)
-
     -- @covers LQLearner:getActionCount
     -- @covers LQLearner:getStateCount
     -- @covers lurek.ai.newQLearner
@@ -1141,7 +1201,6 @@ describe("lurek.ai QLearner", function()
         expect_equal(4, q:getStateCount())
         expect_equal(3, q:getActionCount())
     end)
-
     -- @covers LQLearner:chooseAction
     -- @covers lurek.ai.newQLearner
     it("chooseAction returns 1-based action", function()
@@ -1149,7 +1208,6 @@ describe("lurek.ai QLearner", function()
         local a = q:chooseAction(1)
         expect_true(a >= 1 and a <= 3, "action in range")
     end)
-
     -- @covers LQLearner:bestAction
     -- @covers lurek.ai.newQLearner
     it("bestAction returns 1-based action", function()
@@ -1157,7 +1215,6 @@ describe("lurek.ai QLearner", function()
         local a = q:bestAction(1)
         expect_true(a >= 1 and a <= 3, "best action in range")
     end)
-
     -- @covers LQLearner:getQValue
     -- @covers LQLearner:setQValue
     -- @covers lurek.ai.newQLearner
@@ -1166,7 +1223,6 @@ describe("lurek.ai QLearner", function()
         q:setQValue(1, 2, 5.0)
         expect_near(5.0, q:getQValue(1, 2), 0.001)
     end)
-
     -- @covers LQLearner:getQValue
     -- @covers LQLearner:learn
     -- @covers LQLearner:setExplorationRate
@@ -1180,7 +1236,6 @@ describe("lurek.ai QLearner", function()
         local after = q:getQValue(1, 1)
         expect_true(after > 0, "Q value should increase after positive reward")
     end)
-
     -- @covers LQLearner:getLearningRate
     -- @covers LQLearner:setLearningRate
     -- @covers lurek.ai.newQLearner
@@ -1189,7 +1244,6 @@ describe("lurek.ai QLearner", function()
         q:setLearningRate(0.5)
         expect_near(0.5, q:getLearningRate(), 0.001)
     end)
-
     -- @covers LQLearner:getDiscountFactor
     -- @covers LQLearner:setDiscountFactor
     -- @covers lurek.ai.newQLearner
@@ -1198,7 +1252,6 @@ describe("lurek.ai QLearner", function()
         q:setDiscountFactor(0.8)
         expect_near(0.8, q:getDiscountFactor(), 0.001)
     end)
-
     -- @covers LQLearner:getExplorationRate
     -- @covers LQLearner:setExplorationRate
     -- @covers lurek.ai.newQLearner
@@ -1207,7 +1260,6 @@ describe("lurek.ai QLearner", function()
         q:setExplorationRate(0.1)
         expect_near(0.1, q:getExplorationRate(), 0.001)
     end)
-
     -- @covers LQLearner:getExplorationDecay
     -- @covers LQLearner:setExplorationDecay
     -- @covers lurek.ai.newQLearner
@@ -1216,7 +1268,6 @@ describe("lurek.ai QLearner", function()
         q:setExplorationDecay(0.99)
         expect_near(0.99, q:getExplorationDecay(), 0.001)
     end)
-
     -- @covers LQLearner:endEpisode
     -- @covers LQLearner:getEpisodeCount
     -- @covers lurek.ai.newQLearner
@@ -1228,7 +1279,6 @@ describe("lurek.ai QLearner", function()
         q:endEpisode()
         expect_equal(2, q:getEpisodeCount())
     end)
-
     -- @covers LQLearner:deserialize
     -- @covers LQLearner:getQValue
     -- @covers LQLearner:serialize
@@ -1246,7 +1296,6 @@ describe("lurek.ai QLearner", function()
         expect_near(3.14, q2:getQValue(1, 1), 0.001)
         expect_near(2.71, q2:getQValue(2, 2), 0.001)
     end)
-
     -- @covers LQLearner:bestAction
     -- @covers LQLearner:setQValue
     -- @covers lurek.ai.newQLearner
@@ -1258,7 +1307,6 @@ describe("lurek.ai QLearner", function()
         local best = q:bestAction(1)
         expect_equal(2, best, "action 2 has highest Q")
     end)
-
     -- @covers LQLearner:getQValue
     -- @covers lurek.ai.newQLearner
     it("Q values start at zero", function()
@@ -1279,7 +1327,6 @@ describe("lurek.ai UtilityAI", function()
         local u = lurek.ai.newUtilityAI()
         expect_equal("LUtilityAI", u:type())
     end)
-
     -- @covers LUtilityAI:addAction
     -- @covers LUtilityAI:getActionCount
     -- @covers lurek.ai.newUtilityAI
@@ -1289,7 +1336,6 @@ describe("lurek.ai UtilityAI", function()
         u:addAction("eat", function() return 0.5 end)
         expect_equal(1, u:getActionCount())
     end)
-
     -- @covers LUtilityAI:addAction
     -- @covers LUtilityAI:evaluate
     -- @covers lurek.ai.newUtilityAI
@@ -1301,7 +1347,6 @@ describe("lurek.ai UtilityAI", function()
         local best = u:evaluate()
         expect_equal("sleep", best)
     end)
-
     -- @covers LUtilityAI:evaluate
     -- @covers lurek.ai.newUtilityAI
     it("evaluate returns nil with no actions", function()
@@ -1309,7 +1354,6 @@ describe("lurek.ai UtilityAI", function()
         local result = u:evaluate()
         expect_nil(result)
     end)
-
     -- @covers LUtilityAI:addAction
     -- @covers LUtilityAI:evaluate
     -- @covers LUtilityAI:getLastAction
@@ -1320,7 +1364,6 @@ describe("lurek.ai UtilityAI", function()
         u:evaluate()
         expect_equal("patrol", u:getLastAction())
     end)
-
     -- @covers LUtilityAI:addAction
     -- @covers LUtilityAI:getLastAction
     -- @covers lurek.ai.newUtilityAI
@@ -1329,11 +1372,26 @@ describe("lurek.ai UtilityAI", function()
         u:addAction("idle", function() return 1.0 end)
         expect_nil(u:getLastAction())
     end)
-
     -- @covers LUtilityAI:addAction
+    it("addAction with weight parameter [LUtilityAI:addAction]", function()
+        local u = lurek.ai.newUtilityAI()
+        expect_no_error(function()
+            u:addAction("run", function() return 0.5 end, 2.0)
+        end)
+        expect_equal(1, u:getActionCount())
+    end)
+
     -- @covers LUtilityAI:getActionCount
+    it("addAction with weight parameter [LUtilityAI:getActionCount]", function()
+        local u = lurek.ai.newUtilityAI()
+        expect_no_error(function()
+            u:addAction("run", function() return 0.5 end, 2.0)
+        end)
+        expect_equal(1, u:getActionCount())
+    end)
+
     -- @covers lurek.ai.newUtilityAI
-    it("addAction with weight parameter", function()
+    it("addAction with weight parameter [lurek.ai.newUtilityAI]", function()
         local u = lurek.ai.newUtilityAI()
         expect_no_error(function()
             u:addAction("run", function() return 0.5 end, 2.0)
@@ -1355,7 +1413,6 @@ describe("lurek.ai DialogueAI", function()
         expect_equal("LDialogueAI", d:type())
         expect_true(d:typeOf("LDialogueAI"))
     end)
-
     -- @covers LDialogueAI:addTopic
     -- @covers LDialogueAI:getTopicCount
     -- @covers lurek.ai.newDialogueAI
@@ -1365,7 +1422,6 @@ describe("lurek.ai DialogueAI", function()
         d:addTopic("smalltalk", 0.5)
         expect_equal(1, d:getTopicCount())
     end)
-
     -- @covers LDialogueAI:addBranch
     -- @covers LDialogueAI:addTopic
     -- @covers lurek.ai.newDialogueAI
@@ -1375,7 +1431,6 @@ describe("lurek.ai DialogueAI", function()
         local ok = d:addBranch("quest", "offer", 0.7)
         expect_true(ok)
     end)
-
     -- @covers LDialogueAI:addTopic
     -- @covers LDialogueAI:selectTopic
     -- @covers LDialogueAI:setBTStatus
@@ -1393,7 +1448,6 @@ describe("lurek.ai DialogueAI", function()
 
         expect_equal("combat", d:selectTopic())
     end)
-
     -- @covers LDialogueAI:addBranch
     -- @covers LDialogueAI:addTopic
     -- @covers LDialogueAI:clearUtilityScores
@@ -1427,7 +1481,6 @@ describe("lurek.ai GOAPPlanner", function()
         local g = lurek.ai.newGOAPPlanner()
         expect_equal("LGOAPPlanner", g:type())
     end)
-
     -- @covers LGOAPPlanner:addAction
     -- @covers LGOAPPlanner:getActionCount
     -- @covers lurek.ai.newGOAPPlanner
@@ -1437,11 +1490,26 @@ describe("lurek.ai GOAPPlanner", function()
         g:addAction("gather_wood", 1.0)
         expect_equal(1, g:getActionCount())
     end)
-
     -- @covers LGOAPPlanner:addAction
+    it("setPrecondition does not error [LGOAPPlanner:addAction]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        g:addAction("chop", 1.0)
+        expect_no_error(function()
+            g:setPrecondition("chop", "has_axe", true)
+        end)
+    end)
+
     -- @covers LGOAPPlanner:setPrecondition
+    it("setPrecondition does not error [LGOAPPlanner:setPrecondition]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        g:addAction("chop", 1.0)
+        expect_no_error(function()
+            g:setPrecondition("chop", "has_axe", true)
+        end)
+    end)
+
     -- @covers lurek.ai.newGOAPPlanner
-    it("setPrecondition does not error", function()
+    it("setPrecondition does not error [lurek.ai.newGOAPPlanner]", function()
         local g = lurek.ai.newGOAPPlanner()
         g:addAction("chop", 1.0)
         expect_no_error(function()
@@ -1450,9 +1518,25 @@ describe("lurek.ai GOAPPlanner", function()
     end)
 
     -- @covers LGOAPPlanner:addAction
+    it("setEffect does not error [LGOAPPlanner:addAction]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        g:addAction("chop", 1.0)
+        expect_no_error(function()
+            g:setEffect("chop", "has_wood", true)
+        end)
+    end)
+
     -- @covers LGOAPPlanner:setEffect
+    it("setEffect does not error [LGOAPPlanner:setEffect]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        g:addAction("chop", 1.0)
+        expect_no_error(function()
+            g:setEffect("chop", "has_wood", true)
+        end)
+    end)
+
     -- @covers lurek.ai.newGOAPPlanner
-    it("setEffect does not error", function()
+    it("setEffect does not error [lurek.ai.newGOAPPlanner]", function()
         local g = lurek.ai.newGOAPPlanner()
         g:addAction("chop", 1.0)
         expect_no_error(function()
@@ -1469,11 +1553,26 @@ describe("lurek.ai GOAPPlanner", function()
         g:addGoal("build_house", 1.0)
         expect_equal(1, g:getGoalCount())
     end)
-
     -- @covers LGOAPPlanner:addGoal
+    it("setGoalState does not error [LGOAPPlanner:addGoal]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        g:addGoal("build_house", 1.0)
+        expect_no_error(function()
+            g:setGoalState("build_house", "has_house", true)
+        end)
+    end)
+
     -- @covers LGOAPPlanner:setGoalState
+    it("setGoalState does not error [LGOAPPlanner:setGoalState]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        g:addGoal("build_house", 1.0)
+        expect_no_error(function()
+            g:setGoalState("build_house", "has_house", true)
+        end)
+    end)
+
     -- @covers lurek.ai.newGOAPPlanner
-    it("setGoalState does not error", function()
+    it("setGoalState does not error [lurek.ai.newGOAPPlanner]", function()
         local g = lurek.ai.newGOAPPlanner()
         g:addGoal("build_house", 1.0)
         expect_no_error(function()
@@ -1504,7 +1603,6 @@ describe("lurek.ai GOAPPlanner", function()
         expect_type("table", plan)
         expect_true(#plan > 0, "plan should have steps")
     end)
-
     -- @covers LGOAPPlanner:addAction
     -- @covers LGOAPPlanner:addGoal
     -- @covers LGOAPPlanner:plan
@@ -1523,10 +1621,16 @@ describe("lurek.ai GOAPPlanner", function()
         expect_type("table", plan)
         expect_equal(0, #plan)
     end)
-
     -- @covers LGOAPPlanner:addAction
+    it("addAction with callback [LGOAPPlanner:addAction]", function()
+        local g = lurek.ai.newGOAPPlanner()
+        expect_no_error(function()
+            g:addAction("move", 1.0, function() end)
+        end)
+    end)
+
     -- @covers lurek.ai.newGOAPPlanner
-    it("addAction with callback", function()
+    it("addAction with callback [lurek.ai.newGOAPPlanner]", function()
         local g = lurek.ai.newGOAPPlanner()
         expect_no_error(function()
             g:addAction("move", 1.0, function() end)
@@ -1545,7 +1649,6 @@ describe("lurek.ai InfluenceMap", function()
         local im = lurek.ai.newInfluenceMap(10, 10, 32)
         expect_equal("LInfluenceMap", im:type())
     end)
-
     -- @covers LInfluenceMap:getCellSize
     -- @covers LInfluenceMap:getHeight
     -- @covers LInfluenceMap:getWidth
@@ -1556,7 +1659,6 @@ describe("lurek.ai InfluenceMap", function()
         expect_equal(6, im:getHeight())
         expect_near(16, im:getCellSize(), 0.01)
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:hasLayer
     -- @covers lurek.ai.newInfluenceMap
@@ -1566,7 +1668,6 @@ describe("lurek.ai InfluenceMap", function()
         im:addLayer("threat")
         expect_true(im:hasLayer("threat"))
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:getInfluence
     -- @covers LInfluenceMap:setInfluence
@@ -1577,12 +1678,38 @@ describe("lurek.ai InfluenceMap", function()
         im:setInfluence("danger", 2, 3, 0.75)
         expect_near(0.75, im:getInfluence("danger", 2, 3), 0.01)
     end)
-
     -- @covers LInfluenceMap:addLayer
+    it("propagate does not error [LInfluenceMap:addLayer]", function()
+        local im = lurek.ai.newInfluenceMap(5, 5, 10)
+        im:addLayer("heat")
+        im:setInfluence("heat", 3, 3, 1.0)
+        expect_no_error(function()
+            im:propagate("heat", 0.5)
+        end)
+    end)
+
     -- @covers LInfluenceMap:propagate
+    it("propagate does not error [LInfluenceMap:propagate]", function()
+        local im = lurek.ai.newInfluenceMap(5, 5, 10)
+        im:addLayer("heat")
+        im:setInfluence("heat", 3, 3, 1.0)
+        expect_no_error(function()
+            im:propagate("heat", 0.5)
+        end)
+    end)
+
     -- @covers LInfluenceMap:setInfluence
+    it("propagate does not error [LInfluenceMap:setInfluence]", function()
+        local im = lurek.ai.newInfluenceMap(5, 5, 10)
+        im:addLayer("heat")
+        im:setInfluence("heat", 3, 3, 1.0)
+        expect_no_error(function()
+            im:propagate("heat", 0.5)
+        end)
+    end)
+
     -- @covers lurek.ai.newInfluenceMap
-    it("propagate does not error", function()
+    it("propagate does not error [lurek.ai.newInfluenceMap]", function()
         local im = lurek.ai.newInfluenceMap(5, 5, 10)
         im:addLayer("heat")
         im:setInfluence("heat", 3, 3, 1.0)
@@ -1604,7 +1731,6 @@ describe("lurek.ai InfluenceMap", function()
         local val = im:getInfluence("scent", 1, 1)
         expect_near(0.5, val, 0.01)
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:clearLayer
     -- @covers LInfluenceMap:getInfluence
@@ -1619,7 +1745,6 @@ describe("lurek.ai InfluenceMap", function()
         expect_near(0, im:getInfluence("fog", 1, 1), 0.01)
         expect_near(0, im:getInfluence("fog", 2, 2), 0.01)
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:clearAll
     -- @covers LInfluenceMap:getInfluence
@@ -1635,7 +1760,6 @@ describe("lurek.ai InfluenceMap", function()
         expect_near(0, im:getInfluence("a", 1, 1), 0.01)
         expect_near(0, im:getInfluence("b", 1, 1), 0.01)
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:getMaxPosition
     -- @covers LInfluenceMap:setInfluence
@@ -1648,7 +1772,6 @@ describe("lurek.ai InfluenceMap", function()
         expect_type("number", mx)
         expect_type("number", my)
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:getMinPosition
     -- @covers LInfluenceMap:setInfluence
@@ -1661,7 +1784,6 @@ describe("lurek.ai InfluenceMap", function()
         expect_type("number", mx)
         expect_type("number", my)
     end)
-
     -- @covers LInfluenceMap:addLayer
     -- @covers LInfluenceMap:queryRect
     -- @covers LInfluenceMap:setInfluence
@@ -1673,13 +1795,72 @@ describe("lurek.ai InfluenceMap", function()
         local sum = im:queryRect("zone", 0, 0, 50, 50)
         expect_type("number", sum)
     end)
-
     -- @covers LInfluenceMap:addLayer
+    it("blend combines two layers into destination [LInfluenceMap:addLayer]", function()
+        local im = lurek.ai.newInfluenceMap(3, 3, 10)
+        im:addLayer("a")
+        im:addLayer("b")
+        im:addLayer("result")
+        im:setInfluence("a", 1, 1, 1.0)
+        im:setInfluence("b", 1, 1, 0.5)
+        expect_no_error(function()
+            im:blend("a", 1.0, "b", 1.0, "result")
+        end)
+        -- result should be the weighted blend
+        local val = im:getInfluence("result", 1, 1)
+        expect_true(val > 0, "blended value should be positive")
+    end)
+
     -- @covers LInfluenceMap:blend
+    it("blend combines two layers into destination [LInfluenceMap:blend]", function()
+        local im = lurek.ai.newInfluenceMap(3, 3, 10)
+        im:addLayer("a")
+        im:addLayer("b")
+        im:addLayer("result")
+        im:setInfluence("a", 1, 1, 1.0)
+        im:setInfluence("b", 1, 1, 0.5)
+        expect_no_error(function()
+            im:blend("a", 1.0, "b", 1.0, "result")
+        end)
+        -- result should be the weighted blend
+        local val = im:getInfluence("result", 1, 1)
+        expect_true(val > 0, "blended value should be positive")
+    end)
+
     -- @covers LInfluenceMap:getInfluence
+    it("blend combines two layers into destination [LInfluenceMap:getInfluence]", function()
+        local im = lurek.ai.newInfluenceMap(3, 3, 10)
+        im:addLayer("a")
+        im:addLayer("b")
+        im:addLayer("result")
+        im:setInfluence("a", 1, 1, 1.0)
+        im:setInfluence("b", 1, 1, 0.5)
+        expect_no_error(function()
+            im:blend("a", 1.0, "b", 1.0, "result")
+        end)
+        -- result should be the weighted blend
+        local val = im:getInfluence("result", 1, 1)
+        expect_true(val > 0, "blended value should be positive")
+    end)
+
     -- @covers LInfluenceMap:setInfluence
+    it("blend combines two layers into destination [LInfluenceMap:setInfluence]", function()
+        local im = lurek.ai.newInfluenceMap(3, 3, 10)
+        im:addLayer("a")
+        im:addLayer("b")
+        im:addLayer("result")
+        im:setInfluence("a", 1, 1, 1.0)
+        im:setInfluence("b", 1, 1, 0.5)
+        expect_no_error(function()
+            im:blend("a", 1.0, "b", 1.0, "result")
+        end)
+        -- result should be the weighted blend
+        local val = im:getInfluence("result", 1, 1)
+        expect_true(val > 0, "blended value should be positive")
+    end)
+
     -- @covers lurek.ai.newInfluenceMap
-    it("blend combines two layers into destination", function()
+    it("blend combines two layers into destination [lurek.ai.newInfluenceMap]", function()
         local im = lurek.ai.newInfluenceMap(3, 3, 10)
         im:addLayer("a")
         im:addLayer("b")
@@ -1695,9 +1876,29 @@ describe("lurek.ai InfluenceMap", function()
     end)
 
     -- @covers LInfluenceMap:addLayer
+    it("stampInfluence applies radial influence to a layer [LInfluenceMap:addLayer]", function()
+        local im = lurek.ai.newInfluenceMap(5, 5, 10)
+        im:addLayer("heat")
+        expect_no_error(function()
+            im:stampInfluence("heat", 25.0, 25.0, 15.0, 1.0)
+        end)
+        local val = im:getInfluence("heat", 2, 2)
+        expect_type("number", val)
+    end)
+
     -- @covers LInfluenceMap:stampInfluence
+    it("stampInfluence applies radial influence to a layer [LInfluenceMap:stampInfluence]", function()
+        local im = lurek.ai.newInfluenceMap(5, 5, 10)
+        im:addLayer("heat")
+        expect_no_error(function()
+            im:stampInfluence("heat", 25.0, 25.0, 15.0, 1.0)
+        end)
+        local val = im:getInfluence("heat", 2, 2)
+        expect_type("number", val)
+    end)
+
     -- @covers lurek.ai.newInfluenceMap
-    it("stampInfluence applies radial influence to a layer", function()
+    it("stampInfluence applies radial influence to a layer [lurek.ai.newInfluenceMap]", function()
         local im = lurek.ai.newInfluenceMap(5, 5, 10)
         im:addLayer("heat")
         expect_no_error(function()
@@ -1719,14 +1920,12 @@ describe("lurek.ai Squad", function()
         local sq = lurek.ai.newSquad("alpha")
         expect_equal("LSquad", sq:type())
     end)
-
     -- @covers LSquad:getName
     -- @covers lurek.ai.newSquad
     it("getName returns squad name", function()
         local sq = lurek.ai.newSquad("bravo")
         expect_equal("bravo", sq:getName())
     end)
-
     -- @covers LSquad:addMember
     -- @covers LSquad:getMemberCount
     -- @covers lurek.ai.newSquad
@@ -1738,7 +1937,6 @@ describe("lurek.ai Squad", function()
         sq:addMember("soldier2")
         expect_equal(2, sq:getMemberCount())
     end)
-
     -- @covers LSquad:addMember
     -- @covers LSquad:getMemberCount
     -- @covers LSquad:removeMember
@@ -1750,7 +1948,6 @@ describe("lurek.ai Squad", function()
         sq:removeMember("a")
         expect_equal(1, sq:getMemberCount())
     end)
-
     -- @covers LSquad:addMember
     -- @covers LSquad:getMembers
     -- @covers lurek.ai.newSquad
@@ -1762,7 +1959,6 @@ describe("lurek.ai Squad", function()
         expect_type("table", members)
         expect_equal(2, #members)
     end)
-
     -- @covers LSquad:addMember
     -- @covers LSquad:getLeader
     -- @covers LSquad:setLeader
@@ -1773,14 +1969,12 @@ describe("lurek.ai Squad", function()
         sq:setLeader("leader1")
         expect_equal("leader1", sq:getLeader())
     end)
-
     -- @covers LSquad:getLeader
     -- @covers lurek.ai.newSquad
     it("getLeader returns nil by default", function()
         local sq = lurek.ai.newSquad("team")
         expect_nil(sq:getLeader())
     end)
-
     -- @covers LSquad:getFormation
     -- @covers LSquad:getFormationSpacing
     -- @covers LSquad:setFormation
@@ -1791,7 +1985,6 @@ describe("lurek.ai Squad", function()
         expect_equal("wedge", sq:getFormation())
         expect_near(50, sq:getFormationSpacing(), 0.01)
     end)
-
     -- @covers LSquad:addMember
     -- @covers LSquad:getFormationPosition
     -- @covers lurek.ai.newSquad
@@ -1803,7 +1996,6 @@ describe("lurek.ai Squad", function()
         expect_type("number", x)
         expect_type("number", y)
     end)
-
     -- @covers LSquad:getBlackboard
     -- @covers lurek.ai.newSquad
     it("getBlackboard returns Blackboard", function()
@@ -1825,21 +2017,18 @@ describe("lurek.ai CommandQueue", function()
         local cq = lurek.ai.newCommandQueue()
         expect_equal("LCommandQueue", cq:type())
     end)
-
     -- @covers LCommandQueue:isEmpty
     -- @covers lurek.ai.newCommandQueue
     it("isEmpty returns true initially", function()
         local cq = lurek.ai.newCommandQueue()
         expect_true(cq:isEmpty())
     end)
-
     -- @covers LCommandQueue:getCount
     -- @covers lurek.ai.newCommandQueue
     it("getCount returns 0 initially", function()
         local cq = lurek.ai.newCommandQueue()
         expect_equal(0, cq:getCount())
     end)
-
     -- @covers LCommandQueue:enqueue
     -- @covers LCommandQueue:getCount
     -- @covers LCommandQueue:isEmpty
@@ -1850,7 +2039,6 @@ describe("lurek.ai CommandQueue", function()
         expect_equal(1, cq:getCount())
         expect_false(cq:isEmpty())
     end)
-
     -- @covers LCommandQueue:enqueue
     -- @covers LCommandQueue:getCurrentType
     -- @covers lurek.ai.newCommandQueue
@@ -1859,14 +2047,12 @@ describe("lurek.ai CommandQueue", function()
         cq:enqueue("attack", function() end)
         expect_equal("attack", cq:getCurrentType())
     end)
-
     -- @covers LCommandQueue:getCurrentType
     -- @covers lurek.ai.newCommandQueue
     it("getCurrentType returns nil when empty", function()
         local cq = lurek.ai.newCommandQueue()
         expect_nil(cq:getCurrentType())
     end)
-
     -- @covers LCommandQueue:cancelCurrent
     -- @covers LCommandQueue:enqueue
     -- @covers LCommandQueue:getCount
@@ -1878,7 +2064,6 @@ describe("lurek.ai CommandQueue", function()
         cq:cancelCurrent()
         expect_equal(1, cq:getCount())
     end)
-
     -- @covers LCommandQueue:clear
     -- @covers LCommandQueue:enqueue
     -- @covers LCommandQueue:getCount
@@ -1893,7 +2078,6 @@ describe("lurek.ai CommandQueue", function()
         expect_equal(0, cq:getCount())
         expect_true(cq:isEmpty())
     end)
-
     -- @covers LCommandQueue:enqueue
     -- @covers LCommandQueue:getCurrentType
     -- @covers LCommandQueue:pushFront
@@ -1904,7 +2088,6 @@ describe("lurek.ai CommandQueue", function()
         cq:pushFront("first", function() end)
         expect_equal("first", cq:getCurrentType())
     end)
-
     -- @covers LCommandQueue:enqueue
     -- @covers LCommandQueue:getCount
     -- @covers LCommandQueue:getCurrentType
@@ -1918,11 +2101,36 @@ describe("lurek.ai CommandQueue", function()
         expect_equal(1, cq:getCount())
         expect_equal("only", cq:getCurrentType())
     end)
-
     -- @covers LCommandQueue:enqueue
+    it("enqueue with options table [LCommandQueue:enqueue]", function()
+        local cq = lurek.ai.newCommandQueue()
+        expect_no_error(function()
+            cq:enqueue("move", function() end, {
+                targetX = 100,
+                targetY = 200,
+                priority = 5,
+                interruptible = false,
+            })
+        end)
+        expect_equal(1, cq:getCount())
+    end)
+
     -- @covers LCommandQueue:getCount
+    it("enqueue with options table [LCommandQueue:getCount]", function()
+        local cq = lurek.ai.newCommandQueue()
+        expect_no_error(function()
+            cq:enqueue("move", function() end, {
+                targetX = 100,
+                targetY = 200,
+                priority = 5,
+                interruptible = false,
+            })
+        end)
+        expect_equal(1, cq:getCount())
+    end)
+
     -- @covers lurek.ai.newCommandQueue
-    it("enqueue with options table", function()
+    it("enqueue with options table [lurek.ai.newCommandQueue]", function()
         local cq = lurek.ai.newCommandQueue()
         expect_no_error(function()
             cq:enqueue("move", function() end, {
@@ -1946,79 +2154,66 @@ describe("lurek.ai type system", function()
     it("AIWorld:type() returns AIWorld", function()
         expect_equal("LAIWorld", lurek.ai.newWorld():type())
     end)
-
     -- @covers LAIBlackboard:type
     -- @covers lurek.ai.newBlackboard
     it("Blackboard:type() returns Blackboard", function()
         expect_equal("LAIBlackboard", lurek.ai.newBlackboard():type())
     end)
-
     -- @covers LStateMachine:type
     -- @covers lurek.ai.newStateMachine
     it("StateMachine:type() returns StateMachine", function()
         expect_equal("LStateMachine", lurek.ai.newStateMachine():type())
     end)
-
     -- @covers LBehaviorTree:type
     -- @covers lurek.ai.newBehaviorTree
     it("BehaviorTree:type() returns BehaviorTree", function()
         expect_equal("LBehaviorTree", lurek.ai.newBehaviorTree():type())
     end)
-
     -- @covers LBTNode:type
     -- @covers lurek.ai.newSelector
     it("BTNode:type() returns BTNode", function()
         expect_equal("LBTNode", lurek.ai.newSelector():type())
     end)
-
     -- @covers LSteeringManager:type
     -- @covers lurek.ai.newSteeringManager
     it("SteeringManager:type() returns SteeringManager", function()
         expect_equal("LSteeringManager", lurek.ai.newSteeringManager():type())
     end)
-
     -- @covers LQLearner:type
     -- @covers lurek.ai.newQLearner
     it("QLearner:type() returns QLearner", function()
         expect_equal("LQLearner", lurek.ai.newQLearner(2, 2):type())
     end)
-
     -- @covers LUtilityAI:type
     -- @covers lurek.ai.newUtilityAI
     it("UtilityAI:type() returns UtilityAI", function()
         expect_equal("LUtilityAI", lurek.ai.newUtilityAI():type())
     end)
-
     -- @covers LGOAPPlanner:type
     -- @covers lurek.ai.newGOAPPlanner
     it("GOAPPlanner:type() returns GOAPPlanner", function()
         expect_equal("LGOAPPlanner", lurek.ai.newGOAPPlanner():type())
     end)
-
     -- @covers LInfluenceMap:type
     -- @covers lurek.ai.newInfluenceMap
     it("InfluenceMap:type() returns LInfluenceMap", function()
         expect_equal("LInfluenceMap", lurek.ai.newInfluenceMap(5, 5, 10):type())
     end)
-
     -- @covers LSquad:type
     -- @covers lurek.ai.newSquad
     it("Squad:type() returns LSquad", function()
         expect_equal("LSquad", lurek.ai.newSquad("s"):type())
     end)
-
     -- @covers LCommandQueue:type
     -- @covers lurek.ai.newCommandQueue
     it("CommandQueue:type() returns LCommandQueue", function()
         expect_equal("LCommandQueue", lurek.ai.newCommandQueue():type())
     end)
-
     -- @covers LAIWorld:typeOf
     -- @covers lurek.ai.newWorld
     it("AIWorld:typeOf Object returns true", function()
         expect_true(lurek.ai.newWorld():typeOf("LObject"))
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers lurek.ai.newWorld
     it("Agent:typeOf Object returns true", function()
@@ -2026,13 +2221,11 @@ describe("lurek.ai type system", function()
         local a = w:addAgent("x")
         expect_true(a:typeOf("LObject"))
     end)
-
     -- @covers LAIBlackboard:typeOf
     -- @covers lurek.ai.newBlackboard
     it("Blackboard:typeOf Object returns true", function()
         expect_true(lurek.ai.newBlackboard():typeOf("LObject"))
     end)
-
     -- @covers LBTNode:typeOf
     -- @covers lurek.ai.newSelector
     it("BTNode:typeOf Object returns true", function()
@@ -2052,7 +2245,6 @@ describe("lurek.ai GOAPPlanner maxIterations configurability", function()
         local g = lurek.ai.newGOAPPlanner()
         expect_equal(10000, g:getMaxIterations())
     end)
-
     -- @covers LGOAPPlanner:getMaxIterations
     -- @covers LGOAPPlanner:setMaxIterations
     -- @covers lurek.ai.newGOAPPlanner
@@ -2061,7 +2253,6 @@ describe("lurek.ai GOAPPlanner maxIterations configurability", function()
         g:setMaxIterations(500)
         expect_equal(500, g:getMaxIterations())
     end)
-
     -- @covers LGOAPPlanner:getMaxIterations
     -- @covers LGOAPPlanner:setMaxIterations
     -- @covers lurek.ai.newGOAPPlanner
@@ -2070,7 +2261,6 @@ describe("lurek.ai GOAPPlanner maxIterations configurability", function()
         g:setMaxIterations(1)
         expect_equal(1, g:getMaxIterations())
     end)
-
     -- @covers LGOAPPlanner:getMaxIterations
     -- @covers LGOAPPlanner:setMaxIterations
     -- @covers lurek.ai.newGOAPPlanner
@@ -2103,7 +2293,6 @@ describe("lurek.ai.newContextSteering factory", function()
         local cs = lurek.ai.newContextSteering(8)
         expect_equal(cs:slotCount(), 8)
     end)
-
     -- @covers LContextSteering:slotCount
     -- @covers lurek.ai.newContextSteering
     it("defaults to 16 slots for 0 argument", function()
@@ -2127,7 +2316,6 @@ describe("ContextSteering evaluate", function()
         expect_type("number", dx)
         expect_type("number", dy)
     end)
-
     -- @covers LContextSteering:addWander
     -- @covers LContextSteering:chosenMagnitude
     -- @covers LContextSteering:evaluate
@@ -2139,7 +2327,6 @@ describe("ContextSteering evaluate", function()
         local mag = math.sqrt(dx * dx + dy * dy)
         expect_near(cs:chosenMagnitude(), mag, 0.03)
     end)
-
     -- @covers LContextSteering:addSeekTarget
     -- @covers LContextSteering:clearBehaviors
     -- @covers LContextSteering:evaluate
@@ -2194,7 +2381,6 @@ describe("lurek.ai.newAIDirector factory", function()
         local d = lurek.ai.newAIDirector()
         expect_near(d:tension(), 0.0, 0.001)
     end)
-
     -- @covers LAIDirector:phase
     -- @covers lurek.ai.newAIDirector
     it("starts in Relief phase", function()
@@ -2216,7 +2402,6 @@ describe("AIDirector pushEvent", function()
         d:pushEvent(0.8)
         expect_equal(d:tension() > 0.0, true)
     end)
-
     -- @covers LAIDirector:pushEvent
     -- @covers LAIDirector:tension
     -- @covers lurek.ai.newAIDirector
@@ -2242,21 +2427,18 @@ describe("AIDirector update", function()
         d:update(0.1)
         expect_type("string", d:phase())
     end)
-
     -- @covers LAIDirector:spawnRateFactor
     -- @covers lurek.ai.newAIDirector
     it("spawnRateFactor returns a number", function()
         local d = lurek.ai.newAIDirector()
         expect_type("number", d:spawnRateFactor())
     end)
-
     -- @covers LAIDirector:lootFactor
     -- @covers lurek.ai.newAIDirector
     it("lootFactor returns a number", function()
         local d = lurek.ai.newAIDirector()
         expect_type("number", d:lootFactor())
     end)
-
     -- @covers LAIDirector:ambientIntensity
     -- @covers lurek.ai.newAIDirector
     it("ambientIntensity returns a number", function()
@@ -2280,7 +2462,6 @@ describe("AIDirector reset", function()
         d:reset()
         expect_near(d:tension(), 0.0, 0.001)
     end)
-
     -- @covers LAIDirector:setTension
     -- @covers LAIDirector:tension
     -- @covers lurek.ai.newAIDirector
@@ -2319,14 +2500,12 @@ describe("EmotionModel add/query", function()
         local em = lurek.ai.newEmotionModel()
         expect_equal(em:dominant(), nil)
     end)
-
     -- @covers LEmotionModel:get
     -- @covers lurek.ai.newEmotionModel
     it("get returns 0 for unknown emotion", function()
         local em = lurek.ai.newEmotionModel()
         expect_near(em:get("anger"), 0.0, 0.001)
     end)
-
     -- @covers LEmotionModel:add
     -- @covers LEmotionModel:get
     -- @covers LEmotionModel:trigger
@@ -2337,7 +2516,6 @@ describe("EmotionModel add/query", function()
         em:trigger("fear", 0.8)
         expect_equal(em:get("fear") > 0.0, true)
     end)
-
     -- @covers LEmotionModel:add
     -- @covers LEmotionModel:isActive
     -- @covers lurek.ai.newEmotionModel
@@ -2346,7 +2524,6 @@ describe("EmotionModel add/query", function()
         em:add("joy", 0.0, 0.3, 0.2)
         expect_equal(em:isActive("joy"), false)
     end)
-
     -- @covers LEmotionModel:add
     -- @covers LEmotionModel:isActive
     -- @covers LEmotionModel:trigger
@@ -2389,7 +2566,6 @@ describe("EmotionModel update/reset", function()
         em:update(0.016)
         expect_equal(em:dominant(), nil)
     end)
-
     -- @covers LEmotionModel:add
     -- @covers LEmotionModel:get
     -- @covers LEmotionModel:reset
@@ -2441,7 +2617,6 @@ describe("HTNDomain addPrimitive", function()
         d:addPrimitive("MoveTo", {}, {"at_target"}, {})
         expect_equal(d:taskCount(), 1)
     end)
-
     -- @covers LHTNDomain:addPrimitive
     -- @covers LHTNDomain:taskCount
     -- @covers lurek.ai.newHTNDomain
@@ -2464,7 +2639,6 @@ describe("HTNDomain plan", function()
         local result = d:plan("nonexistent", {})
         expect_equal(result, nil)
     end)
-
     -- @covers LHTNDomain:addCompound
     -- @covers LHTNDomain:addPrimitive
     -- @covers LHTNDomain:plan
@@ -2485,7 +2659,6 @@ describe("HTNDomain plan", function()
         expect_equal(plan[1], "Navigate")
         expect_equal(plan[2], "PickUp")
     end)
-
     -- @covers LHTNDomain:addCompound
     -- @covers LHTNDomain:addPrimitive
     -- @covers LHTNDomain:plan
@@ -2539,7 +2712,6 @@ describe("AILod tierFor", function()
         expect_type("number", tier)
         expect_equal(tier >= 0, true)
     end)
-
     -- @covers LAILod:tierFor
     -- @covers lurek.ai.newAILod
     it("agent at same position as reference gets tier 0 (nearest)", function()
@@ -2547,7 +2719,6 @@ describe("AILod tierFor", function()
         local tier = lod:tierFor(0, 0, 0, 0)
         expect_equal(tier, 0)
     end)
-
     -- @covers LAILod:tierFor
     -- @covers lurek.ai.newAILod
     it("distant agent gets higher tier than close agent", function()
@@ -2556,7 +2727,6 @@ describe("AILod tierFor", function()
         local far_tier  = lod:tierFor(2000, 0, 0, 0) -- very far
         expect_equal(far_tier >= near_tier, true)
     end)
-
     -- @covers LAILod:tierCount
     -- @covers LAILod:tierFor
     -- @covers lurek.ai.newAILod
@@ -2582,7 +2752,6 @@ describe("AILod shouldUpdate", function()
         expect_equal(lod:shouldUpdate(0, 1), true)
         expect_equal(lod:shouldUpdate(0, 7), true)
     end)
-
     -- @covers LAILod:shouldUpdate
     -- @covers LAILod:tierCount
     -- @covers lurek.ai.newAILod
@@ -2619,7 +2788,6 @@ describe("AILod tierName", function()
         local name = lod:tierName(0)
         expect_type("string", name)
     end)
-
     -- @covers LAILod:tierName
     -- @covers lurek.ai.newAILod
     it("out-of-bounds tier returns nil", function()
@@ -2671,7 +2839,6 @@ describe("MCTSEngine search", function()
         local action = mcts:search(0, get_actions, apply_action, evaluate)
         expect_type("number", action)
     end)
-
     -- @covers LMCTSEngine:search
     -- @covers lurek.ai.newMCTSEngine
     it("returns nil when no actions available from root", function()
@@ -2684,7 +2851,6 @@ describe("MCTSEngine search", function()
         )
         expect_equal(action, nil)
     end)
-
     -- @covers LMCTSEngine:search
     -- @covers lurek.ai.newMCTSEngine
     it("prefers higher reward action", function()
@@ -2730,7 +2896,6 @@ describe("lurek.ai.newNeuralNet factory", function()
         local net = lurek.ai.newNeuralNet()
         expect_equal(net:layerCount(), 0)
     end)
-
     -- @covers LNeuralNet:addLayer
     -- @covers LNeuralNet:layerCount
     -- @covers lurek.ai.newNeuralNet
@@ -2740,7 +2905,6 @@ describe("lurek.ai.newNeuralNet factory", function()
         net:addLayer(4, 1, "sigmoid")
         expect_equal(net:layerCount(), 2)
     end)
-
     -- @covers LNeuralNet:addLayer
     -- @covers LNeuralNet:forward
     -- @covers lurek.ai.newNeuralNet
@@ -2751,7 +2915,6 @@ describe("lurek.ai.newNeuralNet factory", function()
         expect_type("table", out)
         expect_equal(#out, 2)
     end)
-
     -- @covers LNeuralNet:addLayer
     -- @covers LNeuralNet:paramCount
     -- @covers lurek.ai.newNeuralNet
@@ -2761,7 +2924,6 @@ describe("lurek.ai.newNeuralNet factory", function()
         -- 2*3 weights + 3 biases = 9
         expect_equal(net:paramCount(), 9)
     end)
-
     -- @covers LNeuralNet:addLayer
     -- @covers LNeuralNet:getWeights
     -- @covers LNeuralNet:paramCount
@@ -2802,7 +2964,6 @@ describe("lurek.ai.newGeneticAlgorithm factory", function()
         local ga = lurek.ai.newGeneticAlgorithm(20, 4, 1)
         expect_equal(ga:popSize(), 20)
     end)
-
     -- @covers LGeneticAlgorithm:getGenes
     -- @covers lurek.ai.newGeneticAlgorithm
     it("getGenes returns table of expected length", function()
@@ -2811,7 +2972,6 @@ describe("lurek.ai.newGeneticAlgorithm factory", function()
         expect_type("table", genes)
         expect_equal(#genes, 8)
     end)
-
     -- @covers LGeneticAlgorithm:evolve
     -- @covers LGeneticAlgorithm:generation
     -- @covers LGeneticAlgorithm:setFitness
@@ -2824,7 +2984,6 @@ describe("lurek.ai.newGeneticAlgorithm factory", function()
         ga:evolve()
         expect_equal(ga:generation(), g0 + 1)
     end)
-
     -- @covers LGeneticAlgorithm:bestGenes
     -- @covers LGeneticAlgorithm:evolve
     -- @covers LGeneticAlgorithm:setFitness
@@ -2860,7 +3019,6 @@ describe("lurek.ai.newBandit factory", function()
         local b = lurek.ai.newBandit(8, "ucb1", 0.0, 1)
         expect_equal(b:armCount(), 8)
     end)
-
     -- @covers LBandit:select
     -- @covers lurek.ai.newBandit
     it("select returns a valid arm index", function()
@@ -2868,7 +3026,6 @@ describe("lurek.ai.newBandit factory", function()
         local idx = b:select()
         expect_equal(idx >= 0 and idx < 4, true)
     end)
-
     -- @covers LBandit:totalPulls
     -- @covers LBandit:update
     -- @covers lurek.ai.newBandit
@@ -2879,7 +3036,6 @@ describe("lurek.ai.newBandit factory", function()
         b:update(2, 0.8)
         expect_equal(b:totalPulls(), 3)
     end)
-
     -- @covers LBandit:bestArm
     -- @covers LBandit:update
     -- @covers lurek.ai.newBandit
@@ -2890,7 +3046,6 @@ describe("lurek.ai.newBandit factory", function()
         b:update(2, 0.3)
         expect_equal(b:bestArm() >= 0, true)
     end)
-
     -- @covers LBandit:select
     -- @covers lurek.ai.newBandit
     it("thompson_sampling strategy creates successfully", function()
@@ -2898,7 +3053,6 @@ describe("lurek.ai.newBandit factory", function()
         local idx = b:select()
         expect_equal(idx >= 0 and idx < 4, true)
     end)
-
     -- @covers LBandit:reset
     -- @covers LBandit:totalPulls
     -- @covers LBandit:update
@@ -2937,7 +3091,6 @@ describe("lurek.ai.newNeuroevolution factory", function()
             {{inputs=2, outputs=2, activation="relu"}}, 8, 1)
         expect_equal(ne:popSize(), 8)
     end)
-
     -- @covers LNeuroevolution:chromosomeToNet
     -- @covers lurek.ai.newNeuroevolution
     it("chromosomeToNet returns a NeuralNet userdata", function()
@@ -2946,7 +3099,6 @@ describe("lurek.ai.newNeuroevolution factory", function()
         local net = ne:chromosomeToNet(0)
         expect_type("userdata", net)
     end)
-
     -- @covers LNeuroevolution:bestNetwork
     -- @covers LNeuroevolution:evolve
     -- @covers LNeuroevolution:setFitness
@@ -2959,7 +3111,6 @@ describe("lurek.ai.newNeuroevolution factory", function()
         local best = ne:bestNetwork()
         expect_type("userdata", best)
     end)
-
     -- @covers LNeuroevolution:evolve
     -- @covers LNeuroevolution:generation
     -- @covers LNeuroevolution:setFitness
@@ -3001,7 +3152,6 @@ describe("NeedSystem add/query", function()
         local ns = lurek.ai.newNeedSystem()
         expect_equal(ns:mostUrgent(), nil)
     end)
-
     -- @covers LNeedSystem:addNeed
     -- @covers LNeedSystem:valueOf
     -- @covers lurek.ai.newNeedSystem
@@ -3010,7 +3160,6 @@ describe("NeedSystem add/query", function()
         ns:addNeed("hunger", 0.1, 0.3, 2.0)
         expect_near(ns:valueOf("hunger"), 1.0, 0.001)
     end)
-
     -- @covers LNeedSystem:valueOf
     -- @covers lurek.ai.newNeedSystem
     it("valueOf returns 0 for unknown need", function()
@@ -3032,7 +3181,6 @@ describe("NeedSystem update/decay", function()
         ns:update(0.016)
         expect_equal(ns:mostUrgent(), nil)
     end)
-
     -- @covers LNeedSystem:addNeed
     -- @covers LNeedSystem:update
     -- @covers LNeedSystem:valueOf
@@ -3121,7 +3269,6 @@ describe("ORCASolver addAgent", function()
         s:addAgent(0, 0, 0.5, 3.0)
         expect_equal(s:agentCount(), 1)
     end)
-
     -- @covers LORCASolver:addAgent
     -- @covers LORCASolver:agentCount
     -- @covers lurek.ai.newORCASolver
@@ -3152,7 +3299,6 @@ describe("ORCASolver compute", function()
         expect_type("number", vx)
         expect_type("number", vy)
     end)
-
     -- @covers LORCASolver:getSafeVelocity
     -- @covers lurek.ai.newORCASolver
     it("getSafeVelocity returns zeros for out-of-bounds index", function()
@@ -3161,7 +3307,6 @@ describe("ORCASolver compute", function()
         expect_near(vx, 0.0, 0.001)
         expect_near(vy, 0.0, 0.001)
     end)
-
     -- @covers LORCASolver:addAgent
     -- @covers LORCASolver:compute
     -- @covers LORCASolver:getSafeVelocity
@@ -3220,7 +3365,6 @@ describe("StimulusWorld add stimuli", function()
         sw:addVisual(100, 200, 1.0, 50.0, nil)
         expect_equal(sw:count(), 1)
     end)
-
     -- @covers LStimulusWorld:addAuditory
     -- @covers LStimulusWorld:count
     -- @covers lurek.ai.newStimulusWorld
@@ -3229,7 +3373,6 @@ describe("StimulusWorld add stimuli", function()
         sw:addAuditory(50, 50, 0.8, 80.0, 0.5, "gunshot")
         expect_equal(sw:count(), 1)
     end)
-
     -- @covers LStimulusWorld:addAuditory
     -- @covers LStimulusWorld:addVisual
     -- @covers LStimulusWorld:count
@@ -3259,7 +3402,6 @@ describe("StimulusWorld remove", function()
         sw:remove(id)
         expect_equal(sw:count(), 0)
     end)
-
     -- @covers LStimulusWorld:addVisual
     -- @covers LStimulusWorld:remove
     -- @covers lurek.ai.newStimulusWorld
@@ -3268,7 +3410,6 @@ describe("StimulusWorld remove", function()
         local id = sw:addVisual(0, 0, 1.0, 50.0, nil)
         expect_equal(sw:remove(id), true)
     end)
-
     -- @covers LStimulusWorld:remove
     -- @covers lurek.ai.newStimulusWorld
     it("remove returns false for unknown id", function()
@@ -3290,7 +3431,6 @@ describe("StimulusWorld update/clear", function()
         sw:update(0.016)
         expect_equal(sw:count(), 0)
     end)
-
     -- @covers LStimulusWorld:addVisual
     -- @covers LStimulusWorld:clear
     -- @covers LStimulusWorld:count
@@ -3334,10 +3474,43 @@ end)
 -- @describe StrategyAI addGoal / forceEvaluate
 describe("StrategyAI addGoal / forceEvaluate", function()
     -- @covers LStrategyAI:activeGoal
+    it("forceEvaluate sets active goal when one has highest score [LStrategyAI:activeGoal]", function()
+        local s = lurek.ai.newStrategyAI(10.0)
+        s:addGoal("attack")
+        s:addGoal("defend")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then return 0.9
+            else return 0.2 end
+        end)
+        expect_equal(s:activeGoal(), "attack")
+    end)
+
     -- @covers LStrategyAI:addGoal
+    it("forceEvaluate sets active goal when one has highest score [LStrategyAI:addGoal]", function()
+        local s = lurek.ai.newStrategyAI(10.0)
+        s:addGoal("attack")
+        s:addGoal("defend")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then return 0.9
+            else return 0.2 end
+        end)
+        expect_equal(s:activeGoal(), "attack")
+    end)
+
     -- @covers LStrategyAI:forceEvaluate
+    it("forceEvaluate sets active goal when one has highest score [LStrategyAI:forceEvaluate]", function()
+        local s = lurek.ai.newStrategyAI(10.0)
+        s:addGoal("attack")
+        s:addGoal("defend")
+        s:forceEvaluate(function(goal)
+            if goal == "attack" then return 0.9
+            else return 0.2 end
+        end)
+        expect_equal(s:activeGoal(), "attack")
+    end)
+
     -- @covers lurek.ai.newStrategyAI
-    it("forceEvaluate sets active goal when one has highest score", function()
+    it("forceEvaluate sets active goal when one has highest score [lurek.ai.newStrategyAI]", function()
         local s = lurek.ai.newStrategyAI(10.0)
         s:addGoal("attack")
         s:addGoal("defend")
@@ -3375,13 +3548,76 @@ describe("StrategyAI update throttle", function()
         s:update(0.016, function(_) return 1.0 end)
         expect_type("number", s:timeUntilNext())
     end)
-
     -- @covers LStrategyAI:activeGoal
+    it("update evaluates after interval passes [LStrategyAI:activeGoal]", function()
+        local s = lurek.ai.newStrategyAI(0.1)
+        s:addGoal("hunt")
+        s:addGoal("flee")
+        -- Force immediate evaluation first
+        s:forceEvaluate(function(g)
+            if g == "flee" then return 0.8 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "flee")
+        -- Update well past interval with different scorer
+        s:update(1.0, function(g)
+            if g == "hunt" then return 0.9 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "hunt")
+    end)
+
     -- @covers LStrategyAI:addGoal
+    it("update evaluates after interval passes [LStrategyAI:addGoal]", function()
+        local s = lurek.ai.newStrategyAI(0.1)
+        s:addGoal("hunt")
+        s:addGoal("flee")
+        -- Force immediate evaluation first
+        s:forceEvaluate(function(g)
+            if g == "flee" then return 0.8 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "flee")
+        -- Update well past interval with different scorer
+        s:update(1.0, function(g)
+            if g == "hunt" then return 0.9 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "hunt")
+    end)
+
     -- @covers LStrategyAI:forceEvaluate
+    it("update evaluates after interval passes [LStrategyAI:forceEvaluate]", function()
+        local s = lurek.ai.newStrategyAI(0.1)
+        s:addGoal("hunt")
+        s:addGoal("flee")
+        -- Force immediate evaluation first
+        s:forceEvaluate(function(g)
+            if g == "flee" then return 0.8 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "flee")
+        -- Update well past interval with different scorer
+        s:update(1.0, function(g)
+            if g == "hunt" then return 0.9 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "hunt")
+    end)
+
     -- @covers LStrategyAI:update
+    it("update evaluates after interval passes [LStrategyAI:update]", function()
+        local s = lurek.ai.newStrategyAI(0.1)
+        s:addGoal("hunt")
+        s:addGoal("flee")
+        -- Force immediate evaluation first
+        s:forceEvaluate(function(g)
+            if g == "flee" then return 0.8 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "flee")
+        -- Update well past interval with different scorer
+        s:update(1.0, function(g)
+            if g == "hunt" then return 0.9 else return 0.1 end
+        end)
+        expect_equal(s:activeGoal(), "hunt")
+    end)
+
     -- @covers lurek.ai.newStrategyAI
-    it("update evaluates after interval passes", function()
+    it("update evaluates after interval passes [lurek.ai.newStrategyAI]", function()
         local s = lurek.ai.newStrategyAI(0.1)
         s:addGoal("hunt")
         s:addGoal("flee")
@@ -3443,7 +3679,6 @@ describe("TraitProfile set/get", function()
         local tp = lurek.ai.newTraitProfile()
         expect_near(tp:get("aggression"), 0.0, 0.001)
     end)
-
     -- @covers LTraitProfile:get
     -- @covers LTraitProfile:set
     -- @covers lurek.ai.newTraitProfile
@@ -3452,14 +3687,12 @@ describe("TraitProfile set/get", function()
         tp:set("courage", 0.75)
         expect_near(tp:get("courage"), 0.75, 0.001)
     end)
-
     -- @covers LTraitProfile:has
     -- @covers lurek.ai.newTraitProfile
     it("has() returns false for unset trait", function()
         local tp = lurek.ai.newTraitProfile()
         expect_equal(tp:has("unknown_trait"), false)
     end)
-
     -- @covers LTraitProfile:has
     -- @covers LTraitProfile:set
     -- @covers lurek.ai.newTraitProfile
@@ -3468,7 +3701,6 @@ describe("TraitProfile set/get", function()
         tp:set("loyalty", 0.5)
         expect_equal(tp:has("loyalty"), true)
     end)
-
     -- @covers LTraitProfile:set
     -- @covers LTraitProfile:traitCount
     -- @covers lurek.ai.newTraitProfile
@@ -3495,7 +3727,6 @@ describe("TraitProfile modifiers", function()
         tp:addModifier("fear", 0.5, nil, "poison")
         expect_near(tp:get("fear"), 0.7, 0.01)
     end)
-
     -- @covers LTraitProfile:addModifier
     -- @covers LTraitProfile:get
     -- @covers LTraitProfile:removeModifiers
@@ -3508,7 +3739,6 @@ describe("TraitProfile modifiers", function()
         tp:removeModifiers("poison")
         expect_near(tp:get("fear"), 0.2, 0.01)
     end)
-
     -- @covers LTraitProfile:addModifier
     -- @covers LTraitProfile:getBase
     -- @covers LTraitProfile:set
@@ -3534,7 +3764,6 @@ describe("TraitProfile update", function()
         tp:update(0.016)
         expect_equal(tp:traitCount(), 0)
     end)
-
     -- @covers LTraitProfile:addModifier
     -- @covers LTraitProfile:get
     -- @covers LTraitProfile:set
@@ -3563,7 +3792,6 @@ describe("Missing API Coverage", function()
         bb:setNumber("hp", 10)
         expect_equal(true, bb:has("hp"))
     end)
-
     -- @covers LBehaviorTree:getDebugState
     -- @covers lurek.ai.newBehaviorTree
     it("covers BehaviorTree:getDebugState", function()
@@ -3573,11 +3801,30 @@ describe("Missing API Coverage", function()
         expect_type("number", dbg.node_count)
         expect_type("string", dbg.last_status)
     end)
-
     -- @covers LSteeringManager:calculate
+    it("covers SteeringManager:setSpatialHashCellSize [LSteeringManager:calculate]", function()
+        local sm = lurek.ai.newSteeringManager()
+        expect_no_error(function()
+            sm:setSpatialHashCellSize(32)
+        end)
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 50, 0.016)
+        expect_type("number", fx)
+        expect_type("number", fy)
+    end)
+
     -- @covers LSteeringManager:setSpatialHashCellSize
+    it("covers SteeringManager:setSpatialHashCellSize [LSteeringManager:setSpatialHashCellSize]", function()
+        local sm = lurek.ai.newSteeringManager()
+        expect_no_error(function()
+            sm:setSpatialHashCellSize(32)
+        end)
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 50, 0.016)
+        expect_type("number", fx)
+        expect_type("number", fy)
+    end)
+
     -- @covers lurek.ai.newSteeringManager
-    it("covers SteeringManager:setSpatialHashCellSize", function()
+    it("covers SteeringManager:setSpatialHashCellSize [lurek.ai.newSteeringManager]", function()
         local sm = lurek.ai.newSteeringManager()
         expect_no_error(function()
             sm:setSpatialHashCellSize(32)
@@ -3588,8 +3835,16 @@ describe("Missing API Coverage", function()
     end)
 
     -- @covers LSteeringManager:enableSpatialHash
+    it("covers SteeringManager:enableSpatialHash [LSteeringManager:enableSpatialHash]", function()
+        local sm = lurek.ai.newSteeringManager()
+        expect_no_error(function()
+            sm:enableSpatialHash(true)
+            sm:enableSpatialHash(false)
+        end)
+    end)
+
     -- @covers lurek.ai.newSteeringManager
-    it("covers SteeringManager:enableSpatialHash", function()
+    it("covers SteeringManager:enableSpatialHash [lurek.ai.newSteeringManager]", function()
         local sm = lurek.ai.newSteeringManager()
         expect_no_error(function()
             sm:enableSpatialHash(true)
@@ -3610,7 +3865,6 @@ describe("Missing API Coverage", function()
         expect_equal(100, x)
         expect_equal(200, y)
     end)
-
     -- @covers LTraitProfile:get
     -- @covers LTraitProfile:set
     -- @covers lurek.ai.newTraitProfile
@@ -3619,7 +3873,6 @@ describe("Missing API Coverage", function()
         tp:set("courage", 0.75)
         expect_near(0.75, tp:get("courage"), 0.001)
     end)
-
     -- @covers LTraitProfile:get
     -- @covers LTraitProfile:set
     -- @covers lurek.ai.newTraitProfile
@@ -3628,7 +3881,6 @@ describe("Missing API Coverage", function()
         tp:set("loyalty", 0.5)
         expect_near(0.5, tp:get("loyalty"), 0.001)
     end)
-
     -- @covers LTraitProfile:has
     -- @covers LTraitProfile:set
     -- @covers lurek.ai.newTraitProfile
@@ -3638,7 +3890,6 @@ describe("Missing API Coverage", function()
         tp:set("focus", 0.9)
         expect_equal(true, tp:has("focus"))
     end)
-
     -- @covers LContextSteering:addAvoidBounds
     -- @covers LContextSteering:evaluate
     -- @covers lurek.ai.newContextSteering
@@ -3649,7 +3900,6 @@ describe("Missing API Coverage", function()
         expect_type("number", dx)
         expect_type("number", dy)
     end)
-
     -- @covers LEmotionModel:add
     -- @covers LEmotionModel:get
     -- @covers lurek.ai.newEmotionModel
@@ -3658,7 +3908,6 @@ describe("Missing API Coverage", function()
         em:add("joy", 0.1, 0.5, 0.2)
         expect_near(0.1, em:get("joy"), 0.001)
     end)
-
     -- @covers LNeuroevolution:bestFitness
     -- @covers LNeuroevolution:setFitness
     -- @covers lurek.ai.newNeuroevolution
@@ -3671,7 +3920,6 @@ describe("Missing API Coverage", function()
         ne:setFitness(3, 0.6)
         expect_near(0.8, ne:bestFitness(), 0.001)
     end)
-
 end)
 
 -- @describe Missing explicit test for AIWorld:addAgent
@@ -4295,10 +4543,34 @@ end)
 -- @describe Missing explicit test for BTNode:reset
 describe("Missing explicit test for BTNode:reset", function()
     -- @covers LBTNode:reset
+    it("BTNode:reset works [LBTNode:reset]", function()
+        local node = lurek.ai.newRepeater(3)
+        node:setChild(lurek.ai.newAction(function() end))
+        expect_no_error(function()
+            node:reset()
+        end)
+    end)
+
     -- @covers LBTNode:setChild
+    it("BTNode:reset works [LBTNode:setChild]", function()
+        local node = lurek.ai.newRepeater(3)
+        node:setChild(lurek.ai.newAction(function() end))
+        expect_no_error(function()
+            node:reset()
+        end)
+    end)
+
     -- @covers lurek.ai.newAction
+    it("BTNode:reset works [lurek.ai.newAction]", function()
+        local node = lurek.ai.newRepeater(3)
+        node:setChild(lurek.ai.newAction(function() end))
+        expect_no_error(function()
+            node:reset()
+        end)
+    end)
+
     -- @covers lurek.ai.newRepeater
-    it("BTNode:reset works", function()
+    it("BTNode:reset works [lurek.ai.newRepeater]", function()
         local node = lurek.ai.newRepeater(3)
         node:setChild(lurek.ai.newAction(function() end))
         expect_no_error(function()
@@ -4310,9 +4582,23 @@ end)
 -- @describe Missing explicit test for BTNode:setChild
 describe("Missing explicit test for BTNode:setChild", function()
     -- @covers LBTNode:setChild
+    it("BTNode:setChild works [LBTNode:setChild]", function()
+        local inv = lurek.ai.newInverter()
+        expect_no_error(function()
+            inv:setChild(lurek.ai.newAction(function() end))
+        end)
+    end)
+
     -- @covers lurek.ai.newAction
+    it("BTNode:setChild works [lurek.ai.newAction]", function()
+        local inv = lurek.ai.newInverter()
+        expect_no_error(function()
+            inv:setChild(lurek.ai.newAction(function() end))
+        end)
+    end)
+
     -- @covers lurek.ai.newInverter
-    it("BTNode:setChild works", function()
+    it("BTNode:setChild works [lurek.ai.newInverter]", function()
         local inv = lurek.ai.newInverter()
         expect_no_error(function()
             inv:setChild(lurek.ai.newAction(function() end))
@@ -4344,8 +4630,15 @@ end)
 -- @describe Missing explicit test for BTNode:setSuccessPolicy
 describe("Missing explicit test for BTNode:setSuccessPolicy", function()
     -- @covers LBTNode:setSuccessPolicy
+    it("BTNode:setSuccessPolicy works [LBTNode:setSuccessPolicy]", function()
+        local par = lurek.ai.newParallel()
+        expect_no_error(function()
+            par:setSuccessPolicy("require_all")
+        end)
+    end)
+
     -- @covers lurek.ai.newParallel
-    it("BTNode:setSuccessPolicy works", function()
+    it("BTNode:setSuccessPolicy works [lurek.ai.newParallel]", function()
         local par = lurek.ai.newParallel()
         expect_no_error(function()
             par:setSuccessPolicy("require_all")
@@ -4356,8 +4649,15 @@ end)
 -- @describe Missing explicit test for BTNode:setFailurePolicy
 describe("Missing explicit test for BTNode:setFailurePolicy", function()
     -- @covers LBTNode:setFailurePolicy
+    it("BTNode:setFailurePolicy works [LBTNode:setFailurePolicy]", function()
+        local par = lurek.ai.newParallel()
+        expect_no_error(function()
+            par:setFailurePolicy("require_all")
+        end)
+    end)
+
     -- @covers lurek.ai.newParallel
-    it("BTNode:setFailurePolicy works", function()
+    it("BTNode:setFailurePolicy works [lurek.ai.newParallel]", function()
         local par = lurek.ai.newParallel()
         expect_no_error(function()
             par:setFailurePolicy("require_all")
@@ -6111,10 +6411,43 @@ end)
 describe("custom decision model", function()
     -- it is invoked when the world is updated.
     -- @covers LAIWorld:addAgent
+    it("can set custom model on agent and callback fires on update [LAIWorld:addAgent]", function()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("test_custom_agent")
+        local called = false
+        agent:setCustomModel(function(ag, bb, dt)
+            called = true
+        end)
+        world:update(0.016)
+        expect_true(called, "custom model callback should be called on update")
+    end)
+
     -- @covers LAIWorld:update
+    it("can set custom model on agent and callback fires on update [LAIWorld:update]", function()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("test_custom_agent")
+        local called = false
+        agent:setCustomModel(function(ag, bb, dt)
+            called = true
+        end)
+        world:update(0.016)
+        expect_true(called, "custom model callback should be called on update")
+    end)
+
     -- @covers LBot:setCustomModel
+    it("can set custom model on agent and callback fires on update [LBot:setCustomModel]", function()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("test_custom_agent")
+        local called = false
+        agent:setCustomModel(function(ag, bb, dt)
+            called = true
+        end)
+        world:update(0.016)
+        expect_true(called, "custom model callback should be called on update")
+    end)
+
     -- @covers lurek.ai.newWorld
-    it("can set custom model on agent and callback fires on update", function()
+    it("can set custom model on agent and callback fires on update [lurek.ai.newWorld]", function()
         local world = lurek.ai.newWorld()
         local agent = world:addAgent("test_custom_agent")
         local called = false
@@ -6149,7 +6482,6 @@ describe("BT Guard decorator", function()
         expect_not_nil(guard, "Guard node should be created")
         expect_equal("guard", guard:getNodeType(), "node type should be 'guard'")
     end)
-
     -- @covers LBTNode:getChildCount
     -- @covers lurek.ai.newAction
     -- @covers lurek.ai.newGuard
@@ -6163,9 +6495,37 @@ end)
 -- @describe custom utility response curve
 describe("custom utility response curve", function()
     -- @covers LUtilityAI:addAction
+    it("addConsideration accepts function as curve without error [LUtilityAI:addAction]", function()
+        local ua = lurek.ai.newUtilityAI()
+        ua:addAction("test_action", function() return 0.5 end)
+        local ok = pcall(function()
+            ua:addConsideration(
+                "test_action",
+                "distance_axis",
+                function() return 0.8 end,  -- scorer
+                function(x) return x * x end  -- custom curve fn
+            )
+        end)
+        expect_true(ok, "addConsideration with function curve should succeed")
+    end)
+
     -- @covers LUtilityAI:addConsideration
+    it("addConsideration accepts function as curve without error [LUtilityAI:addConsideration]", function()
+        local ua = lurek.ai.newUtilityAI()
+        ua:addAction("test_action", function() return 0.5 end)
+        local ok = pcall(function()
+            ua:addConsideration(
+                "test_action",
+                "distance_axis",
+                function() return 0.8 end,  -- scorer
+                function(x) return x * x end  -- custom curve fn
+            )
+        end)
+        expect_true(ok, "addConsideration with function curve should succeed")
+    end)
+
     -- @covers lurek.ai.newUtilityAI
-    it("addConsideration accepts function as curve without error", function()
+    it("addConsideration accepts function as curve without error [lurek.ai.newUtilityAI]", function()
         local ua = lurek.ai.newUtilityAI()
         ua:addAction("test_action", function() return 0.5 end)
         local ok = pcall(function()
@@ -6180,9 +6540,39 @@ describe("custom utility response curve", function()
     end)
 
     -- @covers LUtilityAI:addAction
+    it("addConsideration accepts string curve without error [LUtilityAI:addAction]", function()
+        local ua = lurek.ai.newUtilityAI()
+        ua:addAction("action_b", function() return 0.3 end)
+        local ok = pcall(function()
+            ua:addConsideration(
+                "action_b",
+                "proximity",
+                function() return 0.5 end,
+                "linear",
+                1.0, 0.0, 0.0
+            )
+        end)
+        expect_true(ok, "addConsideration with string curve should succeed")
+    end)
+
     -- @covers LUtilityAI:addConsideration
+    it("addConsideration accepts string curve without error [LUtilityAI:addConsideration]", function()
+        local ua = lurek.ai.newUtilityAI()
+        ua:addAction("action_b", function() return 0.3 end)
+        local ok = pcall(function()
+            ua:addConsideration(
+                "action_b",
+                "proximity",
+                function() return 0.5 end,
+                "linear",
+                1.0, 0.0, 0.0
+            )
+        end)
+        expect_true(ok, "addConsideration with string curve should succeed")
+    end)
+
     -- @covers lurek.ai.newUtilityAI
-    it("addConsideration accepts string curve without error", function()
+    it("addConsideration accepts string curve without error [lurek.ai.newUtilityAI]", function()
         local ua = lurek.ai.newUtilityAI()
         ua:addAction("action_b", function() return 0.3 end)
         local ok = pcall(function()
@@ -6210,12 +6600,41 @@ describe("custom steering behavior", function()
         expect_equal(before + 1, sm:getBehaviorCount(),
             "behavior count should increase by 1")
     end)
-
     -- @covers LAIWorld:addAgent
+    it("applyCustomSteering returns a force pair without error [LAIWorld:addAgent]", function()
+        local sm = lurek.ai.newSteeringManager()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("steering_fixture")
+        local ok = pcall(function()
+            sm:applyCustomSteering(agent, 0.016)
+        end)
+        expect_true(ok, "applyCustomSteering with no custom behaviors should not error")
+    end)
+
     -- @covers LSteeringManager:applyCustomSteering
+    it("applyCustomSteering returns a force pair without error [LSteeringManager:applyCustomSteering]", function()
+        local sm = lurek.ai.newSteeringManager()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("steering_fixture")
+        local ok = pcall(function()
+            sm:applyCustomSteering(agent, 0.016)
+        end)
+        expect_true(ok, "applyCustomSteering with no custom behaviors should not error")
+    end)
+
     -- @covers lurek.ai.newSteeringManager
+    it("applyCustomSteering returns a force pair without error [lurek.ai.newSteeringManager]", function()
+        local sm = lurek.ai.newSteeringManager()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("steering_fixture")
+        local ok = pcall(function()
+            sm:applyCustomSteering(agent, 0.016)
+        end)
+        expect_true(ok, "applyCustomSteering with no custom behaviors should not error")
+    end)
+
     -- @covers lurek.ai.newWorld
-    it("applyCustomSteering returns a force pair without error", function()
+    it("applyCustomSteering returns a force pair without error [lurek.ai.newWorld]", function()
         local sm = lurek.ai.newSteeringManager()
         local world = lurek.ai.newWorld()
         local agent = world:addAgent("steering_fixture")
@@ -6245,12 +6664,44 @@ describe("Agent:setCustomModel extensibility hook", function()
         expect_equal("custom", agent:getDecisionModel(),
             "getDecisionModel should return 'custom' after setCustomModel")
     end)
-
     -- @covers LAIWorld:addAgent
+    it("setCustomModel callback is invoked via world:update without error [LAIWorld:addAgent]", function()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("cb_agent")
+        local called = false
+        agent:setCustomModel(function(ag, bb, dt)
+            called = true
+        end)
+        world:update(0.016)
+        expect_true(called, "custom model callback should be called by world:update")
+    end)
+
     -- @covers LAIWorld:update
+    it("setCustomModel callback is invoked via world:update without error [LAIWorld:update]", function()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("cb_agent")
+        local called = false
+        agent:setCustomModel(function(ag, bb, dt)
+            called = true
+        end)
+        world:update(0.016)
+        expect_true(called, "custom model callback should be called by world:update")
+    end)
+
     -- @covers LBot:setCustomModel
+    it("setCustomModel callback is invoked via world:update without error [LBot:setCustomModel]", function()
+        local world = lurek.ai.newWorld()
+        local agent = world:addAgent("cb_agent")
+        local called = false
+        agent:setCustomModel(function(ag, bb, dt)
+            called = true
+        end)
+        world:update(0.016)
+        expect_true(called, "custom model callback should be called by world:update")
+    end)
+
     -- @covers lurek.ai.newWorld
-    it("setCustomModel callback is invoked via world:update without error", function()
+    it("setCustomModel callback is invoked via world:update without error [lurek.ai.newWorld]", function()
         local world = lurek.ai.newWorld()
         local agent = world:addAgent("cb_agent")
         local called = false
@@ -6271,7 +6722,6 @@ describe("ai strict: LBot missing methods", function()
         local a = w:addAgent("strict_name")
         expect_equal("strict_name", a:getName())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:setPosition
     -- @covers LBot:getPosition
@@ -6284,7 +6734,6 @@ describe("ai strict: LBot missing methods", function()
         expect_type("number", x)
         expect_type("number", y)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:setVelocity
     -- @covers LBot:getVelocity
@@ -6297,9 +6746,7 @@ describe("ai strict: LBot missing methods", function()
         expect_type("number", vx)
         expect_type("number", vy)
     end)
-
     -- @covers LAIWorld:addAgent
-    -- @covers LBot:setPriority
     -- @covers LBot:getPriority
     -- @covers lurek.ai.newWorld
     it("getPriority returns number", function()
@@ -6307,7 +6754,6 @@ describe("ai strict: LBot missing methods", function()
         local a = w:addAgent("strict_prio")
         expect_type("number", a:getPriority())
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:addTag
     -- @covers LBot:hasTag
@@ -6318,7 +6764,6 @@ describe("ai strict: LBot missing methods", function()
         a:addTag("enemy")
         expect_type("boolean", a:hasTag("enemy"))
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:addTag
     -- @covers LBot:removeTag
@@ -6330,7 +6775,6 @@ describe("ai strict: LBot missing methods", function()
         local ok = pcall(function() a:removeTag("boss") end)
         expect_true(ok)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:getBlackboard
     -- @covers lurek.ai.newWorld
@@ -6340,7 +6784,6 @@ describe("ai strict: LBot missing methods", function()
         local bb = a:getBlackboard()
         expect_true(bb ~= nil)
     end)
-
     -- @covers LAIWorld:addAgent
     -- @covers LBot:type
     -- @covers LBot:typeOf
@@ -6363,7 +6806,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", t:type())
         expect_type("boolean", t:typeOf("LObject"))
     end)
-
     -- @covers LStimulusWorld:type
     -- @covers LStimulusWorld:typeOf
     -- @covers lurek.ai.newStimulusWorld
@@ -6372,7 +6814,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", s:type())
         expect_type("boolean", s:typeOf("LObject"))
     end)
-
     -- @covers LContextSteering:type
     -- @covers LContextSteering:typeOf
     -- @covers lurek.ai.newContextSteering
@@ -6381,7 +6822,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", c:type())
         expect_type("boolean", c:typeOf("LObject"))
     end)
-
     -- @covers LNeedSystem:type
     -- @covers LNeedSystem:typeOf
     -- @covers lurek.ai.newNeedSystem
@@ -6390,7 +6830,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", n:type())
         expect_type("boolean", n:typeOf("LObject"))
     end)
-
     -- @covers LAIDirector:type
     -- @covers LAIDirector:typeOf
     -- @covers lurek.ai.newAIDirector
@@ -6399,7 +6838,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", d:type())
         expect_type("boolean", d:typeOf("LObject"))
     end)
-
     -- @covers LHTNDomain:type
     -- @covers LHTNDomain:typeOf
     -- @covers lurek.ai.newHTNDomain
@@ -6408,7 +6846,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", h:type())
         expect_type("boolean", h:typeOf("LObject"))
     end)
-
     -- @covers LMCTSEngine:type
     -- @covers LMCTSEngine:typeOf
     -- @covers lurek.ai.newMCTSEngine
@@ -6417,7 +6854,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", m:type())
         expect_type("boolean", m:typeOf("LObject"))
     end)
-
     -- @covers LEmotionModel:type
     -- @covers LEmotionModel:typeOf
     -- @covers lurek.ai.newEmotionModel
@@ -6426,7 +6862,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", e:type())
         expect_type("boolean", e:typeOf("LObject"))
     end)
-
     -- @covers LORCASolver:type
     -- @covers LORCASolver:typeOf
     -- @covers lurek.ai.newORCASolver
@@ -6435,7 +6870,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", o:type())
         expect_type("boolean", o:typeOf("LObject"))
     end)
-
     -- @covers LNeuralNet:type
     -- @covers LNeuralNet:typeOf
     -- @covers lurek.ai.newNeuralNet
@@ -6444,7 +6878,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", nn:type())
         expect_type("boolean", nn:typeOf("LObject"))
     end)
-
     -- @covers LGeneticAlgorithm:type
     -- @covers LGeneticAlgorithm:typeOf
     -- @covers lurek.ai.newGeneticAlgorithm
@@ -6453,7 +6886,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", ga:type())
         expect_type("boolean", ga:typeOf("LObject"))
     end)
-
     -- @covers LBandit:type
     -- @covers LBandit:typeOf
     -- @covers lurek.ai.newBandit
@@ -6462,7 +6894,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", b:type())
         expect_type("boolean", b:typeOf("LObject"))
     end)
-
     -- @covers LNeuroevolution:type
     -- @covers LNeuroevolution:typeOf
     -- @covers lurek.ai.newNeuroevolution
@@ -6471,7 +6902,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", ne:type())
         expect_type("boolean", ne:typeOf("LObject"))
     end)
-
     -- @covers LStrategyAI:type
     -- @covers LStrategyAI:typeOf
     -- @covers lurek.ai.newStrategyAI
@@ -6480,7 +6910,6 @@ describe("ai strict: missing type methods", function()
         expect_type("string", s:type())
         expect_type("boolean", s:typeOf("LObject"))
     end)
-
     -- @covers LAILod:type
     -- @covers LAILod:typeOf
     -- @covers lurek.ai.newAILod

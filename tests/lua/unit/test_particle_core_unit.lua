@@ -28,7 +28,6 @@ describe("lurek.particle.newSystem", function()
         -- default system starts active
         expect_true(lurek.particle.isActive(ps), "default system should be active")
     end)
-
     -- @covers lurek.particle.newSystem
     it("newSystem with config table", function()
         local ps = lurek.particle.newSystem({ emissionRate = 50, maxParticles = 100 })
@@ -59,21 +58,18 @@ describe("lurek.particle lifecycle", function()
         local ps = lurek.particle.newSystem()
         expect_true(lurek.particle.isActive(ps), "new system should be active")
     end)
-
     -- @covers lurek.particle.isPaused
     -- @covers lurek.particle.newSystem
     it("isPaused returns false for new system", function()
         local ps = lurek.particle.newSystem()
         expect_true(not lurek.particle.isPaused(ps), "new system should not be paused")
     end)
-
     -- @covers lurek.particle.isStopped
     -- @covers lurek.particle.newSystem
     it("isStopped returns false for new (active) system", function()
         local ps = lurek.particle.newSystem()
         expect_true(not lurek.particle.isStopped(ps), "new system should not be stopped")
     end)
-
     -- @covers lurek.particle.isStopped
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.stop
@@ -82,7 +78,6 @@ describe("lurek.particle lifecycle", function()
         lurek.particle.stop(ps)
         expect_true(lurek.particle.isStopped(ps), "stopped system should report isStopped")
     end)
-
     -- @covers lurek.particle.isPaused
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.pause
@@ -91,7 +86,6 @@ describe("lurek.particle lifecycle", function()
         lurek.particle.pause(ps)
         expect_true(lurek.particle.isPaused(ps), "paused system should report isPaused")
     end)
-
     -- @covers lurek.particle.isActive
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.start
@@ -102,7 +96,6 @@ describe("lurek.particle lifecycle", function()
         lurek.particle.start(ps)
         expect_true(lurek.particle.isActive(ps), "started system should be active")
     end)
-
     -- @covers lurek.particle.getCount
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.reset
@@ -123,21 +116,18 @@ describe("lurek.particle.getCount / isEmpty / isFull", function()
         local ps = lurek.particle.newSystem()
         expect_equal(0, lurek.particle.getCount(ps), "count before update")
     end)
-
     -- @covers lurek.particle.isEmpty
     -- @covers lurek.particle.newSystem
     it("isEmpty returns true when count is 0", function()
         local ps = lurek.particle.newSystem()
         expect_true(lurek.particle.isEmpty(ps), "empty before update")
     end)
-
     -- @covers lurek.particle.isFull
     -- @covers lurek.particle.newSystem
     it("isFull returns false for fresh system", function()
         local ps = lurek.particle.newSystem({ maxParticles = 100 })
         expect_true(not lurek.particle.isFull(ps), "not full before update")
     end)
-
     -- @covers lurek.particle.emit
     -- @covers lurek.particle.getCount
     -- @covers lurek.particle.newSystem
@@ -148,7 +138,6 @@ describe("lurek.particle.getCount / isEmpty / isFull", function()
         lurek.particle.emit(ps, 10)
         expect_true(lurek.particle.getCount(ps) > 0, "count should increase after emit")
     end)
-
     -- @covers lurek.particle.getCount
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.update
@@ -171,7 +160,6 @@ describe("lurek.particle position", function()
         expect_true(math.abs(x - 100) < 0.001, "x position should match")
         expect_true(math.abs(y - 200) < 0.001, "y position should match")
     end)
-
     -- @covers lurek.particle.getPosition
     -- @covers lurek.particle.newSystem
     it("getPosition returns 0,0 by default", function()
@@ -180,7 +168,6 @@ describe("lurek.particle position", function()
         expect_true(math.abs(x) < 0.001, "default x should be 0")
         expect_true(math.abs(y) < 0.001, "default y should be 0")
     end)
-
     -- @covers lurek.particle.getPosition
     -- @covers lurek.particle.moveTo
     -- @covers lurek.particle.newSystem
@@ -204,7 +191,6 @@ describe("lurek.particle emission settings", function()
         local rate = lurek.particle.getEmissionRate(ps)
         expect_true(math.abs(rate - 99.0) < 0.001, "emission rate round-trip")
     end)
-
     -- @covers lurek.particle.getParticleLifetime
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setParticleLifetime
@@ -215,7 +201,6 @@ describe("lurek.particle emission settings", function()
         expect_true(math.abs(mn - 0.5) < 0.001, "lifetime min")
         expect_true(math.abs(mx - 2.5) < 0.001, "lifetime max")
     end)
-
     -- @covers lurek.particle.getEmitterLifetime
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setEmitterLifetime
@@ -225,7 +210,6 @@ describe("lurek.particle emission settings", function()
         local t = lurek.particle.getEmitterLifetime(ps)
         expect_true(math.abs(t - 5.0) < 0.001, "emitter lifetime")
     end)
-
     -- @covers lurek.particle.getSpeed
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setSpeed
@@ -236,7 +220,6 @@ describe("lurek.particle emission settings", function()
         expect_true(math.abs(mn - 20.0) < 0.001, "speed min")
         expect_true(math.abs(mx - 80.0) < 0.001, "speed max")
     end)
-
     -- @covers lurek.particle.getDirection
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setDirection
@@ -246,7 +229,6 @@ describe("lurek.particle emission settings", function()
         local d = lurek.particle.getDirection(ps)
         expect_true(math.abs(d - 1.23) < 0.001, "direction")
     end)
-
     -- @covers lurek.particle.getSpread
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setSpread
@@ -272,7 +254,6 @@ describe("lurek.particle acceleration settings", function()
         expect_true(math.abs(xmax - 10) < 0.001, "accel xmax")
         expect_true(math.abs(ymax - 50) < 0.001, "accel ymax")
     end)
-
     -- @covers lurek.particle.getRadialAcceleration
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setRadialAcceleration
@@ -283,7 +264,6 @@ describe("lurek.particle acceleration settings", function()
         expect_true(math.abs(mn - (-5.0)) < 0.001, "radial accel min")
         expect_true(math.abs(mx - 5.0) < 0.001, "radial accel max")
     end)
-
     -- @covers lurek.particle.getTangentialAcceleration
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setTangentialAcceleration
@@ -294,7 +274,6 @@ describe("lurek.particle acceleration settings", function()
         expect_true(math.abs(mn - 1.0) < 0.001, "tangential accel min")
         expect_true(math.abs(mx - 3.0) < 0.001, "tangential accel max")
     end)
-
     -- @covers lurek.particle.getLinearDamping
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setLinearDamping
@@ -321,7 +300,6 @@ describe("lurek.particle size settings", function()
         expect_true(math.abs(sizes[3] - 2.0) < 0.001, "size[3]")
         expect_true(math.abs(sizes[4] - 1.0) < 0.001, "size[4]")
     end)
-
     -- @covers lurek.particle.getSizeVariation
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setSizeVariation
@@ -345,7 +323,6 @@ describe("lurek.particle rotation settings", function()
         expect_true(math.abs(mn - 0.1) < 0.001, "rotation min")
         expect_true(math.abs(mx - 0.9) < 0.001, "rotation max")
     end)
-
     -- @covers lurek.particle.getSpin
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setSpin
@@ -356,7 +333,6 @@ describe("lurek.particle rotation settings", function()
         expect_true(math.abs(mn - 0.2) < 0.001, "spin min")
         expect_true(math.abs(mx - 1.5) < 0.001, "spin max")
     end)
-
     -- @covers lurek.particle.getSpinVariation
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setSpinVariation
@@ -366,7 +342,6 @@ describe("lurek.particle rotation settings", function()
         local v = lurek.particle.getSpinVariation(ps)
         expect_true(math.abs(v - 0.75) < 0.001, "spin variation")
     end)
-
     -- @covers lurek.particle.hasRelativeRotation
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setRelativeRotation
@@ -413,7 +388,6 @@ describe("lurek.particle rendering settings", function()
         expect_true(math.abs(ox - 4.0) < 0.001, "offset x")
         expect_true(math.abs(oy - 8.0) < 0.001, "offset y")
     end)
-
     -- @covers lurek.particle.getInsertMode
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setInsertMode
@@ -422,7 +396,6 @@ describe("lurek.particle rendering settings", function()
         lurek.particle.setInsertMode(ps, "top")
         expect_equal("top", lurek.particle.getInsertMode(ps), "insert mode")
     end)
-
     -- @covers lurek.particle.getInsertMode
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setInsertMode
@@ -431,7 +404,6 @@ describe("lurek.particle rendering settings", function()
         lurek.particle.setInsertMode(ps, "bottom")
         expect_equal("bottom", lurek.particle.getInsertMode(ps), "insert mode bottom")
     end)
-
     -- @covers lurek.particle.getInsertMode
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setInsertMode
@@ -440,7 +412,6 @@ describe("lurek.particle rendering settings", function()
         lurek.particle.setInsertMode(ps, "random")
         expect_equal("random", lurek.particle.getInsertMode(ps), "insert mode random")
     end)
-
     -- @covers lurek.particle.getBufferSize
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setBufferSize
@@ -462,7 +433,6 @@ describe("lurek.particle emission area", function()
         local dist, w, h = lurek.particle.getEmissionArea(ps)
         expect_equal("none", dist, "area distribution none")
     end)
-
     -- @covers lurek.particle.getEmissionArea
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setEmissionArea
@@ -474,7 +444,6 @@ describe("lurek.particle emission area", function()
         expect_true(math.abs(w - 100) < 0.001, "area width")
         expect_true(math.abs(h - 50) < 0.001, "area height")
     end)
-
     -- @covers lurek.particle.getEmissionArea
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.setEmissionArea
@@ -495,7 +464,6 @@ describe("lurek.particle object-method syntax", function()
         ps:update(0.016)
         expect_true(true, "object-method update works")
     end)
-
     -- @covers LParticleSystem:isActive
     -- @covers LParticleSystem:isPaused
     -- @covers LParticleSystem:isStopped
@@ -512,7 +480,6 @@ describe("lurek.particle object-method syntax", function()
         ps:pause()
         expect_true(ps:isPaused(), "ps:isPaused after ps:pause")
     end)
-
     -- @covers LParticleSystem:emit
     -- @covers LParticleSystem:getCount
     -- @covers LParticleSystem:stop
@@ -523,28 +490,24 @@ describe("lurek.particle object-method syntax", function()
         ps:emit(5)
         expect_true(ps:getCount() > 0, "count after ps:emit")
     end)
-
     -- @covers LParticleSystem:type
     -- @covers lurek.particle.newSystem
     it("ps:type() returns 'LParticleSystem'", function()
         local ps = lurek.particle.newSystem()
         expect_equal("LParticleSystem", ps:type(), "type")
     end)
-
     -- @covers LParticleSystem:typeOf
     -- @covers lurek.particle.newSystem
     it("ps:typeOf('Drawable') returns true", function()
         local ps = lurek.particle.newSystem()
         expect_true(ps:typeOf("LDrawable"), "typeOf Drawable")
     end)
-
     -- @covers LParticleSystem:typeOf
     -- @covers lurek.particle.newSystem
     it("ps:typeOf('Object') returns true", function()
         local ps = lurek.particle.newSystem()
         expect_true(ps:typeOf("LObject"), "typeOf Object")
     end)
-
     -- @covers LParticleSystem:typeOf
     -- @covers lurek.particle.newSystem
     it("ps:typeOf('NonExistent') returns false", function()
@@ -578,7 +541,6 @@ describe("lurek.particle.release", function()
         local ok = lurek.particle.release(ps)
         expect_equal(true, ok, "release returns true")
     end)
-
     -- @covers lurek.particle.getCount
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -607,11 +569,26 @@ describe("particle shapes", function()
         end
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:setShape
+    it("invalid shape name raises error [LParticleSystem:setShape]", function()
+        local ps = lurek.particle.newSystem({ maxParticles = 10 })
+        expect_error(function()
+            ps:setShape("hexagon")
+        end)
+        lurek.particle.release(ps)
+    end)
+
     -- @covers lurek.particle.newSystem
+    it("invalid shape name raises error [lurek.particle.newSystem]", function()
+        local ps = lurek.particle.newSystem({ maxParticles = 10 })
+        expect_error(function()
+            ps:setShape("hexagon")
+        end)
+        lurek.particle.release(ps)
+    end)
+
     -- @covers lurek.particle.release
-    it("invalid shape name raises error", function()
+    it("invalid shape name raises error [lurek.particle.release]", function()
         local ps = lurek.particle.newSystem({ maxParticles = 10 })
         expect_error(function()
             ps:setShape("hexagon")
@@ -627,7 +604,6 @@ describe("particle shapes", function()
         expect_equal(ps:getShape(), "square")
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:getShape
     -- @covers LParticleSystem:setShape
     -- @covers lurek.particle.newSystem
@@ -663,7 +639,6 @@ describe("particle gravity", function()
         expect_equal(lurek.particle.getCount(ps), 1)
         lurek.particle.release(ps)
     end)
-
     -- @covers lurek.particle.getGravity
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -688,7 +663,6 @@ describe("new particle shapes", function()
             expect_equal(ps:getShape(), shape_name)
             lurek.particle.release(ps)
         end)
-
         -- @covers LParticleSystem:getShape
         -- @covers LParticleSystem:setShape
         -- @covers lurek.particle.newSystem
@@ -709,7 +683,6 @@ describe("new particle shapes", function()
         expect_equal(ps:getShape(), "shrapnel")
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:getShape
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -718,7 +691,6 @@ describe("new particle shapes", function()
         expect_equal(ps:getShape(), "ray")
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:getShape
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -746,7 +718,6 @@ describe("particle warm_up", function()
         expect_true(ps:count() > 0, "warmUp should produce particles")
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:warmUp
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -777,7 +748,6 @@ describe("particle attractors", function()
         expect_equal(ps:getAttractorCount(), 3)
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:addAttractor
     -- @covers LParticleSystem:clearAttractors
     -- @covers LParticleSystem:getAttractorCount
@@ -791,7 +761,6 @@ describe("particle attractors", function()
         expect_equal(ps:getAttractorCount(), 0)
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:addAttractor
     -- @covers LParticleSystem:count
     -- @covers LParticleSystem:start
@@ -824,7 +793,6 @@ describe("particle bounce bounds", function()
         expect_true(ok, "setBounds should not crash")
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:clearBounds
     -- @covers LParticleSystem:setBounds
     -- @covers lurek.particle.newSystem
@@ -836,7 +804,6 @@ describe("particle bounce bounds", function()
         expect_true(ok, "clearBounds should not crash")
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:count
     -- @covers LParticleSystem:setBounds
     -- @covers LParticleSystem:update
@@ -876,7 +843,6 @@ describe("lurek.particle addSubEmitter", function()
         }, 3)
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:addSubEmitter
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -902,7 +868,6 @@ describe("lurek.particle setFlipbook / getFlipbook", function()
         expect_near(fps, 12.0, 0.001)
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:getFlipbook
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -914,7 +879,6 @@ describe("lurek.particle setFlipbook / getFlipbook", function()
         expect_equal(fps, nil)
         lurek.particle.release(ps)
     end)
-
     -- @covers LParticleSystem:setFlipbook
     -- @covers lurek.particle.newSystem
     -- @covers lurek.particle.release
@@ -924,7 +888,6 @@ describe("lurek.particle setFlipbook / getFlipbook", function()
         expect_equal(ok, false, "setFlipbook(0, ...) must raise an error")
         lurek.particle.release(ps)
     end)
-
 end)
 
 -- =========================================================================
@@ -943,7 +906,6 @@ describe("lurek.particle trail", function()
         expect_equal(trail:typeOf("LTrail"), true)
         expect_equal(trail:typeOf("LObject"), true)
     end)
-
     -- @covers LTrail:clear
     -- @covers LTrail:getPointCount
     -- @covers LTrail:pushPoint
@@ -957,7 +919,6 @@ describe("lurek.particle trail", function()
         trail:clear()
         expect_equal(trail:getPointCount(), 0)
     end)
-
     -- @covers LTrail:getLifetime
     -- @covers LTrail:getWidth
     -- @covers LTrail:setLifetime
@@ -973,7 +934,6 @@ describe("lurek.particle trail", function()
         trail:setLifetime(2.5)
         expect_near(trail:getLifetime(), 2.5, 0.0001)
     end)
-
     -- @covers LTrail:getPointCount
     -- @covers LTrail:pushPoint
     -- @covers LTrail:setMinDistance
@@ -986,7 +946,6 @@ describe("lurek.particle trail", function()
         trail:pushPoint(20.0, 0.0)
         expect_equal(trail:getPointCount(), 2)
     end)
-
     -- @covers LTrail:drawToImage
     -- @covers lurek.particle.newTrail
     it("draws to image data with requested dimensions", function()
@@ -996,7 +955,6 @@ describe("lurek.particle trail", function()
         expect_equal(image:getWidth(), 64)
         expect_equal(image:getHeight(), 32)
     end)
-
 end)
 
 -- Phase 03: Extensibility Hooks
@@ -1015,7 +973,6 @@ describe("particle sub-systems", function()
         local ps = lurek.particle.newSystem({ maxParticles = 64 })
         expect_equal(ps:subSystemCount(), 0)
     end)
-
     -- @covers LParticleSystem:addSubSystem
     -- @covers LParticleSystem:subSystemCount
     -- @covers lurek.particle.newSystem
@@ -1024,7 +981,6 @@ describe("particle sub-systems", function()
         ps:addSubSystem({ maxParticles = 16 })
         expect_equal(ps:subSystemCount(), 1)
     end)
-
     -- @covers LParticleSystem:addSubSystem
     -- @covers lurek.particle.newSystem
     it("addSubSystem returns 1-based index", function()
@@ -1045,8 +1001,16 @@ describe("particle custom emission shape", function()
     end)
 
     -- @covers LParticleSystem:setCustomEmissionShape
+    it("setCustomEmissionShape accepts a callback without error [LParticleSystem:setCustomEmissionShape]", function()
+        local ps = lurek.particle.newSystem({ maxParticles = 64 })
+        local ok = pcall(function()
+            ps:setCustomEmissionShape(function() return 0, 0 end)
+        end)
+        expect_true(ok, "setCustomEmissionShape should accept a callback function")
+    end)
+
     -- @covers lurek.particle.newSystem
-    it("setCustomEmissionShape accepts a callback without error", function()
+    it("setCustomEmissionShape accepts a callback without error [lurek.particle.newSystem]", function()
         local ps = lurek.particle.newSystem({ maxParticles = 64 })
         local ok = pcall(function()
             ps:setCustomEmissionShape(function() return 0, 0 end)
@@ -1055,10 +1019,55 @@ describe("particle custom emission shape", function()
     end)
 
     -- @covers LParticleSystem:emit
+    it("callback is invoked when particles are emitted and updated [LParticleSystem:emit]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 8,
+            emissionRate = 0,
+        })
+        local calls = 0
+        ps:setCustomEmissionShape(function()
+            calls = calls + 1
+            return 10, 20
+        end)
+        ps:emit(3)
+        ps:update(0.016)
+        expect_true(calls >= 3, "custom shape callback should be called for each emitted particle")
+    end)
+
     -- @covers LParticleSystem:setCustomEmissionShape
+    it("callback is invoked when particles are emitted and updated [LParticleSystem:setCustomEmissionShape]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 8,
+            emissionRate = 0,
+        })
+        local calls = 0
+        ps:setCustomEmissionShape(function()
+            calls = calls + 1
+            return 10, 20
+        end)
+        ps:emit(3)
+        ps:update(0.016)
+        expect_true(calls >= 3, "custom shape callback should be called for each emitted particle")
+    end)
+
     -- @covers LParticleSystem:update
+    it("callback is invoked when particles are emitted and updated [LParticleSystem:update]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 8,
+            emissionRate = 0,
+        })
+        local calls = 0
+        ps:setCustomEmissionShape(function()
+            calls = calls + 1
+            return 10, 20
+        end)
+        ps:emit(3)
+        ps:update(0.016)
+        expect_true(calls >= 3, "custom shape callback should be called for each emitted particle")
+    end)
+
     -- @covers lurek.particle.newSystem
-    it("callback is invoked when particles are emitted and updated", function()
+    it("callback is invoked when particles are emitted and updated [lurek.particle.newSystem]", function()
         local ps = lurek.particle.newSystem({
             maxParticles = 8,
             emissionRate = 0,
@@ -1083,8 +1092,16 @@ describe("particle death batch callback", function()
     end)
 
     -- @covers LParticleSystem:setOnDeathBatch
+    it("setOnDeathBatch accepts a callback without error [LParticleSystem:setOnDeathBatch]", function()
+        local ps = lurek.particle.newSystem({ maxParticles = 64 })
+        local ok = pcall(function()
+            ps:setOnDeathBatch(function(_batch) end)
+        end)
+        expect_true(ok, "setOnDeathBatch should accept a callback function")
+    end)
+
     -- @covers lurek.particle.newSystem
-    it("setOnDeathBatch accepts a callback without error", function()
+    it("setOnDeathBatch accepts a callback without error [lurek.particle.newSystem]", function()
         local ps = lurek.particle.newSystem({ maxParticles = 64 })
         local ok = pcall(function()
             ps:setOnDeathBatch(function(_batch) end)
@@ -1093,10 +1110,58 @@ describe("particle death batch callback", function()
     end)
 
     -- @covers LParticleSystem:emit
+    it("death batch callback is invoked when particles die [LParticleSystem:emit]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 8,
+            emissionRate = 0,
+            lifetimeMin = 0.001,
+            lifetimeMax = 0.001,
+        })
+        local death_count = 0
+        ps:setOnDeathBatch(function(batch)
+            death_count = death_count + #batch
+        end)
+        ps:emit(3)
+        ps:update(1.0)  -- enough to kill all 3
+        expect_true(death_count >= 3, "death batch callback should receive all 3 dead particles")
+    end)
+
     -- @covers LParticleSystem:setOnDeathBatch
+    it("death batch callback is invoked when particles die [LParticleSystem:setOnDeathBatch]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 8,
+            emissionRate = 0,
+            lifetimeMin = 0.001,
+            lifetimeMax = 0.001,
+        })
+        local death_count = 0
+        ps:setOnDeathBatch(function(batch)
+            death_count = death_count + #batch
+        end)
+        ps:emit(3)
+        ps:update(1.0)  -- enough to kill all 3
+        expect_true(death_count >= 3, "death batch callback should receive all 3 dead particles")
+    end)
+
     -- @covers LParticleSystem:update
+    it("death batch callback is invoked when particles die [LParticleSystem:update]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 8,
+            emissionRate = 0,
+            lifetimeMin = 0.001,
+            lifetimeMax = 0.001,
+        })
+        local death_count = 0
+        ps:setOnDeathBatch(function(batch)
+            death_count = death_count + #batch
+        end)
+        ps:emit(3)
+        ps:update(1.0)  -- enough to kill all 3
+        expect_true(death_count >= 3, "death batch callback should receive all 3 dead particles")
+    end)
+
     -- @covers lurek.particle.newSystem
-    it("death batch callback is invoked when particles die", function()
+    it("death batch callback is invoked when particles die [lurek.particle.newSystem]", function()
         local ps = lurek.particle.newSystem({
             maxParticles = 8,
             emissionRate = 0,
@@ -1113,10 +1178,76 @@ describe("particle death batch callback", function()
     end)
 
     -- @covers LParticleSystem:emit
+    it("death batch entries have x, y, vx, vy fields [LParticleSystem:emit]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 4,
+            emissionRate = 0,
+            lifetimeMin = 0.001,
+            lifetimeMax = 0.001,
+        })
+        local entry = nil
+        ps:setOnDeathBatch(function(batch)
+            if #batch > 0 then entry = batch[1] end
+        end)
+        ps:emit(1)
+        ps:update(1.0)
+        expect_true(entry ~= nil, "should have received a death entry")
+        if entry then
+            expect_equal(type(entry.x), "number")
+            expect_equal(type(entry.y), "number")
+            expect_equal(type(entry.vx), "number")
+            expect_equal(type(entry.vy), "number")
+        end
+    end)
+
     -- @covers LParticleSystem:setOnDeathBatch
+    it("death batch entries have x, y, vx, vy fields [LParticleSystem:setOnDeathBatch]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 4,
+            emissionRate = 0,
+            lifetimeMin = 0.001,
+            lifetimeMax = 0.001,
+        })
+        local entry = nil
+        ps:setOnDeathBatch(function(batch)
+            if #batch > 0 then entry = batch[1] end
+        end)
+        ps:emit(1)
+        ps:update(1.0)
+        expect_true(entry ~= nil, "should have received a death entry")
+        if entry then
+            expect_equal(type(entry.x), "number")
+            expect_equal(type(entry.y), "number")
+            expect_equal(type(entry.vx), "number")
+            expect_equal(type(entry.vy), "number")
+        end
+    end)
+
     -- @covers LParticleSystem:update
+    it("death batch entries have x, y, vx, vy fields [LParticleSystem:update]", function()
+        local ps = lurek.particle.newSystem({
+            maxParticles = 4,
+            emissionRate = 0,
+            lifetimeMin = 0.001,
+            lifetimeMax = 0.001,
+        })
+        local entry = nil
+        ps:setOnDeathBatch(function(batch)
+            if #batch > 0 then entry = batch[1] end
+        end)
+        ps:emit(1)
+        ps:update(1.0)
+        expect_true(entry ~= nil, "should have received a death entry")
+        if entry then
+            expect_equal(type(entry.x), "number")
+            expect_equal(type(entry.y), "number")
+            expect_equal(type(entry.vx), "number")
+            expect_equal(type(entry.vy), "number")
+        end
+    end)
+
     -- @covers lurek.particle.newSystem
-    it("death batch entries have x, y, vx, vy fields", function()
+    it("death batch entries have x, y, vx, vy fields [lurek.particle.newSystem]", function()
         local ps = lurek.particle.newSystem({
             maxParticles = 4,
             emissionRate = 0,
@@ -1160,9 +1291,25 @@ end)
 -- @describe LTrail color endpoints
 describe("LTrail color endpoints", function()
     -- @covers LTrail:setHeadColor
+    it("setHeadColor and setTailColor accept rgba values [LTrail:setHeadColor]", function()
+        local trail = lurek.particle.newTrail(1.0, 4.0)
+        expect_no_error(function()
+            trail:setHeadColor(1.0, 0.1, 0.2, 1.0)
+            trail:setTailColor(0.1, 0.2, 1.0, 0.5)
+        end)
+    end)
+
     -- @covers LTrail:setTailColor
+    it("setHeadColor and setTailColor accept rgba values [LTrail:setTailColor]", function()
+        local trail = lurek.particle.newTrail(1.0, 4.0)
+        expect_no_error(function()
+            trail:setHeadColor(1.0, 0.1, 0.2, 1.0)
+            trail:setTailColor(0.1, 0.2, 1.0, 0.5)
+        end)
+    end)
+
     -- @covers lurek.particle.newTrail
-    it("setHeadColor and setTailColor accept rgba values", function()
+    it("setHeadColor and setTailColor accept rgba values [lurek.particle.newTrail]", function()
         local trail = lurek.particle.newTrail(1.0, 4.0)
         expect_no_error(function()
             trail:setHeadColor(1.0, 0.1, 0.2, 1.0)
@@ -1250,7 +1397,6 @@ describe("particle strict uncovered methods", function()
         expect_type("boolean", ps:isEmpty())
         expect_type("boolean", ps:isFull())
     end)
-
     -- @covers LParticleSystem:setPosition
     -- @covers LParticleSystem:setEmissionRate
     -- @covers LParticleSystem:setParticleLifetime
@@ -1316,7 +1462,6 @@ describe("particle strict uncovered methods", function()
         local ok_release = pcall(function() ps:release() end)
         expect_type("boolean", ok_release)
     end)
-
     -- @covers LTrail:update
     -- @covers lurek.particle.newTrail
     it("trail update is callable", function()
@@ -1354,7 +1499,6 @@ describe("unit: migrated from integration/test_particle_timer.lua", function()
 
             expect_true(pe:getCount() > 0, "emitter should contain particles after emit")
         end)
-
         -- @covers LParticleSystem:setEmissionRate
         -- @covers LParticleSystem:setParticleLifetime
         -- @covers LParticleSystem:setPosition
@@ -1378,7 +1522,6 @@ describe("unit: migrated from integration/test_particle_timer.lua", function()
             expect_equal(200.0, last.x, "last trail x = 200")
             expect_equal(100.0, last.y, "last trail y = 100")
         end)
-
 end)
 
 -- @describe particle presets and physics collision

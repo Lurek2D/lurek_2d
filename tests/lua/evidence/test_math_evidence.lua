@@ -1,20 +1,5 @@
 -- test_math_evidence.lua
 -- Clean evidence suite for lurek.math with PNG-only outputs.
--- @covers lurek.color.fromHsl
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.math.applyEasing
--- @covers lurek.math.bresenham
--- @covers lurek.math.clamp
--- @covers lurek.math.distance
--- @covers lurek.math.pointInPolygon
--- @covers lurek.math.polygonArea
--- @covers lurek.math.polygonCentroid
--- @covers lurek.math.segmentIntersectsSegment
--- @covers lurek.math.vec2
--- @covers lurek.procgen.fbm
--- @covers lurek.procgen.perlin2d
--- @covers lurek.procgen.simplex2d
 
 
 
@@ -38,7 +23,10 @@ describe("Evidence: lurek.math visual scenarios", function()
         ensure_evidence_dir("math")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.math.vec2
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: math_vec2_unit_circle.png -- normalized vectors on unit circle", function()
         local w, h = 240, 240
         local img = lurek.image.newImageData(w, h)
@@ -58,7 +46,9 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.math.distance
+    -- @covers lurek.math.clamp
     it("PNG: math_distance_heatmap.png -- radial distance map", function()
         local w, h = 256, 192
         local img = lurek.image.newImageData(w, h)
@@ -77,7 +67,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.perlin2d
     it("PNG: math_perlin2d_map.png -- seeded perlin field", function()
         local w, h = 256, 192
         local img = lurek.image.newImageData(w, h)
@@ -95,7 +86,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.simplex2d
     it("PNG: math_simplex2d_map.png -- simplex field", function()
         local w, h = 256, 192
         local img = lurek.image.newImageData(w, h)
@@ -113,7 +105,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.fbm
     it("PNG: math_fbm_terrain.png -- fBm terrain shades", function()
         local w, h = 256, 192
         local img = lurek.image.newImageData(w, h)
@@ -139,7 +132,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.math.applyEasing
     it("PNG: math_easing_curves.png -- multiple easing function curves", function()
         local w, h = 300, 200
         local img = lurek.image.newImageData(w, h)
@@ -173,7 +167,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.math.segmentIntersectsSegment
     it("PNG: math_segment_intersections.png -- segment intersection grid", function()
         local w, h = 300, 220
         local img = lurek.image.newImageData(w, h)
@@ -203,7 +198,10 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.math.polygonCentroid
+    -- @covers lurek.math.polygonArea
+    -- @covers lurek.math.pointInPolygon
     it("PNG: math_polygon_metrics.png -- area, centroid and inside test map", function()
         local w, h = 300, 220
         local img = lurek.image.newImageData(w, h)
@@ -236,7 +234,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.color.fromHsl
     it("PNG: math_hsl_gradient.png -- HSL to RGB conversion gradient", function()
         local w, h = 320, 96
         local img = lurek.image.newImageData(w, h)
@@ -255,7 +254,8 @@ describe("Evidence: lurek.math visual scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.math.bresenham
     it("PNG: math_bresenham_rays.png -- raster rays from center", function()
         local w, h = 256, 256
         local img = lurek.image.newImageData(w, h)

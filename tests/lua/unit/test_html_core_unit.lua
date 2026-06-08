@@ -168,7 +168,6 @@ describe("HtmlDocument content API", function()
         doc:relayout()
         expect_false(doc:isDirty(), "isDirty must be false after relayout")
     end)
-    -- @covers lurek.html
     it("update(dt) does not error", function()
         local doc = make_doc()
         local ok, err = pcall(function() doc:update(1/60) end)
@@ -275,13 +274,11 @@ describe("HtmlDocument event and input API", function()
         return doc
     end
 
-    -- @covers lurek.html
     it("on() returns a non-nil handle", function()
         local doc = make_doc()
         local handle = doc:on("click", function() end)
         expect_not_nil(handle, "on() must return a handle")
     end)
-    -- @covers lurek.html
     -- @covers LHtmlDocument:off
     -- @covers LHtmlElement:off
     it("off(handle) does not error", function()
@@ -351,13 +348,11 @@ describe("HtmlElement DOM manipulation API", function()
         el:setId("para2")
         expect_equal(el:getId(), "para2", "setId must update the id")
     end)
-    -- @covers lurek.html
     -- @covers LHtmlElement:getText
     it("getText returns the text content", function()
         local el = make_el()
         expect_equal(el:getText(), "Hello", "getText must return 'Hello'")
     end)
-    -- @covers lurek.html
     -- @covers LHtmlElement:getText
     -- @covers LHtmlElement:setText
     it("setText updates text content", function()
@@ -426,7 +421,6 @@ describe("HtmlElement DOM manipulation API", function()
         expect_false(el:hasClass("highlight"),
             "class must be absent after toggle-remove")
     end)
-    -- @covers lurek.html
     -- @covers LHtmlElement:getStyle
     -- @covers LHtmlElement:setStyle
     -- @covers LTheme:setStyle
@@ -451,7 +445,6 @@ describe("HtmlElement DOM manipulation API", function()
         local ok, err = pcall(function() el:focus() end)
         expect_true(ok, "focus() must not error: " .. tostring(err))
     end)
-    -- @covers lurek.html
     -- @covers LHtmlElement:blur
     it("blur does not error", function()
         local el = make_el()
@@ -482,13 +475,11 @@ describe("HtmlElement DOM manipulation API", function()
         expect_type("table", results,
             "element:queryAll must return a table")
     end)
-    -- @covers lurek.html
     it("element:on returns a handle", function()
         local el = make_el()
         local h = el:on("click", function() end)
         expect_not_nil(h, "element:on must return a handle")
     end)
-    -- @covers lurek.html
     -- @covers LHtmlDocument:off
     -- @covers LHtmlElement:off
     it("element:off with handle does not error", function()

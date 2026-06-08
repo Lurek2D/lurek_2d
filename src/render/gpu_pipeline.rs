@@ -196,7 +196,7 @@ struct LurekGlobals {{
 @group(0) @binding(0) var<uniform> lurek: LurekGlobals;
 {uniform_decls}
 @vertex
-pub(crate) fn vs_main(in: VertexInput) -> VertexOutput {{
+fn vs_main(in: VertexInput) -> VertexOutput {{
     var out: VertexOutput;
     let view = mat3x3<f32>(
         lurek.view_col0.xyz,
@@ -216,7 +216,7 @@ pub(crate) fn vs_main(in: VertexInput) -> VertexOutput {{
 }}
 {user_source}
 @fragment
-pub(crate) fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
     return {fragment_entry}({fragment_call_args});
 }}
 "#,
@@ -259,7 +259,7 @@ struct LurekGlobals {{
 @group(1) @binding(1) var s_diffuse: sampler;
 {uniform_decls}
 @vertex
-pub(crate) fn vs_main(in: VertexInput) -> VertexOutput {{
+fn vs_main(in: VertexInput) -> VertexOutput {{
     var out: VertexOutput;
     let view = mat3x3<f32>(
         lurek.view_col0.xyz,
@@ -277,7 +277,7 @@ pub(crate) fn vs_main(in: VertexInput) -> VertexOutput {{
 }}
 {user_source}
 @fragment
-pub(crate) fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
     let sampled = textureSample(t_diffuse, s_diffuse, in.uv) * in.color;
     return {fragment_entry}({fragment_call_args});
 }}

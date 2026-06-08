@@ -79,12 +79,53 @@ describe("Query", function()
         local all_pos = world:query("pos")
         expect_equal(2, #all_pos)
     end)
-
     -- @covers LUniverse:each
+    it("iterates matching entities with each() [LUniverse:each]", function()
+        local world = lurek.ecs.newUniverse()
+        local p = world:spawn()
+        world:set(p, "pos", {x=0, y=0})
+        local q = world:spawn()
+        world:set(q, "pos", {x=5, y=5})
+
+        local count = 0
+        world:each("pos", function(id, val)
+            count = count + 1
+        end)
+        expect_equal(2, count)
+    end)
+
     -- @covers LUniverse:set
+    it("iterates matching entities with each() [LUniverse:set]", function()
+        local world = lurek.ecs.newUniverse()
+        local p = world:spawn()
+        world:set(p, "pos", {x=0, y=0})
+        local q = world:spawn()
+        world:set(q, "pos", {x=5, y=5})
+
+        local count = 0
+        world:each("pos", function(id, val)
+            count = count + 1
+        end)
+        expect_equal(2, count)
+    end)
+
     -- @covers LUniverse:spawn
+    it("iterates matching entities with each() [LUniverse:spawn]", function()
+        local world = lurek.ecs.newUniverse()
+        local p = world:spawn()
+        world:set(p, "pos", {x=0, y=0})
+        local q = world:spawn()
+        world:set(q, "pos", {x=5, y=5})
+
+        local count = 0
+        world:each("pos", function(id, val)
+            count = count + 1
+        end)
+        expect_equal(2, count)
+    end)
+
     -- @covers lurek.ecs.newUniverse
-    it("iterates matching entities with each()", function()
+    it("iterates matching entities with each() [lurek.ecs.newUniverse]", function()
         local world = lurek.ecs.newUniverse()
         local p = world:spawn()
         world:set(p, "pos", {x=0, y=0})
@@ -168,7 +209,6 @@ describe("Bitmap Tags", function()
         local any_tags = world:queryBitmapAny({"fast", "strong"})
         expect_equal(2, #any_tags)
     end)
-
     -- @covers LUniverse:bitmapTag
     -- @covers LUniverse:bitmapUntag
     -- @covers LUniverse:hasBitmapTag
@@ -244,7 +284,6 @@ describe("Blueprints", function()
         expect_equal(30, world:get(g, "hp"))
         expect_equal(100, world:get(g, "speed"))
     end)
-
     -- @covers LUniverse:defineBlueprint
     -- @covers LUniverse:get
     -- @covers LUniverse:set
@@ -259,7 +298,6 @@ describe("Blueprints", function()
         local g2 = world:spawnBlueprint("goblin")
         expect_equal(30, world:get(g2, "hp"))
     end)
-
     -- @covers LUniverse:defineBlueprint
     -- @covers LUniverse:extendBlueprint
     -- @covers LUniverse:get
@@ -275,7 +313,6 @@ describe("Blueprints", function()
         expect_equal(100, world:get(bg, "speed"))
         expect_equal(true, world:get(bg, "boss"))
     end)
-
     -- @covers LUniverse:defineBlueprint
     -- @covers LUniverse:get
     -- @covers LUniverse:spawnBlueprint
@@ -288,7 +325,6 @@ describe("Blueprints", function()
         expect_equal(50, world:get(g, "hp"))
         expect_equal(100, world:get(g, "speed"))
     end)
-
     -- @covers LUniverse:defineBlueprint
     -- @covers LUniverse:hasBlueprint
     -- @covers LUniverse:listBlueprints
@@ -305,7 +341,6 @@ describe("Blueprints", function()
         world:removeBlueprint("boss")
         expect_false(world:hasBlueprint("boss"))
     end)
-
     -- @covers LUniverse:defineBlueprint
     -- @covers LUniverse:getBlueprintComponents
     -- @covers lurek.ecs.newUniverse
@@ -344,7 +379,6 @@ describe("Systems", function()
         world:emit("draw")
         expect_equal(1, draw_count)
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:emit
     -- @covers lurek.ecs.newUniverse
@@ -359,7 +393,6 @@ describe("Systems", function()
         world:emit("onHit", 42)
         expect_equal(42, custom_count)
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:getSystemCount
     -- @covers LUniverse:removeSystem
@@ -416,7 +449,6 @@ describe("parent-child hierarchy", function()
         world:setParent(child, parent)
         expect_equal(parent, world:getParent(child))
     end)
-
     -- @covers LUniverse:getParent
     -- @covers LUniverse:spawn
     -- @covers lurek.ecs.newUniverse
@@ -425,7 +457,6 @@ describe("parent-child hierarchy", function()
         local e = world:spawn()
         expect_nil(world:getParent(e))
     end)
-
     -- @covers LUniverse:getChildren
     -- @covers LUniverse:setParent
     -- @covers LUniverse:spawn
@@ -443,7 +474,6 @@ describe("parent-child hierarchy", function()
         end
         expect_true(found, "child id should appear in getChildren")
     end)
-
     -- @covers LUniverse:getChildren
     -- @covers LUniverse:spawn
     -- @covers lurek.ecs.newUniverse
@@ -454,7 +484,6 @@ describe("parent-child hierarchy", function()
         expect_type("table", children)
         expect_equal(0, #children)
     end)
-
     -- @covers LUniverse:getChildren
     -- @covers LUniverse:getParent
     -- @covers LUniverse:setParent
@@ -471,7 +500,6 @@ describe("parent-child hierarchy", function()
         expect_nil(world:getParent(child))
         expect_equal(0, #world:getChildren(parent))
     end)
-
     -- @covers LUniverse:isAlive
     -- @covers LUniverse:killRecursive
     -- @covers LUniverse:setParent
@@ -502,7 +530,6 @@ describe("World.getEntities", function()
         local result = world:getEntities()
         expect_type("table", result)
     end)
-
     -- @covers LUniverse:getEntities
     -- @covers LUniverse:spawn
     -- @covers lurek.ecs.newUniverse
@@ -519,7 +546,6 @@ describe("World.getEntities", function()
         expect_true(found_e1, "e1 in getEntities")
         expect_true(found_e2, "e2 in getEntities")
     end)
-
     -- @covers LUniverse:getEntities
     -- @covers LUniverse:kill
     -- @covers LUniverse:spawn
@@ -557,11 +583,87 @@ end)
 -- @describe component observers
 describe("component observers", function()
     -- @covers LUniverse:flushObservers
+    it("onComponentAdded fires after flushObservers [LUniverse:flushObservers]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        local last_id = nil
+        local last_name = nil
+        w:onComponentAdded("hp", function(id, name)
+            fired = fired + 1
+            last_id = id
+            last_name = name
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 100)
+        expect_equal(0, fired) -- not fired yet
+        w:flushObservers()
+        expect_equal(1, fired)
+        expect_equal(e, last_id)
+        expect_equal("hp", last_name)
+    end)
+
     -- @covers LUniverse:onComponentAdded
+    it("onComponentAdded fires after flushObservers [LUniverse:onComponentAdded]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        local last_id = nil
+        local last_name = nil
+        w:onComponentAdded("hp", function(id, name)
+            fired = fired + 1
+            last_id = id
+            last_name = name
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 100)
+        expect_equal(0, fired) -- not fired yet
+        w:flushObservers()
+        expect_equal(1, fired)
+        expect_equal(e, last_id)
+        expect_equal("hp", last_name)
+    end)
+
     -- @covers LUniverse:set
+    it("onComponentAdded fires after flushObservers [LUniverse:set]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        local last_id = nil
+        local last_name = nil
+        w:onComponentAdded("hp", function(id, name)
+            fired = fired + 1
+            last_id = id
+            last_name = name
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 100)
+        expect_equal(0, fired) -- not fired yet
+        w:flushObservers()
+        expect_equal(1, fired)
+        expect_equal(e, last_id)
+        expect_equal("hp", last_name)
+    end)
+
     -- @covers LUniverse:spawn
+    it("onComponentAdded fires after flushObservers [LUniverse:spawn]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        local last_id = nil
+        local last_name = nil
+        w:onComponentAdded("hp", function(id, name)
+            fired = fired + 1
+            last_id = id
+            last_name = name
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 100)
+        expect_equal(0, fired) -- not fired yet
+        w:flushObservers()
+        expect_equal(1, fired)
+        expect_equal(e, last_id)
+        expect_equal("hp", last_name)
+    end)
+
     -- @covers lurek.ecs.newUniverse
-    it("onComponentAdded fires after flushObservers", function()
+    it("onComponentAdded fires after flushObservers [lurek.ecs.newUniverse]", function()
         local w = lurek.ecs.newUniverse()
         local fired = 0
         local last_id = nil
@@ -581,13 +683,295 @@ describe("component observers", function()
     end)
 
     -- @covers LUniverse:flushObservers
+    it("onComponentRemoved fires after flushObservers [LUniverse:flushObservers]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        w:onComponentRemoved("hp", function(id, name)
+            fired = fired + 1
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 50)
+        w:flushObservers()   -- consume add event
+        w:remove(e, "hp")
+        expect_equal(0, fired) -- not yet
+        w:flushObservers()
+        expect_equal(1, fired)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentRemoved
+        -- @covers LUniverse:remove
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("removing absent component does not fire remove event", function()
+            local w = lurek.ecs.newUniverse()
+            local fired = 0
+            w:onComponentRemoved("hp", function() fired = fired + 1 end)
+            local e = w:spawn()
+            -- hp never set
+            w:remove(e, "hp")
+            w:flushObservers()
+            expect_equal(0, fired)
+        end)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentAdded
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("multiple observers on same component all fire", function()
+            local w = lurek.ecs.newUniverse()
+            local count = 0
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            local e = w:spawn()
+            w:set(e, "pos", {x=0,y=0})
+            w:flushObservers()
+            expect_equal(2, count)
+        end)
+    end)
+
     -- @covers LUniverse:onComponentAdded
+    it("onComponentRemoved fires after flushObservers [LUniverse:onComponentAdded]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        w:onComponentRemoved("hp", function(id, name)
+            fired = fired + 1
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 50)
+        w:flushObservers()   -- consume add event
+        w:remove(e, "hp")
+        expect_equal(0, fired) -- not yet
+        w:flushObservers()
+        expect_equal(1, fired)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentRemoved
+        -- @covers LUniverse:remove
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("removing absent component does not fire remove event", function()
+            local w = lurek.ecs.newUniverse()
+            local fired = 0
+            w:onComponentRemoved("hp", function() fired = fired + 1 end)
+            local e = w:spawn()
+            -- hp never set
+            w:remove(e, "hp")
+            w:flushObservers()
+            expect_equal(0, fired)
+        end)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentAdded
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("multiple observers on same component all fire", function()
+            local w = lurek.ecs.newUniverse()
+            local count = 0
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            local e = w:spawn()
+            w:set(e, "pos", {x=0,y=0})
+            w:flushObservers()
+            expect_equal(2, count)
+        end)
+    end)
+
     -- @covers LUniverse:onComponentRemoved
+    it("onComponentRemoved fires after flushObservers [LUniverse:onComponentRemoved]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        w:onComponentRemoved("hp", function(id, name)
+            fired = fired + 1
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 50)
+        w:flushObservers()   -- consume add event
+        w:remove(e, "hp")
+        expect_equal(0, fired) -- not yet
+        w:flushObservers()
+        expect_equal(1, fired)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentRemoved
+        -- @covers LUniverse:remove
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("removing absent component does not fire remove event", function()
+            local w = lurek.ecs.newUniverse()
+            local fired = 0
+            w:onComponentRemoved("hp", function() fired = fired + 1 end)
+            local e = w:spawn()
+            -- hp never set
+            w:remove(e, "hp")
+            w:flushObservers()
+            expect_equal(0, fired)
+        end)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentAdded
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("multiple observers on same component all fire", function()
+            local w = lurek.ecs.newUniverse()
+            local count = 0
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            local e = w:spawn()
+            w:set(e, "pos", {x=0,y=0})
+            w:flushObservers()
+            expect_equal(2, count)
+        end)
+    end)
+
     -- @covers LUniverse:remove
+    it("onComponentRemoved fires after flushObservers [LUniverse:remove]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        w:onComponentRemoved("hp", function(id, name)
+            fired = fired + 1
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 50)
+        w:flushObservers()   -- consume add event
+        w:remove(e, "hp")
+        expect_equal(0, fired) -- not yet
+        w:flushObservers()
+        expect_equal(1, fired)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentRemoved
+        -- @covers LUniverse:remove
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("removing absent component does not fire remove event", function()
+            local w = lurek.ecs.newUniverse()
+            local fired = 0
+            w:onComponentRemoved("hp", function() fired = fired + 1 end)
+            local e = w:spawn()
+            -- hp never set
+            w:remove(e, "hp")
+            w:flushObservers()
+            expect_equal(0, fired)
+        end)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentAdded
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("multiple observers on same component all fire", function()
+            local w = lurek.ecs.newUniverse()
+            local count = 0
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            local e = w:spawn()
+            w:set(e, "pos", {x=0,y=0})
+            w:flushObservers()
+            expect_equal(2, count)
+        end)
+    end)
+
     -- @covers LUniverse:set
+    it("onComponentRemoved fires after flushObservers [LUniverse:set]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        w:onComponentRemoved("hp", function(id, name)
+            fired = fired + 1
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 50)
+        w:flushObservers()   -- consume add event
+        w:remove(e, "hp")
+        expect_equal(0, fired) -- not yet
+        w:flushObservers()
+        expect_equal(1, fired)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentRemoved
+        -- @covers LUniverse:remove
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("removing absent component does not fire remove event", function()
+            local w = lurek.ecs.newUniverse()
+            local fired = 0
+            w:onComponentRemoved("hp", function() fired = fired + 1 end)
+            local e = w:spawn()
+            -- hp never set
+            w:remove(e, "hp")
+            w:flushObservers()
+            expect_equal(0, fired)
+        end)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentAdded
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("multiple observers on same component all fire", function()
+            local w = lurek.ecs.newUniverse()
+            local count = 0
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            local e = w:spawn()
+            w:set(e, "pos", {x=0,y=0})
+            w:flushObservers()
+            expect_equal(2, count)
+        end)
+    end)
+
     -- @covers LUniverse:spawn
+    it("onComponentRemoved fires after flushObservers [LUniverse:spawn]", function()
+        local w = lurek.ecs.newUniverse()
+        local fired = 0
+        w:onComponentRemoved("hp", function(id, name)
+            fired = fired + 1
+        end)
+        local e = w:spawn()
+        w:set(e, "hp", 50)
+        w:flushObservers()   -- consume add event
+        w:remove(e, "hp")
+        expect_equal(0, fired) -- not yet
+        w:flushObservers()
+        expect_equal(1, fired)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentRemoved
+        -- @covers LUniverse:remove
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("removing absent component does not fire remove event", function()
+            local w = lurek.ecs.newUniverse()
+            local fired = 0
+            w:onComponentRemoved("hp", function() fired = fired + 1 end)
+            local e = w:spawn()
+            -- hp never set
+            w:remove(e, "hp")
+            w:flushObservers()
+            expect_equal(0, fired)
+        end)
+
+        -- @covers LUniverse:flushObservers
+        -- @covers LUniverse:onComponentAdded
+        -- @covers LUniverse:set
+        -- @covers LUniverse:spawn
+        -- @covers lurek.ecs.newUniverse
+        it("multiple observers on same component all fire", function()
+            local w = lurek.ecs.newUniverse()
+            local count = 0
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            w:onComponentAdded("pos", function() count = count + 1 end)
+            local e = w:spawn()
+            w:set(e, "pos", {x=0,y=0})
+            w:flushObservers()
+            expect_equal(2, count)
+        end)
+    end)
+
     -- @covers lurek.ecs.newUniverse
-    it("onComponentRemoved fires after flushObservers", function()
+    it("onComponentRemoved fires after flushObservers [lurek.ecs.newUniverse]", function()
         local w = lurek.ecs.newUniverse()
         local fired = 0
         w:onComponentRemoved("hp", function(id, name)
@@ -657,7 +1041,6 @@ describe("queryNot", function()
         expect_equal(1, #res)
         expect_equal(e2, res[1])
     end)
-
     -- @covers LUniverse:queryNot
     -- @covers LUniverse:set
     -- @covers LUniverse:spawn
@@ -671,7 +1054,6 @@ describe("queryNot", function()
         local res = w:queryNot({"Speed"}, {})
         expect_equal(2, #res)
     end)
-
     -- @covers LUniverse:queryNot
     -- @covers LUniverse:set
     -- @covers LUniverse:spawn
@@ -687,7 +1069,6 @@ describe("queryNot", function()
         -- e2 and e3 should appear
         expect_equal(2, #res)
     end)
-
     -- @covers LUniverse:queryNot
     -- @covers LUniverse:set
     -- @covers LUniverse:spawn
@@ -727,7 +1108,6 @@ describe("lurek.ecs Universe directed relationships", function()
         expect_equal(1, #related)
         expect_equal(e2, related[1])
     end)
-
     -- @covers LUniverse:addRelation
     -- @covers LUniverse:hasRelation
     -- @covers LUniverse:spawn
@@ -739,7 +1119,6 @@ describe("lurek.ecs Universe directed relationships", function()
         u:addRelation(e1, "enemy", e2)
         expect_equal(true, u:hasRelation(e1, "enemy", e2))
     end)
-
     -- @covers LUniverse:hasRelation
     -- @covers LUniverse:spawn
     -- @covers lurek.ecs.newUniverse
@@ -749,7 +1128,6 @@ describe("lurek.ecs Universe directed relationships", function()
         local e2 = u:spawn()
         expect_equal(false, u:hasRelation(e1, "ally", e2))
     end)
-
     -- @covers LUniverse:addRelation
     -- @covers LUniverse:hasRelation
     -- @covers LUniverse:removeRelation
@@ -763,7 +1141,6 @@ describe("lurek.ecs Universe directed relationships", function()
         u:removeRelation(e1, "ally", e2)
         expect_equal(false, u:hasRelation(e1, "ally", e2))
     end)
-
     -- @covers LUniverse:addRelation
     -- @covers LUniverse:clearRelations
     -- @covers LUniverse:getRelated
@@ -779,7 +1156,6 @@ describe("lurek.ecs Universe directed relationships", function()
         u:clearRelations(e1, "friend")
         expect_equal(0, #u:getRelated(e1, "friend"))
     end)
-
     -- @covers LUniverse:addRelation
     -- @covers LUniverse:getRelated
     -- @covers LUniverse:spawn
@@ -792,7 +1168,6 @@ describe("lurek.ecs Universe directed relationships", function()
         u:addRelation(e1, "link", e2)
         expect_equal(1, #u:getRelated(e1, "link"))
     end)
-
     -- @covers LUniverse:addRelation
     -- @covers LUniverse:getRelated
     -- @covers LUniverse:spawn
@@ -804,7 +1179,6 @@ describe("lurek.ecs Universe directed relationships", function()
         u:addRelation(e1, "owns", e2)
         expect_equal(0, #u:getRelated(e2, "owns"))
     end)
-
 end)
 
 --  serialization (merged from test_entity_serialization.lua)
@@ -824,7 +1198,6 @@ describe("serialize and deserialize", function()
         expect_equal("table", type(snap.entities))
         expect_equal("table", type(snap.bitmap_tags))
     end)
-
     -- @covers LUniverse:serialize
     -- @covers LUniverse:spawn
     -- @covers lurek.ecs.newUniverse
@@ -834,7 +1207,6 @@ describe("serialize and deserialize", function()
         local snap = w:serialize()
         expect_equal(3, #snap.entities)
     end)
-
     -- @covers LUniverse:clear
     -- @covers LUniverse:deserialize
     -- @covers LUniverse:get
@@ -857,7 +1229,6 @@ describe("serialize and deserialize", function()
         local hp = w:get(ids[1], "hp")
         expect_equal(42, hp)
     end)
-
     -- @covers LUniverse:addTag
     -- @covers LUniverse:clear
     -- @covers LUniverse:deserialize
@@ -876,7 +1247,6 @@ describe("serialize and deserialize", function()
         local enemies = w:getEntitiesByTag("enemy")
         expect_equal(1, #enemies)
     end)
-
     -- @covers LUniverse:clear
     -- @covers LUniverse:defineBlueprint
     -- @covers LUniverse:deserialize
@@ -927,7 +1297,6 @@ describe("system priority", function()
         expect_equal("B", order[2])
         expect_equal("C", order[3])
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:update
     -- @covers lurek.ecs.newUniverse
@@ -942,7 +1311,6 @@ describe("system priority", function()
         expect_equal("early", order[1])
         expect_equal("default", order[2])
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:getSystemCount
     -- @covers lurek.ecs.newUniverse
@@ -968,7 +1336,6 @@ describe("ecs strict: LUniverse release/spawnBulk/type/typeOf", function()
         expect_type("string", u:type())
         expect_type("boolean", u:typeOf("LObject"))
     end)
-
     -- @covers LUniverse:release
     -- @covers lurek.ecs.newUniverse
     it("LUniverse release is callable", function()
@@ -976,7 +1343,6 @@ describe("ecs strict: LUniverse release/spawnBulk/type/typeOf", function()
         local ok = pcall(function() u:release() end)
         expect_type("boolean", ok)
     end)
-
     -- @covers LUniverse:spawnBulk
     -- @covers lurek.ecs.newUniverse
     it("LUniverse spawnBulk is callable for unknown archetype", function()
@@ -989,10 +1355,76 @@ end)
 -- @describe queryMulti
 describe("queryMulti", function()
     -- @covers LUniverse:queryMulti
+    it("calls callback with id and component values for matching entities [LUniverse:queryMulti]", function()
+        local w = lurek.ecs.newUniverse()
+        local a = w:spawn()
+        local b = w:spawn()
+        local c = w:spawn()
+        w:set(a, "pos", {x=1, y=2})
+        w:set(a, "vel", {x=3, y=4})
+        w:set(b, "pos", {x=5, y=6})   -- no vel
+        w:set(c, "pos", {x=7, y=8})
+        w:set(c, "vel", {x=9, y=10})
+
+        local ids_seen = {}
+        local sum_x = 0
+        w:queryMulti({"pos", "vel"}, function(id, p, v)
+            table.insert(ids_seen, id)
+            sum_x = sum_x + p.x + v.x
+        end)
+
+        expect_equal(2, #ids_seen)
+        expect_equal(1+3+7+9, sum_x)
+    end)
+
     -- @covers LUniverse:set
+    it("calls callback with id and component values for matching entities [LUniverse:set]", function()
+        local w = lurek.ecs.newUniverse()
+        local a = w:spawn()
+        local b = w:spawn()
+        local c = w:spawn()
+        w:set(a, "pos", {x=1, y=2})
+        w:set(a, "vel", {x=3, y=4})
+        w:set(b, "pos", {x=5, y=6})   -- no vel
+        w:set(c, "pos", {x=7, y=8})
+        w:set(c, "vel", {x=9, y=10})
+
+        local ids_seen = {}
+        local sum_x = 0
+        w:queryMulti({"pos", "vel"}, function(id, p, v)
+            table.insert(ids_seen, id)
+            sum_x = sum_x + p.x + v.x
+        end)
+
+        expect_equal(2, #ids_seen)
+        expect_equal(1+3+7+9, sum_x)
+    end)
+
     -- @covers LUniverse:spawn
+    it("calls callback with id and component values for matching entities [LUniverse:spawn]", function()
+        local w = lurek.ecs.newUniverse()
+        local a = w:spawn()
+        local b = w:spawn()
+        local c = w:spawn()
+        w:set(a, "pos", {x=1, y=2})
+        w:set(a, "vel", {x=3, y=4})
+        w:set(b, "pos", {x=5, y=6})   -- no vel
+        w:set(c, "pos", {x=7, y=8})
+        w:set(c, "vel", {x=9, y=10})
+
+        local ids_seen = {}
+        local sum_x = 0
+        w:queryMulti({"pos", "vel"}, function(id, p, v)
+            table.insert(ids_seen, id)
+            sum_x = sum_x + p.x + v.x
+        end)
+
+        expect_equal(2, #ids_seen)
+        expect_equal(1+3+7+9, sum_x)
+    end)
+
     -- @covers lurek.ecs.newUniverse
-    it("calls callback with id and component values for matching entities", function()
+    it("calls callback with id and component values for matching entities [lurek.ecs.newUniverse]", function()
         local w = lurek.ecs.newUniverse()
         local a = w:spawn()
         local b = w:spawn()
@@ -1026,7 +1458,6 @@ describe("queryMulti", function()
         w:queryMulti({"pos", "vel"}, function() count = count + 1 end)
         expect_equal(0, count)
     end)
-
     -- @covers LUniverse:queryMulti
     -- @covers lurek.ecs.newUniverse
     it("empty names list calls callback zero times", function()
@@ -1065,7 +1496,6 @@ describe("getDirtyEntities", function()
         expect_true(found_e1, "e1 should be dirty")
         expect_true(found_e3, "e3 should be dirty")
     end)
-
     -- @covers LUniverse:getDirtyEntities
     -- @covers LUniverse:flushObservers
     -- @covers LUniverse:set
@@ -1079,7 +1509,6 @@ describe("getDirtyEntities", function()
         w:flushObservers()
         expect_equal(0, #w:getDirtyEntities())
     end)
-
     -- @covers LUniverse:getDirtyEntities
     -- @covers LUniverse:remove
     -- @covers LUniverse:set
@@ -1104,7 +1533,6 @@ end)
 describe("system phases", function()
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:update
-    -- @covers LUniverse:updatePhase
     -- @covers lurek.ecs.newUniverse
     it("update() only runs systems in the update phase", function()
         local w = lurek.ecs.newUniverse()
@@ -1122,7 +1550,6 @@ describe("system phases", function()
         expect_true(update_ran, "update phase system should have run")
         expect_false(pre_ran,   "pre_update system should not run on world:update()")
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:updatePhase
     -- @covers lurek.ecs.newUniverse
@@ -1146,7 +1573,6 @@ describe("system phases", function()
         expect_equal("tick", order[2])
         expect_equal("post", order[3])
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:update
     -- @covers lurek.ecs.newUniverse
@@ -1158,7 +1584,6 @@ describe("system phases", function()
         w:update(0.016)
         expect_true(ran, "default-phase system should run on world:update()")
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:emit
     -- @covers lurek.ecs.newUniverse
@@ -1172,7 +1597,6 @@ describe("system phases", function()
         w:emit("onEvent")
         expect_equal(2, count)
     end)
-
     -- @covers LUniverse:addSystem
     -- @covers LUniverse:render
     -- @covers lurek.ecs.newUniverse
@@ -1219,7 +1643,6 @@ describe("snapshot and applySnapshot", function()
         local ids = w:getEntities()
         expect_equal(99, w:get(ids[1], "score"))
     end)
-
     -- @covers LUniverse:applySnapshot
     -- @covers LUniverse:snapshot
     -- @covers LUniverse:spawn
@@ -1340,7 +1763,6 @@ describe("unit: migrated from integration/test_save_ecs.lua", function()
             expect_equal(85, save_data[1].health, "player health preserved")
             expect_equal("Dragon", save_data[3].name, "dragon name preserved")
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_scene_ecs.lua
@@ -1374,7 +1796,6 @@ describe("unit: migrated from integration/test_scene_ecs.lua", function()
                 expect_equal(parent, pid, "child " .. i .. " references parent")
             end
         end)
-
         -- @covers LUniverse:get
         -- @covers LUniverse:kill
         -- @covers LUniverse:set
@@ -1392,7 +1813,6 @@ describe("unit: migrated from integration/test_scene_ecs.lua", function()
             local pid = universe:get(child, "parent_id")
             expect_equal(parent, pid, "orphan child still stores old parent id")
         end)
-
         -- @covers LUniverse:get
         -- @covers LUniverse:kill
         -- @covers LUniverse:set
@@ -1420,7 +1840,6 @@ describe("unit: migrated from integration/test_scene_ecs.lua", function()
             expect_false(universe:isAlive(ids[200]),  "last killed entity is no longer alive")
             expect_equal(0, universe:getEntityCount(), "all entities removed after bulk kill")
         end)
-
 end)
 
 -- @describe LUniverse dependency scheduling + snapshot diff
@@ -1447,7 +1866,6 @@ describe("LUniverse dependency scheduling + snapshot diff", function()
         expect_equal("A", order[1], "A runs before B due to dependency")
         expect_equal("B", order[2], "B runs after A")
     end)
-
     -- @covers LUniverse:set
     -- @covers LUniverse:remove
     -- @covers LUniverse:spawn
@@ -1471,7 +1889,6 @@ describe("LUniverse dependency scheduling + snapshot diff", function()
         expect_equal(0, #drained.deleted_entities, "deleted entities drained")
         expect_equal(0, #drained.dirty_entities, "dirty entities drained")
     end)
-
     -- @covers LUniverse:kill
     -- @covers LUniverse:spawn
     -- @covers LUniverse:takeSnapshotDiff

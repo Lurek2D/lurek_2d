@@ -1029,13 +1029,8 @@ describe("pipeline branch and coroutine async coverage", function()
         expect_true(table_contains(result.skipped, "gate__then"))
     end)
 
-    -- @covers LPipeline:addStep
-    -- @covers LPipeline:isRunning
-    -- @covers LPipeline:runAsync
-    -- @covers LPipeline:update
     -- @covers LPipelineStep:isAsync
     -- @covers LPipelineStep:setAsync
-    -- @covers lurek.pipeline.newPipeline
     -- @covers lurek.pipeline.newStep
     it("setAsync/isAsync toggle step async flag", function()
         local s = lurek.pipeline.newStep("co", function(ctx)

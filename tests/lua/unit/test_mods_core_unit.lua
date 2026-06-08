@@ -597,7 +597,6 @@ describe("lurek.mods API coverage", function()
         expect_equal("3.2.1", mod:getApiVersion())
     end)
 
-    -- @covers LMod:getId
     -- @covers lurek.mods.newMod
     it("newMod round-trips assets and signature through manager tables", function()
         local mm = lurek.mods.newModManager()

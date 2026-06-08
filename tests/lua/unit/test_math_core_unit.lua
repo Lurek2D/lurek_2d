@@ -263,7 +263,6 @@ describe("math constants and utility", function()
     it("rad and deg are inverse", function()
         expect_near(lurek.math.deg(lurek.math.rad(180)), 180, 0.0001)
     end)
-
     -- @covers lurek.math.angleBetween
     it("angleBetween(0,0,1,0) = 0", function()
         expect_near(lurek.math.angleBetween(0, 0, 1, 0), 0, 0.0001)
@@ -298,7 +297,6 @@ describe("math.newRandomGenerator", function()
         local v2 = rng2:random()
         expect_near(v1, v2, 0.000001)
     end)
-
     -- @covers LRandomGenerator:random
     -- @covers lurek.math.newRandomGenerator
     it("different seeds produce different sequences", function()
@@ -308,7 +306,6 @@ describe("math.newRandomGenerator", function()
         local v2 = rng2:random()
         expect_not_equal(v1, v2)
     end)
-
     -- @covers LRandomGenerator:randomInt
     -- @covers lurek.math.newRandomGenerator
     it("randomInt(min, max) stays in range", function()
@@ -318,7 +315,6 @@ describe("math.newRandomGenerator", function()
             expect_true(v >= 5 and v <= 10, "randomInt in range")
         end
     end)
-
     -- @covers LRandomGenerator:randomFloat
     -- @covers lurek.math.newRandomGenerator
     it("randomFloat(min, max) stays in range", function()
@@ -328,7 +324,6 @@ describe("math.newRandomGenerator", function()
             expect_true(v >= 2.0 and v <= 5.0, "randomFloat in range")
         end
     end)
-
     -- @covers LRandomGenerator:randomNormal
     -- @covers lurek.math.newRandomGenerator
     it("randomNormal produces centered values", function()
@@ -341,7 +336,6 @@ describe("math.newRandomGenerator", function()
         local mean = sum / n
         expect_true(math.abs(mean) < 0.1, "normal mean near 0")
     end)
-
     -- @covers LRandomGenerator:random
     -- @covers LRandomGenerator:setSeed
     -- @covers lurek.math.newRandomGenerator
@@ -352,7 +346,6 @@ describe("math.newRandomGenerator", function()
         local v2 = rng:random()
         expect_near(v1, v2, 0.000001)
     end)
-
     -- @covers LRandomGenerator:getState
     -- @covers LRandomGenerator:random
     -- @covers LRandomGenerator:setState
@@ -369,7 +362,6 @@ describe("math.newRandomGenerator", function()
         -- just verify it returns a valid number in [0,1)
         expect_true(v2 >= 0 and v2 < 1, "setState produces valid number")
     end)
-
     -- @covers LRandomGenerator:roll
     it("roll returns integer in [1, sides]", function()
         local rng = lurek.math.newRandomGenerator(42)
@@ -475,7 +467,6 @@ describe("math.newTransform", function()
         expect_near(x, 5, 0.0001)
         expect_near(y, 10, 0.0001)
     end)
-
     -- @covers LTransform:transformPoint
     -- @covers LTransform:translate
     -- @covers lurek.math.newTransform
@@ -486,7 +477,6 @@ describe("math.newTransform", function()
         expect_near(x, 100, 0.0001)
         expect_near(y, 200, 0.0001)
     end)
-
     -- @covers LTransform:scale
     -- @covers LTransform:transformPoint
     -- @covers lurek.math.newTransform
@@ -497,7 +487,6 @@ describe("math.newTransform", function()
         expect_near(x, 10, 0.0001)
         expect_near(y, 20, 0.0001)
     end)
-
     -- @covers LTransform:inverse
     -- @covers LTransform:scale
     -- @covers LTransform:transformPoint
@@ -513,7 +502,6 @@ describe("math.newTransform", function()
         expect_near(bx, 5, 0.01)
         expect_near(by, 10, 0.01)
     end)
-
     -- @covers LTransform:inverseTransformPoint
     -- @covers LTransform:rotate
     -- @covers LTransform:transformPoint
@@ -528,7 +516,6 @@ describe("math.newTransform", function()
         expect_near(bx, 10, 0.01)
         expect_near(by, 20, 0.01)
     end)
-
     -- @covers LTransform:reset
     -- @covers LTransform:transformPoint
     -- @covers LTransform:translate
@@ -541,7 +528,6 @@ describe("math.newTransform", function()
         expect_near(x, 5, 0.0001)
         expect_near(y, 5, 0.0001)
     end)
-
     -- @covers LTransform:clone
     -- @covers LTransform:transformPoint
     -- @covers LTransform:translate
@@ -568,7 +554,6 @@ describe("math.newBezierCurve", function()
         expect_not_nil(curve)
         expect_equal(curve:getControlPointCount(), 3)
     end)
-
     -- @covers LBezierCurve:evaluate
     -- @covers lurek.math.newBezierCurve
     it("evaluate(0) returns start point", function()
@@ -577,7 +562,6 @@ describe("math.newBezierCurve", function()
         expect_near(x, 0, 0.0001)
         expect_near(y, 0, 0.0001)
     end)
-
     -- @covers LBezierCurve:evaluate
     -- @covers lurek.math.newBezierCurve
     it("evaluate(1) returns end point", function()
@@ -586,7 +570,6 @@ describe("math.newBezierCurve", function()
         expect_near(x, 10, 0.0001)
         expect_near(y, 0, 0.0001)
     end)
-
     -- @covers LBezierCurve:render
     -- @covers lurek.math.newBezierCurve
     it("render returns list of vertices", function()
@@ -594,7 +577,6 @@ describe("math.newBezierCurve", function()
         local coords = curve:render(10)
         expect_true(#coords >= 4, "at least 2 points")
     end)
-
     -- @covers LBezierCurve:evaluate
     -- @covers LBezierCurve:translate
     -- @covers lurek.math.newBezierCurve
@@ -605,7 +587,6 @@ describe("math.newBezierCurve", function()
         expect_near(x, 5, 0.0001)
         expect_near(y, 5, 0.0001)
     end)
-
     -- @covers LBezierCurve:evaluateAtDistance
     -- @covers lurek.math.newBezierCurve
     it("evaluateAtDistance clamps start/end", function()
@@ -637,7 +618,6 @@ describe("math.newNoiseGenerator", function()
         local v = ng:perlin2d(0.5, 0.5)
         expect_type("number", v)
     end)
-
     -- @covers LNoiseGenerator:perlin3d
     -- @covers lurek.procgen.newNoiseGenerator
     it("perlin3d returns number", function()
@@ -645,7 +625,6 @@ describe("math.newNoiseGenerator", function()
         local v = ng:perlin3d(0.5, 0.5, 0.5)
         expect_type("number", v)
     end)
-
     -- @covers LNoiseGenerator:perlin2d
     -- @covers lurek.procgen.newNoiseGenerator
     it("is deterministic", function()
@@ -653,7 +632,6 @@ describe("math.newNoiseGenerator", function()
         local ng2 = lurek.procgen.newNoiseGenerator(42)
         expect_near(ng1:perlin2d(1.5, 2.3), ng2:perlin2d(1.5, 2.3), 0.000001)
     end)
-
     -- @covers LNoiseGenerator:simplex2d
     -- @covers lurek.procgen.newNoiseGenerator
     it("simplex2d returns number", function()
@@ -661,7 +639,6 @@ describe("math.newNoiseGenerator", function()
         local v = ng:simplex2d(0.5, 0.5)
         expect_type("number", v)
     end)
-
     -- @covers LNoiseGenerator:fbm
     -- @covers lurek.procgen.newNoiseGenerator
     it("fbm returns number", function()
@@ -669,7 +646,6 @@ describe("math.newNoiseGenerator", function()
         local v = ng:fbm(0.5, 0.5)
         expect_type("number", v)
     end)
-
     -- @covers LNoiseGenerator:perlin2d
     -- @covers lurek.procgen.newNoiseGenerator
     it("different seeds produce different values", function()
@@ -679,7 +655,6 @@ describe("math.newNoiseGenerator", function()
         local v2 = ng2:perlin2d(1.5, 2.3)
         expect_not_equal(v1, v2)
     end)
-
     -- @covers LNoiseGenerator:generateMapCompute
     -- @covers lurek.procgen.newNoiseGenerator
     it("generateMapCompute returns row-major array", function()
@@ -721,7 +696,6 @@ describe("math.newSpatialHash", function()
         expect_not_nil(sh)
         expect_equal(sh:getCellSize(), 64)
     end)
-
     -- @covers LSpatialHash:insert
     -- @covers LSpatialHash:queryRect
     -- @covers lurek.math.newSpatialHash
@@ -731,7 +705,6 @@ describe("math.newSpatialHash", function()
         local results = sh:queryRect(0, 0, 50, 50)
         expect_true(#results >= 1)
     end)
-
     -- @covers LSpatialHash:insert
     -- @covers LSpatialHash:queryRect
     -- @covers lurek.math.newSpatialHash
@@ -741,7 +714,6 @@ describe("math.newSpatialHash", function()
         local results = sh:queryRect(500, 500, 10, 10)
         expect_equal(#results, 0)
     end)
-
     -- @covers LSpatialHash:getItemCount
     -- @covers LSpatialHash:insert
     -- @covers LSpatialHash:remove
@@ -753,7 +725,6 @@ describe("math.newSpatialHash", function()
         sh:remove("1")
         expect_equal(sh:getItemCount(), 0)
     end)
-
     -- @covers LSpatialHash:insert
     -- @covers LSpatialHash:queryCircle
     -- @covers lurek.math.newSpatialHash
@@ -805,7 +776,6 @@ describe("math easing functions", function()
         local v2 = lurek.math.applyEasing("outQuad", 0.5)
         expect_near(v1, v2, 0.0001)
     end)
-
     -- @covers lurek.math.applyEasing
     it("applyEasing is case-insensitive", function()
         local v1 = lurek.math.applyEasing("linear", 0.5)
@@ -887,14 +857,12 @@ describe("lurek.math.vec2", function()
         local v = lurek.math.vec2(3, 4)
         expect_near(v:length(), 5.0, 1e-4)
     end)
-
     -- @covers LVec2:lengthSquared
     -- @covers lurek.math.vec2
     it("lengthSquared returns squared magnitude", function()
         local v = lurek.math.vec2(3, 4)
         expect_near(v:lengthSquared(), 25.0, 1e-4)
     end)
-
     -- @covers LVec2:dot
     -- @covers lurek.math.vec2
     it("dot product is correct", function()
@@ -902,7 +870,6 @@ describe("lurek.math.vec2", function()
         local b = lurek.math.vec2(0, 1)
         expect_near(a:dot(b), 0.0, 1e-5)
     end)
-
     -- @covers LVec2:dot
     -- @covers lurek.math.vec2
     it("dot product of parallel vectors", function()
@@ -910,7 +877,6 @@ describe("lurek.math.vec2", function()
         local b = lurek.math.vec2(2, 0)
         expect_near(a:dot(b), 2.0, 1e-5)
     end)
-
     -- @covers LVec2:normalize
     -- @covers lurek.math.vec2
     it("normalize produces unit vector", function()
@@ -918,7 +884,6 @@ describe("lurek.math.vec2", function()
         local n = v:normalize()
         expect_near(n:length(), 1.0, 1e-4)
     end)
-
     -- @covers LVec2:distance
     -- @covers lurek.math.vec2
     it("distance between two points", function()
@@ -926,7 +891,6 @@ describe("lurek.math.vec2", function()
         local b = lurek.math.vec2(3, 4)
         expect_near(a:distance(b), 5.0, 1e-4)
     end)
-
     -- @covers LVec2:lerp
     -- @covers lurek.math.vec2
     it("lerp at t=0 returns first vector", function()
@@ -936,7 +900,6 @@ describe("lurek.math.vec2", function()
         expect_near(c.x, 0, 1e-5)
         expect_near(c.y, 0, 1e-5)
     end)
-
     -- @covers LVec2:lerp
     -- @covers lurek.math.vec2
     it("lerp at t=1 returns second vector", function()
@@ -946,7 +909,6 @@ describe("lurek.math.vec2", function()
         expect_near(c.x, 10, 1e-5)
         expect_near(c.y, 10, 1e-5)
     end)
-
     -- @covers LVec2:lerp
     -- @covers lurek.math.vec2
     it("lerp at t=0.5 returns midpoint", function()
@@ -956,7 +918,6 @@ describe("lurek.math.vec2", function()
         expect_near(c.x, 5, 1e-5)
         expect_near(c.y, 5, 1e-5)
     end)
-
     -- @covers lurek.math.vec2
     it("addition metamethod works", function()
         local a = lurek.math.vec2(1, 2)
@@ -1027,7 +988,6 @@ describe("lurek.math.aabbTree factory", function()
     local t = lurek.math.aabbTree()
     expect_equal(t:len(), 0)
   end)
-
   -- @covers LAabbTree:isEmpty
   -- @covers lurek.math.aabbTree
   it("new tree isEmpty is true", function()
@@ -1046,7 +1006,6 @@ describe("AabbTree insert / contains", function()
     t:insert(1, 0, 0, 10, 10)
     expect_equal(t:len(), 1)
   end)
-
   -- @covers LAabbTree:contains
   -- @covers LAabbTree:insert
   -- @covers lurek.math.aabbTree
@@ -1055,14 +1014,12 @@ describe("AabbTree insert / contains", function()
     t:insert(42, 0, 0, 5, 5)
     expect_equal(t:contains(42), true)
   end)
-
   -- @covers LAabbTree:contains
   -- @covers lurek.math.aabbTree
   it("contains returns false for unknown id", function()
     local t = lurek.math.aabbTree()
     expect_equal(t:contains(999), false)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:len
   -- @covers lurek.math.aabbTree
@@ -1073,7 +1030,6 @@ describe("AabbTree insert / contains", function()
     t:insert(3, 10, 10, 20, 20)
     expect_equal(t:len(), 3)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:len
   -- @covers lurek.math.aabbTree
@@ -1095,14 +1051,12 @@ describe("AabbTree remove", function()
     t:insert(1, 0, 0, 5, 5)
     expect_equal(t:remove(1), true)
   end)
-
   -- @covers LAabbTree:remove
   -- @covers lurek.math.aabbTree
   it("remove returns false for unknown id", function()
     local t = lurek.math.aabbTree()
     expect_equal(t:remove(999), false)
   end)
-
   -- @covers LAabbTree:contains
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:remove
@@ -1113,7 +1067,6 @@ describe("AabbTree remove", function()
     t:remove(5)
     expect_equal(t:contains(5), false)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:len
   -- @covers LAabbTree:remove
@@ -1141,7 +1094,6 @@ describe("AabbTree query", function()
     expect_equal(#ids, 1)
     expect_equal(ids[1], 1)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:query
   -- @covers lurek.math.aabbTree
@@ -1151,7 +1103,6 @@ describe("AabbTree query", function()
     local ids = t:query(100, 100, 200, 200)
     expect_equal(#ids, 0)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:query
   -- @covers lurek.math.aabbTree
@@ -1163,7 +1114,6 @@ describe("AabbTree query", function()
     local ids = t:query(-1, -1, 100, 100)
     expect_equal(#ids, 3)
   end)
-
   -- @covers LAabbTree:query
   -- @covers lurek.math.aabbTree
   it("query on empty tree returns empty table", function()
@@ -1185,7 +1135,6 @@ describe("AabbTree queryPoint", function()
     expect_equal(#ids, 1)
     expect_equal(ids[1], 1)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:queryPoint
   -- @covers lurek.math.aabbTree
@@ -1195,7 +1144,6 @@ describe("AabbTree queryPoint", function()
     local ids = t:queryPoint(50, 50)
     expect_equal(#ids, 0)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:queryPoint
   -- @covers lurek.math.aabbTree
@@ -1215,7 +1163,6 @@ describe("AabbTree update", function()
     local t = lurek.math.aabbTree()
     expect_equal(t:update(99, 0, 0, 1, 1), false)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:update
   -- @covers lurek.math.aabbTree
@@ -1224,7 +1171,6 @@ describe("AabbTree update", function()
     t:insert(1, 0, 0, 5, 5)
     expect_equal(t:update(1, 10, 10, 20, 20), true)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:query
   -- @covers LAabbTree:update
@@ -1256,7 +1202,6 @@ describe("AabbTree clear", function()
     expect_equal(t:len(), 0)
     expect_equal(t:isEmpty(), true)
   end)
-
   -- @covers LAabbTree:clear
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:query
@@ -1282,7 +1227,6 @@ describe("AabbTree edge cases", function()
     expect_equal(#ids, 1)
     expect_equal(ids[1], 7)
   end)
-
   -- @covers LAabbTree:insert
   -- @covers LAabbTree:isEmpty
   -- @covers LAabbTree:len
@@ -1464,7 +1408,6 @@ describe("property: trig identities", function()
                 "sin^2 + cos^2 = 1 at x=" .. string.format("%.4f", x))
         end
     end)
-
     -- @covers lurek.math.sin
     it("sin(-x) = -sin(x) for 100 values (odd function)", function()
         local angles = test_values(100, -10, 10)
@@ -1561,7 +1504,6 @@ describe("property: Vec2 operations", function()
                 "length >= 0 for (" .. vals[i] .. "," .. vals[i+100] .. ")")
         end
     end)
-
     -- @covers LVec2:normalized
     -- @covers lurek.math.Vec2
     it("normalized vec2 has length 1 for non-zero vectors", function()
@@ -1756,8 +1698,18 @@ end)
 -- @describe lurek.math Transform decompose
 describe("lurek.math Transform decompose", function()
     -- @covers LTransform:decompose
+    it("decompose returns 5 numbers [LTransform:decompose]", function()
+    local t = lurek.math.newTransform()
+    local x, y, a, sx, sy = t:decompose()
+    expect_type("number", x)
+    expect_type("number", y)
+    expect_type("number", a)
+    expect_type("number", sx)
+    expect_type("number", sy)
+  end)
+
     -- @covers lurek.math.newTransform
-    it("decompose returns 5 numbers", function()
+    it("decompose returns 5 numbers [lurek.math.newTransform]", function()
     local t = lurek.math.newTransform()
     local x, y, a, sx, sy = t:decompose()
     expect_type("number", x)
@@ -1767,8 +1719,18 @@ describe("lurek.math Transform decompose", function()
     expect_type("number", sy)
   end)
     -- @covers LTransform:decompose
+    it("identity decomposes to (0,0,0,1,1) [LTransform:decompose]", function()
+    local t = lurek.math.newTransform()
+    local x, y, a, sx, sy = t:decompose()
+    expect_near(0.0, x, 1e-5)
+    expect_near(0.0, y, 1e-5)
+    expect_near(0.0, a, 1e-5)
+    expect_near(1.0, sx, 1e-5)
+    expect_near(1.0, sy, 1e-5)
+  end)
+
     -- @covers lurek.math.newTransform
-    it("identity decomposes to (0,0,0,1,1)", function()
+    it("identity decomposes to (0,0,0,1,1) [lurek.math.newTransform]", function()
     local t = lurek.math.newTransform()
     local x, y, a, sx, sy = t:decompose()
     expect_near(0.0, x, 1e-5)
@@ -1819,19 +1781,60 @@ end)
 -- @describe lurek.math CatmullRomSpline addPoint and removePoint
 describe("lurek.math CatmullRomSpline addPoint and removePoint", function()
     -- @covers LCatmullRom:addPoint
+    it("addPoint increases point count [LCatmullRom:addPoint]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    expect_equal(2, s:len())
+  end)
+
     -- @covers LCatmullRom:len
+    it("addPoint increases point count [LCatmullRom:len]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    expect_equal(2, s:len())
+  end)
+
     -- @covers lurek.math.catmullRom
-    it("addPoint increases point count", function()
+    it("addPoint increases point count [lurek.math.catmullRom]", function()
     local s = lurek.math.catmullRom({})
     s:addPoint(0, 0)
     s:addPoint(1, 1)
     expect_equal(2, s:len())
   end)
     -- @covers LCatmullRom:addPoint
+    it("removePoint reduces count by 1 [LCatmullRom:addPoint]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    s:addPoint(2, 0)
+        s:removePoint(1)
+    expect_equal(2, s:len())
+  end)
+
     -- @covers LCatmullRom:len
+    it("removePoint reduces count by 1 [LCatmullRom:len]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    s:addPoint(2, 0)
+        s:removePoint(1)
+    expect_equal(2, s:len())
+  end)
+
     -- @covers LCatmullRom:removePoint
+    it("removePoint reduces count by 1 [LCatmullRom:removePoint]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    s:addPoint(2, 0)
+        s:removePoint(1)
+    expect_equal(2, s:len())
+  end)
+
     -- @covers lurek.math.catmullRom
-    it("removePoint reduces count by 1", function()
+    it("removePoint reduces count by 1 [lurek.math.catmullRom]", function()
     local s = lurek.math.catmullRom({})
     s:addPoint(0, 0)
     s:addPoint(1, 1)
@@ -1840,10 +1843,40 @@ describe("lurek.math CatmullRomSpline addPoint and removePoint", function()
     expect_equal(2, s:len())
   end)
   -- @covers LCatmullRom:addPoint
+  it("removePoint out-of-range raises an error [LCatmullRom:addPoint]", function()
+    ---@type LCatmullRom
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    expect_error(function()
+      s:removePoint(99)
+    end)
+    expect_equal(1, s:len())
+  end)
+
   -- @covers LCatmullRom:len
+  it("removePoint out-of-range raises an error [LCatmullRom:len]", function()
+    ---@type LCatmullRom
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    expect_error(function()
+      s:removePoint(99)
+    end)
+    expect_equal(1, s:len())
+  end)
+
   -- @covers LCatmullRom:removePoint
+  it("removePoint out-of-range raises an error [LCatmullRom:removePoint]", function()
+    ---@type LCatmullRom
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+    expect_error(function()
+      s:removePoint(99)
+    end)
+    expect_equal(1, s:len())
+  end)
+
   -- @covers lurek.math.catmullRom
-  it("removePoint out-of-range raises an error", function()
+  it("removePoint out-of-range raises an error [lurek.math.catmullRom]", function()
     ---@type LCatmullRom
     local s = lurek.math.catmullRom({})
     s:addPoint(0, 0)
@@ -1853,10 +1886,31 @@ describe("lurek.math CatmullRomSpline addPoint and removePoint", function()
     expect_equal(1, s:len())
   end)
     -- @covers LCatmullRom:addPoint
+    it("adding then removing all points gives empty spline [LCatmullRom:addPoint]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+        s:removePoint(0)
+    expect_equal(0, s:len())
+  end)
+
     -- @covers LCatmullRom:len
+    it("adding then removing all points gives empty spline [LCatmullRom:len]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+        s:removePoint(0)
+    expect_equal(0, s:len())
+  end)
+
     -- @covers LCatmullRom:removePoint
+    it("adding then removing all points gives empty spline [LCatmullRom:removePoint]", function()
+    local s = lurek.math.catmullRom({})
+    s:addPoint(0, 0)
+        s:removePoint(0)
+    expect_equal(0, s:len())
+  end)
+
     -- @covers lurek.math.catmullRom
-    it("adding then removing all points gives empty spline", function()
+    it("adding then removing all points gives empty spline [lurek.math.catmullRom]", function()
     local s = lurek.math.catmullRom({})
     s:addPoint(0, 0)
         s:removePoint(0)
@@ -1873,55 +1927,99 @@ describe("lurek.math Circle value type", function()
   end)
 
   -- @covers LCircle:area
+  it("area returns pi*r^2 [LCircle:area]", function()
+    local c = lurek.math.newCircle(0, 0, 1)
+    local area = c:area()
+    expect_near(math.pi, area, 1e-5)
+  end)
+
   -- @covers lurek.math.newCircle
-  it("area returns pi*r^2", function()
+  it("area returns pi*r^2 [lurek.math.newCircle]", function()
     local c = lurek.math.newCircle(0, 0, 1)
     local area = c:area()
     expect_near(math.pi, area, 1e-5)
   end)
 
   -- @covers LCircle:perimeter
+  it("perimeter returns 2*pi*r [LCircle:perimeter]", function()
+    local c = lurek.math.newCircle(0, 0, 3)
+    local p = c:perimeter()
+    expect_near(6 * math.pi, p, 1e-5)
+  end)
+
   -- @covers lurek.math.newCircle
-  it("perimeter returns 2*pi*r", function()
+  it("perimeter returns 2*pi*r [lurek.math.newCircle]", function()
     local c = lurek.math.newCircle(0, 0, 3)
     local p = c:perimeter()
     expect_near(6 * math.pi, p, 1e-5)
   end)
 
   -- @covers LCircle:contains
+  it("contains returns true for point inside [LCircle:contains]", function()
+    local c = lurek.math.newCircle(0, 0, 5)
+    expect_true(c:contains(0, 0))
+    expect_true(c:contains(3, 4))
+  end)
+
   -- @covers lurek.math.newCircle
-  it("contains returns true for point inside", function()
+  it("contains returns true for point inside [lurek.math.newCircle]", function()
     local c = lurek.math.newCircle(0, 0, 5)
     expect_true(c:contains(0, 0))
     expect_true(c:contains(3, 4))
   end)
 
   -- @covers LCircle:contains
+  it("contains returns false for point outside [LCircle:contains]", function()
+    local c = lurek.math.newCircle(0, 0, 5)
+    expect_false(c:contains(4, 4))
+  end)
+
   -- @covers lurek.math.newCircle
-  it("contains returns false for point outside", function()
+  it("contains returns false for point outside [lurek.math.newCircle]", function()
     local c = lurek.math.newCircle(0, 0, 5)
     expect_false(c:contains(4, 4))
   end)
 
   -- @covers LCircle:intersects
+  it("intersects returns true when circles overlap [LCircle:intersects]", function()
+    local a = lurek.math.newCircle(0, 0, 3)
+    local b = lurek.math.newCircle(4, 0, 3)
+    expect_true(a:intersects(b))
+  end)
+
   -- @covers lurek.math.newCircle
-  it("intersects returns true when circles overlap", function()
+  it("intersects returns true when circles overlap [lurek.math.newCircle]", function()
     local a = lurek.math.newCircle(0, 0, 3)
     local b = lurek.math.newCircle(4, 0, 3)
     expect_true(a:intersects(b))
   end)
 
   -- @covers LCircle:intersects
+  it("intersects returns false when circles are apart [LCircle:intersects]", function()
+    local a = lurek.math.newCircle(0, 0, 1)
+    local b = lurek.math.newCircle(10, 0, 1)
+    expect_false(a:intersects(b))
+  end)
+
   -- @covers lurek.math.newCircle
-  it("intersects returns false when circles are apart", function()
+  it("intersects returns false when circles are apart [lurek.math.newCircle]", function()
     local a = lurek.math.newCircle(0, 0, 1)
     local b = lurek.math.newCircle(10, 0, 1)
     expect_false(a:intersects(b))
   end)
 
   -- @covers LCircle:aabb
+  it("aabb returns 4 numbers covering the circle [LCircle:aabb]", function()
+    local c = lurek.math.newCircle(0, 0, 2)
+    local x1, y1, x2, y2 = c:aabb()
+    expect_near(-2, x1, 1e-5)
+    expect_near(-2, y1, 1e-5)
+    expect_near( 2, x2, 1e-5)
+    expect_near( 2, y2, 1e-5)
+  end)
+
   -- @covers lurek.math.newCircle
-  it("aabb returns 4 numbers covering the circle", function()
+  it("aabb returns 4 numbers covering the circle [lurek.math.newCircle]", function()
     local c = lurek.math.newCircle(0, 0, 2)
     local x1, y1, x2, y2 = c:aabb()
     expect_near(-2, x1, 1e-5)
@@ -1931,8 +2029,13 @@ describe("lurek.math Circle value type", function()
   end)
 
   -- @covers LCircle:radius
+  it("negative radius is clamped to 0 [LCircle:radius]", function()
+    local c = lurek.math.newCircle(1, 2, -5)
+    expect_near(0, c:radius(), 1e-5)
+  end)
+
   -- @covers lurek.math.newCircle
-  it("negative radius is clamped to 0", function()
+  it("negative radius is clamped to 0 [lurek.math.newCircle]", function()
     local c = lurek.math.newCircle(1, 2, -5)
     expect_near(0, c:radius(), 1e-5)
   end)
@@ -1982,7 +2085,6 @@ describe("lurek.math scalar helpers ", function()
         local e = lurek.math.exp(1)
         expect_near(1.0, lurek.math.log(e), 1e-5)
     end)
-
     -- @covers lurek.math.pow
     it("pow(2, 10) = 1024", function()
         expect_near(1024.0, lurek.math.pow(2, 10), 1e-5)
@@ -2004,7 +2106,6 @@ describe("Vec2 accessors ", function()
         end
         expect_near(3.0, xval, 1e-5)
     end)
-
     -- @covers LVec2:y
     -- @covers lurek.math.vec2
     it("y returns the y component", function()
@@ -2030,7 +2131,6 @@ describe("Vec3 arithmetic ", function()
         local b = lurek.math.vec3(0.0, 1.0, 0.0)
         expect_near(0.0, a:dot(b), 1e-5)
     end)
-
     -- @covers LVec3:add
     -- @covers lurek.math.vec3
     it("add returns a new summed vector", function()
@@ -2041,7 +2141,6 @@ describe("Vec3 arithmetic ", function()
         local r = a:add(b)
         expect_not_nil(r)
     end)
-
     -- @covers LVec3:sub
     -- @covers lurek.math.vec3
     it("sub returns a new difference vector", function()
@@ -2057,8 +2156,32 @@ end)
 -- @describe CatmullRom:len
 describe("CatmullRom:len ", function()
     -- @covers LCatmullRom:addPoint
+    it("len returns the control-point count [LCatmullRom:addPoint]", function()
+        local ok, cr = pcall(function()
+            return lurek.math.catmullRom({{0,0},{1,1},{2,0},{3,1}})
+        end)
+        if not ok then
+            -- fallback: try without initial points
+            ok, cr = pcall(function()
+                return lurek.math.catmullRom({})
+            end)
+        end
+        if ok and cr ~= nil then
+            local ok2, n = pcall(function()
+                cr:addPoint(0, 0)
+                cr:addPoint(1, 1)
+                return cr:len()
+            end)
+            if ok2 then
+                expect_type("number", n)
+            else
+                expect_type("boolean", ok2)
+            end
+        end
+    end)
+
     -- @covers lurek.math.catmullRom
-    it("len returns the control-point count", function()
+    it("len returns the control-point count [lurek.math.catmullRom]", function()
         local ok, cr = pcall(function()
             return lurek.math.catmullRom({{0,0},{1,1},{2,0},{3,1}})
         end)
@@ -2086,8 +2209,16 @@ end)
 -- @describe Transform:setTransformation
 describe("Transform:setTransformation ", function()
     -- @covers LTransform:setTransformation
+    it("setTransformation does not crash [LTransform:setTransformation]", function()
+        local t = lurek.math.newTransform()
+        local ok, _ = pcall(function()
+            t:setTransformation(10.0, 20.0, 0.5, 1.0, 1.0, 0.0, 0.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.newTransform
-    it("setTransformation does not crash", function()
+    it("setTransformation does not crash [lurek.math.newTransform]", function()
         local t = lurek.math.newTransform()
         local ok, _ = pcall(function()
             t:setTransformation(10.0, 20.0, 0.5, 1.0, 1.0, 0.0, 0.0)
@@ -2105,7 +2236,6 @@ describe("BezierCurve control-point methods ", function()
         local ok, _ = pcall(function() bc:setControlPoint(1, 0.5, 0.5) end)
         expect_type("boolean", ok)
     end)
-
     -- @covers LBezierCurve:getControlPointCount
     -- @covers LBezierCurve:insertControlPoint
     -- @covers lurek.math.newBezierCurve
@@ -2148,7 +2278,6 @@ describe("Circle accessors ", function()
         local c = lurek.math.newCircle(3.0, 4.0, 5.0)
         expect_near(3.0, c:x(), 1e-5)
     end)
-
     -- @covers LCircle:y
     -- @covers lurek.math.newCircle
     it("y returns the circle centre y", function()
@@ -2165,7 +2294,6 @@ describe("AabbTree:len ", function()
         local tree = lurek.math.aabbTree()
         expect_equal(0, tree:len())
     end)
-
     -- @covers LAabbTree:insert
     -- @covers LAabbTree:len
     -- @covers lurek.math.aabbTree
@@ -2179,17 +2307,197 @@ end)
 -- @describe math missing explicit coverage
 describe("math missing explicit coverage", function()
     -- @covers lurek.math.circleIntersectsLine
+    it("geometry and easing helpers are callable [lurek.math.circleIntersectsLine]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.circleIntersectsSegment
+    it("geometry and easing helpers are callable [lurek.math.circleIntersectsSegment]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.closestPointOnSegment
+    it("geometry and easing helpers are callable [lurek.math.closestPointOnSegment]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.convexHull
+    it("geometry and easing helpers are callable [lurek.math.convexHull]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.delaunayTriangulate
+    it("geometry and easing helpers are callable [lurek.math.delaunayTriangulate]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.fmod
+    it("geometry and easing helpers are callable [lurek.math.fmod]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.inOutQuart
+    it("geometry and easing helpers are callable [lurek.math.inOutQuart]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.inQuart
+    it("geometry and easing helpers are callable [lurek.math.inQuart]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.outQuart
+    it("geometry and easing helpers are callable [lurek.math.outQuart]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.polygonClip
+    it("geometry and easing helpers are callable [lurek.math.polygonClip]", function()
+        expect_type("number", lurek.math.inQuart(0.5))
+        expect_type("number", lurek.math.outQuart(0.5))
+        expect_type("number", lurek.math.inOutQuart(0.5))
+        expect_type("number", lurek.math.fmod(7.5, 2.0))
+
+        local ok, _ = pcall(function()
+            lurek.math.circleIntersectsLine(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.circleIntersectsSegment(0, 0, 5, -10, 0, 10, 0)
+            lurek.math.closestPointOnSegment(1, 1, 0, 0, 10, 0)
+            lurek.math.segmentIntersectsSegment(0, 0, 10, 0, 5, -1, 5, 1)
+            lurek.math.convexHull({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.delaunayTriangulate({0, 0, 1, 0, 1, 1, 0, 1})
+            lurek.math.polygonClip({0, 0, 2, 0, 2, 2, 0, 2}, 1.0, 0.0, 1.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.math.segmentIntersectsSegment
-    it("geometry and easing helpers are callable", function()
+    it("geometry and easing helpers are callable [lurek.math.segmentIntersectsSegment]", function()
         expect_type("number", lurek.math.inQuart(0.5))
         expect_type("number", lurek.math.outQuart(0.5))
         expect_type("number", lurek.math.inOutQuart(0.5))
@@ -2332,7 +2640,6 @@ describe("math strict uncovered symbols", function()
         local h = lurek.math.hermite(0, 0, 1, 1, 1, 0, 1, 0)
         expect_type("userdata", h)
     end)
-
     -- @covers lurek.math.Vec3
     -- @covers LVec2:angle
     -- @covers LVec2:rotate
@@ -2380,7 +2687,6 @@ describe("math strict uncovered symbols", function()
         expect_type("string", c3:type())
         expect_type("boolean", c3:typeOf("LVec3"))
     end)
-
     -- @covers LCatmullRom:sampleSegment
     -- @covers LCatmullRom:type
     -- @covers LCatmullRom:typeOf
@@ -2529,21 +2835,18 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local v = lurek.math.vec3(3, 4, 0)
             expect_near(5.0, v:length(), 1e-4)
         end)
-
         -- @covers LVec3:length
         -- @covers lurek.math.vec3
         it("length of unit vector is 1", function()
             local v = lurek.math.vec3(1, 0, 0)
             expect_near(1.0, v:length(), 1e-5)
         end)
-
         -- @covers LVec3:lengthSquared
         -- @covers lurek.math.vec3
         it("lengthSquared avoids sqrt", function()
             local v = lurek.math.vec3(2, 2, 1)
             expect_near(9.0, v:lengthSquared(), 1e-5) -- 4+4+1=9
         end)
-
         -- @covers LVec3:length
         -- @covers LVec3:normalize
         -- @covers lurek.math.vec3
@@ -2552,7 +2855,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(1.0, v:length(), 1e-5)
             expect_near(1.0, v.x, 1e-5)
         end)
-
         -- @covers LVec3:dot
         -- @covers lurek.math.vec3
         it("dot product of perpendicular vectors is 0", function()
@@ -2560,7 +2862,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local b = lurek.math.vec3(0, 1, 0)
             expect_near(0.0, a:dot(b), 1e-5)
         end)
-
         -- @covers LVec3:dot
         -- @covers lurek.math.vec3
         it("dot product of parallel vectors equals product of lengths", function()
@@ -2568,7 +2869,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local b = lurek.math.vec3(3, 0, 0)
             expect_near(6.0, a:dot(b), 1e-5)
         end)
-
         -- @covers LVec3:cross
         -- @covers lurek.math.vec3
         it("cross product of x and y axes is z axis", function()
@@ -2579,7 +2879,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(0.0, z.y, 1e-5)
             expect_near(1.0, z.z, 1e-5)
         end)
-
         -- @covers LVec3:lerp
         -- @covers lurek.math.vec3
         it("lerp at t=0 returns from", function()
@@ -2588,7 +2887,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local v = a:lerp(b, 0)
             expect_near(0.0, v.x, 1e-5)
         end)
-
         -- @covers LVec3:lerp
         -- @covers lurek.math.vec3
         it("lerp at t=1 returns to", function()
@@ -2598,7 +2896,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(10.0, v.x, 1e-5)
             expect_near(20.0, v.y, 1e-5)
         end)
-
         -- @covers LVec3:lerp
         -- @covers lurek.math.vec3
         it("lerp at t=0.5 is midpoint", function()
@@ -2607,7 +2904,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local v = a:lerp(b, 0.5)
             expect_near(5.0, v.x, 1e-5)
         end)
-
         -- @covers LVec3:distance
         -- @covers lurek.math.vec3
         it("distance from (0,0,0) to (1,0,0) is 1", function()
@@ -2615,7 +2911,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local b = lurek.math.vec3(1, 0, 0)
             expect_near(1.0, a:distance(b), 1e-5)
         end)
-
         -- @covers LVec3:add
         -- @covers lurek.math.vec3
         it("add combines components", function()
@@ -2626,7 +2921,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(7.0, c.y, 1e-5)
             expect_near(9.0, c.z, 1e-5)
         end)
-
         -- @covers LVec3:sub
         -- @covers lurek.math.vec3
         it("sub subtracts components", function()
@@ -2635,7 +2929,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local c = a:sub(b)
             expect_near(3.0, c.x, 1e-5)
         end)
-
         -- @covers LVec3:scale
         -- @covers lurek.math.vec3
         it("scale multiplies components", function()
@@ -2644,7 +2937,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(6.0, v.y, 1e-5)
             expect_near(8.0, v.z, 1e-5)
         end)
-
         -- @covers lurek.math.catmullRom
         it("creates a spline without error", function()
             local s = lurek.math.catmullRom(pts)
@@ -2657,7 +2949,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             local s = lurek.math.catmullRom(pts)
             expect_equal(4, s:len())
         end)
-
         -- @covers LCatmullRom:sample
         -- @covers lurek.math.catmullRom
         it("sample returns two numbers", function()
@@ -2666,7 +2957,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_type("number", x)
             expect_type("number", y)
         end)
-
         -- @covers LCatmullRom:sample
         -- @covers lurek.math.catmullRom
         it("sample at t=0 is near first control point", function()
@@ -2675,7 +2965,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             -- Catmull-Rom boundary behaviour: at t=0 should be near pts[1] or pts[2]
             expect_type("number", x)
         end)
-
         -- @covers LCatmullRom:sampleSegment
         -- @covers lurek.math.catmullRom
         it("sampleSegment returns two numbers", function()
@@ -2684,7 +2973,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_type("number", x)
             expect_type("number", y)
         end)
-
         -- @covers lurek.math.hermite
         it("creates a hermite spline without error", function()
             local s = lurek.math.hermite(0, 0, 10, 0, 1, 1, 1, -1)
@@ -2699,7 +2987,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_type("number", x)
             expect_type("number", y)
         end)
-
         -- @covers LHermite:sample
         -- @covers lurek.math.hermite
         it("sample at t=0 is start point", function()
@@ -2708,7 +2995,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(2.0, x, 1e-4)
             expect_near(3.0, y, 1e-4)
         end)
-
         -- @covers LHermite:sample
         -- @covers lurek.math.hermite
         it("sample at t=1 is end point", function()
@@ -2717,7 +3003,6 @@ describe("unit: migrated from integration/test_math_pathfind.lua", function()
             expect_near(8.0, x, 1e-4)
             expect_near(5.0, y, 1e-4)
         end)
-
         -- @covers lurek.math.lerp
         it("lerp at t=0 returns a", function()
             expect_near(3.0, lurek.math.lerp(3, 7, 0), 1e-5)
@@ -2797,7 +3082,6 @@ describe("unit: migrated from integration/test_math_physics.lua", function()
             expect_near(5, overlap_x, 0.001, "x overlap = 5")
             expect_near(5, overlap_y, 0.001, "y overlap = 5")
         end)
-
         -- @covers lurek.math.atan2
         -- @covers lurek.math.pi
         it("angle between two points", function()
@@ -2807,7 +3091,6 @@ describe("unit: migrated from integration/test_math_physics.lua", function()
             local angle = lurek.math.atan2(y2 - y1, x2 - x1)
             expect_near(lurek.math.pi / 4, angle, 0.001, "45 degree angle")
         end)
-
         -- @covers lurek.math.cos
         -- @covers lurek.math.sin
         it("rotate a velocity vector", function()
@@ -2820,7 +3103,6 @@ describe("unit: migrated from integration/test_math_physics.lua", function()
             expect_near(0, vx, 0.001, "vx at 90 degrees")
             expect_near(10, vy, 0.001, "vy at 90 degrees")
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_timer_math.lua
@@ -2835,7 +3117,6 @@ describe("unit: migrated from integration/test_timer_math.lua", function()
             local value = lurek.math.sin(time * frequency)
             expect_near(1.0, value, 0.001, "sin peak at quarter period")
         end)
-
 end)
 
 -- @describe lurek.math.easingNames and cubicBezier

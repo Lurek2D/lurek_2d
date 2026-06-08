@@ -1,9 +1,6 @@
 -- test_evidence_tilemap.lua
 -- Evidence test: lurek.tilemap API + renders tile grid to PNG
 -- Produces: tilemap_grid.png, tilemap_checkerboard.png
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.tilemap.newTileMap
 
 
 
@@ -38,7 +35,9 @@ end
 
 -- @describe Evidence: lurek.tilemap API + PNG visualization
 describe("Evidence: lurek.tilemap API + PNG visualization", function()
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.image.savePNG
     it("PNG: tilemap grid with 6 different tile GIDs", function()
         local TILE = 8  -- pixel size per tile in output
         local MAP_W, MAP_H = 16, 12
@@ -68,7 +67,7 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
         lurek.image.savePNG(img, OUT .. "tilemap_grid.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: checkerboard tilemap pattern", function()
         local TILE = 8
         local MAP_W, MAP_H = 16, 16
@@ -89,7 +88,8 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- 3. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: isometric tilemap rendering", function()
         local TILE_W, TILE_H = 16, 8
         local MAP_W, MAP_H = 8, 8
@@ -124,7 +124,7 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- 4. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: hexagonal layouts (pointy top)", function()
         local HEX_SIZE = 10
         local MAP_W, MAP_H = 6, 5
@@ -163,7 +163,7 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- 5. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: animated water tiles strip", function()
         local TILE = 16
         local FRAMES = 4
@@ -187,7 +187,7 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- 6. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: multi-layer overlapping tiles", function()
         local TILE = 16
         local MAP_W, MAP_H = 4, 4
@@ -216,7 +216,7 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
     -- 7. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: auto-tiling terrain blending bitmask", function()
         local TILE = 16
         local W, H = TILE * 4, TILE * 4

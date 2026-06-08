@@ -280,11 +280,11 @@ It answers point-in-region queries for selection, triggers, and gameplay ownersh
 
 ## What High-Quality Docstrings Must Include:
 
-✅ **Functionality**: What does the module/file actually DO? (verbs: provide, implement, define, manage, handle, compute)  
-✅ **Purpose**: Why does it exist? What problem does it solve?  
-✅ **Input/Output**: What goes in? What comes out? Data contracts?  
-✅ **Integration**: Where does it fit in the larger system? Boundaries and dependencies?  
-✅ **Depth**: Each line minimum 120 characters of ACTUAL CONTENT (not padding)  
+✅ **Functionality**: What does the module/file actually DO? (verbs: provide, implement, define, manage, handle, compute)
+✅ **Purpose**: Why does it exist? What problem does it solve?
+✅ **Input/Output**: What goes in? What comes out? Data contracts?
+✅ **Integration**: Where does it fit in the larger system? Boundaries and dependencies?
+✅ **Depth**: Each line minimum 120 characters of ACTUAL CONTENT (not padding)
 
 ---
 

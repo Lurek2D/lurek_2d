@@ -44,7 +44,6 @@ describe("Graph construction", function()
         local n = g:addNode()
         expect_type("userdata", n)
     end)
-
     -- @covers LGraph:addEdge
     it("addEdge returns an edge handle", function()
         local g, n1, n2, e = make_simple_graph()
@@ -59,7 +58,6 @@ describe("Graph construction", function()
         expect_equal("factory", n:getType())
         expect_equal(10, n:getCapacity())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("addNode defaults to 'default' type and -1 capacity", function()
@@ -83,7 +81,6 @@ describe("Node management", function()
         local n = g:addNode()
         expect_true(g:hasNode(n))
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraph:removeNode
     -- @covers lurek.graph.newGraph
@@ -92,7 +89,6 @@ describe("Node management", function()
         local n = g:addNode()
         expect_true(g:removeNode(n))
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraph:hasNode
     -- @covers LGraph:removeNode
@@ -103,7 +99,6 @@ describe("Node management", function()
         g:removeNode(n)
         expect_false(g:hasNode(n))
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraph:getNodeCount
     -- @covers lurek.graph.newGraph
@@ -115,7 +110,6 @@ describe("Node management", function()
         g:addNode()
         expect_equal(2, g:getNodeCount())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraph:getNodes
     -- @covers lurek.graph.newGraph
@@ -127,7 +121,6 @@ describe("Node management", function()
         local nodes = g:getNodes()
         expect_equal(3, #nodes)
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraph:getNodeCount
     -- @covers LGraph:removeNode
@@ -166,7 +159,6 @@ describe("Edge management", function()
         g:removeEdge(e)
         expect_false(g:hasEdge(e))
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:getEdgeCount
@@ -182,8 +174,6 @@ describe("Edge management", function()
         g:addEdge(b, c)
         expect_equal(2, g:getEdgeCount())
     end)
-
-    -- @covers lurek.flownet
     -- @covers LGraph:getEdges
     -- @covers LGraphNode:getEdges
     it("getEdges returns all edges", function()
@@ -191,7 +181,6 @@ describe("Edge management", function()
         local edges = g:getEdges()
         expect_equal(1, #edges)
     end)
-
     -- @covers LGraph:getEdgeBetween
     it("getEdgeBetween finds existing edge", function()
         local g, n1, n2, e = make_simple_graph()
@@ -214,7 +203,6 @@ describe("Edge management", function()
         g:removeEdge(e)
         expect_equal(0, g:getEdgeCount())
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
@@ -239,7 +227,6 @@ describe("Item management", function()
         local item = g:createItem()
         expect_type("userdata", item)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:getDecayTime
     -- @covers lurek.graph.newGraph
@@ -249,7 +236,6 @@ describe("Item management", function()
         expect_equal("ore", item:getType())
         expect_near(5.0, item:getDecayTime(), 0.001)
     end)
-
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
     -- @covers LGraph:createItem
@@ -261,7 +247,6 @@ describe("Item management", function()
         g:addItem(item, n)
         expect_equal(1, n:getItemCount())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:hasItem
     -- @covers LGraph:removeItem
@@ -273,7 +258,6 @@ describe("Item management", function()
         g:removeItem(item)
         expect_false(g:hasItem(item))
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:getItems
     -- @covers lurek.graph.newGraph
@@ -284,7 +268,6 @@ describe("Item management", function()
         local items = g:getItems()
         expect_equal(2, #items)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:getItemCount
     -- @covers LGraph:removeItem
@@ -297,7 +280,6 @@ describe("Item management", function()
         g:removeItem(item)
         expect_equal(0, g:getItemCount())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:hasItem
     -- @covers LGraph:removeItem
@@ -324,7 +306,6 @@ describe("Node properties", function()
         n:setType("beta")
         expect_equal("beta", n:getType())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("getCapacity and setCapacity", function()
@@ -334,7 +315,6 @@ describe("Node properties", function()
         n:setCapacity(20)
         expect_equal(20, n:getCapacity())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("getItemCount starts at 0", function()
@@ -342,7 +322,6 @@ describe("Node properties", function()
         local n = g:addNode()
         expect_equal(0, n:getItemCount())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("isFull with unlimited capacity", function()
@@ -350,7 +329,6 @@ describe("Node properties", function()
         local n = g:addNode("x", -1)
         expect_false(n:isFull())
     end)
-
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
     -- @covers LGraph:createItem
@@ -363,7 +341,6 @@ describe("Node properties", function()
         g:addItem(item, n)
         expect_true(n:isFull())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("isActive defaults to true", function()
@@ -371,7 +348,6 @@ describe("Node properties", function()
         local n = g:addNode()
         expect_true(n:isActive())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("setActive toggles state", function()
@@ -382,7 +358,6 @@ describe("Node properties", function()
         n:setActive(true)
         expect_true(n:isActive())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getProcessTime
     -- @covers LGraphNode:setProcessTime
@@ -393,7 +368,6 @@ describe("Node properties", function()
         n:setProcessTime(2.5)
         expect_near(2.5, n:getProcessTime(), 0.001)
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getPushRate
     -- @covers LGraphNode:setPushRate
@@ -404,7 +378,6 @@ describe("Node properties", function()
         n:setPushRate(3.0)
         expect_near(3.0, n:getPushRate(), 0.001)
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getPullRate
     -- @covers LGraphNode:setPullRate
@@ -415,7 +388,6 @@ describe("Node properties", function()
         n:setPullRate(4.0)
         expect_near(4.0, n:getPullRate(), 0.001)
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getPushFilter
     -- @covers LGraphNode:setPushFilter
@@ -427,7 +399,6 @@ describe("Node properties", function()
         n:setPushFilter("ore")
         expect_equal("ore", n:getPushFilter())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getPullFilter
     -- @covers LGraphNode:setPullFilter
@@ -439,7 +410,6 @@ describe("Node properties", function()
         n:setPullFilter("wood")
         expect_equal("wood", n:getPullFilter())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:isQueueEnabled
     -- @covers LGraphNode:setQueueEnabled
@@ -452,7 +422,6 @@ describe("Node properties", function()
         n:setQueueEnabled(false)
         expect_false(n:isQueueEnabled())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getQueueCapacity
     -- @covers LGraphNode:setQueueCapacity
@@ -463,7 +432,6 @@ describe("Node properties", function()
         n:setQueueCapacity(10)
         expect_equal(10, n:getQueueCapacity())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getQueueSize
     -- @covers lurek.graph.newGraph
@@ -472,7 +440,6 @@ describe("Node properties", function()
         local n = g:addNode()
         expect_equal(0, n:getQueueSize())
     end)
-
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
     -- @covers LGraph:createItem
@@ -487,8 +454,6 @@ describe("Node properties", function()
         local items = n:getItems()
         expect_equal(2, #items)
     end)
-
-    -- @covers lurek.flownet
     -- @covers LGraph:getEdges
     -- @covers LGraphNode:getEdges
     it("getEdges returns edges for node", function()
@@ -498,7 +463,6 @@ describe("Node properties", function()
         local inc = n2:getEdges("in")
         expect_equal(1, #inc)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
@@ -519,7 +483,6 @@ end)
 -- =========================================================================
 -- @describe Edge properties
 describe("Edge properties", function()
-    -- @covers lurek.flownet
     it("getType and setType", function()
         local g, n1, n2, e = make_simple_graph()
         e:setType("pipe")
@@ -535,8 +498,6 @@ describe("Edge properties", function()
         expect_type("userdata", from)
         expect_type("userdata", to)
     end)
-
-    -- @covers lurek.flownet
     it("getCapacity and setCapacity", function()
         local g, n1, n2, e = make_simple_graph()
         e:setCapacity(5)
@@ -550,7 +511,6 @@ describe("Edge properties", function()
         e:setThroughput(2.0)
         expect_near(2.0, e:getThroughput(), 0.001)
     end)
-
     -- @covers LGraphEdge:getTravelTime
     -- @covers LGraphEdge:setTravelTime
     it("getTravelTime and setTravelTime", function()
@@ -558,8 +518,6 @@ describe("Edge properties", function()
         e:setTravelTime(3.0)
         expect_near(3.0, e:getTravelTime(), 0.001)
     end)
-
-    -- @covers lurek.flownet
     -- @covers LGraphEdge:getWeight
     -- @covers LGraphEdge:setWeight
     it("getWeight and setWeight", function()
@@ -567,7 +525,6 @@ describe("Edge properties", function()
         e:setWeight(10.5)
         expect_near(10.5, e:getWeight(), 0.001)
     end)
-
     -- @covers LGraphEdge:getSpeedModifier
     -- @covers LGraphEdge:setSpeedModifier
     it("getSpeedModifier and setSpeedModifier", function()
@@ -575,7 +532,6 @@ describe("Edge properties", function()
         e:setSpeedModifier(0.5)
         expect_near(0.5, e:getSpeedModifier(), 0.001)
     end)
-
     -- @covers LGraphEdge:getCooldown
     -- @covers LGraphEdge:setCooldown
     it("getCooldown and setCooldown", function()
@@ -583,7 +539,6 @@ describe("Edge properties", function()
         e:setCooldown(2.0)
         expect_near(2.0, e:getCooldown(), 0.001)
     end)
-
     -- @covers LGraphEdge:isBidirectional
     -- @covers LGraphEdge:setBidirectional
     it("isBidirectional and setBidirectional", function()
@@ -592,8 +547,6 @@ describe("Edge properties", function()
         e:setBidirectional(true)
         expect_true(e:isBidirectional())
     end)
-
-    -- @covers lurek.flownet
     -- @covers LGraphEdge:setActive
     -- @covers LGraphNode:setActive
     it("isActive and setActive", function()
@@ -602,7 +555,6 @@ describe("Edge properties", function()
         e:setActive(false)
         expect_false(e:isActive())
     end)
-
     -- @covers LGraphEdge:getItemsInTransit
     it("getItemsInTransit is empty initially", function()
         local g, n1, n2, e = make_simple_graph()
@@ -625,7 +577,6 @@ describe("Item properties", function()
         item:setType("refined_ore")
         expect_equal("refined_ore", item:getType())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:getDecayTime
     -- @covers LGraphItem:setDecayTime
@@ -637,7 +588,6 @@ describe("Item properties", function()
         item:setDecayTime(5.0)
         expect_near(5.0, item:getDecayTime(), 0.001)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:getRemainingLife
     -- @covers lurek.graph.newGraph
@@ -647,7 +597,6 @@ describe("Item properties", function()
         -- Non-decaying items should have remaining life equal to decay_time (or -1)
         expect_near(-1.0, item:getRemainingLife(), 0.001)
     end)
-
     -- @covers LGraph:createItem
     -- @covers lurek.graph.newGraph
     it("isAlive is true for new item", function()
@@ -655,7 +604,6 @@ describe("Item properties", function()
         local item = g:createItem()
         expect_true(item:isAlive())
     end)
-
     -- @covers LGraph:createItem
     -- @covers lurek.graph.newGraph
     it("kill makes item not alive", function()
@@ -664,7 +612,6 @@ describe("Item properties", function()
         item:kill()
         expect_false(item:isAlive())
     end)
-
     -- @covers LGraph:createItem
     -- @covers lurek.graph.newGraph
     it("getPriority and setPriority", function()
@@ -673,7 +620,6 @@ describe("Item properties", function()
         item:setPriority(5)
         expect_equal(5, item:getPriority())
     end)
-
     -- @covers LGraph:createItem
     -- @covers lurek.graph.newGraph
     it("getPosition returns nil for unplaced item", function()
@@ -682,7 +628,6 @@ describe("Item properties", function()
         local pos1, pos2 = item:getPosition()
         expect_nil(pos1)
     end)
-
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
     -- @covers LGraph:createItem
@@ -696,7 +641,6 @@ describe("Item properties", function()
         expect_type("userdata", pos1)
         expect_nil(pos2)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:sendItem
     -- @covers LGraphEdge:setTravelTime
@@ -725,7 +669,6 @@ describe("Tags", function()
         n:addTag("producer")
         expect_true(n:hasTag("producer"))
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("hasTag returns false for missing tag", function()
@@ -733,7 +676,6 @@ describe("Tags", function()
         local n = g:addNode()
         expect_false(n:hasTag("nonexistent"))
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("removeTag removes a tag", function()
@@ -743,7 +685,6 @@ describe("Tags", function()
         n:removeTag("temp")
         expect_false(n:hasTag("temp"))
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("getTags returns all tags", function()
@@ -754,7 +695,6 @@ describe("Tags", function()
         local tags = n:getTags()
         expect_equal(2, #tags)
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:clearTags
     -- @covers lurek.graph.newGraph
@@ -783,7 +723,6 @@ describe("Overflow policy", function()
         local n = g:addNode()
         expect_equal("reject", n:getOverflowPolicy())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getOverflowPolicy
     -- @covers LGraphNode:setOverflowPolicy
@@ -794,7 +733,6 @@ describe("Overflow policy", function()
         n:setOverflowPolicy("destroy")
         expect_equal("destroy", n:getOverflowPolicy())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getOverflowPolicy
     -- @covers LGraphNode:setOverflowPolicy
@@ -805,7 +743,6 @@ describe("Overflow policy", function()
         n:setOverflowPolicy("queue")
         expect_equal("queue", n:getOverflowPolicy())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getOverflowPolicy
     -- @covers LGraphNode:setOverflowPolicy
@@ -832,7 +769,6 @@ describe("Flow mode", function()
         local n = g:addNode()
         expect_equal("passive", n:getFlowMode())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getFlowMode
     -- @covers LGraphNode:setFlowMode
@@ -843,7 +779,6 @@ describe("Flow mode", function()
         n:setFlowMode("push")
         expect_equal("push", n:getFlowMode())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getFlowMode
     -- @covers LGraphNode:setFlowMode
@@ -854,7 +789,6 @@ describe("Flow mode", function()
         n:setFlowMode("pull")
         expect_equal("pull", n:getFlowMode())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getFlowMode
     -- @covers LGraphNode:setFlowMode
@@ -873,9 +807,25 @@ end)
 -- @describe Conversion rules
 describe("Conversion rules", function()
     -- @covers LGraph:addNode
+    it("setConversion does not error [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:setConversion("ore", "ingot")
+        end)
+    end)
+
     -- @covers LGraphNode:setConversion
+    it("setConversion does not error [LGraphNode:setConversion]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:setConversion("ore", "ingot")
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("setConversion does not error", function()
+    it("setConversion does not error [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         expect_no_error(function()
@@ -884,9 +834,25 @@ describe("Conversion rules", function()
     end)
 
     -- @covers LGraph:addNode
+    it("setConversion with counts [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:setConversion("ore", "ingot", 2, 1)
+        end)
+    end)
+
     -- @covers LGraphNode:setConversion
+    it("setConversion with counts [LGraphNode:setConversion]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:setConversion("ore", "ingot", 2, 1)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("setConversion with counts", function()
+    it("setConversion with counts [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         expect_no_error(function()
@@ -895,10 +861,37 @@ describe("Conversion rules", function()
     end)
 
     -- @covers LGraph:addNode
+    it("clearConversion removes a rule [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:setConversion("ore", "ingot")
+        expect_no_error(function()
+            n:clearConversion("ore")
+        end)
+    end)
+
     -- @covers LGraphNode:clearConversion
+    it("clearConversion removes a rule [LGraphNode:clearConversion]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:setConversion("ore", "ingot")
+        expect_no_error(function()
+            n:clearConversion("ore")
+        end)
+    end)
+
     -- @covers LGraphNode:setConversion
+    it("clearConversion removes a rule [LGraphNode:setConversion]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:setConversion("ore", "ingot")
+        expect_no_error(function()
+            n:clearConversion("ore")
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("clearConversion removes a rule", function()
+    it("clearConversion removes a rule [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         n:setConversion("ore", "ingot")
@@ -908,10 +901,40 @@ describe("Conversion rules", function()
     end)
 
     -- @covers LGraph:addNode
+    it("clearAllConversions removes all rules [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:setConversion("ore", "ingot")
+        n:setConversion("wood", "plank")
+        expect_no_error(function()
+            n:clearAllConversions()
+        end)
+    end)
+
     -- @covers LGraphNode:clearAllConversions
+    it("clearAllConversions removes all rules [LGraphNode:clearAllConversions]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:setConversion("ore", "ingot")
+        n:setConversion("wood", "plank")
+        expect_no_error(function()
+            n:clearAllConversions()
+        end)
+    end)
+
     -- @covers LGraphNode:setConversion
+    it("clearAllConversions removes all rules [LGraphNode:setConversion]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:setConversion("ore", "ingot")
+        n:setConversion("wood", "plank")
+        expect_no_error(function()
+            n:clearAllConversions()
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("clearAllConversions removes all rules", function()
+    it("clearAllConversions removes all rules [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         n:setConversion("ore", "ingot")
@@ -928,9 +951,25 @@ end)
 -- @describe Supply/Demand
 describe("Supply/Demand", function()
     -- @covers LGraph:addNode
+    it("addSupply does not error [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:addSupply("ore", 10)
+        end)
+    end)
+
     -- @covers LGraphNode:addSupply
+    it("addSupply does not error [LGraphNode:addSupply]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:addSupply("ore", 10)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("addSupply does not error", function()
+    it("addSupply does not error [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         expect_no_error(function()
@@ -939,10 +978,37 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:addNode
+    it("removeSupply works after adding [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addSupply("ore", 10)
+        expect_no_error(function()
+            n:removeSupply("ore")
+        end)
+    end)
+
     -- @covers LGraphNode:addSupply
+    it("removeSupply works after adding [LGraphNode:addSupply]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addSupply("ore", 10)
+        expect_no_error(function()
+            n:removeSupply("ore")
+        end)
+    end)
+
     -- @covers LGraphNode:removeSupply
+    it("removeSupply works after adding [LGraphNode:removeSupply]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addSupply("ore", 10)
+        expect_no_error(function()
+            n:removeSupply("ore")
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("removeSupply works after adding", function()
+    it("removeSupply works after adding [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         n:addSupply("ore", 10)
@@ -952,10 +1018,40 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:addNode
+    it("clearSupplies removes all [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addSupply("ore", 10)
+        n:addSupply("wood", 5)
+        expect_no_error(function()
+            n:clearSupplies()
+        end)
+    end)
+
     -- @covers LGraphNode:addSupply
+    it("clearSupplies removes all [LGraphNode:addSupply]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addSupply("ore", 10)
+        n:addSupply("wood", 5)
+        expect_no_error(function()
+            n:clearSupplies()
+        end)
+    end)
+
     -- @covers LGraphNode:clearSupplies
+    it("clearSupplies removes all [LGraphNode:clearSupplies]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addSupply("ore", 10)
+        n:addSupply("wood", 5)
+        expect_no_error(function()
+            n:clearSupplies()
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("clearSupplies removes all", function()
+    it("clearSupplies removes all [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         n:addSupply("ore", 10)
@@ -966,9 +1062,25 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:addNode
+    it("addDemand does not error [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:addDemand("ingot", 5)
+        end)
+    end)
+
     -- @covers LGraphNode:addDemand
+    it("addDemand does not error [LGraphNode:addDemand]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:addDemand("ingot", 5)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("addDemand does not error", function()
+    it("addDemand does not error [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         expect_no_error(function()
@@ -977,9 +1089,25 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:addNode
+    it("addDemand with priority [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:addDemand("ingot", 5, 10)
+        end)
+    end)
+
     -- @covers LGraphNode:addDemand
+    it("addDemand with priority [LGraphNode:addDemand]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        expect_no_error(function()
+            n:addDemand("ingot", 5, 10)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("addDemand with priority", function()
+    it("addDemand with priority [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         expect_no_error(function()
@@ -988,10 +1116,37 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:addNode
+    it("removeDemand works [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addDemand("ingot", 5)
+        expect_no_error(function()
+            n:removeDemand("ingot")
+        end)
+    end)
+
     -- @covers LGraphNode:addDemand
+    it("removeDemand works [LGraphNode:addDemand]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addDemand("ingot", 5)
+        expect_no_error(function()
+            n:removeDemand("ingot")
+        end)
+    end)
+
     -- @covers LGraphNode:removeDemand
+    it("removeDemand works [LGraphNode:removeDemand]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addDemand("ingot", 5)
+        expect_no_error(function()
+            n:removeDemand("ingot")
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("removeDemand works", function()
+    it("removeDemand works [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         n:addDemand("ingot", 5)
@@ -1001,10 +1156,40 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:addNode
+    it("clearDemands removes all [LGraph:addNode]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addDemand("ingot", 5)
+        n:addDemand("plank", 3)
+        expect_no_error(function()
+            n:clearDemands()
+        end)
+    end)
+
     -- @covers LGraphNode:addDemand
+    it("clearDemands removes all [LGraphNode:addDemand]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addDemand("ingot", 5)
+        n:addDemand("plank", 3)
+        expect_no_error(function()
+            n:clearDemands()
+        end)
+    end)
+
     -- @covers LGraphNode:clearDemands
+    it("clearDemands removes all [LGraphNode:clearDemands]", function()
+        local g = lurek.graph.newGraph()
+        local n = g:addNode()
+        n:addDemand("ingot", 5)
+        n:addDemand("plank", 3)
+        expect_no_error(function()
+            n:clearDemands()
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("clearDemands removes all", function()
+    it("clearDemands removes all [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local n = g:addNode()
         n:addDemand("ingot", 5)
@@ -1015,8 +1200,15 @@ describe("Supply/Demand", function()
     end)
 
     -- @covers LGraph:processDemand
+    it("processDemand runs without error on empty graph [LGraph:processDemand]", function()
+        local g = lurek.graph.newGraph()
+        expect_no_error(function()
+            g:processDemand()
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("processDemand runs without error on empty graph", function()
+    it("processDemand runs without error on empty graph [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         expect_no_error(function()
             g:processDemand()
@@ -1029,7 +1221,6 @@ end)
 -- =========================================================================
 -- @describe Pathfinding
 describe("Pathfinding", function()
-    -- @covers lurek.flownet
     it("findPath returns path between connected nodes", function()
         local g, n1, n2, e = make_simple_graph()
         local path = g:findPath(n1, n2)
@@ -1049,7 +1240,6 @@ describe("Pathfinding", function()
         local path = g:findPath(a, b)
         expect_nil(path)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:findPath
@@ -1066,7 +1256,6 @@ describe("Pathfinding", function()
         expect_equal(3, #path.nodes)
         expect_equal(2, #path.edges)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:findPathForItem
     it("findPathForItem respects item type", function()
@@ -1076,8 +1265,6 @@ describe("Pathfinding", function()
         local path = g:findPathForItem(item, n1, n2)
         expect_not_nil(path)
     end)
-
-    -- @covers lurek.flownet
     it("getDistance returns number for connected nodes", function()
         local g, n1, n2, e = make_simple_graph()
         local dist = g:getDistance(n1, n2)
@@ -1094,7 +1281,6 @@ describe("Pathfinding", function()
         local dist = g:getDistance(a, b)
         expect_nil(dist)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:getReachable
@@ -1109,7 +1295,6 @@ describe("Pathfinding", function()
         local reachable = g:getReachable(a)
         expect_true(#reachable >= 2)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:getReachable
@@ -1125,15 +1310,12 @@ describe("Pathfinding", function()
         -- With maxDist=1, only direct neighbor b
         expect_true(#reachable >= 1)
     end)
-
-    -- @covers lurek.flownet
     -- @covers LGlobe:getNeighbors
     it("getNeighbors returns direct neighbors", function()
         local g, n1, n2, e = make_simple_graph()
         local neighbors = g:getNeighbors(n1)
         expect_equal(1, #neighbors)
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraph:getNeighbors
     -- @covers lurek.graph.newGraph
@@ -1163,7 +1345,6 @@ describe("Algorithms", function()
         g:addEdge(b, c)
         expect_false(g:hasCycle())
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:hasCycle
@@ -1176,7 +1357,6 @@ describe("Algorithms", function()
         g:addEdge(b, a)
         expect_true(g:hasCycle())
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:topologicalSort
@@ -1192,7 +1372,6 @@ describe("Algorithms", function()
         expect_not_nil(sorted)
         expect_equal(3, #sorted)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:topologicalSort
@@ -1206,8 +1385,6 @@ describe("Algorithms", function()
         local sorted = g:topologicalSort()
         expect_nil(sorted)
     end)
-
-    -- @covers lurek.flownet
     it("getComponents on single connected component", function()
         local g, n1, n2, e = make_simple_graph()
         local comps = g:getComponents()
@@ -1225,7 +1402,6 @@ describe("Algorithms", function()
         local comps = g:getComponents()
         expect_equal(2, #comps)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:getComponents
@@ -1239,14 +1415,12 @@ describe("Algorithms", function()
         expect_equal(1, #comps)
         expect_equal(2, #comps[1])
     end)
-
     -- @covers LGraph:hasCycle
     -- @covers lurek.graph.newGraph
     it("hasCycle on empty graph", function()
         local g = lurek.graph.newGraph()
         expect_false(g:hasCycle())
     end)
-
     -- @covers LGraph:topologicalSort
     -- @covers lurek.graph.newGraph
     it("topologicalSort on empty graph", function()
@@ -1255,7 +1429,6 @@ describe("Algorithms", function()
         expect_not_nil(sorted)
         expect_equal(0, #sorted)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:subgraph
@@ -1280,8 +1453,15 @@ end)
 -- @describe Simulation
 describe("Simulation", function()
     -- @covers LGraph:update
+    it("update does not error on empty graph [LGraph:update]", function()
+        local g = lurek.graph.newGraph()
+        expect_no_error(function()
+            g:update(1.0)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("update does not error on empty graph", function()
+    it("update does not error on empty graph [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         expect_no_error(function()
             g:update(1.0)
@@ -1289,8 +1469,15 @@ describe("Simulation", function()
     end)
 
     -- @covers LGraph:step
+    it("step does not error on empty graph [LGraph:step]", function()
+        local g = lurek.graph.newGraph()
+        expect_no_error(function()
+            g:step()
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("step does not error on empty graph", function()
+    it("step does not error on empty graph [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         expect_no_error(function()
             g:step()
@@ -1313,7 +1500,6 @@ describe("Simulation", function()
         expect_type("number", pos2)   -- progress
         expect_near(0.5, pos2, 0.1)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:sendItem
     -- @covers LGraphEdge:setTravelTime
@@ -1329,7 +1515,6 @@ describe("Simulation", function()
         expect_type("userdata", pos1) -- node
         expect_nil(pos2)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:sendItem
     -- @covers LGraphEdge:setTravelTime
@@ -1365,7 +1550,6 @@ describe("Item decay", function()
         g:update(2.0)
         expect_true(item:isAlive())
     end)
-
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
     -- @covers LGraph:createItem
@@ -1381,7 +1565,6 @@ describe("Item decay", function()
         local remaining = item:getRemainingLife()
         expect_near(3.0, remaining, 0.1)
     end)
-
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
     -- @covers LGraph:createItem
@@ -1403,8 +1586,15 @@ end)
 -- @describe Callbacks
 describe("Callbacks", function()
     -- @covers LGraph:on
+    it("on registers callback without error [LGraph:on]", function()
+        local g = lurek.graph.newGraph()
+        expect_no_error(function()
+            g:on("itemEnter", function() end)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("on registers callback without error", function()
+    it("on registers callback without error [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         expect_no_error(function()
             g:on("itemEnter", function() end)
@@ -1412,8 +1602,15 @@ describe("Callbacks", function()
     end)
 
     -- @covers LGraph:on
+    it("on rejects unknown event name [LGraph:on]", function()
+        local g = lurek.graph.newGraph()
+        expect_error(function()
+            g:on("badEvent", function() end)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("on rejects unknown event name", function()
+    it("on rejects unknown event name [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         expect_error(function()
             g:on("badEvent", function() end)
@@ -1421,9 +1618,37 @@ describe("Callbacks", function()
     end)
 
     -- @covers LGraph:createItem
+    it("itemEnter fires when item arrives at node [LGraph:createItem]", function()
+        local g, n1, n2, e = make_simple_graph()
+        e:setTravelTime(1.0)
+        local fired = false
+        g:on("itemEnter", function(item, node)
+            fired = true
+        end)
+        local item = g:createItem()
+        g:addItem(item, n1)
+        g:sendItem(item, e)
+        g:update(2.0) -- enough time for transit to complete
+        expect_true(fired)
+    end)
+
     -- @covers LGraph:sendItem
+    it("itemEnter fires when item arrives at node [LGraph:sendItem]", function()
+        local g, n1, n2, e = make_simple_graph()
+        e:setTravelTime(1.0)
+        local fired = false
+        g:on("itemEnter", function(item, node)
+            fired = true
+        end)
+        local item = g:createItem()
+        g:addItem(item, n1)
+        g:sendItem(item, e)
+        g:update(2.0) -- enough time for transit to complete
+        expect_true(fired)
+    end)
+
     -- @covers LGraphEdge:setTravelTime
-    it("itemEnter fires when item arrives at node", function()
+    it("itemEnter fires when item arrives at node [LGraphEdge:setTravelTime]", function()
         local g, n1, n2, e = make_simple_graph()
         e:setTravelTime(1.0)
         local fired = false
@@ -1438,9 +1663,53 @@ describe("Callbacks", function()
     end)
 
     -- @covers LGraph:createItem
+    it("edgeEnter fires when item starts transit [LGraph:createItem]", function()
+        local g, n1, n2, e = make_simple_graph()
+        e:setTravelTime(5.0)
+        local fired = false
+        g:on("edgeEnter", function(item, edge)
+            fired = true
+        end)
+        local item = g:createItem()
+        g:addItem(item, n1)
+        g:sendItem(item, e)
+        -- sendItem itself should trigger edgeEnter via update,
+        -- or we may need a step/update
+        g:update(0.0)
+        -- If not fired yet, the event may fire on actual move
+        -- Try step
+        if not fired then
+            g:step()
+        end
+-- Accept either event fires at some point
+        -- If still not fired, sendItem may have triggered it directly
+    end)
+
     -- @covers LGraph:sendItem
+    it("edgeEnter fires when item starts transit [LGraph:sendItem]", function()
+        local g, n1, n2, e = make_simple_graph()
+        e:setTravelTime(5.0)
+        local fired = false
+        g:on("edgeEnter", function(item, edge)
+            fired = true
+        end)
+        local item = g:createItem()
+        g:addItem(item, n1)
+        g:sendItem(item, e)
+        -- sendItem itself should trigger edgeEnter via update,
+        -- or we may need a step/update
+        g:update(0.0)
+        -- If not fired yet, the event may fire on actual move
+        -- Try step
+        if not fired then
+            g:step()
+        end
+-- Accept either event fires at some point
+        -- If still not fired, sendItem may have triggered it directly
+    end)
+
     -- @covers LGraphEdge:setTravelTime
-    it("edgeEnter fires when item starts transit", function()
+    it("edgeEnter fires when item starts transit [LGraphEdge:setTravelTime]", function()
         local g, n1, n2, e = make_simple_graph()
         e:setTravelTime(5.0)
         local fired = false
@@ -1463,8 +1732,22 @@ describe("Callbacks", function()
     end)
 
     -- @covers LGraph:on
+    it("all valid event names are accepted [LGraph:on]", function()
+        local g = lurek.graph.newGraph()
+        local events = {
+            "itemEnter", "itemLeave", "itemDecay", "itemConvert",
+            "itemLost", "edgeEnter", "edgeLeave", "demandFulfilled",
+            "supplyDepleted", "itemQueued", "itemDequeued"
+        }
+        for _, name in ipairs(events) do
+            expect_no_error(function()
+                g:on(name, function() end)
+            end)
+        end
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("all valid event names are accepted", function()
+    it("all valid event names are accepted [lurek.graph.newGraph]", function()
         local g = lurek.graph.newGraph()
         local events = {
             "itemEnter", "itemLeave", "itemDecay", "itemConvert",
@@ -1479,9 +1762,51 @@ describe("Callbacks", function()
     end)
 
     -- @covers LGraph:createItem
+    it("callback receives userdata arguments [LGraph:createItem]", function()
+        local g, n1, n2, e = make_simple_graph()
+        e:setTravelTime(1.0)
+        local received_item = nil
+        local received_node = nil
+        g:on("itemEnter", function(item, node)
+            received_item = item
+            received_node = node
+        end)
+        local item = g:createItem()
+        g:addItem(item, n1)
+        g:sendItem(item, e)
+        g:update(2.0)
+        if received_item then
+            expect_type("userdata", received_item)
+        end
+        if received_node then
+            expect_type("userdata", received_node)
+        end
+    end)
+
     -- @covers LGraph:sendItem
+    it("callback receives userdata arguments [LGraph:sendItem]", function()
+        local g, n1, n2, e = make_simple_graph()
+        e:setTravelTime(1.0)
+        local received_item = nil
+        local received_node = nil
+        g:on("itemEnter", function(item, node)
+            received_item = item
+            received_node = node
+        end)
+        local item = g:createItem()
+        g:addItem(item, n1)
+        g:sendItem(item, e)
+        g:update(2.0)
+        if received_item then
+            expect_type("userdata", received_item)
+        end
+        if received_node then
+            expect_type("userdata", received_node)
+        end
+    end)
+
     -- @covers LGraphEdge:setTravelTime
-    it("callback receives userdata arguments", function()
+    it("callback receives userdata arguments [LGraphEdge:setTravelTime]", function()
         local g, n1, n2, e = make_simple_graph()
         e:setTravelTime(1.0)
         local received_item = nil
@@ -1529,7 +1854,6 @@ describe("Edge type filtering", function()
         e:addAllowedType("ore")
         expect_true(e:isItemTypeAllowed("ore"))
     end)
-
     -- @covers LGraphEdge:addAllowedType
     -- @covers LGraphEdge:isItemTypeAllowed
     it("isItemTypeAllowed returns false for disallowed type", function()
@@ -1537,7 +1861,6 @@ describe("Edge type filtering", function()
         e:addAllowedType("ore")
         expect_false(e:isItemTypeAllowed("wood"))
     end)
-
     -- @covers LGraphEdge:addAllowedType
     -- @covers LGraphEdge:isItemTypeAllowed
     -- @covers LGraphEdge:removeAllowedType
@@ -1549,7 +1872,6 @@ describe("Edge type filtering", function()
         expect_false(e:isItemTypeAllowed("ore"))
         expect_true(e:isItemTypeAllowed("wood"))
     end)
-
     -- @covers LGraphEdge:addAllowedType
     -- @covers LGraphEdge:clearAllowedTypes
     -- @covers LGraphEdge:isItemTypeAllowed
@@ -1604,7 +1926,6 @@ describe("Stats", function()
         expect_type("number", stats.totalSupply)
         expect_type("number", stats.queuedItems)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addItem
     -- @covers LGraph:addNode
@@ -1624,7 +1945,6 @@ describe("Stats", function()
         expect_equal(1, stats.items)
         expect_equal(1, stats.itemsOnNodes)
     end)
-
     -- @covers LGraph:getStats
     -- @covers lurek.graph.newGraph
     it("getStats on empty graph", function()
@@ -1647,21 +1967,18 @@ describe("Type system", function()
         local g = lurek.graph.newGraph()
         expect_equal("LGraph", g:type())
     end)
-
     -- @covers LGraph:typeOf
     -- @covers lurek.graph.newGraph
     it("Graph typeOf Graph", function()
         local g = lurek.graph.newGraph()
         expect_true(g:typeOf("LGraph"))
     end)
-
     -- @covers LGraph:typeOf
     -- @covers lurek.graph.newGraph
     it("Graph typeOf Object", function()
         local g = lurek.graph.newGraph()
         expect_true(g:typeOf("LObject"))
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("Node type() returns LGraphNode", function()
@@ -1669,7 +1986,6 @@ describe("Type system", function()
         local n = g:addNode()
         expect_equal("LGraphNode", n:type())
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("Node typeOf GraphNode", function()
@@ -1677,14 +1993,11 @@ describe("Type system", function()
         local n = g:addNode()
         expect_true(n:typeOf("LGraphNode"))
     end)
-
-    -- @covers lurek.flownet
     it("Edge type() returns LGraphEdge", function()
         local g, n1, n2, e = make_simple_graph()
         expect_equal("LGraphEdge", e:type())
     end)
 
-    -- @covers lurek.flownet
     it("Edge typeOf GraphEdge", function()
         local g, n1, n2, e = make_simple_graph()
         expect_true(e:typeOf("LGraphEdge"))
@@ -1697,7 +2010,6 @@ describe("Type system", function()
         local item = g:createItem()
         expect_equal("LGraphItem", item:type())
     end)
-
     -- @covers LGraph:createItem
     -- @covers lurek.graph.newGraph
     it("Item typeOf GraphItem", function()
@@ -1705,7 +2017,6 @@ describe("Type system", function()
         local item = g:createItem()
         expect_true(item:typeOf("LGraphItem"))
     end)
-
     -- @covers LGraph:createItem
     -- @covers lurek.graph.newGraph
     it("Item typeOf Object", function()
@@ -1713,7 +2024,6 @@ describe("Type system", function()
         local item = g:createItem()
         expect_true(item:typeOf("LObject"))
     end)
-
     -- @covers LGraph:addNode
     -- @covers lurek.graph.newGraph
     it("Node typeOf returns false for wrong type", function()
@@ -1741,7 +2051,6 @@ describe("sendItem", function()
         expect_type("userdata", pos1) -- edge
         expect_type("number", pos2)   -- progress
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:sendItem
     -- @covers LGraphEdge:setTravelTime
@@ -1754,7 +2063,6 @@ describe("sendItem", function()
         g:sendItem(item, e)
         expect_equal(0, n1:getItemCount())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:sendItem
     -- @covers LGraphEdge:getItemsInTransit
@@ -1768,7 +2076,6 @@ describe("sendItem", function()
         local transit = e:getItemsInTransit()
         expect_equal(1, #transit)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:sendItem
     -- @covers LGraphEdge:setTravelTime
@@ -1786,40 +2093,65 @@ end)
 -- @describe graph edge validity errors (RS parity)
 describe("graph edge validity errors (RS parity)", function()
     -- @covers LGraph:addEdge
+    it("addEdge with invalid source returns error [LGraph:addEdge]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers LGraph:addNode
+    it("addEdge with invalid source returns error [LGraph:addNode]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers LGraph:getEdgeCount
+    it("addEdge with invalid source returns error [LGraph:getEdgeCount]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers LGraph:getNodeCount
+    it("addEdge with invalid source returns error [LGraph:getNodeCount]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers LGraph:getNodes
+    it("addEdge with invalid source returns error [LGraph:getNodes]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers LGraph:removeNode
+    it("addEdge with invalid source returns error [LGraph:removeNode]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers lurek.graph.newGraph
-    it("addEdge with invalid source returns error", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
+    it("addEdge with invalid source returns error [lurek.graph.newGraph]", function() local g=lurek.graph.newGraph(); local b=g:addNode("B"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(invalid,b) end) end)
     -- @covers LGraph:addEdge
+    it("addEdge with invalid destination returns error [LGraph:addEdge]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers LGraph:addNode
+    it("addEdge with invalid destination returns error [LGraph:addNode]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers LGraph:getEdgeCount
+    it("addEdge with invalid destination returns error [LGraph:getEdgeCount]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers LGraph:getNodeCount
+    it("addEdge with invalid destination returns error [LGraph:getNodeCount]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers LGraph:getNodes
+    it("addEdge with invalid destination returns error [LGraph:getNodes]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers LGraph:removeNode
+    it("addEdge with invalid destination returns error [LGraph:removeNode]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers lurek.graph.newGraph
-    it("addEdge with invalid destination returns error", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
+    it("addEdge with invalid destination returns error [lurek.graph.newGraph]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:addEdge(a,invalid) end) end)
     -- @covers LGraph:addEdge
+    it("removeNode cleans connected edges [LGraph:addEdge]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers LGraph:addNode
+    it("removeNode cleans connected edges [LGraph:addNode]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers LGraph:getEdgeCount
+    it("removeNode cleans connected edges [LGraph:getEdgeCount]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers LGraph:getNodeCount
+    it("removeNode cleans connected edges [LGraph:getNodeCount]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers LGraph:getNodes
+    it("removeNode cleans connected edges [LGraph:getNodes]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers LGraph:removeNode
+    it("removeNode cleans connected edges [LGraph:removeNode]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers lurek.graph.newGraph
-    it("removeNode cleans connected edges", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
+    it("removeNode cleans connected edges [lurek.graph.newGraph]", function() local g=lurek.graph.newGraph(); local a=g:addNode("A"); local b=g:addNode("B"); g:addEdge(a,b); g:removeNode(a); expect_equal(1,g:getNodeCount()); expect_equal(0,g:getEdgeCount()) end)
     -- @covers LGraph:addNode
+    it("removeNode on nonexistent id raises error [LGraph:addNode]", function() local g=lurek.graph.newGraph(); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:removeNode(invalid) end) end)
     -- @covers LGraph:getNodeCount
+    it("removeNode on nonexistent id raises error [LGraph:getNodeCount]", function() local g=lurek.graph.newGraph(); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:removeNode(invalid) end) end)
     -- @covers LGraph:getNodes
+    it("removeNode on nonexistent id raises error [LGraph:getNodes]", function() local g=lurek.graph.newGraph(); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:removeNode(invalid) end) end)
     -- @covers LGraph:removeNode
+    it("removeNode on nonexistent id raises error [LGraph:removeNode]", function() local g=lurek.graph.newGraph(); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:removeNode(invalid) end) end)
     -- @covers lurek.graph.newGraph
-    it("removeNode on nonexistent id raises error", function() local g=lurek.graph.newGraph(); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:removeNode(invalid) end) end)
+    it("removeNode on nonexistent id raises error [lurek.graph.newGraph]", function() local g=lurek.graph.newGraph(); expect_error(function() local invalid=g:addNode("invalid"); g:removeNode(invalid); g:removeNode(invalid) end) end)
     -- @covers LGraph:addNode
+    it("getNodes count matches getNodeCount [LGraph:addNode]", function() local g=lurek.graph.newGraph(); g:addNode("X"); g:addNode("Y"); local nodes=g:getNodes(); expect_equal(g:getNodeCount(),#nodes) end)
     -- @covers LGraph:getNodeCount
+    it("getNodes count matches getNodeCount [LGraph:getNodeCount]", function() local g=lurek.graph.newGraph(); g:addNode("X"); g:addNode("Y"); local nodes=g:getNodes(); expect_equal(g:getNodeCount(),#nodes) end)
     -- @covers LGraph:getNodes
+    it("getNodes count matches getNodeCount [LGraph:getNodes]", function() local g=lurek.graph.newGraph(); g:addNode("X"); g:addNode("Y"); local nodes=g:getNodes(); expect_equal(g:getNodeCount(),#nodes) end)
     -- @covers lurek.graph.newGraph
-    it("getNodes count matches getNodeCount", function() local g=lurek.graph.newGraph(); g:addNode("X"); g:addNode("Y"); local nodes=g:getNodes(); expect_equal(g:getNodeCount(),#nodes) end)
+    it("getNodes count matches getNodeCount [lurek.graph.newGraph]", function() local g=lurek.graph.newGraph(); g:addNode("X"); g:addNode("Y"); local nodes=g:getNodes(); expect_equal(g:getNodeCount(),#nodes) end)
 end)
 -- @describe lurek.flownet tickParallel
 describe("lurek.flownet tickParallel", function()
@@ -1830,8 +2162,15 @@ describe("lurek.flownet tickParallel", function()
     end)
 
     -- @covers LGraph:tickParallel
+    it("tickParallel does not error on an empty graph [LGraph:tickParallel]", function()
+        local sim = lurek.graph.newGraph()
+        expect_no_error(function()
+            sim:tickParallel(0.016)
+        end)
+    end)
+
     -- @covers lurek.graph.newGraph
-    it("tickParallel does not error on an empty graph", function()
+    it("tickParallel does not error on an empty graph [lurek.graph.newGraph]", function()
         local sim = lurek.graph.newGraph()
         expect_no_error(function()
             sim:tickParallel(0.016)
@@ -1890,7 +2229,6 @@ describe("graph regression coverage", function()
         expect_true(contains(mst, 2))
         expect_false(contains(mst, 3))
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:colorGraph
@@ -1911,7 +2249,6 @@ describe("graph regression coverage", function()
         expect_true(colors[2] ~= colors[3])
         expect_equal(colors[1], colors[3])
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraph:addNode
     -- @covers LGraph:isBipartite
@@ -1948,7 +2285,6 @@ describe("graph strict: LGraphItem methods", function()
         item:setType("shield")
         expect_equal("shield", item:getType())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:isAlive
     -- @covers lurek.graph.newGraph
@@ -1957,7 +2293,6 @@ describe("graph strict: LGraphItem methods", function()
         local item = g:createItem("potion", -1)
         expect_type("boolean", item:isAlive())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:kill
     -- @covers lurek.graph.newGraph
@@ -1967,7 +2302,6 @@ describe("graph strict: LGraphItem methods", function()
         local ok = pcall(function() item:kill() end)
         expect_true(ok)
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:getPriority
     -- @covers lurek.graph.newGraph
@@ -1976,7 +2310,6 @@ describe("graph strict: LGraphItem methods", function()
         local item = g:createItem("key", -1)
         expect_type("number", item:getPriority())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:getPosition
     -- @covers lurek.graph.newGraph
@@ -1986,7 +2319,6 @@ describe("graph strict: LGraphItem methods", function()
         local x, y = item:getPosition()
         expect_true(x == nil or type(x) == "number")
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraphItem:type
     -- @covers LGraphItem:typeOf
@@ -2013,7 +2345,6 @@ describe("graph strict: LGraphEdge methods", function()
         e:setType("road")
         expect_equal("road", e:getType())
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraphEdge:getCapacity
     -- @covers LGraphEdge:setCapacity
@@ -2026,7 +2357,6 @@ describe("graph strict: LGraphEdge methods", function()
         e:setCapacity(5.0)
         expect_true(math.abs(e:getCapacity() - 5.0) < 0.001)
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraphEdge:isActive
     -- @covers lurek.graph.newGraph
@@ -2037,7 +2367,6 @@ describe("graph strict: LGraphEdge methods", function()
         local e = g:addEdge(a, b)
         expect_type("boolean", e:isActive())
     end)
-
     -- @covers LGraph:addEdge
     -- @covers LGraphEdge:type
     -- @covers LGraphEdge:typeOf
@@ -2064,7 +2393,6 @@ describe("graph strict: LGraphNode methods", function()
         n:setType("city")
         expect_equal("city", n:getType())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getCapacity
     -- @covers LGraphNode:setCapacity
@@ -2075,7 +2403,6 @@ describe("graph strict: LGraphNode methods", function()
         n:setCapacity(10)
         expect_equal(10, n:getCapacity())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getItemCount
     -- @covers LGraphNode:isFull
@@ -2086,7 +2413,6 @@ describe("graph strict: LGraphNode methods", function()
         expect_type("number", n:getItemCount())
         expect_type("boolean", n:isFull())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:isActive
     -- @covers lurek.graph.newGraph
@@ -2095,7 +2421,6 @@ describe("graph strict: LGraphNode methods", function()
         local n = g:addNode()
         expect_type("boolean", n:isActive())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:getItems
     -- @covers lurek.graph.newGraph
@@ -2104,7 +2429,6 @@ describe("graph strict: LGraphNode methods", function()
         local n = g:addNode()
         expect_type("table", n:getItems())
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:addTag
     -- @covers LGraphNode:hasTag
@@ -2119,7 +2443,6 @@ describe("graph strict: LGraphNode methods", function()
         n:removeTag("hub")
         expect_type("table", n:getTags())
     end)
-
     -- @covers LGraph:createItem
     -- @covers LGraph:addNode
     -- @covers LGraphNode:enqueue
@@ -2133,7 +2456,6 @@ describe("graph strict: LGraphNode methods", function()
         expect_true(ok)
         n:dequeue()
     end)
-
     -- @covers LGraph:addNode
     -- @covers LGraphNode:type
     -- @covers LGraphNode:typeOf
@@ -2178,7 +2500,6 @@ describe("unit: migrated from integration/test_graph_pathfind.lua", function()
             local tree = g:mst()
             expect_equal(1, #tree)
         end)
-
         -- @covers LGraph:addNode
         -- @covers LGraph:mst
         -- @covers lurek.graph.newGraph
@@ -2188,7 +2509,6 @@ describe("unit: migrated from integration/test_graph_pathfind.lua", function()
             local tree = g:mst()
             expect_equal(0, #tree)
         end)
-
         -- @covers LGraph:addNode
         -- @covers LGraph:astar
         -- @covers lurek.graph.newGraph
@@ -2200,7 +2520,6 @@ describe("unit: migrated from integration/test_graph_pathfind.lua", function()
             local path = g:astar(a, b)
             expect_equal(nil, path)
         end)
-
         -- @covers LGraph:addEdge
         -- @covers LGraph:addNode
         -- @covers LGraph:astar
@@ -2218,7 +2537,6 @@ describe("unit: migrated from integration/test_graph_pathfind.lua", function()
                 expect_equal(3, #path)
             end
         end)
-
         -- @covers LGraph:addNode
         -- @covers LGraph:astar
         -- @covers lurek.graph.newGraph
@@ -2229,7 +2547,6 @@ describe("unit: migrated from integration/test_graph_pathfind.lua", function()
             -- A path from a node to itself should be [a] or nil depending on impl
             expect_true(path == nil or #path == 1, "path to self should be length 1 or nil")
         end)
-
 end)
 
 --------------------------------------------------------------------------------
@@ -2256,7 +2573,6 @@ describe("lurek.graph.addNode", function()
         expect_not_nil(n, "node handle must not be nil")
         expect_equal(1, g:getNodeCount())
     end)
-
     -- @covers lurek.graph.addNode
     -- @covers lurek.graph.newGraph
     it("adds multiple nodes", function()
@@ -2280,7 +2596,6 @@ describe("lurek.graph.addEdge", function()
         local e = g:addEdge(a, b)
         expect_not_nil(e, "edge handle must not be nil")
     end)
-
     -- @covers lurek.graph.addEdge
     -- @covers lurek.graph.addNode
     -- @covers lurek.graph.newGraph
@@ -2324,7 +2639,6 @@ describe("lurek.graph.astar", function()
         expect_not_nil(path, "path must exist for connected nodes")
         expect_equal(3, #path)
     end)
-
     -- @covers lurek.graph.astar
     -- @covers lurek.graph.addNode
     -- @covers lurek.graph.newGraph

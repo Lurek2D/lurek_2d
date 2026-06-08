@@ -18,7 +18,6 @@ describe("lurek.light module functions", function()
         expect_type("userdata", l)
         l:remove()
     end)
-
     -- @covers LLight:getBlendMode
     -- @covers LLight:getColor
     -- @covers LLight:getEnergy
@@ -79,7 +78,6 @@ describe("lurek.light module functions", function()
         expect_false(l:isEnabled())
         l:remove()
     end)
-
     -- @covers LOccluder:remove
     -- @covers lurek.light.clear
     -- @covers lurek.light.newOccluder
@@ -89,7 +87,6 @@ describe("lurek.light module functions", function()
         expect_type("userdata", o)
         o:remove()
     end)
-
     -- @covers LOccluder:getLightMask
     -- @covers LOccluder:getOpacity
     -- @covers LOccluder:isEnabled
@@ -108,7 +105,6 @@ describe("lurek.light module functions", function()
         expect_false(o:isEnabled())
         o:remove()
     end)
-
     -- @covers lurek.light.newOccluder
     it("newOccluder errors on fewer than 6 numbers", function()
         expect_error(function()
@@ -135,7 +131,6 @@ describe("lurek.light module functions", function()
         expect_near(b, 0.5, 0.001)
         expect_near(a, 1.0, 0.001)
     end)
-
     -- @covers lurek.light.clear
     -- @covers lurek.light.getAmbient
     -- @covers lurek.light.setAmbient
@@ -148,7 +143,6 @@ describe("lurek.light module functions", function()
         expect_near(b, 0.4, 0.001)
         expect_near(a, 0.8, 0.001)
     end)
-
     -- @covers lurek.light.clear
     -- @covers lurek.light.isEnabled
     -- @covers lurek.light.setEnabled
@@ -159,7 +153,6 @@ describe("lurek.light module functions", function()
         lurek.light.setEnabled(true)
         expect_true(lurek.light.isEnabled())
     end)
-
     -- @covers LLight:remove
     -- @covers lurek.light.clear
     -- @covers lurek.light.isEnabled
@@ -173,7 +166,6 @@ describe("lurek.light module functions", function()
         expect_true(lurek.light.isEnabled())
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers lurek.light.clear
     -- @covers lurek.light.getLightCount
@@ -190,7 +182,6 @@ describe("lurek.light module functions", function()
         l2:remove()
         expect_equal(lurek.light.getLightCount(), 0)
     end)
-
     -- @covers LOccluder:remove
     -- @covers lurek.light.clear
     -- @covers lurek.light.getOccluderCount
@@ -207,7 +198,6 @@ describe("lurek.light module functions", function()
         o2:remove()
         expect_equal(lurek.light.getOccluderCount(), 0)
     end)
-
     -- @covers lurek.light.clear
     -- @covers lurek.light.getMaxLights
     -- @covers lurek.light.setMaxLights
@@ -216,7 +206,6 @@ describe("lurek.light module functions", function()
         lurek.light.setMaxLights(128)
         expect_equal(lurek.light.getMaxLights(), 128)
     end)
-
     -- @covers lurek.light.getMaxLights
     -- @covers lurek.light.setMaxLights
     it("setMaxLights clamps to 1..256", function()
@@ -225,7 +214,6 @@ describe("lurek.light module functions", function()
         lurek.light.setMaxLights(999)
         expect_equal(lurek.light.getMaxLights(), 256)
     end)
-
     -- @covers lurek.light.clear
     -- @covers lurek.light.getAmbient
     -- @covers lurek.light.getLightCount
@@ -266,7 +254,6 @@ describe("Light handle methods", function()
         expect_near(y, 99, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getRadius
     -- @covers LLight:remove
     -- @covers LLight:setRadius
@@ -279,7 +266,6 @@ describe("Light handle methods", function()
         expect_near(l:getRadius(), 77.5, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getColor
     -- @covers LLight:remove
     -- @covers LLight:setColor
@@ -296,7 +282,6 @@ describe("Light handle methods", function()
         expect_near(a, 1.0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getColor
     -- @covers LLight:remove
     -- @covers LLight:setColor
@@ -313,7 +298,6 @@ describe("Light handle methods", function()
         expect_near(a, 0.5, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getIntensity
     -- @covers LLight:remove
     -- @covers LLight:setIntensity
@@ -326,7 +310,6 @@ describe("Light handle methods", function()
         expect_near(l:getIntensity(), 3.5, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getEnergy
     -- @covers LLight:remove
     -- @covers LLight:setEnergy
@@ -339,7 +322,6 @@ describe("Light handle methods", function()
         expect_near(l:getEnergy(), 2.0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getBlendMode
     -- @covers LLight:getFalloff
     -- @covers LLight:getShadowFilter
@@ -354,7 +336,6 @@ describe("Light handle methods", function()
         expect_equal(l:getShadowFilter(), "none")
         l:remove()
     end)
-
     -- @covers LLight:getBlendMode
     -- @covers LLight:remove
     -- @covers LLight:setBlendMode
@@ -367,7 +348,6 @@ describe("Light handle methods", function()
         expect_equal(l:getBlendMode(), "add")
         l:remove()
     end)
-
     -- @covers LLight:getBlendMode
     -- @covers LLight:remove
     -- @covers LLight:setBlendMode
@@ -380,7 +360,6 @@ describe("Light handle methods", function()
         expect_equal(l:getBlendMode(), "sub")
         l:remove()
     end)
-
     -- @covers LLight:getBlendMode
     -- @covers LLight:remove
     -- @covers LLight:setBlendMode
@@ -393,7 +372,6 @@ describe("Light handle methods", function()
         expect_equal(l:getBlendMode(), "mix")
         l:remove()
     end)
-
     -- @covers LLight:getFalloff
     -- @covers LLight:remove
     -- @covers LLight:setFalloff
@@ -406,7 +384,6 @@ describe("Light handle methods", function()
         expect_equal(l:getFalloff(), "smooth")
         l:remove()
     end)
-
     -- @covers LLight:getFalloff
     -- @covers LLight:remove
     -- @covers LLight:setFalloff
@@ -419,7 +396,6 @@ describe("Light handle methods", function()
         expect_equal(l:getFalloff(), "constant")
         l:remove()
     end)
-
     -- @covers LLight:getFalloff
     -- @covers LLight:remove
     -- @covers LLight:setFalloff
@@ -432,7 +408,6 @@ describe("Light handle methods", function()
         expect_equal(l:getFalloff(), "linear")
         l:remove()
     end)
-
     -- @covers LLight:isShadowEnabled
     -- @covers LLight:remove
     -- @covers LLight:setShadowEnabled
@@ -448,7 +423,6 @@ describe("Light handle methods", function()
         expect_false(l:isShadowEnabled())
         l:remove()
     end)
-
     -- @covers LLight:getShadowColor
     -- @covers LLight:remove
     -- @covers LLight:setShadowColor
@@ -465,7 +439,6 @@ describe("Light handle methods", function()
         expect_near(a, 0.9, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getShadowFilter
     -- @covers LLight:remove
     -- @covers LLight:setShadowFilter
@@ -478,7 +451,6 @@ describe("Light handle methods", function()
         expect_equal(l:getShadowFilter(), "pcf5")
         l:remove()
     end)
-
     -- @covers LLight:getShadowFilter
     -- @covers LLight:remove
     -- @covers LLight:setShadowFilter
@@ -491,7 +463,6 @@ describe("Light handle methods", function()
         expect_equal(l:getShadowFilter(), "pcf13")
         l:remove()
     end)
-
     -- @covers LLight:getShadowFilter
     -- @covers LLight:remove
     -- @covers LLight:setShadowFilter
@@ -504,7 +475,6 @@ describe("Light handle methods", function()
         expect_equal(l:getShadowFilter(), "none")
         l:remove()
     end)
-
     -- @covers LLight:getShadowSmooth
     -- @covers LLight:remove
     -- @covers LLight:setShadowSmooth
@@ -517,7 +487,6 @@ describe("Light handle methods", function()
         expect_near(l:getShadowSmooth(), 2.0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getLightMask
     -- @covers LLight:remove
     -- @covers LLight:setLightMask
@@ -530,7 +499,6 @@ describe("Light handle methods", function()
         expect_equal(l:getLightMask(), 255)
         l:remove()
     end)
-
     -- @covers LLight:getShadowMask
     -- @covers LLight:remove
     -- @covers LLight:setShadowMask
@@ -543,7 +511,6 @@ describe("Light handle methods", function()
         expect_equal(l:getShadowMask(), 127)
         l:remove()
     end)
-
     -- @covers LLight:isEnabled
     -- @covers LLight:remove
     -- @covers LLight:setEnabled
@@ -559,7 +526,6 @@ describe("Light handle methods", function()
         expect_true(l:isEnabled())
         l:remove()
     end)
-
     -- @covers LLight:isValid
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -570,7 +536,6 @@ describe("Light handle methods", function()
         expect_true(l:isValid())
         l:remove()
     end)
-
     -- @covers LLight:isValid
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -601,7 +566,6 @@ describe("Occluder handle methods", function()
         expect_near(y, 25, 0.001)
         o:remove()
     end)
-
     -- @covers LOccluder:getOpacity
     -- @covers LOccluder:remove
     -- @covers LOccluder:setOpacity
@@ -614,7 +578,6 @@ describe("Occluder handle methods", function()
         expect_near(o:getOpacity(), 0.5, 0.001)
         o:remove()
     end)
-
     -- @covers LOccluder:getLightMask
     -- @covers LOccluder:remove
     -- @covers lurek.light.clear
@@ -625,7 +588,6 @@ describe("Occluder handle methods", function()
         expect_equal(o:getLightMask(), 65535)
         o:remove()
     end)
-
     -- @covers LOccluder:getLightMask
     -- @covers LOccluder:remove
     -- @covers LOccluder:setLightMask
@@ -640,7 +602,6 @@ describe("Occluder handle methods", function()
         expect_equal(o:getLightMask(), 255)
         o:remove()
     end)
-
     -- @covers LOccluder:isEnabled
     -- @covers LOccluder:remove
     -- @covers LOccluder:setEnabled
@@ -656,7 +617,6 @@ describe("Occluder handle methods", function()
         expect_true(o:isEnabled())
         o:remove()
     end)
-
     -- @covers LOccluder:isValid
     -- @covers LOccluder:remove
     -- @covers lurek.light.clear
@@ -668,7 +628,6 @@ describe("Occluder handle methods", function()
         o:remove()
         expect_false(o:isValid())
     end)
-
     -- @covers LOccluder:getVertices
     -- @covers LOccluder:remove
     -- @covers lurek.light.clear
@@ -687,7 +646,6 @@ describe("Occluder handle methods", function()
         expect_near(verts[6], 60, 0.001)
         o:remove()
     end)
-
     -- @covers LOccluder:getVertices
     -- @covers LOccluder:remove
     -- @covers LOccluder:setVertices
@@ -722,7 +680,6 @@ describe("lurek.light edge cases", function()
         expect_error(function() l:setBlendMode("bad") end)
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers LLight:setFalloff
     -- @covers lurek.light.clear
@@ -733,7 +690,6 @@ describe("lurek.light edge cases", function()
         expect_error(function() l:setFalloff("bad") end)
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers LLight:setShadowFilter
     -- @covers lurek.light.clear
@@ -744,7 +700,6 @@ describe("lurek.light edge cases", function()
         expect_error(function() l:setShadowFilter("bad") end)
         l:remove()
     end)
-
     -- @covers LLight:getColor
     -- @covers LLight:getIntensity
     -- @covers LLight:getPosition
@@ -769,7 +724,6 @@ describe("lurek.light edge cases", function()
         expect_error(function() l:getIntensity() end)
         expect_error(function() l:setIntensity(1) end)
     end)
-
     -- @covers LOccluder:getOpacity
     -- @covers LOccluder:getPosition
     -- @covers LOccluder:getVertices
@@ -806,7 +760,6 @@ describe("Light type", function()
         expect_equal(l:getLightType(), "point")
         l:remove()
     end)
-
     -- @covers LLight:getLightType
     -- @covers LLight:remove
     -- @covers LLight:setLightType
@@ -823,7 +776,6 @@ describe("Light type", function()
         expect_equal(l:getLightType(), "point")
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers LLight:setLightType
     -- @covers lurek.light.clear
@@ -850,7 +802,6 @@ describe("Light direction and angles", function()
         expect_near(l:getDirection(), 0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getDirection
     -- @covers LLight:remove
     -- @covers LLight:setDirection
@@ -863,7 +814,6 @@ describe("Light direction and angles", function()
         expect_near(l:getDirection(), 1.57, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getInnerAngle
     -- @covers LLight:remove
     -- @covers LLight:setInnerAngle
@@ -876,7 +826,6 @@ describe("Light direction and angles", function()
         expect_near(l:getInnerAngle(), 0.3, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getOuterAngle
     -- @covers LLight:remove
     -- @covers LLight:setOuterAngle
@@ -889,7 +838,6 @@ describe("Light direction and angles", function()
         expect_near(l:getOuterAngle(), 0.6, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getInnerAngle
     -- @covers LLight:getOuterAngle
     -- @covers LLight:remove
@@ -921,7 +869,6 @@ describe("Light attenuation", function()
         expect_near(q, 0.0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getAttenuation
     -- @covers LLight:remove
     -- @covers LLight:setAttenuation
@@ -953,7 +900,6 @@ describe("Light flicker", function()
         expect_equal(l:isFlickerEnabled(), false)
         l:remove()
     end)
-
     -- @covers LLight:getFlicker
     -- @covers LLight:isFlickerEnabled
     -- @covers LLight:remove
@@ -970,7 +916,6 @@ describe("Light flicker", function()
         expect_equal(l:isFlickerEnabled(), true)
         l:remove()
     end)
-
     -- @covers LLight:isFlickerEnabled
     -- @covers LLight:remove
     -- @covers LLight:setFlicker
@@ -987,7 +932,6 @@ describe("Light flicker", function()
         expect_equal(l:isFlickerEnabled(), true)
         l:remove()
     end)
-
     -- @covers LLight:addFlicker
     -- @covers LLight:getFlicker
     -- @covers LLight:isFlickerEnabled
@@ -1020,7 +964,6 @@ describe("Light groups", function()
         expect_equal(l:getGroupId(), 0)
         l:remove()
     end)
-
     -- @covers LLight:getGroupId
     -- @covers LLight:remove
     -- @covers LLight:setGroupId
@@ -1033,7 +976,6 @@ describe("Light groups", function()
         expect_equal(l:getGroupId(), 5)
         l:remove()
     end)
-
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
     -- @covers lurek.light.getGroupCount
@@ -1048,7 +990,6 @@ describe("Light groups", function()
         expect_equal(lurek.light.getGroupCount(0), 0)
         lurek.light.clear()
     end)
-
     -- @covers LLight:isEnabled
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
@@ -1068,7 +1009,6 @@ describe("Light groups", function()
         expect_equal(l3:isEnabled(), true) -- unaffected
         lurek.light.clear()
     end)
-
     -- @covers LLight:getIntensity
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
@@ -1082,7 +1022,6 @@ describe("Light groups", function()
         expect_near(l1:getIntensity(), 0.5, 0.001)
         lurek.light.clear()
     end)
-
     -- @covers LLight:getColor
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
@@ -1116,7 +1055,6 @@ describe("Light volumetric", function()
         expect_equal(l:isVolumetric(), false)
         l:remove()
     end)
-
     -- @covers LLight:isVolumetric
     -- @covers LLight:remove
     -- @covers LLight:setVolumetric
@@ -1166,7 +1104,6 @@ describe("newLight opts with new effects", function()
         expect_equal(l:getLightType(), "spot")
         l:remove()
     end)
-
     -- @covers LLight:getDirection
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1177,7 +1114,6 @@ describe("newLight opts with new effects", function()
         expect_near(l:getDirection(), 1.57, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getInnerAngle
     -- @covers LLight:getOuterAngle
     -- @covers LLight:remove
@@ -1190,7 +1126,6 @@ describe("newLight opts with new effects", function()
         expect_near(l:getOuterAngle(), 0.6, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getGroupId
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1201,7 +1136,6 @@ describe("newLight opts with new effects", function()
         expect_equal(l:getGroupId(), 7)
         l:remove()
     end)
-
     -- @covers LLight:isVolumetric
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1212,7 +1146,6 @@ describe("newLight opts with new effects", function()
         expect_equal(l:isVolumetric(), true)
         l:remove()
     end)
-
     -- @covers LLight:getFlicker
     -- @covers LLight:isFlickerEnabled
     -- @covers LLight:remove
@@ -1230,7 +1163,6 @@ describe("newLight opts with new effects", function()
         expect_near(strength, 0.3, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getAttenuation
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1264,7 +1196,6 @@ describe("Light type", function()
         expect_equal(l:getLightType(), "point")
         l:remove()
     end)
-
     -- @covers LLight:getLightType
     -- @covers LLight:remove
     -- @covers LLight:setLightType
@@ -1281,7 +1212,6 @@ describe("Light type", function()
         expect_equal(l:getLightType(), "point")
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers LLight:setLightType
     -- @covers lurek.light.clear
@@ -1308,7 +1238,6 @@ describe("Light direction and angles", function()
         expect_near(l:getDirection(), 0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getDirection
     -- @covers LLight:remove
     -- @covers LLight:setDirection
@@ -1321,7 +1250,6 @@ describe("Light direction and angles", function()
         expect_near(l:getDirection(), 1.57, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getInnerAngle
     -- @covers LLight:remove
     -- @covers LLight:setInnerAngle
@@ -1334,7 +1262,6 @@ describe("Light direction and angles", function()
         expect_near(l:getInnerAngle(), 0.3, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getOuterAngle
     -- @covers LLight:remove
     -- @covers LLight:setOuterAngle
@@ -1347,7 +1274,6 @@ describe("Light direction and angles", function()
         expect_near(l:getOuterAngle(), 0.6, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getInnerAngle
     -- @covers LLight:getOuterAngle
     -- @covers LLight:remove
@@ -1379,7 +1305,6 @@ describe("Light attenuation", function()
         expect_near(q, 0.0, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getAttenuation
     -- @covers LLight:remove
     -- @covers LLight:setAttenuation
@@ -1411,7 +1336,6 @@ describe("Light flicker", function()
         expect_equal(l:isFlickerEnabled(), false)
         l:remove()
     end)
-
     -- @covers LLight:getFlicker
     -- @covers LLight:isFlickerEnabled
     -- @covers LLight:remove
@@ -1428,7 +1352,6 @@ describe("Light flicker", function()
         expect_equal(l:isFlickerEnabled(), true)
         l:remove()
     end)
-
     -- @covers LLight:isFlickerEnabled
     -- @covers LLight:remove
     -- @covers LLight:setFlicker
@@ -1461,7 +1384,6 @@ describe("Light groups", function()
         expect_equal(l:getGroupId(), 0)
         l:remove()
     end)
-
     -- @covers LLight:getGroupId
     -- @covers LLight:remove
     -- @covers LLight:setGroupId
@@ -1474,7 +1396,6 @@ describe("Light groups", function()
         expect_equal(l:getGroupId(), 5)
         l:remove()
     end)
-
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
     -- @covers lurek.light.getGroupCount
@@ -1489,7 +1410,6 @@ describe("Light groups", function()
         expect_equal(lurek.light.getGroupCount(0), 0)
         lurek.light.clear()
     end)
-
     -- @covers LLight:isEnabled
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
@@ -1509,7 +1429,6 @@ describe("Light groups", function()
         expect_equal(l3:isEnabled(), true) -- unaffected
         lurek.light.clear()
     end)
-
     -- @covers LLight:getIntensity
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
@@ -1523,7 +1442,6 @@ describe("Light groups", function()
         expect_near(l1:getIntensity(), 0.5, 0.001)
         lurek.light.clear()
     end)
-
     -- @covers LLight:getColor
     -- @covers LLight:setGroupId
     -- @covers lurek.light.clear
@@ -1557,7 +1475,6 @@ describe("Light volumetric", function()
         expect_equal(l:isVolumetric(), false)
         l:remove()
     end)
-
     -- @covers LLight:isVolumetric
     -- @covers LLight:remove
     -- @covers LLight:setVolumetric
@@ -1607,7 +1524,6 @@ describe("newLight opts with new effects", function()
         expect_equal(l:getLightType(), "spot")
         l:remove()
     end)
-
     -- @covers LLight:getDirection
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1618,7 +1534,6 @@ describe("newLight opts with new effects", function()
         expect_near(l:getDirection(), 1.57, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getInnerAngle
     -- @covers LLight:getOuterAngle
     -- @covers LLight:remove
@@ -1631,7 +1546,6 @@ describe("newLight opts with new effects", function()
         expect_near(l:getOuterAngle(), 0.6, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getGroupId
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1642,7 +1556,6 @@ describe("newLight opts with new effects", function()
         expect_equal(l:getGroupId(), 7)
         l:remove()
     end)
-
     -- @covers LLight:isVolumetric
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1653,7 +1566,6 @@ describe("newLight opts with new effects", function()
         expect_equal(l:isVolumetric(), true)
         l:remove()
     end)
-
     -- @covers LLight:getFlicker
     -- @covers LLight:isFlickerEnabled
     -- @covers LLight:remove
@@ -1671,7 +1583,6 @@ describe("newLight opts with new effects", function()
         expect_near(strength, 0.3, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getAttenuation
     -- @covers LLight:remove
     -- @covers lurek.light.clear
@@ -1734,7 +1645,6 @@ describe("syncAmbient()", function()
         expect_near(0.6, b, 0.001)
         expect_near(0.8, a, 0.001)
     end)
-
     -- @covers lurek.light.getAmbient
     -- @covers lurek.light.setAmbient
     -- @covers lurek.light.syncAmbient
@@ -1764,7 +1674,6 @@ describe("getGodRayHints()", function()
         local hints = lurek.light.getGodRayHints()
         expect_equal(0, #hints)
     end)
-
     -- @covers LLight:setDirection
     -- @covers LLight:setEnabled
     -- @covers lurek.light.clear
@@ -1785,7 +1694,6 @@ describe("getGodRayHints()", function()
         expect_near(200, h.y, 0.001)
         expect_near(1.57, h.angle, 0.001)
     end)
-
     -- @covers LLight:setEnabled
     -- @covers lurek.light.clear
     -- @covers lurek.light.getGodRayHints
@@ -1819,7 +1727,6 @@ describe("Missing API Coverage", function()
         expect_near(strength, 0.1, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getColor
     -- @covers LLight:getIntensity
     -- @covers LLight:getRadius
@@ -1857,7 +1764,6 @@ describe("Missing API Coverage", function()
         expect_equal(l:updateTransition(0.1), false)
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers LLight:stopTransition
     -- @covers LLight:transitionTo
@@ -1872,7 +1778,6 @@ describe("Missing API Coverage", function()
         expect_equal(l:updateTransition(0.1), false)
         l:remove()
     end)
-
     -- @covers LLight:getCookie
     -- @covers LLight:remove
     -- @covers LLight:setCookie
@@ -1885,7 +1790,6 @@ describe("Missing API Coverage", function()
         expect_equal(l:getCookie(), "assets/lights/cookie.png")
         l:remove()
     end)
-
     -- @covers LLight:getCookie
     -- @covers LLight:remove
     -- @covers LLight:setCookie
@@ -1899,7 +1803,6 @@ describe("Missing API Coverage", function()
         expect_equal(l:getCookie(), "assets/lights/window.png")
         l:remove()
     end)
-
     -- @covers LLight:clearCookie
     -- @covers LLight:getCookie
     -- @covers LLight:remove
@@ -1914,7 +1817,6 @@ describe("Missing API Coverage", function()
         expect_equal(l:getCookie(), nil)
         l:remove()
     end)
-
 end)
 
 -- @describe light enhancements: soft shadows and normal-map hints
@@ -1931,7 +1833,6 @@ describe("light enhancements: soft shadows and normal-map hints", function()
         expect_near(l:getShadowSoftness(), 1.75, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:getNormalMap
     -- @covers LLight:getNormalStrength
     -- @covers LLight:remove
@@ -1948,7 +1849,6 @@ describe("light enhancements: soft shadows and normal-map hints", function()
         expect_near(l:getNormalStrength(), 0.65, 0.001)
         l:remove()
     end)
-
     -- @covers LLight:clearNormalMap
     -- @covers LLight:getNormalMap
     -- @covers LLight:remove
@@ -1963,7 +1863,6 @@ describe("light enhancements: soft shadows and normal-map hints", function()
         expect_equal(l:getNormalMap(), nil)
         l:remove()
     end)
-
     -- @covers LLight:remove
     -- @covers LLight:setNormalMap
     -- @covers LLight:setNormalStrength
@@ -2004,15 +1903,38 @@ describe("light strict: LLight type/typeOf", function()
         expect_type("boolean", l:typeOf("LObject"))
         l:remove()
     end)
-
 end)
 
 -- @describe light strict: LOccluder type/typeOf
 describe("light strict: LOccluder type/typeOf", function()
     -- @covers LOccluder:type
+    it("LOccluder type and typeOf are callable [LOccluder:type]", function()
+        local ok, oc = pcall(function()
+            return lurek.light.newOccluder({{0,0},{10,0},{10,10},{0,10}})
+        end)
+        if ok and oc ~= nil then
+            expect_type("string", oc:type())
+            expect_type("boolean", oc:typeOf("LObject"))
+        else
+            expect_false(ok and oc ~= nil)
+        end
+    end)
+
     -- @covers LOccluder:typeOf
+    it("LOccluder type and typeOf are callable [LOccluder:typeOf]", function()
+        local ok, oc = pcall(function()
+            return lurek.light.newOccluder({{0,0},{10,0},{10,10},{0,10}})
+        end)
+        if ok and oc ~= nil then
+            expect_type("string", oc:type())
+            expect_type("boolean", oc:typeOf("LObject"))
+        else
+            expect_false(ok and oc ~= nil)
+        end
+    end)
+
     -- @covers lurek.light.newOccluder
-    it("LOccluder type and typeOf are callable", function()
+    it("LOccluder type and typeOf are callable [lurek.light.newOccluder]", function()
         local ok, oc = pcall(function()
             return lurek.light.newOccluder({{0,0},{10,0},{10,10},{0,10}})
         end)

@@ -426,7 +426,6 @@ describe("LuaParallaxLayer clamp", function()
 
     -- @covers LParallaxLayer:render
     -- @covers LParallaxLayer:setClamp
-    -- @covers LParallaxLayer:setAutoscroll
     -- @covers LParallaxLayer:update
     -- @covers lurek.parallax.newLayer
     it("autoscroll + clamp interaction remains stable under large camera offsets", function()
@@ -939,8 +938,6 @@ end)
 -- @describe parallax strict: LParallaxLayer setRepeat/setScale
 describe("parallax strict: LParallaxLayer setRepeat/setScale", function()
     -- @covers LParallaxLayer:setRepeat
-    -- @covers LParallaxLayer:setScale
-    -- @covers lurek.parallax.newLayer
     it("LParallaxLayer setRepeat is callable", function()
         local layer = make_layer()
         local ok = pcall(function() layer:setRepeat(true, true) end)
@@ -948,7 +945,6 @@ describe("parallax strict: LParallaxLayer setRepeat/setScale", function()
     end)
 
     -- @covers LParallaxLayer:setScale
-    -- @covers lurek.parallax.newLayer
     it("LParallaxLayer setScale is callable", function()
         local layer = make_layer()
         local ok = pcall(function() layer:setScale(1.5, 1.5) end)

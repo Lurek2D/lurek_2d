@@ -686,7 +686,6 @@ end)
 describe("Signal wildcard subscriptions", function()
   -- @covers LSignal:connect
   -- @covers LSignal:emit
-  -- @covers LSignal:remove
   -- @covers lurek.event.newSignal
   it("wildcard_multi_star_sequence_matches_mid_name_segments", function()
         local sig = lurek.event.newSignal()
@@ -698,7 +697,6 @@ describe("Signal wildcard subscriptions", function()
 
   -- @covers LSignal:connect
   -- @covers LSignal:emit
-  -- @covers LSignal:remove
   -- @covers lurek.event.newSignal
   it("wildcard_adjacent_stars_match_suffixes", function()
         local sig = lurek.event.newSignal()
@@ -710,7 +708,6 @@ describe("Signal wildcard subscriptions", function()
 
   -- @covers LSignal:connect
   -- @covers LSignal:emit
-  -- @covers LSignal:remove
   -- @covers lurek.event.newSignal
   it("wildcard_star_matches_prefix", function()
         local sig = lurek.event.newSignal()
@@ -722,7 +719,6 @@ describe("Signal wildcard subscriptions", function()
 
   -- @covers LSignal:connect
   -- @covers LSignal:emit
-  -- @covers LSignal:remove
   -- @covers lurek.event.newSignal
   it("wildcard_no_match_does_not_fire", function()
         local sig = lurek.event.newSignal()
@@ -734,7 +730,6 @@ describe("Signal wildcard subscriptions", function()
 
   -- @covers LSignal:connect
   -- @covers LSignal:emit
-  -- @covers LSignal:remove
   -- @covers lurek.event.newSignal
   it("wildcard_question_mark_matches_single_char", function()
         local sig = lurek.event.newSignal()

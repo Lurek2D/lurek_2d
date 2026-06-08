@@ -634,7 +634,7 @@ mod gpu_renderer_tests {
 
     const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
 @fragment
-pub(crate) fn fs_main(
+fn fs_main(
     @location(0) color: vec4<f32>,
     @location(1) uv: vec2<f32>,
 ) -> @location(0) vec4<f32> {

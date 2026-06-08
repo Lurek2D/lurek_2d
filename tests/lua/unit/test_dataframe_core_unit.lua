@@ -121,7 +121,6 @@ describe("construction", function()
         expect_equal(0, df:nrows())
         expect_equal(0, df:ncols())
     end)
-
     -- @covers LVecFrame:ncols
     -- @covers LVecFrame:nrows
     it("fromCSV creates DataFrame with correct shape", function()
@@ -129,7 +128,6 @@ describe("construction", function()
         expect_equal(3, df:nrows())
         expect_equal(3, df:ncols())
     end)
-
     -- @covers LDataFrame:columns
     -- @covers LVecFrame:columns
     it("fromCSV parses column names", function()
@@ -139,7 +137,6 @@ describe("construction", function()
         expect_equal("age", cols[2])
         expect_equal("score", cols[3])
     end)
-
     -- @covers LVecFrame:getValue
     it("fromCSV auto-detects numbers", function()
         local df = make_test_df()
@@ -175,7 +172,6 @@ describe("construction", function()
         expect_equal(3, df:ncols())
         expect_equal("Bob", df:getValue(2, "name"))
     end)
-
     -- @covers lurek.dataframe.fromRows
     it("fromRows validates row width against declared columns", function()
         expect_error(function()
@@ -190,7 +186,6 @@ describe("construction", function()
         local df = lurek.dataframe.fromJSON(json)
         expect_equal(2, df:nrows())
     end)
-
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:nrows
     -- @covers lurek.dataframe.random
@@ -200,7 +195,6 @@ describe("construction", function()
         expect_equal(10, df:nrows())
         expect_equal(2, df:ncols())
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.random
     it("random with seed is deterministic", function()
@@ -211,7 +205,6 @@ describe("construction", function()
             expect_near(df1:getValue(i, "val"), df2:getValue(i, "val"), 1e-5)
         end
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.random
     it("random with seed 0 matches the omitted-seed path", function()
@@ -222,7 +215,6 @@ describe("construction", function()
             expect_near(seeded_zero:getValue(i, "val"), implicit_seed:getValue(i, "val"), 1e-5)
         end
     end)
-
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:nrows
     -- @covers lurek.dataframe.fromCSV
@@ -257,8 +249,7 @@ describe("schema", function()
         local cols = df:columns()
         expect_equal(3, #cols)
     end)
-
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:count
     it("count is alias for nrows", function()
         local df = make_test_df()
         expect_equal(df:nrows(), df:count())
@@ -277,7 +268,6 @@ describe("column operations", function()
         df_add_column(df, "grade")
         expect_equal(4, df:ncols())
     end)
-
     -- @covers LDataFrame:addColumn
     -- @covers LDataFrame:getValue
     it("addColumn with default fills all rows", function()
@@ -287,7 +277,6 @@ describe("column operations", function()
             expect_equal(true, df:getValue(i, "pass"))
         end
     end)
-
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:removeColumn
     it("removeColumn by name decreases ncols", function()
@@ -295,7 +284,6 @@ describe("column operations", function()
         df_remove_column(df, "age")
         expect_equal(2, df:ncols())
     end)
-
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:removeColumn
     it("removeColumn by index decreases ncols", function()
@@ -303,7 +291,6 @@ describe("column operations", function()
         df_remove_column(df, 2)
         expect_equal(2, df:ncols())
     end)
-
     -- @covers LDataFrame:rename
     it("rename changes column name", function()
         local df = make_test_df()
@@ -421,7 +408,6 @@ describe("cell access", function()
         df_set_value(df, 1, "name", "Alicia")
         expect_equal("Alicia", df:getValue(1, "name"))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:setValue
     it("setValue by column index", function()
@@ -429,7 +415,6 @@ describe("cell access", function()
         df_set_value(df, 2, 2, 99)
         expect_near(99, df:getValue(2, "age"), 1e-5)
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:setValue
     it("setValue to nil clears cell", function()
@@ -520,7 +505,7 @@ end)
 -- =========================================================================
 -- @describe sort
 describe("sort", function()
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:sort
     it("sort ascending by numeric column", function()
         local df = make_test_df()
         local sorted = df:sort("age", true)
@@ -529,7 +514,7 @@ describe("sort", function()
         expect_near(35, sorted:getValue(3, "age"), 1e-5)
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:sort
     it("sort descending by numeric column", function()
         local df = make_test_df()
         local sorted = df:sort("age", false)
@@ -538,14 +523,14 @@ describe("sort", function()
         expect_near(25, sorted:getValue(3, "age"), 1e-5)
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:sort
     it("sort defaults to ascending", function()
         local df = make_test_df()
         local sorted = df:sort("age")
         expect_near(25, sorted:getValue(1, "age"), 1e-5)
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:sort
     it("sort preserves row data", function()
         local df = make_test_df()
         local sorted = df:sort("age", true)
@@ -553,7 +538,7 @@ describe("sort", function()
     end)
 
     -- @covers LDataFrame:sort
-    -- @covers lurek.dataframe.fromTable
+    -- @covers LDataFrame:sort.fromTable
     it("sort places nil values last", function()
         local df = lurek.dataframe.fromTable({
             { x = 2 },
@@ -565,9 +550,8 @@ describe("sort", function()
         expect_near(2, sorted:getValue(2, "x"), 1e-5)
         expect_nil(sorted:getValue(3, "x"))
     end)
-
     -- @covers LDataFrame:sort
-    -- @covers lurek.dataframe.fromTable
+    -- @covers LDataFrame:sort.fromTable
     it("sort orders numbers before text before booleans", function()
         local df = lurek.dataframe.fromTable({
             { x = true },
@@ -694,7 +678,6 @@ describe("unique", function()
         local u = df:unique("color")
         expect_equal(3, #u)
     end)
-
     -- @covers LDataFrame:unique
     -- @covers lurek.dataframe.fromCSV
     it("unique on numeric column", function()
@@ -718,7 +701,6 @@ describe("groupBy", function()
         local groups = df:groupBy("dept")
         expect_type("table", groups)
     end)
-
     -- @covers LDataFrame:groupBy
     -- @covers lurek.dataframe.fromCSV
     it("groupBy subsets have correct row counts", function()
@@ -731,7 +713,6 @@ describe("groupBy", function()
         end
         expect_equal(4, count)
     end)
-
     -- @covers LDataFrame:groupBy
     -- @covers lurek.dataframe.fromCSV
     it("groupBy preserves column structure", function()
@@ -759,7 +740,6 @@ describe("join", function()
         local result = df1:join(df2, "id", "id", "inner")
         expect_equal(2, result:nrows()) -- only ids 1 and 2 match
     end)
-
     -- @covers LDataFrame:join
     -- @covers lurek.dataframe.fromCSV
     it("left join keeps all left rows", function()
@@ -770,7 +750,6 @@ describe("join", function()
         local result = df1:join(df2, "id", "id", "left")
         expect_equal(3, result:nrows()) -- all 3 left rows
     end)
-
     -- @covers LDataFrame:join
     -- @covers lurek.dataframe.fromCSV
     it("join defaults to inner", function()
@@ -797,7 +776,6 @@ describe("merge", function()
         df1:merge(df2)
         expect_equal(4, df1:nrows())
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:merge
     -- @covers lurek.dataframe.fromCSV
@@ -826,7 +804,6 @@ describe("countBy", function()
         expect_equal(3, result:nrows()) -- 3 unique colors
         expect_equal(2, result:ncols()) -- value + count
     end)
-
     -- @covers LDataFrame:countBy
     -- @covers lurek.dataframe.fromCSV
     it("countBy counts are correct", function()
@@ -858,7 +835,6 @@ describe("valueCounts and data quality helpers", function()
         expect_near(3, result:getValue(1, "count"), 1e-5)
         expect_near(50, result:getValue(1, "percent"), 1e-5)
     end)
-
     -- @covers LDataFrame:missingReport
     -- @covers lurek.dataframe.newDataFrame
     it("missingReport summarizes missing and non-missing cells", function()
@@ -875,7 +851,6 @@ describe("valueCounts and data quality helpers", function()
         expect_near(2, report:getValue(1, "non_missing"), 1e-5)
         expect_near(33.333333333333, report:getValue(1, "missing_percent"), 1e-5)
     end)
-
     -- @covers LDataFrame:duplicateRows
     -- @covers lurek.dataframe.fromRows
     it("duplicateRows returns rows with repeated selected-column keys", function()
@@ -892,7 +867,6 @@ describe("valueCounts and data quality helpers", function()
         expect_equal(3, dups:nrows())
         expect_near(30, dups:getValue(3, "amount"), 1e-5)
     end)
-
     -- @covers LDataFrame:duplicateRows
     -- @covers lurek.dataframe.fromRows
     it("duplicateRows defaults to full-row duplicate keys", function()
@@ -907,7 +881,6 @@ describe("valueCounts and data quality helpers", function()
         local dups = df:duplicateRows()
         expect_equal(2, dups:nrows())
     end)
-
     -- @covers LDataFrame:dateParts
     -- @covers lurek.dataframe.newDataFrame
     it("dateParts extracts simple ISO date columns and leaves invalid dates nil", function()
@@ -943,7 +916,6 @@ describe("dropNil", function()
         local result = df:dropNil("x")
         expect_equal(2, result:nrows())
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:dropNil
     -- @covers lurek.dataframe.newDataFrame
@@ -970,7 +942,6 @@ describe("sample", function()
         local s = df:sample(2, 42)
         expect_equal(2, s:nrows())
     end)
-
     -- @covers LCatmullRom:sample
     -- @covers LDataFrame:sample
     -- @covers LHermite:sample
@@ -981,7 +952,6 @@ describe("sample", function()
         expect_equal(s1:getValue(1, "name"), s2:getValue(1, "name"))
         expect_equal(s1:getValue(2, "name"), s2:getValue(2, "name"))
     end)
-
     -- @covers LCatmullRom:sample
     -- @covers LDataFrame:sample
     -- @covers LHermite:sample
@@ -1019,28 +989,26 @@ end)
 -- =========================================================================
 -- @describe analytics
 describe("analytics", function()
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:sum
     it("sum computes correct total", function()
         local df = make_test_df()
         -- ages: 30 + 25 + 35 = 90
         expect_near(90, df:sum("age"), 1e-5)
     end)
 
-    -- @covers lurek.dataframe
     -- @covers LDataFrame:mean
     it("mean computes correct average", function()
         local df = make_test_df()
         -- ages: (30 + 25 + 35) / 3 = 30
         expect_near(30, df:mean("age"), 1e-5)
     end)
-
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:min
     it("min returns smallest value", function()
         local df = make_test_df()
         expect_near(25, df:min("age"), 1e-5)
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:max
     it("max returns largest value", function()
         local df = make_test_df()
         expect_near(35, df:max("age"), 1e-5)
@@ -1067,14 +1035,13 @@ describe("analytics", function()
         expect_true(v >= 0)
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:sum
     it("sum on scores", function()
         local df = make_test_df()
         -- scores: 90 + 85 + 92 = 267
         expect_near(267, df:sum("score"), 1e-5)
     end)
 
-    -- @covers lurek.dataframe
     it("analytics by column index", function()
         local df = make_test_df()
         -- column 2 = age, sum = 90
@@ -1100,7 +1067,6 @@ describe("fillNil", function()
         df:fillNil("x", 0)
         expect_near(0, df:getValue(2, "x"), 1e-5)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:fillNil
     -- @covers LDataFrame:getValue
@@ -1113,7 +1079,6 @@ describe("fillNil", function()
         df:fillNil("x", 0)
         expect_near(5, df:getValue(1, "x"), 1e-5)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:fillNil
     -- @covers LDataFrame:getValue
@@ -1142,7 +1107,6 @@ describe("apply", function()
         expect_near(4, df:getValue(2, "x"), 1e-5)
         expect_near(6, df:getValue(3, "x"), 1e-5)
     end)
-
     -- @covers LDataFrame:apply
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.fromCSV
@@ -1152,7 +1116,6 @@ describe("apply", function()
         -- tostring of a number may vary; just check it's now a string
         expect_type("string", df:getValue(1, "x"))
     end)
-
     -- @covers LDataFrame:apply
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.fromCSV
@@ -1188,7 +1151,6 @@ describe("serialization", function()
         expect_equal(df:ncols(), restored:ncols())
         expect_equal("Alice", restored:getValue(1, "name"))
     end)
-
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:nrows
     -- @covers LDataFrame:toCSV
@@ -1200,7 +1162,6 @@ describe("serialization", function()
         expect_equal(df:nrows(), df2:nrows())
         expect_equal(df:ncols(), df2:ncols())
     end)
-
     -- @covers LDataFrame:toJSON
     -- @covers LQualityReport:toJSON
     it("toJSON produces string", function()
@@ -1209,7 +1170,6 @@ describe("serialization", function()
         expect_type("string", json)
         expect_true(#json > 0)
     end)
-
     -- @covers LDataFrame:toJSONFile
     -- @covers lurek.dataframe.fromJSONFile
     it("toJSONFile/fromJSONFile roundtrip preserves rows", function()
@@ -1220,7 +1180,6 @@ describe("serialization", function()
         expect_equal(df:nrows(), restored:nrows())
         expect_near(85, restored:getValue(2, "score"), 1e-5)
     end)
-
     -- @covers LDataFrame:nrows
     -- @covers lurek.dataframe.fromJSON
     it("toJSON roundtrip preserves row count", function()
@@ -1229,7 +1188,6 @@ describe("serialization", function()
         local df2 = lurek.dataframe.fromJSON(json)
         expect_equal(df:nrows(), df2:nrows())
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:ncols
     -- @covers LDataFrame:nrows
@@ -1248,7 +1206,6 @@ describe("serialization", function()
             expect_near(df:getValue(i, "age"), df2:getValue(i, "age"), 1e-5)
         end
     end)
-
     -- @covers LDataFrame:toBinaryFile
     -- @covers lurek.filesystem.readBytes
     -- @covers lurek.dataframe.fromBinary
@@ -1260,7 +1217,6 @@ describe("serialization", function()
         expect_equal(df:nrows(), restored:nrows())
         expect_equal("Charlie", restored:getValue(3, "name"))
     end)
-
     -- @covers LDatabase:save
     -- @covers lurek.dataframe.loadDatabase
     -- @covers LDatabase:getTable
@@ -1276,7 +1232,6 @@ describe("serialization", function()
         expect_equal(3, table_df:nrows())
         expect_near(90, table_df:getValue(1, "score"), 1e-5)
     end)
-
     -- @covers LDataFrame:toTable
     it("toTable returns array of row-tables", function()
         local df = make_test_df()
@@ -1286,7 +1241,7 @@ describe("serialization", function()
     end)
 
     -- @covers LDataFrame:rows
-    -- @covers LDataFrame:toTable
+    -- @covers LDataFrame:rows
     it("rows iterator streams index and row table in order", function()
         local df = make_test_df()
         local seen = {}
@@ -1300,7 +1255,6 @@ describe("serialization", function()
         expect_equal(3, seen[3].i)
         expect_equal("Charlie", seen[3].name)
     end)
-
     -- @covers LDataFrame:rows
     -- @covers lurek.dataframe.newDataFrame
     it("rows iterator returns no items for empty dataframe", function()
@@ -1311,7 +1265,6 @@ describe("serialization", function()
         end
         expect_equal(0, count)
     end)
-
     -- @covers LDataFrame:toString
     it("toString returns non-empty string", function()
         local df = make_test_df()
@@ -1333,7 +1286,6 @@ describe("SQL on DataFrame", function()
         local result = df:query("SELECT * FROM self")
         expect_equal(3, result:nrows())
     end)
-
     -- @covers LHtmlDocument:query
     -- @covers LHtmlElement:query
     it("SELECT with WHERE filters rows", function()
@@ -1345,7 +1297,6 @@ describe("SQL on DataFrame", function()
             expect_true(result:getValue(i, "age") > 28)
         end
     end)
-
     -- @covers LHtmlDocument:query
     -- @covers LHtmlElement:query
     it("SELECT with ORDER BY sorts", function()
@@ -1353,7 +1304,6 @@ describe("SQL on DataFrame", function()
         local result = df:query("SELECT * FROM self ORDER BY age")
         expect_near(25, result:getValue(1, "age"), 1e-5)
     end)
-
     -- @covers LHtmlDocument:query
     -- @covers LHtmlElement:query
     it("SELECT with LIMIT restricts rows", function()
@@ -1361,7 +1311,6 @@ describe("SQL on DataFrame", function()
         local result = df:query("SELECT * FROM self LIMIT 2")
         expect_equal(2, result:nrows())
     end)
-
     -- @covers LHtmlDocument:query
     -- @covers LHtmlElement:query
     it("SELECT specific columns", function()
@@ -1377,7 +1326,6 @@ end)
 -- =========================================================================
 -- @describe clone
 describe("clone", function()
-    -- @covers lurek.dataframe
     -- @covers LByteData:clone
     -- @covers LParticleSystem:clone
     it("clone returns independent copy", function()
@@ -1387,8 +1335,7 @@ describe("clone", function()
         expect_equal("Alice", df:getValue(1, "name"))
         expect_equal("Modified", c:getValue(1, "name"))
     end)
-
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:clone
     it("clone has same dimensions", function()
         local df = make_test_df()
         local c = df:clone()
@@ -1396,7 +1343,7 @@ describe("clone", function()
         expect_equal(df:ncols(), c:ncols())
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:clone
     it("clone has same data", function()
         local df = make_test_df()
         local c = df:clone()
@@ -1411,19 +1358,19 @@ end)
 -- =========================================================================
 -- @describe type
 describe("type", function()
-    -- @covers lurek.dataframe
+    -- @covers type
     it("DataFrame type() returns LDataFrame", function()
         local df = make_test_df()
         expect_equal("LDataFrame", df:type())
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers typeOf
     it("DataFrame typeOf DataFrame is true", function()
         local df = make_test_df()
         expect_true(df:typeOf("LDataFrame"))
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers typeOf
     it("DataFrame typeOf wrong type is false", function()
         local df = make_test_df()
         expect_false(df:typeOf("LDatabase"))
@@ -1441,7 +1388,6 @@ describe("Database", function()
         local db = lurek.dataframe.newDatabase()
         expect_equal(0, db:tableCount())
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:getTable
     -- @covers lurek.dataframe.newDatabase
@@ -1454,14 +1400,12 @@ describe("Database", function()
         assert(retrieved)
         expect_equal(3, retrieved:nrows())
     end)
-
     -- @covers LDatabase:getTable
     -- @covers lurek.dataframe.newDatabase
     it("getTable returns nil for missing table", function()
         local db = lurek.dataframe.newDatabase()
         expect_nil(db:getTable("nonexistent"))
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:hasTable
     -- @covers lurek.dataframe.newDatabase
@@ -1470,14 +1414,12 @@ describe("Database", function()
         db:addTable("data", make_test_df())
         expect_true(db:hasTable("data"))
     end)
-
     -- @covers LDatabase:hasTable
     -- @covers lurek.dataframe.newDatabase
     it("hasTable returns false for missing table", function()
         local db = lurek.dataframe.newDatabase()
         expect_false(db:hasTable("nope"))
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:hasTable
     -- @covers LDatabase:removeTable
@@ -1488,7 +1430,6 @@ describe("Database", function()
         db:removeTable("data")
         expect_false(db:hasTable("data"))
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:listTables
     -- @covers lurek.dataframe.newDatabase
@@ -1499,7 +1440,6 @@ describe("Database", function()
         local names = db:listTables()
         expect_equal(2, #names)
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:tableCount
     -- @covers lurek.dataframe.newDatabase
@@ -1511,7 +1451,6 @@ describe("Database", function()
         db:addTable("t2", make_test_df())
         expect_equal(2, db:tableCount())
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:clear
     -- @covers LDatabase:tableCount
@@ -1523,7 +1462,6 @@ describe("Database", function()
         db:clear()
         expect_equal(0, db:tableCount())
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:hasTable
     -- @covers LDatabase:merge
@@ -1537,7 +1475,6 @@ describe("Database", function()
         expect_true(db1:hasTable("a"))
         expect_true(db1:hasTable("b"))
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:toJSON
     -- @covers lurek.dataframe.newDatabase
@@ -1548,21 +1485,18 @@ describe("Database", function()
         expect_type("string", json)
         expect_true(#json > 0)
     end)
-
     -- @covers LDatabase:type
     -- @covers lurek.dataframe.newDatabase
     it("Database type() returns LDatabase", function()
         local db = lurek.dataframe.newDatabase()
         expect_equal("LDatabase", db:type())
     end)
-
     -- @covers LDatabase:typeOf
     -- @covers lurek.dataframe.newDatabase
     it("Database typeOf Database is true", function()
         local db = lurek.dataframe.newDatabase()
         expect_true(db:typeOf("LDatabase"))
     end)
-
     -- @covers LDatabase:typeOf
     -- @covers lurek.dataframe.newDatabase
     it("Database typeOf wrong type is false", function()
@@ -1585,7 +1519,6 @@ describe("Database SQL", function()
         local result = db:query("SELECT * FROM users")
         expect_equal(3, result:nrows())
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:query
     -- @covers lurek.dataframe.newDatabase
@@ -1595,7 +1528,6 @@ describe("Database SQL", function()
         local result = db:query("SELECT * FROM users WHERE age > 28")
         expect_true(result:nrows() > 0)
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:query
     -- @covers lurek.dataframe.newDatabase
@@ -1606,7 +1538,6 @@ describe("Database SQL", function()
         expect_equal(1, result:ncols())
         expect_equal(3, result:nrows())
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:queryParams
     -- @covers lurek.dataframe.newDatabase
@@ -1620,7 +1551,6 @@ describe("Database SQL", function()
         expect_equal(1, result:nrows())
         expect_equal("Charlie", result:getValue(1, "name"))
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:queryParams
     -- @covers lurek.dataframe.newDatabase
@@ -1635,11 +1565,44 @@ describe("Database SQL", function()
         expect_equal(1, result:nrows())
         expect_near(10, result:getValue(1, "amount"), 1e-5)
     end)
-
     -- @covers LDatabase:addTable
+    it("queryParams binds booleans and rejects placeholder mismatches [LDatabase:addTable]", function()
+        local db = lurek.dataframe.newDatabase()
+        local df = lurek.dataframe.fromRows(
+            { "name", "active" },
+            { { "Alice", true }, { "Bob", false } }
+        )
+        db:addTable("flags", df)
+        local result = db:queryParams("SELECT name FROM flags WHERE active = ?", { true })
+        expect_equal(1, result:nrows())
+        expect_equal("Alice", result:getValue(1, "name"))
+
+        local ok = pcall(function()
+            db:queryParams("SELECT name FROM flags WHERE active = ? AND name = ?", { true })
+        end)
+        expect_false(ok)
+    end)
+
     -- @covers LDatabase:queryParams
+    it("queryParams binds booleans and rejects placeholder mismatches [LDatabase:queryParams]", function()
+        local db = lurek.dataframe.newDatabase()
+        local df = lurek.dataframe.fromRows(
+            { "name", "active" },
+            { { "Alice", true }, { "Bob", false } }
+        )
+        db:addTable("flags", df)
+        local result = db:queryParams("SELECT name FROM flags WHERE active = ?", { true })
+        expect_equal(1, result:nrows())
+        expect_equal("Alice", result:getValue(1, "name"))
+
+        local ok = pcall(function()
+            db:queryParams("SELECT name FROM flags WHERE active = ? AND name = ?", { true })
+        end)
+        expect_false(ok)
+    end)
+
     -- @covers lurek.dataframe.newDatabase
-    it("queryParams binds booleans and rejects placeholder mismatches", function()
+    it("queryParams binds booleans and rejects placeholder mismatches [lurek.dataframe.newDatabase]", function()
         local db = lurek.dataframe.newDatabase()
         local df = lurek.dataframe.fromRows(
             { "name", "active" },
@@ -1678,7 +1641,6 @@ describe("Database SQL", function()
         expect_near(3, result:getValue(1, "row_count"), 1e-5)
         expect_near(60, result:getValue(1, "total_score"), 1e-5)
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:queryParams
     -- @covers lurek.dataframe.fromRows
@@ -1754,7 +1716,6 @@ describe("async dataframe tasks", function()
         expect_equal(2, result:nrows())
         expect_equal("Alice", result:getValue(1, "name"))
     end)
-
     -- @covers lurek.dataframe.fromJSONFileAsync
     -- @covers LDataFrameTask:wait
     -- @covers LDataFrameTask:result
@@ -1768,11 +1729,38 @@ describe("async dataframe tasks", function()
         expect_equal(2, result:nrows())
         expect_near(20, result:getValue(2, "val"), 1e-5)
     end)
-
     -- @covers lurek.dataframe.fromCSVFileAsync
+    it("fromCSVFileAsync reports malformed CSV errors [lurek.dataframe.fromCSVFileAsync]", function()
+        local path = TMP .. "async_bad.csv"
+        lurek.filesystem.write(path, "name,score\nAlice\n")
+
+        local task = lurek.dataframe.fromCSVFileAsync(path)
+        expect_false(task:wait())
+        local error_message = task:getError()
+        expect_type("string", error_message)
+        expect_true(tostring(error_message):find("CSV row", 1, true) ~= nil)
+        expect_error(function()
+            task:result()
+        end)
+    end)
+
     -- @covers LDataFrameTask:getError
+    it("fromCSVFileAsync reports malformed CSV errors [LDataFrameTask:getError]", function()
+        local path = TMP .. "async_bad.csv"
+        lurek.filesystem.write(path, "name,score\nAlice\n")
+
+        local task = lurek.dataframe.fromCSVFileAsync(path)
+        expect_false(task:wait())
+        local error_message = task:getError()
+        expect_type("string", error_message)
+        expect_true(tostring(error_message):find("CSV row", 1, true) ~= nil)
+        expect_error(function()
+            task:result()
+        end)
+    end)
+
     -- @covers LDataFrameTask:result
-    it("fromCSVFileAsync reports malformed CSV errors", function()
+    it("fromCSVFileAsync reports malformed CSV errors [LDataFrameTask:result]", function()
         local path = TMP .. "async_bad.csv"
         lurek.filesystem.write(path, "name,score\nAlice\n")
 
@@ -1787,9 +1775,37 @@ describe("async dataframe tasks", function()
     end)
 
     -- @covers lurek.dataframe.fromJSONFileAsync
+    it("fromJSONFileAsync reports malformed JSON errors [lurek.dataframe.fromJSONFileAsync]", function()
+        local path = TMP .. "async_bad.json"
+        lurek.filesystem.write(path, "{not valid json")
+
+        local task = lurek.dataframe.fromJSONFileAsync(path)
+        expect_false(task:wait())
+        local error_message = task:getError()
+        expect_type("string", error_message)
+        expect_true(tostring(error_message):find("lurek.dataframe.fromJSONFileAsync", 1, true) ~= nil)
+        expect_error(function()
+            task:result()
+        end)
+    end)
+
     -- @covers LDataFrameTask:getError
+    it("fromJSONFileAsync reports malformed JSON errors [LDataFrameTask:getError]", function()
+        local path = TMP .. "async_bad.json"
+        lurek.filesystem.write(path, "{not valid json")
+
+        local task = lurek.dataframe.fromJSONFileAsync(path)
+        expect_false(task:wait())
+        local error_message = task:getError()
+        expect_type("string", error_message)
+        expect_true(tostring(error_message):find("lurek.dataframe.fromJSONFileAsync", 1, true) ~= nil)
+        expect_error(function()
+            task:result()
+        end)
+    end)
+
     -- @covers LDataFrameTask:result
-    it("fromJSONFileAsync reports malformed JSON errors", function()
+    it("fromJSONFileAsync reports malformed JSON errors [LDataFrameTask:result]", function()
         local path = TMP .. "async_bad.json"
         lurek.filesystem.write(path, "{not valid json")
 
@@ -1813,7 +1829,6 @@ describe("async dataframe tasks", function()
         expect_equal(2, result:nrows())
         expect_equal("Alice", result:getValue(1, "name"))
     end)
-
     -- @covers LDatabase:queryAsync
     -- @covers LDatabase:queryParamsAsync
     -- @covers LDataFrameTask:wait
@@ -1847,7 +1862,6 @@ describe("CellValue nil and display (RS parity)", function()
         local v = df:getValue(1, "x")
         expect_true(v == nil or v == "nil" or v == "")
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.newDataFrame
@@ -1857,7 +1871,6 @@ describe("CellValue nil and display (RS parity)", function()
         df:addRow({ n = 42 })
         expect_near(42, df:getValue(1, "n"), 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.newDataFrame
@@ -1867,7 +1880,6 @@ describe("CellValue nil and display (RS parity)", function()
         df:addRow({ s = "hello" })
         expect_equal("hello", df:getValue(1, "s"))
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getValue
     -- @covers lurek.dataframe.newDataFrame
@@ -1877,7 +1889,6 @@ describe("CellValue nil and display (RS parity)", function()
         df:addRow({ b = true })
         expect_true(df:getValue(1, "b"))
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:toCSV
     -- @covers lurek.dataframe.newDataFrame
@@ -1914,7 +1925,6 @@ describe("Database (RS parity)", function()
         local t = db:getTable("users")
         expect_equal("userdata", type(t))
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:listTables
     -- @covers lurek.dataframe.newDataFrame
@@ -1929,7 +1939,6 @@ describe("Database (RS parity)", function()
         for _, n in ipairs(names) do if n == "items" then found = true end end
         expect_true(found)
     end)
-
     -- @covers LDatabase:addTable
     -- @covers LDatabase:listTables
     -- @covers LDatabase:removeTable
@@ -1969,7 +1978,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_equal(nil, row1.rm)
         expect_near(2.0, row2.rm, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withRollingSum
@@ -1984,7 +1992,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local row3 = df:getRow(3)
         expect_near(10.0, row3.rs, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withRank
@@ -2003,7 +2010,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(3.0, r2.rank, 0.001)
         expect_near(2.0, r3.rank, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withPctChange
@@ -2020,7 +2026,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_equal(nil, row1.pct)
         expect_near(0.1, row2.pct, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withCumsum
@@ -2033,7 +2038,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local row3 = df:getRow(3)
         expect_near(6.0, row3.cs, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:groupAgg
     -- @covers lurek.dataframe.newDataFrame
@@ -2049,11 +2053,30 @@ describe("lurek.dataframe.DataFrame analytics", function()
             expect_equal(2, agg:nrows())
         end
     end)
-
     -- @covers LDataFrame:addRow
+    it("groupAgg errors on unknown aggregate name [LDataFrame:addRow]", function()
+        local df = lurek.dataframe.newDataFrame()
+        df_add_column(df, "cat", "")
+        df_add_column(df, "val", 0)
+        df:addRow({cat = "A", val = 10})
+        expect_error(function()
+            df:groupAgg("cat", "val", "nope")
+        end)
+    end)
+
     -- @covers LDataFrame:groupAgg
+    it("groupAgg errors on unknown aggregate name [LDataFrame:groupAgg]", function()
+        local df = lurek.dataframe.newDataFrame()
+        df_add_column(df, "cat", "")
+        df_add_column(df, "val", 0)
+        df:addRow({cat = "A", val = 10})
+        expect_error(function()
+            df:groupAgg("cat", "val", "nope")
+        end)
+    end)
+
     -- @covers lurek.dataframe.newDataFrame
-    it("groupAgg errors on unknown aggregate name", function()
+    it("groupAgg errors on unknown aggregate name [lurek.dataframe.newDataFrame]", function()
         local df = lurek.dataframe.newDataFrame()
         df_add_column(df, "cat", "")
         df_add_column(df, "val", 0)
@@ -2072,7 +2095,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRow({x = 1}) df:addRow({x = 2}) df:addRow({x = 3})
         expect_near(1.0, df:corr("x", "x"), 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:correlationMatrix
     -- @covers lurek.dataframe.newDataFrame
@@ -2087,7 +2109,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local cols = mat:columns()
         expect_equal("column", cols[1])
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:zscoreCol
@@ -2101,7 +2122,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         for i = 1, 8 do total = total + df:getRow(i).z end
         expect_near(0.0, total / 8, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:normalizeCol
@@ -2115,7 +2135,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(0.5, df:getRow(2).n, 0.001)
         expect_near(1.0, df:getRow(3).n, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:outliers
     -- @covers lurek.dataframe.newDataFrame
@@ -2128,7 +2147,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local out = df:outliers("v", 2.0)
         expect_equal(1, out:nrows())
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:modeVal
     -- @covers lurek.dataframe.newDataFrame
@@ -2139,7 +2157,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRow({x = "a"}) df:addRow({x = "c"})
         expect_equal("a", df:modeVal("x"))
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:entropy
     -- @covers lurek.dataframe.newDataFrame
@@ -2150,7 +2167,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRow({x = "c"}) df:addRow({x = "d"})
         expect_near(2.0, df:entropy("x"), 0.001)
     end)
-
     -- @covers LDataFrame:addRowBatch
     -- @covers LDataFrame:nrows
     -- @covers lurek.dataframe.newDataFrame
@@ -2160,7 +2176,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRowBatch({{1}, {2}, {3}})
         expect_equal(3, df:nrows())
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getColumnAsF64
     -- @covers lurek.dataframe.newDataFrame
@@ -2173,7 +2188,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(10.0, arr[1], 0.001)
         expect_near(20.0, arr[2], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:setColumnFromF64
@@ -2186,7 +2200,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(7.0, df:getRow(1).v, 0.001)
         expect_near(14.0, df:getRow(2).v, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:pivot
     -- @covers lurek.dataframe.newDataFrame
@@ -2202,7 +2215,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         -- Should have 3 columns: row, C1, C2
         expect_equal(3, #p:columns())
     end)
-
 end)
 
 -- ---------------------------------------------------------------------------
@@ -2227,7 +2239,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_equal(nil, row1.rm)
         expect_near(2.0, row2.rm, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withRollingSum
@@ -2242,7 +2253,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local row3 = df:getRow(3)
         expect_near(10.0, row3.rs, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withRank
@@ -2261,7 +2271,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(3.0, r2.rank, 0.001)
         expect_near(2.0, r3.rank, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withPctChange
@@ -2278,7 +2287,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_equal(nil, row1.pct)
         expect_near(0.1, row2.pct, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withCumsum
@@ -2291,7 +2299,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local row3 = df:getRow(3)
         expect_near(6.0, row3.cs, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:groupAgg
     -- @covers lurek.dataframe.newDataFrame
@@ -2305,7 +2312,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local agg = df:groupAgg("cat", "val", "sum")
         expect_equal(2, agg:nrows())
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:corr
     -- @covers lurek.dataframe.newDataFrame
@@ -2315,7 +2321,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRow({x = 1}) df:addRow({x = 2}) df:addRow({x = 3})
         expect_near(1.0, df:corr("x", "x"), 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:correlationMatrix
     -- @covers lurek.dataframe.newDataFrame
@@ -2330,7 +2335,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local cols = mat:columns()
         expect_equal("column", cols[1])
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:zscoreCol
@@ -2344,7 +2348,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         for i = 1, 8 do total = total + df:getRow(i).z end
         expect_near(0.0, total / 8, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:normalizeCol
@@ -2358,7 +2361,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(0.5, df:getRow(2).n, 0.001)
         expect_near(1.0, df:getRow(3).n, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:outliers
     -- @covers lurek.dataframe.newDataFrame
@@ -2371,7 +2373,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         local out = df:outliers("v", 2.0)
         expect_equal(1, out:nrows())
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:modeVal
     -- @covers lurek.dataframe.newDataFrame
@@ -2382,7 +2383,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRow({x = "a"}) df:addRow({x = "c"})
         expect_equal("a", df:modeVal("x"))
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:entropy
     -- @covers lurek.dataframe.newDataFrame
@@ -2393,7 +2393,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRow({x = "c"}) df:addRow({x = "d"})
         expect_near(2.0, df:entropy("x"), 0.001)
     end)
-
     -- @covers LDataFrame:addRowBatch
     -- @covers LDataFrame:nrows
     -- @covers lurek.dataframe.newDataFrame
@@ -2403,7 +2402,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         df:addRowBatch({{1}, {2}, {3}})
         expect_equal(3, df:nrows())
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getColumnAsF64
     -- @covers lurek.dataframe.newDataFrame
@@ -2416,7 +2414,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(10.0, arr[1], 0.001)
         expect_near(20.0, arr[2], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:setColumnFromF64
@@ -2429,7 +2426,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         expect_near(7.0, df:getRow(1).v, 0.001)
         expect_near(14.0, df:getRow(2).v, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:pivot
     -- @covers lurek.dataframe.newDataFrame
@@ -2445,7 +2441,6 @@ describe("lurek.dataframe.DataFrame analytics", function()
         -- Should have 3 columns: row, C1, C2
         expect_equal(3, #p:columns())
     end)
-
 end)
 
 -- DataFrame pivotTable / rollingMean / rollingSum / rank (merged from test_dataframe_pivot_window.lua)
@@ -2479,7 +2474,6 @@ describe("DataFrame: pivotTable", function()
         expect_near(80,  hp[2], 0.001)
         expect_near(60,  mp[2], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:pivotTable
     -- @covers lurek.dataframe.newDataFrame
@@ -2499,7 +2493,6 @@ describe("DataFrame: pivotTable", function()
         local b_col = wide:getColumn("b")
         expect_near(5, b_col[1], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:pivotTable
     -- @covers lurek.dataframe.newDataFrame
@@ -2518,7 +2511,6 @@ describe("DataFrame: pivotTable", function()
         local c2 = wide:getColumn("C2")
         expect_equal(1, c2[1])
     end)
-
 end)
 
 -- @describe DataFrame: rollingMean
@@ -2551,7 +2543,6 @@ describe("DataFrame: rollingMean", function()
         -- Row 4: mean(6,8)=7
         expect_near(7.0, rm[4], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:rollingMean
     -- @covers lurek.dataframe.newDataFrame
@@ -2567,7 +2558,6 @@ describe("DataFrame: rollingMean", function()
         expect_equal("score", cols[1])
         expect_equal("rolling_mean", cols[2])
     end)
-
 end)
 
 -- @describe DataFrame: rollingSum
@@ -2590,7 +2580,6 @@ describe("DataFrame: rollingSum", function()
         expect_near(3.0, rs[2], 0.001)  -- 1+2
         expect_near(5.0, rs[3], 0.001)  -- 2+3
     end)
-
 end)
 
 -- @describe DataFrame: rank
@@ -2614,7 +2603,6 @@ describe("DataFrame: rank", function()
         expect_near(3, ranks[2], 0.001)
         expect_near(2, ranks[3], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:rank
     -- @covers lurek.dataframe.newDataFrame
@@ -2632,7 +2620,6 @@ describe("DataFrame: rank", function()
         expect_near(1, ranks[2], 0.001)
         expect_near(2, ranks[3], 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:rank
     -- @covers lurek.dataframe.newDataFrame
@@ -2647,7 +2634,6 @@ describe("DataFrame: rank", function()
         expect_equal(2, #cols)
         expect_equal("rank", cols[2])
     end)
-
 end)
 
 -- =========================================================================
@@ -2661,14 +2647,12 @@ describe("Missing API Coverage", function()
         local df = lurek.dataframe.fromCSV("v\n10\n2\n7")
         expect_equal(2, df:min("v"))
     end)
-
     -- @covers LDataFrame:max
     -- @covers lurek.dataframe.fromCSV
     it("covers DataFrame:max", function()
         local df = lurek.dataframe.fromCSV("v\n10\n2\n7")
         expect_equal(10, df:max("v"))
     end)
-
     -- @covers LDataFrame:withEval
     -- @covers lurek.dataframe.fromCSV
     it("withEval adds a computed column with a string expression", function()
@@ -2679,7 +2663,6 @@ describe("Missing API Coverage", function()
         expect_equal(3, out:getValue(1, "z"))   -- 1 + 2
         expect_equal(7, out:getValue(2, "z"))   -- 3 + 4
     end)
-
 end)
 
 -- @describe DataFrame shape accessors
@@ -2705,7 +2688,7 @@ describe("DataFrame shape accessors", function()
         expect_equal(3, #cols)
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:count
     it("count returns the total number of rows", function()
         local df = csv3x3()
         expect_equal(3, df:count())
@@ -2725,7 +2708,6 @@ describe("DataFrame column/row mutation", function()
         df_remove_column(df, "b")
         expect_equal(1, df:ncols())
     end)
-
     -- @covers LDataFrame:rename
     it("rename renames a column", function()
         local df = make_df()
@@ -2808,7 +2790,6 @@ describe("DataFrame slicing and filtering", function()
         local out = df:select("a", "c")
         expect_equal(2, out:ncols())
     end)
-
     -- @covers LDataFrame:unique
     -- @covers lurek.dataframe.fromCSV
     it("unique returns an array of distinct values", function()
@@ -2817,7 +2798,6 @@ describe("DataFrame slicing and filtering", function()
         expect_type("table", vals)
         expect_equal(3, #vals)
     end)
-
     -- @covers LDataFrame:groupBy
     -- @covers lurek.dataframe.fromCSV
     it("groupBy returns a table of DataFrames keyed by group value", function()
@@ -2825,7 +2805,6 @@ describe("DataFrame slicing and filtering", function()
         local groups = df:groupBy("cat")
         expect_type("table", groups)
     end)
-
     -- @covers LDataFrame:merge
     -- @covers LDataFrame:nrows
     -- @covers lurek.dataframe.fromCSV
@@ -2835,7 +2814,6 @@ describe("DataFrame slicing and filtering", function()
         left:merge(right)
         expect_equal(4, left:nrows())
     end)
-
     -- @covers LDataFrame:countBy
     -- @covers lurek.dataframe.fromCSV
     it("countBy returns a DataFrame with count column", function()
@@ -2845,7 +2823,6 @@ describe("DataFrame slicing and filtering", function()
         -- countBy returns a DataFrame userdata (value, count columns)
         expect_equal(2, counts:nrows())   -- 2 distinct values: A, B
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:dropNil
     -- @covers lurek.dataframe.newDataFrame
@@ -2858,7 +2835,6 @@ describe("DataFrame slicing and filtering", function()
         local out = df:dropNil("x")
         expect_equal(2, out:nrows())
     end)
-
     -- @covers LDataFrame:sample
     it("sample(2) returns exactly 2 rows", function()
         local out = nums_df():sample(2)
@@ -2890,7 +2866,6 @@ describe("lurek.dataframe vectorized factory functions", function()
         expect_true(vf ~= nil, "toVec returned nil")
         expect_true(type(vf) == "userdata", "expected userdata")
     end)
-
     -- @covers lurek.dataframe.fromCSV
     -- @covers lurek.dataframe.fromVec
     -- @covers lurek.dataframe.toVec
@@ -2957,7 +2932,6 @@ describe("VecFrame type inspection and casting", function()
         vf:colCast("hp", "int64")
         expect_true(vf:colType("hp") == "int64", "expected int64 after cast")
     end)
-
     -- @covers LVecFrame:colCast
     -- @covers LVecFrame:colType
     it("colCast int64 back to float64 changes type", function()
@@ -2991,7 +2965,6 @@ describe("VecFrame scalar column operations", function()
         expect_true(v ~= nil, "colAdd: got nil")
         expect_true(math.abs(v - 15) < 0.0001, "expected 15, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colSub
     -- @covers lurek.dataframe.fromVec
@@ -3002,7 +2975,6 @@ describe("VecFrame scalar column operations", function()
         local v = df2:getValue(1, "hp")
         expect_true(math.abs(v - 5) < 0.0001, "expected 5, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colMul
     -- @covers lurek.dataframe.fromVec
@@ -3013,7 +2985,6 @@ describe("VecFrame scalar column operations", function()
         local v = df2:getValue(1, "hp")
         expect_true(math.abs(v - 30) < 0.0001, "expected 30, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colDiv
     -- @covers lurek.dataframe.fromVec
@@ -3024,7 +2995,6 @@ describe("VecFrame scalar column operations", function()
         local v = df2:getValue(1, "hp")
         expect_true(math.abs(v - 5) < 0.0001, "expected 5, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colAbs
     -- @covers lurek.dataframe.fromCSV
@@ -3038,7 +3008,6 @@ describe("VecFrame scalar column operations", function()
         local v = df2:getValue(1, "v")
         expect_true(v ~= nil and v >= 0, "expected non-negative, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colSqrt
     -- @covers lurek.dataframe.fromCSV
@@ -3052,7 +3021,6 @@ describe("VecFrame scalar column operations", function()
         local v = df2:getValue(1, "v")
         expect_true(math.abs(v - 3) < 0.0001, "expected 3, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colFloor
     -- @covers lurek.dataframe.fromCSV
@@ -3065,7 +3033,6 @@ describe("VecFrame scalar column operations", function()
         local df2 = lurek.dataframe.fromVec(vf)
         expect_true(math.abs(df2:getValue(1, "v") - 1) < 0.0001, "expected 1")
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colCeil
     -- @covers lurek.dataframe.fromCSV
@@ -3078,7 +3045,6 @@ describe("VecFrame scalar column operations", function()
         local df2 = lurek.dataframe.fromVec(vf)
         expect_true(math.abs(df2:getValue(1, "v") - 2) < 0.0001, "expected 2")
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colNeg
     -- @covers lurek.dataframe.fromCSV
@@ -3091,11 +3057,10 @@ describe("VecFrame scalar column operations", function()
         local df2 = lurek.dataframe.fromVec(vf)
         expect_true(math.abs(df2:getValue(1, "v") - (-5)) < 0.0001, "expected -5")
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colClamp
     -- @covers lurek.dataframe.fromVec
-    it("colClamp clamps values to [min, max]", function()
+    it("colClamp clamps values to", function()
         local vf = make_vf()
         vf:colClamp("hp", 15, 25)
         local df2 = lurek.dataframe.fromVec(vf)
@@ -3106,7 +3071,6 @@ describe("VecFrame scalar column operations", function()
         local v2 = df2:getValue(3, "hp")
         expect_true(math.abs(v2 - 25) < 0.0001, "expected 25 (clamped), got " .. tostring(v2))
     end)
-
     -- @covers LVecFrame:colDiv
     it("colDiv by zero errors", function()
         local vf = make_vf()
@@ -3116,9 +3080,25 @@ describe("VecFrame scalar column operations", function()
     end)
 
     -- @covers LVecFrame:colAdd
+    it("scalar ops on text columns error [LVecFrame:colAdd]", function()
+        local df = lurek.dataframe.fromCSV("name\nAlice\nBob\n")
+        local vf = lurek.dataframe.toVec(df)
+        expect_error(function()
+            vf:colAdd("name", 1)
+        end)
+    end)
+
     -- @covers lurek.dataframe.fromCSV
+    it("scalar ops on text columns error [lurek.dataframe.fromCSV]", function()
+        local df = lurek.dataframe.fromCSV("name\nAlice\nBob\n")
+        local vf = lurek.dataframe.toVec(df)
+        expect_error(function()
+            vf:colAdd("name", 1)
+        end)
+    end)
+
     -- @covers lurek.dataframe.toVec
-    it("scalar ops on text columns error", function()
+    it("scalar ops on text columns error [lurek.dataframe.toVec]", function()
         local df = lurek.dataframe.fromCSV("name\nAlice\nBob\n")
         local vf = lurek.dataframe.toVec(df)
         expect_error(function()
@@ -3142,7 +3122,6 @@ describe("VecFrame binary column operations", function()
         local v = df2:getValue(1, "total")
         expect_true(v ~= nil and math.abs(v - 15) < 0.0001, "expected 15, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colOp
     -- @covers lurek.dataframe.fromCSV
@@ -3156,7 +3135,6 @@ describe("VecFrame binary column operations", function()
         local v = df2:getValue(1, "product")
         expect_true(v ~= nil and math.abs(v - 12) < 0.0001, "expected 12, got " .. tostring(v))
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LVecFrame:colOp
     -- @covers lurek.dataframe.fromCSV
@@ -3179,33 +3157,33 @@ describe("VecFrame reductions", function()
         return lurek.dataframe.toVec(df)
     end
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:reduce
     it("reduce sum returns correct total", function()
         local vf = make_vf()
         local s = vf:reduce("hp", "sum")
         expect_true(s ~= nil and math.abs(s - 60) < 0.0001, "expected 60, got " .. tostring(s))
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:reduce
     it("reduce mean returns correct average", function()
         local vf = make_vf()
         local m = vf:reduce("hp", "mean")
         expect_true(m ~= nil and math.abs(m - 20) < 0.0001, "expected 20, got " .. tostring(m))
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:reduce
     it("reduce min returns minimum value", function()
         local vf = make_vf()
         expect_true(vf:reduce("hp", "min") == 10, "expected 10")
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:reduce
     it("reduce max returns maximum value", function()
         local vf = make_vf()
         expect_true(vf:reduce("hp", "max") == 30, "expected 30")
     end)
 
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:reduce
     it("reduce count returns row count", function()
         local vf = make_vf()
         expect_true(vf:reduce("hp", "count") == 3, "expected 3")
@@ -3213,18 +3191,17 @@ describe("VecFrame reductions", function()
 
     -- @covers LVecFrame:reduce
     -- @covers lurek.dataframe.fromCSV
-    -- @covers lurek.dataframe.toVec
+    -- @covers LDataFrame:reduce.toVec
     it("reduce std is near 0 for constant column", function()
         local df = lurek.dataframe.fromCSV("v\n5\n5\n5\n")
         local vf = lurek.dataframe.toVec(df)
         local s = vf:reduce("v", "std")
         expect_true(s ~= nil and math.abs(s) < 0.0001, "expected near 0, got " .. tostring(s))
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LVecFrame:reduce
     -- @covers lurek.dataframe.newDataFrame
-    -- @covers lurek.dataframe.toVec
+    -- @covers LDataFrame:reduce.toVec
     it("reduce count skips nil rows after toVec conversion", function()
         local df = lurek.dataframe.newDataFrame()
         df_add_column(df, "v")
@@ -3234,8 +3211,7 @@ describe("VecFrame reductions", function()
         local vf = lurek.dataframe.toVec(df)
         expect_true(vf:reduce("v", "count") == 2, "expected count=2")
     end)
-
-    -- @covers lurek.dataframe
+    -- @covers LDataFrame:reduce
     it("reduce on missing column errors", function()
         local vf = make_vf()
         expect_error(function()
@@ -3278,7 +3254,6 @@ describe("VecFrame filter and mask", function()
         local filtered = vf:applyMask(mask)
         expect_true(filtered:nrows() == 2, "expected 2 rows, got " .. tostring(filtered:nrows()))
     end)
-
     -- @covers LVecFrame:applyMask
     -- @covers LVecFrame:filterMask
     it("applyMask combined reduce gives correct sum", function()
@@ -3288,7 +3263,6 @@ describe("VecFrame filter and mask", function()
         local s = filtered:reduce("hp", "sum")
         expect_true(math.abs(s - 50) < 0.0001, "expected 50, got " .. tostring(s))
     end)
-
     -- @covers LVecFrame:applyMask
     it("applyMask with wrong mask length errors", function()
         local vf = make_vf()
@@ -3398,7 +3372,6 @@ describe("DataFrame statistics", function()
         local m = df:modeVal("v")
         expect_equal(2, m)
     end)
-
     -- @covers LDataFrame:entropy
     -- @covers lurek.dataframe.fromCSV
     it("entropy returns a non-negative number", function()
@@ -3407,7 +3380,6 @@ describe("DataFrame statistics", function()
         expect_type("number", e)
         expect_true(e >= 0, "entropy must be non-negative")
     end)
-
     -- @covers LDataFrame:correlationMatrix
     -- @covers lurek.dataframe.fromCSV
     it("correlationMatrix returns a DataFrame or table", function()
@@ -3487,11 +3459,10 @@ describe("DataFrame query and clone", function()
         expect_not_nil(out)
         expect_equal(2, out:nrows())
     end)
-
     -- @covers LDataFrame:clone
     -- @covers LDataFrame:nrows
     -- @covers LDataFrame:removeRow
-    -- @covers lurek.dataframe.fromCSV
+    -- @covers LDataFrame:clone.fromCSV
     it("clone produces an independent copy", function()
         local df = lurek.dataframe.fromCSV("v\n1\n2\n3")
         local copy = df:clone()
@@ -3512,7 +3483,6 @@ describe("DataFrame bulk row ops and typed columns", function()
         df:addRowBatch({{ v = 1 }, { v = 2 }, { v = 3 }})
         expect_equal(3, df:nrows())
     end)
-
     -- @covers LDataFrame:getColumnAsF64
     -- @covers lurek.dataframe.fromCSV
     it("getColumnAsF64 returns a number array", function()
@@ -3522,7 +3492,6 @@ describe("DataFrame bulk row ops and typed columns", function()
         expect_equal(3, #nums)
         expect_equal(1, nums[1])
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:setColumnFromF64
     -- @covers lurek.dataframe.fromCSV
@@ -3532,14 +3501,12 @@ describe("DataFrame bulk row ops and typed columns", function()
         expect_equal(10, df:getValue(1, "v"))
         expect_equal(30, df:getValue(3, "v"))
     end)
-
     -- @covers LDataFrame:type
     -- @covers lurek.dataframe.newDataFrame
     it("type returns 'LDataFrame'", function()
         local df = lurek.dataframe.newDataFrame()
         expect_equal("LDataFrame", df:type())
     end)
-
     -- @covers LDataFrame:typeOf
     -- @covers lurek.dataframe.newDataFrame
     it("typeOf('LDataFrame') returns true", function()
@@ -3580,7 +3547,6 @@ describe("Database operations", function()
         db:removeTable("test")
         expect_equal(false, db:hasTable("test"))
     end)
-
     -- @covers LDatabase:listTables
     it("listTables returns an array of table name strings", function()
         local db = make_db()
@@ -3613,7 +3579,6 @@ describe("Database operations", function()
         db1:merge(db2)
         expect_equal(2, db1:tableCount())
     end)
-
     -- @covers LDatabase:toJSON
     it("toJSON returns a non-empty string", function()
         local json = make_db():toJSON()
@@ -3633,7 +3598,6 @@ describe("Database operations", function()
     it("type returns 'LDatabase'", function()
         expect_equal("LDatabase", lurek.dataframe.newDatabase():type())
     end)
-
     -- @covers LDatabase:typeOf
     -- @covers lurek.dataframe.newDatabase
     it("typeOf('LDatabase') returns true", function()
@@ -3665,11 +3629,40 @@ describe("grouped:aggregate with Lua callback", function()
         expect_not_nil(g)
         expect_equal(type(g.aggregate), "function")
     end)
-
     -- @covers LDataFrame:groupByObj
+    it("aggregate with sum callback produces correct result [LDataFrame:groupByObj]", function()
+        local csv = "category,value\na,1\na,2\nb,10"
+        local df = lurek.dataframe.fromCSV(csv)
+        local g = df:groupByObj("category")
+        if g then
+            local result = g:aggregate("value", function(vals)
+                local s = 0
+                for _, v in ipairs(vals) do s = s + v end
+                return s
+            end)
+            expect_not_nil(result)
+            expect_equal(result:nrows(), 2)
+        end
+    end)
+
     -- @covers LGroupedFrame:aggregate
+    it("aggregate with sum callback produces correct result [LGroupedFrame:aggregate]", function()
+        local csv = "category,value\na,1\na,2\nb,10"
+        local df = lurek.dataframe.fromCSV(csv)
+        local g = df:groupByObj("category")
+        if g then
+            local result = g:aggregate("value", function(vals)
+                local s = 0
+                for _, v in ipairs(vals) do s = s + v end
+                return s
+            end)
+            expect_not_nil(result)
+            expect_equal(result:nrows(), 2)
+        end
+    end)
+
     -- @covers lurek.dataframe.fromCSV
-    it("aggregate with sum callback produces correct result", function()
+    it("aggregate with sum callback produces correct result [lurek.dataframe.fromCSV]", function()
         local csv = "category,value\na,1\na,2\nb,10"
         local df = lurek.dataframe.fromCSV(csv)
         local g = df:groupByObj("category")
@@ -3701,7 +3694,6 @@ describe("LDataFrame rolling extrema", function()
         local row3 = df:getRow(3)
         expect_near(2.0, row3.rmin, 0.001)
     end)
-
     -- @covers LDataFrame:addRow
     -- @covers LDataFrame:getRow
     -- @covers LDataFrame:withRollingMax
@@ -3726,7 +3718,6 @@ describe("dataframe strict: LDataFrame extra methods", function()
         local df = lurek.dataframe.newDataFrame()
         expect_type("number", df:count())
     end)
-
     -- @covers LDataFrame:addColumn
     -- @covers lurek.dataframe.newDataFrame
     it("LDataFrame addColumn is callable", function()
@@ -3734,7 +3725,6 @@ describe("dataframe strict: LDataFrame extra methods", function()
         local ok = pcall(function() df:addColumn("score", 0) end)
         expect_true(ok)
     end)
-
     -- @covers LDataFrame:removeColumn
     -- @covers lurek.dataframe.newDataFrame
     it("LDataFrame removeColumn is callable after addColumn", function()
@@ -3743,7 +3733,6 @@ describe("dataframe strict: LDataFrame extra methods", function()
         local ok = pcall(function() df:removeColumn("tmp") end)
         expect_true(ok)
     end)
-
     -- @covers LDataFrame:setValue
     -- @covers lurek.dataframe.newDataFrame
     it("LDataFrame setValue is callable", function()
@@ -3753,7 +3742,6 @@ describe("dataframe strict: LDataFrame extra methods", function()
         local ok = pcall(function() df:setValue(1, "val", 99) end)
         expect_true(ok)
     end)
-
     -- @covers LDataFrame:sum
     -- @covers lurek.dataframe.newDataFrame
     it("LDataFrame sum returns a number for numeric column", function()
@@ -3764,7 +3752,6 @@ describe("dataframe strict: LDataFrame extra methods", function()
         local s = df:sum("n")
         expect_true(s == nil or type(s) == "number")
     end)
-
     -- @covers LDataFrame:toTable
     -- @covers lurek.dataframe.newDataFrame
     it("LDataFrame toTable returns a table", function()
@@ -3825,7 +3812,6 @@ describe("dataframe dedicated: advanced transforms and SQL join", function()
         expect_near(5.0, out:getValue(1, "z"), 0.001)
         expect_near(12.0, out:getValue(2, "z"), 0.001)
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:pivotTable
     -- @covers lurek.dataframe.fromRows
@@ -3844,7 +3830,6 @@ describe("dataframe dedicated: advanced transforms and SQL join", function()
         expect_near(2.0, out:getValue(1, "a"), 0.001)
         expect_near(4.0, out:getValue(1, "b"), 0.001)
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:rollingMean
     -- @covers lurek.dataframe.fromRows
@@ -3861,7 +3846,6 @@ describe("dataframe dedicated: advanced transforms and SQL join", function()
         expect_near(3.0, out:getValue(2, "v_rm"), 0.001)
         expect_near(6.0, out:getValue(3, "v_rm"), 0.001)
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:rollingSum
     -- @covers lurek.dataframe.fromRows
@@ -3878,7 +3862,6 @@ describe("dataframe dedicated: advanced transforms and SQL join", function()
         expect_near(6.0, out:getValue(2, "v_rs"), 0.001)
         expect_near(12.0, out:getValue(3, "v_rs"), 0.001)
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDataFrame:rank
     -- @covers lurek.dataframe.fromRows
@@ -3896,7 +3879,6 @@ describe("dataframe dedicated: advanced transforms and SQL join", function()
         expect_near(1.0, out:getValue(2, "rk"), 0.001)
         expect_near(2.0, out:getValue(3, "rk"), 0.001)
     end)
-
     -- @covers LDataFrame:getValue
     -- @covers LDatabase:addTable
     -- @covers LDatabase:query
@@ -3945,7 +3927,6 @@ describe("unit: migrated from integration/test_image_dataframe.lua", function()
             end
             expect_equal(256, df:nrows(), "256 rows without overflow")
         end)
-
 end)
 
 -- @describe lazy evaluation pipeline
@@ -3959,7 +3940,6 @@ describe("lazy evaluation pipeline", function()
         expect_not_nil(lq, "lazy() returns a value")
         expect_equal("LLazyQuery", lq:type(), "type is LLazyQuery")
     end)
-
     -- @covers LLazyQuery:slice
     -- @covers LLazyQuery:collect
     it("lazy slice keeps the requested row window", function()
@@ -3968,7 +3948,6 @@ describe("lazy evaluation pipeline", function()
         expect_equal(2, out:nrows(), "slice keeps two rows")
         expect_equal(20, out:getValue(1, "x"), "slice starts at requested row")
     end)
-
     -- @covers LDataFrame:lazy
     -- @covers LLazyQuery:collect
     it("lazy collect with no steps returns identical rows", function()
@@ -3977,7 +3956,6 @@ describe("lazy evaluation pipeline", function()
         expect_equal(3, out:nrows(), "row count preserved")
         expect_equal(2, out:ncols(), "col count preserved")
     end)
-
     -- @covers LLazyQuery:filter
     -- @covers LLazyQuery:collect
     it("lazy filter reduces rows", function()
@@ -3985,7 +3963,6 @@ describe("lazy evaluation pipeline", function()
         local out = df:lazy():filter("age", ">", 25):collect()
         expect_equal(2, out:nrows(), "two rows pass age > 25")
     end)
-
     -- @covers LLazyQuery:sort
     -- @covers LLazyQuery:head
     it("lazy sort + head returns top-n", function()
@@ -3994,7 +3971,6 @@ describe("lazy evaluation pipeline", function()
         expect_equal(3, out:nrows(), "head(3) yields 3 rows")
         expect_equal(9, out:getValue(1, "v"), "first row is max value")
     end)
-
     -- @covers LLazyQuery:tail
     it("lazy tail returns last rows", function()
         local df = lurek.dataframe.fromCSV("n\n1\n2\n3\n4\n5")
@@ -4043,7 +4019,6 @@ describe("lazy evaluation pipeline", function()
         expect_equal(2, out:nrows(), "two rows pass score >= 70 after head(2)")
         expect_equal(90, out:getValue(1, "score"), "top score first")
     end)
-
     -- @covers LLazyQuery:typeOf
     it("lazy typeOf returns true for LLazyQuery", function()
         local df = lurek.dataframe.fromCSV("x\n1")
@@ -4150,7 +4125,6 @@ describe("lurek.dataframe.filter", function()
         local result = df:filter("name", "==", "Alice")
         expect_equal(2, result:nrows())
     end)
-
     -- @covers lurek.dataframe.filter
     -- @covers lurek.dataframe.fromCSV
     it("filters rows with numeric comparison", function()
@@ -4196,7 +4170,6 @@ describe("lurek.dataframe.sort", function()
         local sorted = df:sort("val", true)
         expect_equal(3, sorted:nrows())
     end)
-
     -- @covers lurek.dataframe.sort
     -- @covers lurek.dataframe.fromCSV
     it("sorts rows in descending order", function()

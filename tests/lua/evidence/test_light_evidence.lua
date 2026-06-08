@@ -1,26 +1,5 @@
 -- test_light_evidence.lua
 -- Evidence test: lurek.light API + PNG visualisations
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.light.advanceFlickers
--- @covers lurek.light.clear
--- @covers lurek.light.drawToImage
--- @covers lurek.light.getAmbient
--- @covers lurek.light.getGodRayHints
--- @covers lurek.light.getGroupCount
--- @covers lurek.light.getLightCount
--- @covers lurek.light.getMaxLights
--- @covers lurek.light.getNormalMapHints
--- @covers lurek.light.getOccluderCount
--- @covers lurek.light.isEnabled
--- @covers lurek.light.newLight
--- @covers lurek.light.newOccluder
--- @covers lurek.light.setAmbient
--- @covers lurek.light.setEnabled
--- @covers lurek.light.setGroupColor
--- @covers lurek.light.setGroupEnabled
--- @covers lurek.light.setGroupIntensity
--- @covers lurek.light.setMaxLights
 
 
 local OUT = "tests/output/light/"
@@ -33,7 +12,12 @@ end
 
 -- @describe Evidence: lurek.light API + PNG visualization
 describe("Evidence: lurek.light API + PNG visualization", function()
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.light.setAmbient
+    -- @covers lurek.light.newLight
+    -- @covers lurek.light.drawToImage
+    -- @covers lurek.light.clear
+    -- @covers lurek.image.savePNG
     it("PNG: single point light with radial falloff", function()
         lurek.light.clear()
         lurek.light.setAmbient(0.08, 0.08, 0.10, 1.0)
@@ -52,7 +36,22 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.light.setMaxLights
+    -- @covers lurek.light.setGroupIntensity
+    -- @covers lurek.light.setGroupEnabled
+    -- @covers lurek.light.setGroupColor
+    -- @covers lurek.light.setEnabled
+    -- @covers lurek.light.newOccluder
+    -- @covers lurek.light.isEnabled
+    -- @covers lurek.light.getOccluderCount
+    -- @covers lurek.light.getNormalMapHints
+    -- @covers lurek.light.getMaxLights
+    -- @covers lurek.light.getLightCount
+    -- @covers lurek.light.getGroupCount
+    -- @covers lurek.light.getGodRayHints
+    -- @covers lurek.light.getAmbient
+    -- @covers lurek.light.advanceFlickers
     it("PNG: light world controls, groups, hints and counters", function()
         lurek.light.clear()
         lurek.light.setEnabled(true)
@@ -124,7 +123,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: multi-light additive blend with disabled world state", function()
         lurek.light.clear()
         lurek.light.setEnabled(false)
@@ -151,7 +150,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: occluder_corridor.png -- corridor with two occluders and grouped lights", function()
         lurek.light.clear()
         lurek.light.setAmbient(0.05, 0.05, 0.07, 1.0)
@@ -183,7 +182,8 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: light_flicker_timeline.png -- flicker progression strips", function()
         lurek.light.clear()
         lurek.light.setAmbient(0.03, 0.03, 0.04, 1.0)
@@ -220,7 +220,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: colored overlapping lights", function()
         lurek.light.clear()
         local W, H = 200, 200
@@ -244,7 +244,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: spotlights with directional cones", function()
         lurek.light.clear()
         local W, H = 200, 200
@@ -276,7 +276,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: moving light source streaks", function()
         lurek.light.clear()
         local W, H = 200, 100
@@ -300,7 +300,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: hard shadows with occluders", function()
         lurek.light.clear()
         local W, H = 200, 200
@@ -321,7 +321,7 @@ describe("Evidence: lurek.light API + PNG visualization", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: light map masking", function()
         lurek.light.clear()
         local W, H = 200, 200

@@ -17,6 +17,7 @@ pub struct LSvgImage {
 }
 
 impl LuaUserData for LSvgImage {
+    #[allow(clippy::type_complexity)]
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getWidth --
         /// Returns the document width in points/pixels.
@@ -47,10 +48,10 @@ impl LuaUserData for LSvgImage {
             let oy = oy.unwrap_or(0.0);
 
             let mut st = this.state.borrow_mut();
-            
+
             // Push transform matrix
             st.render_commands.push(crate::render::renderer::RenderCommand::PushTransform);
-            
+
             // Apply draw parameters
             st.render_commands.push(crate::render::renderer::RenderCommand::Translate { x, y });
             if rotation != 0.0 {
@@ -295,7 +296,7 @@ impl LuaUserData for LSvgImage {
 
         // -- type --
         methods.add_method("type", |_, _, ()| Ok("LSvgImage"));
-        
+
         // -- typeOf --
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LSvgImage" || name == "LObject")
@@ -306,24 +307,24 @@ impl LuaUserData for LSvgImage {
 /// Registers the global lurek.svg module and its methods.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let svg = lua.create_table()?;
-    
+
     let s = state.clone();
     svg.set("load", lua.create_function(move |lua, path: String| {
         let st = s.borrow();
         let full_path = st.game_dir.join(&path);
-        
+
         let bytes = std::fs::read(&full_path)
             .map_err(|e| LuaError::RuntimeError(format!("Failed to read SVG file '{}': {}", path, e)))?;
-            
+
         let svg_image = SvgImage::from_bytes(&bytes, &path)
-            .map_err(|e| LuaError::RuntimeError(e))?;
-            
+            .map_err(LuaError::RuntimeError)?;
+
         lua.create_userdata(LSvgImage {
             state: s.clone(),
             inner: Rc::new(RefCell::new(svg_image)),
         })
     })?)?;
-    
+
     lurek.set("svg", svg)?;
     Ok(())
 }

@@ -50,7 +50,7 @@ describe("Transitions", function()
     -- @covers lurek.scene.isTransitioning
     -- @covers lurek.scene.push
     -- @covers lurek.scene.update
-    it("reports transitioning state and progress in [0,1]", function()
+    it("reports transitioning state and progress in", function()
         lurek.scene.clear()
         expect_false(lurek.scene.isTransitioning())
         expect_equal(0, lurek.scene.getTransitionProgress())
@@ -179,7 +179,6 @@ describe("Lifecycle callbacks", function()
         expect_equal("s2:leave", log[4])
         expect_equal("s1:resume", log[5])
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.push
     -- @covers lurek.scene.update
@@ -192,7 +191,6 @@ describe("Lifecycle callbacks", function()
         lurek.scene.update(0.016)
         expect_equal("s1:update", log[1])
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.draw
     -- @covers lurek.scene.push
@@ -209,7 +207,6 @@ describe("Lifecycle callbacks", function()
         expect_equal("s2:draw", log[1])
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.push
     -- @covers lurek.scene.switchTo
@@ -225,7 +222,6 @@ describe("Lifecycle callbacks", function()
         expect_equal("s1:leave", log[1])
         expect_equal("s2:enter", log[2])
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.push
     it("push forwards params to enter callback", function()
@@ -241,7 +237,6 @@ describe("Lifecycle callbacks", function()
         expect_equal(3, received.level)
         expect_equal("hard", received.mode)
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.push
     it("push with no params calls enter with nil", function()
@@ -254,7 +249,6 @@ describe("Lifecycle callbacks", function()
         expect_true(called)
         expect_equal(nil, received)
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.push
     -- @covers lurek.scene.switchTo
@@ -314,7 +308,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_near(1.0 / 60.0, called_dt, 1e-9)
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.processLate
     -- @covers lurek.scene.push
@@ -328,7 +321,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_near(0.016, called_dt, 1e-3)
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.process
     -- @covers lurek.scene.push
@@ -342,8 +334,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_near(0.016, called_dt, 1e-3)
         lurek.scene.pop()
     end)
-
-    -- @covers lurek.scene.pop
     -- @covers lurek.scene.push
     -- @covers lurek.scene.render
     it("render calls scene:render() only for top render-active scene", function()
@@ -357,8 +347,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal("s2", calls[1])
         lurek.scene.clear()
     end)
-
-    -- @covers lurek.scene.pop
     -- @covers lurek.scene.push
     -- @covers lurek.scene.renderUi
     it("renderUi calls scene:render_ui() only for top render-active scene", function()
@@ -372,7 +360,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal("s2", calls[1])
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getRenderActiveScenes
     -- @covers lurek.scene.push
@@ -393,7 +380,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal(overlay, rs[1])
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.process
     -- @covers lurek.scene.processPhysics
@@ -461,7 +447,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal(1, counts.late)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.isProcessEnabled
     -- @covers lurek.scene.push
@@ -487,7 +472,6 @@ describe("lurek.scene new pipeline callbacks", function()
 
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.process
     -- @covers lurek.scene.push
@@ -503,7 +487,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal(1, ready_count)
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.process
     -- @covers lurek.scene.push
@@ -520,7 +503,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal("process", order[2])
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.process
     -- @covers lurek.scene.push
@@ -539,7 +521,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal(1, b_ready)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.process
@@ -556,7 +537,6 @@ describe("lurek.scene new pipeline callbacks", function()
         expect_equal(2, count)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.process
@@ -568,7 +548,6 @@ describe("lurek.scene new pipeline callbacks", function()
         lurek.scene.process(0.016)
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.process
@@ -580,7 +559,6 @@ describe("lurek.scene new pipeline callbacks", function()
         lurek.scene.process(0)
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.push
@@ -594,21 +572,18 @@ describe("lurek.scene new pipeline callbacks", function()
         lurek.scene.renderUi()
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.renderUi
     it("renderUi with empty stack is safe", function()
         lurek.scene.clear()
         lurek.scene.renderUi()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.render
     it("render with empty stack is safe", function()
         lurek.scene.clear()
         lurek.scene.render()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.processPhysics
     it("processPhysics with empty stack is safe", function()
@@ -642,7 +617,6 @@ describe("popTo", function()
         expect_true(lurek.scene.getStackSize() < 3)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getStackSize
     -- @covers lurek.scene.popTo
@@ -688,7 +662,6 @@ describe("DepthSorter addObject", function()
         expect_equal("obj2", calls[1])
         expect_equal("obj1", calls[2])
     end)
-
     -- @covers LDepthSorter:addObject
     -- @covers LDepthSorter:getCount
     -- @covers lurek.scene.newDepthSorter
@@ -698,7 +671,6 @@ describe("DepthSorter addObject", function()
         sorter:addObject({ depth = 1, drawSorted = function() end })
         expect_equal(1, sorter:getCount())
     end)
-
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:clear
     -- @covers LDepthSorter:getCount
@@ -754,7 +726,6 @@ describe("scene.new factory", function()
         expect_equal(1, lurek.scene.getStackSize())
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.new
     -- @covers lurek.scene.push
@@ -820,7 +791,6 @@ describe("Data store complex values", function()
         expect_equal("sword", got_tbl.items[1])
         lurek.scene.removeData("player")
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getData
     -- @covers lurek.scene.removeData
@@ -856,7 +826,6 @@ describe("Transition params", function()
         expect_equal(5, got_params.level)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.push
     -- @covers lurek.scene.switchTo
@@ -897,7 +866,6 @@ describe("DepthSorter (RS parity)", function()
         ds:add(function() end, 5)
         expect_equal(2, ds:getCount())
     end)
-
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:flush
     -- @covers LDepthSorter:sort
@@ -915,7 +883,6 @@ describe("DepthSorter (RS parity)", function()
         expect_equal("mid", order[2])
         expect_equal("back", order[3])
     end)
-
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:clear
     -- @covers LDepthSorter:getCount
@@ -940,7 +907,6 @@ describe("scene popTo (RS parity)", function()
         expect_false(r)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getStackSize
     -- @covers lurek.scene.push
@@ -972,7 +938,6 @@ describe("scene easing transitions", function()
         expect_true(lurek.scene.getStackSize() >= 1)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getTransitionProgressEased
     it("getTransitionProgressEased returns 0 when idle", function()
@@ -981,7 +946,6 @@ describe("scene easing transitions", function()
         expect_true(type(p) == "number")
         expect_true(p >= 0.0 and p <= 1.0)
     end)
-
     -- Migrated from Rust active_transition_progress_eased_linear_matches_progress
     -- and scene_stack_get_transition_progress_eased_linear_matches.
     -- @covers lurek.scene.clear
@@ -1001,7 +965,6 @@ describe("scene easing transitions", function()
         expect_near(raw, eased, 0.005)
         lurek.scene.clear()
     end)
-
     -- before the midpoint (t < t for 0 < t < 1).
     -- Migrated from Rust active_transition_progress_eased_ease_in_less_before_midpoint.
     -- @covers lurek.scene.clear
@@ -1021,7 +984,6 @@ describe("scene easing transitions", function()
         expect_true(eased < raw)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getStackSize
     -- @covers lurek.scene.pop
@@ -1056,7 +1018,6 @@ describe("scene overlay", function()
         expect_true(lurek.scene.isOverlay())
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.isOverlay
     -- @covers lurek.scene.pop
@@ -1072,7 +1033,6 @@ describe("scene overlay", function()
         expect_false(lurek.scene.isOverlay())
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getActiveScenes
     -- @covers lurek.scene.push
@@ -1088,7 +1048,6 @@ describe("scene overlay", function()
         expect_true(#scenes >= 2)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getActiveScenes
     -- @covers lurek.scene.push
@@ -1122,7 +1081,6 @@ describe("DepthSorter Lua API", function()
         ds:clear()
         expect_equal(ds:getCount(), 0)
     end)
-
     -- @covers LDepthSorter:isStable
     -- @covers LDepthSorter:setStable
     -- @covers lurek.scene.newDepthSorter
@@ -1150,13 +1108,60 @@ describe("scene preload", function()
         -- isPreloaded should be false until pushPreloaded is called.
         expect_false(lurek.scene.isPreloaded("my_scene"))
     end)
-
     -- @covers lurek.scene.clear
+    it("pushPreloaded calls loader and marks isPreloaded true [lurek.scene.clear]", function()
+        lurek.scene.clear()
+        local called = false
+        lurek.scene.registerScene("pre_scene", {})
+        lurek.scene.preload("pre_scene", function()
+            called = true
+        end)
+        lurek.scene.pushPreloaded("pre_scene")
+        expect_true(lurek.scene.isPreloaded("pre_scene"))
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.isPreloaded
+    it("pushPreloaded calls loader and marks isPreloaded true [lurek.scene.isPreloaded]", function()
+        lurek.scene.clear()
+        local called = false
+        lurek.scene.registerScene("pre_scene", {})
+        lurek.scene.preload("pre_scene", function()
+            called = true
+        end)
+        lurek.scene.pushPreloaded("pre_scene")
+        expect_true(lurek.scene.isPreloaded("pre_scene"))
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.preload
+    it("pushPreloaded calls loader and marks isPreloaded true [lurek.scene.preload]", function()
+        lurek.scene.clear()
+        local called = false
+        lurek.scene.registerScene("pre_scene", {})
+        lurek.scene.preload("pre_scene", function()
+            called = true
+        end)
+        lurek.scene.pushPreloaded("pre_scene")
+        expect_true(lurek.scene.isPreloaded("pre_scene"))
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.pushPreloaded
+    it("pushPreloaded calls loader and marks isPreloaded true [lurek.scene.pushPreloaded]", function()
+        lurek.scene.clear()
+        local called = false
+        lurek.scene.registerScene("pre_scene", {})
+        lurek.scene.preload("pre_scene", function()
+            called = true
+        end)
+        lurek.scene.pushPreloaded("pre_scene")
+        expect_true(lurek.scene.isPreloaded("pre_scene"))
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.registerScene
-    it("pushPreloaded calls loader and marks isPreloaded true", function()
+    it("pushPreloaded calls loader and marks isPreloaded true [lurek.scene.registerScene]", function()
         lurek.scene.clear()
         local called = false
         lurek.scene.registerScene("pre_scene", {})
@@ -1189,7 +1194,6 @@ describe("DepthSorter flush sort order", function()
         expect_equal(order[2], "mid")
         expect_equal(order[3], "deep")
     end)
-
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:flush
     -- @covers LDepthSorter:sort
@@ -1209,7 +1213,6 @@ describe("DepthSorter flush sort order", function()
         expect_equal(order[2], "fn2")
         expect_equal(order[3], "fn1")
     end)
-
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:flush
     -- @covers LDepthSorter:setStable
@@ -1226,7 +1229,6 @@ describe("DepthSorter flush sort order", function()
         expect_equal(order[2], "B")
         expect_equal(order[3], "C")
     end)
-
     --              order (exercises the radix sort path internally).
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:flush
@@ -1246,7 +1248,6 @@ describe("DepthSorter flush sort order", function()
         end
         expect_true(ascending)
     end)
-
     -- @covers LDepthSorter:add
     -- @covers LDepthSorter:flush
     -- @covers lurek.scene.newDepthSorter
@@ -1316,7 +1317,6 @@ describe("lurek.scene overlay mode", function()
         lurek.scene.pop()
         expect_equal(lurek.scene.depth(), 0)
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.isOverlay
     -- @covers lurek.scene.pop
@@ -1328,7 +1328,6 @@ describe("lurek.scene overlay mode", function()
         expect_true(lurek.scene.isOverlay())
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.isOverlay
     -- @covers lurek.scene.pop
@@ -1340,7 +1339,6 @@ describe("lurek.scene overlay mode", function()
         expect_false(lurek.scene.isOverlay())
         lurek.scene.pop()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getActiveScenes
     -- @covers lurek.scene.push
@@ -1355,7 +1353,6 @@ describe("lurek.scene overlay mode", function()
         expect_equal(#active, 2)
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.depth
     -- @covers lurek.scene.getStackSize
@@ -1410,15 +1407,99 @@ describe("lurek.scene.preload", function()
         lurek.scene.preload("lazy_scene", function() end)
         expect_false(lurek.scene.isPreloaded("lazy_scene"))
     end)
-
     -- is invoked multiple times for the same name.
     -- @covers lurek.scene.clear
+    it("loader is invoked exactly once across multiple pushPreloaded calls [lurek.scene.clear]", function()
+        lurek.scene.clear()
+        local call_count = 0
+        local dummy = {}
+        lurek.scene.registerScene("once_scene", dummy)
+        lurek.scene.preload("once_scene", function()
+            call_count = call_count + 1
+        end)
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        expect_equal(call_count, 1)
+        lurek.scene.unregisterScene("once_scene")
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.pop
+    it("loader is invoked exactly once across multiple pushPreloaded calls [lurek.scene.pop]", function()
+        lurek.scene.clear()
+        local call_count = 0
+        local dummy = {}
+        lurek.scene.registerScene("once_scene", dummy)
+        lurek.scene.preload("once_scene", function()
+            call_count = call_count + 1
+        end)
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        expect_equal(call_count, 1)
+        lurek.scene.unregisterScene("once_scene")
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.preload
+    it("loader is invoked exactly once across multiple pushPreloaded calls [lurek.scene.preload]", function()
+        lurek.scene.clear()
+        local call_count = 0
+        local dummy = {}
+        lurek.scene.registerScene("once_scene", dummy)
+        lurek.scene.preload("once_scene", function()
+            call_count = call_count + 1
+        end)
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        expect_equal(call_count, 1)
+        lurek.scene.unregisterScene("once_scene")
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.pushPreloaded
+    it("loader is invoked exactly once across multiple pushPreloaded calls [lurek.scene.pushPreloaded]", function()
+        lurek.scene.clear()
+        local call_count = 0
+        local dummy = {}
+        lurek.scene.registerScene("once_scene", dummy)
+        lurek.scene.preload("once_scene", function()
+            call_count = call_count + 1
+        end)
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        expect_equal(call_count, 1)
+        lurek.scene.unregisterScene("once_scene")
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.registerScene
+    it("loader is invoked exactly once across multiple pushPreloaded calls [lurek.scene.registerScene]", function()
+        lurek.scene.clear()
+        local call_count = 0
+        local dummy = {}
+        lurek.scene.registerScene("once_scene", dummy)
+        lurek.scene.preload("once_scene", function()
+            call_count = call_count + 1
+        end)
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        lurek.scene.pushPreloaded("once_scene")
+        lurek.scene.pop()
+        expect_equal(call_count, 1)
+        lurek.scene.unregisterScene("once_scene")
+        lurek.scene.clear()
+    end)
+
     -- @covers lurek.scene.unregisterScene
-    it("loader is invoked exactly once across multiple pushPreloaded calls", function()
+    it("loader is invoked exactly once across multiple pushPreloaded calls [lurek.scene.unregisterScene]", function()
         lurek.scene.clear()
         local call_count = 0
         local dummy = {}
@@ -1472,7 +1553,6 @@ describe("serializeScene and deserializeScene", function()
         expect_equal(3, snap.data.level)
         expect_equal(9999, snap.data.score)
     end)
-
     -- @covers lurek.scene.deserializeScene
     -- @covers lurek.scene.getData
     it("deserializeScene restores setData values", function()
@@ -1481,7 +1561,6 @@ describe("serializeScene and deserializeScene", function()
         expect_equal(150, lurek.scene.getData("gold"))
         expect_equal(80, lurek.scene.getData("hp"))
     end)
-
     -- @pending: requires a global scene-data reset API (e.g. clearAllData()).
     -- deserializeScene merges, not replaces; no way to guarantee zero keys with shared global state.
     -- @covers lurek.scene.deserializeScene
@@ -1491,7 +1570,6 @@ describe("serializeScene and deserializeScene", function()
         local snap = lurek.scene.serializeScene()
         expect_type("table", snap.data)
     end)
-
     -- @covers lurek.scene.deserializeScene
     it("deserializeScene with empty snapshot does not error", function()
         local ok, err = pcall(function()
@@ -1676,7 +1754,6 @@ describe("scene queue/layer API", function()
         expect_equal(0, lurek.scene.getQueuedTransitionCount())
         lurek.scene.clear()
     end)
-
     -- @covers lurek.scene.clear
     -- @covers lurek.scene.getCurrentLayer
     -- @covers lurek.scene.process

@@ -1,8 +1,5 @@
 -- Evidence tests: tween module
 -- Evidence validates lurek.tween interpolation and control flow.
--- @covers lurek.tween.sequence
--- @covers lurek.tween.tween
--- @covers lurek.tween.update
 
 
 
@@ -15,6 +12,8 @@ describe("Evidence: lurek.tween API", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.tween.update
+    -- @covers lurek.tween.tween
     it("TXT: property tween progression", function()
         local target = { x = 0, y = 0 }
         local tw = lurek.tween.tween(1.0, target, { x = 100, y = 50 }, "inOutQuad")
@@ -75,6 +74,7 @@ describe("Evidence: lurek.tween API", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.tween.sequence
     it("TXT: sequence execution", function()
         local target = { x = 0 }
         local seq = lurek.tween.sequence()

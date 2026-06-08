@@ -19,7 +19,6 @@ end
 
 -- @describe particle + render integration
 describe("particle + render integration", function()
-    -- @covers LImageData:getPixel
     -- @covers LParticleSystem:emit
     -- @covers LParticleSystem:getCount
     -- @covers LParticleSystem:setParticleLifetime

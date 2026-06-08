@@ -50,6 +50,7 @@ impl CameraWalker {
     /// * `start_x` — initial world X position
     /// * `start_y` — initial world Y position
     /// * `camera` — camera to follow walker position
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         map: Rc<RefCell<TileMap>>,
         layer: usize,

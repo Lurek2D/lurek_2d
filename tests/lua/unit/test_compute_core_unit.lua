@@ -51,28 +51,24 @@ describe("construction", function()
         expect_equal(3, s[1])
         expect_equal(3, s[2])
     end)
-
     -- @covers LArray:getSize
     -- @covers lurek.compute.zeros
     it("zeros creates array with correct size", function()
         local a = lurek.compute.zeros({3, 3})
         expect_equal(9, a:getSize())
     end)
-
     -- @covers LArray:getDimensions
     -- @covers lurek.compute.zeros
     it("zeros creates array with correct dimensions", function()
         local a = lurek.compute.zeros({3, 3})
         expect_equal(2, a:getDimensions())
     end)
-
     -- @covers LArray:getDataType
     -- @covers lurek.compute.zeros
     it("zeros default dtype is float32", function()
         local a = lurek.compute.zeros({2, 2})
         expect_equal("float32", a:getDataType())
     end)
-
     -- @covers LArray:get
     -- @covers lurek.compute.zeros
     it("zeros elements are all zero", function()
@@ -81,7 +77,6 @@ describe("construction", function()
             expect_near(0.0, a:get(i), 1e-5)
         end
     end)
-
     -- @covers LArray:get
     -- @covers lurek.compute.ones
     it("ones creates array with all elements 1.0", function()
@@ -92,7 +87,6 @@ describe("construction", function()
             end
         end
     end)
-
     -- @covers LArray:getDimensions
     -- @covers LArray:getSize
     -- @covers lurek.compute.ones
@@ -101,7 +95,6 @@ describe("construction", function()
         expect_equal(6, a:getSize())
         expect_equal(2, a:getDimensions())
     end)
-
     -- @covers LArray:get
     -- @covers LArray:getSize
     -- @covers lurek.compute.range
@@ -112,7 +105,6 @@ describe("construction", function()
         expect_near(2.0, a:get(2), 1e-5)
         expect_near(3.0, a:get(3), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:getSize
     -- @covers lurek.compute.range
@@ -125,7 +117,6 @@ describe("construction", function()
         expect_near(6.0, a:get(4), 1e-5)
         expect_near(8.0, a:get(5), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:getSize
     -- @covers lurek.compute.fromTable
@@ -136,7 +127,6 @@ describe("construction", function()
         expect_near(20.0, a:get(2), 1e-5)
         expect_near(30.0, a:get(3), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:getDimensions
     -- @covers LArray:getSize
@@ -150,7 +140,6 @@ describe("construction", function()
         expect_near(3.0, a:get(2, 1), 1e-5)
         expect_near(4.0, a:get(2, 2), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:getSize
     -- @covers lurek.compute.newArray
@@ -159,21 +148,18 @@ describe("construction", function()
         expect_equal(4, a:getSize())
         expect_near(0.0, a:get(1, 1), 1e-5)
     end)
-
     -- @covers LArray:getDataType
     -- @covers lurek.compute.zeros
     it("float64 dtype works", function()
         local a = lurek.compute.zeros({3}, "float64")
         expect_equal("float64", a:getDataType())
     end)
-
     -- @covers LArray:getDataType
     -- @covers lurek.compute.zeros
     it("int32 dtype works", function()
         local a = lurek.compute.zeros({3}, "int32")
         expect_equal("int32", a:getDataType())
     end)
-
     -- @covers LArray:getDimensions
     -- @covers LArray:getShape
     -- @covers LArray:getSize
@@ -206,7 +192,6 @@ describe("element access", function()
         expect_near(0.0, a:get(2), 1e-5)
         expect_near(7.5, a:get(3), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -216,7 +201,6 @@ describe("element access", function()
         expect_near(7.0, a:get(2, 3), 1e-5)
         expect_near(0.0, a:get(1, 1), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -226,7 +210,6 @@ describe("element access", function()
         expect_near(99.0, a:get(1, 2, 3), 1e-5)
         expect_near(0.0, a:get(1, 1, 1), 1e-5)
     end)
-
     -- @covers LArray:toTable
     -- @covers lurek.compute.fromTable
     it("toTable returns flat table", function()
@@ -238,7 +221,6 @@ describe("element access", function()
         expect_near(30.0, t[3], 1e-5)
         expect_near(40.0, t[4], 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -249,7 +231,6 @@ describe("element access", function()
         a:set(2, 200.0)
         expect_near(200.0, a:get(2), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -275,35 +256,30 @@ describe("inspection", function()
         expect_equal(4, s[1])
         expect_equal(5, s[2])
     end)
-
     -- @covers LArray:getDimensions
     -- @covers lurek.compute.zeros
     it("getDimensions for 1D", function()
         local a = lurek.compute.zeros({10})
         expect_equal(1, a:getDimensions())
     end)
-
     -- @covers LArray:getDimensions
     -- @covers lurek.compute.zeros
     it("getDimensions for 3D", function()
         local a = lurek.compute.zeros({2, 3, 4})
         expect_equal(3, a:getDimensions())
     end)
-
     -- @covers LArray:getSize
     -- @covers lurek.compute.zeros
     it("getSize is product of shape", function()
         local a = lurek.compute.zeros({3, 4, 5})
         expect_equal(60, a:getSize())
     end)
-
     -- @covers LArray:isOnGPU
     -- @covers lurek.compute.zeros
     it("isOnGPU always returns false", function()
         local a = lurek.compute.zeros({3})
         expect_false(a:isOnGPU())
     end)
-
     -- @covers LArray:getDataType
     -- @covers lurek.compute.ones
     it("getDataType returns dtype name", function()
@@ -327,7 +303,6 @@ describe("arithmetic", function()
         expect_near(7.0, c:get(2), 1e-5)
         expect_near(9.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:add
     -- @covers lurek.compute.fromTable
     it("add scalar to array", function()
@@ -337,7 +312,6 @@ describe("arithmetic", function()
         expect_near(12.0, c:get(2), 1e-5)
         expect_near(13.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:add
     -- @covers LArray:get
     -- @covers lurek.compute.fromTable
@@ -348,7 +322,6 @@ describe("arithmetic", function()
         expect_near(2.0, a:get(2), 1e-5)
         expect_near(3.0, a:get(3), 1e-5)
     end)
-
     -- @covers LArray:sub
     -- @covers lurek.compute.fromTable
     it("sub arrays element-wise", function()
@@ -359,7 +332,6 @@ describe("arithmetic", function()
         expect_near(18.0, c:get(2), 1e-5)
         expect_near(27.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:sub
     -- @covers lurek.compute.fromTable
     it("sub scalar", function()
@@ -369,7 +341,6 @@ describe("arithmetic", function()
         expect_near(15.0, c:get(2), 1e-5)
         expect_near(25.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:mul
     -- @covers lurek.compute.fromTable
     it("mul arrays element-wise", function()
@@ -380,7 +351,6 @@ describe("arithmetic", function()
         expect_near(18.0, c:get(2), 1e-5)
         expect_near(28.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:mul
     -- @covers lurek.compute.fromTable
     it("mul scalar", function()
@@ -390,7 +360,6 @@ describe("arithmetic", function()
         expect_near(9.0, c:get(2), 1e-5)
         expect_near(12.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:add
     -- @covers lurek.compute.fromTable
     it("add supports 2D + 1D row broadcast", function()
@@ -404,7 +373,6 @@ describe("arithmetic", function()
         expect_near(220.0, c:get(2, 2), 1e-5)
         expect_near(330.0, c:get(2, 3), 1e-5)
     end)
-
     -- @covers LArray:addInplace
     -- @covers lurek.compute.fromTable
     it("addInplace mutates array with row broadcast", function()
@@ -418,7 +386,6 @@ describe("arithmetic", function()
         expect_near(25.0, a:get(2, 2), 1e-5)
         expect_near(36.0, a:get(2, 3), 1e-5)
     end)
-
     -- @covers LArray:sub
     -- @covers lurek.compute.fromTable
     it("sub supports reverse 1D from 2D row broadcast", function()
@@ -432,7 +399,6 @@ describe("arithmetic", function()
         expect_near(180.0, c:get(2, 2), 1e-5)
         expect_near(270.0, c:get(2, 3), 1e-5)
     end)
-
     -- @covers LArray:addInplace
     -- @covers lurek.compute.fromTable
     it("inplace rejects unsupported broadcast direction", function()
@@ -441,7 +407,6 @@ describe("arithmetic", function()
         local ok, err = pcall(function() a:addInplace(b) end)
         expect_false(ok, "inplace with unsupported broadcast direction should error")
     end)
-
     -- @covers LArray:subInplace
     -- @covers LArray:mulInplace
     -- @covers LArray:divInplace
@@ -462,7 +427,6 @@ describe("arithmetic", function()
         expect_near(5.0, a:get(2), 1e-5)
         expect_near(9.0, a:get(3), 1e-5)
     end)
-
     -- @covers LArray:div
     -- @covers lurek.compute.fromTable
     it("div arrays element-wise", function()
@@ -473,7 +437,6 @@ describe("arithmetic", function()
         expect_near(5.0, c:get(2), 1e-5)
         expect_near(6.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:div
     -- @covers lurek.compute.fromTable
     it("div scalar", function()
@@ -483,7 +446,6 @@ describe("arithmetic", function()
         expect_near(10.0, c:get(2), 1e-5)
         expect_near(15.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:pow
     -- @covers lurek.compute.fromTable
     it("pow raises elements to power", function()
@@ -493,7 +455,6 @@ describe("arithmetic", function()
         expect_near(9.0, c:get(2), 1e-5)
         expect_near(16.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:sqrt
     -- @covers lurek.compute.fromTable
     it("sqrt of perfect squares", function()
@@ -504,7 +465,6 @@ describe("arithmetic", function()
         expect_near(4.0, c:get(3), 1e-5)
         expect_near(5.0, c:get(4), 1e-5)
     end)
-
     -- @covers LArray:abs
     -- @covers lurek.compute.fromTable
     it("abs of mixed values", function()
@@ -515,7 +475,6 @@ describe("arithmetic", function()
         expect_near(5.0, c:get(3), 1e-5)
         expect_near(1.5, c:get(4), 1e-5)
     end)
-
     -- @covers LArray:neg
     -- @covers lurek.compute.fromTable
     it("neg negates elements", function()
@@ -525,7 +484,6 @@ describe("arithmetic", function()
         expect_near(2.0, c:get(2), 1e-5)
         expect_near(-3.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:clamp
     -- @covers lurek.compute.fromTable
     it("clamp clips values to range", function()
@@ -554,7 +512,6 @@ describe("comparison", function()
         expect_near(0.0, c:get(2), 1e-5)
         expect_near(1.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:eq
     -- @covers lurek.compute.fromTable
     it("eq with scalar", function()
@@ -565,7 +522,6 @@ describe("comparison", function()
         expect_near(1.0, c:get(3), 1e-5)
         expect_near(0.0, c:get(4), 1e-5)
     end)
-
     -- @covers LArray:neq
     -- @covers lurek.compute.fromTable
     it("neq returns 1.0 for unequal elements", function()
@@ -576,7 +532,6 @@ describe("comparison", function()
         expect_near(1.0, c:get(2), 1e-5)
         expect_near(0.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:neq
     -- @covers lurek.compute.fromTable
     it("neq with scalar", function()
@@ -587,7 +542,6 @@ describe("comparison", function()
         expect_near(0.0, c:get(3), 1e-5)
         expect_near(1.0, c:get(4), 1e-5)
     end)
-
     -- @covers LArray:gt
     -- @covers lurek.compute.fromTable
     it("gt returns 1.0 where a > b", function()
@@ -598,7 +552,6 @@ describe("comparison", function()
         expect_near(1.0, c:get(2), 1e-5)
         expect_near(0.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:gt
     -- @covers lurek.compute.fromTable
     it("gt with scalar", function()
@@ -608,7 +561,6 @@ describe("comparison", function()
         expect_near(1.0, c:get(2), 1e-5)
         expect_near(1.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:lt
     -- @covers lurek.compute.fromTable
     it("lt returns 1.0 where a < b", function()
@@ -618,7 +570,6 @@ describe("comparison", function()
         expect_near(0.0, c:get(2), 1e-5)
         expect_near(0.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:gte
     -- @covers lurek.compute.fromTable
     it("gte returns 1.0 where a >= b", function()
@@ -628,7 +579,6 @@ describe("comparison", function()
         expect_near(1.0, c:get(2), 1e-5)
         expect_near(1.0, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:lte
     -- @covers lurek.compute.fromTable
     it("lte returns 1.0 where a <= b", function()
@@ -655,7 +605,6 @@ describe("masking", function()
         expect_near(1.0, c:get(3), 1e-5)
         expect_near(1.0, c:get(4), 1e-5)
     end)
-
     -- @covers lurek.compute.fromTable
     it("where selects from two arrays based on condition", function()
         local cond = lurek.compute.fromTable({1, 0, 1, 0})
@@ -688,49 +637,42 @@ describe("counting", function()
         local a = lurek.compute.fromTable({0, 1, 0, 3, 5})
         expect_equal(3, a:countNonZero())
     end)
-
     -- @covers LArray:countNonZero
     -- @covers lurek.compute.zeros
     it("countNonZero for all zeros", function()
         local a = lurek.compute.zeros({4})
         expect_equal(0, a:countNonZero())
     end)
-
     -- @covers LArray:argmin
     -- @covers lurek.compute.fromTable
     it("argmin returns 1-based index of minimum", function()
         local a = lurek.compute.fromTable({5, 1, 3, 2})
         expect_equal(2, a:argmin())
     end)
-
     -- @covers LArray:argmax
     -- @covers lurek.compute.fromTable
     it("argmax returns 1-based index of maximum", function()
         local a = lurek.compute.fromTable({5, 1, 3, 2})
         expect_equal(1, a:argmax())
     end)
-
     -- @covers LArray:any
     -- @covers lurek.compute.fromTable
     it("any returns true if any nonzero", function()
         local a = lurek.compute.fromTable({0, 0, 1})
         expect_true(a:any())
     end)
-
     -- @covers LArray:any
     -- @covers lurek.compute.zeros
     it("any returns false for all zeros", function()
         local a = lurek.compute.zeros({3})
         expect_false(a:any())
     end)
-
     -- @covers LArray:all
     -- @covers lurek.compute.fromTable
     it("all returns true when all nonzero", function()
         local a = lurek.compute.fromTable({1, 2, 3})
         expect_true(a:all())
     end)
-
     -- @covers LArray:all
     -- @covers lurek.compute.fromTable
     it("all returns false when any zero", function()
@@ -750,35 +692,30 @@ describe("reductions", function()
         local a = lurek.compute.ones({3, 3})
         expect_near(9.0, a:sum(), 1e-5)
     end)
-
     -- @covers LArray:sum
     -- @covers lurek.compute.fromTable
     it("sum of fromTable", function()
         local a = lurek.compute.fromTable({1, 2, 3, 4})
         expect_near(10.0, a:sum(), 1e-5)
     end)
-
     -- @covers LArray:mean
     -- @covers lurek.compute.fromTable
     it("mean of values", function()
         local a = lurek.compute.fromTable({2, 4, 6})
         expect_near(4.0, a:mean(), 1e-5)
     end)
-
     -- @covers LArray:min
     -- @covers lurek.compute.fromTable
     it("min of array", function()
         local a = lurek.compute.fromTable({5, 1, 3, 2})
         expect_near(1.0, a:min(), 1e-5)
     end)
-
     -- @covers LArray:max
     -- @covers lurek.compute.fromTable
     it("max of array", function()
         local a = lurek.compute.fromTable({5, 1, 3, 2})
         expect_near(5.0, a:max(), 1e-5)
     end)
-
     -- @covers LArray:sum
     -- @covers lurek.compute.fromTable
     it("sum along axis 1 of a 3x3 array", function()
@@ -791,7 +728,6 @@ describe("reductions", function()
         expect_near(15.0, sum_result:get(2), 1e-5)
         expect_near(18.0, sum_result:get(3), 1e-5)
     end)
-
     -- @covers LArray:sum
     -- @covers lurek.compute.fromTable
     it("sum along axis 2 of a 3x3 array", function()
@@ -803,7 +739,6 @@ describe("reductions", function()
         expect_near(15.0, sum_result:get(2), 1e-5)
         expect_near(24.0, sum_result:get(3), 1e-5)
     end)
-
     -- @covers LArray:mean
     -- @covers lurek.compute.fromTable
     it("mean along axis", function()
@@ -813,7 +748,6 @@ describe("reductions", function()
         expect_near(3.0, mean_result:get(1), 1e-5)
         expect_near(7.0, mean_result:get(2), 1e-5)
     end)
-
     -- @covers LArray:min
     -- @covers lurek.compute.fromTable
     it("min along axis", function()
@@ -823,7 +757,6 @@ describe("reductions", function()
         expect_near(1.0, min_result:get(1), 1e-5)
         expect_near(2.0, min_result:get(2), 1e-5)
     end)
-
     -- @covers LArray:max
     -- @covers lurek.compute.fromTable
     it("max along axis", function()
@@ -852,7 +785,6 @@ describe("shape manipulation", function()
         expect_near(1.0, t[1], 1e-5)
         expect_near(6.0, t[6], 1e-5)
     end)
-
     -- @covers LArray:reshape
     -- @covers lurek.compute.fromTable
     it("reshape changes shape but not data", function()
@@ -863,7 +795,6 @@ describe("shape manipulation", function()
         expect_near(1.0, b:get(1), 1e-5)
         expect_near(4.0, b:get(4), 1e-5)
     end)
-
     -- @covers LArray:clone
     -- @covers LArray:get
     -- @covers lurek.compute.fromTable
@@ -874,7 +805,6 @@ describe("shape manipulation", function()
         expect_near(1.0, a:get(1), 1e-5)
         expect_near(99.0, b:get(1), 1e-5)
     end)
-
     -- @covers LArray:transpose
     -- @covers lurek.compute.fromTable
     it("transpose swaps rows and cols", function()
@@ -892,7 +822,6 @@ describe("shape manipulation", function()
         expect_near(3.0, b:get(3, 1), 1e-5)
         expect_near(6.0, b:get(3, 2), 1e-5)
     end)
-
     -- @covers LArray:fill
     -- @covers LArray:get
     -- @covers lurek.compute.zeros
@@ -930,7 +859,6 @@ describe("linear algebra", function()
         -- C[2,2] = 4*8 + 5*10 + 6*12 = 32+50+72 = 154
         expect_near(154.0, c:get(2, 2), 1e-5)
     end)
-
     -- @covers LArray:dot
     -- @covers lurek.compute.fromTable
     it("dot product of two 1D arrays", function()
@@ -939,7 +867,6 @@ describe("linear algebra", function()
         -- dot = 1*4 + 2*5 + 3*6 = 4+10+18 = 32
         expect_near(32.0, a:dot(b), 1e-5)
     end)
-
     -- @covers LArray:dot
     -- @covers lurek.compute.fromTable
     it("dot product of orthogonal vectors is zero", function()
@@ -947,7 +874,6 @@ describe("linear algebra", function()
         local b = lurek.compute.fromTable({0, 1})
         expect_near(0.0, a:dot(b), 1e-5)
     end)
-
     -- @covers LArray:matmul
     -- @covers lurek.compute.fromTable
     it("identity matmul preserves matrix", function()
@@ -977,7 +903,6 @@ describe("bitwise operations", function()
         expect_near(0x0F, c:get(2), 1e-5)
         expect_near(0x00, c:get(3), 1e-5)
     end)
-
     -- @covers LArray:bitwiseOr
     -- @covers lurek.compute.fromTable
     it("bitwiseOr on int32 arrays", function()
@@ -987,7 +912,6 @@ describe("bitwise operations", function()
         expect_near(0xFF, c:get(1), 1e-5)
         expect_near(0x0F, c:get(2), 1e-5)
     end)
-
     -- @covers LArray:bitwiseXor
     -- @covers lurek.compute.fromTable
     it("bitwiseXor on int32 arrays", function()
@@ -997,7 +921,6 @@ describe("bitwise operations", function()
         expect_near(0x00, c:get(1), 1e-5)
         expect_near(0x00, c:get(2), 1e-5)
     end)
-
     -- @covers LArray:bitwiseNot
     -- @covers lurek.compute.fromTable
     it("bitwiseNot on int32 array", function()
@@ -1007,7 +930,6 @@ describe("bitwise operations", function()
         expect_near(-1, c:get(1), 1e-5)
         expect_near(-2, c:get(2), 1e-5)
     end)
-
     -- @covers LArray:bitwiseAnd
     -- @covers lurek.compute.fromTable
     it("bitwise on float32 errors", function()
@@ -1036,7 +958,6 @@ describe("2D spatial operations", function()
         -- Center element should stay 5 (edges may be clamped/zero-padded)
         expect_near(5.0, c:get(2, 2), 1e-5)
     end)
-
     -- @covers LArray:convolve2D
     -- @covers LArray:set
     -- @covers lurek.compute.fromTable
@@ -1052,7 +973,6 @@ describe("2D spatial operations", function()
         local c = a:convolve2D(k)
         expect_near(1.0, c:get(2, 2), 1e-5)
     end)
-
     -- @covers LArray:dilate
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -1065,7 +985,6 @@ describe("2D spatial operations", function()
         expect_true(d:get(2, 3) > 0, "top neighbor should be nonzero")
         expect_true(d:get(3, 2) > 0, "left neighbor should be nonzero")
     end)
-
     -- @covers LArray:erode
     -- @covers LArray:set
     -- @covers lurek.compute.ones
@@ -1076,7 +995,6 @@ describe("2D spatial operations", function()
         -- The corner neighbors should be eroded away
         expect_near(0.0, e:get(1, 1), 1e-5)
     end)
-
     -- @covers LArray:floodFill
     -- @covers lurek.compute.zeros
     it("floodFill fills connected region", function()
@@ -1088,7 +1006,6 @@ describe("2D spatial operations", function()
         expect_near(5.0, filled:get(2, 2), 1e-5)
         expect_near(5.0, filled:get(3, 3), 1e-5)
     end)
-
     -- @covers LArray:getRegion
     -- @covers lurek.compute.fromTable
     it("getRegion extracts sub-array", function()
@@ -1103,7 +1020,6 @@ describe("2D spatial operations", function()
         expect_near(6.0, r:get(2, 1), 1e-5)
         expect_near(7.0, r:get(2, 2), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:setRegion
     -- @covers lurek.compute.fromTable
@@ -1119,7 +1035,6 @@ describe("2D spatial operations", function()
         -- Untouched regions remain zero
         expect_near(0.0, a:get(1, 1), 1e-5)
     end)
-
     -- @covers LArray:convolve2D
     -- @covers lurek.compute.fromTable
     it("convolve2D with 1x3 horizontal kernel (non-square)", function()
@@ -1131,7 +1046,6 @@ describe("2D spatial operations", function()
         expect_equal(3, c:getShape()[1])
         expect_equal(3, c:getShape()[2])
     end)
-
     -- @covers LArray:convolve2D
     -- @covers lurek.compute.fromTable
     it("convolve2D with 3x1 vertical kernel (non-square)", function()
@@ -1143,7 +1057,6 @@ describe("2D spatial operations", function()
         expect_equal(4, c:getShape()[1])
         expect_equal(4, c:getShape()[2])
     end)
-
     -- @covers LArray:convolve2D
     -- @covers lurek.compute.fromTable
     -- @covers lurek.compute.zeros
@@ -1161,7 +1074,6 @@ describe("2D spatial operations", function()
         expect_equal(5, c:getShape()[1])
         expect_equal(3, c:getShape()[2])
     end)
-
     -- @covers LArray:convolve2D
     -- @covers lurek.compute.fromTable
     it("convolve2D with 1x5 kernel preserves output shape", function()
@@ -1186,21 +1098,18 @@ describe("type system", function()
         local a = lurek.compute.zeros({2})
         expect_equal("LArray", a:type())
     end)
-
     -- @covers LArray:typeOf
     -- @covers lurek.compute.zeros
     it("typeOf Array is true", function()
         local a = lurek.compute.zeros({2})
         expect_true(a:typeOf("LArray"))
     end)
-
     -- @covers LArray:typeOf
     -- @covers lurek.compute.zeros
     it("typeOf Object is true", function()
         local a = lurek.compute.zeros({2})
         expect_true(a:typeOf("LObject"))
     end)
-
     -- @covers LArray:typeOf
     -- @covers lurek.compute.zeros
     it("typeOf Source is false", function()
@@ -1222,7 +1131,6 @@ describe("error cases", function()
         local ok = pcall(function() a:add(b) end)
         expect_false(ok, "mismatched shapes should error")
     end)
-
     -- @covers LArray:reshape
     -- @covers lurek.compute.fromTable
     it("reshape with wrong element count errors", function()
@@ -1230,7 +1138,6 @@ describe("error cases", function()
         local ok = pcall(function() a:reshape({2, 2}) end)
         expect_false(ok, "reshape with wrong count should error")
     end)
-
     -- @covers lurek.compute.zeros
     it("empty shape errors", function()
         local ok = pcall(function() lurek.compute.zeros({}) end)
@@ -1249,7 +1156,6 @@ describe("error cases", function()
         local a = lurek.compute.zeros({1, 2, 3, 4})
         expect_equal(4, a:getDimensions())
     end)
-
     -- @covers LArray:transpose
     -- @covers lurek.compute.zeros
     it("transpose on non-2D errors", function()
@@ -1257,7 +1163,6 @@ describe("error cases", function()
         local ok = pcall(function() a:transpose() end)
         expect_false(ok, "transpose on 1D should error")
     end)
-
     -- @covers lurek.compute.zeros
     it("unknown dtype errors", function()
         local ok = pcall(function() lurek.compute.zeros({3}, "float16") end)
@@ -1284,7 +1189,6 @@ describe("error cases", function()
         local ok = pcall(function() a:matmul(b) end)
         expect_false(ok, "matmul shape mismatch should error")
     end)
-
     -- @covers LArray:dot
     -- @covers lurek.compute.fromTable
     it("dot on mismatched sizes errors", function()
@@ -1293,7 +1197,6 @@ describe("error cases", function()
         local ok = pcall(function() a:dot(b) end)
         expect_false(ok, "dot size mismatch should error")
     end)
-
     -- @covers LArray:floodFill
     -- @covers lurek.compute.zeros
     it("floodFill out of bounds errors", function()
@@ -1301,7 +1204,6 @@ describe("error cases", function()
         local ok = pcall(function() a:floodFill(6, 1, 1.0) end)
         expect_false(ok, "out-of-bounds floodFill should error")
     end)
-
     -- @covers LArray:getRegion
     -- @covers lurek.compute.zeros
     it("getRegion out of bounds errors", function()
@@ -1325,7 +1227,6 @@ describe("bitwise shift", function()
         expect_equal(8, r:get(2))
         expect_equal(16, r:get(3))
     end)
-
     -- @covers LArray:bitwiseRShift
     -- @covers lurek.compute.fromTable
     it("bitwiseRShift shifts right", function()
@@ -1335,7 +1236,6 @@ describe("bitwise shift", function()
         expect_equal(2, r:get(2))
         expect_equal(1, r:get(3))
     end)
-
     -- @covers LArray:bitwiseLShift
     -- @covers lurek.compute.fromTable
     it("bitwiseLShift with shift amount 0 preserves values", function()
@@ -1345,7 +1245,6 @@ describe("bitwise shift", function()
         expect_equal(10, r:get(2))
         expect_equal(15, r:get(3))
     end)
-
     -- @covers LArray:bitwiseRShift
     -- @covers lurek.compute.fromTable
     it("bitwiseRShift with shift amount 0 preserves values", function()
@@ -1355,7 +1254,6 @@ describe("bitwise shift", function()
         expect_equal(10, r:get(2))
         expect_equal(15, r:get(3))
     end)
-
     -- @covers LArray:bitwiseLShift
     -- @covers lurek.compute.fromTable
     it("bitwiseLShift with large shift amounts", function()
@@ -1365,7 +1263,6 @@ describe("bitwise shift", function()
         expect_equal(256, r:get(2))
         expect_equal(256, r:get(3))
     end)
-
     -- @covers LArray:bitwiseRShift
     -- @covers lurek.compute.fromTable
     it("bitwiseRShift with large values", function()
@@ -1401,7 +1298,6 @@ describe("compute array strides and error paths (RS parity)", function()
             expect_near(1.0, a:get(i), 0.001)
         end
     end)
-
     -- @covers LArray:get
     -- @covers lurek.compute.zeros
     it("zeros creates array filled with 0.0", function()
@@ -1410,7 +1306,6 @@ describe("compute array strides and error paths (RS parity)", function()
             expect_near(0.0, a:get(i), 0.001)
         end
     end)
-
     -- @covers LArray:get
     -- @covers lurek.compute.range
     it("range ascending produces correct sequence", function()
@@ -1419,7 +1314,6 @@ describe("compute array strides and error paths (RS parity)", function()
         expect_near(2.0, a:get(2), 0.001)
         expect_near(3.0, a:get(3), 0.001)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -1428,7 +1322,6 @@ describe("compute array strides and error paths (RS parity)", function()
         a:set(7, 3.14)
         expect_near(3.14, a:get(7), 0.001)
     end)
-
     -- @covers LArray:getShape
     -- @covers lurek.compute.zeros
     it("getShape returns table with dimensions", function()
@@ -1455,7 +1348,6 @@ describe("lurek.compute.Array analytics", function()
         expect_near(3,  c:get(2), 0.001)
         expect_near(10, c:get(4), 0.001)
     end)
-
     -- @covers LArray:diff
     -- @covers lurek.compute.fromTable
     it("diff order 1 yields first differences", function()
@@ -1465,7 +1357,6 @@ describe("lurek.compute.Array analytics", function()
         expect_near(3, d:get(1), 0.01)
         expect_near(7, d:get(3), 0.01)
     end)
-
     -- @covers LArray:diff
     -- @covers lurek.compute.fromTable
     it("diff order 2 of quadratic is constant", function()
@@ -1475,7 +1366,6 @@ describe("lurek.compute.Array analytics", function()
         expect_near(2, d:get(1), 0.01)
         expect_near(2, d:get(3), 0.01)
     end)
-
     -- @covers LArray:histogram
     -- @covers lurek.compute.fromTable
     it("histogram returns correct bin counts", function()
@@ -1485,7 +1375,6 @@ describe("lurek.compute.Array analytics", function()
         expect_equal(2, h[1].count)
         expect_equal(2, h[2].count)
     end)
-
     -- @covers LArray:histogram
     -- @covers lurek.compute.fromTable
     it("histogram ignores values outside min/max range", function()
@@ -1495,21 +1384,18 @@ describe("lurek.compute.Array analytics", function()
         expect_equal(1, h[1].count)
         expect_equal(1, h[2].count)
     end)
-
     -- @covers LArray:percentile
     -- @covers lurek.compute.fromTable
     it("percentile 50 is median", function()
         local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, nil, "float32")
         expect_near(3.0, a:percentile(50), 0.001)
     end)
-
     -- @covers LArray:percentile
     -- @covers lurek.compute.fromTable
     it("percentile 100 equals max", function()
         local a = lurek.compute.fromTable({3, 1, 4, 1, 5}, nil, "float32")
         expect_near(5.0, a:percentile(100), 0.001)
     end)
-
     -- @covers LArray:covariance
     -- @covers lurek.compute.fromTable
     it("covariance of array with itself is its variance", function()
@@ -1517,7 +1403,6 @@ describe("lurek.compute.Array analytics", function()
         -- pop variance of [1,2,3] = 2/3
         expect_near(0.6667, a:covariance(a), 0.01)
     end)
-
     -- @covers LArray:pearsonCorr
     -- @covers lurek.compute.fromTable
     it("pearsonCorr of linearly related arrays is 1", function()
@@ -1525,24 +1410,21 @@ describe("lurek.compute.Array analytics", function()
         local b = lurek.compute.fromTable({2, 4, 6}, nil, "float32")
         expect_near(1.0, a:pearsonCorr(b), 0.001)
     end)
-
     -- @covers LArray:normalizeRange
     -- @covers lurek.compute.fromTable
-    it("normalizeRange scales to [0, 1]", function()
+    it("normalizeRange scales to", function()
         local a = lurek.compute.fromTable({0, 5, 10}, nil, "float32")
         local n = a:normalizeRange(0, 1)
         expect_near(0.0, n:get(1), 0.001)
         expect_near(0.5, n:get(2), 0.001)
         expect_near(1.0, n:get(3), 0.001)
     end)
-
     -- @covers LArray:zscore
     -- @covers lurek.compute.fromTable
     it("zscore of constant array returns error", function()
         local a = lurek.compute.fromTable({5, 5, 5}, nil, "float32")
         expect_error(function() a:zscore() end)
     end)
-
     -- @covers LArray:zscore
     -- @covers lurek.compute.fromTable
     it("zscore normalises mean to zero", function()
@@ -1552,7 +1434,6 @@ describe("lurek.compute.Array analytics", function()
         for i = 1, z:getSize() do sum = sum + z:get(i) end
         expect_near(0.0, sum / z:getSize(), 0.001)
     end)
-
     -- @covers LArray:convolve1d
     -- @covers lurek.compute.fromTable
     it("convolve1d with identity kernel returns input", function()
@@ -1563,7 +1444,6 @@ describe("lurek.compute.Array analytics", function()
         expect_near(1, out:get(1), 0.001)
         expect_near(3, out:get(3), 0.001)
     end)
-
     -- @covers LArray:correlate1d
     -- @covers lurek.compute.fromTable
     it("correlate1d peaks at template location", function()
@@ -1590,7 +1470,6 @@ describe("lurek.compute linear algebra", function()
         expect_near(0.6, n:get(1), 0.001)
         expect_near(0.8, n:get(2), 0.001)
     end)
-
     -- @covers LArray:cross2d
     -- @covers lurek.compute.fromTable
     it("cross2d of standard basis vectors is 1", function()
@@ -1598,7 +1477,6 @@ describe("lurek.compute linear algebra", function()
         local b = lurek.compute.fromTable({0, 1}, nil, "float64")
         expect_near(1.0, a:cross2d(b), 0.001)
     end)
-
     -- @covers LArray:outer
     -- @covers lurek.compute.fromTable
     it("outer product has correct shape and values", function()
@@ -1609,7 +1487,6 @@ describe("lurek.compute linear algebra", function()
         expect_equal(2, shape[1])
         expect_equal(3, shape[2])
     end)
-
     -- @covers LArray:get
     -- @covers lurek.compute.gaussianKernel
     it("gaussianKernel sums to one", function()
@@ -1622,7 +1499,6 @@ describe("lurek.compute linear algebra", function()
         end
         expect_near(1.0, s, 0.0001)
     end)
-
     -- @covers LArray:reshape
     -- @covers LArray:transformPoints
     -- @covers lurek.compute.fromTable
@@ -1634,7 +1510,6 @@ describe("lurek.compute linear algebra", function()
         expect_near(0.0, out:get(1, 1), 0.001)
         expect_near(1.0, out:get(1, 2), 0.001)
     end)
-
     -- @covers LArray:reshape
     -- @covers LArray:transformPoints
     -- @covers lurek.compute.affine2d
@@ -1646,7 +1521,6 @@ describe("lurek.compute linear algebra", function()
         expect_near(5.0, out:get(1, 1), 0.001)
         expect_near(3.0, out:get(1, 2), 0.001)
     end)
-
     -- @covers LArray:linsolve
     -- @covers LArray:reshape
     -- @covers lurek.compute.fromTable
@@ -1657,7 +1531,6 @@ describe("lurek.compute linear algebra", function()
         expect_near(1.0, x:get(1), 0.001)
         expect_near(3.0, x:get(2), 0.001)
     end)
-
     -- @covers LArray:sobel
     -- @covers lurek.compute.zeros
     it("sobel on flat image gives zero gradient", function()
@@ -1666,7 +1539,6 @@ describe("lurek.compute linear algebra", function()
         expect_near(0.0, result.gx:get(3, 3), 0.001)
         expect_near(0.0, result.gy:get(3, 3), 0.001)
     end)
-
 end)
 
 -- =========================================================================
@@ -1696,7 +1568,6 @@ describe("Missing API Coverage", function()
             expect_near(data[i], recovered[i], 1e-6)
         end
     end)
-
     -- @covers lurek.compute.fftMagnitude
     it("covers lurek.compute.fftMagnitude", function()
         local mag = lurek.compute.fftMagnitude({0.1, -0.2, 0.3, -0.4, 0.5})
@@ -1713,7 +1584,6 @@ describe("Missing API Coverage", function()
         expect_equal(10, a:get(1))
         expect_equal(30, a:get(3))
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -1722,7 +1592,6 @@ describe("Missing API Coverage", function()
         a:set(2, 99)
         expect_equal(99, a:get(2))
     end)
-
     -- @covers LArray:pow
     -- @covers lurek.compute.fromTable
     it("covers Array:pow", function()
@@ -1732,7 +1601,6 @@ describe("Missing API Coverage", function()
         expect_equal(9, r:get(2))
         expect_equal(16, r:get(3))
     end)
-
     -- @covers LArray:abs
     -- @covers lurek.compute.fromTable
     it("covers Array:abs", function()
@@ -1742,7 +1610,6 @@ describe("Missing API Coverage", function()
         expect_equal(2, r:get(2))
         expect_equal(3, r:get(3))
     end)
-
     -- @covers LArray:neg
     -- @covers lurek.compute.fromTable
     it("covers Array:neg", function()
@@ -1752,7 +1619,6 @@ describe("Missing API Coverage", function()
         expect_equal(2,  r:get(2))
         expect_equal(-3, r:get(3))
     end)
-
     -- @covers LArray:any
     -- @covers lurek.compute.fromTable
     it("covers Array:any", function()
@@ -1761,7 +1627,6 @@ describe("Missing API Coverage", function()
         expect_equal(true,  a_true:any())
         expect_equal(false, a_false:any())
     end)
-
     -- @covers LArray:all
     -- @covers lurek.compute.fromTable
     it("covers Array:all", function()
@@ -1770,28 +1635,24 @@ describe("Missing API Coverage", function()
         expect_equal(true,  a_true:all())
         expect_equal(false, a_false:all())
     end)
-
     -- @covers LArray:sum
     -- @covers lurek.compute.fromTable
     it("covers Array:sum", function()
         local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
         expect_equal(10, a:sum())
     end)
-
     -- @covers LArray:min
     -- @covers lurek.compute.fromTable
     it("covers Array:min", function()
         local a = lurek.compute.fromTable({5, 2, 8, 1}, {4})
         expect_equal(1, a:min())
     end)
-
     -- @covers LArray:max
     -- @covers lurek.compute.fromTable
     it("covers Array:max", function()
         local a = lurek.compute.fromTable({5, 2, 8, 1}, {4})
         expect_equal(8, a:max())
     end)
-
     -- @covers LArray:dot
     -- @covers lurek.compute.fromTable
     it("covers Array:dot", function()
@@ -1800,7 +1661,6 @@ describe("Missing API Coverage", function()
         -- 1*4 + 2*5 + 3*6 = 32
         expect_equal(32, a:dot(b))
     end)
-
     -- @covers LArray:luDecompose
     -- @covers lurek.compute.fromTable
     it("covers Array:luDecompose", function()
@@ -1811,7 +1671,6 @@ describe("Missing API Coverage", function()
         expect_equal(2, result.n)
         expect_type("table", result.perm)
     end)
-
 end)
 
 -- @describe Array shape and metadata
@@ -1824,21 +1683,18 @@ describe("Array shape and metadata", function()
         expect_equal(3, s[1])
         expect_equal(4, s[2])
     end)
-
     -- @covers LArray:getDimensions
     -- @covers lurek.compute.zeros
     it("getDimensions returns 2 for a 2D array", function()
         local a = lurek.compute.zeros({3, 4})
         expect_equal(2, a:getDimensions())
     end)
-
     -- @covers LArray:getSize
     -- @covers lurek.compute.zeros
     it("getSize returns total element count", function()
         local a = lurek.compute.zeros({3, 4})
         expect_equal(12, a:getSize())
     end)
-
     -- @covers LArray:getDataType
     -- @covers lurek.compute.zeros
     it("getDataType returns a non-empty string", function()
@@ -1847,21 +1703,18 @@ describe("Array shape and metadata", function()
         expect_type("string", dt)
         expect_true(#dt > 0, "data type must be non-empty")
     end)
-
     -- @covers LArray:isOnGPU
     -- @covers lurek.compute.zeros
     it("isOnGPU returns a boolean", function()
         local a = lurek.compute.zeros({3})
         expect_type("boolean", a:isOnGPU())
     end)
-
     -- @covers LArray:type
     -- @covers lurek.compute.zeros
     it("type returns 'LArray'", function()
         local a = lurek.compute.zeros({2})
         expect_equal("LArray", a:type())
     end)
-
     -- @covers LArray:typeOf
     -- @covers lurek.compute.zeros
     it("typeOf('LArray') returns true", function()
@@ -1882,7 +1735,6 @@ describe("Array data access and mutation", function()
         expect_equal(1, t[1])
         expect_equal(3, t[3])
     end)
-
     -- @covers LArray:reshape
     -- @covers lurek.compute.fromTable
     it("reshape {4} into {2,2} preserves data", function()
@@ -1892,7 +1744,6 @@ describe("Array data access and mutation", function()
         expect_equal(2, s[1])
         expect_equal(2, s[2])
     end)
-
     -- @covers LArray:clone
     -- @covers LArray:get
     -- @covers lurek.compute.fromTable
@@ -1903,7 +1754,6 @@ describe("Array data access and mutation", function()
         b:set(1, 999)
         expect_equal(5, a:get(1))  -- original unchanged
     end)
-
     -- @covers LArray:transpose
     -- @covers lurek.compute.zeros
     it("transpose of 2x3 gives 3x2 shape", function()
@@ -1913,7 +1763,6 @@ describe("Array data access and mutation", function()
         expect_equal(3, s[1])
         expect_equal(2, s[2])
     end)
-
     -- @covers LArray:fill
     -- @covers LArray:get
     -- @covers lurek.compute.zeros
@@ -1936,17 +1785,15 @@ describe("Array math operations", function()
         expect_equal(3, r:get(2))
         expect_equal(4, r:get(3))
     end)
-
     -- @covers LArray:clamp
     -- @covers lurek.compute.fromTable
-    it("clamp(2, 8) restricts values to [2, 8]", function()
+    it("clamp(2, 8) restricts values to", function()
         local a = lurek.compute.fromTable({0, 5, 10}, {3})
         local r = a:clamp(2, 8)
         expect_equal(2, r:get(1))
         expect_equal(5, r:get(2))
         expect_equal(8, r:get(3))
     end)
-
     -- @covers LArray:threshold
     -- @covers lurek.compute.fromTable
     it("threshold returns a 0/1 mask", function()
@@ -1958,35 +1805,30 @@ describe("Array math operations", function()
         expect_equal(0, r:get(3))   -- 3 < 4
         expect_equal(1, r:get(4))   -- 9 >= 4
     end)
-
     -- @covers LArray:countNonZero
     -- @covers lurek.compute.fromTable
     it("countNonZero counts non-zero elements", function()
         local a = lurek.compute.fromTable({0, 1, 0, 3, 0}, {5})
         expect_equal(2, a:countNonZero())
     end)
-
     -- @covers LArray:argmin
     -- @covers lurek.compute.fromTable
     it("argmin returns index (1-based) of smallest element", function()
         local a = lurek.compute.fromTable({5, 2, 8, 1}, {4})
         expect_equal(4, a:argmin())
     end)
-
     -- @covers LArray:argmax
     -- @covers lurek.compute.fromTable
     it("argmax returns index (1-based) of largest element", function()
         local a = lurek.compute.fromTable({5, 2, 8, 1}, {4})
         expect_equal(3, a:argmax())
     end)
-
     -- @covers LArray:mean
     -- @covers lurek.compute.fromTable
     it("mean of {2, 4, 6} is 4", function()
         local a = lurek.compute.fromTable({2, 4, 6}, {3})
         expect_equal(4, a:mean())
     end)
-
     -- @covers LArray:matmul
     -- @covers lurek.compute.fromTable
     it("matmul of 2x2 matrices produces 2x2", function()
@@ -2068,7 +1910,6 @@ describe("Array image/spatial operations", function()
         expect_equal(5, s[1])
         expect_equal(5, s[2])
     end)
-
     -- @covers LArray:dilate
     -- @covers lurek.compute.zeros
     it("dilate with radius 1 returns an array of same shape", function()
@@ -2078,7 +1919,6 @@ describe("Array image/spatial operations", function()
         expect_equal(5, s[1])
         expect_equal(5, s[2])
     end)
-
     -- @covers LArray:erode
     -- @covers lurek.compute.ones
     it("erode with radius 1 returns an array of same shape", function()
@@ -2088,7 +1928,6 @@ describe("Array image/spatial operations", function()
         expect_equal(5, s[1])
         expect_equal(5, s[2])
     end)
-
     -- @covers LArray:transformPoints
     -- @covers lurek.compute.fromTable
     it("transformPoints with 3x3 identity matrix leaves points unchanged", function()
@@ -2196,7 +2035,6 @@ describe("Array element operations ", function()
         expect_near(10.0, a:get(1), 1e-5)
         expect_near(30.0, a:get(3), 1e-5)
     end)
-
     -- @covers LArray:get
     -- @covers LArray:set
     -- @covers lurek.compute.zeros
@@ -2206,7 +2044,6 @@ describe("Array element operations ", function()
         expect_near(99.0, a:get(2), 1e-5)
         expect_near(0.0, a:get(1), 1e-5)
     end)
-
     -- @covers LArray:pow
     -- @covers lurek.compute.fromTable
     it("Array:pow raises each element to a power", function()
@@ -2215,7 +2052,6 @@ describe("Array element operations ", function()
         expect_not_nil(r)
         expect_type("userdata", r)
     end)
-
     -- @covers LArray:abs
     -- @covers lurek.compute.fromTable
     it("Array:abs returns absolute-value array", function()
@@ -2224,7 +2060,6 @@ describe("Array element operations ", function()
         expect_not_nil(r)
         expect_type("userdata", r)
     end)
-
     -- @covers LArray:neg
     -- @covers lurek.compute.fromTable
     it("Array:neg negates all elements", function()
@@ -2233,7 +2068,6 @@ describe("Array element operations ", function()
         expect_not_nil(r)
         expect_type("userdata", r)
     end)
-
     -- @covers LArray:any
     -- @covers lurek.compute.fromTable
     it("Array:any returns a boolean", function()
@@ -2242,7 +2076,6 @@ describe("Array element operations ", function()
         expect_type("boolean", v)
         expect_equal(true, v)
     end)
-
     -- @covers LArray:all
     -- @covers lurek.compute.fromTable
     it("Array:all returns a boolean", function()
@@ -2251,7 +2084,6 @@ describe("Array element operations ", function()
         expect_type("boolean", v)
         expect_equal(true, v)
     end)
-
     -- @covers LArray:sum
     -- @covers lurek.compute.fromTable
     it("Array:sum returns the total of all elements", function()
@@ -2259,7 +2091,6 @@ describe("Array element operations ", function()
         local s = a:sum()
         expect_near(6.0, s, 1e-5)
     end)
-
     -- @covers LArray:min
     -- @covers lurek.compute.fromTable
     it("Array:min returns the smallest element", function()
@@ -2267,7 +2098,6 @@ describe("Array element operations ", function()
         local m = a:min()
         expect_near(1.0, m, 1e-5)
     end)
-
     -- @covers LArray:max
     -- @covers lurek.compute.fromTable
     it("Array:max returns the largest element", function()
@@ -2275,7 +2105,6 @@ describe("Array element operations ", function()
         local m = a:max()
         expect_near(5.0, m, 1e-5)
     end)
-
     -- @covers LArray:dot
     -- @covers lurek.compute.fromTable
     it("Array:dot computes inner product", function()
@@ -2284,7 +2113,6 @@ describe("Array element operations ", function()
         local d = a:dot(b)
         expect_near(32.0, d, 1e-5)
     end)
-
     -- @covers LArray:map
     -- @covers lurek.compute.fromTable
     it("Array:map applies a transform to each element", function()
@@ -2320,7 +2148,6 @@ describe("LArray:eigenPower", function()
         expect_type("number", result.value)
         expect_type("table", result.vector)
     end)
-
     -- @covers LArray:eigenPower
     -- @covers lurek.compute.newArray
     it("eigenPower converges to known dominant eigenvalue for 3x3 matrix", function()
@@ -2379,7 +2206,6 @@ describe("lurek.compute parallelization configuration", function()
         -- Restore original threshold
         lurek.compute.setParThreshold(old_threshold)
     end)
-
     -- @covers lurek.compute.setParThreshold
     -- @covers lurek.compute.getParThreshold
     it("setParThreshold enforces minimum value of 1", function()

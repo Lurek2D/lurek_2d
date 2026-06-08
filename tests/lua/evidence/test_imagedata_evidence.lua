@@ -1,7 +1,5 @@
 -- Evidence tests: imagedata module
 -- Artifacts are generated from low-level LImageData operations.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
 
 
 
@@ -14,6 +12,8 @@ describe("evidence: imagedata", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: pixel grid from setPixel", function()
         local w, h, cell = 64, 64, 8
         local img = lurek.image.newImageData(w, h)

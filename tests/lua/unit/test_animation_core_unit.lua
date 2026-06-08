@@ -144,7 +144,6 @@ describe("play() / stop()", function()
         expect_equal(true, ok)
         expect_equal(true, a:isPlaying())
     end)
-
     -- @covers LAnimation:play
     it("play returns false for unknown clip", function()
         local a = lurek.animation.new()
@@ -199,7 +198,6 @@ describe("update() + getQuad()", function()
         expect_type("number", q.w)
         expect_type("number", q.h)
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:getQuad
@@ -219,7 +217,6 @@ describe("update() + getQuad()", function()
         expect_equal(16, q.w)
         expect_equal(16, q.h)
     end)
-
     -- @covers LAnimation:getQuad
     it("getQuad returns nil when not playing", function()
         local a = lurek.animation.new()
@@ -254,7 +251,6 @@ describe("draw()", function()
         expect_true(ok)
         expect_equal(before, a:getCurrentFrame())
     end)
-
     -- @covers LAnimation:draw
     it("returns false when no current frame is active", function()
         local a = lurek.animation.new()
@@ -339,7 +335,6 @@ describe("pause and resume", function()
         a:update(1.0)
         expect_equal(f_before, a:getCurrentFrame())
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:getCurrentFrame
@@ -415,7 +410,6 @@ describe("isLooping", function()
         a:play("idle")
         expect_true(a:isLooping())
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:isLooping
@@ -451,7 +445,6 @@ describe("event lifecycle", function()
         end
         expect_true(found, "expected Finished event")
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:play
@@ -470,7 +463,6 @@ describe("event lifecycle", function()
         end
         expect_true(found, "expected Looped event")
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:play
@@ -493,7 +485,6 @@ describe("event lifecycle", function()
         end
         expect_true(found, "expected frameChanged event")
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:play
@@ -532,7 +523,6 @@ describe("speed edge cases", function()
         a:update(1.0)
         expect_equal(f0, a:getCurrentFrame())
     end)
-
     -- @covers LAnimation:getSpeed
     -- @covers LAnimation:setSpeed
     it("setSpeed clamps negative to 0", function()
@@ -569,9 +559,27 @@ end)
 -- @describe addClipFromGrid
 describe("addClipFromGrid", function()
     -- @covers LAnimation:addClipFromGrid
+    it("creates clip from grid in one call [LAnimation:addClipFromGrid]", function()
+        local a = lurek.animation.new()
+        expect_no_error(function()
+            a:addClipFromGrid("walk", 128, 128, 32, 32, 0, 4, 12, true)
+        end)
+        expect_equal(1, a:getClipCount())
+        expect_equal(4, a:getFrameCount())
+    end)
+
     -- @covers LAnimation:getClipCount
+    it("creates clip from grid in one call [LAnimation:getClipCount]", function()
+        local a = lurek.animation.new()
+        expect_no_error(function()
+            a:addClipFromGrid("walk", 128, 128, 32, 32, 0, 4, 12, true)
+        end)
+        expect_equal(1, a:getClipCount())
+        expect_equal(4, a:getFrameCount())
+    end)
+
     -- @covers LAnimation:getFrameCount
-    it("creates clip from grid in one call", function()
+    it("creates clip from grid in one call [LAnimation:getFrameCount]", function()
         local a = lurek.animation.new()
         expect_no_error(function()
             a:addClipFromGrid("walk", 128, 128, 32, 32, 0, 4, 12, true)
@@ -683,7 +691,6 @@ describe("getBlendState()", function()
         expect_type("table", bs.to)
         expect_type("number", bs.blend)
     end)
-
     -- @covers LAnimation:crossfade
     -- @covers LAnimation:getBlendState
     it("blend starts near 0 at crossfade start", function()
@@ -748,7 +755,6 @@ describe("fromAseprite()", function()
         assert(a)
         expect_equal(2, a:getFrameCount())
     end)
-
     -- @covers LAnimation:getClipCount
     -- @covers lurek.animation.fromAseprite
     it("registers named clips from frameTags", function()
@@ -756,7 +762,6 @@ describe("fromAseprite()", function()
         assert(a)
         expect_true(a:getClipCount() >= 1, "expected at least one clip")
     end)
-
     -- @covers LAnimation:getQuad
     -- @covers LAnimation:play
     -- @covers lurek.animation.fromAseprite
@@ -771,7 +776,6 @@ describe("fromAseprite()", function()
         expect_equal(16, q.w)
         expect_equal(16, q.h)
     end)
-
     -- @covers lurek.animation.fromAseprite
     it("errors on invalid JSON", function()
         expect_error(function()
@@ -824,7 +828,6 @@ describe("newStateMachine()", function()
         fsm:forceState("run")
         expect_equal("run", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:forceState
     -- @covers LAnimStateMachine:getState
@@ -836,7 +839,6 @@ describe("newStateMachine()", function()
         expect_equal(false, ok)
         expect_equal("idle", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:addTransition
     -- @covers LAnimStateMachine:getState
@@ -852,7 +854,6 @@ describe("newStateMachine()", function()
         fsm:update(0.016)
         expect_equal("run", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:addTransition
     -- @covers LAnimStateMachine:getState
@@ -868,7 +869,6 @@ describe("newStateMachine()", function()
         fsm:update(0.016)
         expect_equal("run", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:addTransition
     -- @covers LAnimStateMachine:getState
@@ -884,7 +884,6 @@ describe("newStateMachine()", function()
         fsm:update(0.016)
         expect_equal("idle", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:addTransition
     -- @covers LAnimStateMachine:getState
@@ -900,7 +899,6 @@ describe("newStateMachine()", function()
         fsm:update(0.016)
         expect_equal("run", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:addTransition
     -- @covers LAnimStateMachine:getState
@@ -916,7 +914,6 @@ describe("newStateMachine()", function()
         fsm:update(0.016)
         expect_equal("idle", fsm:getState())
     end)
-
     -- @covers LAnimStateMachine:getQuad
     it("getQuad returns a table", function()
         local a = make_anim()
@@ -966,7 +963,6 @@ describe("len() / addLayer()", function()
         bls:addLayer("upper", "attack", 1.0)
         expect_equal(1, bls:len())
     end)
-
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
     it("accepts two distinct layers", function()
@@ -975,7 +971,6 @@ describe("len() / addLayer()", function()
         bls:addLayer("lower", "walk",   1.0)
         expect_equal(2, bls:len())
     end)
-
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:len
     it("accepts bone mask as fourth argument", function()
@@ -995,7 +990,6 @@ describe("setWeight() / getWeight()", function()
         local w = bls:getWeight("upper")
         expect_near(0.75, w, 0.001)
     end)
-
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:getWeight
     -- @covers LBlendLayerSet:setWeight
@@ -1018,7 +1012,6 @@ describe("listLayers()", function()
         local names = bls:listLayers()
         expect_type("table", names)
     end)
-
     -- @covers LBlendLayerSet:addLayer
     -- @covers LBlendLayerSet:listLayers
     it("table length equals layer count", function()
@@ -1042,7 +1035,6 @@ describe("removeLayer()", function()
         bls:removeLayer("upper")
         expect_equal(1, bls:len())
     end)
-
     -- @covers LBlendLayerSet:removeLayer
     it("removing unknown layer raises an error", function()
         local bls = lurek.animation.newBlendLayerSet()
@@ -1083,7 +1075,6 @@ describe("animation regression coverage", function()
         curve:clear()
         expect_equal(0, curve:keyframeCount())
     end)
-
     -- @covers LAnimCurve:addKeyframe
     -- @covers LAnimCurve:eval
     -- @covers lurek.animation.newCurve
@@ -1095,7 +1086,6 @@ describe("animation regression coverage", function()
         expect_near(42.0, curve:eval(0.0), 0.001)
         expect_near(42.0, curve:eval(2.0), 0.001)
     end)
-
     -- @covers LAnimCurve:addKeyframe
     -- @covers LAnimCurve:eval
     -- @covers LAnimCurve:setEasing
@@ -1111,7 +1101,6 @@ describe("animation regression coverage", function()
         curve:setEasing("step")
         expect_near(5.0, curve:eval(0.5), 0.001)
     end)
-
     -- @covers LAnimSyncGroup:add
     -- @covers LAnimSyncGroup:clear
     -- @covers LAnimSyncGroup:memberCount
@@ -1170,7 +1159,6 @@ describe("AnimCurve custom easing", function()
             expect_near(0.25, v, 0.01)
         end
     end)
-
     -- @covers LAnimCurve:addKeyframe
     -- @covers LAnimCurve:eval
     -- @covers LAnimCurve:setCustomEasing
@@ -1228,7 +1216,6 @@ describe("animation strict: type / typeOf coverage", function()
         expect_type("string", a:type())
         expect_type("boolean", a:typeOf("LObject"))
     end)
-
     -- @covers LAnimStateMachine:type
     -- @covers LAnimStateMachine:typeOf
     it("LAnimStateMachine type and typeOf are callable", function()
@@ -1238,7 +1225,6 @@ describe("animation strict: type / typeOf coverage", function()
         expect_type("string", sm:type())
         expect_type("boolean", sm:typeOf("LObject"))
     end)
-
     -- @covers LBlendLayerSet:type
     -- @covers LBlendLayerSet:typeOf
     it("LBlendLayerSet type and typeOf are callable", function()
@@ -1246,7 +1232,6 @@ describe("animation strict: type / typeOf coverage", function()
         expect_type("string", bls:type())
         expect_type("boolean", bls:typeOf("LObject"))
     end)
-
     -- @covers LAnimCurve:type
     -- @covers LAnimCurve:typeOf
     it("LAnimCurve type and typeOf are callable", function()
@@ -1258,7 +1243,6 @@ describe("animation strict: type / typeOf coverage", function()
             expect_not_nil(ac)
         end
     end)
-
     -- @covers LAnimSyncGroup:type
     -- @covers LAnimSyncGroup:typeOf
     it("LAnimSyncGroup type and typeOf are callable", function()
@@ -1293,7 +1277,6 @@ describe("animation migrated from integration/animation_timer", function()
         expect_type("number", frame)
         expect_true(frame >= 0)
     end)
-
     -- @covers LAnimation:addClip
     -- @covers LAnimation:addFrame
     -- @covers LAnimation:getCurrentFrame
@@ -1328,7 +1311,6 @@ end)
         anim:addClip("walk", {0, 1}, 10, true, "pingpong")
         expect_equal("pingpong", anim:getClipMode("walk"))
     end)
-
     -- @covers LAnimation:setClipMode
     -- @covers LAnimation:getClipMode
     -- @covers lurek.animation.new
@@ -1412,7 +1394,6 @@ describe("animation migrated from rust", function()
         anim:update(0.11)
         expect_equal(0, anim:getCurrentFrame())
     end)
-
     -- @covers LAnimStateMachine:addState
     -- @covers LAnimStateMachine:addTransition
     -- @covers LAnimStateMachine:getState
@@ -1459,7 +1440,6 @@ describe("setImage() / draw without explicit image (LAnimation)", function()
         local ok = a:draw(10, 20)
         expect_true(ok)
     end)
-
     -- @covers LAnimation:draw
     it("draw(x, y) without prior setImage raises an error", function()
         local a = make_playing_animation()
@@ -1489,7 +1469,6 @@ describe("setImage() / draw without explicit image (LAnimStateMachine)", functio
         local ok = fsm:draw(10, 20)
         expect_true(ok)
     end)
-
     -- @covers LAnimStateMachine:draw
     it("draw(x, y) without prior setImage raises an error", function()
         local fsm = make_playing_statemachine()

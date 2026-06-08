@@ -2564,9 +2564,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // Provides high-level music/SFX group controls as lurek.audio.manager.*
     let mgr = lua.create_table()?;
     // -- manager.playMusic(path, opts?) --
-    /// Plays a music track, routing through a named group with optional fade-in.
-    /// @param | path | string | Path to audio file.
-    /// @param | opts | table? | Optional: `group` (string), `fadeIn` (number seconds).
+    // Plays a music track, routing through a named group with optional fade-in.
+    // @param | path | string | Path to audio file.
+    // @param | opts | table? | Optional: `group` (string), `fadeIn` (number seconds).
     // NOTE: Broken playMusic implementation removed; use lurek.audio.play() with stream source type instead
     // mgr.set(
     //     "playMusic",

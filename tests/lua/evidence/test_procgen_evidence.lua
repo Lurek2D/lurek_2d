@@ -1,23 +1,5 @@
 -- test_procgen_evidence.lua
 -- Evidence test: procedural generation APIs visualized as PNG outputs
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.procgen.bspDungeon
--- @covers lurek.procgen.cellularAutomata
--- @covers lurek.procgen.floodFill
--- @covers lurek.procgen.generateNames
--- @covers lurek.procgen.heightmap
--- @covers lurek.procgen.lsystemSegments
--- @covers lurek.procgen.noiseMap
--- @covers lurek.procgen.noiseMapParallel
--- @covers lurek.procgen.perlinNoise
--- @covers lurek.procgen.poissonDisk
--- @covers lurek.procgen.roomsDungeon
--- @covers lurek.procgen.simplex2d
--- @covers lurek.procgen.simplex3d
--- @covers lurek.procgen.voronoi
--- @covers lurek.procgen.wfcGenerate
--- @covers lurek.procgen.worldGraph
 
 
 
@@ -31,7 +13,11 @@ end
 
 -- @describe Evidence: lurek.procgen API + PNG visualizations
 describe("Evidence: lurek.procgen API + PNG visualizations", function()
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.floodFill
+    -- @covers lurek.procgen.cellularAutomata
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: cellular automata with flood fill overlay", function()
         local gw, gh = 64, 64
         local scale = 4
@@ -59,7 +45,9 @@ describe("Evidence: lurek.procgen API + PNG visualizations", function()
         expect_evidence_created(OUT .. "procgen_cellular_flood.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.voronoi
+    -- @covers lurek.procgen.poissonDisk
     it("PNG: poisson disk points with voronoi regions", function()
         local W, H = 300, 220
         local img = lurek.image.newImageData(W, H)
@@ -94,7 +82,12 @@ describe("Evidence: lurek.procgen API + PNG visualizations", function()
         expect_evidence_created(OUT .. "procgen_poisson_voronoi.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.simplex3d
+    -- @covers lurek.procgen.simplex2d
+    -- @covers lurek.procgen.perlinNoise
+    -- @covers lurek.procgen.noiseMapParallel
+    -- @covers lurek.procgen.noiseMap
     it("PNG: noise map vs parallel noise with perlin/simplex strips", function()
         local W, H = 256, 192
         local img = lurek.image.newImageData(W, H)
@@ -137,7 +130,9 @@ describe("Evidence: lurek.procgen API + PNG visualizations", function()
         expect_evidence_created(OUT .. "procgen_noise_suite.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.roomsDungeon
+    -- @covers lurek.procgen.bspDungeon
     it("PNG: BSP and rooms dungeons side by side", function()
         local W, H = 360, 200
         local img = lurek.image.newImageData(W, H)
@@ -168,7 +163,9 @@ describe("Evidence: lurek.procgen API + PNG visualizations", function()
         expect_evidence_created(OUT .. "procgen_dungeons.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.worldGraph
+    -- @covers lurek.procgen.heightmap
     it("PNG: heightmap + world graph overlay", function()
         local W, H = 320, 240
         local img = lurek.image.newImageData(W, H)
@@ -205,7 +202,10 @@ describe("Evidence: lurek.procgen API + PNG visualizations", function()
         expect_evidence_created(OUT .. "procgen_height_worldgraph.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.procgen.wfcGenerate
+    -- @covers lurek.procgen.lsystemSegments
+    -- @covers lurek.procgen.generateNames
     it("PNG: WFC tiles + L-system segments + generated names", function()
         local W, H = 320, 220
         local img = lurek.image.newImageData(W, H)

@@ -1,6 +1,5 @@
 -- Evidence tests: camera module
 -- Output-only evidence from direct lurek.camera API calls.
--- @covers lurek.camera.newCamera
 
 
 
@@ -18,7 +17,8 @@ describe("evidence: camera", function()
         ensure_evidence_dir("camera")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.camera.newCamera
+    -- @covers lurek.camera.newCamera
     it("exports zoom/rotation transform samples", function()
         local dir = evidence_output_dir("camera")
         local path = dir .. "transforms.json"
@@ -38,7 +38,7 @@ describe("evidence: camera", function()
         write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.camera.newCamera
     it("exports follow smoothing trace", function()
         local dir = evidence_output_dir("camera")
         local path = dir .. "follow_trace.json"
@@ -61,7 +61,7 @@ describe("evidence: camera", function()
         write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.camera.newCamera
     it("exports shake response trace", function()
         local dir = evidence_output_dir("camera")
         local path = dir .. "shake_trace.json"

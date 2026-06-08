@@ -1,11 +1,5 @@
 -- Evidence tests: gui module
 -- Produces PNG artifacts from content/layouts/*.toml via engine UI rendering.
--- @covers lurek.binary.parseToml
--- @covers lurek.filesystem.listRecursive
--- @covers lurek.filesystem.read
--- @covers lurek.ui.clear
--- @covers lurek.ui.loadLayoutFile
--- @covers lurek.ui.renderToImage
 
 
 
@@ -31,6 +25,10 @@ describe("evidence: gui", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.ui.renderToImage
+    -- @covers lurek.ui.loadLayoutFile
+    -- @covers lurek.ui.clear
+    -- @covers lurek.filesystem.listRecursive
     it("renders TOML layouts from content/layouts with engine default UI", function()
         local dir = evidence_output_dir("gui")
         local layout_paths = lurek.filesystem.listRecursive("content/layouts")

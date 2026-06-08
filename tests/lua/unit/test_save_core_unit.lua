@@ -189,7 +189,6 @@ describe("SaveManager slot operations", function()
         expect_true(sm:exists(SLOT))
     end)
 
-    -- @covers LSaveManager:exists
     -- @covers LSaveManager:getSlots
     -- @covers LSaveManager:register
     -- @covers LSaveManager:save

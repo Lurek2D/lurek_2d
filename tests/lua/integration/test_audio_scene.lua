@@ -1,9 +1,4 @@
 -- Integration: audio state driven by scene enter/leave/resume hooks
--- @covers lurek.audio.getMasterVolume
--- @covers lurek.audio.setMasterVolume
--- @covers lurek.scene.clear
--- @covers lurek.scene.pop
--- @covers lurek.scene.push
 
 
 
@@ -18,6 +13,9 @@ describe("audio + scene integration", function()
     -- @integration lurek.audio.setMasterVolume
     -- @integration lurek.scene.clear
     -- @integration lurek.scene.push
+    -- @covers lurek.scene.push
+    -- @covers lurek.audio.setMasterVolume
+    -- @covers lurek.audio.getMasterVolume
     it("plays background music when scene loads", function()
         reset_scene_audio_state()
 
@@ -39,6 +37,7 @@ describe("audio + scene integration", function()
     -- @integration lurek.scene.clear
     -- @integration lurek.scene.pop
     -- @integration lurek.scene.push
+    -- @covers lurek.scene.pop
     it("stops all audio sources on scene unload", function()
         reset_scene_audio_state()
 

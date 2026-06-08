@@ -1,6 +1,5 @@
 -- Evidence tests: scene module
 -- Evidence validates lurek.scene depth sorting behavior.
--- @covers lurek.scene.newDepthSorter
 
 
 
@@ -13,6 +12,7 @@ describe("Evidence: lurek.scene DepthSorter", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.scene.newDepthSorter
     it("TXT: depth order ascending", function()
         local ds = lurek.scene.newDepthSorter()
         local call_order = {}

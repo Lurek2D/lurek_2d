@@ -29,8 +29,8 @@ impl LNetworkRpc {
         // Call the library's .new() function
         let new_fn: LuaFunction = rpc_lib.get("new")?;
         let rpc_instance = match (channel, timeout) {
-            (Some(ch), Some(to)) => new_fn.call::<_, LuaValue>((host, ch as u8, to))?,
-            (Some(ch), None) => new_fn.call::<_, LuaValue>((host, ch as u8))?,
+            (Some(ch), Some(to)) => new_fn.call::<_, LuaValue>((host, ch, to))?,
+            (Some(ch), None) => new_fn.call::<_, LuaValue>((host, ch))?,
             (None, Some(to)) => new_fn.call::<_, LuaValue>((host, 0, to))?,
             (None, None) => new_fn.call::<_, LuaValue>((host, 0))?,
         };

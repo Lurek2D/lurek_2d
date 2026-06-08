@@ -40,7 +40,6 @@ describe("lurek.debugbridge lifecycle", function()
         lurek.debugbridge.stop()
         expect_equal(false, lurek.debugbridge.isRunning())
     end)
-
     -- @covers lurek.debugbridge.start
     -- @covers lurek.debugbridge.stop
     it("start returns false if already running", function()
@@ -49,7 +48,6 @@ describe("lurek.debugbridge lifecycle", function()
         expect_equal(false, second)
         lurek.debugbridge.stop()
     end)
-
     -- @covers lurek.debugbridge.poll
     it("poll does not error when not running", function()
         expect_no_error(function() lurek.debugbridge.poll() end)
@@ -71,7 +69,6 @@ describe("lurek.debugbridge print capture", function()
         local last = history[#history]
         expect_equal("hello world", last.message)
     end)
-
     -- @covers lurek.debugbridge.capturePrint
     -- @covers lurek.debugbridge.getPrintHistory
     it("capturePrint with source and line", function()
@@ -82,7 +79,6 @@ describe("lurek.debugbridge print capture", function()
         expect_equal("main.lua", last.source)
         expect_equal(42, last.line)
     end)
-
     -- @covers lurek.debugbridge.capturePrint
     -- @covers lurek.debugbridge.clearPrintHistory
     -- @covers lurek.debugbridge.getPrintHistory
@@ -92,7 +88,6 @@ describe("lurek.debugbridge print capture", function()
         local history = lurek.debugbridge.getPrintHistory()
         expect_equal(0, #history)
     end)
-
     -- @covers lurek.debugbridge.capturePrint
     -- @covers lurek.debugbridge.clearPrintHistory
     -- @covers lurek.debugbridge.getPrintHistory
@@ -109,7 +104,6 @@ describe("lurek.debugbridge print capture", function()
         -- Reset to default
         lurek.debugbridge.setMaxPrintHistory(2000)
     end)
-
     -- @covers lurek.debugbridge.capturePrint
     -- @covers lurek.debugbridge.clearPrintHistory
     -- @covers lurek.debugbridge.getPrintHistory
@@ -122,7 +116,6 @@ describe("lurek.debugbridge print capture", function()
         expect_equal(3, #last3)
         expect_equal("entry 8", last3[1].message)
     end)
-
 end)
 
 -- ===== Performance =====
@@ -188,7 +181,6 @@ describe("lurek.debugbridge screenshots", function()
         lurek.debugbridge.requestScreenshot(2)
         expect_equal(true, lurek.debugbridge.isScreenshotRequested())
     end)
-
 end)
 
 -- ===== Broadcast =====
@@ -216,6 +208,5 @@ describe("lurek.debugbridge poll", function()
         expect_no_error(function() lurek.debugbridge.poll() end)
         lurek.debugbridge.stop()
     end)
-
 end)
 test_summary()

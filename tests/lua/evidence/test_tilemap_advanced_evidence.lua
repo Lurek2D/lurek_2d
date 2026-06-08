@@ -2,9 +2,6 @@
 -- Evidence tests: advanced lurek.tilemap scenarios
 -- Covers exactly 5 high-quality unique evidence files:
 -- tilemap_layers.png, tilemap_collision.png, tilemap_isometric.png, tilemap_viewport.png, tilemap_autotile.png
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.tilemap.newTileMap
 
 
 
@@ -30,7 +27,10 @@ end
 -- @describe Evidence: advanced lurek.tilemap scenarios
 describe("Evidence: advanced lurek.tilemap scenarios", function()
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: tilemap layers (ground + decoration overlay)", function()
         ensure_evidence_dir("tilemap_advanced")
         local path = OUT .. "tilemap_layers.png"
@@ -85,7 +85,7 @@ describe("Evidence: advanced lurek.tilemap scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: tilemap collision mask (solid vs walkable)", function()
         ensure_evidence_dir("tilemap_advanced")
         local path = OUT .. "tilemap_collision.png"
@@ -139,7 +139,7 @@ describe("Evidence: advanced lurek.tilemap scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: tilemap isometric view projection", function()
         ensure_evidence_dir("tilemap_advanced")
         local path = OUT .. "tilemap_isometric.png"
@@ -199,7 +199,7 @@ describe("Evidence: advanced lurek.tilemap scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: tilemap camera viewport culling visual", function()
         ensure_evidence_dir("tilemap_advanced")
         local path = OUT .. "tilemap_viewport.png"
@@ -253,7 +253,7 @@ describe("Evidence: advanced lurek.tilemap scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: tilemap autotile Wang pattern layout", function()
         ensure_evidence_dir("tilemap_advanced")
         local path = OUT .. "tilemap_autotile.png"

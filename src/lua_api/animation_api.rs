@@ -650,15 +650,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "fromAseprite",
         lua.create_function(|lua, json_str: String| {
             // First, check if meta exists in the original JSON
-            match serde_json::from_str::<serde_json::Value>(&json_str) {
-                Ok(root) => {
-                    if root.get("meta").is_none() {
-                        return Err(LuaError::RuntimeError(
-                            "fromAseprite: missing 'meta' key".to_string(),
-                        ));
-                    }
+            if let Ok(root) = serde_json::from_str::<serde_json::Value>(&json_str) {
+                if root.get("meta").is_none() {
+                    return Err(LuaError::RuntimeError(
+                        "fromAseprite: missing 'meta' key".to_string(),
+                    ));
                 }
-                Err(_) => {} // JSON parse errors will be caught below
             }
 
             match load_aseprite_json(&json_str) {

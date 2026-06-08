@@ -41,7 +41,6 @@ describe("collision surface available via lurek.physics", function()
         local events = world:getCollisionEvents()
         expect_equal(0, #events)
     end)
-
     -- @covers LBody:getLayer
     -- @covers LBody:setLayer
     it("getLayer / setLayer round-trip", function()
@@ -50,7 +49,6 @@ describe("collision surface available via lurek.physics", function()
         body:setLayer(3)
         expect_equal(3, body:getLayer())
     end)
-
     -- @covers LBody:getMask
     -- @covers LBody:setMask
     it("getMask / setMask round-trip", function()

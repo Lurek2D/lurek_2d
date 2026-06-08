@@ -1,11 +1,5 @@
 -- Evidence tests: geometry module
 -- Output-only evidence from direct lurek.math API calls.
--- @covers lurek.math.convexHull
--- @covers lurek.math.lineIntersect
--- @covers lurek.math.pointInPolygon
--- @covers lurek.math.polygonArea
--- @covers lurek.math.polygonCentroid
--- @covers lurek.math.triangulate
 
 
 
@@ -24,6 +18,7 @@ describe("evidence: geometry", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.math.lineIntersect
     it("exports line intersection evidence as JSON", function()
         local dir = evidence_output_dir("geometry")
         local path = dir .. "line_intersection.json"
@@ -33,6 +28,7 @@ describe("evidence: geometry", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.math.pointInPolygon
     it("exports point-in-polygon classification as JSON", function()
         local dir = evidence_output_dir("geometry")
         local path = dir .. "point_in_polygon.json"
@@ -49,6 +45,10 @@ describe("evidence: geometry", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.math.triangulate
+    -- @covers lurek.math.polygonCentroid
+    -- @covers lurek.math.polygonArea
+    -- @covers lurek.math.convexHull
     it("exports polygon area and centroid metrics as JSON", function()
         local dir = evidence_output_dir("geometry")
         local path = dir .. "polygon_metrics.json"

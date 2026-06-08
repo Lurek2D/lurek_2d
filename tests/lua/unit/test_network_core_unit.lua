@@ -365,8 +365,6 @@ describe("lurek.network.pack / unpack", function()
     end)
 
     -- @covers LNetworkRuntime:poll
-    -- @covers LNetworkRuntime:shutdown
-    -- @covers lurek.network.newRuntime
     it("should survive multiple polls", function()
         local rt = lurek.network.newRuntime()
         for i = 1, 5 do

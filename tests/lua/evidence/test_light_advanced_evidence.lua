@@ -2,12 +2,6 @@
 -- Evidence tests: advanced lurek.light scenarios
 -- Covers exactly 5 high-quality unique evidence files:
 -- light_falloff.png, light_cone_spotlight.png, light_shadow_occlusion.png, light_normal_map.png, light_color_mix.png
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.light.clear
--- @covers lurek.light.newLight
--- @covers lurek.light.newOccluder
--- @covers lurek.light.setAmbient
 
 
 
@@ -29,7 +23,11 @@ end
 -- @describe Evidence: advanced lurek.light scenarios
 describe("Evidence: advanced lurek.light scenarios", function()
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.light.newLight
+    -- @covers lurek.light.clear
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: light distance falloff", function()
         ensure_evidence_dir("light_advanced")
         local path = OUT .. "light_falloff.png"
@@ -65,7 +63,7 @@ describe("Evidence: advanced lurek.light scenarios", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: cone spotlight with angular falloff", function()
         ensure_evidence_dir("light_advanced")
         local path = OUT .. "light_cone_spotlight.png"
@@ -120,7 +118,9 @@ describe("Evidence: advanced lurek.light scenarios", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.light.setAmbient
+    -- @covers lurek.light.newOccluder
     it("PNG: occluder shadow casting occlusion", function()
         ensure_evidence_dir("light_advanced")
         local path = OUT .. "light_shadow_occlusion.png"
@@ -183,7 +183,7 @@ describe("Evidence: advanced lurek.light scenarios", function()
         lurek.light.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: normal-map hint visualization", function()
         ensure_evidence_dir("light_advanced")
         local path = OUT .. "light_normal_map.png"
@@ -214,7 +214,7 @@ describe("Evidence: advanced lurek.light scenarios", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: color mix of RGB dynamic light sources", function()
         ensure_evidence_dir("light_advanced")
         local path = OUT .. "light_color_mix.png"

@@ -21,14 +21,12 @@ describe("NavGrid creation", function()
         expect_equal(20, grid:getWidth())
         expect_equal(20, grid:getHeight())
     end)
-
     -- @covers LNavGrid:getCost
     -- @covers lurek.pathfind.newNavGrid
     it("default cost is 1", function()
         local grid = lurek.pathfind.newNavGrid(5, 5)
         expect_equal(1, grid:getCost(1, 1))
     end)
-
     -- @covers LNavGrid:getCost
     -- @covers LNavGrid:setCost
     -- @covers lurek.pathfind.newNavGrid
@@ -37,7 +35,6 @@ describe("NavGrid creation", function()
         grid:setCost(5, 5, 10)
         expect_equal(10, grid:getCost(5, 5))
     end)
-
     -- @covers LNavGrid:isBlocked
     -- @covers LNavGrid:setBlocked
     -- @covers lurek.pathfind.newNavGrid
@@ -47,7 +44,6 @@ describe("NavGrid creation", function()
         expect_true(grid:isBlocked(3, 3))
         expect_false(grid:isBlocked(1, 1))
     end)
-
     -- @covers LNavGrid:isWalkable
     -- @covers LNavGrid:setBlocked
     -- @covers lurek.pathfind.newNavGrid
@@ -57,7 +53,6 @@ describe("NavGrid creation", function()
         grid:setBlocked(1, 1, true)
         expect_false(grid:isWalkable(1, 1))
     end)
-
     -- @covers LNavGrid:isWalkable
     -- @covers LNavGrid:setBlocked
     -- @covers lurek.pathfind.newNavGrid
@@ -67,7 +62,6 @@ describe("NavGrid creation", function()
         grid:setBlocked(2, 1, true)
         expect_false(grid:isWalkable(1, 1, 2))
     end)
-
     -- @covers LNavGrid:fillRect
     -- @covers LNavGrid:isBlocked
     -- @covers lurek.pathfind.newNavGrid
@@ -78,7 +72,6 @@ describe("NavGrid creation", function()
         expect_true(grid:isBlocked(12, 12))
         expect_false(grid:isBlocked(9, 9))
     end)
-
     -- @covers LNavGrid:getDiagonalMode
     -- @covers LNavGrid:setDiagonalMode
     -- @covers lurek.pathfind.newNavGrid
@@ -103,7 +96,6 @@ describe("Pathfinder", function()
         local pf = lurek.pathfind.newPathfinder(grid)
         expect_type("userdata", pf)
     end)
-
     -- @covers LUnitPathfinder:findPath
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -118,7 +110,6 @@ describe("Pathfinder", function()
         expect_equal(10, path[#path].x)
         expect_equal(10, path[#path].y)
     end)
-
     -- @covers LNavGrid:setBlocked
     -- @covers LUnitPathfinder:findPath
     -- @covers lurek.pathfind.newNavGrid
@@ -131,7 +122,6 @@ describe("Pathfinder", function()
         local path = pf:findPath(1, 1, 10, 10)
         expect_true(path ~= nil, "should find path through narrow gap")
     end)
-
     -- @covers LUnitPathfinder:heuristicDistance
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -142,7 +132,6 @@ describe("Pathfinder", function()
         expect_type("number", d)
         expect_true(d > 0, "distance should be positive")
     end)
-
     -- @covers LUnitPathfinder:clearCache
     -- @covers LUnitPathfinder:getCacheSize
     -- @covers LUnitPathfinder:isCacheEnabled
@@ -155,7 +144,6 @@ describe("Pathfinder", function()
         pf:clearCache()
         expect_equal(0, pf:getCacheSize())
     end)
-
     -- @covers LUnitPathfinder:findPath
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -186,7 +174,6 @@ describe("FlowField", function()
         local ff = lurek.pathfind.newFlowField(grid)
         expect_type("userdata", ff)
     end)
-
     -- @covers LFlowField:isCalculated
     -- @covers lurek.pathfind.newFlowField
     -- @covers lurek.pathfind.newNavGrid
@@ -195,7 +182,6 @@ describe("FlowField", function()
         local ff = lurek.pathfind.newFlowField(grid)
         expect_false(ff:isCalculated())
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:isCalculated
     -- @covers lurek.pathfind.newFlowField
@@ -206,7 +192,6 @@ describe("FlowField", function()
         ff:calculate(10, 10)
         expect_true(ff:isCalculated())
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:getDirection
     -- @covers lurek.pathfind.newFlowField
@@ -219,7 +204,6 @@ describe("FlowField", function()
         expect_type("number", dx)
         expect_type("number", dy)
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:getCostToTarget
     -- @covers lurek.pathfind.newFlowField
@@ -231,7 +215,6 @@ describe("FlowField", function()
         local cost = ff:getCostToTarget(1, 1)
         expect_true(cost > 0, "cost should be positive")
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:steer
     -- @covers lurek.pathfind.newFlowField
@@ -298,7 +281,6 @@ describe("NavGrid.fill", function()
             end
         end
     end)
-
     -- @covers LNavGrid:fill
     -- @covers LNavGrid:isWalkable
     -- @covers lurek.pathfind.newNavGrid
@@ -323,7 +305,6 @@ describe("NavGrid.saveToString / loadFromString", function()
         expect_type("string", s)
         expect_true(#s > 0, "serialised string must not be empty")
     end)
-
     -- @covers LNavGrid:isBlocked
     -- @covers LNavGrid:loadFromString
     -- @covers LNavGrid:saveToString
@@ -340,7 +321,6 @@ describe("NavGrid.saveToString / loadFromString", function()
         expect_true(g2:isBlocked(4, 2), "cell 4,2 still blocked after deserialise")
         expect_false(g2:isBlocked(1, 1))
     end)
-
     -- @covers LNavGrid:getCost
     -- @covers LNavGrid:loadFromString
     -- @covers LNavGrid:saveToString
@@ -375,7 +355,6 @@ describe("NavGrid.type / typeOf", function()
         local g = lurek.pathfind.newNavGrid(4, 4)
         expect_type("string", g:type())
     end)
-
     -- @covers LNavGrid:typeOf
     -- @covers lurek.pathfind.newNavGrid
     it("typeOf() checks identity against a type name", function()
@@ -398,7 +377,6 @@ describe("UnitPathfinder.findPathSmooth", function()
         local path = pf:findPathSmooth(1, 1, 10, 10)
         expect_true(path == nil or type(path) == "table", "findPathSmooth must return table or nil")
     end)
-
     -- @covers LUnitPathfinder:findPathSmooth
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -428,7 +406,6 @@ describe("UnitPathfinder.getPathLength / getPathCost", function()
             expect_true(true, "skip: no path found")
         end
     end)
-
     -- @covers LUnitPathfinder:findPath
     -- @covers LUnitPathfinder:getPathCost
     -- @covers lurek.pathfind.newNavGrid
@@ -459,7 +436,6 @@ describe("UnitPathfinder.findPartialPath", function()
         expect_true(path == nil or type(path) == "table", "findPartialPath must return table or nil")
         expect_type("boolean", complete)
     end)
-
     -- @covers LUnitPathfinder:findPartialPath
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -485,7 +461,6 @@ describe("UnitPathfinder.findNearestWalkable", function()
         expect_type("number", nx)
         expect_type("number", ny)
     end)
-
     -- @covers LUnitPathfinder:findNearestWalkable
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -508,7 +483,6 @@ describe("UnitPathfinder.isReachable", function()
         local pf = lurek.pathfind.newPathfinder(g)
         expect_true(pf:isReachable(1, 1, 10, 10))
     end)
-
     -- @covers LNavGrid:setBlocked
     -- @covers LUnitPathfinder:isReachable
     -- @covers lurek.pathfind.newNavGrid
@@ -537,7 +511,6 @@ describe("UnitPathfinder.lineOfSight", function()
         local pf = lurek.pathfind.newPathfinder(g)
         expect_true(pf:lineOfSight(1, 1, 5, 5))
     end)
-
     -- @covers LNavGrid:setBlocked
     -- @covers LUnitPathfinder:lineOfSight
     -- @covers lurek.pathfind.newNavGrid
@@ -566,7 +539,6 @@ describe("UnitPathfinder cache control", function()
         pf:setCacheEnabled(true)
         expect_true(pf:isCacheEnabled())
     end)
-
     -- @covers LUnitPathfinder:clearCache
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -575,7 +547,6 @@ describe("UnitPathfinder cache control", function()
         local pf = lurek.pathfind.newPathfinder(g)
         expect_no_error(function() pf:clearCache() end)
     end)
-
     -- @covers LUnitPathfinder:getCacheSize
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -584,7 +555,6 @@ describe("UnitPathfinder cache control", function()
         local pf = lurek.pathfind.newPathfinder(g)
         expect_type("number", pf:getCacheSize())
     end)
-
     -- @covers LUnitPathfinder:setCacheMaxSize
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -604,7 +574,6 @@ describe("flow field (RS parity)", function()
         local ff = lurek.pathfind.newFlowField(g)
         expect_equal("userdata", type(ff))
     end)
-
     -- @covers LFlowField:isCalculated
     -- @covers lurek.pathfind.newFlowField
     -- @covers lurek.pathfind.newNavGrid
@@ -613,7 +582,6 @@ describe("flow field (RS parity)", function()
         local ff = lurek.pathfind.newFlowField(g)
         expect_false(ff:isCalculated())
     end)
-
     -- @covers LFlowField:getTargets
     -- @covers lurek.pathfind.newFlowField
     -- @covers lurek.pathfind.newNavGrid
@@ -624,7 +592,6 @@ describe("flow field (RS parity)", function()
         expect_equal("table", type(targets))
         expect_equal(0, #targets)
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:isCalculated
     -- @covers lurek.pathfind.newFlowField
@@ -635,7 +602,6 @@ describe("flow field (RS parity)", function()
         ff:calculate(3, 3)
         expect_true(ff:isCalculated())
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:getTargets
     -- @covers lurek.pathfind.newFlowField
@@ -647,7 +613,6 @@ describe("flow field (RS parity)", function()
         local targets = ff:getTargets()
         expect_equal(1, #targets)
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:getCostToTarget
     -- @covers lurek.pathfind.newFlowField
@@ -659,7 +624,6 @@ describe("flow field (RS parity)", function()
         local cost = ff:getCostToTarget(3, 3)
         expect_near(0.0, cost, 0.01)
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:steer
     -- @covers lurek.pathfind.newFlowField
@@ -672,7 +636,6 @@ describe("flow field (RS parity)", function()
         expect_equal("number", type(vx))
         expect_equal("number", type(vy))
     end)
-
     -- @covers LFlowField:calculate
     -- @covers LFlowField:isCalculated
     -- @covers lurek.pathfind.newFlowField
@@ -695,7 +658,6 @@ describe("pathfinder line of sight and diagonal mode (RS parity)", function()
         local pf = lurek.pathfind.newPathfinder(g)
         expect_true(pf:lineOfSight(1, 1, 5, 5))
     end)
-
     -- @covers LNavGrid:setBlocked
     -- @covers LUnitPathfinder:lineOfSight
     -- @covers lurek.pathfind.newNavGrid
@@ -707,7 +669,6 @@ describe("pathfinder line of sight and diagonal mode (RS parity)", function()
         local pf = lurek.pathfind.newPathfinder(g)
         expect_false(pf:lineOfSight(1, 5, 9, 5))
     end)
-
     -- @covers LNavGrid:getDiagonalMode
     -- @covers LNavGrid:setDiagonalMode
     -- @covers lurek.pathfind.newNavGrid
@@ -742,7 +703,6 @@ describe("Bidirectional A*: path finding", function()
         expect_equal(5, last.x)
         expect_equal(5, last.y)
     end)
-
     -- @covers LUnitPathfinder:findPathBidirectional
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -756,7 +716,6 @@ describe("Bidirectional A*: path finding", function()
         expect_equal(3, path[1].x)
         expect_equal(3, path[1].y)
     end)
-
     -- @covers LNavGrid:setBlocked
     -- @covers LUnitPathfinder:findPathBidirectional
     -- @covers lurek.pathfind.newNavGrid
@@ -769,7 +728,6 @@ describe("Bidirectional A*: path finding", function()
         expect_nil(path, "path must be nil when start is blocked")
         expect_false(complete, "complete must be false when start is blocked")
     end)
-
     -- @covers LUnitPathfinder:findPathBidirectional
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -784,7 +742,6 @@ describe("Bidirectional A*: path finding", function()
         expect_equal(10, last.x)
         expect_equal(10, last.y)
     end)
-
     -- @covers LUnitPathfinder:findPathBidirectional
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newPathfinder
@@ -795,7 +752,6 @@ describe("Bidirectional A*: path finding", function()
         expect_not_nil(path)
         expect_false(complete, "should be partial when max_nodes is very small")
     end)
-
 end)
 
 -- [merged from test_pathfind_regress_zero_index.lua]
@@ -806,9 +762,25 @@ end)
 -- @describe UnitPathfinder regression: zero index
 describe("UnitPathfinder regression: zero index", function()
     -- @covers LUnitPathfinder:findPath
+    it("findPath with x1=0 returns a Lua error (no panic) [LUnitPathfinder:findPath]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPath(0, 1, 5, 5)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newNavGrid
+    it("findPath with x1=0 returns a Lua error (no panic) [lurek.pathfind.newNavGrid]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPath(0, 1, 5, 5)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newPathfinder
-    it("findPath with x1=0 returns a Lua error (no panic)", function()
+    it("findPath with x1=0 returns a Lua error (no panic) [lurek.pathfind.newPathfinder]", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf = lurek.pathfind.newPathfinder(grid)
         expect_error(function()
@@ -817,9 +789,25 @@ describe("UnitPathfinder regression: zero index", function()
     end)
 
     -- @covers LUnitPathfinder:findPathSmooth
+    it("findPathSmooth with y2=0 returns a Lua error (no panic) [LUnitPathfinder:findPathSmooth]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPathSmooth(1, 1, 5, 0)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newNavGrid
+    it("findPathSmooth with y2=0 returns a Lua error (no panic) [lurek.pathfind.newNavGrid]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPathSmooth(1, 1, 5, 0)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newPathfinder
-    it("findPathSmooth with y2=0 returns a Lua error (no panic)", function()
+    it("findPathSmooth with y2=0 returns a Lua error (no panic) [lurek.pathfind.newPathfinder]", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf = lurek.pathfind.newPathfinder(grid)
         expect_error(function()
@@ -843,9 +831,25 @@ end)
 -- @describe UnitPathfinder regression: zero index
 describe("UnitPathfinder regression: zero index", function()
     -- @covers LUnitPathfinder:findPath
+    it("findPath with x1=0 returns a Lua error (no panic) [LUnitPathfinder:findPath]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPath(0, 1, 5, 5)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newNavGrid
+    it("findPath with x1=0 returns a Lua error (no panic) [lurek.pathfind.newNavGrid]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPath(0, 1, 5, 5)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newPathfinder
-    it("findPath with x1=0 returns a Lua error (no panic)", function()
+    it("findPath with x1=0 returns a Lua error (no panic) [lurek.pathfind.newPathfinder]", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf = lurek.pathfind.newPathfinder(grid)
         expect_error(function()
@@ -854,9 +858,25 @@ describe("UnitPathfinder regression: zero index", function()
     end)
 
     -- @covers LUnitPathfinder:findPathSmooth
+    it("findPathSmooth with y2=0 returns a Lua error (no panic) [LUnitPathfinder:findPathSmooth]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPathSmooth(1, 1, 5, 0)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newNavGrid
+    it("findPathSmooth with y2=0 returns a Lua error (no panic) [lurek.pathfind.newNavGrid]", function()
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf = lurek.pathfind.newPathfinder(grid)
+        expect_error(function()
+            pf:findPathSmooth(1, 1, 5, 0)
+        end)
+    end)
+
     -- @covers lurek.pathfind.newPathfinder
-    it("findPathSmooth with y2=0 returns a Lua error (no panic)", function()
+    it("findPathSmooth with y2=0 returns a Lua error (no panic) [lurek.pathfind.newPathfinder]", function()
         local grid = lurek.pathfind.newNavGrid(10, 10)
         local pf = lurek.pathfind.newPathfinder(grid)
         expect_error(function()
@@ -875,10 +895,37 @@ describe("pathfind missing explicit coverage", function()
     end)
 
     -- @covers LNavGrid:clearDirty
+    it("NavGrid dirty/abstract rebuild methods do not error [LNavGrid:clearDirty]", function()
+        local grid = lurek.pathfind.newNavGrid(12, 12)
+        expect_no_error(function()
+            grid:setDirty(1, 1, 3, 3)
+            grid:rebuildAbstract()
+            grid:clearDirty()
+        end)
+    end)
+
     -- @covers LNavGrid:rebuildAbstract
+    it("NavGrid dirty/abstract rebuild methods do not error [LNavGrid:rebuildAbstract]", function()
+        local grid = lurek.pathfind.newNavGrid(12, 12)
+        expect_no_error(function()
+            grid:setDirty(1, 1, 3, 3)
+            grid:rebuildAbstract()
+            grid:clearDirty()
+        end)
+    end)
+
     -- @covers LNavGrid:setDirty
+    it("NavGrid dirty/abstract rebuild methods do not error [LNavGrid:setDirty]", function()
+        local grid = lurek.pathfind.newNavGrid(12, 12)
+        expect_no_error(function()
+            grid:setDirty(1, 1, 3, 3)
+            grid:rebuildAbstract()
+            grid:clearDirty()
+        end)
+    end)
+
     -- @covers lurek.pathfind.newNavGrid
-    it("NavGrid dirty/abstract rebuild methods do not error", function()
+    it("NavGrid dirty/abstract rebuild methods do not error [lurek.pathfind.newNavGrid]", function()
         local grid = lurek.pathfind.newNavGrid(12, 12)
         expect_no_error(function()
             grid:setDirty(1, 1, 3, 3)
@@ -919,7 +966,6 @@ describe("pathfind strict: newHexGrid / LHexGrid methods", function()
         g:setBlocked(1, 1, true)
         expect_true(g:isBlocked(1, 1))
     end)
-
     -- @covers LHexGrid:setCost
     -- @covers lurek.pathfind.newHexGrid
     it("LHexGrid setCost is callable", function()
@@ -927,35 +973,30 @@ describe("pathfind strict: newHexGrid / LHexGrid methods", function()
         local ok = pcall(function() g:setCost(2, 2, 2.0) end)
         expect_true(ok)
     end)
-
     -- @covers LHexGrid:lineOfSight
     -- @covers lurek.pathfind.newHexGrid
     it("LHexGrid lineOfSight returns boolean", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         expect_type("boolean", g:lineOfSight(1, 1, 3, 3))
     end)
-
     -- @covers LHexGrid:fieldOfView
     -- @covers lurek.pathfind.newHexGrid
     it("LHexGrid fieldOfView returns table", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         expect_type("table", g:fieldOfView(1, 1, 3))
     end)
-
     -- @covers LHexGrid:rangeOfMovement
     -- @covers lurek.pathfind.newHexGrid
     it("LHexGrid rangeOfMovement returns table", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         expect_type("table", g:rangeOfMovement(1, 1, 3))
     end)
-
     -- @covers LHexGrid:distance
     -- @covers lurek.pathfind.newHexGrid
     it("LHexGrid distance returns number", function()
         local g = lurek.pathfind.newHexGrid(8, 8)
         expect_type("number", g:distance(1, 1, 3, 3))
     end)
-
     -- @covers LHexGrid:type
     -- @covers LHexGrid:typeOf
     -- @covers lurek.pathfind.newHexGrid
@@ -982,7 +1023,6 @@ describe("pathfind strict: newJpsGrid / LJpsGrid methods", function()
         g:setBlocked(2, 2, true)
         expect_true(g:isBlocked(2, 2))
     end)
-
     -- @covers LJpsGrid:type
     -- @covers LJpsGrid:typeOf
     -- @covers lurek.pathfind.newJpsGrid
@@ -1019,7 +1059,6 @@ describe("pathfind strict: UnitPathfinder / FlowField / AIFlowField typeOf", fun
         expect_type("string", pf:type())
         expect_type("boolean", pf:typeOf("LObject"))
     end)
-
     -- @covers LFlowField:type
     -- @covers LFlowField:typeOf
     -- @covers lurek.pathfind.newFlowField
@@ -1030,14 +1069,12 @@ describe("pathfind strict: UnitPathfinder / FlowField / AIFlowField typeOf", fun
         expect_type("string", ff:type())
         expect_type("boolean", ff:typeOf("LObject"))
     end)
-
     -- @covers LPathGrid:typeOf
     -- @covers lurek.pathfind.newPathGrid
     it("LPathGrid typeOf is callable", function()
         local pg = lurek.pathfind.newPathGrid(8, 8, 1.0)
         expect_type("boolean", pg:typeOf("LObject"))
     end)
-
     -- @covers LAIFlowField:typeOf
     -- @covers lurek.pathfind.newPathFlowField
     -- @covers lurek.pathfind.newPathGrid
@@ -1060,7 +1097,6 @@ describe("lurek.pathfind PathGrid", function()
         local g = lurek.pathfind.newPathGrid(10, 10, 32)
         expect_equal("LPathGrid", g:type())
     end)
-
     -- @covers LPathGrid:getCellSize
     -- @covers LPathGrid:getHeight
     -- @covers LPathGrid:getWidth
@@ -1071,7 +1107,6 @@ describe("lurek.pathfind PathGrid", function()
         expect_equal(6, g:getHeight())
         expect_near(16, g:getCellSize(), 0.01)
     end)
-
     -- @covers LPathGrid:isWalkable
     -- @covers lurek.pathfind.newPathGrid
     it("all cells walkable by default", function()
@@ -1079,7 +1114,6 @@ describe("lurek.pathfind PathGrid", function()
         expect_true(g:isWalkable(1, 1))
         expect_true(g:isWalkable(5, 5))
     end)
-
     -- @covers LPathGrid:isWalkable
     -- @covers LPathGrid:setWalkable
     -- @covers lurek.pathfind.newPathGrid
@@ -1090,7 +1124,6 @@ describe("lurek.pathfind PathGrid", function()
         g:setWalkable(3, 3, true)
         expect_true(g:isWalkable(3, 3))
     end)
-
     -- @covers LPathGrid:getCost
     -- @covers LPathGrid:setCost
     -- @covers lurek.pathfind.newPathGrid
@@ -1099,7 +1132,6 @@ describe("lurek.pathfind PathGrid", function()
         g:setCost(2, 2, 3.5)
         expect_near(3.5, g:getCost(2, 2), 0.01)
     end)
-
     -- @covers LPathGrid:findPath
     -- @covers lurek.pathfind.newPathGrid
     it("findPath returns a table for open grid", function()
@@ -1109,7 +1141,6 @@ describe("lurek.pathfind PathGrid", function()
         expect_type("table", path)
         expect_true(#path > 0, "path should have waypoints")
     end)
-
     -- @covers LPathGrid:findPath
     -- @covers lurek.pathfind.newPathGrid
     it("findPath entries have x and y fields", function()
@@ -1120,7 +1151,6 @@ describe("lurek.pathfind PathGrid", function()
         expect_not_nil(first.x, "x field")
         expect_not_nil(first.y, "y field")
     end)
-
     -- @covers LPathGrid:findPath
     -- @covers LPathGrid:setWalkable
     -- @covers lurek.pathfind.newPathGrid
@@ -1130,7 +1160,6 @@ describe("lurek.pathfind PathGrid", function()
         local path = g:findPath(1, 1, 3, 1)
         expect_nil(path, "blocked path should be nil")
     end)
-
     -- @covers LPathGrid:findPathSmoothed
     -- @covers lurek.pathfind.newPathGrid
     it("findPathSmoothed returns a table", function()
@@ -1139,7 +1168,6 @@ describe("lurek.pathfind PathGrid", function()
         expect_not_nil(path)
         expect_type("table", path)
     end)
-
     -- @covers LPathGrid:findPath
     -- @covers lurek.pathfind.newPathGrid
     it("findPath same start and goal", function()
@@ -1162,7 +1190,6 @@ describe("lurek.pathfind FlowField", function()
         local ff = lurek.pathfind.newPathFlowField(g)
         expect_equal("LAIFlowField", ff:type())
     end)
-
     -- @covers LAIFlowField:getHeight
     -- @covers LAIFlowField:getWidth
     -- @covers lurek.pathfind.newPathFlowField
@@ -1173,7 +1200,6 @@ describe("lurek.pathfind FlowField", function()
         expect_equal(8, ff:getWidth())
         expect_equal(6, ff:getHeight())
     end)
-
     -- @covers LAIFlowField:hasGoal
     -- @covers lurek.pathfind.newPathFlowField
     -- @covers lurek.pathfind.newPathGrid
@@ -1182,7 +1208,6 @@ describe("lurek.pathfind FlowField", function()
         local ff = lurek.pathfind.newPathFlowField(g)
         expect_false(ff:hasGoal())
     end)
-
     -- @covers LAIFlowField:getGoal
     -- @covers LAIFlowField:hasGoal
     -- @covers LAIFlowField:setGoal
@@ -1197,7 +1222,6 @@ describe("lurek.pathfind FlowField", function()
         expect_equal(3, gx)
         expect_equal(4, gy)
     end)
-
     -- @covers LAIFlowField:getDirection
     -- @covers LAIFlowField:setGoal
     -- @covers lurek.pathfind.newPathFlowField
@@ -1210,7 +1234,6 @@ describe("lurek.pathfind FlowField", function()
         expect_type("number", dx)
         expect_type("number", dy)
     end)
-
     -- @covers LAIFlowField:getDistance
     -- @covers LAIFlowField:setGoal
     -- @covers lurek.pathfind.newPathFlowField
@@ -1222,7 +1245,6 @@ describe("lurek.pathfind FlowField", function()
         local d = ff:getDistance(1, 1)
         expect_type("number", d)
     end)
-
     -- @covers LAIFlowField:getGoal
     -- @covers lurek.pathfind.newPathFlowField
     -- @covers lurek.pathfind.newPathGrid
@@ -1233,7 +1255,6 @@ describe("lurek.pathfind FlowField", function()
         expect_nil(gx)
         expect_nil(gy)
     end)
-
     -- @covers LAIFlowField:getDistance
     -- @covers LAIFlowField:setGoal
     -- @covers lurek.pathfind.newPathFlowField
@@ -1245,7 +1266,6 @@ describe("lurek.pathfind FlowField", function()
         local d = ff:getDistance(3, 3)
         expect_near(0, d, 0.01)
     end)
-
     -- @covers LAIFlowField:getDistance
     -- @covers LAIFlowField:setGoal
     -- @covers LPathGrid:setWalkable
@@ -1259,7 +1279,6 @@ describe("lurek.pathfind FlowField", function()
         local d = ff:getDistance(1, 1)
         expect_equal(math.huge, d)
     end)
-
     -- @covers LAIFlowField:getDirection
     -- @covers LAIFlowField:setGoal
     -- @covers lurek.pathfind.newPathFlowField
@@ -1271,7 +1290,6 @@ describe("lurek.pathfind FlowField", function()
         local dx, dy = ff:getDirection(1, 1)
         expect_true(dx > 0)
     end)
-
     -- @covers LAIFlowField:getDirection
     -- @covers LAIFlowField:getDistance
     -- @covers lurek.pathfind.newPathFlowField
@@ -1304,7 +1322,6 @@ describe("pathfind constructors migrated from ai unit", function()
     it("PathGrid:type() returns PathGrid", function()
         expect_equal("LPathGrid", lurek.pathfind.newPathGrid(5, 5, 10):type())
     end)
-
     -- @covers LAIFlowField:type
     -- @covers lurek.pathfind.newPathFlowField
     -- @covers lurek.pathfind.newPathGrid
@@ -1352,7 +1369,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
             expect_true(path ~= nil, "AI should find a path on open map")
             expect_true(#path >= 1, "path must have length >= 1")
         end)
-
         -- @covers LHexGrid:rangeOfMovement
         -- @covers lurek.pathfind.newHexGrid
         it("AI units compute their movement range with budget", function()
@@ -1363,7 +1379,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
             expect_true(#reachable > 0, "unit should be able to reach some cells")
             expect_true(#reachable >= 6, "with budget=3, should reach at least 6 hex cells")
         end)
-
         -- @covers LHexGrid:lineOfSight
         -- @covers LHexGrid:setBlocked
         -- @covers lurek.pathfind.newHexGrid
@@ -1379,7 +1394,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
             local los_blocked = map:lineOfSight(1, 5, 8, 5)
             expect_equal(false, los_blocked, "wall should block LOS")
         end)
-
         -- @covers LHexGrid:fieldOfView
         -- @covers lurek.pathfind.newHexGrid
         it("AI computes FOV for visibility grid", function()
@@ -1389,7 +1403,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
             -- FOV with radius 3 on open map should see many cells
             expect_true(#visible >= 7, "expected at least 7 visible cells with radius 3")
         end)
-
         -- @covers LHexGrid:distance
         -- @covers lurek.pathfind.newHexGrid
         it("enemy AI chooses closest walkable cell to player", function()
@@ -1414,7 +1427,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
             expect_equal(9, closest.col)
             expect_equal(9, closest.row)
         end)
-
         -- @covers LHexGrid:findPath
         -- @covers LHexGrid:setBlocked
         -- @covers lurek.pathfind.newHexGrid
@@ -1429,7 +1441,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
                     "path should avoid blocked row 4")
             end
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
         it("AI pathfinding request returns a route", function()
@@ -1438,7 +1449,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
             expect_not_nil(path, "open map should produce a route")
             expect_true(#path > 0, "route should contain at least one step")
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers LJpsGrid:setBlocked
         -- @covers lurek.pathfind.newJpsGrid
@@ -1456,7 +1466,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
                 expect_nil(path_blocked, "fully blocked route is an accepted outcome")
             end
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
         it("AI can place multiple units without conflicts", function()
@@ -1472,7 +1481,6 @@ describe("unit: migrated from integration/test_pathfind_ai.lua", function()
                 expect_true(#r > 0, "each route should contain at least one step")
             end
         end)
-
         -- @covers lurek.pathfind.rangeMap
         it("AI identifies cells within movement budget", function()
             local result = lurek.pathfind.rangeMap({
@@ -1553,7 +1561,6 @@ describe("unit: migrated from integration/test_pathfind_ecs.lua", function()
                 expect_true(len > 9, "path is longer due to obstacle: " .. len)
             end
         end)
-
         -- @covers LNavGrid:setBlocked
         -- @covers LUnitPathfinder:findPath
         -- @covers lurek.pathfind.newNavGrid
@@ -1570,7 +1577,6 @@ describe("unit: migrated from integration/test_pathfind_ecs.lua", function()
             local path = pf:findPath(1, 1, 1, 10)
             expect_true(path == nil, "no path to unreachable goal (got " .. tostring(path) .. ")")
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_pathfind_graph.lua
@@ -1591,7 +1597,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             g:setBlocked(5, 3, false)
             expect_equal(false, g:isBlocked(5, 3))
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers LJpsGrid:setBlocked
         -- @covers lurek.pathfind.newJpsGrid
@@ -1601,7 +1606,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             local path = g:findPath(1, 1, 6, 6)
             expect_nil(path, "blocked start should produce no path")
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
         it("findPath on open grid returns a path", function()
@@ -1609,7 +1613,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             local path = g:findPath(1, 1, 8, 8)
             expect_true(path ~= nil, "expected a valid path on open grid")
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
         it("findPath from a cell to itself returns a single-step path", function()
@@ -1618,7 +1621,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             expect_not_nil(path)
             expect_equal(1, #path)
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers LJpsGrid:setBlocked
         -- @covers lurek.pathfind.newJpsGrid
@@ -1629,7 +1631,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             end
             expect_nil(g:findPath(1, 3, 5, 3))
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
         it("path cells have x and y fields", function()
@@ -1640,7 +1641,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             expect_type("number", path[1].x)
             expect_type("number", path[1].y)
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers lurek.pathfind.newJpsGrid
         it("path starts and ends at expected coordinates", function()
@@ -1655,7 +1655,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             expect_equal(5, last.x)
             expect_equal(5, last.y)
         end)
-
         -- @covers LJpsGrid:findPath
         -- @covers LJpsGrid:setBlocked
         -- @covers lurek.pathfind.newJpsGrid
@@ -1670,7 +1669,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
                 end
             end
         end)
-
         -- @covers LJpsGrid:isBlocked
         -- @covers LJpsGrid:setBlocked
         -- @covers lurek.pathfind.newJpsGrid
@@ -1681,7 +1679,6 @@ describe("unit: migrated from integration/test_pathfind_graph.lua", function()
             expect_equal(true, g1:isBlocked(3, 3))
             expect_equal(false, g2:isBlocked(3, 3))
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_pathfind_hexmap.lua
@@ -1714,7 +1711,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             g:setBlocked(3, 3, false)
             expect_equal(false, g:isBlocked(3, 3))
         end)
-
         -- @covers LHexGrid:findPath
         -- @covers LHexGrid:setBlocked
         -- @covers lurek.pathfind.newHexGrid
@@ -1729,7 +1725,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             local path = g:findPath(1, 1, 6, 6)
             expect_nil(path, "separating wall should make target unreachable")
         end)
-
         -- @covers LHexGrid:findPath
         -- @covers lurek.pathfind.newHexGrid
         it("findPath returns a path on an open grid", function()
@@ -1738,7 +1733,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             expect_true(path ~= nil, "expected path on open grid")
             expect_true(#path >= 1, "path must have at least one step")
         end)
-
         -- @covers LHexGrid:findPath
         -- @covers lurek.pathfind.newHexGrid
         it("path cells have col and row fields", function()
@@ -1750,7 +1744,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             expect_type("number", cell.col)
             expect_type("number", cell.row)
         end)
-
         -- @covers LHexGrid:lineOfSight
         -- @covers LHexGrid:setBlocked
         -- @covers lurek.pathfind.newHexGrid
@@ -1762,7 +1755,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             local los = g:lineOfSight(1, 4, 8, 4)
             expect_equal(false, los)
         end)
-
         -- @covers LHexGrid:lineOfSight
         -- @covers lurek.pathfind.newHexGrid
         it("lineOfSight returns true in open space", function()
@@ -1770,7 +1762,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             local los = g:lineOfSight(1, 1, 2, 2)
             expect_equal(true, los)
         end)
-
         -- @covers LHexGrid:fieldOfView
         -- @covers lurek.pathfind.newHexGrid
         it("fieldOfView returns cells within radius", function()
@@ -1783,7 +1774,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
                 expect_type("number", c.row)
             end
         end)
-
         -- @covers LHexGrid:rangeOfMovement
         -- @covers lurek.pathfind.newHexGrid
         it("rangeOfMovement returns cells within budget", function()
@@ -1792,7 +1782,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             expect_type("table", cells)
             expect_true(#cells > 0, "expected at least one reachable cell")
         end)
-
         -- @covers LHexGrid:rangeOfMovement
         -- @covers LHexGrid:setBlocked
         -- @covers lurek.pathfind.newHexGrid
@@ -1810,7 +1799,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             local cells_blocked = g:rangeOfMovement(4, 4, 5)
             expect_true(#cells_blocked <= #cells_open, "blocked grid should have fewer reachable cells")
         end)
-
         -- @covers LHexGrid:distance
         -- @covers lurek.pathfind.newHexGrid
         it("distance between adjacent cells is 1", function()
@@ -1818,7 +1806,6 @@ describe("unit: migrated from integration/test_pathfind_hexmap.lua", function()
             local d = g:distance(3, 3, 4, 3)
             expect_equal(1, d)
         end)
-
         -- @covers lurek.pathfind.rangeMap
         it("returns cells, width, height", function()
             local result = lurek.pathfind.rangeMap({
@@ -1908,7 +1895,6 @@ describe("NavMesh", function()
         expect_type("string", mesh:type())
         expect_type("boolean", mesh:typeOf("LObject"))
     end)
-
     -- @covers LNavMesh:addPolygon
     -- @covers LNavMesh:getPolygonCount
     -- @covers lurek.pathfind.newNavMesh
@@ -1923,11 +1909,28 @@ describe("NavMesh", function()
         expect_equal(1, a)
         expect_equal(1, mesh:getPolygonCount())
     end)
-
     -- @covers LNavMesh:addPolygon
+    it("addPolygon with fewer than 3 vertices raises an error [LNavMesh:addPolygon]", function()
+        local mesh = lurek.pathfind.newNavMesh()
+        local ok = pcall(function()
+            mesh:addPolygon({{x = 0, y = 0}, {x = 1, y = 0}})
+        end)
+        expect_false(ok)
+        expect_equal(0, mesh:getPolygonCount())
+    end)
+
     -- @covers LNavMesh:getPolygonCount
+    it("addPolygon with fewer than 3 vertices raises an error [LNavMesh:getPolygonCount]", function()
+        local mesh = lurek.pathfind.newNavMesh()
+        local ok = pcall(function()
+            mesh:addPolygon({{x = 0, y = 0}, {x = 1, y = 0}})
+        end)
+        expect_false(ok)
+        expect_equal(0, mesh:getPolygonCount())
+    end)
+
     -- @covers lurek.pathfind.newNavMesh
-    it("addPolygon with fewer than 3 vertices raises an error", function()
+    it("addPolygon with fewer than 3 vertices raises an error [lurek.pathfind.newNavMesh]", function()
         local mesh = lurek.pathfind.newNavMesh()
         local ok = pcall(function()
             mesh:addPolygon({{x = 0, y = 0}, {x = 1, y = 0}})

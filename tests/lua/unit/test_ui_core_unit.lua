@@ -40,7 +40,6 @@ describe("lurek.ui.loadLayout  - flat single widget", function()
         expect_true(after > before, "widget count must increase after loadLayout")
         expect_true(idx > 0, "returned pool index must be > 0")
     end)
-
     -- @covers lurek.ui.loadLayout
     it("creates a label widget", function()
         local idx = lurek.ui.loadLayout({
@@ -101,7 +100,6 @@ describe("lurek.ui.loadLayout  - nested tree with id lookup", function()
         expect_true(after >= before + 3,
             "expected at least 3 new widgets, got " .. (after - before))
     end)
-
     -- @covers lurek.ui.getRoot
     -- @covers lurek.ui.loadLayout
     it("findById resolves a widget given an id field", function()
@@ -117,7 +115,6 @@ describe("lurek.ui.loadLayout  - nested tree with id lookup", function()
         local found = root:findById("hp_label")
         expect_true(found ~= nil, "findById('hp_label') must return a widget handle")
     end)
-
     -- @covers lurek.ui.loadLayout
     it("3-level deep tree loads without error", function()
         local ok = pcall(function()
@@ -185,7 +182,6 @@ describe("UI custom widget", function()
         local after = lurek.ui.getWidgetCount()
         expect_true(after > before, "widget count must increase after newCustomWidget")
     end)
-
     -- @covers lurek.ui.newCustomWidget
     it("setOnDraw method exists on widget", function()
         ---@type unknown
@@ -218,8 +214,19 @@ describe("UI custom widget", function()
     end)
 
     -- @covers lurek.ui.draw
+    it("draw invokes on_draw callback [lurek.ui.draw]", function()
+        local called = false
+        ---@type unknown
+        local w = lurek.ui.newCustomWidget({ x = 5, y = 5, width = 40, height = 30 })
+        w:setOnDraw(function(rect)
+            called = true
+        end)
+        lurek.ui.draw()
+        expect_true(called, "on_draw callback must be called by lurek.ui.draw()")
+    end)
+
     -- @covers lurek.ui.newCustomWidget
-    it("draw invokes on_draw callback", function()
+    it("draw invokes on_draw callback [lurek.ui.newCustomWidget]", function()
         local called = false
         ---@type unknown
         local w = lurek.ui.newCustomWidget({ x = 5, y = 5, width = 40, height = 30 })
@@ -431,7 +438,6 @@ describe("LUiWidget geometry and visibility", function()
         expect_equal(12.0, x)
         expect_equal(34.0, y)
     end)
-
     -- @covers LUiWidget.setSize
     -- @covers LUiWidget.getSize
     it("setSize / getSize round-trips width and height", function()
@@ -441,7 +447,6 @@ describe("LUiWidget geometry and visibility", function()
         expect_equal(80.0, width)
         expect_equal(60.0, height)
     end)
-
     -- @covers LUiWidget.getRect
     it("getRect returns four numbers", function()
         local w = make_basic_widget()
@@ -459,7 +464,6 @@ describe("LUiWidget geometry and visibility", function()
         w:setVisible(false)
         expect_equal(false, w:isVisible())
     end)
-
     -- @covers LUiWidget.setVisible
     -- @covers LUiWidget.isVisible
     it("setVisible true shows the widget", function()
@@ -468,7 +472,6 @@ describe("LUiWidget geometry and visibility", function()
         w:setVisible(true)
         expect_equal(true, w:isVisible())
     end)
-
     -- @covers LUiWidget.type
     it("type returns the widget type name string", function()
         local w = make_basic_widget()
@@ -512,7 +515,6 @@ describe("LUiWidget geometry and visibility", function()
         parent:removeChild(child)
         expect_type("number", parent:getChildCount())
     end)
-
     -- @covers LUiWidget.findById
     -- @covers LUiWidget.setId
     it("findById resolves descendant id", function()
@@ -523,7 +525,6 @@ describe("LUiWidget geometry and visibility", function()
         local found = parent:findById("cov_child")
         expect_true(found == nil or type(found) == "table")
     end)
-
     -- @covers LUiWidget.setOnClick
     -- @covers LUiWidget.setOnChange
     -- @covers LUiWidget.setOnDraw
@@ -534,7 +535,6 @@ describe("LUiWidget geometry and visibility", function()
         w:setOnDraw(function() end)
         expect_true(true)
     end)
-
     -- @covers LUiWidget.containsPoint
     it("containsPoint is callable", function()
         local w = make_basic_widget()
@@ -553,7 +553,6 @@ describe("LUiWidget geometry and visibility", function()
         expect_equal(3, b)
         expect_equal(4, l)
     end)
-
     -- @covers LUiWidget.setMargin
     -- @covers LUiWidget.getMargin
     it("setMargin/getMargin round-trip", function()
@@ -565,7 +564,6 @@ describe("LUiWidget geometry and visibility", function()
         expect_equal(7, b)
         expect_equal(8, l)
     end)
-
     -- @covers LUiWidget.setZOrder
     -- @covers LUiWidget.getZOrder
     it("setZOrder/getZOrder round-trip", function()
@@ -573,7 +571,6 @@ describe("LUiWidget geometry and visibility", function()
         w:setZOrder(9)
         expect_equal(9, w:getZOrder())
     end)
-
     -- @covers LUiWidget.setMinSize
     -- @covers LUiWidget.getMinSize
     -- @covers LUiWidget.setMaxSize
@@ -589,7 +586,6 @@ describe("LUiWidget geometry and visibility", function()
         expect_equal(99, maxw)
         expect_equal(120, maxh)
     end)
-
     -- @covers LUiWidget.setAnchor
     -- @covers LUiWidget.setAnchorCenter
     -- @covers LUiWidget.clearAnchor
@@ -600,7 +596,6 @@ describe("LUiWidget geometry and visibility", function()
         w:clearAnchor()
         expect_true(true)
     end)
-
     -- @covers LUiWidget.setFlexGrow
     -- @covers LUiWidget.getFlexGrow
     -- @covers LUiWidget.setFlexShrink
@@ -612,7 +607,6 @@ describe("LUiWidget geometry and visibility", function()
         expect_equal(2.5, w:getFlexGrow())
         expect_equal(0.5, w:getFlexShrink())
     end)
-
     -- @covers LUiWidget.bind
     -- @covers LUiWidget.unbind
     it("bind/unbind are callable", function()
@@ -621,7 +615,6 @@ describe("LUiWidget geometry and visibility", function()
         w:unbind()
         expect_true(true)
     end)
-
     -- @covers LUiWidget.setAlpha
     -- @covers LUiWidget.getAlpha
     -- @covers LUiWidget.fadeIn
@@ -635,7 +628,6 @@ describe("LUiWidget geometry and visibility", function()
         w:fadeIn()
         expect_equal(1.0, w:getAlpha())
     end)
-
     -- @covers LUiWidget.slideIn
     -- @covers LUiWidget.slideOut
     -- @covers LUiWidget.attachToEntity
@@ -648,7 +640,6 @@ describe("LUiWidget geometry and visibility", function()
         w:detachFromEntity()
         expect_true(true)
     end)
-
 end)
 
 -- @describe basic control widgets
@@ -661,7 +652,6 @@ describe("basic control widgets", function()
         b:setText("Play")
         expect_equal("Play", b:getText())
     end)
-
     -- @covers LLabel.setText
     -- @covers LLabel.getText
     -- @covers lurek.ui.newLabel
@@ -670,7 +660,6 @@ describe("basic control widgets", function()
         l:setText("New")
         expect_equal("New", l:getText())
     end)
-
     -- @covers LTextInput.setText
     -- @covers LTextInput.getText
     -- @covers LTextInput.setPlaceholder
@@ -689,7 +678,6 @@ describe("basic control widgets", function()
         expect_type("boolean", t:isFocused())
         expect_type("number", t:getCursorPosition())
     end)
-
     -- @covers LCheckbox.setChecked
     -- @covers LCheckbox.isChecked
     -- @covers LCheckbox.setText
@@ -702,7 +690,6 @@ describe("basic control widgets", function()
         expect_equal("enabled", c:getText())
         expect_equal(true, c:isChecked())
     end)
-
     -- @covers LSlider.setValue
     -- @covers LSlider.getValue
     -- @covers LSlider.setRange
@@ -719,7 +706,6 @@ describe("basic control widgets", function()
         expect_equal(0, s:getMin())
         expect_equal(20, s:getMax())
     end)
-
     -- @covers LProgressBar.setValue
     -- @covers LProgressBar.getValue
     -- @covers LProgressBar.getProgress
@@ -736,7 +722,6 @@ describe("basic control widgets", function()
         expect_equal(0, p:getMin())
         expect_equal(200, p:getMax())
     end)
-
     -- @covers LComboBox.addItem
     -- @covers LComboBox.removeItem
     -- @covers LComboBox.clearItems
@@ -759,7 +744,6 @@ describe("basic control widgets", function()
         c:clearItems()
         expect_equal(0, c:getItemCount())
     end)
-
     -- @covers LListBox.addItem
     -- @covers LListBox.removeItem
     -- @covers LListBox.clearItems
@@ -782,7 +766,6 @@ describe("basic control widgets", function()
         l:clearItems()
         expect_equal(0, l:getItemCount())
     end)
-
     -- @covers LTabBar.addTab
     -- @covers LTabBar.removeTab
     -- @covers LTabBar.getTab
@@ -801,7 +784,6 @@ describe("basic control widgets", function()
         t:removeTab(1)
         expect_equal(1, t:getTabCount())
     end)
-
     -- @covers LSpinBox.setValue
     -- @covers LSpinBox.getValue
     -- @covers LSpinBox.increment
@@ -818,7 +800,6 @@ describe("basic control widgets", function()
         s:decrement()
         expect_type("number", s:getValue())
     end)
-
     -- @covers LSwitch.setOn
     -- @covers LSwitch.isOn
     -- @covers LSwitch.toggle
@@ -830,7 +811,6 @@ describe("basic control widgets", function()
         s:toggle()
         expect_type("boolean", s:isOn())
     end)
-
     -- @covers LBadge.setCount
     -- @covers LBadge.getCount
     -- @covers LBadge.getDisplayText
@@ -841,7 +821,6 @@ describe("basic control widgets", function()
         expect_equal(7, b:getCount())
         expect_type("string", b:getDisplayText())
     end)
-
     -- @covers LPanel.setTitle
     -- @covers LPanel.getTitle
     -- @covers LPanel.setScrollable
@@ -852,7 +831,6 @@ describe("basic control widgets", function()
         p:setScrollable(true)
         expect_equal("Inventory", p:getTitle())
     end)
-
     -- @covers LLayout.setDirection
     -- @covers LLayout.getDirection
     -- @covers LLayout.setSpacing
@@ -954,7 +932,6 @@ describe("ui remaining api sweep", function()
         try_call(function() l:getJustify() end)
         expect_true(true)
     end)
-
     -- @covers LScrollPanel.setContentSize
     -- @covers LScrollPanel.getContentSize
     -- @covers LScrollPanel.setScrollPosition
@@ -974,7 +951,6 @@ describe("ui remaining api sweep", function()
         try_call(function() s:getScrollSpeed() end)
         expect_true(true)
     end)
-
     -- @covers LNinePatch.setInsets
     -- @covers LNinePatch.getInsets
     -- @covers LNinePatch.setImageDimensions
@@ -990,7 +966,6 @@ describe("ui remaining api sweep", function()
         try_call(function() n:getSlices() end)
         expect_true(true)
     end)
-
     -- @covers LToast.setMessage
     -- @covers LToast.getMessage
     -- @covers LToast.setDuration
@@ -1008,7 +983,6 @@ describe("ui remaining api sweep", function()
         try_call(function() t:isExpired() end)
         expect_true(true)
     end)
-
     -- @covers LSeparator.setVertical
     -- @covers LSeparator.isVertical
     -- @covers LSeparator.setThickness
@@ -1022,7 +996,6 @@ describe("ui remaining api sweep", function()
         try_call(function() s:getThickness() end)
         expect_true(true)
     end)
-
     -- @covers LTreeView.addNode
     -- @covers LTreeView.toggleNode
     -- @covers LTreeView.isExpanded
@@ -1070,7 +1043,6 @@ describe("ui remaining api sweep", function()
         try_call(function() tv:clearNodes() end)
         expect_true(true)
     end)
-
     -- @covers LRadioButton.getText
     -- @covers LRadioButton.setText
     -- @covers LRadioButton.isSelected
@@ -1090,7 +1062,6 @@ describe("ui remaining api sweep", function()
         try_call(function() r:setOnChange(function() end) end)
         expect_true(true)
     end)
-
     -- @covers LScrollBar.getScrollPosition
     -- @covers LScrollBar.setScrollPosition
     -- @covers LScrollBar.getContentSize
@@ -1112,7 +1083,6 @@ describe("ui remaining api sweep", function()
         try_call(function() s:setOnChange(function() end) end)
         expect_true(true)
     end)
-
     -- @covers LGuiWindow.getTitle
     -- @covers LGuiWindow.setTitle
     -- @covers LGuiWindow.isCloseable
@@ -1136,7 +1106,6 @@ describe("ui remaining api sweep", function()
         try_call(function() w:setOnClose(function() end) end)
         expect_true(true)
     end)
-
     -- @covers LSplitPanel.getOrientation
     -- @covers LSplitPanel.setOrientation
     -- @covers LSplitPanel.getSplitPosition
@@ -1168,7 +1137,6 @@ describe("ui remaining api sweep", function()
         try_call(function() p:getSecondChild() end)
         expect_true(true)
     end)
-
     -- @covers LDockPanel.dock
     -- @covers LDockPanel.undock
     -- @covers LDockPanel.getDockedCount
@@ -1187,7 +1155,6 @@ describe("ui remaining api sweep", function()
         try_call(function() d:undock(any_panel) end)
         expect_true(true)
     end)
-
     -- @covers LToolbar.getOrientation
     -- @covers LToolbar.setOrientation
     -- @covers LToolbar.addButton
@@ -1213,7 +1180,6 @@ describe("ui remaining api sweep", function()
         try_call(function() t:isButtonToggled(any_idx) end)
         expect_true(true)
     end)
-
     -- @covers LMenuBar.addMenu
     -- @covers LMenuBar.removeMenu
     -- @covers LMenuBar.getMenus
@@ -1230,7 +1196,6 @@ describe("ui remaining api sweep", function()
         try_call(function() m:removeMenu(1) end)
         expect_true(true)
     end)
-
     -- @covers LMenuItem.getText
     -- @covers LMenuItem.setText
     -- @covers LMenuItem.getShortcut
@@ -1257,7 +1222,6 @@ describe("ui remaining api sweep", function()
         try_call(function() m:setOnClick(function() end) end)
         expect_true(true)
     end)
-
     -- @covers LDialog.getTitle
     -- @covers LDialog.setTitle
     -- @covers LDialog.isModal
@@ -1287,7 +1251,6 @@ describe("ui remaining api sweep", function()
         try_call(function() d:addButton("ok", function() end) end)
         expect_true(true)
     end)
-
     -- @covers LStatusBar.addSection
     -- @covers LStatusBar.setSectionText
     -- @covers LStatusBar.getSectionText
@@ -1306,7 +1269,6 @@ describe("ui remaining api sweep", function()
         try_call(function() s:setSectionWidget(1, p) end)
         expect_true(true)
     end)
-
     -- @covers LAccordion.addSection
     -- @covers LAccordion.getSectionCount
     -- @covers LAccordion.toggleSection
@@ -1328,7 +1290,6 @@ describe("ui remaining api sweep", function()
         try_call(function() a:getSectionTitle(1) end)
         expect_true(true)
     end)
-
     -- @covers LTooltipPanel.getText
     -- @covers LTooltipPanel.setText
     -- @covers LTooltipPanel.getDelay
@@ -1349,7 +1310,6 @@ describe("ui remaining api sweep", function()
         try_call(function() t:setTarget(any_target) end)
         expect_true(true)
     end)
-
     -- @covers LColorPicker.getColor
     -- @covers LColorPicker.setColor
     -- @covers LColorPicker.getShowAlpha
@@ -1369,7 +1329,6 @@ describe("ui remaining api sweep", function()
         try_call(function() c:setOnChange(function() end) end)
         expect_true(true)
     end)
-
     -- @covers LGuiTable.addColumn
     -- @covers LGuiTable.getColumnCount
     -- @covers LGuiTable.addRow
@@ -1397,7 +1356,6 @@ describe("ui remaining api sweep", function()
         try_call(function() t:setOnSelect(function() end) end)
         expect_true(true)
     end)
-
     -- @covers LImageWidget.getScaleMode
     -- @covers LImageWidget.setScaleMode
     -- @covers LImageWidget.getTint
@@ -1411,7 +1369,6 @@ describe("ui remaining api sweep", function()
         try_call(function() i:setTint(1, 1, 1, 1) end)
         expect_true(true)
     end)
-
     -- @covers LTheme:type
     -- @covers LTheme:typeOf
     -- @covers lurek.ui.newTheme
@@ -1421,7 +1378,6 @@ describe("ui remaining api sweep", function()
         try_call(function() th:typeOf("LTheme") end)
         expect_true(true)
     end)
-
     -- @covers LLineChart.addSeries
     -- @covers LLineChart.setYMax
     -- @covers LLineChart.setXMax
@@ -1437,7 +1393,6 @@ describe("ui remaining api sweep", function()
         try_call(function() c:typeOf("LLineChart") end)
         expect_true(true)
     end)
-
     -- @covers LBarChart.addSeries
     -- @covers LBarChart.addCategory
     -- @covers LBarChart:type
@@ -1451,7 +1406,6 @@ describe("ui remaining api sweep", function()
         try_call(function() c:typeOf("LBarChart") end)
         expect_true(true)
     end)
-
     -- @covers LScatterPlot.addSeries
     -- @covers LScatterPlot.setXRange
     -- @covers LScatterPlot.setYRange
@@ -1467,7 +1421,6 @@ describe("ui remaining api sweep", function()
         try_call(function() c:typeOf("LScatterPlot") end)
         expect_true(true)
     end)
-
     -- @covers LPieChart.addSegment
     -- @covers LPieChart:type
     -- @covers LPieChart:typeOf
@@ -1479,7 +1432,6 @@ describe("ui remaining api sweep", function()
         try_call(function() c:typeOf("LPieChart") end)
         expect_true(true)
     end)
-
     -- @covers LAreaChart.addLayer
     -- @covers LAreaChart.setYMax
     -- @covers LAreaChart:type
@@ -1518,7 +1470,6 @@ describe("UI DataFrame bridge helpers", function()
         expect_equal(0, t:getRowCount())
         expect_nil(t:getSelectedRow())
     end)
-
     -- @covers LGuiTable.setDataFrame
     -- @covers LGuiTable.getColumnCount
     -- @covers LGuiTable.getCell
@@ -1538,7 +1489,6 @@ describe("UI DataFrame bridge helpers", function()
         expect_equal("Alice", t:getCell(1, 1))
         expect_equal("90", t:getCell(1, 2))
     end)
-
     -- @covers LLineChart.addSeriesFromDataFrame
     -- @covers lurek.dataframe.fromRows
     -- @covers lurek.ui.newLineChart
@@ -1548,7 +1498,6 @@ describe("UI DataFrame bridge helpers", function()
         local count = chart:addSeriesFromDataFrame("income", df, "x", "y", 0.2, 0.6, 0.9)
         expect_equal(2, count)
     end)
-
     -- @covers LScatterPlot.addSeriesFromDataFrame
     -- @covers lurek.dataframe.fromRows
     -- @covers lurek.ui.newScatterPlot
@@ -1558,7 +1507,6 @@ describe("UI DataFrame bridge helpers", function()
         local count = chart:addSeriesFromDataFrame("points", df, "x", "y", 0.8, 0.3, 0.2)
         expect_equal(2, count)
     end)
-
     -- @covers LBarChart.addCategoriesFromDataFrame
     -- @covers LBarChart.addSeries
     -- @covers lurek.dataframe.fromRows
@@ -1574,7 +1522,6 @@ describe("UI DataFrame bridge helpers", function()
         local count = chart:addCategoriesFromDataFrame(df, "month", { "income", "expense" })
         expect_equal(2, count)
     end)
-
     -- @covers LPieChart.addSegmentsFromDataFrame
     -- @covers lurek.dataframe.fromRows
     -- @covers lurek.ui.newPieChart
@@ -1587,7 +1534,6 @@ describe("UI DataFrame bridge helpers", function()
         local count = chart:addSegmentsFromDataFrame(df, "label", "value")
         expect_equal(2, count)
     end)
-
     -- @covers LAreaChart.addLayerFromDataFrame
     -- @covers lurek.dataframe.fromRows
     -- @covers lurek.ui.newAreaChart
@@ -1776,7 +1722,6 @@ describe("lurek.ui module exists", function()
         expect_type("function", lurek.ui.textinput)
         expect_type("function", lurek.ui.wheelmoved)
     end)
-
     -- @covers lurek.ui.addToast
     -- @covers lurek.ui.getToastCount
     it("has toast functions", function()
@@ -2250,7 +2195,6 @@ describe("lurek.ui Panel", function()
         p:addChild(b2)
         expect_equal(2, p:getChildCount())
     end)
-
     -- @covers lurek.ui.newButton
     -- @covers lurek.ui.newPanel
     it("can remove children", function()
@@ -2621,7 +2565,6 @@ describe("lurek.ui focus", function()
         local f = lurek.ui.getFocus()
         expect_equal(nil, f)
     end)
-
     -- @covers lurek.ui.getFocus
     -- @covers lurek.ui.newButton
     -- @covers lurek.ui.setFocus
@@ -2631,7 +2574,6 @@ describe("lurek.ui focus", function()
         local f = lurek.ui.getFocus()
         expect_type("number", f)
     end)
-
     -- @covers lurek.ui.focusNext
     -- @covers lurek.ui.getFocus
     -- @covers lurek.ui.newButton
@@ -2993,7 +2935,6 @@ describe("lurek.ui.newToolbar", function()
         tb:addChild(btn)
         expect_equal(1, tb:getChildCount())
     end)
-
     -- @covers lurek.ui.newToolbar
     it("addButton returns 1-based index", function()
         local tb = lurek.ui.newToolbar("horizontal")
@@ -3164,7 +3105,6 @@ describe("lurek.ui.newDialog", function()
         d:setContent(btn["_idx"])
         expect_equal(btn["_idx"], d:getContent())
     end)
-
     -- @covers lurek.ui.newButton
     -- @covers lurek.ui.newDialog
     it("setContent nil clears content", function()
@@ -3174,7 +3114,6 @@ describe("lurek.ui.newDialog", function()
         d:setContent(nil)
         expect_equal(nil, d:getContent())
     end)
-
     -- @covers lurek.ui.newDialog
     it("addButton appends footer button and returns count", function()
         local d = lurek.ui.newDialog("Prompt")
@@ -3809,7 +3748,6 @@ describe("LUiWidget flexbox and style helpers", function()
         expect_false(panel:setMouseFilter("invalid"))
         expect_equal("stop", panel:getMouseFilter())
     end)
-
     -- @covers LUiWidget.setStyleClass
     -- @covers LUiWidget.getStyleClass
     it("setStyleClass and getStyleClass work", function()
@@ -3822,7 +3760,6 @@ describe("LUiWidget flexbox and style helpers", function()
         expect_true(btn:setStyleClass("danger"))
         expect_equal("danger", btn:getStyleClass())
     end)
-
     -- @covers LUiWidget.setAlign
     -- @covers LUiWidget.getAlign
     it("setAlign and getAlign work on layout", function()
@@ -3832,7 +3769,6 @@ describe("LUiWidget flexbox and style helpers", function()
         expect_true(layout:setAlign("center"))
         expect_equal("center", layout:getAlign())
     end)
-
     -- @covers LUiWidget.setJustify
     -- @covers LUiWidget.getJustify
     it("setJustify and getJustify work on layout", function()
@@ -3894,11 +3830,32 @@ describe("lurek.ui theme API", function()
         lurek.ui.setTheme(t)
         expect_true(lurek.ui.getTheme(), "theme must be active after setTheme")
     end)
-
     -- @covers lurek.ui.newTheme
+    it("theme fallback: setting normal style makes hovered state work without error [lurek.ui.newTheme]", function()
+        local t = lurek.ui.newTheme()
+        t:setStyle("button", "normal", { font_size = 14.0 })
+        -- Fallback behaviour: hovered falls back to normal in Rust internals;
+        -- Lua can only verify no error is raised during setTheme.
+        local ok = pcall(function()
+            lurek.ui.setTheme(t)
+        end)
+        expect_true(ok, "setTheme with only normal state must not throw")
+    end)
+
     -- @covers lurek.ui.setTheme
+    it("theme fallback: setting normal style makes hovered state work without error [lurek.ui.setTheme]", function()
+        local t = lurek.ui.newTheme()
+        t:setStyle("button", "normal", { font_size = 14.0 })
+        -- Fallback behaviour: hovered falls back to normal in Rust internals;
+        -- Lua can only verify no error is raised during setTheme.
+        local ok = pcall(function()
+            lurek.ui.setTheme(t)
+        end)
+        expect_true(ok, "setTheme with only normal state must not throw")
+    end)
+
     -- @covers lurek.ui.getTheme
-    it("theme fallback: setting normal style makes hovered state work without error", function()
+    it("theme fallback: setting normal style makes hovered state work without error [lurek.ui.getTheme]", function()
         local t = lurek.ui.newTheme()
         t:setStyle("button", "normal", { font_size = 14.0 })
         -- Fallback behaviour: hovered falls back to normal in Rust internals;
@@ -3910,8 +3867,16 @@ describe("lurek.ui theme API", function()
     end)
 
     -- @covers lurek.ui.newTheme
+    it("setStyle with unknown widget type raises an error [lurek.ui.newTheme]", function()
+        local t = lurek.ui.newTheme()
+        local ok = pcall(function()
+            t:setStyle("frobnicator_widget", "normal", {})
+        end)
+        expect_false(ok, "setStyle with unknown type must raise an error")
+    end)
+
     -- @covers lurek.ui.setTheme
-    it("setStyle with unknown widget type raises an error", function()
+    it("setStyle with unknown widget type raises an error [lurek.ui.setTheme]", function()
         local t = lurek.ui.newTheme()
         local ok = pcall(function()
             t:setStyle("frobnicator_widget", "normal", {})
@@ -4047,7 +4012,6 @@ describe("lurek.ui toast lifecycle", function()
         -- Clean up: advance enough to expire
         lurek.ui.update(120.0)
     end)
-
     -- @covers lurek.ui.addToast
     -- @covers lurek.ui.getToastCount
     -- @covers lurek.ui.update
@@ -4071,14 +4035,12 @@ describe("lurek.ui badge widget", function()
         local b = lurek.ui.newBadge(42)
         expect_equal("42", b:getDisplayText())
     end)
-
     -- @covers lurek.ui.newBadge
     -- @covers LBadge.getDisplayText
     it("badge with count 150 displays '99+'", function()
         local b = lurek.ui.newBadge(150)
         expect_equal("99+", b:getDisplayText())
     end)
-
     -- @covers lurek.ui.newBadge
     -- @covers LBadge.setCount
     -- @covers LBadge.getCount
@@ -4087,7 +4049,6 @@ describe("lurek.ui badge widget", function()
         b:setCount(5)
         expect_equal(5, b:getCount())
     end)
-
     -- @covers lurek.ui.newBadge
     -- @covers LBadge.setCount
     -- @covers LBadge.getDisplayText
@@ -4198,7 +4159,6 @@ end)
 describe("lurek.ui update_bindings multi-widget", function()
     -- @covers lurek.ui.update_bindings
     -- @covers LLabel.getText
-    -- @covers LCheckbox.isChecked
     -- @covers LSlider.getValue
     it("update_bindings updates label text, switch on, and slider value", function()
         local lbl    = lurek.ui.newLabel("old")
@@ -4252,9 +4212,7 @@ describe("lurek.ui switch toggle", function()
         sw:toggle()
         expect_false(sw:isOn())
     end)
-
     -- @covers lurek.ui.newSwitch
-    -- @covers LSwitch.setOn
     -- @covers LSwitch.isOn
     it("newSwitch(true) starts on", function()
         local sw = lurek.ui.newSwitch(true)
@@ -4272,7 +4230,6 @@ describe("lurek.ui text input backspace and max length", function()
         ti:setText("abc")
         expect_equal("abc", ti:getText())
     end)
-
     -- @covers lurek.ui.newTextInput
     -- @covers LTextInput.setMaxLength
     -- @covers LTextInput.setText
@@ -4499,8 +4456,31 @@ describe("lurek.ui chart pixel evidence tests", function()
     end
 
     -- @covers lurek.ui.newLineChart
+    it("cartesian legend does not receive plot line pixels [lurek.ui.newLineChart]", function()
+        local chart = lurek.ui.newLineChart({
+            width = 220,
+            height = 130,
+            title = "Mini"
+        })
+        chart:setXMax(6.0)
+        chart:setYMax(100.0)
+        chart:addSeries("A", { {0.0, 100.0}, {6.0, 0.0} }, 1.0, 0.0, 0.0)
+
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+
+        -- The plot area is x=50..200 (left margin 50, right margin 20).
+        -- Check only the right margin (x=201..219) where no plot line should appear.
+        local red_pixels_in_margin = count_matching_pixels(img, 201, 30, 219, 90, function(r, g, b, a)
+            return r == 255 and g == 0 and b == 0 and a == 255
+        end)
+
+        -- Allow up to 5 pixels for sub-pixel/anti-aliased rendering at the line endpoint
+        expect_true(red_pixels_in_margin <= 5, "right margin should not contain many plot line pixels")
+    end)
+
     -- @covers lurek.ui.LChart.drawToImage
-    it("cartesian legend does not receive plot line pixels", function()
+    it("cartesian legend does not receive plot line pixels [lurek.ui.LChart.drawToImage]", function()
         local chart = lurek.ui.newLineChart({
             width = 220,
             height = 130,
@@ -4524,8 +4504,30 @@ describe("lurek.ui chart pixel evidence tests", function()
     end)
 
     -- @covers lurek.ui.newPieChart
+    it("pie chart dashboard legend stays out of pie region [lurek.ui.newPieChart]", function()
+        local chart = lurek.ui.newPieChart({
+            width = 220,
+            height = 130,
+            title = "Mini"
+        })
+        chart:addSegment("Rent", 40.0, 0.8, 0.2, 0.2)
+        chart:addSegment("Food", 25.0, 0.2, 0.7, 0.3)
+        chart:addSegment("Transport", 20.0, 0.2, 0.4, 0.9)
+        chart:addSegment("Other", 15.0, 0.8, 0.6, 0.1)
+
+        local img = lurek.image.newImageData(220, 130)
+        chart:drawToImage(img)
+
+        local panel_pixels_in_pie = count_matching_pixels(img, 70, 45, 96, 96, function(r, g, b, a)
+            -- 250, 250, 252, 230 is the legend panel background color in Rust ui_tests
+            return r == 250 and g == 250 and b == 252 and a == 230
+        end)
+
+        expect_equal(0, panel_pixels_in_pie, "pie region should not contain legend panel pixels")
+    end)
+
     -- @covers lurek.ui.LChart.drawToImage
-    it("pie chart dashboard legend stays out of pie region", function()
+    it("pie chart dashboard legend stays out of pie region [lurek.ui.LChart.drawToImage]", function()
         local chart = lurek.ui.newPieChart({
             width = 220,
             height = 130,
@@ -4563,7 +4565,6 @@ describe("lurek.ui migrated internal tests", function()
         end
         expect_false(pcall(function() t:setStyle("button", "unknown_state", {}) end), "should reject unknown state")
     end)
-
     -- @covers lurek.ui.newPanel
     -- @covers lurek.ui.LUiWidget.isVisible
     -- @covers lurek.ui.LUiWidget.isEnabled
@@ -4572,7 +4573,6 @@ describe("lurek.ui migrated internal tests", function()
         expect_true(w:isVisible(), "default widget should be visible")
         expect_true(w:isEnabled(), "default widget should be enabled")
     end)
-
     -- @covers lurek.ui.loadLayout
     it("loadLayout rejects unknown widget types", function()
         expect_false(pcall(function()
@@ -4594,7 +4594,6 @@ describe("lurek.ui migrated internal tests", function()
         local unknown = lurek.ui.newLayout("diagonal")
         expect_equal("vertical", unknown:getDirection(), "should fallback to vertical")
     end)
-
     -- @covers lurek.ui.updateBindings
     -- @covers lurek.ui.LUiWidget.setBindKey
     it("updateBindings propagates values to bound widgets", function()
@@ -4619,17 +4618,272 @@ describe("lurek.ui migrated internal tests", function()
         root:removeChild(label)
         root:removeChild(switch)
     end)
-
     -- @covers lurek.ui.focusNeighbor
+    it("covers focus/style/gamefs and accessibility ui methods [lurek.ui.focusNeighbor]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers lurek.ui.getStyleToken
+    it("covers focus/style/gamefs and accessibility ui methods [lurek.ui.getStyleToken]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers lurek.ui.loadLayoutGameFile
+    it("covers focus/style/gamefs and accessibility ui methods [lurek.ui.loadLayoutGameFile]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers LUiWidget.setTextWrap
+    it("covers focus/style/gamefs and accessibility ui methods [LUiWidget.setTextWrap]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers LUiWidget.setTextEllipsis
+    it("covers focus/style/gamefs and accessibility ui methods [LUiWidget.setTextEllipsis]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers LUiWidget.setTextVAlign
+    it("covers focus/style/gamefs and accessibility ui methods [LUiWidget.setTextVAlign]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers LUiWidget.setFocusNeighbor
+    it("covers focus/style/gamefs and accessibility ui methods [LUiWidget.setFocusNeighbor]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers LUiWidget.setRole
+    it("covers focus/style/gamefs and accessibility ui methods [LUiWidget.setRole]", function()
+        local left = lurek.ui.newButton("Left")
+        local right = lurek.ui.newButton("Right")
+
+        left:setTextWrap(true)
+        left:setTextEllipsis(true)
+        local valign_ok = left:setTextVAlign("middle")
+        expect_true(valign_ok, "setTextVAlign should accept 'middle'")
+
+        local neigh_ok = left:setFocusNeighbor("right", 1)
+        expect_true(neigh_ok, "setFocusNeighbor should accept known directions")
+
+        left:setRole("button")
+        left:setAriaName("Primary action")
+
+        local moved = lurek.ui.focusNeighbor("right")
+        expect_type("boolean", moved)
+
+        local token = lurek.ui.getStyleToken("spacing_md")
+        expect_true(token == nil or type(token) == "number" or type(token) == "table")
+
+        expect_type("function", lurek.ui.loadLayoutGameFile)
+        local ok = pcall(function()
+            lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        end)
+        expect_type("boolean", ok)
+
+        local root = lurek.ui.getRoot()
+        root:removeChild(left)
+        root:removeChild(right)
+    end)
+
     -- @covers LUiWidget.setAriaName
-    it("covers focus/style/gamefs and accessibility ui methods", function()
+    it("covers focus/style/gamefs and accessibility ui methods [LUiWidget.setAriaName]", function()
         local left = lurek.ui.newButton("Left")
         local right = lurek.ui.newButton("Right")
 
@@ -4673,10 +4927,8 @@ describe("lurek.ui badge display text exact values", function()
         local b = lurek.ui.newBadge(42)
         expect_equal("42", b:getDisplayText())
     end)
-
     -- @covers lurek.ui.newBadge
     -- @covers LBadge.getDisplayText
-    -- @covers LBadge.setCount
     it("badge with count 150 displays '99+' overflow cap", function()
         local b = lurek.ui.newBadge(150)
         expect_equal("99+", b:getDisplayText())

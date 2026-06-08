@@ -1,8 +1,5 @@
 -- Evidence tests: noise module
 -- Output-only evidence from direct lurek.math noise APIs.
--- @covers lurek.procgen.newNoiseGenerator
--- @covers lurek.procgen.perlin2d
--- @covers lurek.procgen.simplex2d
 
 
 
@@ -21,6 +18,7 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.procgen.perlin2d
     it("exports perlin grid JSON", function()
         local dir = evidence_output_dir("noise")
         local path = dir .. "perlin_grid.json"
@@ -36,6 +34,7 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.procgen.simplex2d
     it("exports simplex grid JSON", function()
         local dir = evidence_output_dir("noise")
         local path = dir .. "simplex_grid.json"
@@ -51,6 +50,7 @@ describe("evidence: noise", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.procgen.newNoiseGenerator
     it("exports seeded noise generator samples", function()
         local dir = evidence_output_dir("noise")
         local path = dir .. "seeded_noise.json"

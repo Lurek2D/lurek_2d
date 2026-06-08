@@ -6234,10 +6234,8 @@ lurek.audio.pause = function(source) end
 --- Pauses all currently playing audio sources.
 lurek.audio.pauseAll = function() end
 
---- Plays a music track, routing through a named group with optional fade-in.
----@param path string Path to audio file.
----@param opts? table Optional: `group` (string), `fadeIn` (number seconds).
-lurek.audio.manager.pauseAll = function(path, opts) end
+--- Pauses all active audio sources.
+lurek.audio.manager.pauseAll = function() end
 
 --- Starts playback of a source by handle, optionally routing through a named bus.
 ---@param source LSource|number Audio source or numeric source ID.

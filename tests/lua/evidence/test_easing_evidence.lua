@@ -1,15 +1,5 @@
 -- Evidence tests: easing module
 -- Artifacts are generated from lurek.math easing functions.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.math.applyEasing
--- @covers lurek.math.inCubic
--- @covers lurek.math.inOutQuad
--- @covers lurek.math.inQuad
--- @covers lurek.math.linear
--- @covers lurek.math.outBounce
--- @covers lurek.math.outCubic
--- @covers lurek.math.outQuad
 
 
 
@@ -34,6 +24,12 @@ describe("evidence: easing", function()
     end
 
     -- @evidence file
+    -- @covers lurek.math.outQuad
+    -- @covers lurek.math.linear
+    -- @covers lurek.math.inQuad
+    -- @covers lurek.math.inOutQuad
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: quad easing curves", function()
         local img = lurek.image.newImageData(420, 220)
         img:fill(245, 245, 245, 255)
@@ -49,6 +45,9 @@ describe("evidence: easing", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.math.outCubic
+    -- @covers lurek.math.outBounce
+    -- @covers lurek.math.inCubic
     it("PNG: cubic and bounce curves", function()
         local img = lurek.image.newImageData(420, 220)
         img:fill(250, 250, 250, 255)
@@ -63,6 +62,7 @@ describe("evidence: easing", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.math.applyEasing
     it("PNG: applyEasing heatmap", function()
         local names = {
             "linear", "inQuad", "outQuad", "inOutQuad",

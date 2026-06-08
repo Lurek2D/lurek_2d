@@ -1,8 +1,5 @@
 -- Evidence tests: cellular_sand module
 -- Evidence comes from lurek.procgen.cellularAutomata outputs.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.procgen.cellularAutomata
 
 
 
@@ -31,6 +28,7 @@ describe("evidence: cellular_sand", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.procgen.cellularAutomata
     it("generates cave map PNG + stats", function()
         local w, h = 64, 64
         local data = lurek.procgen.cellularAutomata(w, h, {

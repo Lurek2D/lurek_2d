@@ -1,7 +1,5 @@
 -- Evidence tests: canvas module
 -- Output-only evidence from direct lurek.render canvas APIs.
--- @covers lurek.render.newCanvas
--- @covers lurek.render.setCanvas
 
 
 
@@ -20,6 +18,8 @@ describe("evidence: canvas", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.render.setCanvas
+    -- @covers lurek.render.newCanvas
     it("exports canvas API surface", function()
         local dir = evidence_output_dir("canvas")
         local path = dir .. "canvas_api_surface.json"

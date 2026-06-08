@@ -88,7 +88,6 @@ end)
 
 -- @describe movement helpers
 describe("movement helpers", function()
-    -- @covers LRaycaster:setCell
     -- @covers LRaycaster:tryMove
     -- @covers lurek.raycaster.new
     it("tryMove advances when target cell is empty", function()
@@ -1179,7 +1178,6 @@ describe("per-cell floor/ceiling texture overrides", function()
         expect_equal(nil, v)
     end)
 
-    -- @covers LRaycaster:setCeilingTextureCell
     -- @covers LRaycaster:getCeilingTextureCell
     -- @covers lurek.raycaster.new
     it("getCeilingTextureCell returns nil for unset cell", function()
@@ -1200,7 +1198,6 @@ describe("per-cell floor/ceiling texture overrides", function()
     end)
 
     -- @covers LRaycaster:setFloorTextureCell
-    -- @covers LRaycaster:setCeilingTextureCell
     -- @covers lurek.raycaster.new
     it("floor and ceiling cells are independent", function()
         local rc = lurek.raycaster.new(8, 8)

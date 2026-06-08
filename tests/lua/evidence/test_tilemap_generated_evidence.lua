@@ -1,8 +1,5 @@
 -- Evidence tests: additional tilemap cases
 -- Artifacts are generated through lurek.tilemap drawToImage and map APIs.
--- @covers lurek.image.savePNG
--- @covers lurek.tilemap.newTileMap
--- @covers lurek.tilemap.newTileSet
 
 
 
@@ -21,7 +18,9 @@ describe("Evidence: additional lurek.tilemap API", function()
         expect_evidence_created(path)
     end
 
-    -- @evidence file
+    -- @evidence lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers lurek.tilemap.newTileMap
     it("TM01 PNG: autotile 8-neighbor", function()
         local ts = lurek.tilemap.newTileSet(1, 128, 8, 16, 16)
         for mask = 0, 255 do
@@ -42,7 +41,7 @@ describe("Evidence: additional lurek.tilemap API", function()
         save_tm(tm, 12, "tm01_autotile8.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.tilemap.newTileMap
     it("TM02 PNG: per-tile tint", function()
         local tm = lurek.tilemap.newTileMap(16, 16)
         local layer = tm:addLayer("tint", 10, 10)
@@ -58,7 +57,7 @@ describe("Evidence: additional lurek.tilemap API", function()
         save_tm(tm, 12, "tm02_tile_tint.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.tilemap.newTileMap
     it("TM03 PNG: viewport crop", function()
         local tm = lurek.tilemap.newTileMap(8, 8)
         local layer = tm:addLayer("world", 30, 20)
@@ -73,7 +72,7 @@ describe("Evidence: additional lurek.tilemap API", function()
         save_tm(tm, 8, "tm03_viewport_crop.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.tilemap.newTileMap
     it("TM04 PNG: layer visibility toggle", function()
         local tm = lurek.tilemap.newTileMap(16, 16)
         local base = tm:addLayer("base", 12, 8)
@@ -92,7 +91,7 @@ describe("Evidence: additional lurek.tilemap API", function()
         save_tm(tm, 14, "tm04_layer_visible.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.tilemap.newTileMap
     it("TM05 PNG: orientation staggered", function()
         local tm = lurek.tilemap.newTileMap(16, 16)
         tm:setOrientation("staggered")

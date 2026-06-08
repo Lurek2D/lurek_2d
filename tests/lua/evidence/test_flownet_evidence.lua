@@ -1,6 +1,5 @@
 -- Evidence tests: graph module
 -- Output-only evidence from direct lurek.flownet API calls.
--- @covers lurek.graph.newGraph
 
 
 
@@ -19,6 +18,7 @@ describe("evidence: graph", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.graph.newGraph
     it("exports ring topology shortest-path evidence", function()
         local dir = evidence_output_dir("graph")
         local path = dir .. "ring_path.json"

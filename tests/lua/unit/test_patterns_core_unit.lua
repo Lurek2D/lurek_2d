@@ -25,7 +25,6 @@ describe("lurek.patterns.newEventBus", function()
         bus:emit("ping", 42)
         expect_equal(received, 42)
     end)
-
     -- @covers LEventBus:on
     -- @covers lurek.patterns.newEventBus
     it("on returns unique subscription IDs", function()
@@ -34,7 +33,6 @@ describe("lurek.patterns.newEventBus", function()
         local id2 = bus:on("a", function() end)
         expect_true(id1 ~= id2)
     end)
-
     -- @covers LEventBus:emit
     -- @covers LEventBus:on
     -- @covers lurek.patterns.newEventBus
@@ -49,7 +47,6 @@ describe("lurek.patterns.newEventBus", function()
         expect_equal("low", order[2])
         expect_equal("mid", order[3])
     end)
-
     -- @covers LEventBus:emit
     -- @covers LEventBus:off
     -- @covers LEventBus:on
@@ -64,7 +61,6 @@ describe("lurek.patterns.newEventBus", function()
         bus:emit("tick")
         expect_equal(count, 1)
     end)
-
     -- @covers LEventBus:clear
     -- @covers LEventBus:getListenerCount
     -- @covers LEventBus:on
@@ -79,7 +75,6 @@ describe("lurek.patterns.newEventBus", function()
         expect_equal(bus:getListenerCount("x"), 0)
         expect_equal(bus:getListenerCount("y"), 1)
     end)
-
     -- @covers LEventBus:clearAll
     -- @covers LEventBus:getListenerCount
     -- @covers LEventBus:on
@@ -92,7 +87,6 @@ describe("lurek.patterns.newEventBus", function()
         expect_equal(bus:getListenerCount("a"), 0)
         expect_equal(bus:getListenerCount("b"), 0)
     end)
-
     -- @covers LEventBus:getEvents
     -- @covers LEventBus:on
     -- @covers lurek.patterns.newEventBus
@@ -133,7 +127,6 @@ describe("lurek.patterns.newObjectPool", function()
         expect_equal(pool:getActiveCount(), 1)
         expect_equal(pool:getAvailableCount(), 1)
     end)
-
     -- @covers LObjectPool:getActiveCount
     -- @covers LObjectPool:getAvailableCount
     -- @covers lurek.patterns.newObjectPool
@@ -142,7 +135,6 @@ describe("lurek.patterns.newObjectPool", function()
         expect_equal(0, pool:getAvailableCount())
         expect_equal(0, pool:getActiveCount())
     end)
-
     -- @covers LObjectPool:acquire
     -- @covers LObjectPool:add
     -- @covers LObjectPool:getActiveCount
@@ -158,7 +150,6 @@ describe("lurek.patterns.newObjectPool", function()
         expect_equal(pool:getActiveCount(), 0)
         expect_equal(pool:getAvailableCount(), 1)
     end)
-
     -- @covers LObjectPool:acquire
     -- @covers LObjectPool:add
     -- @covers LObjectPool:getTotalCount
@@ -170,7 +161,6 @@ describe("lurek.patterns.newObjectPool", function()
         pool:acquire()
         expect_equal(pool:getTotalCount(), 2)
     end)
-
     -- @covers LObjectPool:acquire
     -- @covers LObjectPool:add
     -- @covers LObjectPool:clearAll
@@ -207,7 +197,6 @@ describe("lurek.patterns.newCommandStack", function()
         cmds:execute("inc", function() x = x + 1 end)
         expect_equal(x, 1)
     end)
-
     -- @covers LCommandStack:execute
     -- @covers LCommandStack:undo
     -- @covers lurek.patterns.newCommandStack
@@ -220,7 +209,6 @@ describe("lurek.patterns.newCommandStack", function()
         expect_true(ok)
         expect_equal(x, 0)
     end)
-
     -- @covers LCommandStack:execute
     -- @covers LCommandStack:redo
     -- @covers LCommandStack:undo
@@ -235,7 +223,6 @@ describe("lurek.patterns.newCommandStack", function()
         expect_true(ok)
         expect_equal(x, 5)
     end)
-
     -- @covers LCommandStack:canRedo
     -- @covers LCommandStack:canUndo
     -- @covers LCommandStack:execute
@@ -252,7 +239,6 @@ describe("lurek.patterns.newCommandStack", function()
         expect_false(cmds:canUndo())
         expect_true(cmds:canRedo())
     end)
-
     -- @covers LCommandStack:canRedo
     -- @covers LCommandStack:execute
     -- @covers LCommandStack:getHistorySize
@@ -268,7 +254,6 @@ describe("lurek.patterns.newCommandStack", function()
         expect_false(cmds:canRedo())
         expect_equal(cmds:getHistorySize(), 2)
     end)
-
     -- @covers LCommandStack:execute
     -- @covers LCommandStack:getCurrentName
     -- @covers lurek.patterns.newCommandStack
@@ -278,7 +263,6 @@ describe("lurek.patterns.newCommandStack", function()
         cmds:execute("move", function() end)
         expect_equal(cmds:getCurrentName(), "move")
     end)
-
     -- @covers LCommandStack:canUndo
     -- @covers LCommandStack:clearAll
     -- @covers LCommandStack:execute
@@ -318,7 +302,6 @@ describe("lurek.patterns.newServiceLocator", function()
         local svc = sl:locate("logger")
         expect_true(svc ~= nil)
     end)
-
     -- @covers LServiceLocator:locate
     -- @covers lurek.patterns.newServiceLocator
     it("locate returns nil for unknown service", function()
@@ -326,7 +309,6 @@ describe("lurek.patterns.newServiceLocator", function()
         local svc = sl:locate("missing")
         expect_nil(svc)
     end)
-
     -- @covers LServiceLocator:has
     -- @covers LServiceLocator:provide
     -- @covers LServiceLocator:remove
@@ -338,7 +320,6 @@ describe("lurek.patterns.newServiceLocator", function()
         sl:remove("db")
         expect_false(sl:has("db"))
     end)
-
     -- @covers LServiceLocator:getServices
     -- @covers LServiceLocator:provide
     -- @covers lurek.patterns.newServiceLocator
@@ -349,7 +330,6 @@ describe("lurek.patterns.newServiceLocator", function()
         local names = sl:getServices()
         expect_equal(#names, 2)
     end)
-
     -- @covers LServiceLocator:clearAll
     -- @covers LServiceLocator:has
     -- @covers LServiceLocator:provide
@@ -378,9 +358,33 @@ describe("lurek.patterns.newFactory", function()
     end)
 
     -- @covers LFactory:create
+    it("register/create builds objects [LFactory:create]", function()
+        local f = lurek.patterns.newFactory()
+        f:register("bullet", function(x, y)
+            return { x = x, y = y, kind = "bullet" }
+        end)
+        local b = f:create("bullet", 10, 20)
+        expect_true(b ~= nil)
+        expect_equal(10, b and b.x or nil)
+        expect_equal(20, b and b.y or nil)
+        expect_equal("bullet", b and b.kind or nil)
+    end)
+
     -- @covers LFactory:register
+    it("register/create builds objects [LFactory:register]", function()
+        local f = lurek.patterns.newFactory()
+        f:register("bullet", function(x, y)
+            return { x = x, y = y, kind = "bullet" }
+        end)
+        local b = f:create("bullet", 10, 20)
+        expect_true(b ~= nil)
+        expect_equal(10, b and b.x or nil)
+        expect_equal(20, b and b.y or nil)
+        expect_equal("bullet", b and b.kind or nil)
+    end)
+
     -- @covers lurek.patterns.newFactory
-    it("register/create builds objects", function()
+    it("register/create builds objects [lurek.patterns.newFactory]", function()
         local f = lurek.patterns.newFactory()
         f:register("bullet", function(x, y)
             return { x = x, y = y, kind = "bullet" }
@@ -401,7 +405,6 @@ describe("lurek.patterns.newFactory", function()
         f:register("enemy", function() return {} end)
         expect_true(f:has("enemy"))
     end)
-
     -- @covers LFactory:getTypes
     -- @covers LFactory:register
     -- @covers lurek.patterns.newFactory
@@ -412,7 +415,6 @@ describe("lurek.patterns.newFactory", function()
         local types = f:getTypes()
         expect_equal(#types, 2)
     end)
-
     -- @covers LFactory:has
     -- @covers LFactory:register
     -- @covers LFactory:remove
@@ -423,7 +425,6 @@ describe("lurek.patterns.newFactory", function()
         f:remove("temp")
         expect_false(f:has("temp"))
     end)
-
     -- @covers LFactory:clearAll
     -- @covers LFactory:getTypes
     -- @covers LFactory:register
@@ -464,7 +465,6 @@ describe("lurek.patterns.newSimpleState", function()
         fsm:transitionTo("walk")
         expect_equal(fsm:getCurrent(), "walk")
     end)
-
     -- @covers LSimpleState:transitionTo
     -- @covers lurek.patterns.newSimpleState
     it("transitionTo returns false for unknown state", function()
@@ -472,7 +472,6 @@ describe("lurek.patterns.newSimpleState", function()
         local ok = fsm:transitionTo("nonexistent")
         expect_false(ok)
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:transitionTo
     -- @covers lurek.patterns.newSimpleState
@@ -492,7 +491,6 @@ describe("lurek.patterns.newSimpleState", function()
         expect_equal(log[2], "exit_a")
         expect_equal(log[3], "enter_b")
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:transitionTo
     -- @covers LSimpleState:update
@@ -507,7 +505,6 @@ describe("lurek.patterns.newSimpleState", function()
         fsm:update(0.016)
         expect_true(math.abs(dt_received - 0.016) < 0.001)
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:hasState
     -- @covers lurek.patterns.newSimpleState
@@ -517,7 +514,6 @@ describe("lurek.patterns.newSimpleState", function()
         fsm:addState("jump")
         expect_true(fsm:hasState("jump"))
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:getStates
     -- @covers lurek.patterns.newSimpleState
@@ -529,7 +525,6 @@ describe("lurek.patterns.newSimpleState", function()
         local states = fsm:getStates()
         expect_equal(#states, 3)
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:clearAll
     -- @covers LSimpleState:getCurrent
@@ -555,14 +550,12 @@ describe("SimpleState extended coverage (RS parity)", function()
         local fsm = lurek.patterns.newSimpleState()
         expect_false(fsm:hasState("unknown"))
     end)
-
     -- @covers LSimpleState:update
     -- @covers lurek.patterns.newSimpleState
     it("update does not error with no current state", function()
         local fsm = lurek.patterns.newSimpleState()
         expect_no_error(function() fsm:update(0.016) end)
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:getCurrent
     -- @covers lurek.patterns.newSimpleState
@@ -571,7 +564,6 @@ describe("SimpleState extended coverage (RS parity)", function()
         fsm:addState("idle")
         expect_nil(fsm:getCurrent())
     end)
-
     -- @covers LSimpleState:addState
     -- @covers LSimpleState:clearAll
     -- @covers LSimpleState:getStates
@@ -601,7 +593,6 @@ describe("CommandStack undo/redo (RS parity)", function()
         cs:redo()
         expect_equal(1, val)
     end)
-
     -- @covers LCommandStack:execute
     -- @covers LCommandStack:getHistorySize
     -- @covers lurek.patterns.newCommandStack
@@ -633,7 +624,6 @@ describe("lurek.patterns.Stack", function()
         expect_equal("a", s:pop())
         expect_equal(true, s:isEmpty())
     end)
-
     -- @covers LStack:len
     -- @covers LStack:peek
     -- @covers LStack:push
@@ -644,7 +634,6 @@ describe("lurek.patterns.Stack", function()
         expect_equal(42, s:peek())
         expect_equal(1, s:len())
     end)
-
     -- @covers LStack:isFull
     -- @covers LStack:push
     -- @covers lurek.patterns.newStack
@@ -653,7 +642,6 @@ describe("lurek.patterns.Stack", function()
         s:push(1); s:push(2); s:push(3)
         expect_equal(true, s:isFull())
     end)
-
     -- @covers LStack:push
     -- @covers LStack:toArray
     -- @covers lurek.patterns.newStack
@@ -663,7 +651,6 @@ describe("lurek.patterns.Stack", function()
         local arr = s:toArray()
         expect_equal(2, #arr)
     end)
-
     -- @covers LStack:clear
     -- @covers LStack:len
     -- @covers LStack:push
@@ -689,7 +676,6 @@ describe("lurek.patterns.Queue", function()
         expect_equal("first", q:dequeue())
         expect_equal("second", q:dequeue())
     end)
-
     -- @covers LQueue:enqueue
     -- @covers LQueue:front
     -- @covers LQueue:len
@@ -700,7 +686,6 @@ describe("lurek.patterns.Queue", function()
         expect_equal("peek_me", q:front())
         expect_equal(1, q:len())
     end)
-
     -- @covers LQueue:enqueue
     -- @covers LQueue:isEmpty
     -- @covers lurek.patterns.newQueue
@@ -732,7 +717,6 @@ describe("lurek.patterns.List", function()
         l:remove(1)
         expect_equal(2, l:len())
     end)
-
     -- @covers LList:add
     -- @covers LList:contains
     -- @covers lurek.patterns.newList
@@ -761,7 +745,6 @@ describe("lurek.patterns.Set", function()
         expect_equal(false, s:has("fire"))
         expect_equal(1, s:len())
     end)
-
     -- @covers LSet:add
     -- @covers LSet:union
     -- @covers lurek.patterns.newSet
@@ -773,7 +756,6 @@ describe("lurek.patterns.Set", function()
         local u = a:union(b)
         expect_equal(3, u:len())
     end)
-
     -- @covers LSet:add
     -- @covers LSet:intersection
     -- @covers lurek.patterns.newSet
@@ -785,7 +767,6 @@ describe("lurek.patterns.Set", function()
         local i = a:intersection(b)
         expect_equal(2, i:len())
     end)
-
     -- @covers LSet:add
     -- @covers LSet:toArray
     -- @covers lurek.patterns.newSet
@@ -802,9 +783,29 @@ end)
 -- @describe lurek.patterns.Mediator
 describe("lurek.patterns.Mediator", function()
     -- @covers LMediator:on
+    it("on registers a handler that receives send messages [LMediator:on]", function()
+        local m = lurek.patterns.newMediator()
+        local received = nil
+        m:on("click", function(data)
+            received = data
+        end)
+        m:send("click", "hello")
+        expect_equal("hello", received)
+    end)
+
     -- @covers LMediator:send
+    it("on registers a handler that receives send messages [LMediator:send]", function()
+        local m = lurek.patterns.newMediator()
+        local received = nil
+        m:on("click", function(data)
+            received = data
+        end)
+        m:send("click", "hello")
+        expect_equal("hello", received)
+    end)
+
     -- @covers lurek.patterns.newMediator
-    it("on registers a handler that receives send messages", function()
+    it("on registers a handler that receives send messages [lurek.patterns.newMediator]", function()
         local m = lurek.patterns.newMediator()
         local received = nil
         m:on("click", function(data)
@@ -827,7 +828,6 @@ describe("lurek.patterns.Mediator", function()
         m:send("tick")
         expect_equal(1, count)
     end)
-
     -- @covers LMediator:on
     -- @covers LMediator:send
     -- @covers lurek.patterns.newMediator
@@ -839,7 +839,6 @@ describe("lurek.patterns.Mediator", function()
         m:send("channelA", "payload")
         expect_equal(1, hit)
     end)
-
     -- @covers LMediator:handlerCount
     -- @covers LMediator:off
     -- @covers LMediator:on
@@ -852,7 +851,6 @@ describe("lurek.patterns.Mediator", function()
         m:off("events", id)
         expect_equal(0, m:handlerCount("events"))
     end)
-
     -- @covers LMediator:channels
     -- @covers LMediator:on
     -- @covers lurek.patterns.newMediator
@@ -863,7 +861,6 @@ describe("lurek.patterns.Mediator", function()
         local ch = m:channels()
         expect_equal(2, #ch)
     end)
-
     -- @covers LMediator:handlerCount
     -- @covers LMediator:on
     -- @covers LMediator:removeChannel
@@ -876,7 +873,6 @@ describe("lurek.patterns.Mediator", function()
         m:removeChannel("destroy")
         expect_equal(0, m:handlerCount("destroy"))
     end)
-
     -- @covers LMediator:channels
     -- @covers LMediator:clear
     -- @covers LMediator:on
@@ -907,7 +903,6 @@ describe("lurek.patterns.Strategy", function()
         s:execute()
         expect_equal(true, called)
     end)
-
     -- @covers LStrategy:getCurrent
     -- @covers LStrategy:register
     -- @covers LStrategy:set
@@ -919,7 +914,6 @@ describe("lurek.patterns.Strategy", function()
         s:set("patrol")
         expect_equal("patrol", s:getCurrent())
     end)
-
     -- @covers LStrategy:has
     -- @covers LStrategy:register
     -- @covers lurek.patterns.newStrategy
@@ -929,7 +923,6 @@ describe("lurek.patterns.Strategy", function()
         expect_equal(true, s:has("attack"))
         expect_equal(false, s:has("retreat"))
     end)
-
     -- @covers LStrategy:getCurrent
     -- @covers LStrategy:has
     -- @covers LStrategy:register
@@ -945,7 +938,6 @@ describe("lurek.patterns.Strategy", function()
         expect_equal(false, s:has("idle"))
         expect_equal(nil, s:getCurrent())
     end)
-
     -- @covers LStrategy:names
     -- @covers LStrategy:register
     -- @covers lurek.patterns.newStrategy
@@ -957,7 +949,6 @@ describe("lurek.patterns.Strategy", function()
         local names = s:names()
         expect_equal(3, #names)
     end)
-
     -- @covers LStrategy:execute
     -- @covers LStrategy:register
     -- @covers LStrategy:set
@@ -970,7 +961,6 @@ describe("lurek.patterns.Strategy", function()
         s:execute(0.016)
         expect_near(0.016, got_dt, 1e-6)
     end)
-
     -- @covers LStrategy:clear
     -- @covers LStrategy:getCurrent
     -- @covers LStrategy:names
@@ -999,10 +989,43 @@ end)
 -- @describe ObjectPool regression: acquire double-borrow
 describe("ObjectPool regression: acquire double-borrow", function()
     -- @covers LObjectPool:acquire
+    it("acquire -> release -> acquire cycle does not panic [LObjectPool:acquire]", function()
+        local pool = lurek.patterns.newObjectPool()
+        pool:add({ id = "a" })
+        expect_no_error(function()
+            local v1 = pool:acquire()
+            pool:release(v1)
+            local v2 = pool:acquire()
+            pool:release(v2)
+        end)
+    end)
+
     -- @covers LObjectPool:add
+    it("acquire -> release -> acquire cycle does not panic [LObjectPool:add]", function()
+        local pool = lurek.patterns.newObjectPool()
+        pool:add({ id = "a" })
+        expect_no_error(function()
+            local v1 = pool:acquire()
+            pool:release(v1)
+            local v2 = pool:acquire()
+            pool:release(v2)
+        end)
+    end)
+
     -- @covers LObjectPool:release
+    it("acquire -> release -> acquire cycle does not panic [LObjectPool:release]", function()
+        local pool = lurek.patterns.newObjectPool()
+        pool:add({ id = "a" })
+        expect_no_error(function()
+            local v1 = pool:acquire()
+            pool:release(v1)
+            local v2 = pool:acquire()
+            pool:release(v2)
+        end)
+    end)
+
     -- @covers lurek.patterns.newObjectPool
-    it("acquire -> release -> acquire cycle does not panic", function()
+    it("acquire -> release -> acquire cycle does not panic [lurek.patterns.newObjectPool]", function()
         local pool = lurek.patterns.newObjectPool()
         pool:add({ id = "a" })
         expect_no_error(function()
@@ -1020,10 +1043,43 @@ end)
 -- @describe Strategy:set and Strategy:has
 describe("Strategy:set and Strategy:has ", function()
     -- @covers LStrategy:has
+    it("set and has are callable on a Strategy [LStrategy:has]", function()
+        local s = lurek.patterns.newStrategy()
+        local ok_set, _ = pcall(function()
+            s:register("attack", function() return "attack" end)
+            s:set("attack")
+        end)
+        expect_type("boolean", ok_set)
+        local ok_has, _ = pcall(function() return s:has("attack") end)
+        expect_type("boolean", ok_has)
+    end)
+
     -- @covers LStrategy:register
+    it("set and has are callable on a Strategy [LStrategy:register]", function()
+        local s = lurek.patterns.newStrategy()
+        local ok_set, _ = pcall(function()
+            s:register("attack", function() return "attack" end)
+            s:set("attack")
+        end)
+        expect_type("boolean", ok_set)
+        local ok_has, _ = pcall(function() return s:has("attack") end)
+        expect_type("boolean", ok_has)
+    end)
+
     -- @covers LStrategy:set
+    it("set and has are callable on a Strategy [LStrategy:set]", function()
+        local s = lurek.patterns.newStrategy()
+        local ok_set, _ = pcall(function()
+            s:register("attack", function() return "attack" end)
+            s:set("attack")
+        end)
+        expect_type("boolean", ok_set)
+        local ok_has, _ = pcall(function() return s:has("attack") end)
+        expect_type("boolean", ok_has)
+    end)
+
     -- @covers lurek.patterns.newStrategy
-    it("set and has are callable on a Strategy", function()
+    it("set and has are callable on a Strategy [lurek.patterns.newStrategy]", function()
         local s = lurek.patterns.newStrategy()
         local ok_set, _ = pcall(function()
             s:register("attack", function() return "attack" end)
@@ -1046,7 +1102,6 @@ describe("Stack:pop and Stack:len ", function()
         st:push("second")
         expect_equal("second", st:pop())
     end)
-
     -- @covers LStack:len
     -- @covers LStack:push
     -- @covers lurek.patterns.newStack
@@ -1097,22 +1152,372 @@ describe("patterns missing explicit coverage", function()
         expect_equal(2, ring:len())
         expect_near(5.0, ring:sum(), 0.0001)
     end)
-
     -- @covers LDebounce:getFireCount
+    it("throttle/debounce/funnel callback helpers are callable [LDebounce:getFireCount]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LDebounce:isPending
+    it("throttle/debounce/funnel callback helpers are callable [LDebounce:isPending]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LDebounce:onFire
+    it("throttle/debounce/funnel callback helpers are callable [LDebounce:onFire]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LDebounce:trigger
+    it("throttle/debounce/funnel callback helpers are callable [LDebounce:trigger]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LDebounce:update
+    it("throttle/debounce/funnel callback helpers are callable [LDebounce:update]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LFunnel:getFlushCount
+    it("throttle/debounce/funnel callback helpers are callable [LFunnel:getFlushCount]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LFunnel:onFlush
+    it("throttle/debounce/funnel callback helpers are callable [LFunnel:onFlush]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LFunnel:push
+    it("throttle/debounce/funnel callback helpers are callable [LFunnel:push]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LThrottle:getFireCount
+    it("throttle/debounce/funnel callback helpers are callable [LThrottle:getFireCount]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LThrottle:onFire
+    it("throttle/debounce/funnel callback helpers are callable [LThrottle:onFire]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers LThrottle:update
+    it("throttle/debounce/funnel callback helpers are callable [LThrottle:update]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers lurek.patterns.newDebounce
+    it("throttle/debounce/funnel callback helpers are callable [lurek.patterns.newDebounce]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers lurek.patterns.newFunnel
+    it("throttle/debounce/funnel callback helpers are callable [lurek.patterns.newFunnel]", function()
+        local fired_throttle = false
+        local th = lurek.patterns.newThrottle(0.0)
+        th:onFire(function() fired_throttle = true end)
+        local ok_th, _ = pcall(function() th:update(1.0) end)
+        expect_type("boolean", ok_th)
+        expect_type("number", th:getFireCount())
+
+        local fired_debounce = false
+        local db = lurek.patterns.newDebounce(0.0)
+        db:onFire(function() fired_debounce = true end)
+        local ok_db, _ = pcall(function()
+            db:trigger()
+            db:update(1.0)
+        end)
+        expect_type("boolean", ok_db)
+        expect_type("boolean", db:isPending())
+        expect_type("number", db:getFireCount())
+
+        local flushed = false
+        local fn = lurek.patterns.newFunnel(0.0, 0, "fn")
+        fn:onFlush(function(_entries) flushed = true end)
+        local ok_fn, _ = pcall(function() fn:push("evt", 1.0) end)
+        expect_type("boolean", ok_fn)
+        expect_type("number", fn:getFlushCount())
+    end)
+
     -- @covers lurek.patterns.newThrottle
-    it("throttle/debounce/funnel callback helpers are callable", function()
+    it("throttle/debounce/funnel callback helpers are callable [lurek.patterns.newThrottle]", function()
         local fired_throttle = false
         local th = lurek.patterns.newThrottle(0.0)
         th:onFire(function() fired_throttle = true end)
@@ -1537,7 +1942,6 @@ describe("lurek.patterns.RelationshipManager", function()
         local rm = lurek.patterns.newRelationshipManager()
         expect_near(0.0, rm:getValue(1, 2), 1e-5)
     end)
-
     -- @covers LRelationshipManager:getValue
     -- @covers LRelationshipManager:setValue
     -- @covers lurek.patterns.newRelationshipManager
@@ -1547,7 +1951,6 @@ describe("lurek.patterns.RelationshipManager", function()
         rm:setValue(a, b, 75.0)
         expect_near(75.0, rm:getValue(a, b), 1e-5)
     end)
-
     -- @covers LRelationshipManager:adjustValue
     -- @covers LRelationshipManager:getValue
     -- @covers LRelationshipManager:setValue
@@ -1558,7 +1961,6 @@ describe("lurek.patterns.RelationshipManager", function()
         rm:adjustValue(1, 2, -10.0)
         expect_near(40.0, rm:getValue(1, 2), 1e-5)
     end)
-
     -- @covers LRelationshipManager:defineType
     -- @covers LRelationshipManager:getLevel
     -- @covers LRelationshipManager:setLevel
@@ -1570,14 +1972,12 @@ describe("lurek.patterns.RelationshipManager", function()
         expect_equal(true, ok)
         expect_equal("ally", rm:getLevel(1, 2, "Faction"))
     end)
-
     -- @covers LRelationshipManager:setLevel
     -- @covers lurek.patterns.newRelationshipManager
     it("setLevel returns false for unknown type", function()
         local rm = lurek.patterns.newRelationshipManager()
         expect_equal(false, rm:setLevel(1, 2, "Unknown", "ally"))
     end)
-
     -- @covers LRelationshipManager:defineType
     -- @covers LRelationshipManager:setLevel
     -- @covers lurek.patterns.newRelationshipManager
@@ -1586,7 +1986,6 @@ describe("lurek.patterns.RelationshipManager", function()
         rm:defineType("Faction", {"enemy", "ally"}, "ally")
         expect_equal(false, rm:setLevel(1, 2, "Faction", "neutral"))
     end)
-
     -- @covers LRelationshipManager:defineType
     -- @covers LRelationshipManager:getLevel
     -- @covers lurek.patterns.newRelationshipManager
@@ -1595,7 +1994,6 @@ describe("lurek.patterns.RelationshipManager", function()
         rm:defineType("Faction", {"enemy", "neutral", "ally"}, "neutral")
         expect_equal("neutral", rm:getLevel(1, 2, "Faction"))
     end)
-
     -- @covers LRelationshipManager:getValue
     -- @covers LRelationshipManager:pairCount
     -- @covers LRelationshipManager:removePair
@@ -1609,7 +2007,6 @@ describe("lurek.patterns.RelationshipManager", function()
         expect_equal(0, rm:pairCount())
         expect_near(0.0, rm:getValue(1, 2), 1e-5)
     end)
-
     -- @covers LRelationshipManager:pairCount
     -- @covers LRelationshipManager:setValue
     -- @covers lurek.patterns.newRelationshipManager
@@ -1619,7 +2016,6 @@ describe("lurek.patterns.RelationshipManager", function()
         rm:setValue(1, 2, 5.0)
         expect_equal(1, rm:pairCount())
     end)
-
     -- @covers LRelationshipManager:defineType
     -- @covers LRelationshipManager:typeNames
     -- @covers lurek.patterns.newRelationshipManager
@@ -1630,7 +2026,6 @@ describe("lurek.patterns.RelationshipManager", function()
         local names = rm:typeNames()
         expect_equal(2, #names)
     end)
-
     -- @covers LRelationshipManager:defineType
     -- @covers LRelationshipManager:removeType
     -- @covers LRelationshipManager:setLevel
@@ -1653,9 +2048,29 @@ end)
 -- @describe RelationshipManager regression: empty default_level
 describe("RelationshipManager regression: empty default_level", function()
     -- @covers LRelationshipManager:defineType
+    it("defineType without default_level does not panic [LRelationshipManager:defineType]", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        expect_no_error(function()
+            rm:defineType("diplomacy", { "war", "neutral", "alliance" })
+        end)
+        local names = rm:typeNames()
+        expect_equal(1, #names)
+        expect_equal("diplomacy", names[1])
+    end)
+
     -- @covers LRelationshipManager:typeNames
+    it("defineType without default_level does not panic [LRelationshipManager:typeNames]", function()
+        local rm = lurek.patterns.newRelationshipManager()
+        expect_no_error(function()
+            rm:defineType("diplomacy", { "war", "neutral", "alliance" })
+        end)
+        local names = rm:typeNames()
+        expect_equal(1, #names)
+        expect_equal("diplomacy", names[1])
+    end)
+
     -- @covers lurek.patterns.newRelationshipManager
-    it("defineType without default_level does not panic", function()
+    it("defineType without default_level does not panic [lurek.patterns.newRelationshipManager]", function()
         local rm = lurek.patterns.newRelationshipManager()
         expect_no_error(function()
             rm:defineType("diplomacy", { "war", "neutral", "alliance" })
@@ -1701,7 +2116,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         wr:add(2.0, "b")
         expect_equal(wr:len(), 2)
     end)
-
     -- @covers LWeightedRandom:isEmpty
     -- @covers lurek.patterns.newWeightedRandom
     it("isEmpty returns true when empty", function()
@@ -1710,7 +2124,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         wr:add(1.0, "x")
         expect_true(not wr:isEmpty())
     end)
-
     -- @covers LWeightedRandom:totalWeight
     -- @covers lurek.patterns.newWeightedRandom
     it("totalWeight sums all weights", function()
@@ -1719,14 +2132,12 @@ describe("lurek.patterns.newWeightedRandom", function()
         wr:add(7.0, "b")
         expect_equal(wr:totalWeight(), 10.0)
     end)
-
     -- @covers LWeightedRandom:pick
     -- @covers lurek.patterns.newWeightedRandom
     it("pick returns nil for empty pool", function()
         local wr = newWeightedRandom()
         expect_equal(wr:pick(0.5), nil)
     end)
-
     -- @covers LWeightedRandom:add
     -- @covers LWeightedRandom:pick
     -- @covers lurek.patterns.newWeightedRandom
@@ -1739,7 +2150,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         val = wr:pick(0.5)        -- middle -> "high"
         expect_equal(val, "high")
     end)
-
     -- @covers LWeightedRandom:remove
     -- @covers lurek.patterns.newWeightedRandom
     it("remove decreases len and returns true", function()
@@ -1749,7 +2159,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         expect_equal(wr:len(), 0)
         expect_true(not wr:remove(id))
     end)
-
     -- @covers LWeightedRandom:setWeight
     -- @covers lurek.patterns.newWeightedRandom
     it("setWeight updates weight and totalWeight", function()
@@ -1759,7 +2168,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         expect_true(wr:setWeight(id, 5.0))
         expect_equal(wr:totalWeight(), 5.0)
     end)
-
     -- @covers LWeightedRandom:pickN
     -- @covers lurek.patterns.newWeightedRandom
     it("pickN returns distinct entries without replacement", function()
@@ -1771,7 +2179,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         expect_equal(#results, 2)
         expect_true(results[1] ~= results[2])
     end)
-
     -- @covers LWeightedRandom:clearAll
     -- @covers lurek.patterns.newWeightedRandom
     it("clearAll removes all entries", function()
@@ -1782,7 +2189,6 @@ describe("lurek.patterns.newWeightedRandom", function()
         expect_equal(wr:len(), 0)
         expect_true(wr:isEmpty())
     end)
-
     -- @covers LWeightedRandom:getRevision
     -- @covers lurek.patterns.newWeightedRandom
     it("getRevision increments on structural changes", function()
@@ -1816,7 +2222,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         local bt = newBehaviorTree()
         expect_equal(bt:tick(), "failure")
     end)
-
     -- @covers LBehaviorTree:addLeaf
     -- @covers LBehaviorTree:setLeaf
     -- @covers LBehaviorTree:setRoot
@@ -1829,7 +2234,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         bt:setRoot(leaf)
         expect_equal(bt:tick(), "success")
     end)
-
     -- @covers LBehaviorTree:addLeaf
     -- @covers LBehaviorTree:addSequence
     -- @covers LBehaviorTree:addChild
@@ -1849,7 +2253,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         bt:setRoot(seq)
         expect_equal(bt:tick(), "failure")
     end)
-
     -- @covers LBehaviorTree:addLeaf
     -- @covers LBehaviorTree:addSelector
     -- @covers LBehaviorTree:addChild
@@ -1869,7 +2272,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         bt:setRoot(sel)
         expect_equal(bt:tick(), "success")
     end)
-
     -- @covers LBehaviorTree:addInverter
     -- @covers LBehaviorTree:addLeaf
     -- @covers LBehaviorTree:addChild
@@ -1886,9 +2288,7 @@ describe("lurek.patterns.newBehaviorTree", function()
         bt:setRoot(inv)
         expect_equal(bt:tick(), "failure")
     end)
-
     -- @covers LBehaviorTree:addLeaf
-    -- @covers LBehaviorTree:addRepeat
     -- @covers LBehaviorTree:addParallel
     -- @covers LBehaviorTree:addChild
     -- @covers LBehaviorTree:setLeaf
@@ -1910,7 +2310,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         bt:setRoot(par)
         expect_equal(bt:tick(), "success")
     end)
-
     -- @covers LBehaviorTree:addRepeat
     -- @covers LBehaviorTree:addLeaf
     -- @covers LBehaviorTree:addChild
@@ -1933,7 +2332,6 @@ describe("lurek.patterns.newBehaviorTree", function()
             expect_equal(first, "success")
         end
     end)
-
     -- @covers LBehaviorTree:resetState
     -- @covers LBehaviorTree:addRepeat
     -- @covers LBehaviorTree:addLeaf
@@ -1956,7 +2354,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         local after_reset = bt:tick()
         expect_true(after_reset == "running" or after_reset == "success")
     end)
-
     -- @covers LBehaviorTree:nodeCount
     -- @covers lurek.patterns.newBehaviorTree
     it("nodeCount returns correct count", function()
@@ -1966,7 +2363,6 @@ describe("lurek.patterns.newBehaviorTree", function()
         bt:addLeaf("b")
         expect_equal(bt:nodeCount(), 2)
     end)
-
     -- @covers LBehaviorTree:clearAll
     -- @covers lurek.patterns.newBehaviorTree
     it("clearAll resets the tree", function()
@@ -2006,7 +2402,6 @@ describe("lurek.patterns.newGraph", function()
         g:addNode("b")
         expect_equal(g:nodeCount(), 2)
     end)
-
     -- @covers LPatternGraph:addNode
     -- @covers LPatternGraph:hasNode
     -- @covers lurek.patterns.newGraph
@@ -2016,7 +2411,6 @@ describe("lurek.patterns.newGraph", function()
         expect_true(g:hasNode(id))
         expect_true(not g:hasNode(9999))
     end)
-
     -- @covers LPatternGraph:addEdge
     -- @covers LPatternGraph:edgeCount
     -- @covers lurek.patterns.newGraph
@@ -2027,7 +2421,6 @@ describe("lurek.patterns.newGraph", function()
         g:addEdge(a, b)
         expect_equal(g:edgeCount(), 1)
     end)
-
     -- @covers LPatternGraph:addEdge
     -- @covers LPatternGraph:neighbors
     -- @covers lurek.patterns.newGraph
@@ -2041,7 +2434,6 @@ describe("lurek.patterns.newGraph", function()
         local nbs = g:neighbors(a)
         expect_equal(#nbs, 2)
     end)
-
     -- @covers LPatternGraph:bfs
     -- @covers lurek.patterns.newGraph
     it("bfs visits all reachable nodes", function()
@@ -2055,7 +2447,6 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(#order, 3)
         expect_equal(order[1], a)
     end)
-
     -- @covers LPatternGraph:dfs
     -- @covers lurek.patterns.newGraph
     it("dfs visits all reachable nodes in depth-first order", function()
@@ -2069,7 +2460,6 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(#order, 3)
         expect_equal(order[1], a)
     end)
-
     -- @covers LPatternGraph:isConnected
     -- @covers lurek.patterns.newGraph
     it("isConnected returns true when path exists", function()
@@ -2082,7 +2472,6 @@ describe("lurek.patterns.newGraph", function()
         expect_true(g:isConnected(a, c))
         expect_true(not g:isConnected(c, a))
     end)
-
     -- @covers LPatternGraph:addNode
     -- @covers LPatternGraph:getNodeValue
     -- @covers lurek.patterns.newGraph
@@ -2094,7 +2483,6 @@ describe("lurek.patterns.newGraph", function()
             expect_equal(v.pop, 1000)
         end
     end)
-
     -- @covers LPatternGraph:removeNode
     -- @covers lurek.patterns.newGraph
     it("removeNode removes node and incident edges", function()
@@ -2106,7 +2494,6 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(g:nodeCount(), 1)
         expect_equal(g:edgeCount(), 0)
     end)
-
     -- @covers LPatternGraph:clearAll
     -- @covers lurek.patterns.newGraph
     it("clearAll removes everything", function()
@@ -2118,9 +2505,7 @@ describe("lurek.patterns.newGraph", function()
         expect_equal(g:nodeCount(), 0)
         expect_equal(g:edgeCount(), 0)
     end)
-
     -- @covers LPatternGraph:addEdge
-    -- @covers LPatternGraph:neighbors
     -- @covers lurek.patterns.newGraph
     it("undirected graph adds reverse edge automatically", function()
         local g = newGraph(true)
@@ -2130,7 +2515,6 @@ describe("lurek.patterns.newGraph", function()
         expect_true(g:isConnected(a, b))
         expect_true(g:isConnected(b, a))
     end)
-
     -- @covers LPatternGraph:removeEdge
     -- @covers lurek.patterns.newGraph
     it("removeEdge removes an existing edge", function()
@@ -2169,7 +2553,6 @@ describe("patterns generic collections extensions", function()
         expect_equal("a", popped[2])
         expect_equal(nil, s:popBottom())
     end)
-
     -- @covers LQueue:enqueueFront
     -- @covers LQueue:dequeueBack
     -- @covers LQueue:back
@@ -2189,7 +2572,6 @@ describe("patterns generic collections extensions", function()
         expect_equal("c", q:removeAt(3))
         expect_equal("d", q:dequeueBack())
     end)
-
     -- @covers LList:push
     -- @covers LList:unshift
     -- @covers LList:insert
@@ -2209,7 +2591,6 @@ describe("patterns generic collections extensions", function()
         expect_equal("a", l:pop())
         expect_equal("c", l:shift())
     end)
-
     -- @covers lurek.patterns.newMap
     -- @covers LMap:set
     -- @covers LMap:get

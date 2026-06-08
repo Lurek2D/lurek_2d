@@ -568,7 +568,7 @@ impl GpuRenderer {
                 TexVertex { position: [0.0, 1.0], uv: [0.0, 1.0], color: [1.0, 1.0, 1.0, 1.0], w_depth: 1.0, _pad: [0.0; 3] },
             ];
             let quad_idxs = [0u32, 1, 2, 0, 2, 3];
-            
+
             let quad_vbo = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("quad_vbo"),
                 contents: bytemuck::cast_slice(&quad_verts),
@@ -579,7 +579,7 @@ impl GpuRenderer {
                 contents: bytemuck::cast_slice(&quad_idxs),
                 usage: wgpu::BufferUsages::INDEX,
             });
-            
+
             let quad_key = crate::runtime::resource_keys::StaticGeometryKey::default();
             let quad_entry = crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: quad_vbo,
@@ -652,6 +652,7 @@ impl GpuRenderer {
         self.light_gpu = None;
     }
     /// Renders a full frame of deferred draw commands to the surface swapchain texture.
+    #[allow(clippy::too_many_arguments)]
     pub fn render_frame(
         &mut self,
         surface: &wgpu::Surface<'static>,
@@ -727,17 +728,17 @@ impl GpuRenderer {
                             * Mat3::from_scale(Vec2 { x: *sx, y: *sy });
                         let model = *parent * local;
                         let instance = crate::render::gpu_types::InstanceData::from(model);
-                        
+
                         let inst_offset = frame_instances.len() as u32;
                         frame_instances.push(instance);
-                        
+
                         let (target_width, target_height) =
                             self.target_dimensions(current_target, canvases);
-                        
+
                         draws.push(PreparedDraw {
                             target: current_target,
                             geometry: geom.geometry_kind,
-                            texture_ref: geom.texture.map(|key| crate::render::gpu_types::TexRef::Texture(key)),
+                            texture_ref: geom.texture.map(crate::render::gpu_types::TexRef::Texture),
                             idx_start: 0,
                             idx_count: geom.index_count,
                             blend_mode: current_blend_mode,
@@ -764,7 +765,7 @@ impl GpuRenderer {
                                         geom.geometry_kind,
                                         Some(static_key),
                                         geom.index_count,
-                                        geom.texture.map(|key| crate::render::gpu_types::TexRef::Texture(key)),
+                                        geom.texture.map(crate::render::gpu_types::TexRef::Texture),
                                     )
                                 } else {
                                     continue;
@@ -4211,7 +4212,7 @@ RenderCommand::SetColor(r, g, b, a) => {
             stencil_mode: draw.stencil_mode,
         };
         let effective_shader = shader_for_draw(draw);
-        
+
         let (vertex_buf, index_buf) = match draw.static_geometry {
             Some(geom_key) => {
                 if let Some(geom) = self.mesh_cache.static_geometry.get(&geom_key) {
@@ -4246,7 +4247,7 @@ RenderCommand::SetColor(r, g, b, a) => {
         pass.set_bind_group(0, &self.viewport_bind_group, &[]);
         pass.set_vertex_buffer(0, vertex_buf.slice(..));
         pass.set_index_buffer(index_buf.slice(..), wgpu::IndexFormat::Uint32);
-        
+
         if let Some(inst_buf) = inst_buf_ref {
             pass.set_vertex_buffer(1, inst_buf.slice(..));
         }
@@ -4325,7 +4326,7 @@ RenderCommand::SetColor(r, g, b, a) => {
             None => pass.set_scissor_rect(0, 0, target_width, target_height),
         }
         pass.set_stencil_reference(draw.stencil_reference);
-        
+
         let inst_start = draw.instance_start;
         let inst_count = if draw.geometry == GeometryKind::ColorInstanced || draw.geometry == GeometryKind::TextureInstanced {
             draw.instance_count

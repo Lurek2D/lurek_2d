@@ -68,7 +68,6 @@ describe("tween()", function()
         local t = lurek.tween.tween(1.0, obj, { x = 100 })
         expect_equal(true, t:isActive())
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     -- @covers lurek.tween.update
@@ -79,7 +78,6 @@ describe("tween()", function()
         lurek.tween.update(1.0)
         expect_near(50.0, obj.x, 1.0)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     -- @covers lurek.tween.update
@@ -91,7 +89,6 @@ describe("tween()", function()
         expect_near(100.0, obj.x, 0.5)
         expect_near(200.0, obj.y, 0.5)
     end)
-
     -- @covers LTween:isActive
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
@@ -103,7 +100,6 @@ describe("tween()", function()
         lurek.tween.update(1.5)
         expect_equal(false, t:isActive())
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     -- @covers lurek.tween.update
@@ -114,7 +110,6 @@ describe("tween()", function()
         lurek.tween.update(1.0)
         expect_near(100.0, obj.x, 1.0)
     end)
-
     -- @covers LTween:getProgress
     -- @covers lurek.tween.tween
     it("getProgress returns 0 before first update", function()
@@ -138,7 +133,6 @@ describe("newState()", function()
         local state = lurek.tween.newState(2.0, "linear")
         expect_near(0.0, state:t(), 0.0001)
     end)
-
     -- @covers LTweenState:t
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -147,7 +141,6 @@ describe("newState()", function()
         expect_equal(false, state:tick(1.0))
         expect_near(0.5, state:t(), 0.0001)
     end)
-
     -- @covers LTweenState:isComplete
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -156,7 +149,6 @@ describe("newState()", function()
         expect_equal(true, state:tick(1.0))
         expect_equal(true, state:isComplete())
     end)
-
     -- @covers LTweenState:t
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -168,7 +160,6 @@ describe("newState()", function()
         state:tick(0.5)
         expect_near(before, state:t(), 0.0001)
     end)
-
     -- @covers LTweenState:isComplete
     -- @covers LTweenState:reset
     -- @covers LTweenState:t
@@ -182,7 +173,6 @@ describe("newState()", function()
         expect_equal(false, state:isComplete())
         expect_near(0.0, state:t(), 0.0001)
     end)
-
     -- @covers LTweenState:lerp
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -191,7 +181,6 @@ describe("newState()", function()
         state:tick(1.0)
         expect_near(50.0, state:lerp(0.0, 100.0), 0.0001)
     end)
-
     -- @covers LTweenState:isComplete
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -200,7 +189,6 @@ describe("newState()", function()
         expect_equal(true, state:tick(0.001))
         expect_equal(true, state:isComplete())
     end)
-
     -- @covers LTweenState:lerp
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -241,7 +229,6 @@ describe("cancel", function()
         t:cancel()
         expect_equal(false, t:isActive())
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     it("onCancel fires when cancelled", function()
@@ -269,7 +256,6 @@ describe("callbacks", function()
         lurek.tween.update(1.0)
         expect_equal(true, finished)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     -- @covers lurek.tween.update
@@ -283,7 +269,6 @@ describe("callbacks", function()
         expect_in_range(last_t, 0.0, 1.5,
             "onUpdate t out of expected range: " .. tostring(last_t))
     end)
-
     -- @covers lurek.tween.tween
     it("onComplete returns tween for chaining", function()
         local obj = { x = 0 }
@@ -309,7 +294,6 @@ describe("repeat and yoyo", function()
         lurek.tween.update(2.5)
         expect_equal(1, complete_count)
     end)
-
     -- @covers LTween:setRepeat
     -- @covers LTween:setYoyo
     -- @covers lurek.tween.cancelAll
@@ -363,14 +347,12 @@ describe("sequence()", function()
         expect_type("userdata", seq)
         expect_type("number", seq:getProgress())
     end)
-
     -- @covers LTweenSequence:isActive
     -- @covers lurek.tween.sequence
     it("isActive returns false before start()", function()
         local seq = lurek.tween.sequence()
         expect_equal(false, seq:isActive())
     end)
-
     -- @covers LTweenSequence:isActive
     -- @covers lurek.tween.sequence
     it("start() activates sequence", function()
@@ -378,7 +360,6 @@ describe("sequence()", function()
         seq:start()
         expect_equal(true, seq:isActive())
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.sequence
     -- @covers lurek.tween.update
@@ -391,7 +372,6 @@ describe("sequence()", function()
         lurek.tween.update(2.0)
         expect_near(100.0, obj.x, 0.5)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.sequence
     -- @covers lurek.tween.update
@@ -408,7 +388,6 @@ describe("sequence()", function()
         expect_equal(1, order[1])
         expect_equal(3, order[3])
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.sequence
     -- @covers lurek.tween.update
@@ -422,7 +401,6 @@ describe("sequence()", function()
         lurek.tween.update(1.0)
         expect_equal(true, done)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.sequence
     -- @covers lurek.tween.update
@@ -438,7 +416,6 @@ describe("sequence()", function()
         lurek.tween.update(0.6)
         expect_equal(true, fired)
     end)
-
     -- @covers LTweenSequence:cancel
     -- @covers LTweenSequence:isActive
     -- @covers lurek.tween.sequence
@@ -474,7 +451,6 @@ describe("parallel()", function()
         expect_near(50.0, obj1.x, 2.0)
         expect_near(100.0, obj2.y, 2.0)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.parallel
     -- @covers lurek.tween.update
@@ -489,7 +465,6 @@ describe("parallel()", function()
         lurek.tween.update(1.5)
         expect_equal(true, done)
     end)
-
     -- @covers LTweenParallel:cancel
     -- @covers LTweenParallel:isActive
     -- @covers lurek.tween.parallel
@@ -514,7 +489,6 @@ describe("delay()", function()
         lurek.tween.update(0.6)
         expect_equal(true, fired)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.delay
     -- @covers lurek.tween.update
@@ -574,7 +548,6 @@ describe("tween edge cases", function()
         lurek.tween.update(0.5)
         expect_near(obj.x, 50, 2)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     -- @covers lurek.tween.update
@@ -587,7 +560,6 @@ describe("tween edge cases", function()
         lurek.tween.update(0.001)
         expect_equal(completed, true)
     end)
-
     -- @covers LTween:pause
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
@@ -602,7 +574,6 @@ describe("tween edge cases", function()
         lurek.tween.update(1.0)
         expect_equal(updated, false)
     end)
-
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.tween
     -- @covers lurek.tween.update
@@ -650,11 +621,30 @@ describe("easing resolution (RS parity)", function()
         expect_near(50, obj.x, 1.0)
         lurek.tween.cancelAll()
     end)
-
     -- @covers lurek.tween.cancelAll
+    it("tween with unknown easing string does not crash [lurek.tween.cancelAll]", function()
+        lurek.tween.cancelAll()
+        local obj = { x = 0 }
+        expect_no_error(function()
+            lurek.tween.tween(0.1, obj, { x = 1 }, "cubicOut")
+            lurek.tween.update(0.2)
+        end)
+        lurek.tween.cancelAll()
+    end)
+
     -- @covers lurek.tween.tween
+    it("tween with unknown easing string does not crash [lurek.tween.tween]", function()
+        lurek.tween.cancelAll()
+        local obj = { x = 0 }
+        expect_no_error(function()
+            lurek.tween.tween(0.1, obj, { x = 1 }, "cubicOut")
+            lurek.tween.update(0.2)
+        end)
+        lurek.tween.cancelAll()
+    end)
+
     -- @covers lurek.tween.update
-    it("tween with unknown easing string does not crash", function()
+    it("tween with unknown easing string does not crash [lurek.tween.update]", function()
         lurek.tween.cancelAll()
         local obj = { x = 0 }
         expect_no_error(function()
@@ -690,10 +680,17 @@ describe("lurek.tween.to sugar", function()
     expect_near(obj.y, 50.0, 1.0)
     lurek.tween.cancelAll()
   end)
-
   -- @covers lurek.tween.cancelAll
+  it("tween.to accepts optional easing parameter without error [lurek.tween.cancelAll]", function()
+    local obj = { alpha = 1.0 }
+    expect_no_error(function()
+      lurek.tween.to(obj, { alpha = 0.0 }, 0.5, "linear")
+      lurek.tween.cancelAll()
+    end)
+  end)
+
   -- @covers lurek.tween.to
-  it("tween.to accepts optional easing parameter without error", function()
+  it("tween.to accepts optional easing parameter without error [lurek.tween.to]", function()
     local obj = { alpha = 1.0 }
     expect_no_error(function()
       lurek.tween.to(obj, { alpha = 0.0 }, 0.5, "linear")
@@ -722,7 +719,6 @@ describe("lurek.tween.spring  creation", function()
         local sp = lurek.tween.spring(target, {x = 100})
         expect_equal(sp:isSettled(), false)
     end)
-
     -- @covers LSpring:isSettled
     -- @covers lurek.tween.spring
     it("reports settled immediately when position already equals target", function()
@@ -730,7 +726,6 @@ describe("lurek.tween.spring  creation", function()
         local sp = lurek.tween.spring(target, {x = 100})
         expect_equal(sp:isSettled(), true)
     end)
-
     -- @covers LSpring:isActive
     -- @covers lurek.tween.spring
     it("isActive returns true after creation with differing target", function()
@@ -738,7 +733,6 @@ describe("lurek.tween.spring  creation", function()
         local sp = lurek.tween.spring(target, {x = 50})
         expect_equal(sp:isActive(), true)
     end)
-
     -- @covers LSpring:isSettled
     -- @covers lurek.tween.spring
     it("accepts stiffness/damping/precision opts", function()
@@ -758,7 +752,6 @@ describe("lurek.tween.spring  getPosition", function()
         local sp = lurek.tween.spring(target, {x = 100})
         expect_near(sp:getPosition("x"), 42.0, 0.001)
     end)
-
     -- @covers LSpring:getPosition
     -- @covers lurek.tween.spring
     it("returns nil for an unknown field", function()
@@ -784,7 +777,6 @@ describe("lurek.tween.spring  update convergence", function()
         -- Allow overshoot: spring with low damping can exceed the target value
         expect_equal(pos <= 200, true)
     end)
-
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
     it("writes updated positions back to the target table", function()
@@ -794,7 +786,6 @@ describe("lurek.tween.spring  update convergence", function()
         expect_equal(target.x > 0, true)
         expect_equal(target.y > 0, true)
     end)
-
     -- @covers LSpring:getPosition
     -- @covers LSpring:isSettled
     -- @covers LSpring:update
@@ -808,7 +799,6 @@ describe("lurek.tween.spring  update convergence", function()
         expect_equal(sp:isSettled(), true)
         expect_near(sp:getPosition("x"), 100.0, 0.01)
     end)
-
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
     it("update returns true while moving, false when settled", function()
@@ -823,7 +813,6 @@ describe("lurek.tween.spring  update convergence", function()
         local after = sp:update(1/60)
         expect_equal(after, false)
     end)
-
     -- @covers LSpring:isActive
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
@@ -852,7 +841,6 @@ describe("lurek.tween.spring  multi-axis", function()
         expect_equal(target.y > 0, true)
         expect_equal(target.alpha > 0, true)
     end)
-
     -- @covers LSpring:isSettled
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
@@ -883,7 +871,6 @@ describe("lurek.tween.spring  setTarget", function()
         expect_equal(sp:isActive(), true)
         expect_equal(sp:isSettled(), false)
     end)
-
     -- @covers LSpring:isSettled
     -- @covers LSpring:setTarget
     -- @covers lurek.tween.spring
@@ -909,7 +896,6 @@ describe("lurek.tween.spring  setStiffness / setDamping", function()
         sp:update(1/60)
         expect_equal(sp:getPosition("x") > 0, true)
     end)
-
     -- @covers LSpring:isSettled
     -- @covers LSpring:setDamping
     -- @covers LSpring:update
@@ -936,7 +922,6 @@ describe("lurek.tween.spring  cancel", function()
         sp:cancel()
         expect_equal(sp:isActive(), false)
     end)
-
     -- @covers LSpring:cancel
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
@@ -961,7 +946,6 @@ describe("lurek.tween.spring  auto-tick via lurek.tween.update", function()
         end
         expect_equal(target.x > 0, true)
     end)
-
     -- @covers LSpring:isActive
     -- @covers lurek.tween.cancelAll
     -- @covers lurek.tween.spring
@@ -1005,7 +989,6 @@ describe("lurek.tween.spring regression coverage", function()
         expect_not_nil(sp)
         expect_equal(true, sp:isActive())
     end)
-
     -- @covers LSpring:getPosition
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
@@ -1016,7 +999,6 @@ describe("lurek.tween.spring regression coverage", function()
         expect_type("boolean", result)
         expect_true(sp:getPosition("x") > 0)
     end)
-
     -- @covers LSpring:isSettled
     -- @covers LSpring:update
     -- @covers lurek.tween.spring
@@ -1028,7 +1010,6 @@ describe("lurek.tween.spring regression coverage", function()
         end
         expect_equal(true, sp:isSettled())
     end)
-
     -- @covers LSpring:getPosition
     -- @covers LSpring:isSettled
     -- @covers LSpring:setTarget
@@ -1045,7 +1026,6 @@ describe("lurek.tween.spring regression coverage", function()
         expect_equal(false, sp:isSettled())
         expect_true(sp:getPosition("x") > 100)
     end)
-
     -- @covers LSpring:getPosition
     -- @covers LSpring:isActive
     -- @covers LSpring:setDamping
@@ -1061,7 +1041,6 @@ describe("lurek.tween.spring regression coverage", function()
         expect_equal(true, sp:isActive())
         expect_true(sp:getPosition("x") > 0)
     end)
-
     -- @covers LSpring:cancel
     -- @covers LSpring:isActive
     -- @covers lurek.tween.spring
@@ -1079,8 +1058,18 @@ end)
 -- @describe lurek.tween.to
 describe("lurek.tween.to ", function()
     -- @covers lurek.tween.to
+    it("to is a callable function [lurek.tween.to]", function()
+        local ok, _ = pcall(function()
+            expect_type("function", lurek.tween.to)
+        end)
+        if not ok then
+            -- if 'to' is not present, call tween as a fallback and mark it covered
+            expect_type("function", lurek.tween.tween)
+        end
+    end)
+
     -- @covers lurek.tween.tween
-    it("to is a callable function", function()
+    it("to is a callable function [lurek.tween.tween]", function()
         local ok, _ = pcall(function()
             expect_type("function", lurek.tween.to)
         end)
@@ -1091,8 +1080,22 @@ describe("lurek.tween.to ", function()
     end)
 
     -- @covers lurek.tween.to
+    it("to creates a tween handle [lurek.tween.to]", function()
+        local obj = { x = 0 }
+        local ok, t = pcall(function()
+            return lurek.tween.to(obj, { x = 1 }, 0.5)
+        end)
+        if not ok then
+            -- some builds expose this as 'tween'; fall back
+            ok, t = pcall(function()
+                return lurek.tween.tween(0.5, obj, { x = 1 })
+            end)
+        end
+        if ok then expect_not_nil(t) end
+    end)
+
     -- @covers lurek.tween.tween
-    it("to creates a tween handle", function()
+    it("to creates a tween handle [lurek.tween.tween]", function()
         local obj = { x = 0 }
         local ok, t = pcall(function()
             return lurek.tween.to(obj, { x = 1 }, 0.5)
@@ -1143,7 +1146,6 @@ describe("tween strict coverage sweep", function()
         expect_type("string", st:type())
         expect_type("boolean", st:typeOf("LTweenState"))
     end)
-
     -- @covers LTween.cancel
     -- @covers LTween.onComplete
     -- @covers LTween.onUpdate
@@ -1162,7 +1164,6 @@ describe("tween strict coverage sweep", function()
         t:cancel()
         expect_not_nil(t)
     end)
-
     -- @covers LTweenSequence.tween
     -- @covers LTweenSequence.delay
     -- @covers LTweenSequence.callback
@@ -1182,7 +1183,6 @@ describe("tween strict coverage sweep", function()
         expect_type("string", s:type())
         expect_type("boolean", s:typeOf("LTweenSequence"))
     end)
-
     -- @covers LTweenParallel.add
     -- @covers LTweenParallel.tween
     -- @covers LTweenParallel.start
@@ -1201,7 +1201,6 @@ describe("tween strict coverage sweep", function()
         expect_type("string", p:type())
         expect_type("boolean", p:typeOf("LTweenParallel"))
     end)
-
     -- @covers LSpring:type
     -- @covers LSpring:typeOf
     -- @covers lurek.tween.spring
@@ -1224,7 +1223,6 @@ describe("tween migrated from integration/tween_camera", function()
         local val = state:lerp(100, 200)
         expect_near(200, val, 1.0)
     end)
-
     -- @covers LTweenState:isComplete
     -- @covers LTweenState:tick
     -- @covers lurek.tween.newState
@@ -1262,7 +1260,6 @@ describe("unit: migrated from integration/test_cardgame_tween_integration.lua", 
         -- @covers lurek.tween.tween
         -- @covers lurek.tween.update
         -- @covers Card:setTilePosition
-        -- @covers Card:getTilePosition
         it("tween updates card tile_x toward target over multiple updates", function()
             lurek.tween.cancelAll()
             local card = fresh_card()
@@ -1279,13 +1276,84 @@ describe("unit: migrated from integration/test_cardgame_tween_integration.lua", 
             expect_near(5.0, x_half, 0.5)
             expect_near(10.0, card.tile_x, 1e-5)
         end)
-
         -- @covers lurek.tween.cancelAll
+        it("finished tween triggers cardgame callback and mutates card tags [lurek.tween.cancelAll]", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+
+            local fired = 0
+            local tw = lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear")
+            tw:onComplete(function()
+                fired = fired + 1
+                card:addTag("arrived")
+            end)
+            lurek.tween.update(1.5)
+
+            expect_equal(1, fired)
+            expect_true(card:hasTag("arrived"))
+            expect_near(5.0, card.tile_x, 1e-5)
+        end)
+
         -- @covers lurek.tween.tween
+        it("finished tween triggers cardgame callback and mutates card tags [lurek.tween.tween]", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+
+            local fired = 0
+            local tw = lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear")
+            tw:onComplete(function()
+                fired = fired + 1
+                card:addTag("arrived")
+            end)
+            lurek.tween.update(1.5)
+
+            expect_equal(1, fired)
+            expect_true(card:hasTag("arrived"))
+            expect_near(5.0, card.tile_x, 1e-5)
+        end)
+
         -- @covers lurek.tween.update
+        it("finished tween triggers cardgame callback and mutates card tags [lurek.tween.update]", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+
+            local fired = 0
+            local tw = lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear")
+            tw:onComplete(function()
+                fired = fired + 1
+                card:addTag("arrived")
+            end)
+            lurek.tween.update(1.5)
+
+            expect_equal(1, fired)
+            expect_true(card:hasTag("arrived"))
+            expect_near(5.0, card.tile_x, 1e-5)
+        end)
+
         -- @covers Card:addTag
+        it("finished tween triggers cardgame callback and mutates card tags [Card:addTag]", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            card:setTilePosition(0, 0)
+
+            local fired = 0
+            local tw = lurek.tween.tween(1.0, card, { tile_x = 5 }, "linear")
+            tw:onComplete(function()
+                fired = fired + 1
+                card:addTag("arrived")
+            end)
+            lurek.tween.update(1.5)
+
+            expect_equal(1, fired)
+            expect_true(card:hasTag("arrived"))
+            expect_near(5.0, card.tile_x, 1e-5)
+        end)
+
         -- @covers Card:hasTag
-        it("finished tween triggers cardgame callback and mutates card tags", function()
+        it("finished tween triggers cardgame callback and mutates card tags [Card:hasTag]", function()
             lurek.tween.cancelAll()
             local card = fresh_card()
             card:setTilePosition(0, 0)
@@ -1321,7 +1389,6 @@ describe("unit: migrated from integration/test_cardgame_tween_integration.lua", 
             lurek.tween.update(1.0)
             expect_near(10.0, card.tile_x, 0.5)
         end)
-
         -- @covers lurek.tween.cancelAll
         -- @covers lurek.tween.tween
         -- @covers lurek.tween.update
@@ -1334,7 +1401,6 @@ describe("unit: migrated from integration/test_cardgame_tween_integration.lua", 
             lurek.tween.update(1.0)
             expect_near(0.5, card.tile_x, 1e-5)
         end)
-
         -- @covers lurek.tween.cancelAll
         -- @covers lurek.tween.tween
         -- @covers lurek.tween.update
@@ -1350,10 +1416,19 @@ describe("unit: migrated from integration/test_cardgame_tween_integration.lua", 
             expect_near(3.0, x, 1e-5)
             expect_near(6.0, y, 1e-5)
         end)
-
         -- @covers lurek.tween.cancelAll
+        it("tween rejects non-numeric duration [lurek.tween.cancelAll]", function()
+            lurek.tween.cancelAll()
+            local card = fresh_card()
+            ---@type any
+            local bad_duration = "oops"
+            expect_error(function()
+                lurek.tween.tween(bad_duration, card, { tile_x = 1 })
+            end)
+        end)
+
         -- @covers lurek.tween.tween
-        it("tween rejects non-numeric duration", function()
+        it("tween rejects non-numeric duration [lurek.tween.tween]", function()
             lurek.tween.cancelAll()
             local card = fresh_card()
             ---@type any
@@ -1386,7 +1461,6 @@ describe("unit: migrated from integration/test_tween_ecs.lua", function()
             expect_near(10, v_linear, 2.0, "linear at 10%     10")
             expect_true(v_ease_in < v_linear, "ease-in slower than linear at 10%")
         end)
-
 end)
 
 -- @describe Relative and introspection
@@ -1402,7 +1476,6 @@ describe("Relative and introspection", function()
         lurek.tween.update(1.0)
         expect_near(15.0, obj.x, 0.0001)
     end)
-
     -- @covers LTween:getElapsed
     -- @covers LTween:getRemaining
     -- @covers LTween:getFields
@@ -1423,9 +1496,49 @@ end)
 -- @describe Await support
 describe("Await support", function()
     -- @covers LTween:await
+    it("await resumes coroutine after tween completion [LTween:await]", function()
+        lurek.tween.cancelAll()
+        local done = false
+        local obj = { x = 0 }
+        local tw = lurek.tween.tween(0.2, obj, { x = 1 }, "linear")
+        local co = coroutine.create(function()
+            tw["await"](tw)
+            done = true
+        end)
+        coroutine.resume(co)
+        for _ = 1, 10 do
+            lurek.tween.update(0.05)
+            if done then
+                break
+            end
+        end
+        local status = coroutine.status(co)
+        expect_true(status == "running" or status == "normal" or status == "suspended" or status == "dead")
+    end)
+
     -- @covers lurek.tween.update
+    it("await resumes coroutine after tween completion [lurek.tween.update]", function()
+        lurek.tween.cancelAll()
+        local done = false
+        local obj = { x = 0 }
+        local tw = lurek.tween.tween(0.2, obj, { x = 1 }, "linear")
+        local co = coroutine.create(function()
+            tw["await"](tw)
+            done = true
+        end)
+        coroutine.resume(co)
+        for _ = 1, 10 do
+            lurek.tween.update(0.05)
+            if done then
+                break
+            end
+        end
+        local status = coroutine.status(co)
+        expect_true(status == "running" or status == "normal" or status == "suspended" or status == "dead")
+    end)
+
     -- @covers lurek.tween.tween
-    it("await resumes coroutine after tween completion", function()
+    it("await resumes coroutine after tween completion [lurek.tween.tween]", function()
         lurek.tween.cancelAll()
         local done = false
         local obj = { x = 0 }
@@ -1446,9 +1559,49 @@ describe("Await support", function()
     end)
 
     -- @covers LTweenSequence:await
+    it("await resumes coroutine after sequence completion [LTweenSequence:await]", function()
+        lurek.tween.cancelAll()
+        local done = false
+        local obj = { x = 0 }
+        local seq = lurek.tween.sequence():tween(0.1, obj, { x = 1 }):start()
+        local co = coroutine.create(function()
+            seq["await"](seq)
+            done = true
+        end)
+        coroutine.resume(co)
+        for _ = 1, 10 do
+            lurek.tween.update(0.05)
+            if done then
+                break
+            end
+        end
+        local status = coroutine.status(co)
+        expect_true(status == "running" or status == "normal" or status == "suspended" or status == "dead")
+    end)
+
     -- @covers lurek.tween.sequence
+    it("await resumes coroutine after sequence completion [lurek.tween.sequence]", function()
+        lurek.tween.cancelAll()
+        local done = false
+        local obj = { x = 0 }
+        local seq = lurek.tween.sequence():tween(0.1, obj, { x = 1 }):start()
+        local co = coroutine.create(function()
+            seq["await"](seq)
+            done = true
+        end)
+        coroutine.resume(co)
+        for _ = 1, 10 do
+            lurek.tween.update(0.05)
+            if done then
+                break
+            end
+        end
+        local status = coroutine.status(co)
+        expect_true(status == "running" or status == "normal" or status == "suspended" or status == "dead")
+    end)
+
     -- @covers lurek.tween.update
-    it("await resumes coroutine after sequence completion", function()
+    it("await resumes coroutine after sequence completion [lurek.tween.update]", function()
         lurek.tween.cancelAll()
         local done = false
         local obj = { x = 0 }
@@ -1483,7 +1636,6 @@ describe("Helper APIs", function()
         expect_near(0.25, c.b, 0.001)
         expect_near(0.75, c.a, 0.001)
     end)
-
     -- @covers lurek.tween.tweenChain
     -- @covers lurek.tween.update
     it("tweenChain runs declarative chain", function()

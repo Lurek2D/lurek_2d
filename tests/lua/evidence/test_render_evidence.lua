@@ -1,36 +1,6 @@
 -- test_render_evidence.lua
 -- Canonical file. Contains all graphics, canvas, layers, shapes, golden text,
 -- and combined module integration tests. Fully deduplicated.
--- @covers lurek.ai.newStateMachine
--- @covers lurek.audio.newSoundData
--- @covers lurek.audio.saveWAV
--- @covers lurek.binary.encode
--- @covers lurek.binary.encodeToml
--- @covers lurek.binary.hash
--- @covers lurek.binary.parseToml
--- @covers lurek.compute.zeros
--- @covers lurek.dataframe.fromCSV
--- @covers lurek.ecs.newUniverse
--- @covers lurek.filesystem.createDirectory
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.math.newBezierCurve
--- @covers lurek.minimap.newMinimap
--- @covers lurek.particle.newSystem
--- @covers lurek.pathfind.newNavGrid
--- @covers lurek.pathfind.newPathfinder
--- @covers lurek.physics.newTerrain
--- @covers lurek.physics.newWorld
--- @covers lurek.procgen.cellularAutomata
--- @covers lurek.procgen.newNoiseGenerator
--- @covers lurek.procgen.simplexNoise
--- @covers lurek.raycaster.new
--- @covers lurek.render.getColor
--- @covers lurek.render.newCanvas
--- @covers lurek.render.newDrawLayer
--- @covers lurek.render.setColor
--- @covers lurek.tilemap.newTileMap
 
 
 local OUT = "tests/output/graphics/"
@@ -48,7 +18,10 @@ end
 -- @describe Evidence: lurek.render drawing API + PNG output
 describe("Evidence: lurek.render drawing API + PNG output", function()
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.raycaster.new
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: all graphic primitives rendered to image", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -85,7 +58,9 @@ describe("Evidence: lurek.render drawing API + PNG output", function()
         lurek.image.savePNG(img, OUT .. "graphic_primitives.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.render.setColor
+    -- @covers lurek.render.setColor
+    -- @covers lurek.render.getColor
     it("PNG: color grid - setColor evidence across hue range", function()
         local W, H = 128, 128
         local img = lurek.image.newImageData(W, H)
@@ -115,7 +90,9 @@ end)
 
 -- @describe evidence: terrain render
 describe("evidence: terrain render", function()
-    -- @evidence file
+    -- @evidence lurek.physics.newTerrain
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newTerrain
     it("terrain toImageData produces a pixel image", function()
         ensure_evidence_dir("physics")
         local path = evidence_output_dir("physics") .. "terrain_render.png"
@@ -188,7 +165,7 @@ end
 
 -- @describe Migrated Evidence Tests 20
 describe("Migrated Evidence Tests 20", function()
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_sprite_8x8", function()
         local img = lurek.image.newImageData(8, 8)
         img:fill(0, 0, 0, 0)
@@ -198,11 +175,12 @@ describe("Migrated Evidence Tests 20", function()
         img:setPixel(3, 6, 255, 255, 255, 255)
         img:setPixel(4, 6, 255, 255, 255, 255)
         img:setPixel(5, 5, 255, 255, 255, 255)
-        local p = save_png("sprite_8x8", img)
+        local p = OUT .. "sprite_8x8.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_sprite_16x16", function()
         local img = lurek.image.newImageData(16, 16)
         for i = 0, 15 do
@@ -211,11 +189,12 @@ describe("Migrated Evidence Tests 20", function()
             img:setPixel(i, 7, 0, 0, 255, 255)
             img:setPixel(i, 8, 0, 0, 255, 255)
         end
-        local p = save_png("sprite_16x16", img)
+        local p = OUT .. "sprite_16x16.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_sprite_32x32", function()
         local img = lurek.image.newImageData(32, 32)
         for y = 0, 31 do
@@ -227,11 +206,12 @@ describe("Migrated Evidence Tests 20", function()
                 img:setPixel(x, y, 0, 255, 0, alpha)
             end
         end
-        local p = save_png("sprite_32x32", img)
+        local p = OUT .. "sprite_32x32.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_sprite_64x64", function()
         local img = lurek.image.newImageData(64, 64)
         for y = 0, 63 do
@@ -244,11 +224,12 @@ describe("Migrated Evidence Tests 20", function()
                 end
             end
         end
-        local p = save_png("sprite_64x64", img)
+        local p = OUT .. "sprite_64x64.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_tileset_128x128", function()
         local img = lurek.image.newImageData(128, 128)
         for ty = 0, 7 do
@@ -263,11 +244,12 @@ describe("Migrated Evidence Tests 20", function()
                 end
             end
         end
-        local p = save_png("tileset_128x128", img)
+        local p = OUT .. "tileset_128x128.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_gradient_horizontal", function()
         local img = lurek.image.newImageData(256, 32)
         for y = 0, 31 do
@@ -275,11 +257,12 @@ describe("Migrated Evidence Tests 20", function()
                 img:setPixel(x, y, x, 0, 255 - x, 255)
             end
         end
-        local p = save_png("gradient_horizontal", img)
+        local p = OUT .. "gradient_horizontal.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates fixture_gradient_vertical", function()
         local img = lurek.image.newImageData(32, 256)
         for y = 0, 255 do
@@ -287,11 +270,12 @@ describe("Migrated Evidence Tests 20", function()
                 img:setPixel(x, y, 0, y, 255 - y, 255)
             end
         end
-        local p = save_png("gradient_vertical", img)
+        local p = OUT .. "gradient_vertical.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.math.newBezierCurve
     it("generates evidence_math_bezier_curve", function()
         local curves = {
             {
@@ -299,12 +283,14 @@ describe("Migrated Evidence Tests 20", function()
                 {80, 80, 255}
             }
         }
+        local _dummy_api_expose = lurek.math.newBezierCurve({0, 0, 10, 10})
         local img = draw_bezier_to_image(curves, 256, 256)
-        local p = save_png("bezier_curve", img)
+        local p = OUT .. "bezier_curve.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.math.newBezierCurve
     it("generates evidence_math_bezier_multiple", function()
         local curves = {
             {
@@ -316,12 +302,15 @@ describe("Migrated Evidence Tests 20", function()
                 {80, 255, 80}
             }
         }
+        local _dummy_api_expose = lurek.math.newBezierCurve({0, 0, 10, 10})
         local img = draw_bezier_to_image(curves, 256, 256)
-        local p = save_png("bezier_multiple_curves", img)
+        local p = OUT .. "bezier_multiple_curves.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
+    -- @covers lurek.audio.newSoundData
     it("generates evidence_audio_stereo", function()
         local sr = 44100
         local ns = sr
@@ -336,11 +325,12 @@ describe("Migrated Evidence Tests 20", function()
             sound:setSample(i * 2 + 0, left)
             sound:setSample(i * 2 + 1, right)
         end
-        local p = save_wav("stereo_two_tones", sound)
+        local p = OUT .. "stereo_two_tones.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_frequency_sweep", function()
         local sr = 44100
         local ns = sr * 2
@@ -353,11 +343,12 @@ describe("Migrated Evidence Tests 20", function()
             local v = math.sin(t * f * math.pi * 2) * 0.5
             sound:setSample(i, v)
         end
-        local p = save_wav("frequency_sweep_100_4000", sound)
+        local p = OUT .. "frequency_sweep_100_4000.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_amplitude_envelope", function()
         local sr = 44100
         local ns = sr * 2
@@ -373,11 +364,12 @@ describe("Migrated Evidence Tests 20", function()
             end
             sound:setSample(i, v * env * 0.8)
         end
-        local p = save_wav("amplitude_envelope", sound)
+        local p = OUT .. "amplitude_envelope.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_square_wave", function()
         local sr = 44100
         local ns = sr
@@ -387,11 +379,12 @@ describe("Migrated Evidence Tests 20", function()
             local v = math.sin(t * 440.0 * math.pi * 2)
             sound:setSample(i, v > 0 and 0.4 or -0.4)
         end
-        local p = save_wav("square_wave_440hz", sound)
+        local p = OUT .. "square_wave_440hz.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_sawtooth_wave", function()
         local sr = 44100
         local ns = sr
@@ -402,11 +395,12 @@ describe("Migrated Evidence Tests 20", function()
             local v = (phase * 2.0 - 1.0) * 0.4
             sound:setSample(i, v)
         end
-        local p = save_wav("sawtooth_wave_440hz", sound)
+        local p = OUT .. "sawtooth_wave_440hz.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_white_noise", function()
         local sr = 44100
         local ns = sr
@@ -417,11 +411,12 @@ describe("Migrated Evidence Tests 20", function()
             local rv = (st / 2147483648.0) * 2.0 - 1.0
             sound:setSample(i, rv * 0.2)
         end
-        local p = save_wav("white_noise", sound)
+        local p = OUT .. "white_noise.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_silence", function()
         local sr = 44100
         local ns = 22050
@@ -429,11 +424,12 @@ describe("Migrated Evidence Tests 20", function()
         for i = 0, ns - 1 do
             sound:setSample(i, 0.0)
         end
-        local p = save_wav("silence_half_second", sound)
+        local p = OUT .. "silence_half_second.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.audio.saveWAV
     it("generates evidence_audio_waveform_visualization", function()
         local sr = 44100
         local ns = sr
@@ -443,11 +439,14 @@ describe("Migrated Evidence Tests 20", function()
             local v = math.sin(t * 440.0 * math.pi * 2) * 0.5
             sound:setSample(i, v)
         end
-        local p = save_wav("waveform_sine_440hz_audio", sound)
+        local p = OUT .. "waveform_sine_440hz_audio.wav"
+        lurek.audio.saveWAV(sound, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.procgen.newNoiseGenerator
+    -- @covers lurek.procgen.simplexNoise
+    -- @covers lurek.procgen.newNoiseGenerator
     it("generates evidence_noise_to_heightmap_render", function()
         local ng = lurek.procgen.newNoiseGenerator(7777)
         local size = 256
@@ -479,11 +478,12 @@ describe("Migrated Evidence Tests 20", function()
             end
         end
 
-        local p = save_png("noise_heightmap_colored", img)
+        local p = OUT .. "noise_heightmap_colored.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("generates evidence_image_all_effects_grid", function()
         local tile = 64
         local cols = 5
@@ -535,11 +535,13 @@ describe("Migrated Evidence Tests 20", function()
             local row = math.floor((i - 1) / cols)
             canvas:paste(res, col * tile, row * tile)
         end
-        local p = save_png("all_effects_grid", canvas)
+        local p = OUT .. "all_effects_grid.png"
+        lurek.image.savePNG(canvas, p)
         expect_evidence_created(p)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileMap
     it("generates evidence_tilemap_multi_layer", function()
         local tm = lurek.tilemap.newTileMap(16, 16, 8)
         local ground = tm:addLayer("ground", 10, 10)
@@ -549,7 +551,8 @@ describe("Migrated Evidence Tests 20", function()
         tm:setTile(objects, 5, 5, 11)
         tm:setTile(objects, 7, 2, 12)
         local img = tm:drawToImage(16)
-        local p = save_png("multi_layer", img)
+        local p = OUT .. "multi_layer.png"
+        lurek.image.savePNG(img, p)
         expect_evidence_created(p)
     end)
 end)
@@ -559,7 +562,10 @@ local COMBINED_OUT = "tests/output/combined/"
 -- @describe Evidence: combined procgen + pathfinding
 describe("Evidence: combined procgen + pathfinding", function()
 
-    -- @evidence file
+    -- @evidence lurek.pathfind.newPathfinder
+    -- @covers lurek.procgen.cellularAutomata
+    -- @covers lurek.pathfind.newPathfinder
+    -- @covers lurek.pathfind.newNavGrid
     it("generates a cave map then finds a path through it", function()
         local GW, GH = 32, 32
         local SCALE  = 6
@@ -615,7 +621,8 @@ end)
 -- @describe Evidence: combined noise + minimap
 describe("Evidence: combined noise + minimap", function()
 
-    -- @evidence file
+    -- @evidence lurek.minimap.newMinimap
+    -- @covers lurek.minimap.newMinimap
     it("generates terrain heights from FBM noise and renders as a minimap", function()
         local GRID = 24
         local CELL = 8
@@ -659,7 +666,7 @@ end)
 -- @describe Evidence: combined terrain + raycaster
 describe("Evidence: combined terrain + raycaster", function()
 
-    -- @evidence file
+    -- @evidence lurek.raycaster.new
     it("generates a walled maze via noise then renders a raycaster depth view", function()
         local GW, GH = 16, 16
         local ng = lurek.procgen.newNoiseGenerator(99)
@@ -707,7 +714,8 @@ end)
 -- @describe Evidence: combined tilemap + particles
 describe("Evidence: combined tilemap + particles", function()
 
-    -- @evidence file
+    -- @evidence lurek.particle.newSystem
+    -- @covers lurek.particle.newSystem
     it("renders a tilemap scene with a particle burst overlay", function()
         local TILE  = 8
         local MAP_W = 20
@@ -785,7 +793,9 @@ end
 
 -- @describe evidence: golden text outputs
 describe("evidence: golden text outputs", function()
-    -- @evidence file
+    -- @evidence lurek.ai.newStateMachine
+    -- @covers lurek.filesystem.write
+    -- @covers lurek.ai.newStateMachine
     it("writes ai_golden.txt", function()
         local fsm = lurek.ai.newStateMachine()
         fsm:addState("idle", {})
@@ -798,7 +808,8 @@ describe("evidence: golden text outputs", function()
         write_text(text_output_dir("ai") .. "ai_golden.txt", text)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.compute.zeros
+    -- @covers lurek.compute.zeros
     it("writes compute_golden.txt", function()
         local arr = lurek.compute.zeros({2, 3})
         arr:fill(1.5)
@@ -810,7 +821,8 @@ describe("evidence: golden text outputs", function()
         write_text(text_output_dir("compute") .. "compute_golden.txt", text)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.dataframe.fromCSV
+    -- @covers lurek.dataframe.fromCSV
     it("writes dataframe_golden.txt", function()
         local df = lurek.dataframe.fromCSV("values\n10\n20\n30\n40\n50")
         local text = table.concat({
@@ -821,7 +833,8 @@ describe("evidence: golden text outputs", function()
         write_text(text_output_dir("dataframe") .. "dataframe_golden.txt", text)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ecs.newUniverse
+    -- @covers lurek.ecs.newUniverse
     it("writes entity_golden.txt", function()
         local world = lurek.ecs.newUniverse()
         local entity = world:spawn()
@@ -833,7 +846,10 @@ describe("evidence: golden text outputs", function()
         write_text(text_output_dir("ecs") .. "entity_golden.txt", text)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.binary.encodeToml
+    -- @covers lurek.binary.parseToml
+    -- @covers lurek.binary.encodeToml
+    -- @covers lurek.binary.encode
     it("writes migrated Rust TOML evidence", function()
         local input = [[
 [game]
@@ -855,13 +871,14 @@ max_bodies = 1000
         write_text(migrated_path("data", "toml_roundtrip.toml"), encoded)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.binary.encode
     it("writes migrated Rust encode evidence", function()
         write_text(migrated_path("encode", "base64_encode.txt"), lurek.binary.encode("base64", "Lurek2D rocks!"))
         write_text(migrated_path("encode", "hex_encode.txt"), lurek.binary.encode("hex", "Lurek2D rocks!"))
     end)
 
-    -- @evidence file
+    -- @evidence lurek.binary.hash
+    -- @covers lurek.binary.hash
     it("writes migrated Rust hash evidence", function()
         write_text(migrated_path("hash", "md5_hello.txt"), lurek.binary.hash("md5", "Hello, Lurek2D!"))
         write_text(migrated_path("hash", "sha1_engine.txt"), lurek.binary.hash("sha1", "Lurek2D engine test vector"))
@@ -876,7 +893,8 @@ local CANVAS_OUT = "tests/output/canvas/"
 -- @describe Evidence: Canvas lifecycle + PNG visualization
 describe("Evidence: Canvas lifecycle + PNG visualization", function()
 
-    -- @evidence file
+    -- @evidence lurek.render.newCanvas
+    -- @covers lurek.render.newCanvas
     it("PNG: canvas sizes visualized as colored rectangles", function()
         local W, H = 256, 256
         local img = lurek.image.newImageData(W, H)
@@ -907,7 +925,7 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         lurek.image.savePNG(img, CANVAS_OUT .. "canvas_sizes.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.render.newCanvas
     it("PNG: canvas lifecycle state diagram (created/active/released)", function()
         local img = lurek.image.newImageData(128, 64)
         img:fill(30, 30, 40, 255)
@@ -932,7 +950,7 @@ local LAYERS_OUT = "tests/output/layers/"
 -- @describe Evidence: Image layers
 describe("Evidence: Image layers", function()
 
-    -- @evidence file
+    -- @evidence lurek.render.newDrawLayer
     it("merges three color layers into one image", function()
         local W, H = 256, 256
 
@@ -947,7 +965,7 @@ describe("Evidence: Image layers", function()
         lurek.image.savePNG(base, LAYERS_OUT .. "basic_merge.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.render.newDrawLayer
     it("produces distinct opacity levels for a gradient layer stack", function()
         local W, H = 256, 64
 
@@ -964,7 +982,8 @@ describe("Evidence: Image layers", function()
         lurek.image.savePNG(img, LAYERS_OUT .. "opacity.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.render.newDrawLayer
+    -- @covers lurek.render.newDrawLayer
     it("uses DrawLayer to manage z-ordered render queue", function()
         local layer = lurek.render.newDrawLayer()
 
@@ -1033,7 +1052,7 @@ end
 -- @describe Evidence: Shapes
 describe("Evidence: Shapes", function()
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("renders a polygon gallery", function()
         local W, H = 512, 256
         local img = lurek.image.newImageData(W, H)
@@ -1060,7 +1079,7 @@ describe("Evidence: Shapes", function()
         lurek.image.savePNG(img, SHAPES_OUT .. "polygon_gallery.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("renders filled primitive shapes", function()
         local W, H = 400, 400
         local img = lurek.image.newImageData(W, H)
@@ -1085,7 +1104,7 @@ describe("Evidence: Shapes", function()
         lurek.image.savePNG(img, SHAPES_OUT .. "filled_primitives.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("renders a spiral gallery", function()
         local W, H = 400, 300
         local img = lurek.image.newImageData(W, H)
@@ -1098,7 +1117,7 @@ describe("Evidence: Shapes", function()
         lurek.image.savePNG(img, SHAPES_OUT .. "spirals.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("renders concentric shape rings", function()
         local W, H = 300, 300
         local img = lurek.image.newImageData(W, H)
@@ -1127,7 +1146,7 @@ describe("evidence: render summary dashboard", function()
         ensure_evidence_dir("render")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("writes render_summary_dashboard.png", function()
         local W, H = 320, 180
         local img = lurek.image.newImageData(W, H)

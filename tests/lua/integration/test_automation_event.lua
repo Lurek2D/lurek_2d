@@ -1,16 +1,4 @@
 -- Integration: automation script replay + event queue
--- @covers lurek.automation.getLastError
--- @covers lurek.automation.isFailed
--- @covers lurek.automation.load
--- @covers lurek.automation.setCondition
--- @covers lurek.automation.start
--- @covers lurek.automation.stop
--- @covers lurek.automation.unload
--- @covers lurek.automation.update
--- @covers lurek.event.clear
--- @covers lurek.event.wait
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
 
 
 
@@ -25,6 +13,13 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.update
     -- @integration lurek.event.clear
     -- @integration lurek.event.wait
+    -- @covers lurek.event.wait
+    -- @covers lurek.event.clear
+    -- @covers lurek.automation.update
+    -- @covers lurek.automation.unload
+    -- @covers lurek.automation.stop
+    -- @covers lurek.automation.start
+    -- @covers lurek.automation.load
     it("dispatches queued key events with expected payload", function()
         lurek.event.clear()
         lurek.automation.load("evt_payload", {
@@ -121,6 +116,9 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.update
     -- @integration lurek.image.newImageData
     -- @integration lurek.image.savePNG
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.automation.isFailed
     it("passes visualassert action on identical images", function()
         local img = lurek.image.newImageData(2, 2)
         img:setPixel(0, 0, 255, 0, 0, 255)
@@ -160,6 +158,7 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.isFailed
     -- @integration lurek.event.clear
     -- @integration lurek.event.wait
+    -- @covers lurek.automation.setCondition
     it("supports boolean expressions in when gates", function()
         lurek.event.clear()
         automation.setCondition("ready", true)
@@ -203,6 +202,7 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.setCondition
     -- @integration lurek.automation.isFailed
     -- @integration lurek.automation.getLastError
+    -- @covers lurek.automation.getLastError
     it("reports expression failures for assert actions", function()
         automation.setCondition("ready", true)
         automation.setCondition("boss_dead", false)

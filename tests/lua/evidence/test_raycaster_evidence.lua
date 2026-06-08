@@ -4,11 +4,6 @@
 -- The raycaster casts rays through a 2D grid and returns hit data.
 -- Tests verify correctness of ray geometry and render results to a PNG
 -- "depth buffer" image so the output can be visually inspected.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.raycaster.distanceShade
--- @covers lurek.raycaster.new
--- @covers lurek.raycaster.projectColumn
 
 
 
@@ -16,7 +11,12 @@ local OUT = "tests/output/raycaster/"
 
 -- @describe Evidence: lurek.raycaster API contracts
 describe("Evidence: lurek.raycaster API contracts", function()
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.raycaster.projectColumn
+    -- @covers lurek.raycaster.new
+    -- @covers lurek.raycaster.distanceShade
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("saves raycaster depth-buffer as PNG evidence", function()
         local W, H = 128, 64
         local FOV = math.pi / 2
@@ -58,7 +58,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
         expect_evidence_created(OUT .. "raycaster_depth.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("saves top-down occupancy map as PNG evidence", function()
         local W, H = 128, 128
         local rc = lurek.raycaster.new(16, 16)
@@ -94,7 +94,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("saves raycaster FOV rays projection as PNG evidence", function()
         local W, H = 128, 128
         local rc = lurek.raycaster.new(16, 16)
@@ -145,7 +145,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("saves raycaster minimap overlay as PNG evidence", function()
         local W, H = 128, 128
         local rc = lurek.raycaster.new(16, 16)
@@ -178,7 +178,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("saves raycaster shaded walls with height variance as PNG evidence", function()
         local W, H = 128, 64
         local img = lurek.image.newImageData(W, H)
@@ -206,7 +206,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
         expect_evidence_created(path)
     end)
     -- 6. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: raycaster mirrors/reflections", function()
         ensure_evidence_dir("raycaster")
         local W, H = 128, 64
@@ -242,7 +242,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
     end)
 
     -- 7. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: transparent glass walls", function()
         ensure_evidence_dir("raycaster")
         local W, H = 128, 64
@@ -282,7 +282,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
     end)
 
     -- 8. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: varied floor/ceiling textures", function()
         ensure_evidence_dir("raycaster")
         local W, H = 128, 64
@@ -322,7 +322,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
     end)
 
     -- 9. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: animated wall textures", function()
         ensure_evidence_dir("raycaster")
         local W, H = 128, 64
@@ -358,7 +358,7 @@ describe("Evidence: lurek.raycaster API contracts", function()
     end)
 
     -- 10. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: sprite billboarding in raycaster space", function()
         ensure_evidence_dir("raycaster")
         local W, H = 128, 64

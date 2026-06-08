@@ -1,15 +1,5 @@
 -- Evidence tests: advanced UI
 -- Artifacts are generated through lurek.ui native rendering APIs.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.ui.clear
--- @covers lurek.ui.loadLayoutFile
--- @covers lurek.ui.newAreaChart
--- @covers lurek.ui.newBarChart
--- @covers lurek.ui.newLineChart
--- @covers lurek.ui.newPieChart
--- @covers lurek.ui.newScatterPlot
--- @covers lurek.ui.renderToImage
 
 
 
@@ -41,37 +31,53 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         lurek.ui.clear()
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.renderToImage
+    -- @covers lurek.ui.renderToImage
+    -- @covers lurek.ui.loadLayoutFile
+    -- @covers lurek.ui.clear
     it("UI01 PNG: dashboard layout 1280x720", function()
-        render_layout("content/layouts/apps/dashboard.toml", "ui01_dashboard_1280x720.png", 1280, 720)
+        lurek.ui.clear()
+        lurek.ui.loadLayoutFile("content/layouts/apps/dashboard.toml")
+        lurek.ui.renderToImage(1280, 720, OUT .. "ui01_dashboard_1280x720.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.renderToImage
     it("UI02 PNG: settings layout 1366x768", function()
-        render_layout("content/layouts/games/settings_menu.toml", "ui02_settings_1366x768.png", 1366, 768)
+        lurek.ui.clear()
+        lurek.ui.loadLayoutFile("content/layouts/games/settings_menu.toml")
+        lurek.ui.renderToImage(1366, 768, OUT .. "ui02_settings_1366x768.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.renderToImage
     it("UI03 PNG: RPG inventory layout 1280x720", function()
-        render_layout("content/layouts/games/rpg_inventory.toml", "ui03_inventory_1280x720.png", 1280, 720)
+        lurek.ui.clear()
+        lurek.ui.loadLayoutFile("content/layouts/games/rpg_inventory.toml")
+        lurek.ui.renderToImage(1280, 720, OUT .. "ui03_inventory_1280x720.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.renderToImage
     it("UI04 PNG: strategy diplomacy layout 1400x800", function()
-        render_layout("content/layouts/games/strategy_world_diplomacy.toml", "ui04_diplomacy_1400x800.png", 1400, 800)
+        lurek.ui.clear()
+        lurek.ui.loadLayoutFile("content/layouts/games/strategy_world_diplomacy.toml")
+        lurek.ui.renderToImage(1400, 800, OUT .. "ui04_diplomacy_1400x800.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.renderToImage
     it("UI05 PNG: dashboard layout mobile-like 960x540", function()
-        render_layout("content/layouts/apps/dashboard.toml", "ui05_dashboard_960x540.png", 960, 540)
+        lurek.ui.clear()
+        lurek.ui.loadLayoutFile("content/layouts/apps/dashboard.toml")
+        lurek.ui.renderToImage(960, 540, OUT .. "ui05_dashboard_960x540.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.renderToImage
     it("UI06 PNG: settings layout ultrawide 1920x1080", function()
-        render_layout("content/layouts/games/settings_menu.toml", "ui06_settings_1920x1080.png", 1920, 1080)
+        lurek.ui.clear()
+        lurek.ui.loadLayoutFile("content/layouts/games/settings_menu.toml")
+        lurek.ui.renderToImage(1920, 1080, OUT .. "ui06_settings_1920x1080.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.newLineChart
+    -- @covers lurek.ui.newLineChart
     it("UI07 PNG: line chart widget", function()
         local chart = lurek.ui.newLineChart({ width = 500, height = 300, title = "Population Growth" })
         chart:setYMax(120)
@@ -88,7 +94,10 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         save_chart(chart, 500, 300, "ui07_line_chart.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.ui.newBarChart
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("UI08 PNG: bar chart widget", function()
         local chart = lurek.ui.newBarChart({ width = 480, height = 280, title = "Quarter KPI" })
         chart:addSeries("Team A", 0.95, 0.35, 0.35)
@@ -100,10 +109,14 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         chart:addCategory("Q3", { 73, 58, 40 })
         chart:addCategory("Q4", { 68, 62, 51 })
 
-        save_chart(chart, 480, 280, "ui08_bar_chart.png")
+        local img = lurek.image.newImageData(480, 280)
+        img:fill(18, 20, 28, 255)
+        chart:drawToImage(img)
+        lurek.image.savePNG(img, OUT .. "ui08_bar_chart.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.newPieChart
+    -- @covers lurek.ui.newPieChart
     it("UI09 PNG: pie chart widget", function()
         local chart = lurek.ui.newPieChart({ width = 420, height = 280, title = "Traffic Sources" })
         chart:addSegment("Organic", 41, 0.30, 0.75, 0.35)
@@ -114,7 +127,8 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         save_chart(chart, 420, 280, "ui09_pie_chart.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.ui.newAreaChart
     it("UI10 PNG: area chart widget", function()
         local chart = lurek.ui.newAreaChart({ width = 520, height = 300, title = "Capacity Plan" })
         chart:setYMax(140)
@@ -122,10 +136,14 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         chart:addLayer("GPU", { 15, 21, 28, 34, 39, 45, 50, 56 }, 0.35, 0.70, 0.95)
         chart:addLayer("IO",  { 10, 14, 16, 20, 25, 30, 35, 42 }, 0.40, 0.85, 0.45)
 
-        save_chart(chart, 520, 300, "ui10_area_chart.png")
+        local img = lurek.image.newImageData(520, 300)
+        img:fill(18, 20, 28, 255)
+        chart:drawToImage(img)
+        lurek.image.savePNG(img, OUT .. "ui10_area_chart.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.newScatterPlot
+    -- @covers lurek.ui.newScatterPlot
     it("UI11 PNG: scatter plot widget", function()
         local chart = lurek.ui.newScatterPlot({ width = 500, height = 300, title = "Cluster Points" })
         local pts1, pts2 = {}, {}
@@ -141,7 +159,7 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         save_chart(chart, 500, 300, "ui11_scatter_chart.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("UI12 PNG: dense line chart", function()
         local chart = lurek.ui.newLineChart({ width = 560, height = 320, title = "Dense Series" })
         chart:setYMax(1.0)
@@ -154,10 +172,13 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         end
         chart:addSeries("signal", pts, 0.20, 0.80, 0.95)
 
-        save_chart(chart, 560, 320, "ui12_line_dense.png")
+        local img = lurek.image.newImageData(560, 320)
+        img:fill(18, 20, 28, 255)
+        chart:drawToImage(img)
+        lurek.image.savePNG(img, OUT .. "ui12_line_dense.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.newBarChart
     it("UI13 PNG: bar chart 12 categories", function()
         local chart = lurek.ui.newBarChart({ width = 560, height = 300, title = "Monthly Production" })
         chart:addSeries("A", 0.90, 0.35, 0.35)
@@ -170,7 +191,7 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         save_chart(chart, 560, 300, "ui13_bar_12cats.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("UI14 PNG: pie chart 6 segments", function()
         local chart = lurek.ui.newPieChart({ width = 480, height = 300, title = "Revenue Mix" })
         chart:addSegment("A", 28, 0.90, 0.30, 0.30)
@@ -180,10 +201,13 @@ describe("Evidence: advanced lurek.ui features via native API", function()
         chart:addSegment("E", 12, 0.75, 0.35, 0.85)
         chart:addSegment("F", 10, 0.45, 0.85, 0.85)
 
-        save_chart(chart, 480, 300, "ui14_pie_6seg.png")
+        local img = lurek.image.newImageData(480, 300)
+        img:fill(18, 20, 28, 255)
+        chart:drawToImage(img)
+        lurek.image.savePNG(img, OUT .. "ui14_pie_6seg.png")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.ui.newAreaChart
     it("UI15 PNG: area chart 4 layers", function()
         local chart = lurek.ui.newAreaChart({ width = 560, height = 320, title = "Stacked Capacity" })
         chart:setYMax(220)

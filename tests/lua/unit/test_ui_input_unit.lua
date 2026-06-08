@@ -264,7 +264,6 @@ describe("input + ui integration", function()
     -- @covers LTextInput.isFocused
     -- @covers LTextInput.setMaxLength
     -- @covers LTextInput.setOnChange
-    -- @covers LTextInput.setText
     -- @covers lurek.ui.clearFocus
     -- @covers lurek.ui.keypressed
     -- @covers lurek.ui.setFocus

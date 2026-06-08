@@ -43,7 +43,6 @@ describe("CursorManager", function()
         local mgr = lurek.cursor.newManager()
         expect_true(mgr:isVisible())
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:setVisible
     -- @covers LCursorManager:isVisible
@@ -54,7 +53,6 @@ describe("CursorManager", function()
         mgr:setVisible(true)
         expect_true(mgr:isVisible())
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:setLocked
     -- @covers LCursorManager:isLocked
@@ -64,7 +62,6 @@ describe("CursorManager", function()
         mgr:setLocked(true)
         expect_true(mgr:isLocked())
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:getPosition
     it("getPosition returns x, y", function()
@@ -73,7 +70,6 @@ describe("CursorManager", function()
         expect_type("number", x)
         expect_type("number", y)
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:setSystem
     it("setSystem accepts cursor name", function()
@@ -82,7 +78,6 @@ describe("CursorManager", function()
         -- No crash = system cursor set
         expect_true(true)
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:setContext
     -- @covers LCursorManager:getContext
@@ -91,7 +86,6 @@ describe("CursorManager", function()
         mgr:setContext("combat")
         expect_equal("combat", mgr:getContext())
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:addRule
     -- @covers LCursorManager:removeRule
@@ -102,7 +96,6 @@ describe("CursorManager", function()
         -- No crash = success
         expect_true(true)
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:update
     -- @covers LCursorManager:getPosition
@@ -113,7 +106,6 @@ describe("CursorManager", function()
         expect_near(100, x, 0.1)
         expect_near(200, y, 0.1)
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:enableTrail
     -- @covers LCursorManager:disableTrail
@@ -123,7 +115,6 @@ describe("CursorManager", function()
         mgr:disableTrail()
         expect_true(true)
     end)
-
     -- @covers lurek.cursor.newManager
     -- @covers LCursorManager:enableZoom
     -- @covers LCursorManager:disableZoom
@@ -175,7 +166,6 @@ describe("CustomCursor", function()
         expect_equal(32, w)
         expect_equal(32, h)
     end)
-
     -- @covers lurek.cursor.newCustom
     -- @covers LCustomCursor:getHotspot
     it("getHotspot returns hotspot position", function()
@@ -184,7 +174,6 @@ describe("CustomCursor", function()
         expect_equal(8, hx)
         expect_equal(4, hy)
     end)
-
     -- @covers lurek.cursor.newCustom
     -- @covers LCustomCursor:setPixel
     -- @covers LCustomCursor:getPixel
@@ -220,7 +209,6 @@ describe("AnimatedCursor", function()
         anim:addFrame(frame, 100)
         expect_equal(1, anim:frameCount())
     end)
-
     -- @covers lurek.cursor.newAnimated
     -- @covers LAnimatedCursor:addFrame
     -- @covers LAnimatedCursor:currentIndex
@@ -230,7 +218,6 @@ describe("AnimatedCursor", function()
         anim:addFrame(frame, 100)
         expect_equal(0, anim:currentIndex())
     end)
-
     -- @covers lurek.cursor.newAnimated
     -- @covers LAnimatedCursor:addFrame
     -- @covers LAnimatedCursor:update
@@ -244,7 +231,6 @@ describe("AnimatedCursor", function()
         anim:update(0.06) -- 60ms > 50ms frame duration
         expect_equal(1, anim:currentIndex())
     end)
-
     -- @covers lurek.cursor.newAnimated
     -- @covers LAnimatedCursor:addFrame
     -- @covers LAnimatedCursor:update
@@ -260,7 +246,6 @@ describe("AnimatedCursor", function()
         anim:reset()
         expect_equal(0, anim:currentIndex())
     end)
-
     -- @covers lurek.cursor.newAnimated
     -- @covers LAnimatedCursor:addFrame
     -- @covers LAnimatedCursor:setPulse
@@ -274,7 +259,6 @@ describe("AnimatedCursor", function()
         expect_type("number", scale)
         expect_true(scale >= 0.8 and scale <= 1.2)
     end)
-
     -- @covers LAnimatedCursor:clearPulse
     -- @covers LAnimatedCursor:addFrame
     -- @covers LAnimatedCursor:setPulse

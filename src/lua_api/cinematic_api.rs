@@ -14,7 +14,7 @@
 //! - `type()` → `"LCinematic"`.
 //! - `typeOf(name)` → boolean.
 
-use crate::cinematic::{Cinematic, CinematicTimeline, CinematicClip, ClipType, TimelineState};
+use crate::cinematic::{Cinematic, CinematicTimeline, CinematicClip, ClipType};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -57,10 +57,8 @@ impl LuaUserData for LuaCinematicTimeline {
                     let target = clip_table.get("target")?;
                     let props_tbl: LuaTable = clip_table.get("properties").unwrap_or_else(|_| _lua.create_table().unwrap());
                     let mut props = HashMap::new();
-                    for pair in props_tbl.pairs::<String, f32>() {
-                        if let Ok((k, v)) = pair {
-                            props.insert(k, v);
-                        }
+                    for (k, v) in props_tbl.pairs::<String, f32>().flatten() {
+                        props.insert(k, v);
                     }
                     let easing = clip_table.get("easing").ok();
                     ClipType::Tween { target, properties: props, easing }

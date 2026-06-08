@@ -2584,8 +2584,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let mut lua_minimap = minimap_ud.borrow_mut::<super::minimap_api::LuaMinimap>()?;
 
             // Get minimap grid dimensions
-            let grid_w = lua_minimap.inner.grid_width() as u32;
-            let grid_h = lua_minimap.inner.grid_height() as u32;
+            let grid_w = lua_minimap.inner.grid_width();
+            let grid_h = lua_minimap.inner.grid_height();
 
             // Sync terrain: iterate through all minimap cells and set based on tilemap solidity
             for y in 1..=grid_h {

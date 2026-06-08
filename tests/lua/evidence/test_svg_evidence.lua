@@ -1,20 +1,5 @@
 -- Evidence tests: svg module
 -- Artifacts are generated from lurek.svg APIs.
--- @covers lurek.svg.load
--- @covers LSvgImage:getWidth
--- @covers LSvgImage:getHeight
--- @covers LSvgImage:draw
--- @covers LSvgImage:getElementIds
--- @covers LSvgImage:setElementVisible
--- @covers LSvgImage:setElementColor
--- @covers LSvgImage:setElementTransform
--- @covers LSvgImage:getElementPoints
--- @covers LSvgImage:getAdjacencies
--- @covers LSvgImage:cacheToCanvas
--- @covers LSvgImage:getCanvasKey
--- @covers LSvgImage:getCanvas
--- @covers LSvgImage:type
--- @covers LSvgImage:typeOf
 
 local OUT = "tests/output/svg/"
 
@@ -25,6 +10,21 @@ describe("Evidence: svg", function()
     end)
 
     -- @evidence file
+    -- @covers LSvgImage:typeOf
+    -- @covers LSvgImage:type
+    -- @covers LSvgImage:getCanvas
+    -- @covers LSvgImage:getCanvasKey
+    -- @covers LSvgImage:cacheToCanvas
+    -- @covers LSvgImage:getAdjacencies
+    -- @covers LSvgImage:getElementPoints
+    -- @covers LSvgImage:setElementTransform
+    -- @covers LSvgImage:setElementColor
+    -- @covers LSvgImage:setElementVisible
+    -- @covers LSvgImage:getElementIds
+    -- @covers LSvgImage:draw
+    -- @covers LSvgImage:getHeight
+    -- @covers LSvgImage:getWidth
+    -- @covers lurek.svg.load
     it("TXT: SVG structure, adjacencies and points report", function()
         local svg = lurek.svg.load("tests/lua/unit/test.svg")
         expect_equal("LSvgImage", svg:type())

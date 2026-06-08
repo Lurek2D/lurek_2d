@@ -108,7 +108,6 @@ local function test_playback_control()
     expect_equal(tl:getState(), "stopped")
     expect_equal(tl:getTime(), 0.0)
   end)
-  -- @covers Lcorrect
   it("isPlaying returns correct state", function()
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 1.0, { type = "signal", name = "test" })
@@ -175,7 +174,6 @@ local function test_labels_and_branching()
   end)
 end
 local function test_timeline_queries()
-  -- @covers Lcurrent
   it("getState returns current state", function()
     local tl = lurek.cinematic.newTimeline()
     expect_equal(tl:getState(), "stopped")

@@ -43,6 +43,7 @@ impl TileMap {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn tile_intersects_camera(
         &self,
         tx: u32,
@@ -61,6 +62,7 @@ impl TileMap {
             && world_y <= cam_y + cam_h
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn push_tile_render_commands(
         &self,
         cmds: &mut Vec<RenderCommand>,
@@ -83,7 +85,7 @@ impl TileMap {
                 mode: DrawMode::Fill,
                 x: sx + tw * 0.5,
                 y: sy + th * 0.5,
-                r: (tw * 0.5).min(6.0).max(3.0),
+                r: (tw * 0.5).clamp(3.0, 6.0),
             });
         } else {
             cmds.push(RenderCommand::Rectangle {

@@ -28,7 +28,6 @@ describe("position", function()
         expect_near(0.0, x, 0.001)
         expect_near(0.0, y, 0.001)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:setPosition
     -- @covers lurek.camera.new
@@ -39,7 +38,6 @@ describe("position", function()
         expect_near(50.0, x, 0.001)
         expect_near(75.0, y, 0.001)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:lookAt
     -- @covers lurek.camera.new
@@ -50,7 +48,6 @@ describe("position", function()
         expect_near(100.0, x, 0.001)
         expect_near(200.0, y, 0.001)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:move
     -- @covers LCamera:setPosition
@@ -73,7 +70,6 @@ describe("zoom", function()
         local cam = lurek.camera.new(320, 240)
         expect_near(1.0, cam:getZoom(), 0.001)
     end)
-
     -- @covers LCamera:getZoom
     -- @covers LCamera:setZoom
     -- @covers lurek.camera.new
@@ -92,7 +88,6 @@ describe("rotation", function()
         local cam = lurek.camera.new(320, 240)
         expect_near(0.0, cam:getRotation(), 0.001)
     end)
-
     -- @covers LCamera:getRotation
     -- @covers LCamera:setRotation
     -- @covers lurek.camera.new
@@ -113,7 +108,6 @@ describe("viewport", function()
         expect_near(800.0, w, 0.001)
         expect_near(600.0, h, 0.001)
     end)
-
     -- @covers LCamera:getViewport
     -- @covers LCamera:setViewport
     -- @covers lurek.camera.new
@@ -156,7 +150,6 @@ describe("getVisibleArea()", function()
         expect_type("number", w)
         expect_type("number", h)
     end)
-
     -- @covers LCamera:getVisibleArea
     -- @covers LCamera:setZoom
     -- @covers lurek.camera.new
@@ -178,7 +171,6 @@ describe("shake()", function()
         local cam = lurek.camera.new(320, 240)
         cam:shake(5.0, 0.5)
     end)
-
     -- @covers LCamera:shake
     -- @covers LCamera:toScreen
     -- @covers LCamera:update
@@ -218,7 +210,6 @@ describe("setBounds / removeBounds", function()
         local cam = lurek.camera.new(800, 600)
         cam:setBounds(0, 0, 1600, 1200)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:setBounds
     -- @covers LCamera:setPosition
@@ -233,7 +224,6 @@ describe("setBounds / removeBounds", function()
         expect_near(50.0, x, 0.001)
         expect_near(50.0, y, 0.001)
     end)
-
     -- @covers LCamera:removeBounds
     -- @covers LCamera:setBounds
     -- @covers lurek.camera.new
@@ -242,7 +232,6 @@ describe("setBounds / removeBounds", function()
         cam:setBounds(0, 0, 2000, 2000)
         cam:removeBounds()
     end)
-
     -- @covers LCamera:removeBounds
     -- @covers lurek.camera.new
     it("removeBounds does not error when no bounds are set", function()
@@ -259,7 +248,6 @@ describe("setTarget / clearTarget", function()
         local cam = lurek.camera.new(320, 240)
         cam:setTarget(100.0, 200.0)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:setFollowSmooth
     -- @covers LCamera:setTarget
@@ -274,7 +262,6 @@ describe("setTarget / clearTarget", function()
         expect_near(200.0, x, 0.001)
         expect_near(300.0, y, 0.001)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:setFollowSmooth
     -- @covers LCamera:setTarget
@@ -289,7 +276,6 @@ describe("setTarget / clearTarget", function()
         expect_true(x > 0.0 and x < 200.0, "x should move toward the target without snapping")
         expect_near(0.0, y, 0.001)
     end)
-
     -- @covers LCamera:clearTarget
     -- @covers LCamera:setTarget
     -- @covers lurek.camera.new
@@ -298,7 +284,6 @@ describe("setTarget / clearTarget", function()
         cam:setTarget(50.0, 75.0)
         cam:clearTarget()
     end)
-
     -- @covers LCamera:clearTarget
     -- @covers lurek.camera.new
     it("clearTarget does not error when no target is set", function()
@@ -315,7 +300,6 @@ describe("setFollowSmooth", function()
         local cam = lurek.camera.new(320, 240)
         cam:setFollowSmooth(5.0)
     end)
-
     -- @covers LCamera:setFollowSmooth
     -- @covers lurek.camera.new
     it("does not error for speed 0 (snap)", function()
@@ -332,7 +316,6 @@ describe("setDeadZone", function()
         local cam = lurek.camera.new(800, 600)
         cam:setDeadZone(40.0, 30.0)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:setDeadZone
     -- @covers LCamera:setFollowSmooth
@@ -349,7 +332,6 @@ describe("setDeadZone", function()
         expect_near(0.0, x, 0.001)
         expect_near(0.0, y, 0.001)
     end)
-
     -- @covers LCamera:setDeadZone
     -- @covers lurek.camera.new
     it("does not error for zero dead zone", function()
@@ -366,7 +348,6 @@ describe("setLookAhead", function()
         local cam = lurek.camera.new(320, 240)
         cam:setLookAhead(1.0)
     end)
-
     -- @covers LCamera:setLookAhead
     -- @covers lurek.camera.new
     it("does not error for multiplier 0.0 (off)", function()
@@ -445,7 +426,6 @@ describe("camera effects  getEffectiveZoom baseline", function()
         local ez = cam:getEffectiveZoom()
         expect_near(1.5, ez, 0.001)
     end)
-
     -- @covers LCamera:getEffectiveZoom
     -- @covers lurek.camera.new
     it("returns a number", function()
@@ -470,7 +450,6 @@ describe("camera effects  zoomPulse", function()
         local ez = cam:getEffectiveZoom()
         expect_true(ez > 1.0, "effective zoom exceeds base after pulse")
     end)
-
     -- @covers LCamera:getEffectiveZoom
     -- @covers LCamera:setZoom
     -- @covers LCamera:update
@@ -496,7 +475,6 @@ describe("camera effects  sway", function()
         cam:startSway(5.0, 3.0, 1.0)
         expect_true(cam:isSway(), "isSway returns true after start")
     end)
-
     -- @covers LCamera:isSway
     -- @covers LCamera:startSway
     -- @covers LCamera:stopSway
@@ -507,14 +485,12 @@ describe("camera effects  sway", function()
         cam:stopSway()
         expect_true(not cam:isSway(), "isSway returns false after stop")
     end)
-
     -- @covers LCamera:isSway
     -- @covers lurek.camera.new
     it("isSway is false on fresh camera", function()
         local cam = lurek.camera.new(320, 240)
         expect_true(not cam:isSway(), "isSway is false by default")
     end)
-
     -- @covers LCamera:getEffectOffset
     -- @covers lurek.camera.new
     it("getEffectOffset returns two numbers", function()
@@ -523,7 +499,6 @@ describe("camera effects  sway", function()
         expect_type("number", dx)
         expect_type("number", dy)
     end)
-
     -- @covers LCamera:getEffectOffset
     -- @covers lurek.camera.new
     it("getEffectOffset is zero when no sway active", function()
@@ -532,7 +507,6 @@ describe("camera effects  sway", function()
         expect_near(0.0, dx, 0.001)
         expect_near(0.0, dy, 0.001)
     end)
-
     -- @covers LCamera:getEffectOffset
     -- @covers LCamera:startSway
     -- @covers LCamera:update
@@ -547,7 +521,6 @@ describe("camera effects  sway", function()
         local magnitude = math.abs(dx) + math.abs(dy)
         expect_true(magnitude > 0.5, "sway offset magnitude > 0.5 after advance")
     end)
-
     -- @covers LCamera:isSway
     -- @covers LCamera:startSway
     -- @covers lurek.camera.new
@@ -568,7 +541,6 @@ describe("camera effects  breathing", function()
         cam:startBreathing()
         expect_true(cam:isBreathing(), "isBreathing returns true after start")
     end)
-
     -- @covers LCamera:isBreathing
     -- @covers LCamera:startBreathing
     -- @covers LCamera:stopBreathing
@@ -579,14 +551,12 @@ describe("camera effects  breathing", function()
         cam:stopBreathing()
         expect_true(not cam:isBreathing(), "isBreathing returns false after stop")
     end)
-
     -- @covers LCamera:isBreathing
     -- @covers lurek.camera.new
     it("isBreathing is false on fresh camera", function()
         local cam = lurek.camera.new(320, 240)
         expect_true(not cam:isBreathing(), "isBreathing is false by default")
     end)
-
     -- @covers LCamera:getEffectiveZoom
     -- @covers LCamera:setZoom
     -- @covers LCamera:startBreathing
@@ -603,7 +573,6 @@ describe("camera effects  breathing", function()
         local diff = math.abs(ez - 1.0)
         expect_true(diff > 0.001, "breathing shifts effective zoom")
     end)
-
     -- @covers LCamera:isBreathing
     -- @covers LCamera:startBreathing
     -- @covers lurek.camera.new
@@ -612,7 +581,6 @@ describe("camera effects  breathing", function()
         cam:startBreathing(0.01, 0.3) -- explicit params
         expect_true(cam:isBreathing(), "breathing active with explicit params")
     end)
-
     -- @covers LCamera:isBreathing
     -- @covers LCamera:startBreathing
     -- @covers lurek.camera.new
@@ -649,7 +617,6 @@ describe("Camera2D regression coverage", function()
         expect_false(cam:updatePath(0.1))
         expect_near(1.0, cam:pathProgress(), 0.001)
     end)
-
     -- @covers LCamera:followPath
     -- @covers LCamera:getPosition
     -- @covers LCamera:updatePath
@@ -664,7 +631,6 @@ describe("Camera2D regression coverage", function()
         expect_near(0.0, y, 0.001)
         expect_false(cam:updatePath(0.1))
     end)
-
     -- @covers LCamera:followPath
     -- @covers LCamera:getPosition
     -- @covers LCamera:updatePath
@@ -678,7 +644,6 @@ describe("Camera2D regression coverage", function()
         expect_near(100.0, x, 1.0)
         expect_near(0.0, y, 1.0)
     end)
-
     -- @covers LCamera:followPath
     -- @covers LCamera:getPosition
     -- @covers LCamera:setPosition
@@ -694,7 +659,6 @@ describe("Camera2D regression coverage", function()
         expect_near(5.0, x, 0.001)
         expect_near(6.0, y, 0.001)
     end)
-
     -- @covers LCamera:getZoom
     -- @covers LCamera:setZoom
     -- @covers LCamera:stopZoom
@@ -714,7 +678,6 @@ describe("Camera2D regression coverage", function()
         expect_false(cam:updateZoom(0.1))
         expect_near(mid_zoom, cam:getZoom(), 0.001)
     end)
-
     -- @covers LCamera:getZoom
     -- @covers LCamera:setZoom
     -- @covers LCamera:updateZoom
@@ -729,7 +692,6 @@ describe("Camera2D regression coverage", function()
         expect_near(3.0, cam:getZoom(), 0.001)
         expect_false(cam:updateZoom(0.1))
     end)
-
     -- @covers LCamera:clearParallaxFactors
     -- @covers LCamera:getParallaxFactor
     -- @covers LCamera:setParallaxFactor
@@ -752,8 +714,17 @@ end)
 -- @describe Camera2D:followPath
 describe("Camera2D:followPath ", function()
     -- @covers LCamera:followPath
+    it("followPath does not crash on a path of points [LCamera:followPath]", function()
+        local cam = lurek.camera.new(320, 240)
+        local path = {{x=0,y=0},{x=100,y=0},{x=100,y=100}}
+        local ok, _ = pcall(function()
+            cam:followPath(path, 50.0)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.camera.new
-    it("followPath does not crash on a path of points", function()
+    it("followPath does not crash on a path of points [lurek.camera.new]", function()
         local cam = lurek.camera.new(320, 240)
         local path = {{x=0,y=0},{x=100,y=0},{x=100,y=100}}
         local ok, _ = pcall(function()
@@ -766,8 +737,16 @@ end)
 -- @describe Camera2D:setParallaxFactor
 describe("Camera2D:setParallaxFactor ", function()
     -- @covers LCamera:setParallaxFactor
+    it("setParallaxFactor stores the factor without crash [LCamera:setParallaxFactor]", function()
+        local cam = lurek.camera.new(320, 240)
+        local ok, _ = pcall(function()
+            cam:setParallaxFactor("bg", 0.5)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.camera.new
-    it("setParallaxFactor stores the factor without crash", function()
+    it("setParallaxFactor stores the factor without crash [lurek.camera.new]", function()
         local cam = lurek.camera.new(320, 240)
         local ok, _ = pcall(function()
             cam:setParallaxFactor("bg", 0.5)
@@ -793,7 +772,6 @@ describe("camera strict: newCamera / apply / reset / attach / detach / type / ty
         expect_type("string", cam:type())
         expect_type("boolean", cam:typeOf("LObject"))
     end)
-
     -- @covers LCamera:apply
     -- @covers lurek.camera.newCamera
     it("LCamera apply is callable", function()
@@ -801,7 +779,6 @@ describe("camera strict: newCamera / apply / reset / attach / detach / type / ty
         local ok = pcall(function() cam:apply() end)
         expect_type("boolean", ok)
     end)
-
     -- @covers LCamera:reset
     -- @covers lurek.camera.newCamera
     it("LCamera reset is callable", function()
@@ -809,7 +786,6 @@ describe("camera strict: newCamera / apply / reset / attach / detach / type / ty
         local ok = pcall(function() cam:reset() end)
         expect_type("boolean", ok)
     end)
-
     -- @covers LCamera:attach
     -- @covers LCamera:detach
     -- @covers lurek.camera.newCamera
@@ -836,7 +812,6 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(0.5, minz, 0.001)
         expect_near(2.0, maxz, 0.001)
     end)
-
     -- @covers LCamera:getZoom
     -- @covers LCamera:setZoom
     -- @covers LCamera:setZoomConstraints
@@ -849,7 +824,6 @@ describe("Camera2D constraint + easing extensions", function()
         cam:update(0.016)
         expect_true(cam:getZoom() <= 3.0)
     end)
-
     -- @covers LCamera:setFollowEasing
     -- @covers LCamera:getFollowEasing
     -- @covers lurek.camera.new
@@ -858,7 +832,6 @@ describe("Camera2D constraint + easing extensions", function()
         cam:setFollowEasing("smoothstep")
         expect_equal("smoothstep", cam:getFollowEasing())
     end)
-
     -- @covers LCamera:onWindowResize
     -- @covers LCamera:getViewport
     -- @covers lurek.camera.new
@@ -871,7 +844,6 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(1920.0, w, 0.001)
         expect_near(1080.0, h, 0.001)
     end)
-
     -- @covers LCamera:onWindowResizeScaled
     -- @covers LCamera:getViewport
     -- @covers lurek.camera.new
@@ -884,7 +856,6 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(800.0, w, 0.001)
         expect_near(600.0, h, 0.001)
     end)
-
     -- @covers LCamera:presetTightFollow
     -- @covers LCamera:getFollowSmooth
     -- @covers LCamera:getDeadZone
@@ -900,7 +871,6 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(20.0, h, 0.001)
         expect_near(0.5, cam:getLookAhead(), 0.001)
     end)
-
     -- @covers LCamera:presetCinematicFollow
     -- @covers LCamera:getFollowSmooth
     -- @covers LCamera:getDeadZone
@@ -916,7 +886,6 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(100.0, h, 0.001)
         expect_near(0.0, cam:getLookAhead(), 0.001)
     end)
-
     -- @covers LCamera:presetBalancedFollow
     -- @covers LCamera:getFollowSmooth
     -- @covers LCamera:getDeadZone
@@ -932,7 +901,6 @@ describe("Camera2D constraint + easing extensions", function()
         expect_near(40.0, h, 0.001)
         expect_near(0.3, cam:getLookAhead(), 0.001)
     end)
-
     -- @covers LCamera:presetAggressiveFollow
     -- @covers LCamera:getFollowSmooth
     -- @covers LCamera:getDeadZone
@@ -961,7 +929,6 @@ describe("CameraRig API", function()
         expect_equal("LCameraRig", rig:type())
         expect_true(rig:typeOf("LCameraRig"))
     end)
-
     -- @covers LCameraRig:splitScreen
     -- @covers LCameraRig:has
     -- @covers LCameraRig:getViewport
@@ -977,7 +944,6 @@ describe("CameraRig API", function()
         expect_near(640.0, w, 0.001)
         expect_near(720.0, h, 0.001)
     end)
-
     -- @covers LCameraRig:minimap
     -- @covers LCameraRig:pictureInPicture
     -- @covers LCameraRig:names
@@ -989,7 +955,6 @@ describe("CameraRig API", function()
         local names = rig:names()
         expect_true(#names >= 2)
     end)
-
     -- @covers LCameraRig:setPosition
     -- @covers LCameraRig:setZoom
     -- @covers LCameraRig:setTarget
@@ -1006,7 +971,6 @@ describe("CameraRig API", function()
         expect_true(rig:apply("left"))
         expect_false(rig:apply("missing_name"))
     end)
-
     -- @covers LCameraRig:remove
     -- @covers LCameraRig:has
     -- @covers lurek.camera.newRig
@@ -1037,7 +1001,6 @@ describe("Camera2D accessor completeness", function()
         expect_near(3, w, 0.001)
         expect_near(4, h, 0.001)
     end)
-
     -- @covers LCamera:getTarget
     -- @covers LCamera:setTarget
     -- @covers lurek.camera.new
@@ -1051,7 +1014,6 @@ describe("Camera2D accessor completeness", function()
         expect_near(11, x, 0.001)
         expect_near(22, y, 0.001)
     end)
-
     -- @covers LCamera:getDeadZone
     -- @covers LCamera:setDeadZone
     -- @covers lurek.camera.new
@@ -1065,7 +1027,6 @@ describe("Camera2D accessor completeness", function()
         expect_near(50, w, 0.001)
         expect_near(30, h, 0.001)
     end)
-
     -- @covers LCamera:getFollowSmooth
     -- @covers LCamera:getLookAhead
     -- @covers LCamera:setFollowSmooth
@@ -1078,7 +1039,6 @@ describe("Camera2D accessor completeness", function()
         expect_near(3.5, cam:getFollowSmooth(), 0.001)
         expect_near(0.75, cam:getLookAhead(), 0.001)
     end)
-
     -- @covers LCamera:getShakeOffset
     -- @covers LCamera:getRenderOffset
     -- @covers LCamera:shake
@@ -1095,7 +1055,6 @@ describe("Camera2D accessor completeness", function()
         expect_type("number", rx)
         expect_type("number", ry)
     end)
-
     -- @covers LCamera:setZoomDamping
     -- @covers LCamera:getZoomDamping
     -- @covers LCamera:setRotationDamping
@@ -1108,7 +1067,6 @@ describe("Camera2D accessor completeness", function()
         expect_near(0.3, cam:getZoomDamping(), 0.001)
         expect_near(0.6, cam:getRotationDamping(), 0.001)
     end)
-
     -- @covers LCamera:setRotationConstraints
     -- @covers LCamera:getRotationConstraints
     -- @covers lurek.camera.new
@@ -1121,7 +1079,6 @@ describe("Camera2D accessor completeness", function()
         expect_near(-0.5, min_r, 0.001)
         expect_near(0.5, max_r, 0.001)
     end)
-
     -- @covers LCamera:getRotation
     -- @covers LCamera:setRotation
     -- @covers LCamera:setRotationConstraints
@@ -1154,7 +1111,6 @@ describe("camera migrated from integration/scene_camera", function()
         expect_near(320, x1, 0.001)
         expect_near(240, y1, 0.001)
     end)
-
     -- @covers LCamera:getZoom
     -- @covers LCamera:setZoom
     -- @covers lurek.camera.newCamera
@@ -1167,7 +1123,6 @@ describe("camera migrated from integration/scene_camera", function()
         cam:setZoom(0.5)
         expect_near(0.5, cam:getZoom(), 0.001)
     end)
-
     -- @covers LCamera:getRotation
     -- @covers LCamera:setRotation
     -- @covers lurek.camera.newCamera
@@ -1176,7 +1131,6 @@ describe("camera migrated from integration/scene_camera", function()
         cam:setRotation(0.5)
         expect_near(0.5, cam:getRotation(), 0.001)
     end)
-
     -- @covers LCamera:getPosition
     -- @covers LCamera:setBounds
     -- @covers LCamera:setPosition
@@ -1208,12 +1162,8 @@ describe("unit: migrated from integration/test_camera_tilemap_scroll.lua", funct
         end
         -- @covers LCamera:getPosition
         -- @covers LCamera:setPosition
-        -- @covers LTileMap:addLayer
-        -- @covers LTileMap:getTile
-        -- @covers LTileMap:setTile
         -- @covers LTileMap:worldToTile
         -- @covers lurek.camera.newCamera
-        -- @covers lurek.tilemap.newTileMap
         it("loads tilemap chunk when camera moves into range", function()
             local cam = lurek.camera.newCamera()
             local tm = build_scroll_map()
@@ -1232,16 +1182,12 @@ describe("unit: migrated from integration/test_camera_tilemap_scroll.lua", funct
             expect_type("number", ty1)
             expect_true(tx1 >= tx0, "camera move right should not move to an earlier tile column")
         end)
-
         -- @covers LCamera:getViewport
         -- @covers LCamera:setPosition
         -- @covers LCamera:setViewport
-        -- @covers LTileMap:addLayer
         -- @covers LTileMap:getTile
-        -- @covers LTileMap:setTile
         -- @covers LTileMap:worldToTile
         -- @covers lurek.camera.newCamera
-        -- @covers lurek.tilemap.newTileMap
         it("unloads distant chunks as camera moves away", function()
             local cam = lurek.camera.newCamera()
             local tm = build_scroll_map()
@@ -1264,7 +1210,6 @@ describe("unit: migrated from integration/test_camera_tilemap_scroll.lua", funct
             expect_true(last_visible >= first_visible, "viewport right edge should not move backward")
             expect_true(new_first_visible > first_visible, "camera move right should shift first visible tile forward")
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_input_camera.lua
@@ -1295,7 +1240,6 @@ describe("unit: migrated from integration/test_input_camera.lua", function()
             expect_near(320.0, world_x, 0.001, "world x matches screen x")
             expect_near(240.0, world_y, 0.001, "world y matches screen y")
         end)
-
         -- @covers LCamera:getPosition
         -- @covers LCamera:getZoom
         -- @covers LCamera:setPosition
@@ -1316,7 +1260,6 @@ describe("unit: migrated from integration/test_input_camera.lua", function()
             expect_near(100.0, world_x, 0.001, "world x offset by cam pan")
             expect_near(50.0,  world_y, 0.001, "world y offset by cam pan")
         end)
-
         -- @covers LCamera:getZoom
         -- @covers LCamera:setPosition
         -- @covers LCamera:setZoom
@@ -1332,6 +1275,5 @@ describe("unit: migrated from integration/test_input_camera.lua", function()
 
             expect_near(100.0, world_x, 0.001, "zoom 2x halves screen x to world x")
         end)
-
 end)
 test_summary()

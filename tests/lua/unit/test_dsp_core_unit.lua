@@ -126,8 +126,6 @@ end)
 
 -- @describe lurek.dsp analysis
 describe("lurek.dsp analysis", function()
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.analyzeRms
     it("analyzeRms returns a number in range for a sine wave", function()
         local sound = make_test_tone(4410, 0.5)
@@ -137,8 +135,6 @@ describe("lurek.dsp analysis", function()
         expect_equal(rms <= 1.0, true)
     end)
 
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.analyzePeak
     it("analyzePeak returns a number in range for a sine wave", function()
         local sound = make_test_tone(4410, 0.5)
@@ -148,8 +144,6 @@ describe("lurek.dsp analysis", function()
         expect_equal(peak <= 1.0, true)
     end)
 
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.analyzePeak
     -- @covers lurek.dsp.applyGain
     it("applyGain increases peak when gain is above one", function()
@@ -160,8 +154,6 @@ describe("lurek.dsp analysis", function()
         expect_equal(after > before, true)
     end)
 
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.analyzeFft
     it("analyzeFft returns bins with frequency and magnitude fields", function()
         local sound = make_test_tone(4410, 0.5)
@@ -278,8 +270,6 @@ end)
 
 -- @describe lurek.dsp filters
 describe("lurek.dsp filters", function()
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.applyLowpass
     it("applyLowpass accepts LSoundData", function()
         local sound = make_test_tone(4410, 0.5)
@@ -288,8 +278,6 @@ describe("lurek.dsp filters", function()
         end)
     end)
 
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.applyHighpass
     it("applyHighpass accepts LSoundData", function()
         local sound = make_test_tone(4410, 0.5)
@@ -298,8 +286,6 @@ describe("lurek.dsp filters", function()
         end)
     end)
 
-    -- @covers LSoundData:setSample
-    -- @covers lurek.audio.newSoundData
     -- @covers lurek.dsp.applyBandpass
     it("applyBandpass accepts LSoundData", function()
         local sound = make_test_tone(4410, 0.5)
@@ -368,7 +354,6 @@ describe("lurek.dsp bus effects errors", function()
     end)
 
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.dsp.removeEffectFromBus
     it("removeEffectFromBus rejects missing effect id", function()
         lurek.audio.create_bus("test_dsp_rm_err_bus")
@@ -379,7 +364,6 @@ describe("lurek.dsp bus effects errors", function()
     end)
 
     -- @covers lurek.audio.create_bus
-    -- @covers lurek.dsp.addEffectToBus
     -- @covers lurek.dsp.setEffectParam
     it("setEffectParam rejects missing effect id", function()
         lurek.audio.create_bus("test_dsp_param_err_bus")

@@ -28,7 +28,6 @@ describe("postfx.setShaderErrorDisplay / getShaderErrorDisplay", function()
         lurek.effect.setShaderErrorDisplay(true)
         expect_equal(lurek.effect.getShaderErrorDisplay(), true)
     end)
-
     -- @covers lurek.effect.getShaderErrorDisplay
     -- @covers lurek.effect.setShaderErrorDisplay
     it("setShaderErrorDisplay(false) turns it off", function()
@@ -36,7 +35,6 @@ describe("postfx.setShaderErrorDisplay / getShaderErrorDisplay", function()
         lurek.effect.setShaderErrorDisplay(false)
         expect_equal(lurek.effect.getShaderErrorDisplay(), false)
     end)
-
 end)
 
 -- @describe PostFxStack:dedup
@@ -55,7 +53,6 @@ describe("PostFxStack:dedup", function()
         local removed = stack:dedup()
         expect_equal(removed, 0)
     end)
-
     -- @covers LPostFxStack:dedup
     -- @covers lurek.effect.newStack
     it("dedup on stack with no duplicates returns 0", function()
@@ -64,7 +61,6 @@ describe("PostFxStack:dedup", function()
         local removed = stack:dedup()
         expect_equal(removed, 0)
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:dedup
     -- @covers LPostFxStack:len
@@ -80,7 +76,6 @@ describe("PostFxStack:dedup", function()
         expect_equal(1, removed)
         expect_equal(1, stack:len())
     end)
-
 end)
 
 -- Effect Overlay/Water (merged from test_effect_overlay_water.lua)
@@ -116,7 +111,6 @@ describe("LuaOverlay water overlay", function()
         expect_near(4.0, w.frequency, 1e-6)
         expect_near(2.0, w.speed, 1e-6)
     end)
-
     -- @covers LOverlay:getWater
     -- @covers LOverlay:setWaterTint
     it("setWaterTint stores tint channels and strength", function()
@@ -128,7 +122,6 @@ describe("LuaOverlay water overlay", function()
         expect_near(0.9, w.tint_b, 1e-6)
         expect_near(0.7, w.tint_strength, 1e-6)
     end)
-
     -- @covers LOverlay:setCustomShader
     it("setCustomShader stores a shader name", function()
         local ov = make_overlay()
@@ -167,7 +160,6 @@ describe("LuaOverlay water does not affect non-water state", function()
         local w = ov:getWater()
         expect_equal(w.enabled, false)
     end)
-
     -- @covers LOverlay:getWater
     -- @covers LOverlay:setWater
     it("setWater then getWater returns consistent values on second call", function()
@@ -179,7 +171,6 @@ describe("LuaOverlay water does not affect non-water state", function()
         expect_equal(w1.frequency, w2.frequency)
         expect_equal(w1.speed, w2.speed)
     end)
-
     -- @covers LOverlay:getWater
     -- @covers LOverlay:setWater
     it("update advances water time when enabled", function()
@@ -189,7 +180,6 @@ describe("LuaOverlay water does not affect non-water state", function()
         local w = ov:getWater()
         expect_near(w.time, 1.0, 1e-6)
     end)
-
     -- @covers LOverlay:getWater
     it("update leaves water time unchanged when disabled", function()
         local ov = make_overlay()
@@ -320,21 +310,18 @@ describe("lurek.effect.newEffect", function()
         local eff = lurek.effect.newEffect("blur")
         expect_equal("blur", eff:getTypeName())
     end)
-
     -- @covers LPostFxEffect:isBuiltIn
     -- @covers lurek.effect.newEffect
     it("effect:isBuiltIn returns true for newEffect", function()
         local eff = lurek.effect.newEffect("vignette")
         expect_equal(true, eff:isBuiltIn())
     end)
-
     -- @covers LPostFxEffect:isEnabled
     -- @covers lurek.effect.newEffect
     it("effect:isEnabled returns true by default", function()
         local eff = lurek.effect.newEffect("bloom")
         expect_equal(true, eff:isEnabled())
     end)
-
     -- @covers LPostFxEffect:isEnabled
     -- @covers LPostFxEffect:setEnabled
     -- @covers lurek.effect.newEffect
@@ -345,14 +332,12 @@ describe("lurek.effect.newEffect", function()
         eff:setEnabled(true)
         expect_equal(true, eff:isEnabled())
     end)
-
     -- @covers LPostFxEffect:type
     -- @covers lurek.effect.newEffect
     it("effect:type returns 'LPostFxEffect'", function()
         local eff = lurek.effect.newEffect("blur")
         expect_equal("LPostFxEffect", eff:type())
     end)
-
     -- @covers LPostFxEffect:typeOf
     -- @covers lurek.effect.newEffect
     it("effect:typeOf('PostFxEffect') returns true", function()
@@ -378,21 +363,18 @@ describe("lurek.effect.newStack", function()
         local stack = lurek.effect.newStack()
         expect_equal(0, stack:len())
     end)
-
     -- @covers LPostFxStack:getEffectCount
     -- @covers lurek.effect.newStack
     it("stack:getEffectCount returns 0 for empty stack", function()
         local stack = lurek.effect.newStack()
         expect_equal(0, stack:getEffectCount())
     end)
-
     -- @covers LPostFxStack:isEmpty
     -- @covers lurek.effect.newStack
     it("stack:isEmpty returns true when empty", function()
         local stack = lurek.effect.newStack()
         expect_equal(true, stack:isEmpty())
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:len
     -- @covers lurek.effect.newEffect
@@ -403,7 +385,6 @@ describe("lurek.effect.newStack", function()
         stack:add(eff)
         expect_equal(1, stack:len())
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:len
     -- @covers lurek.effect.newEffect
@@ -414,7 +395,6 @@ describe("lurek.effect.newStack", function()
         stack:add(lurek.effect.newEffect("blur"))
         expect_equal(2, stack:len())
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:len
     -- @covers LPostFxStack:remove
@@ -427,7 +407,6 @@ describe("lurek.effect.newStack", function()
         stack:remove(eff)
         expect_equal(0, stack:len())
     end)
-
     -- @covers LPostFxStack:remove
     -- @covers lurek.effect.newEffect
     -- @covers lurek.effect.newStack
@@ -437,7 +416,6 @@ describe("lurek.effect.newStack", function()
         expect_equal(false, stack:remove(eff))
         expect_equal(0, stack:len())
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:clear
     -- @covers LPostFxStack:len
@@ -450,14 +428,12 @@ describe("lurek.effect.newStack", function()
         stack:clear()
         expect_equal(0, stack:len())
     end)
-
     -- @covers LPostFxStack:type
     -- @covers lurek.effect.newStack
     it("stack:type returns 'LPostFxStack'", function()
         local stack = lurek.effect.newStack()
         expect_equal("LPostFxStack", stack:type())
     end)
-
     -- @covers LPostFxStack:getHeight
     -- @covers LPostFxStack:getWidth
     -- @covers lurek.effect.newStack
@@ -466,7 +442,6 @@ describe("lurek.effect.newStack", function()
         expect_equal(320, stack:getWidth())
         expect_equal(240, stack:getHeight())
     end)
-
     -- @covers LPostFxStack:getDimensions
     -- @covers lurek.effect.newStack
     it("stack:getDimensions returns (w, h)", function()
@@ -475,7 +450,6 @@ describe("lurek.effect.newStack", function()
         expect_equal(640, w)
         expect_equal(480, h)
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:isEnabled
     -- @covers LPostFxStack:setEnabled
@@ -489,7 +463,6 @@ describe("lurek.effect.newStack", function()
         stack:setEnabled(1, true)
         expect_equal(true, stack:isEnabled(1))
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:getEffect
     -- @covers lurek.effect.newEffect
@@ -549,49 +522,42 @@ describe("lurek.effect.newEffect built-in types", function()
         expect_equal(e:getEffectType(), "bloom")
         expect_equal(e:isBuiltIn(), true)
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("creates blur effect", function()
         local e = lurek.effect.newEffect("blur")
         expect_equal(e:getEffectType(), "blur")
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("creates crt effect", function()
         local e = lurek.effect.newEffect("crt")
         expect_equal(e:getEffectType(), "crt")
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("creates godrays effect", function()
         local e = lurek.effect.newEffect("godrays")
         expect_equal(e:getEffectType(), "godrays")
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("creates vignette effect", function()
         local e = lurek.effect.newEffect("vignette")
         expect_equal(e:getEffectType(), "vignette")
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("creates colourgrade effect", function()
         local e = lurek.effect.newEffect("colourgrade")
         expect_equal(e:getEffectType(), "colourgrade")
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("creates chromatic effect", function()
         local e = lurek.effect.newEffect("chromatic")
         expect_equal(e:getEffectType(), "chromatic")
     end)
-
     -- @covers lurek.effect.newEffect
     it("rejects invalid effect type", function()
         expect_error(function()
@@ -640,7 +606,6 @@ describe("PostFxEffect parameters", function()
         local bloom = lurek.effect.newEffect("bloom")
         expect_equal(bloom:hasParameter("threshold"), true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("getParameter returns value", function()
@@ -648,7 +613,6 @@ describe("PostFxEffect parameters", function()
         local t = bloom:getParameter("threshold")
         expect_type("number", t)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setParameter
     -- @covers lurek.effect.newEffect
@@ -658,7 +622,6 @@ describe("PostFxEffect parameters", function()
         local v = bloom:getParameter("threshold")
         expect_equal(math.abs(v - 0.5) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("getParameter uses default for missing", function()
@@ -666,7 +629,6 @@ describe("PostFxEffect parameters", function()
         local v = bloom:getParameter("nonexistent", 42.0)
         expect_equal(math.abs(v - 42.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameterNames
     -- @covers lurek.effect.newEffect
     it("getParameterNames returns sorted list", function()
@@ -687,7 +649,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() bloom:setThreshold(0.8) end)
         expect_equal(math.abs(bloom:getParameter("threshold") - 0.8) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setIntensity
     -- @covers lurek.effect.newEffect
@@ -696,7 +657,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() bloom:setIntensity(2.0) end)
         expect_equal(math.abs(bloom:getParameter("intensity") - 2.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setRadius
     -- @covers lurek.effect.newEffect
@@ -705,7 +665,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() blur:setRadius(5.0) end)
         expect_equal(math.abs(blur:getParameter("radius") - 5.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setStrength
     -- @covers lurek.effect.newEffect
@@ -714,7 +673,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() vig:setStrength(0.8) end)
         expect_equal(math.abs(vig:getParameter("strength") - 0.8) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setScanlineStrength
     -- @covers lurek.effect.newEffect
@@ -723,7 +681,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() crt:setScanlineStrength(0.4) end)
         expect_equal(math.abs(crt:getParameter("scanline_strength") - 0.4) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setOffset
     -- @covers lurek.effect.newEffect
@@ -732,7 +689,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() chr:setOffset(3.0) end)
         expect_equal(math.abs(chr:getParameter("offset") - 3.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setBrightness
     -- @covers lurek.effect.newEffect
@@ -741,7 +697,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() cg:setBrightness(1.5) end)
         expect_equal(math.abs(cg:getParameter("brightness") - 1.5) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setContrast
     -- @covers lurek.effect.newEffect
@@ -750,7 +705,6 @@ describe("PostFxEffect convenience setters", function()
         expect_no_error(function() cg:setContrast(0.9) end)
         expect_equal(math.abs(cg:getParameter("contrast") - 0.9) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers LPostFxEffect:setSaturation
     -- @covers lurek.effect.newEffect
@@ -769,7 +723,6 @@ describe("PostFxEffect enable/disable", function()
         local bloom = lurek.effect.newEffect("bloom")
         expect_equal(bloom:isEnabled(), true)
     end)
-
     -- @covers LPostFxEffect:isEnabled
     -- @covers LPostFxEffect:setEnabled
     -- @covers lurek.effect.newEffect
@@ -778,7 +731,6 @@ describe("PostFxEffect enable/disable", function()
         bloom:setEnabled(false)
         expect_equal(bloom:isEnabled(), false)
     end)
-
     -- @covers LPostFxEffect:isEnabled
     -- @covers LPostFxEffect:setEnabled
     -- @covers lurek.effect.newEffect
@@ -798,7 +750,6 @@ describe("PostFxEffect auto uniforms", function()
         local bloom = lurek.effect.newEffect("bloom")
         expect_equal(bloom:isAutoUniforms(), false)
     end)
-
     -- @covers LPostFxEffect:enableAutoUniforms
     -- @covers LPostFxEffect:isAutoUniforms
     -- @covers lurek.effect.newEffect
@@ -807,7 +758,6 @@ describe("PostFxEffect auto uniforms", function()
         bloom:enableAutoUniforms()
         expect_equal(bloom:isAutoUniforms(), true)
     end)
-
     -- @covers LPostFxEffect:disableAutoUniforms
     -- @covers LPostFxEffect:enableAutoUniforms
     -- @covers LPostFxEffect:isAutoUniforms
@@ -835,7 +785,6 @@ describe("ScreenTransition", function()
         expect_equal(transition:isActive(), false)
         expect_equal(transition:isDone(), false)
     end)
-
     -- @covers LScreenTransition:kind
     it("roundtrips every supported kind", function()
         local kinds = {"fade", "wipe", "iris_wipe", "dissolve"}
@@ -858,7 +807,6 @@ describe("ScreenTransition", function()
         expect_equal(transition:update(1.0), true)
         expect_near(transition:progress(), 0.5, 0.001)
     end)
-
     -- @covers LScreenTransition:progress
     -- @covers LScreenTransition:reverse
     -- @covers LScreenTransition:update
@@ -868,7 +816,6 @@ describe("ScreenTransition", function()
         transition:update(1.0)
         expect_near(transition:progress(), 0.5, 0.001)
     end)
-
     -- @covers LScreenTransition:isActive
     -- @covers LScreenTransition:isDone
     -- @covers LScreenTransition:play
@@ -890,7 +837,6 @@ describe("PostFxEffect type() method", function()
         local bloom = lurek.effect.newEffect("bloom")
         expect_equal(bloom:type(), "LPostFxEffect")
     end)
-
     -- @covers LPostFxEffect:type
     -- @covers lurek.effect.newPass
     it("custom pass also returns PostFxEffect", function()
@@ -909,7 +855,6 @@ describe("lurek.effect.newStack", function()
         expect_equal(stack:getWidth(), 800)
         expect_equal(stack:getHeight(), 600)
     end)
-
     -- @covers LPostFxStack:getHeight
     -- @covers LPostFxStack:getWidth
     -- @covers lurek.effect.newStack
@@ -918,14 +863,12 @@ describe("lurek.effect.newStack", function()
         expect_equal(stack:getWidth(), 1920)
         expect_equal(stack:getHeight(), 1080)
     end)
-
     -- @covers LPostFxStack:getEffectCount
     -- @covers lurek.effect.newStack
     it("starts empty", function()
         local stack = lurek.effect.newStack()
         expect_equal(stack:getEffectCount(), 0)
     end)
-
     -- @covers LPostFxStack:type
     -- @covers lurek.effect.newStack
     it("type is PostFxStack", function()
@@ -946,7 +889,6 @@ describe("PostFxStack add/remove", function()
         stack:add(bloom)
         expect_equal(stack:getEffectCount(), 1)
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:getEffectCount
     -- @covers lurek.effect.newEffect
@@ -958,7 +900,6 @@ describe("PostFxStack add/remove", function()
         stack:add(lurek.effect.newEffect("crt"))
         expect_equal(stack:getEffectCount(), 3)
     end)
-
     -- @covers LPostFxStack:add
     -- @covers LPostFxStack:getEffectCount
     -- @covers LPostFxStack:remove
@@ -1007,7 +948,6 @@ describe("PostFxStack dimensions", function()
         expect_equal(w, 800)
         expect_equal(h, 600)
     end)
-
     -- @covers LPostFxStack:getHeight
     -- @covers LPostFxStack:getWidth
     -- @covers LPostFxStack:resize
@@ -1040,56 +980,48 @@ describe("New effect types construction and defaults", function()
         local e = lurek.effect.newEffect("pixelate")
         expect_equal(math.abs(e:getParameter("block_size") - 4.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("sepia has strength default 1.0", function()
         local e = lurek.effect.newEffect("sepia")
         expect_equal(math.abs(e:getParameter("strength") - 1.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:isBuiltIn
     -- @covers lurek.effect.newEffect
     it("grayscale is built-in", function()
         local e = lurek.effect.newEffect("grayscale")
         expect_equal(e:isBuiltIn(), true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("invert has strength default 1.0", function()
         local e = lurek.effect.newEffect("invert")
         expect_equal(math.abs(e:getParameter("strength") - 1.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("scanlines has spacing default 4.0", function()
         local e = lurek.effect.newEffect("scanlines")
         expect_equal(math.abs(e:getParameter("spacing") - 4.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("edgedetect has strength default 1.0", function()
         local e = lurek.effect.newEffect("edgedetect")
         expect_equal(math.abs(e:getParameter("strength") - 1.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("hueshift has angle default 0.0", function()
         local e = lurek.effect.newEffect("hueshift")
         expect_equal(math.abs(e:getParameter("angle") - 0.0) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getParameter
     -- @covers lurek.effect.newEffect
     it("noise has strength default 0.1", function()
         local e = lurek.effect.newEffect("noise")
         expect_equal(math.abs(e:getParameter("strength") - 0.1) < 0.001, true)
     end)
-
     -- @covers LPostFxEffect:getEffectType
     -- @covers lurek.effect.newEffect
     it("all new types round-trip through getEffectType", function()
@@ -1101,7 +1033,6 @@ describe("New effect types construction and defaults", function()
         end
         expect_equal(all_ok, true)
     end)
-
     -- @covers lurek.effect.getEffectTypes
     it("getEffectTypes includes all new types", function()
         local types = lurek.effect.getEffectTypes()
@@ -1132,7 +1063,6 @@ describe("lurek.effect.newStack (extended)", function()
         local s = lurek.effect.newStack()
         s:beginCapture()
     end)
-
     -- @covers LPostFxStack:beginCapture
     -- @covers LPostFxStack:endCapture
     -- @covers lurek.effect.newStack
@@ -1141,7 +1071,6 @@ describe("lurek.effect.newStack (extended)", function()
         s:beginCapture()
         s:endCapture()
     end)
-
     -- @covers LPostFxStack:apply
     -- @covers LPostFxStack:beginCapture
     -- @covers LPostFxStack:endCapture
@@ -1152,7 +1081,6 @@ describe("lurek.effect.newStack (extended)", function()
         s:endCapture()
         s:apply()
     end)
-
     -- @covers LPostFxStack:apply
     -- @covers LPostFxStack:beginCapture
     -- @covers LPostFxStack:endCapture
@@ -1255,7 +1183,6 @@ describe("lurek.effect factory", function()
         expect_equal(ov:getWidth(), 1024)
         expect_equal(ov:getHeight(), 768)
     end)
-
     -- @covers LOverlay:getHeight
     -- @covers LOverlay:getWidth
     it("creates an overlay with default dimensions", function()
@@ -1263,7 +1190,6 @@ describe("lurek.effect factory", function()
         expect_equal(ov:getWidth(), 800)
         expect_equal(ov:getHeight(), 600)
     end)
-
     -- @covers LOverlay:getDimensions
     it("returns dimensions as tuple", function()
         local ov = lurek.effect.newOverlay(640, 480)
@@ -1325,7 +1251,6 @@ describe("overlay core", function()
         expect_equal(ov:getWidth(), 1920)
         expect_equal(ov:getHeight(), 1080)
     end)
-
     -- @covers LOverlay:isActive
     -- @covers LOverlay:update
     it("update does not error on empty overlay", function()
@@ -1333,7 +1258,6 @@ describe("overlay core", function()
         ov:update(0.016)
         expect_equal(ov:isActive(), false)
     end)
-
     -- @covers LOverlay:render
     it("draw does not error", function()
         local ov = lurek.effect.newOverlay()
@@ -1377,7 +1301,6 @@ describe("overlay ambient", function()
         expect_near(b, 1.0, 0.001)
         expect_near(a, 1.0, 0.001)
     end)
-
     -- @covers LOverlay:isActive
     -- @covers LOverlay:isAmbientEnabled
     -- @covers LOverlay:setAmbientEnabled
@@ -1387,7 +1310,6 @@ describe("overlay ambient", function()
         expect_equal(ov:isAmbientEnabled(), true)
         expect_equal(ov:isActive(), true)
     end)
-
     -- @covers LOverlay:isAmbientEnabled
     -- @covers LOverlay:setAmbientEnabled
     it("disables ambient lighting", function()
@@ -1396,7 +1318,6 @@ describe("overlay ambient", function()
         ov:setAmbientEnabled(false)
         expect_equal(ov:isAmbientEnabled(), false)
     end)
-
     -- @covers LOverlay:pullAmbientFromLight
     -- @covers LOverlay:pushAmbientToLight
     -- @covers LOverlay:syncAmbientWithLight
@@ -1409,7 +1330,6 @@ describe("overlay ambient", function()
         expect_type("boolean", ok_push)
         expect_type("boolean", ok_sync)
     end)
-
     -- @covers LOverlay:getAmbientColor
     -- @covers LOverlay:setAmbientColor
     it("sets and gets ambient color with alpha", function()
@@ -1421,7 +1341,6 @@ describe("overlay ambient", function()
         expect_near(b, 0.5, 0.001)
         expect_near(a, 0.6, 0.001)
     end)
-
     -- @covers LOverlay:getAmbientColor
     -- @covers LOverlay:setAmbientColor
     it("ambient color alpha defaults to 1.0", function()
@@ -1430,7 +1349,6 @@ describe("overlay ambient", function()
         local _, _, _, a = ov:getAmbientColor()
         expect_near(a, 1.0, 0.001)
     end)
-
     -- @covers LOverlay:getTimeOfDay
     -- @covers LOverlay:setTimeOfDay
     it("sets and gets time of day", function()
@@ -1438,7 +1356,6 @@ describe("overlay ambient", function()
         ov:setTimeOfDay(6.5)
         expect_near(ov:getTimeOfDay(), 6.5, 0.001)
     end)
-
     -- @covers LOverlay:getAmbientColor
     -- @covers LOverlay:setAmbientEnabled
     -- @covers LOverlay:setTimeOfDay
@@ -1454,7 +1371,6 @@ describe("overlay ambient", function()
         expect_near(g, 0.1, 0.01)
         expect_near(b, 0.3, 0.01)
     end)
-
     -- @covers LOverlay:getAmbientColor
     -- @covers LOverlay:setAmbientEnabled
     -- @covers LOverlay:setTimeOfDay
@@ -1469,7 +1385,6 @@ describe("overlay ambient", function()
         expect_near(g, 0.8, 0.01)
         expect_near(b, 0.6, 0.01)
     end)
-
     -- @covers LOverlay:getAmbientColor
     -- @covers LOverlay:setAmbientEnabled
     -- @covers LOverlay:setTimeOfDay
@@ -1498,7 +1413,6 @@ describe("overlay weather", function()
         expect_equal(ov:isWeatherEnabled(), false)
         expect_equal(ov:getWeather(), "none")
     end)
-
     -- @covers LOverlay:isWeatherEnabled
     -- @covers LOverlay:setWeatherEnabled
     it("enables weather", function()
@@ -1506,7 +1420,6 @@ describe("overlay weather", function()
         ov:setWeatherEnabled(true)
         expect_equal(ov:isWeatherEnabled(), true)
     end)
-
     -- @covers LOverlay:getWeather
     -- @covers LOverlay:setWeather
     it("sets weather type", function()
@@ -1514,7 +1427,6 @@ describe("overlay weather", function()
         ov:setWeather("rain")
         expect_equal(ov:getWeather(), "rain")
     end)
-
     -- @covers LOverlay:getWeather
     -- @covers LOverlay:setWeather
     it("roundtrips all weather types", function()
@@ -1525,7 +1437,6 @@ describe("overlay weather", function()
             expect_equal(ov:getWeather(), wt)
         end
     end)
-
     -- @covers LOverlay:setWeather
     it("rejects invalid weather type", function()
         local ov = lurek.effect.newOverlay()
@@ -1541,7 +1452,6 @@ describe("overlay weather", function()
         ov:setWeatherIntensity(0.8)
         expect_near(ov:getWeatherIntensity(), 0.8, 0.001)
     end)
-
     -- @covers LOverlay:getWindDirection
     -- @covers LOverlay:setWindDirection
     it("sets and gets wind direction", function()
@@ -1549,7 +1459,6 @@ describe("overlay weather", function()
         ov:setWindDirection(1.57)
         expect_near(ov:getWindDirection(), 1.57, 0.001)
     end)
-
     -- @covers LOverlay:getWindSpeed
     -- @covers LOverlay:setWindSpeed
     it("sets and gets wind speed", function()
@@ -1573,7 +1482,6 @@ describe("overlay flash", function()
         ov:flash(1, 0, 0, 1, 0.5)
         expect_equal(ov:isFlashing(), true)
     end)
-
     -- @covers LOverlay:flash
     -- @covers LOverlay:isFlashing
     -- @covers LOverlay:update
@@ -1585,7 +1493,6 @@ describe("overlay flash", function()
         ov:update(0.3)
         expect_equal(ov:isFlashing(), false)
     end)
-
     -- @covers LOverlay:flash
     -- @covers LOverlay:isFlashing
     -- @covers LOverlay:update
@@ -1595,7 +1502,6 @@ describe("overlay flash", function()
         ov:update(0.2)
         expect_equal(ov:isFlashing(), false)
     end)
-
     -- @covers LOverlay:flash
     -- @covers LOverlay:isActive
     it("flash activates isActive", function()
@@ -1619,7 +1525,6 @@ describe("overlay shake", function()
         ov:shake(10, 0.5)
         expect_equal(ov:isShaking(), true)
     end)
-
     -- @covers LOverlay:isShaking
     -- @covers LOverlay:shake
     -- @covers LOverlay:update
@@ -1631,7 +1536,6 @@ describe("overlay shake", function()
         ov:update(0.6)
         expect_equal(ov:isShaking(), false)
     end)
-
     -- @covers LOverlay:getShakeOffset
     -- @covers LOverlay:shake
     -- @covers LOverlay:update
@@ -1644,7 +1548,6 @@ describe("overlay shake", function()
         local total = math.abs(x) + math.abs(y)
         expect_equal(total > 0, true)
     end)
-
     -- @covers LOverlay:getShakeOffset
     -- @covers LOverlay:shake
     -- @covers LOverlay:update
@@ -1672,7 +1575,6 @@ describe("overlay fade", function()
         ov:fade(0, 0, 0, 1, 1.0)
         expect_equal(ov:isFading(), true)
     end)
-
     -- @covers LOverlay:fade
     -- @covers LOverlay:isFading
     -- @covers LOverlay:update
@@ -1684,7 +1586,6 @@ describe("overlay fade", function()
         ov:update(1.1)
         expect_equal(ov:isFading(), false)
     end)
-
     -- @covers LOverlay:fade
     -- @covers LOverlay:isFading
     -- @covers LOverlay:update
@@ -1709,7 +1610,6 @@ describe("overlay clouds", function()
         expect_equal(ov:isCloudShadowsEnabled(), false)
         expect_equal(ov:getCloudCount(), 5)
     end)
-
     -- @covers LOverlay:isActive
     -- @covers LOverlay:isCloudShadowsEnabled
     -- @covers LOverlay:setCloudShadows
@@ -1719,7 +1619,6 @@ describe("overlay clouds", function()
         expect_equal(ov:isCloudShadowsEnabled(), true)
         expect_equal(ov:isActive(), true)
     end)
-
     -- @covers LOverlay:isCloudShadowsEnabled
     -- @covers LOverlay:setCloudShadows
     it("disables cloud shadows", function()
@@ -1728,7 +1627,6 @@ describe("overlay clouds", function()
         ov:setCloudShadows(false)
         expect_equal(ov:isCloudShadowsEnabled(), false)
     end)
-
     -- @covers LOverlay:getCloudCount
     -- @covers LOverlay:setCloudCount
     it("sets and gets cloud count", function()
@@ -1736,7 +1634,6 @@ describe("overlay clouds", function()
         ov:setCloudCount(12)
         expect_equal(ov:getCloudCount(), 12)
     end)
-
     -- @covers LOverlay:getCloudSpeed
     -- @covers LOverlay:setCloudSpeed
     it("sets and gets cloud speed", function()
@@ -1744,7 +1641,6 @@ describe("overlay clouds", function()
         ov:setCloudSpeed(35.0)
         expect_near(ov:getCloudSpeed(), 35.0, 0.001)
     end)
-
     -- @covers LOverlay:getCloudScale
     -- @covers LOverlay:setCloudScale
     it("sets and gets cloud scale", function()
@@ -1752,7 +1648,6 @@ describe("overlay clouds", function()
         ov:setCloudScale(2.5)
         expect_near(ov:getCloudScale(), 2.5, 0.001)
     end)
-
     -- @covers LOverlay:getCloudOpacity
     -- @covers LOverlay:setCloudOpacity
     it("sets and gets cloud opacity", function()
@@ -1775,7 +1670,6 @@ describe("overlay fog", function()
         expect_equal(ov:isFogEnabled(), false)
         expect_near(ov:getFogDensity(), 0.3, 0.001)
     end)
-
     -- @covers LOverlay:isFogEnabled
     -- @covers LOverlay:setFogEnabled
     it("enables fog", function()
@@ -1783,7 +1677,6 @@ describe("overlay fog", function()
         ov:setFogEnabled(true)
         expect_equal(ov:isFogEnabled(), true)
     end)
-
     -- @covers LOverlay:getFogDensity
     -- @covers LOverlay:setFogDensity
     it("sets and gets fog density", function()
@@ -1791,7 +1684,6 @@ describe("overlay fog", function()
         ov:setFogDensity(0.7)
         expect_near(ov:getFogDensity(), 0.7, 0.001)
     end)
-
     -- @covers LOverlay:getFogColor
     -- @covers LOverlay:setFogColor
     it("sets and gets fog color", function()
@@ -1803,7 +1695,6 @@ describe("overlay fog", function()
         expect_near(b, 0.6, 0.001)
         expect_near(a, 0.9, 0.001)
     end)
-
     -- @covers LOverlay:getFogColor
     -- @covers LOverlay:setFogColor
     it("fog color alpha defaults to 1.0", function()
@@ -1827,7 +1718,6 @@ describe("overlay heat haze", function()
         expect_equal(ov:isHeatHazeEnabled(), false)
         expect_near(ov:getHeatHazeIntensity(), 0.5, 0.001)
     end)
-
     -- @covers LOverlay:isHeatHazeEnabled
     -- @covers LOverlay:setHeatHazeEnabled
     it("enables heat haze", function()
@@ -1835,7 +1725,6 @@ describe("overlay heat haze", function()
         ov:setHeatHazeEnabled(true)
         expect_equal(ov:isHeatHazeEnabled(), true)
     end)
-
     -- @covers LOverlay:getHeatHazeIntensity
     -- @covers LOverlay:setHeatHazeIntensity
     it("sets and gets intensity", function()
@@ -1858,7 +1747,6 @@ describe("overlay vignette", function()
         expect_equal(ov:isVignetteEnabled(), false)
         expect_near(ov:getVignetteStrength(), 0.5, 0.001)
     end)
-
     -- @covers LOverlay:isVignetteEnabled
     -- @covers LOverlay:setVignetteEnabled
     it("enables vignette", function()
@@ -1866,7 +1754,6 @@ describe("overlay vignette", function()
         ov:setVignetteEnabled(true)
         expect_equal(ov:isVignetteEnabled(), true)
     end)
-
     -- @covers LOverlay:getVignetteStrength
     -- @covers LOverlay:setVignetteStrength
     it("sets and gets strength", function()
@@ -1889,7 +1776,6 @@ describe("overlay film grain", function()
         expect_equal(ov:isFilmGrainEnabled(), false)
         expect_near(ov:getFilmGrainIntensity(), 0.3, 0.001)
     end)
-
     -- @covers LOverlay:isFilmGrainEnabled
     -- @covers LOverlay:setFilmGrainEnabled
     it("enables film grain", function()
@@ -1897,7 +1783,6 @@ describe("overlay film grain", function()
         ov:setFilmGrainEnabled(true)
         expect_equal(ov:isFilmGrainEnabled(), true)
     end)
-
     -- @covers LOverlay:getFilmGrainIntensity
     -- @covers LOverlay:setFilmGrainIntensity
     it("sets and gets intensity", function()
@@ -1921,7 +1806,6 @@ describe("overlay lightning", function()
         -- Lightning is active (makes overlay active)
         expect_equal(ov:isActive(), true)
     end)
-
     -- @covers LOverlay:getLightningColor
     -- @covers LOverlay:setLightningColor
     it("sets and gets lightning color", function()
@@ -1933,7 +1817,6 @@ describe("overlay lightning", function()
         expect_near(b, 0.8, 0.001)
         expect_near(a, 0.7, 0.001)
     end)
-
     -- @covers LOverlay:getLightningColor
     -- @covers LOverlay:setLightningColor
     it("lightning color alpha defaults to 0.8", function()
@@ -1971,7 +1854,6 @@ describe("overlay combined", function()
         expect_equal(ov:isVignetteEnabled(), true)
         expect_equal(ov:isFlashing(), true)
     end)
-
     -- @covers LOverlay:clear
     -- @covers LOverlay:fade
     -- @covers LOverlay:flash
@@ -2002,7 +1884,6 @@ describe("overlay combined", function()
         ov:clear()
         expect_equal(ov:isActive(), false)
     end)
-
     -- @covers LOverlay:flash
     -- @covers LOverlay:isFlashing
     -- @covers LOverlay:isShaking
@@ -2032,7 +1913,6 @@ describe("effect missing explicit coverage", function()
         expect_type("table", enabled)
         expect_true(#enabled >= 1)
     end)
-
     -- @covers LPostFxStack:clearFeedback
     -- @covers LPostFxStack:getFeedback
     -- @covers LPostFxStack:setFeedback
@@ -2044,7 +1924,6 @@ describe("effect missing explicit coverage", function()
         stack:clearFeedback()
         expect_near(0.0, stack:getFeedback(), 0.001)
     end)
-
     -- @covers LImageEffect:removeByIndex
     -- @covers LImageEffect:removeByName
     -- @covers lurek.effect.newImageEffect
@@ -2056,7 +1935,6 @@ describe("effect missing explicit coverage", function()
         expect_type("boolean", ie:removeByIndex(0))
         expect_type("boolean", ie:removeByName("blur"))
     end)
-
     -- @covers LOverlay:triggerShake
     it("triggerShake can be called safely", function()
         local ov = lurek.effect.newOverlay()
@@ -2235,7 +2113,6 @@ describe("lurek.effect.newImageEffect construction (single name)", function()
         local fx = lurek.effect.newImageEffect("blur")
         expect_equal(fx:effectCount(), 1)
     end)
-
     -- @covers lurek.effect.newImageEffect
     it("first effect type is 'blur'", function()
         local fx = lurek.effect.newImageEffect("blur")
@@ -2249,7 +2126,6 @@ describe("lurek.effect.newImageEffect construction (single name)", function()
         local fx = lurek.effect.newImageEffect("blur", { radius = 4 })
         expect_equal(fx:effectCount(), 1)
     end)
-
     -- @covers lurek.effect.newImageEffect
     it("newImageEffect('blur', {radius=4}) sets radius parameter", function()
         local fx = lurek.effect.newImageEffect("blur", { radius = 4 })
@@ -2266,7 +2142,6 @@ describe("lurek.effect.newImageEffect construction (chain table)", function()
         local fx = lurek.effect.newImageEffect({ { type = "blur", radius = 2 }, { type = "sepia" } })
         expect_equal(fx:effectCount(), 2)
     end)
-
     -- @covers lurek.effect.newImageEffect
     it("first effect in chain is 'blur'", function()
         local fx = lurek.effect.newImageEffect({ { type = "blur", radius = 2 }, { type = "sepia" } })
@@ -2296,7 +2171,6 @@ describe("ImageEffect:addEffect", function()
         local e = fx:addEffect("vignette")
         expect_equal(e ~= nil, true)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers lurek.effect.newImageEffect
     it("addEffect returns PostFxEffect with correct type", function()
@@ -2304,7 +2178,6 @@ describe("ImageEffect:addEffect", function()
         local e = fx:addEffect("vignette")
         expect_equal(e:getType(), "vignette")
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:effectCount
     -- @covers lurek.effect.newImageEffect
@@ -2315,7 +2188,6 @@ describe("ImageEffect:addEffect", function()
         fx:addEffect("sepia")
         expect_equal(fx:effectCount(), 2)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers lurek.effect.newImageEffect
     it("addEffect appends to end of chain", function()
@@ -2336,7 +2208,6 @@ describe("ImageEffect:getEffect by index", function()
         fx:addEffect("sepia")
         expect_equal(require_effect(fx, 1):getType(), "blur")
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers lurek.effect.newImageEffect
     it("getEffect(2) returns second effect", function()
@@ -2345,11 +2216,30 @@ describe("ImageEffect:getEffect by index", function()
         fx:addEffect("sepia")
         expect_equal(require_effect(fx, 2):getType(), "sepia")
     end)
-
     -- @covers LImageEffect:addEffect
+    it("getEffect out-of-bounds returns nil or errors gracefully [LImageEffect:addEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect(99)
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers LImageEffect:getEffect
+    it("getEffect out-of-bounds returns nil or errors gracefully [LImageEffect:getEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect(99)
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.effect.newImageEffect
-    it("getEffect out-of-bounds returns nil or errors gracefully", function()
+    it("getEffect out-of-bounds returns nil or errors gracefully [lurek.effect.newImageEffect]", function()
         local fx = lurek.effect.newImageEffect()
         fx:addEffect("blur")
         local ok = pcall(function()
@@ -2360,9 +2250,29 @@ describe("ImageEffect:getEffect by index", function()
     end)
 
     -- @covers LImageEffect:addEffect
+    it("getEffect(0) returns nil or errors gracefully [LImageEffect:addEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect(0)
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers LImageEffect:getEffect
+    it("getEffect(0) returns nil or errors gracefully [LImageEffect:getEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect(0)
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.effect.newImageEffect
-    it("getEffect(0) returns nil or errors gracefully", function()
+    it("getEffect(0) returns nil or errors gracefully [lurek.effect.newImageEffect]", function()
         local fx = lurek.effect.newImageEffect()
         fx:addEffect("blur")
         local ok = pcall(function()
@@ -2386,7 +2296,6 @@ describe("ImageEffect:getEffect by name", function()
         expect_equal(e ~= nil, true)
         expect_equal(require_effect(fx, "blur"):getType(), "blur")
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:getEffect
     -- @covers lurek.effect.newImageEffect
@@ -2398,11 +2307,30 @@ describe("ImageEffect:getEffect by name", function()
         expect_equal(e ~= nil, true)
         expect_equal(require_effect(fx, "sepia"):getType(), "sepia")
     end)
-
     -- @covers LImageEffect:addEffect
+    it("getEffect with unknown name returns nil or errors gracefully [LImageEffect:addEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect("nonexistent_effect")
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers LImageEffect:getEffect
+    it("getEffect with unknown name returns nil or errors gracefully [LImageEffect:getEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        fx:addEffect("blur")
+        local ok = pcall(function()
+            local e = fx:getEffect("nonexistent_effect")
+            expect_equal(e == nil, true)
+        end)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers lurek.effect.newImageEffect
-    it("getEffect with unknown name returns nil or errors gracefully", function()
+    it("getEffect with unknown name returns nil or errors gracefully [lurek.effect.newImageEffect]", function()
         local fx = lurek.effect.newImageEffect()
         fx:addEffect("blur")
         local ok = pcall(function()
@@ -2455,7 +2383,6 @@ describe("ImageEffect:effectCount", function()
         local fx = lurek.effect.newImageEffect()
         expect_equal(fx:effectCount(), 0)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:effectCount
     -- @covers lurek.effect.newImageEffect
@@ -2468,7 +2395,6 @@ describe("ImageEffect:effectCount", function()
         fx:addEffect("sepia")
         expect_equal(fx:effectCount(), 3)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:effectCount
     -- @covers LImageEffect:removeEffect
@@ -2495,7 +2421,6 @@ describe("ImageEffect:removeEffect by index", function()
         fx:removeEffect(1)
         expect_equal(fx:effectCount(), 1)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:removeEffect
     -- @covers lurek.effect.newImageEffect
@@ -2506,7 +2431,6 @@ describe("ImageEffect:removeEffect by index", function()
         fx:removeEffect(1)
         expect_equal(require_effect(fx, 1):getType(), "sepia")
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:effectCount
     -- @covers LImageEffect:removeEffect
@@ -2527,14 +2451,13 @@ describe("ImageEffect:removeEffect by name", function()
     -- @covers LImageEffect:effectCount
     -- @covers LImageEffect:removeEffect
     -- @covers lurek.effect.newImageEffect
-    it("removeEffect('sepia') from [blur, sepia] -> effectCount == 1", function()
+    it("removeEffect('sepia') from", function()
         local fx = lurek.effect.newImageEffect()
         fx:addEffect("blur")
         fx:addEffect("sepia")
         fx:removeEffect("sepia")
         expect_equal(fx:effectCount(), 1)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:removeEffect
     -- @covers lurek.effect.newImageEffect
@@ -2545,12 +2468,11 @@ describe("ImageEffect:removeEffect by name", function()
         fx:removeEffect("sepia")
         expect_equal(require_effect(fx, 1):getType(), "blur")
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:effectCount
     -- @covers LImageEffect:removeEffect
     -- @covers lurek.effect.newImageEffect
-    it("removeEffect('blur') from [blur, sepia] -> remaining is 'sepia'", function()
+    it("removeEffect('blur') from", function()
         local fx = lurek.effect.newImageEffect()
         fx:addEffect("blur")
         fx:addEffect("sepia")
@@ -2574,7 +2496,6 @@ describe("ImageEffect:clearEffects", function()
         fx:clearEffects()
         expect_equal(fx:effectCount(), 0)
     end)
-
     -- @covers LImageEffect:clearEffects
     -- @covers LImageEffect:effectCount
     -- @covers lurek.effect.newImageEffect
@@ -2583,7 +2504,6 @@ describe("ImageEffect:clearEffects", function()
         fx:clearEffects()
         expect_equal(fx:effectCount(), 0)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:clearEffects
     -- @covers LImageEffect:effectCount
@@ -2609,7 +2529,6 @@ describe("ImageEffect:clone", function()
         local copy = fx:clone()
         expect_equal(copy ~= nil, true)
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:clone
     -- @covers LImageEffect:effectCount
@@ -2621,7 +2540,6 @@ describe("ImageEffect:clone", function()
         local copy = fx:clone()
         expect_equal(copy:effectCount(), fx:effectCount())
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:clone
     -- @covers lurek.effect.newImageEffect
@@ -2633,7 +2551,6 @@ describe("ImageEffect:clone", function()
         expect_equal(require_effect(copy, 1):getType(), "blur")
         expect_equal(require_effect(copy, 2):getType(), "sepia")
     end)
-
     -- @covers LImageEffect:addEffect
     -- @covers LImageEffect:clone
     -- @covers LImageEffect:effectCount
@@ -2646,7 +2563,6 @@ describe("ImageEffect:clone", function()
         expect_equal(fx:effectCount(), 1)
         expect_equal(copy:effectCount(), 2)
     end)
-
     -- @covers LImageEffect:clone
     -- @covers lurek.effect.newImageEffect
     it("modifying clone parameter does not affect original", function()
@@ -2669,8 +2585,15 @@ describe("lurek.effect.newImageEffect invalid effect name", function()
     end)
 
     -- @covers LImageEffect:addEffect
+    it("addEffect rejects unknown effect name [LImageEffect:addEffect]", function()
+        local fx = lurek.effect.newImageEffect()
+        expect_error(function()
+            fx:addEffect("not_a_real_effect")
+        end)
+    end)
+
     -- @covers lurek.effect.newImageEffect
-    it("addEffect rejects unknown effect name", function()
+    it("addEffect rejects unknown effect name [lurek.effect.newImageEffect]", function()
         local fx = lurek.effect.newImageEffect()
         expect_error(function()
             fx:addEffect("not_a_real_effect")

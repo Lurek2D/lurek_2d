@@ -3,7 +3,6 @@
 -- Verifies that dialog events ("line", "choice", "finished") can be forwarded
 -- through lurek.event.newSignal() so external observers receive them via the
 -- engine-level pub/sub primitive.
--- @covers lurek.event.newSignal
 
 
 
@@ -21,6 +20,7 @@ describe("integration: library.dialog + lurek.event", function()
     -- @integration LSignal:connect
     -- @integration LSignal:emit
     -- @integration lurek.event.newSignal
+    -- @covers lurek.event.newSignal
     it("dialog events are forwarded through engine signal", function()
         local seq = dialog.newSequencer()
         local sig = lurek.event.newSignal()

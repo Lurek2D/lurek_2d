@@ -1145,7 +1145,7 @@ lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channel
 lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 lurek.audio.newSource(path: string, [sourceType]: string) -> LSource -- Creates a new audio source from a file path, either fully loaded or streaming.
 lurek.audio.pause(source: LSource|integer) -- Pauses playback of a source at its current position.
-lurek.audio.manager.pauseAll(path: string, [opts]: table) -- Plays a music track, routing through a named group with optional fade-in.
+lurek.audio.manager.pauseAll() -- Pauses all active audio sources.
 lurek.audio.pauseAll() -- Pauses all currently playing audio sources.
 lurek.audio.play(source: LSource|integer, [options]: table) -> integer -- Starts playback of a source by handle, optionally routing through a named bus.
 lurek.audio.playLooping(source: LSource|integer) -- Starts playback of a source with looping enabled in one call.

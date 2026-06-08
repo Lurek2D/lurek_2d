@@ -806,7 +806,7 @@ impl Terminal {
         (false, Vec::new())
     }
     /// Compose widgets into `cells` on top of the base grid.
-    fn compose_widgets_into(&self, mut cells: &mut [TCell]) {
+    fn compose_widgets_into(&self, cells: &mut [TCell]) {
         for (index, widget) in self.widgets.iter().enumerate() {
             if !widget.base.visible {
                 continue;
@@ -814,7 +814,7 @@ impl Terminal {
             match &widget.kind {
                 WidgetKind::Label { text, color } => {
                     write_render_text(
-                        &mut cells,
+                        cells,
                         self.cols,
                         self.rows,
                         widget.base.x,
@@ -837,7 +837,7 @@ impl Terminal {
                     };
                     if widget.base.height <= 1 {
                         draw_compact_button(
-                            &mut cells,
+                            cells,
                             self.cols,
                             self.rows,
                             widget.base.x,
@@ -849,7 +849,7 @@ impl Terminal {
                         );
                     } else {
                         draw_shaded_frame(
-                            &mut cells,
+                            cells,
                             self.cols,
                             self.rows,
                             widget.base.x,
@@ -864,7 +864,7 @@ impl Terminal {
                         let start_col =
                             widget.base.x + widget.base.width.saturating_sub(text_width) / 2;
                         write_render_text(
-                            &mut cells, self.cols, self.rows, start_col, row, text, fg, text_width,
+                            cells, self.cols, self.rows, start_col, row, text, fg, text_width,
                         );
                     }
                 }
@@ -872,7 +872,7 @@ impl Terminal {
                     text, cursor_pos, ..
                 } => {
                     clear_render_rect(
-                        &mut cells,
+                        cells,
                         self.cols,
                         self.rows,
                         widget.base.x,
@@ -884,7 +884,7 @@ impl Terminal {
                     );
                     let display = truncate_chars(text, widget.base.width);
                     write_render_text(
-                        &mut cells,
+                        cells,
                         self.cols,
                         self.rows,
                         widget.base.x,
@@ -896,7 +896,7 @@ impl Terminal {
                     if self.focused == Some(index) && widget.base.width > 0 {
                         let cursor_col = widget.base.x + (*cursor_pos).min(widget.base.width - 1);
                         set_render_cell(
-                            &mut cells,
+                            cells,
                             self.cols,
                             self.rows,
                             cursor_col,
@@ -912,7 +912,7 @@ impl Terminal {
                     scroll_offset,
                 } => {
                     clear_render_rect(
-                        &mut cells,
+                        cells,
                         self.cols,
                         self.rows,
                         widget.base.x,
@@ -936,7 +936,7 @@ impl Terminal {
                         };
                         if is_selected {
                             clear_render_rect(
-                                &mut cells,
+                                cells,
                                 self.cols,
                                 self.rows,
                                 widget.base.x,
@@ -951,7 +951,7 @@ impl Terminal {
                         let available = widget.base.width.saturating_sub(char_count(prefix));
                         let text = truncate_chars(&items[item_index], available);
                         write_render_text(
-                            &mut cells,
+                            cells,
                             self.cols,
                             self.rows,
                             widget.base.x,
@@ -961,7 +961,7 @@ impl Terminal {
                             char_count(prefix),
                         );
                         write_render_text(
-                            &mut cells,
+                            cells,
                             self.cols,
                             self.rows,
                             widget.base.x + char_count(prefix),
@@ -978,7 +978,7 @@ impl Terminal {
                     color,
                 } => {
                     clear_render_rect(
-                        &mut cells,
+                        cells,
                         self.cols,
                         self.rows,
                         widget.base.x,
@@ -988,11 +988,11 @@ impl Terminal {
                         *color,
                         PANEL_BG,
                     );
-                    self.render_border(&mut cells, widget, *style, title, *color);
+                    self.render_border(cells, widget, *style, title, *color);
                 }
                 WidgetKind::Panel { .. } => {
                     draw_shaded_frame(
-                        &mut cells,
+                        cells,
                         self.cols,
                         self.rows,
                         widget.base.x,

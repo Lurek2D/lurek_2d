@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-07",
+  "generated": "2026-06-08",
   "modules": [
     {
       "name": "agent",
@@ -3281,21 +3281,8 @@
           "name": "pauseAll",
           "fullPath": "lurek.audio.manager.pauseAll",
           "signature": "()",
-          "description": "Plays a music track, routing through a named group with optional fade-in.",
-          "parameters": [
-            {
-              "name": "path",
-              "type": "string",
-              "description": "Path to audio file.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Optional: `group` (string), `fadeIn` (number seconds).",
-              "optional": true
-            }
-          ],
+          "description": "Pauses all active audio sources.",
+          "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": false,

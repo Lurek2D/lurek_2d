@@ -1,9 +1,5 @@
 -- Evidence tests: particle module
 -- Artifacts are generated via lurek.particle APIs (toImage/drawToImage).
--- @covers lurek.image.savePNG
--- @covers lurek.particle.newSystem
--- @covers lurek.particle.newTrail
--- @covers lurek.particle.release
 
 
 
@@ -15,7 +11,10 @@ describe("Evidence: lurek.particle API", function()
         ensure_evidence_dir("particle")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.particle.release
+    -- @covers lurek.particle.newSystem
+    -- @covers lurek.image.savePNG
     it("PNG: emitter cluster snapshot", function()
         local ps = lurek.particle.newSystem({
             maxParticles = 180,
@@ -41,7 +40,7 @@ describe("Evidence: lurek.particle API", function()
         lurek.particle.release(ps)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: burst emission", function()
         local ps = lurek.particle.newSystem({
             maxParticles = 220,
@@ -68,7 +67,7 @@ describe("Evidence: lurek.particle API", function()
         lurek.particle.release(ps)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: attractor contraction", function()
         local ps = lurek.particle.newSystem({
             maxParticles = 240,
@@ -95,7 +94,8 @@ describe("Evidence: lurek.particle API", function()
         lurek.particle.release(ps)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.particle.newTrail
     it("PNG: trail drawToImage", function()
         local trail = lurek.particle.newTrail(0.9, 10.0)
         trail:setWidth(10)

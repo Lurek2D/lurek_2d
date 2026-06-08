@@ -2,11 +2,6 @@
 -- Evidence tests: lurek.globe API
 -- Produces exactly 5 high-quality PNG artifacts proving globe rendering,
 -- projections, route paths, and political/terminator overlays.
--- @covers lurek.globe.greatCirclePath
--- @covers lurek.globe.new
--- @covers lurek.globe.remove
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
 
 
 
@@ -22,7 +17,11 @@ end
 -- @describe Evidence: lurek.globe API + PNG visualization
 describe("Evidence: lurek.globe API + PNG visualization", function()
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
+    -- @covers lurek.globe.remove
+    -- @covers lurek.globe.new
     it("PNG: globe equirectangular projection with province borders", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -91,7 +90,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
         lurek.globe.remove("globe_provinces")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: globe heat-map overlay (temperature gradient)", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -123,7 +122,8 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
         lurek.globe.remove("globe_heatmap")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.globe.greatCirclePath
     it("PNG: globe great-circle route visualized", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -164,7 +164,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: globe political color fill (Voronoi-style capital regions)", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -223,7 +223,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
         lurek.globe.remove("globe_political")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: globe day/night terminator visualization", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -282,7 +282,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
     end)
 
     -- 6. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: globe 3D map markers (isometric/pseudo-3D)", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -323,7 +323,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
     end)
 
     -- 7. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: atmospheric scattering (edge glow on globe projection)", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -357,7 +357,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
     end)
 
     -- 8. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: city night lights (glow on night side)", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -403,7 +403,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
     end)
 
     -- 9. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: globe latitude/longitude grid overlay", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")
@@ -445,7 +445,7 @@ describe("Evidence: lurek.globe API + PNG visualization", function()
     end)
 
     -- 10. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: topographical height map blending", function()
         ensure_evidence_dir("globe")
         local dir = evidence_output_dir("globe")

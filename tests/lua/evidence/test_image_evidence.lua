@@ -1,7 +1,5 @@
 -- Evidence tests: image module
 -- Artifacts are generated from lurek.image drawing/effects APIs.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
 
 
 
@@ -30,6 +28,7 @@ describe("Evidence: image", function()
     end
 
     -- @evidence file
+    -- @covers lurek.image.savePNG
     it("PNG: drawing primitives scene", function()
         local img = make_base(256, 256)
         local path = OUT .. "drawing_combined.png"
@@ -38,6 +37,7 @@ describe("Evidence: image", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.image.newImageData
     it("PNG: effects strip", function()
         local cell = 96
         local canvas = lurek.image.newImageData(cell * 4, cell)

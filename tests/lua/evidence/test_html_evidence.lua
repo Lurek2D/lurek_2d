@@ -1,6 +1,5 @@
 -- Evidence tests: html module
 -- Output-only evidence from direct lurek.html API calls.
--- @covers lurek.html.newDocument
 
 
 
@@ -19,6 +18,7 @@ describe("evidence: html", function()
     end)
 
     -- @evidence file
+    -- @covers lurek.html.newDocument
     it("exports markup snapshot", function()
         local dir = evidence_output_dir("html")
         local path = dir .. "document_markup.txt"

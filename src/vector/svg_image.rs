@@ -27,17 +27,17 @@ pub struct SvgElement {
     pub is_group: bool,
     pub parent_id: Option<String>,
     pub child_ids: Vec<String>,
-    
+
     // Original local transform parsed from SVG
     pub local_transform: [f32; 9], // 3x3 column-major matrix
-    
+
     // Dynamic runtime overrides (mutated via Lua)
     pub visible: bool,
     pub color_override: Option<[f32; 4]>,
     pub translation: Vec2,
     pub rotation: f32,
     pub scale: Vec2,
-    
+
     // Paths contained in this element (empty if group)
     pub paths: Vec<SvgPath>,
 }
@@ -57,19 +57,18 @@ impl SvgImage {
         let opt = usvg::Options::default();
         let tree = usvg::Tree::from_data(bytes, &opt)
             .map_err(|e| format!("Failed to parse SVG '{}': {}", label, e))?;
-        
-        let width = tree.size.width() as f32;
-        let height = tree.size.height() as f32;
-        
+
+        let width = tree.size.width();
+        let height = tree.size.height();
+
         let mut elements = HashMap::new();
-        let root_id;
-        
+
         // Helper to convert usvg::Transform to [f32; 9] column-major
         let convert_transform = |t: &usvg::Transform| -> [f32; 9] {
             [
-                t.sx as f32,  t.kx as f32, 0.0,
-                t.ky as f32,  t.sy as f32, 0.0,
-                t.tx as f32,  t.ty as f32, 1.0,
+                t.sx,  t.kx, 0.0,
+                t.ky,  t.sy, 0.0,
+                t.tx,  t.ty, 1.0,
             ]
         };
 
@@ -86,7 +85,7 @@ impl SvgImage {
             } else {
                 node.id().to_string()
             };
-            
+
             let mut is_group = false;
             let mut child_ids = Vec::new();
             let mut paths = Vec::new();
@@ -103,7 +102,7 @@ impl SvgImage {
                 }
                 usvg::NodeKind::Path(ref p) => {
                     local_transform = convert_transform(&p.transform);
-                    
+
                     let mut fill_color = None;
                     if let Some(fill) = &p.fill {
                         if let usvg::Paint::Color(c) = &fill.paint {
@@ -111,7 +110,7 @@ impl SvgImage {
                                 c.red as f32 / 255.0,
                                 c.green as f32 / 255.0,
                                 c.blue as f32 / 255.0,
-                                fill.opacity.get() as f32,
+                                fill.opacity.get(),
                             ]);
                         }
                     }
@@ -124,10 +123,10 @@ impl SvgImage {
                                 c.red as f32 / 255.0,
                                 c.green as f32 / 255.0,
                                 c.blue as f32 / 255.0,
-                                stroke.opacity.get() as f32,
+                                stroke.opacity.get(),
                             ]);
                         }
-                        stroke_width = stroke.width.get() as f32;
+                        stroke_width = stroke.width.get();
                     }
 
                     // Convert usvg segments to PathSegment
@@ -195,7 +194,7 @@ impl SvgImage {
         }
 
         let root_node = tree.root;
-        root_id = walk_node(&root_node, None, &mut elements, &convert_transform);
+        let root_id = walk_node(&root_node, None, &mut elements, &convert_transform);
 
         Ok(Self {
             width,
@@ -328,7 +327,7 @@ impl SvgImage {
         let el = self.elements.get(element_id)?;
         let step = step_size.unwrap_or(5.0);
         let mut points = Vec::new();
-        
+
         // Recursive helper to gather paths from this element and its descendants
         fn gather_points(
             svg: &SvgImage,
@@ -339,11 +338,11 @@ impl SvgImage {
         ) {
             let Some(el) = svg.elements.get(el_id) else { return; };
             if !el.visible { return; }
-            
+
             // Compute transform for this element
             let mat = mul_matrix(parent_mat, &el.local_transform);
             let mat = apply_trs(&mat, el.translation, el.rotation, el.scale);
-            
+
             for path in &el.paths {
                 let mut current_pos = Vec2::new(0.0, 0.0);
                 for seg in &path.segments {
@@ -362,7 +361,7 @@ impl SvgImage {
                             let p0 = current_pos;
                             let pc = Vec2::new(*cx, *cy);
                             let p1 = Vec2::new(*x, *y);
-                            
+
                             let d1 = (pc - p0).length();
                             let d2 = (p1 - pc).length();
                             let approx_len = d1 + d2;
@@ -380,7 +379,7 @@ impl SvgImage {
                             let pc1 = Vec2::new(*cx1, *cy1);
                             let pc2 = Vec2::new(*cx2, *cy2);
                             let p1 = Vec2::new(*x, *y);
-                            
+
                             let d1 = (pc1 - p0).length();
                             let d2 = (pc2 - pc1).length();
                             let d3 = (p1 - pc2).length();
@@ -397,12 +396,12 @@ impl SvgImage {
                     }
                 }
             }
-            
+
             for child_id in &el.child_ids {
                 gather_points(svg, child_id, &mat, step, points);
             }
         }
-        
+
         // Compute base mat for starting element
         let mut parent_mat = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
         if let Some(ref p_id) = el.parent_id {
@@ -410,16 +409,17 @@ impl SvgImage {
                 parent_mat = pm;
             }
         }
-        
+
         gather_points(self, element_id, &parent_mat, step, &mut points);
         Some(points)
     }
 
     /// Automatically detects adjacency graph between elements matching the given prefix.
+    #[allow(clippy::needless_range_loop)]
     pub fn get_adjacencies(&self, prefix: &str, epsilon: Option<f32>) -> HashMap<String, Vec<String>> {
         let eps = epsilon.unwrap_or(2.0);
         let mut adj: HashMap<String, Vec<String>> = HashMap::new();
-        
+
         // 1. Gather all elements matching prefix and their points
         let mut target_elements = Vec::new();
         for (id, el) in &self.elements {
@@ -442,20 +442,20 @@ impl SvgImage {
                 }
             }
         }
-        
+
         // 2. Perform pairwise checks
         let count = target_elements.len();
         for i in 0..count {
             let (ref id_a, ref pts_a, bbox_a) = target_elements[i];
             for j in (i + 1)..count {
                 let (ref id_b, ref pts_b, bbox_b) = target_elements[j];
-                
+
                 // Overlap check with epsilon margin
                 if bbox_a.1 + eps < bbox_b.0 - eps || bbox_b.1 + eps < bbox_a.0 - eps ||
                    bbox_a.3 + eps < bbox_b.2 - eps || bbox_b.3 + eps < bbox_a.2 - eps {
                     continue;
                 }
-                
+
                 // Point-to-point distance check
                 let mut is_adjacent = false;
                 'outer: for p_a in pts_a {
@@ -466,14 +466,14 @@ impl SvgImage {
                         }
                     }
                 }
-                
+
                 if is_adjacent {
                     adj.entry(id_a.clone()).or_default().push(id_b.clone());
                     adj.entry(id_b.clone()).or_default().push(id_a.clone());
                 }
             }
         }
-        
+
         adj
     }
 

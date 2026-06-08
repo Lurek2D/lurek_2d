@@ -2,9 +2,6 @@
 -- Evidence tests: lurek.minimap API + PNG visualization
 -- Covers exactly 5 high-quality unique evidence files:
 -- minimap_terrain.png, minimap_fog.png, minimap_blips.png, minimap_bounds.png, minimap_waypoints.png
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.minimap.newMinimap
 
 
 
@@ -18,7 +15,9 @@ end
 -- @describe Evidence: lurek.minimap API + PNG visualization
 describe("Evidence: lurek.minimap API + PNG visualization", function()
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.minimap.newMinimap
+    -- @covers lurek.image.savePNG
     it("PNG: terrain grid rendered as colored cells", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_terrain.png"
@@ -58,7 +57,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: fog-of-war overlay on terrain", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_fog.png"
@@ -93,7 +92,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: blips and markers on minimap", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_blips.png"
@@ -120,7 +119,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: camera viewport rectangle overlay", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_bounds.png"
@@ -155,7 +154,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: waypoints and path overlays", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_waypoints.png"
@@ -197,7 +196,8 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- 6. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: radar sweeping effect", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_radar_sweep.png"
@@ -249,7 +249,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- 7. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: zooming and scaling interpolation", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_zoom.png"
@@ -291,7 +291,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- 8. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: multi-level floors", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_multi_floor.png"
@@ -320,7 +320,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- 9. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: unexplored masks (fog of war hard edge)", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_unexplored.png"
@@ -353,7 +353,7 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
     -- 10. @evidence file
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: circular minimap border shape", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_circular.png"

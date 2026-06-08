@@ -97,7 +97,6 @@ describe("LuaLineChart methods", function()
         expect_equal(800, chart:getWidth())
         expect_equal(600, chart:getHeight())
     end)
-
     -- @covers lurek.charts.newLine
     -- @covers LLineChart:addSeries
     -- @covers LLineChart:render
@@ -110,7 +109,6 @@ describe("LuaLineChart methods", function()
         expect_true(type(data) == "string", "data is a string")
         expect_true(#data > 0, "data is not empty")
     end)
-
     -- @covers lurek.charts.newLine
     -- @covers LLineChart:addSeries
     -- @covers LLineChart:clear
@@ -123,7 +121,6 @@ describe("LuaLineChart methods", function()
         expect_true(w > 0, "width > 0 after clear")
         expect_true(type(data) == "string", "data is string after clear")
     end)
-
     -- @covers lurek.charts.newLine
     -- @covers LLineChart:setTitle
     -- @covers LLineChart:render
@@ -148,7 +145,6 @@ describe("LuaBarChart methods", function()
         expect_true(h > 0, "height > 0")
         expect_true(#data > 0, "data not empty")
     end)
-
     -- @covers lurek.charts.newBar
     -- @covers LBarChart:setBarWidth
     -- @covers LBarChart:addSeries
@@ -160,7 +156,6 @@ describe("LuaBarChart methods", function()
         local w, h, data = chart:render()
         expect_true(w > 0, "renders after setBarWidth")
     end)
-
     -- @covers lurek.charts.newBar
     -- @covers LBarChart:addSeries
     -- @covers LBarChart:clear
@@ -172,7 +167,6 @@ describe("LuaBarChart methods", function()
         local w, h, data = chart:render()
         expect_true(w > 0, "renders after clear")
     end)
-
     -- @covers lurek.charts.newBar
     -- @covers LBarChart:getWidth
     -- @covers LBarChart:getHeight
@@ -181,7 +175,6 @@ describe("LuaBarChart methods", function()
         expect_equal(640, chart:getWidth())
         expect_equal(480, chart:getHeight())
     end)
-
     -- @covers LBarChart:setTitle
     it("setTitle updates bar chart title", function()
         local chart = lurek.charts.newBar()
@@ -204,7 +197,6 @@ describe("LuaScatterPlot methods", function()
         expect_true(h > 0, "height > 0")
         expect_true(#data > 0, "data not empty")
     end)
-
     -- @covers lurek.charts.newScatter
     -- @covers LScatterPlot:setDotRadius
     -- @covers LScatterPlot:addSeries
@@ -216,7 +208,6 @@ describe("LuaScatterPlot methods", function()
         local w, h, data = chart:render()
         expect_true(w > 0, "renders after setDotRadius")
     end)
-
     -- @covers lurek.charts.newScatter
     -- @covers LScatterPlot:addSeries
     -- @covers LScatterPlot:clear
@@ -228,7 +219,6 @@ describe("LuaScatterPlot methods", function()
         local w, h, data = chart:render()
         expect_true(type(data) == "string", "data is string")
     end)
-
     -- @covers LScatterPlot:setTitle
     it("setTitle updates scatter chart title", function()
         local chart = lurek.charts.newScatter()
@@ -266,7 +256,6 @@ describe("LuaPieChart methods", function()
         expect_true(h > 0, "height > 0")
         expect_true(#data > 0, "data not empty")
     end)
-
     -- @covers lurek.charts.newPie
     -- @covers LPieChart:addSlice
     -- @covers LPieChart:render
@@ -277,7 +266,6 @@ describe("LuaPieChart methods", function()
         local w, h, data = chart:render()
         expect_true(#data > 0, "renders with auto-colors")
     end)
-
     -- @covers lurek.charts.newPie
     -- @covers LPieChart:addSlice
     -- @covers LPieChart:clear
@@ -289,7 +277,6 @@ describe("LuaPieChart methods", function()
         local w, h, data = chart:render()
         expect_true(type(data) == "string", "renders after clear")
     end)
-
     -- @covers lurek.charts.newPie
     -- @covers LPieChart:setTitle
     -- @covers LPieChart:addSlice
@@ -301,7 +288,6 @@ describe("LuaPieChart methods", function()
         local w, h, data = chart:render()
         expect_true(w > 0, "renders with title")
     end)
-
     -- @covers LPieChart:getWidth
     it("getWidth returns configured width", function()
         local chart = lurek.charts.newPie({width = 420, height = 240})
@@ -328,7 +314,6 @@ describe("LuaAreaChart methods", function()
         expect_true(h > 0, "height > 0")
         expect_true(#data > 0, "data not empty")
     end)
-
     -- @covers lurek.charts.newArea
     -- @covers LAreaChart:addSeries
     -- @covers LAreaChart:clear
@@ -340,7 +325,6 @@ describe("LuaAreaChart methods", function()
         local w, h, data = chart:render()
         expect_true(type(data) == "string", "renders after clear")
     end)
-
     -- @covers lurek.charts.newArea
     -- @covers LAreaChart:getWidth
     -- @covers LAreaChart:getHeight
@@ -355,7 +339,6 @@ describe("LuaAreaChart methods", function()
         expect_equal(1024, w)
         expect_equal(768, h)
     end)
-
     -- @covers LAreaChart:setTitle
     it("setTitle updates area chart title", function()
         local chart = lurek.charts.newArea()
@@ -376,7 +359,6 @@ describe("chart config", function()
         expect_true(chart:getWidth() > 0, "default width > 0")
         expect_true(chart:getHeight() > 0, "default height > 0")
     end)
-
     -- @covers lurek.charts.newBar
     -- @covers LBarChart:getWidth
     -- @covers LBarChart:getHeight

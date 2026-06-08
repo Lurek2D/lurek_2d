@@ -27,8 +27,15 @@ describe("lurek.physics world", function()
     end)
 
     -- @covers lurek.physics.newWorld
+    it("step can be called with world_id and dt [lurek.physics.newWorld]", function()
+        local world = lurek.physics.newWorld(0, 9.81)
+        expect_no_error(function()
+            lurek.physics.step(world, 1/60)
+        end)
+    end)
+
     -- @covers lurek.physics.step
-    it("step can be called with world_id and dt", function()
+    it("step can be called with world_id and dt [lurek.physics.step]", function()
         local world = lurek.physics.newWorld(0, 9.81)
         expect_no_error(function()
             lurek.physics.step(world, 1/60)
@@ -50,7 +57,6 @@ describe("lurek.physics bodies", function()
         local id = lurek.physics.newBody(world, 100, 100, "dynamic")
         expect_type("userdata", id)
     end)
-
     -- @covers lurek.physics.getBody
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -61,16 +67,31 @@ describe("lurek.physics bodies", function()
         expect_near(50, x, 1)
         expect_near(50, y, 1)
     end)
-
     -- @covers lurek.physics.setBodyVelocity
     it("setBodyVelocity is a function", function()
         expect_type("function", lurek.physics.setBodyVelocity)
     end)
 
     -- @covers lurek.physics.newBody
+    it("setBodyVelocity changes velocity [lurek.physics.newBody]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local id = lurek.physics.newBody(world, 0, 0, "dynamic")
+        expect_no_error(function()
+            lurek.physics.setBodyVelocity(world, id, 100, 0)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
+    it("setBodyVelocity changes velocity [lurek.physics.newWorld]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local id = lurek.physics.newBody(world, 0, 0, "dynamic")
+        expect_no_error(function()
+            lurek.physics.setBodyVelocity(world, id, 100, 0)
+        end)
+    end)
+
     -- @covers lurek.physics.setBodyVelocity
-    it("setBodyVelocity changes velocity", function()
+    it("setBodyVelocity changes velocity [lurek.physics.setBodyVelocity]", function()
         local world = lurek.physics.newWorld(0, 0)
         local id = lurek.physics.newBody(world, 0, 0, "dynamic")
         expect_no_error(function()
@@ -89,7 +110,6 @@ describe("lurek.physics bodies", function()
         local x, y, vx, vy = lurek.physics.getBody(world, id)
         expect_true(y > 0, "body should fall due to gravity")
     end)
-
     -- @covers lurek.physics.getBody
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -117,7 +137,6 @@ describe("sleeping allowed", function()
         local id = lurek.physics.newBody(world, 0, 0, "dynamic")
         expect_true(lurek.physics.isSleepingAllowed(world, id))
     end)
-
     -- @covers lurek.physics.isSleepingAllowed
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -128,7 +147,6 @@ describe("sleeping allowed", function()
         lurek.physics.setSleepingAllowed(world, id, false)
         expect_false(lurek.physics.isSleepingAllowed(world, id))
     end)
-
     -- @covers lurek.physics.isSleepingAllowed
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -164,14 +182,12 @@ describe("physics.Shape userdata", function()
         expect_type("userdata", s)
         expect_equal("circle", s:getType())
     end)
-
     -- @covers LPhysicsShape:getRadius
     -- @covers lurek.physics.newCircleShape
     it("getRadius returns correct value for circle", function()
         local s = lurek.physics.newCircleShape(7.5)
         expect_near(7.5, s:getRadius(), 0.001)
     end)
-
     -- @covers LPhysicsShape:getType
     -- @covers lurek.physics.newRectangleShape
     it("newRectangleShape returns userdata with type 'rectangle'", function()
@@ -179,7 +195,6 @@ describe("physics.Shape userdata", function()
         expect_type("userdata", s)
         expect_equal("rectangle", s:getType())
     end)
-
     -- @covers LPhysicsShape:getType
     -- @covers lurek.physics.newEdgeShape
     it("newEdgeShape returns userdata with type 'edge'", function()
@@ -187,7 +202,6 @@ describe("physics.Shape userdata", function()
         expect_type("userdata", s)
         expect_equal("edge", s:getType())
     end)
-
     -- @covers LPhysicsShape:getType
     -- @covers lurek.physics.newPolygonShape
     it("newPolygonShape returns userdata with type 'polygon'", function()
@@ -195,7 +209,6 @@ describe("physics.Shape userdata", function()
         expect_type("userdata", s)
         expect_equal("polygon", s:getType())
     end)
-
     -- @covers LPhysicsShape:getType
     -- @covers lurek.physics.newChainShape
     it("newChainShape returns userdata with type 'chain'", function()
@@ -203,7 +216,6 @@ describe("physics.Shape userdata", function()
         expect_type("userdata", s)
         expect_equal("chain", s:getType())
     end)
-
     -- @covers LPhysicsShape:getBoundingBox
     -- @covers lurek.physics.newCircleShape
     it("getBoundingBox returns 4 numbers for circle", function()
@@ -214,47 +226,68 @@ describe("physics.Shape userdata", function()
         expect_near(-5, x1, 0.001)
         expect_near(5, x2, 0.001)
     end)
-
     -- @covers LPhysicsShape:setDensity
     -- @covers lurek.physics.newCircleShape
     it("setDensity does not error", function()
         local s = lurek.physics.newCircleShape(1)
         expect_no_error(function() s:setDensity(2.0) end)
     end)
-
     -- @covers LPhysicsShape:setFriction
     -- @covers lurek.physics.newCircleShape
     it("setFriction does not error", function()
         local s = lurek.physics.newCircleShape(1)
         expect_no_error(function() s:setFriction(0.8) end)
     end)
-
     -- @covers LPhysicsShape:setRestitution
     -- @covers lurek.physics.newCircleShape
     it("setRestitution does not error", function()
         local s = lurek.physics.newCircleShape(1)
         expect_no_error(function() s:setRestitution(0.5) end)
     end)
-
     -- @covers LPhysicsShape:setSensor
     -- @covers lurek.physics.newCircleShape
     it("setSensor does not error", function()
         local s = lurek.physics.newCircleShape(1)
         expect_no_error(function() s:setSensor(true) end)
     end)
-
     -- @covers LPhysicsShape:destroy
     -- @covers lurek.physics.newCircleShape
     it("destroy does not error", function()
         local s = lurek.physics.newCircleShape(1)
         expect_no_error(function() s:destroy() end)
     end)
-
     -- @covers lurek.physics.attachShape
+    it("attachShape attaches circle to body [lurek.physics.attachShape]", function()
+        local world = lurek.physics.newWorld(0, 9.81)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        local shape = lurek.physics.newCircleShape(15)
+        expect_no_error(function()
+            lurek.physics.attachShape(body, shape)
+        end)
+    end)
+
     -- @covers lurek.physics.newBody
+    it("attachShape attaches circle to body [lurek.physics.newBody]", function()
+        local world = lurek.physics.newWorld(0, 9.81)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        local shape = lurek.physics.newCircleShape(15)
+        expect_no_error(function()
+            lurek.physics.attachShape(body, shape)
+        end)
+    end)
+
     -- @covers lurek.physics.newCircleShape
+    it("attachShape attaches circle to body [lurek.physics.newCircleShape]", function()
+        local world = lurek.physics.newWorld(0, 9.81)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        local shape = lurek.physics.newCircleShape(15)
+        expect_no_error(function()
+            lurek.physics.attachShape(body, shape)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
-    it("attachShape attaches circle to body", function()
+    it("attachShape attaches circle to body [lurek.physics.newWorld]", function()
         local world = lurek.physics.newWorld(0, 9.81)
         local body = lurek.physics.newBody(world, 0, 0, "dynamic")
         local shape = lurek.physics.newCircleShape(15)
@@ -278,7 +311,6 @@ describe("Body UserData methods", function()
         expect_near(10.0, x, 0.01)
         expect_near(20.0, y, 0.01)
     end)
-
     -- @covers LBody:getPosition
     -- @covers LBody:setPosition
     -- @covers lurek.physics.newBody
@@ -291,7 +323,6 @@ describe("Body UserData methods", function()
         expect_near(50, x, 0.01)
         expect_near(75, y, 0.01)
     end)
-
     -- @covers LBody:getX
     -- @covers LBody:getY
     -- @covers lurek.physics.newBody
@@ -302,7 +333,6 @@ describe("Body UserData methods", function()
         expect_near(3.5, body:getX(), 0.01)
         expect_near(7.5, body:getY(), 0.01)
     end)
-
     -- @covers LBody:getVelocity
     -- @covers LBody:setVelocity
     -- @covers lurek.physics.newBody
@@ -315,7 +345,6 @@ describe("Body UserData methods", function()
         expect_near(5.0, vx, 0.01)
         expect_near(-3.0, vy, 0.01)
     end)
-
     -- @covers LBody:getAngle
     -- @covers LBody:setAngle
     -- @covers lurek.physics.newBody
@@ -326,7 +355,6 @@ describe("Body UserData methods", function()
         body:setAngle(1.57)
         expect_near(1.57, body:getAngle(), 0.01)
     end)
-
     -- @covers LBody:getAngularVelocity
     -- @covers LBody:setAngularVelocity
     -- @covers lurek.physics.newBody
@@ -337,7 +365,6 @@ describe("Body UserData methods", function()
         body:setAngularVelocity(2.5)
         expect_near(2.5, body:getAngularVelocity(), 0.01)
     end)
-
     -- @covers LBody:getMass
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -346,7 +373,6 @@ describe("Body UserData methods", function()
         local body = world:newCircleBody(0, 0, 1.0, "dynamic")
         expect_true(body:getMass() > 0)
     end)
-
     -- @covers LBody:getType
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -355,7 +381,6 @@ describe("Body UserData methods", function()
         local body = lurek.physics.newBody(world, 0, 0, "static")
         expect_equal("static", body:getType())
     end)
-
     -- @covers LBody:getType
     -- @covers LBody:setType
     -- @covers lurek.physics.newBody
@@ -366,7 +391,6 @@ describe("Body UserData methods", function()
         body:setType("kinematic")
         expect_equal("kinematic", body:getType())
     end)
-
     -- @covers LBody:getFriction
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -376,7 +400,6 @@ describe("Body UserData methods", function()
         body:setFriction(0.7)
         expect_near(0.7, body:getFriction(), 0.01)
     end)
-
     -- @covers LBody:getRestitution
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -386,7 +409,6 @@ describe("Body UserData methods", function()
         body:setRestitution(0.9)
         expect_near(0.9, body:getRestitution(), 0.01)
     end)
-
     -- @covers LBody:getLayer
     -- @covers LBody:setLayer
     -- @covers lurek.physics.newBody
@@ -397,7 +419,6 @@ describe("Body UserData methods", function()
         body:setLayer(3)
         expect_equal(3, body:getLayer())
     end)
-
     -- @covers LBody:getMask
     -- @covers LBody:setMask
     -- @covers lurek.physics.newBody
@@ -408,7 +429,6 @@ describe("Body UserData methods", function()
         body:setMask(5)
         expect_equal(5, body:getMask())
     end)
-
     -- @covers LBody:applyImpulse
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -419,7 +439,6 @@ describe("Body UserData methods", function()
         local vx, vy = body:getVelocity()
         expect_true(vx > 0, "impulse should increase x velocity")
     end)
-
     -- @covers LBody:applyForce
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -428,7 +447,6 @@ describe("Body UserData methods", function()
         local body = world:newCircleBody(0, 0, 1.0, "dynamic")
         expect_no_error(function() body:applyForce(100, 0) end)
     end)
-
     -- @covers LBody:applyTorque
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -437,7 +455,6 @@ describe("Body UserData methods", function()
         local body = world:newCircleBody(0, 0, 1.0, "dynamic")
         expect_no_error(function() body:applyTorque(5.0) end)
     end)
-
     -- @covers LBody:applyAngularImpulse
     -- @covers LBody:getAngularVelocity
     -- @covers LWorld:newCircleBody
@@ -448,7 +465,6 @@ describe("Body UserData methods", function()
         body:applyAngularImpulse(3.0)
         expect_true(math.abs(body:getAngularVelocity()) > 0)
     end)
-
     -- @covers LBody:getGravityScale
     -- @covers LBody:setGravityScale
     -- @covers lurek.physics.newBody
@@ -459,7 +475,6 @@ describe("Body UserData methods", function()
         body:setGravityScale(0.5)
         expect_near(0.5, body:getGravityScale(), 0.01)
     end)
-
     -- @covers LBody:isFixedRotation
     -- @covers LBody:setFixedRotation
     -- @covers lurek.physics.newBody
@@ -471,7 +486,6 @@ describe("Body UserData methods", function()
         body:setFixedRotation(true)
         expect_true(body:isFixedRotation())
     end)
-
     -- @covers LBody:getLinearDamping
     -- @covers LBody:setLinearDamping
     -- @covers lurek.physics.newBody
@@ -482,7 +496,6 @@ describe("Body UserData methods", function()
         body:setLinearDamping(0.3)
         expect_near(0.3, body:getLinearDamping(), 0.01)
     end)
-
     -- @covers LBody:getAngularDamping
     -- @covers LBody:setAngularDamping
     -- @covers lurek.physics.newBody
@@ -493,7 +506,6 @@ describe("Body UserData methods", function()
         body:setAngularDamping(0.4)
         expect_near(0.4, body:getAngularDamping(), 0.01)
     end)
-
     -- @covers LBody:isBullet
     -- @covers LBody:setBullet
     -- @covers lurek.physics.newBody
@@ -505,7 +517,6 @@ describe("Body UserData methods", function()
         body:setBullet(true)
         expect_true(body:isBullet())
     end)
-
     -- @covers LBody:getId
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -514,7 +525,6 @@ describe("Body UserData methods", function()
         local body = lurek.physics.newBody(world, 0, 0, "dynamic")
         expect_type("number", body:getId())
     end)
-
     -- @covers LBody:destroy
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -537,7 +547,6 @@ describe("World UserData methods", function()
         expect_near(0, gx, 0.01)
         expect_near(9.81, gy, 0.01)
     end)
-
     -- @covers LWorld:getGravity
     -- @covers LWorld:setGravity
     -- @covers lurek.physics.newWorld
@@ -548,7 +557,6 @@ describe("World UserData methods", function()
         expect_near(0, gx, 0.01)
         expect_near(-10, gy, 0.01)
     end)
-
     -- @covers LWorld:getBodyCount
     -- @covers LWorld:newBody
     -- @covers lurek.physics.newWorld
@@ -560,7 +568,6 @@ describe("World UserData methods", function()
         world:newBody(5, 5, "static")
         expect_equal(2, world:getBodyCount())
     end)
-
     -- @covers LWorld:getBodyIds
     -- @covers LWorld:newBody
     -- @covers lurek.physics.newWorld
@@ -571,7 +578,6 @@ describe("World UserData methods", function()
         local ids = world:getBodyIds()
         expect_equal(2, #ids)
     end)
-
     -- @covers LWorld:newBody
     -- @covers lurek.physics.newWorld
     it("newBody assigns sequential ids", function()
@@ -581,7 +587,6 @@ describe("World UserData methods", function()
         expect_equal(0, a:getId())
         expect_equal(1, b:getId())
     end)
-
     -- @covers LWorld:destroyBody
     -- @covers LWorld:getBodyCount
     -- @covers LWorld:newBody
@@ -596,7 +601,6 @@ describe("World UserData methods", function()
         expect_equal(1, world:getBodyCount())
         expect_equal("static", body:getType())
     end)
-
     -- @covers LWorld:clear
     -- @covers LWorld:getBodyCount
     -- @covers LWorld:newBody
@@ -608,7 +612,6 @@ describe("World UserData methods", function()
         world:clear()
         expect_equal(0, world:getBodyCount())
     end)
-
     -- @covers LWorld:newCircleBody
     -- @covers LWorld:step
     -- @covers lurek.physics.newWorld
@@ -619,7 +622,6 @@ describe("World UserData methods", function()
         local _, y = body:getPosition()
         expect_true(y > 0, "gravity should move body down")
     end)
-
     -- @covers LWorld:getMeter
     -- @covers LWorld:setMeter
     -- @covers lurek.physics.newWorld
@@ -628,7 +630,6 @@ describe("World UserData methods", function()
         world:setMeter(100)
         expect_near(100, world:getMeter(), 0.01)
     end)
-
     -- @covers LWorld:setMeter
     -- @covers LWorld:toPhysics
     -- @covers LWorld:toPixels
@@ -641,7 +642,6 @@ describe("World UserData methods", function()
         local px = world:toPixels(2.0)
         expect_near(100, px, 0.01)
     end)
-
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
     it("newCircleBody creates a body with circle shape", function()
@@ -651,7 +651,6 @@ describe("World UserData methods", function()
         expect_near(10, x, 0.01)
         expect_near(20, y, 0.01)
     end)
-
     -- @covers LWorld:newPolygonBody
     -- @covers lurek.physics.newWorld
     it("newPolygonBody creates a polygon body", function()
@@ -661,7 +660,6 @@ describe("World UserData methods", function()
         expect_not_nil(body)
         expect_equal("dynamic", body:getType())
     end)
-
     -- @covers LWorld:newEdgeBody
     -- @covers lurek.physics.newWorld
     it("newEdgeBody creates an edge body", function()
@@ -685,7 +683,6 @@ describe("Joint operations", function()
         local jid = world:addRevoluteJoint(a:getId(), b:getId(), 2.5, 0)
         expect_type("number", jid)
     end)
-
     -- @covers LWorld:addDistanceJoint
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -696,7 +693,6 @@ describe("Joint operations", function()
         local jid = world:addDistanceJoint(a:getId(), b:getId(), 0, 0, 10, 0, 10)
         expect_type("number", jid)
     end)
-
     -- @covers LWorld:addWeldJoint
     -- @covers LWorld:newCircleBody
     -- @covers lurek.physics.newWorld
@@ -707,7 +703,6 @@ describe("Joint operations", function()
         local jid = world:addWeldJoint(a:getId(), b:getId(), 2.5, 0)
         expect_type("number", jid)
     end)
-
     -- @covers LWorld:addRevoluteJoint
     -- @covers LWorld:jointCount
     -- @covers LWorld:newCircleBody
@@ -720,7 +715,6 @@ describe("Joint operations", function()
         world:addRevoluteJoint(a:getId(), b:getId(), 2.5, 0)
         expect_equal(1, world:jointCount())
     end)
-
     -- @covers LWorld:addRevoluteJoint
     -- @covers LWorld:getJointIds
     -- @covers LWorld:newCircleBody
@@ -733,7 +727,6 @@ describe("Joint operations", function()
         local ids = world:getJointIds()
         expect_equal(1, #ids)
     end)
-
     -- @covers LWorld:addRevoluteJoint
     -- @covers LWorld:getJointType
     -- @covers LWorld:newCircleBody
@@ -746,7 +739,6 @@ describe("Joint operations", function()
         local jtype = world:getJointType(jid)
         expect_type("string", jtype)
     end)
-
     -- @covers LWorld:addRevoluteJoint
     -- @covers LWorld:destroyJoint
     -- @covers LWorld:jointCount
@@ -776,7 +768,6 @@ describe("Fixture operations", function()
         local body = lurek.physics.newBody(world, 0, 0, "dynamic")
         expect_equal(1, world:fixtureCount(body:getId()))
     end)
-
     -- @covers LBody:getId
     -- @covers LWorld:addFixture
     -- @covers lurek.physics.newBody
@@ -787,7 +778,6 @@ describe("Fixture operations", function()
         local idx = world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
         expect_type("number", idx)
     end)
-
     -- @covers LBody:getId
     -- @covers LWorld:addFixture
     -- @covers LWorld:fixtureCount
@@ -800,20 +790,54 @@ describe("Fixture operations", function()
         world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
         expect_equal(before + 1, world:fixtureCount(body:getId()))
     end)
-
     -- @covers LWorld:fixtureCount
     -- @covers lurek.physics.newWorld
     it("fixtureCount returns 0 for unknown body", function()
         local world = lurek.physics.newWorld(0, 0)
         expect_equal(0, world:fixtureCount(999))
     end)
-
     -- @covers LBody:getId
+    it("setFixtureFriction does not error [LBody:getId]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureFriction(body:getId(), 0, 0.8)
+        end)
+    end)
+
     -- @covers LWorld:addFixture
+    it("setFixtureFriction does not error [LWorld:addFixture]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureFriction(body:getId(), 0, 0.8)
+        end)
+    end)
+
     -- @covers LWorld:setFixtureFriction
+    it("setFixtureFriction does not error [LWorld:setFixtureFriction]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureFriction(body:getId(), 0, 0.8)
+        end)
+    end)
+
     -- @covers lurek.physics.newBody
+    it("setFixtureFriction does not error [lurek.physics.newBody]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureFriction(body:getId(), 0, 0.8)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
-    it("setFixtureFriction does not error", function()
+    it("setFixtureFriction does not error [lurek.physics.newWorld]", function()
         local world = lurek.physics.newWorld(0, 0)
         local body = lurek.physics.newBody(world, 0, 0, "dynamic")
         world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
@@ -823,11 +847,47 @@ describe("Fixture operations", function()
     end)
 
     -- @covers LBody:getId
+    it("setFixtureRestitution does not error [LBody:getId]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureRestitution(body:getId(), 0, 0.6)
+        end)
+    end)
+
     -- @covers LWorld:addFixture
+    it("setFixtureRestitution does not error [LWorld:addFixture]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureRestitution(body:getId(), 0, 0.6)
+        end)
+    end)
+
     -- @covers LWorld:setFixtureRestitution
+    it("setFixtureRestitution does not error [LWorld:setFixtureRestitution]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureRestitution(body:getId(), 0, 0.6)
+        end)
+    end)
+
     -- @covers lurek.physics.newBody
+    it("setFixtureRestitution does not error [lurek.physics.newBody]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureRestitution(body:getId(), 0, 0.6)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
-    it("setFixtureRestitution does not error", function()
+    it("setFixtureRestitution does not error [lurek.physics.newWorld]", function()
         local world = lurek.physics.newWorld(0, 0)
         local body = lurek.physics.newBody(world, 0, 0, "dynamic")
         world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
@@ -837,11 +897,47 @@ describe("Fixture operations", function()
     end)
 
     -- @covers LBody:getId
+    it("setFixtureSensor does not error [LBody:getId]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureSensor(body:getId(), 0, true)
+        end)
+    end)
+
     -- @covers LWorld:addFixture
+    it("setFixtureSensor does not error [LWorld:addFixture]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureSensor(body:getId(), 0, true)
+        end)
+    end)
+
     -- @covers LWorld:setFixtureSensor
+    it("setFixtureSensor does not error [LWorld:setFixtureSensor]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureSensor(body:getId(), 0, true)
+        end)
+    end)
+
     -- @covers lurek.physics.newBody
+    it("setFixtureSensor does not error [lurek.physics.newBody]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
+        expect_no_error(function()
+            world:setFixtureSensor(body:getId(), 0, true)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
-    it("setFixtureSensor does not error", function()
+    it("setFixtureSensor does not error [lurek.physics.newWorld]", function()
         local world = lurek.physics.newWorld(0, 0)
         local body = lurek.physics.newBody(world, 0, 0, "dynamic")
         world:addFixture(body:getId(), "circle", 1.0, 0.5, 0.3, false, 2.0)
@@ -865,7 +961,6 @@ describe("Collision and simulation behavior", function()
         local _, y = body:getPosition()
         expect_near(0, y, 0.001)
     end)
-
     -- @covers LWorld:newCircleBody
     -- @covers LWorld:step
     -- @covers lurek.physics.newWorld
@@ -877,7 +972,6 @@ describe("Collision and simulation behavior", function()
         expect_near(0, x, 0.001)
         expect_near(0, y, 0.001)
     end)
-
     -- @covers LWorld:newCircleBody
     -- @covers LWorld:step
     -- @covers lurek.physics.newWorld
@@ -888,7 +982,6 @@ describe("Collision and simulation behavior", function()
         local _, y = body:getPosition()
         expect_near(0, y, 0.001)
     end)
-
     -- @covers LBody:setGravityScale
     -- @covers LWorld:newCircleBody
     -- @covers LWorld:step
@@ -901,7 +994,6 @@ describe("Collision and simulation behavior", function()
         local _, y = body:getPosition()
         expect_near(0, y, 0.001)
     end)
-
     -- @covers LWorld:newCircleBody
     -- @covers LWorld:step
     -- @covers lurek.physics.newWorld
@@ -955,7 +1047,6 @@ describe("physics body data", function()
       expect_equal("platform", d.kind)
     end
   end)
-
   -- @covers LWorld:getBodyData
   -- @covers LWorld:newBody
   -- @covers lurek.physics.newWorld
@@ -966,7 +1057,6 @@ describe("physics body data", function()
     local d = w:getBodyData(id)
     expect_equal(d, nil)
   end)
-
   -- @covers LWorld:clearBodyData
   -- @covers LWorld:getBodyData
   -- @covers LWorld:newBody
@@ -980,7 +1070,6 @@ describe("physics body data", function()
     w:clearBodyData(id)
     expect_equal(w:getBodyData(id), nil)
   end)
-
   -- @covers LWorld:getBodyData
   -- @covers LWorld:newBody
   -- @covers LWorld:setBodyData
@@ -993,7 +1082,6 @@ describe("physics body data", function()
     w:setBodyData(id, "second")
     expect_equal(w:getBodyData(id), "second")
   end)
-
   -- @covers LWorld:getBodyData
   -- @covers LWorld:newBody
   -- @covers LWorld:setBodyData
@@ -1009,7 +1097,6 @@ describe("physics body data", function()
     expect_equal(w:getBodyData(id1), "bodyA")
     expect_equal(w:getBodyData(id2), "bodyB")
   end)
-
 end)
 
 -- =========================================================================
@@ -1084,7 +1171,6 @@ describe("lurek.physics cellular cell access", function()
         sim:setCell(5, 5, lurek.procgen.CELL_SAND)
         expect_equal(lurek.procgen.CELL_SAND, sim:getCell(5, 5))
     end)
-
     -- @covers LCellular:getCell
     -- @covers LCellular:setCell
     it("setting cell to AIR clears it", function()
@@ -1135,12 +1221,27 @@ describe("lurek.physics cellular step", function()
         -- Top cell should now be air (sand moved down).
         expect_equal(lurek.procgen.CELL_AIR, sim:getCell(4, 0))
     end)
-
     -- @coverage Verifies stepN is callable with n > 1.
     -- @covers LCellular:fillRect
+    it("stepN accepts a count without error [LCellular:fillRect]", function()
+        local sim = lurek.procgen.newCellular(16, 16)
+        sim:fillRect(0, 0, 16, 1, lurek.procgen.CELL_SAND)
+        expect_no_error(function()
+            sim:stepN(10)
+        end)
+    end)
+
     -- @covers LCellular:stepN
+    it("stepN accepts a count without error [LCellular:stepN]", function()
+        local sim = lurek.procgen.newCellular(16, 16)
+        sim:fillRect(0, 0, 16, 1, lurek.procgen.CELL_SAND)
+        expect_no_error(function()
+            sim:stepN(10)
+        end)
+    end)
+
     -- @covers lurek.procgen.newCellular
-    it("stepN accepts a count without error", function()
+    it("stepN accepts a count without error [lurek.procgen.newCellular]", function()
         local sim = lurek.procgen.newCellular(16, 16)
         sim:fillRect(0, 0, 16, 1, lurek.procgen.CELL_SAND)
         expect_no_error(function()
@@ -1161,7 +1262,6 @@ describe("lurek.physics cellular query", function()
         sim:setCell(2, 0, lurek.procgen.CELL_ROCK)
         expect_equal(3, sim:countCells(lurek.procgen.CELL_ROCK))
     end)
-
     -- @covers LCellular:findCells
     -- @covers LCellular:setCell
     -- @covers lurek.procgen.newCellular
@@ -1225,7 +1325,6 @@ describe("lurek.physics solver iterations", function()
         world:setSolverIterations(8)
         expect_equal(8, world:getSolverIterations())
     end)
-
     -- @covers LWorld:getSolverIterations
     -- @covers LWorld:setSolverIterations
     it("setSolverIterations clamps zero to 1", function()
@@ -1273,7 +1372,6 @@ describe("lurek.physics body sleeping", function()
         local body = lurek.physics.newBody(world, 200, 200, "dynamic")
         expect_type("boolean", body:isSleeping())
     end)
-
     -- @covers LBody:isSleeping
     -- @covers LBody:sleep
     -- @covers lurek.physics.newBody
@@ -1282,7 +1380,6 @@ describe("lurek.physics body sleeping", function()
         body:sleep()
         expect_equal(true, body:isSleeping())
     end)
-
     -- @covers LBody:isSleeping
     -- @covers LBody:sleep
     -- @covers LBody:wakeUp
@@ -1346,7 +1443,6 @@ describe("physics missing API coverage sweep", function()
         local body = world:newChainBody(0, 0, {0, 0, 10, 0, 10, 10}, false, "static")
         expect_type("userdata", body)
     end)
-
     -- @covers LWorld:addPrismaticJoint
     -- @covers LWorld:addRopeJoint
     -- @covers LWorld:addWheelJoint
@@ -1370,7 +1466,6 @@ describe("physics missing API coverage sweep", function()
         expect_type("number", world:addPulleyJoint(a:getId(), b:getId(), 0, 0))
         expect_type("number", world:addGearJoint(a:getId(), b:getId(), 0, 0))
     end)
-
     -- @covers LWorld:setJointMotorSpeed
     -- @covers LWorld:getJointMotorSpeed
     -- @covers LWorld:setJointLimits
@@ -1400,7 +1495,6 @@ describe("physics missing API coverage sweep", function()
         expect_type("number", ba)
         expect_type("number", bb)
     end)
-
     -- @covers LWorld:queryAABB
     -- @covers LWorld:raycastClosest
     -- @covers LWorld:getBodyAtPoint
@@ -1422,7 +1516,6 @@ describe("physics missing API coverage sweep", function()
         end
         expect_true(id >= 0)
     end)
-
     -- @covers LWorld:getCollisionEvents
     -- @covers LWorld:getBeginContactEvents
     -- @covers LWorld:getEndContactEvents
@@ -1442,7 +1535,6 @@ describe("physics missing API coverage sweep", function()
         expect_type("table", contacts)
         expect_type("table", body_contacts)
     end)
-
     -- @covers LWorld:setBodyType
     -- @covers LWorld:getBodyType
     -- @covers LWorld:newBody
@@ -1454,12 +1546,38 @@ describe("physics missing API coverage sweep", function()
         world:setBodyType(id, "kinematic")
         expect_equal("kinematic", world:getBodyType(id))
     end)
-
     -- @covers LBody:setMass
+    it("body mass and point-force APIs are callable [LBody:setMass]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 1, "dynamic")
+        expect_no_error(function()
+            body:setMass(2.0)
+            body:applyForceAtPoint(10, 0, 0, 0)
+        end)
+    end)
+
     -- @covers LBody:applyForceAtPoint
+    it("body mass and point-force APIs are callable [LBody:applyForceAtPoint]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 1, "dynamic")
+        expect_no_error(function()
+            body:setMass(2.0)
+            body:applyForceAtPoint(10, 0, 0, 0)
+        end)
+    end)
+
     -- @covers LWorld:newCircleBody
+    it("body mass and point-force APIs are callable [LWorld:newCircleBody]", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 1, "dynamic")
+        expect_no_error(function()
+            body:setMass(2.0)
+            body:applyForceAtPoint(10, 0, 0, 0)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
-    it("body mass and point-force APIs are callable", function()
+    it("body mass and point-force APIs are callable [lurek.physics.newWorld]", function()
         local world = lurek.physics.newWorld(0, 0)
         local body = world:newCircleBody(0, 0, 1, "dynamic")
         expect_no_error(function()
@@ -1535,8 +1653,15 @@ describe("lurek.physics contact callbacks", function()
     end)
 
     -- @covers LWorld:clearBeginContact
+    it("clearBeginContact does not error [LWorld:clearBeginContact]", function()
+        world:setBeginContact(function(a, b) end)
+        expect_no_error(function()
+            world:clearBeginContact()
+        end)
+    end)
+
     -- @covers LWorld:setBeginContact
-    it("clearBeginContact does not error", function()
+    it("clearBeginContact does not error [LWorld:setBeginContact]", function()
         world:setBeginContact(function(a, b) end)
         expect_no_error(function()
             world:clearBeginContact()
@@ -1551,8 +1676,15 @@ describe("lurek.physics contact callbacks", function()
     end)
 
     -- @covers LWorld:clearEndContact
+    it("clearEndContact does not error [LWorld:clearEndContact]", function()
+        world:setEndContact(function(a, b) end)
+        expect_no_error(function()
+            world:clearEndContact()
+        end)
+    end)
+
     -- @covers LWorld:setEndContact
-    it("clearEndContact does not error", function()
+    it("clearEndContact does not error [LWorld:setEndContact]", function()
         world:setEndContact(function(a, b) end)
         expect_no_error(function()
             world:clearEndContact()
@@ -1605,8 +1737,15 @@ end)
 -- @describe lurek.physics World:stepFixed
 describe("lurek.physics World:stepFixed", function()
     -- @covers LWorld:stepFixed
+    it("stepFixed is callable [LWorld:stepFixed]", function()
+        local world = lurek.physics.newWorld(0, 9.81)
+        expect_no_error(function()
+            world:stepFixed(1/60, 1/60, 8)
+        end)
+    end)
+
     -- @covers lurek.physics.newWorld
-    it("stepFixed is callable", function()
+    it("stepFixed is callable [lurek.physics.newWorld]", function()
         local world = lurek.physics.newWorld(0, 9.81)
         expect_no_error(function()
             world:stepFixed(1/60, 1/60, 8)
@@ -1621,7 +1760,6 @@ describe("lurek.physics World:stepFixed", function()
         local remainder = world:stepFixed(step_dt, step_dt, 8)
         expect_near(0.0, remainder, 1e-4)
     end)
-
     -- @covers LWorld:stepFixed
     -- @covers lurek.physics.newWorld
     it("remainder is always less than step_dt", function()
@@ -1633,7 +1771,6 @@ describe("lurek.physics World:stepFixed", function()
         expect_true(remainder < step_dt, "remainder must be < step_dt")
         expect_true(remainder >= 0, "remainder must be non-negative")
     end)
-
     -- @covers LWorld:stepFixed
     -- @covers lurek.physics.newWorld
     it("max_steps cap leaves remainder >= step_dt when capped", function()
@@ -1645,7 +1782,6 @@ describe("lurek.physics World:stepFixed", function()
         -- After one step, remainder = accum - step_dt  step_dt * 99
         expect_true(remainder > step_dt, "remaining time should exceed step_dt when capped")
     end)
-
     -- @covers LWorld:stepFixed
     -- @covers lurek.physics.newBody
     -- @covers lurek.physics.newWorld
@@ -1689,27 +1825,23 @@ describe("lurek.physics terrain cell access", function()
         terrain = lurek.physics.newTerrain(16, 16, 8, world)
     end)
 
-    -- @covers lurek.physics
     it("all cells start empty", function()
         expect_false(terrain:getCell(0, 0))
         expect_false(terrain:getCell(7, 7))
         expect_false(terrain:getCell(15, 15))
     end)
 
-    -- @covers lurek.physics
     it("setCell true makes cell solid", function()
         terrain:setCell(3, 3, true)
         expect_true(terrain:getCell(3, 3))
     end)
 
-    -- @covers lurek.physics
     it("setCell false clears a solid cell", function()
         terrain:setCell(5, 5, true)
         terrain:setCell(5, 5, false)
         expect_false(terrain:getCell(5, 5))
     end)
 
-    -- @covers lurek.physics
     it("isDirty is true after setCell", function()
         expect_false(terrain:isDirty())
         terrain:setCell(0, 0, true)
@@ -1742,15 +1874,12 @@ describe("lurek.physics terrain bulk fill", function()
         expect_false(terrain:getCell(15, 15))
     end)
 
-    -- @covers lurek.physics
     -- @covers LTerrain:fillRect
     it("fillRect marks affected cells solid", function()
         -- fill a 55 block at cell (0,0), world coords 0,0 / 40,40 (8px cells)
         terrain:fillRect(0, 0, 40, 40, true)
         expect_true(terrain:getCell(2, 2))
     end)
-
-    -- @covers lurek.physics
     -- @covers LCellular:fillCircle
     -- @covers LTerrain:fillCircle
     it("fillCircle marks centre cell solid", function()
@@ -1818,7 +1947,6 @@ describe("lurek.physics terrain collapse columns", function()
         local n = terrain:collapseColumns()
         expect_true(n >= 0, "count must be non-negative")
     end)
-
     --              (every cell has its neighbour below it).
     -- @covers LTerrain:collapseColumns
     -- @covers LTerrain:fillAll
@@ -1831,7 +1959,6 @@ describe("lurek.physics terrain collapse columns", function()
         local n = terrain:collapseColumns()
         expect_equal(0, n)
     end)
-
     --              it has no floor, no left neighbour, and no right neighbour.
     -- @covers LTerrain:collapseColumns
     -- @covers LTerrain:getCell
@@ -1849,7 +1976,6 @@ describe("lurek.physics terrain collapse columns", function()
         expect_true(n >= 1, "at least one cell should collapse")
         expect_false(terrain:getCell(4, 0))
     end)
-
     -- @covers LTerrain:collapseColumns
     -- @covers LTerrain:getCell
     -- @covers LTerrain:setCell
@@ -1865,7 +1991,6 @@ describe("lurek.physics terrain collapse columns", function()
         expect_equal(0, n)
         expect_true(terrain:getCell(3, 6))
     end)
-
     -- @covers LTerrain:collapseColumns
     -- @covers LTerrain:flush
     -- @covers LTerrain:isDirty
@@ -1893,7 +2018,6 @@ describe("lurek.physics terrain solid positions", function()
         local pts = terrain:solidPositions()
         expect_equal(0, #pts)
     end)
-
     -- @covers LTerrain:setCell
     -- @covers LTerrain:solidPositions
     -- @covers lurek.physics.newTerrain
@@ -1923,7 +2047,6 @@ describe("lurek.physics zone factory", function()
         local zone = world:addZone(0, 0, 100, 100)
         expect_type("userdata", zone)
     end)
-
     -- @covers LWorld:addZone
     -- @covers lurek.physics.newWorld
     it("consecutive zones have different IDs", function()
@@ -1981,7 +2104,6 @@ describe("lurek.physics zone configuration", function()
         zone = world:addZone(0, 0, 1000, 1000)
     end)
 
-    -- @covers lurek.physics
     it("setEnabled false does not error", function()
         expect_no_error(function()
             zone:setEnabled(false)
@@ -1989,10 +2111,28 @@ describe("lurek.physics zone configuration", function()
     end)
 
     -- @covers lurek.physics
+    it("setPriority accepts an integer [lurek.physics]", function()
+        expect_no_error(function()
+            zone:setPriority(10)
+        end)
+    end)
+
     -- @covers LAgent:setPriority
+    it("setPriority accepts an integer [LAgent:setPriority]", function()
+        expect_no_error(function()
+            zone:setPriority(10)
+        end)
+    end)
+
     -- @covers LGraphItem:setPriority
+    it("setPriority accepts an integer [LGraphItem:setPriority]", function()
+        expect_no_error(function()
+            zone:setPriority(10)
+        end)
+    end)
+
     -- @covers LZone:setPriority
-    it("setPriority accepts an integer", function()
+    it("setPriority accepts an integer [LZone:setPriority]", function()
         expect_no_error(function()
             zone:setPriority(10)
         end)
@@ -2045,7 +2185,6 @@ describe("lurek.physics zone events", function()
         local events = world:getZoneEvents()
         expect_type("table", events)
     end)
-
     -- @covers LWorld:addZone
     -- @covers LWorld:getZoneEvents
     -- @covers LWorld:step
@@ -2257,7 +2396,6 @@ describe("physics strict: module functions", function()
     local cols = lurek.physics.getCollisions(world)
     expect_type("table", cols)
   end)
-
   -- @covers lurek.physics.drawDebugGpu
   -- @covers lurek.physics.newWorld
   it("drawDebugGpu is callable", function()
@@ -2282,7 +2420,6 @@ describe("physics strict: LWorld missing methods", function()
             expect_nil(new_img)
     end
   end)
-
   -- @covers LWorld:raycast
   -- @covers lurek.physics.newWorld
   it("raycast is callable", function()
@@ -2290,7 +2427,6 @@ describe("physics strict: LWorld missing methods", function()
     local hit = world:raycast(0, 0, 10, 0)
     expect_true(hit == nil or type(hit) == "table")
   end)
-
   -- @covers LWorld:raycastAll
   -- @covers lurek.physics.newWorld
   it("raycastAll returns a table", function()
@@ -2298,7 +2434,6 @@ describe("physics strict: LWorld missing methods", function()
     local hits = world:raycastAll(0, 0, 1, 0, 10)
     expect_type("table", hits)
   end)
-
   -- @covers LWorld:getBodyCCD
   -- @covers LWorld:newBody
   -- @covers lurek.physics.newWorld
@@ -2307,7 +2442,6 @@ describe("physics strict: LWorld missing methods", function()
     local b = world:newBody(0, 0, "dynamic")
     expect_type("boolean", world:getBodyCCD(b:getId()))
   end)
-
   -- @covers LWorld:setJointBreakForce
   -- @covers LWorld:getJointBreakForce
   -- @covers LWorld:addRevoluteJoint
@@ -2322,7 +2456,6 @@ describe("physics strict: LWorld missing methods", function()
     local force = world:getJointBreakForce(jid)
     expect_type("number", force)
   end)
-
   -- @covers LWorld:type
   -- @covers LWorld:typeOf
   -- @covers lurek.physics.newWorld
@@ -2343,7 +2476,6 @@ describe("physics strict: LZone missing methods", function()
     local z = world:addZone(0, 0, 10, 10)
     expect_type("number", z:getId())
   end)
-
   -- @covers LZone:setEnabled
   -- @covers LWorld:addZone
   -- @covers lurek.physics.newWorld
@@ -2353,7 +2485,6 @@ describe("physics strict: LZone missing methods", function()
     local ok = pcall(function() z:setEnabled(false) end)
     expect_true(ok)
   end)
-
   -- @covers LZone:destroy
   -- @covers LWorld:addZone
   -- @covers lurek.physics.newWorld
@@ -2363,7 +2494,6 @@ describe("physics strict: LZone missing methods", function()
     local ok = pcall(function() z:destroy() end)
     expect_true(ok)
   end)
-
   -- @covers LZone:type
   -- @covers LZone:typeOf
   -- @covers LWorld:addZone
@@ -2387,7 +2517,6 @@ describe("physics strict: Terrain and Cellular", function()
     local out = t:spawnDebris({{x=1,y=1},{x=2,y=2}}, 1.0, 0.2)
     expect_type("table", out)
   end)
-
   -- @covers LTerrain:toImageData
   -- @covers lurek.physics.newTerrain
   -- @covers lurek.physics.newWorld
@@ -2397,7 +2526,6 @@ describe("physics strict: Terrain and Cellular", function()
     local data = t:toImageData(255, 255, 255, 0, 0, 0)
     expect_type("string", data)
   end)
-
   -- @covers LTerrain:type
   -- @covers LTerrain:typeOf
   -- @covers lurek.physics.newTerrain
@@ -2408,7 +2536,6 @@ describe("physics strict: Terrain and Cellular", function()
     expect_type("string", t:type())
     expect_type("boolean", t:typeOf("LObject"))
   end)
-
   -- @covers LCellular:toImageData
   -- @covers lurek.procgen.newCellular
   it("cellular toImageData returns string bytes", function()
@@ -2416,7 +2543,6 @@ describe("physics strict: Terrain and Cellular", function()
     local data = c:toImageData()
     expect_type("string", data)
   end)
-
   -- @covers LCellular:toImageDataRegion
   -- @covers lurek.procgen.newCellular
   it("cellular toImageDataRegion returns string bytes", function()
@@ -2424,7 +2550,6 @@ describe("physics strict: Terrain and Cellular", function()
     local data = c:toImageDataRegion(0, 0, 4, 4)
     expect_type("string", data)
   end)
-
   -- @covers LCellular:type
   -- @covers LCellular:typeOf
   -- @covers lurek.procgen.newCellular
@@ -2447,7 +2572,6 @@ describe("physics strict: LBody and LPhysicsShape", function()
     expect_type("number", b:getWidth())
     expect_type("number", b:getHeight())
   end)
-
   -- @covers LBody:setFriction
   -- @covers LWorld:newBody
   -- @covers lurek.physics.newWorld
@@ -2457,7 +2581,6 @@ describe("physics strict: LBody and LPhysicsShape", function()
     local ok = pcall(function() b:setFriction(0.5) end)
     expect_true(ok)
   end)
-
   -- @covers LBody:setRestitution
   -- @covers LWorld:newBody
   -- @covers lurek.physics.newWorld
@@ -2467,7 +2590,6 @@ describe("physics strict: LBody and LPhysicsShape", function()
     local ok = pcall(function() b:setRestitution(0.2) end)
     expect_true(ok)
   end)
-
   -- @covers LBody:isSleepingAllowed
   -- @covers LBody:setSleepingAllowed
   -- @covers LWorld:newBody
@@ -2478,7 +2600,6 @@ describe("physics strict: LBody and LPhysicsShape", function()
     b:setSleepingAllowed(false)
     expect_type("boolean", b:isSleepingAllowed())
   end)
-
   -- @covers LBody:type
   -- @covers LBody:typeOf
   -- @covers LWorld:newBody
@@ -2489,7 +2610,6 @@ describe("physics strict: LBody and LPhysicsShape", function()
     expect_type("string", b:type())
     expect_type("boolean", b:typeOf("LObject"))
   end)
-
   -- @covers LPhysicsShape:type
   -- @covers LPhysicsShape:typeOf
   -- @covers lurek.physics.newCircleShape
@@ -2504,7 +2624,6 @@ end)
 describe("unit: migrated from integration/test_combat_physics_integration.lua", function()
         local combat = rawget(_G, "combat")
         if combat == nil or combat.newCollisionGroupSet == nil then
-            -- @covers combat
             it("combat module unavailable in this runtime", function()
                 expect_nil(combat)
             end)
@@ -2542,8 +2661,6 @@ describe("unit: migrated from integration/test_combat_physics_integration.lua", 
             return out
         end
         -- @covers lurek.physics.newWorld
-        -- @covers lurek.physics.newBody
-        -- @covers lurek.physics.getBody
         -- @covers Chassis:takeDamage
         it("damage is applied to chassis whose physics body is in range", function()
             local world = lurek.physics.newWorld(0, 0)
@@ -2557,10 +2674,7 @@ describe("unit: migrated from integration/test_combat_physics_integration.lua", 
             hits[1].target.chassis:takeDamage(25)
             expect_equal(75, t.chassis.hp)
         end)
-
         -- @covers lurek.physics.newWorld
-        -- @covers lurek.physics.newBody
-        -- @covers lurek.physics.getBody
         it("no-op when the only target is outside attack range", function()
             local world = lurek.physics.newWorld(0, 0)
             local cgs = combat.newCollisionGroupSet()
@@ -2571,10 +2685,7 @@ describe("unit: migrated from integration/test_combat_physics_integration.lua", 
             expect_equal(0, #hits)
             expect_equal(100, t.chassis.hp)
         end)
-
         -- @covers lurek.physics.newWorld
-        -- @covers lurek.physics.newBody
-        -- @covers lurek.physics.getBody
         it("multiple targets are sorted nearest-first", function()
             local world = lurek.physics.newWorld(0, 0)
             local cgs = combat.newCollisionGroupSet()
@@ -2593,7 +2704,6 @@ describe("unit: migrated from integration/test_combat_physics_integration.lua", 
             expect_equal(mid, hits[2].target)
             expect_equal(far, hits[3].target)
         end)
-
         -- @covers lurek.physics.newWorld
         -- @covers CollisionGroupSet:defineGroup
         it("friendly-fire OFF spares same-group chassis", function()
@@ -2609,7 +2719,6 @@ describe("unit: migrated from integration/test_combat_physics_integration.lua", 
             expect_equal(1, #hits)
             expect_equal(enemy, hits[1].target)
         end)
-
         -- @covers lurek.physics.newWorld
         -- @covers CollisionGroupSet:defineGroup
         it("friendly-fire ON includes same-group chassis", function()
@@ -2624,10 +2733,18 @@ describe("unit: migrated from integration/test_combat_physics_integration.lua", 
             local hits = resolve_targets(world, { ally, enemy }, 0, 0, 20, player_bit + enemy_bit)
             expect_equal(2, #hits)
         end)
-
         -- @covers lurek.physics.newWorld
+        it("physics.step rejects a non-numeric dt [lurek.physics.newWorld]", function()
+            local world = lurek.physics.newWorld(0, 0)
+            ---@type any
+            local bad_dt = "not a number"
+            expect_error(function()
+                lurek.physics.step(world, bad_dt)
+            end)
+        end)
+
         -- @covers lurek.physics.step
-        it("physics.step rejects a non-numeric dt", function()
+        it("physics.step rejects a non-numeric dt [lurek.physics.step]", function()
             local world = lurek.physics.newWorld(0, 0)
             ---@type any
             local bad_dt = "not a number"
@@ -2658,7 +2775,6 @@ describe("unit: migrated from integration/test_math_physics.lua", function()
 
             lurek.physics.destroyWorld(world_id)
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_physics_platformer.lua
@@ -2675,11 +2791,38 @@ describe("unit: migrated from integration/test_physics_platformer.lua", function
             local _, y1 = lurek.physics.getBody(world, player)
             expect_true(y1 > y0, "player should move down after world steps")
         end)
-
         -- @covers LWorld:setBeginContact
+        it("registered callbacks can observe contact activity [LWorld:setBeginContact]", function()
+            local world = lurek.physics.newWorld(0, 0)
+            local began = 0
+            world:setBeginContact(function()
+                began = began + 1
+            end)
+            lurek.physics.newBody(world, 0, 0, "dynamic")
+            lurek.physics.newBody(world, 0, 0, "static")
+            for _ = 1, 5 do
+                world:step(1/60)
+            end
+            expect_true(began >= 1, "begin-contact callback should fire at least once")
+        end)
+
         -- @covers LWorld:step
+        it("registered callbacks can observe contact activity [LWorld:step]", function()
+            local world = lurek.physics.newWorld(0, 0)
+            local began = 0
+            world:setBeginContact(function()
+                began = began + 1
+            end)
+            lurek.physics.newBody(world, 0, 0, "dynamic")
+            lurek.physics.newBody(world, 0, 0, "static")
+            for _ = 1, 5 do
+                world:step(1/60)
+            end
+            expect_true(began >= 1, "begin-contact callback should fire at least once")
+        end)
+
         -- @covers lurek.physics.newBody
-        it("registered callbacks can observe contact activity", function()
+        it("registered callbacks can observe contact activity [lurek.physics.newBody]", function()
             local world = lurek.physics.newWorld(0, 0)
             local began = 0
             world:setBeginContact(function()
@@ -2714,7 +2857,6 @@ describe("unit: migrated from integration/test_physics_platformer.lua", function
             local _, y_awake = lurek.physics.getBody(gravity_world, b)
             expect_true(y_awake > y_sleep, "woken body should move under gravity")
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_physics_space.lua
@@ -2740,7 +2882,6 @@ describe("unit: migrated from integration/test_physics_space.lua", function()
             expect_true(#events >= 1, "expected zone enter event")
             expect_equal("enter", events[1].kind)
         end)
-
         -- @covers LWorld:addZone
         -- @covers LWorld:newBody
         -- @covers LWorld:step
@@ -2766,7 +2907,6 @@ describe("unit: migrated from integration/test_physics_space.lua", function()
             expect_near(x0, x1, 1e-3)
             expect_near(y0, y1, 1e-3)
         end)
-
         -- @covers LWorld:addZone
         -- @covers LWorld:newBody
         -- @covers LWorld:getZoneEvents
@@ -2791,7 +2931,6 @@ describe("unit: migrated from integration/test_physics_space.lua", function()
             local events = world:getZoneEvents()
             expect_type("table", events)
         end)
-
 end)
 
 -- @describe unit: migrated from integration/test_physics_tanks.lua
@@ -2840,7 +2979,6 @@ describe("unit: migrated from integration/test_physics_tanks.lua", function()
 
             expect_true(#ids >= 0, "spawnDebris returns a valid id table")
         end)
-
         -- @covers LTerrain:toImageData
         -- @covers lurek.physics.newTerrain
         -- @covers lurek.physics.newWorld
@@ -2852,7 +2990,6 @@ describe("unit: migrated from integration/test_physics_tanks.lua", function()
             -- Expected: w * h * 4 bytes
             expect_equal(w * h * 4, #img)
         end)
-
 end)
 
 -- @describe property: physics monotonic fall
@@ -2941,7 +3078,6 @@ end)
 describe("lurek.physics.raycast", function()
     -- @covers lurek.physics.raycast
     -- @covers lurek.physics.newWorld
-    -- @covers lurek.physics.newBody
     it("returns nil when no body is hit", function()
         local world = lurek.physics.newWorld(0, 0)
         local hit = world:raycast(0, 0, 100, 0)

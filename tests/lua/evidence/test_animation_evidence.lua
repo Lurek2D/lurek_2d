@@ -1,7 +1,5 @@
 -- Evidence tests: animation module
 -- Artifacts are generated from lurek.animation APIs.
--- @covers lurek.animation.new
--- @covers lurek.image.savePNG
 
 
 
@@ -13,7 +11,9 @@ describe("Evidence: lurek.animation API", function()
         ensure_evidence_dir("animation")
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.animation.new
     it("PNG: animator current frame render", function()
         local anim = lurek.animation.new()
         anim:addClip("walk", { 1, 2, 3, 4, 5, 6, 7, 8 }, 8, true)
@@ -29,7 +29,7 @@ describe("Evidence: lurek.animation API", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.image.savePNG
     it("PNG: preview grid from clip frames", function()
         local anim = lurek.animation.new()
         anim:addClip("idle", { 1, 2, 3, 4, 5, 6 }, 6, true)
@@ -41,7 +41,7 @@ describe("Evidence: lurek.animation API", function()
         expect_evidence_created(path)
     end)
 
-    -- @evidence file
+    -- @evidence lurek.animation.new
     it("TXT: blend/crossfade state evidence", function()
         local anim = lurek.animation.new()
         anim:addClip("idle", { 1, 2, 3, 4 }, 4, true)

@@ -10,7 +10,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("<f", b)
     expect_near(v, 3.14, 0.01)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips u8 max", function()
@@ -18,7 +17,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("B", b)
     expect_equal(v, 255)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips u8 zero", function()
@@ -26,7 +24,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("B", b)
     expect_equal(v, 0)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips big-endian i16", function()
@@ -34,7 +31,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack(">h", b)
     expect_equal(v, 256)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips i8 negative", function()
@@ -42,7 +38,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("b", b)
     expect_equal(v, -1)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips u16", function()
@@ -50,7 +45,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("<H", b)
     expect_equal(v, 1000)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips i32", function()
@@ -58,7 +52,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("<i", b)
     expect_equal(v, -123456)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips u32", function()
@@ -66,7 +59,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("<I", b)
     expect_equal(v, 123456)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips f64 (double)", function()
@@ -74,7 +66,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("<d", b)
     expect_near(v, 1.23456789, 1e-9)
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips length-prefixed string", function()
@@ -82,7 +73,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("s", b)
     expect_equal(v, "hello")
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("round-trips null-terminated string", function()
@@ -90,7 +80,6 @@ describe("data.pack + data.unpack", function()
     local v = lurek.binary.unpack("z", b)
     expect_equal(v, "world")
   end)
-
   -- @covers lurek.binary.pack
   -- @covers lurek.binary.unpack
   it("returns next byte position", function()
@@ -100,7 +89,6 @@ describe("data.pack + data.unpack", function()
     expect_equal(v2, 20)
     expect_equal(pos, 2)
   end)
-
   -- @covers lurek.binary.pack
   it("respects big-endian prefix", function()
     local b = lurek.binary.pack(">H", 0x0102)
@@ -191,7 +179,6 @@ describe("data.newDataView", function()
     local dv = lurek.binary.newDataView(b)
     expect_equal(dv:getUInt8(0), 255)
   end)
-
   -- @covers LDataView:getSize
   -- @covers lurek.binary.newDataView
   -- @covers lurek.binary.pack
@@ -200,7 +187,6 @@ describe("data.newDataView", function()
     local dv = lurek.binary.newDataView(b)
     expect_equal(dv:getSize(), 3)
   end)
-
   -- @covers LDataView:getUInt16
   -- @covers lurek.binary.newDataView
   -- @covers lurek.binary.pack
@@ -209,7 +195,6 @@ describe("data.newDataView", function()
     local dv = lurek.binary.newDataView(b)
     expect_equal(dv:getUInt16(0), 1000)
   end)
-
   -- @covers LDataView:getFloat
   -- @covers lurek.binary.newDataView
   -- @covers lurek.binary.pack
@@ -218,7 +203,6 @@ describe("data.newDataView", function()
     local dv = lurek.binary.newDataView(b)
     expect_near(dv:getFloat(0), 1.5, 0.0001)
   end)
-
   -- @covers LDataView:getDouble
   -- @covers lurek.binary.newDataView
   -- @covers lurek.binary.pack
@@ -227,7 +211,6 @@ describe("data.newDataView", function()
     local dv = lurek.binary.newDataView(b)
     expect_near(dv:getDouble(0), 2.718281828, 1e-9)
   end)
-
   -- @covers LDataView:getUInt32
   -- @covers lurek.binary.newDataView
   -- @covers lurek.binary.pack
@@ -236,7 +219,6 @@ describe("data.newDataView", function()
     local dv = lurek.binary.newDataView(b)
     expect_equal(dv:getUInt32(0), 100000)
   end)
-
   -- @covers LDataView:getSize
   -- @covers LDataView:getUInt16
   -- @covers lurek.binary.newDataView
@@ -247,7 +229,6 @@ describe("data.newDataView", function()
     expect_equal(dv:getUInt16(0), 512)
     expect_equal(dv:getSize(), 2)
   end)
-
   -- @covers LDataView:getUInt16
   -- @covers lurek.binary.newDataView
   -- @covers lurek.binary.pack
@@ -270,7 +251,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("deflate", compressed)
     expect_equal(decompressed, original)
   end)
-
   -- @covers lurek.binary.compress
   it("deflate actually compresses (smaller output)", function()
     local original = string.rep("AAAA", 100)
@@ -286,7 +266,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("gzip", compressed)
     expect_equal(decompressed, original)
   end)
-
   -- @covers lurek.binary.compress
   -- @covers lurek.binary.decompress
   it("round-trips lz4", function()
@@ -295,7 +274,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("lz4", compressed)
     expect_equal(decompressed, original)
   end)
-
   -- @covers lurek.binary.compress
   -- @covers lurek.binary.decompress
   it("round-trips zlib", function()
@@ -304,7 +282,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("zlib", compressed)
     expect_equal(decompressed, original)
   end)
-
   -- @covers lurek.binary.compress
   -- @covers lurek.binary.decompress
   it("accepts case-insensitive compression format names", function()
@@ -313,7 +290,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("GZip", compressed)
     expect_equal(decompressed, original)
   end)
-
   -- @covers lurek.binary.compress
   -- @covers lurek.binary.decompress
   it("handles empty data", function()
@@ -321,7 +297,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("deflate", compressed)
     expect_equal(decompressed, "")
   end)
-
   -- @covers lurek.binary.compress
   -- @covers lurek.binary.decompress
   it("clamps oversized compression levels", function()
@@ -330,7 +305,6 @@ describe("data.compress + data.decompress", function()
     local decompressed = lurek.binary.decompress("deflate", compressed)
     expect_equal(decompressed, original)
   end)
-
   -- @covers lurek.binary.compress
   it("unknown compression format errors", function()
     expect_error(function()
@@ -349,7 +323,6 @@ describe("data.compressChunks + data.decompressChunks", function()
     local restored = lurek.binary.decompressChunks("zlib", compressed)
     expect_equal(restored, table.concat(chunks, ""))
   end)
-
   -- @covers lurek.binary.compressChunks
   -- @covers lurek.binary.decompressChunks
   it("accepts single-string input for chunk helpers", function()
@@ -358,7 +331,6 @@ describe("data.compressChunks + data.decompressChunks", function()
     local restored = lurek.binary.decompressChunks("gzip", compressed)
     expect_equal(restored, payload)
   end)
-
   -- @covers lurek.binary.compressChunks
   it("rejects non-string chunk entries", function()
     expect_error(function()
@@ -387,7 +359,6 @@ describe("data.encode + data.decode", function()
     local decoded = lurek.binary.decode("base64", encoded)
     expect_equal(decoded, original)
   end)
-
   -- @covers lurek.binary.decode
   -- @covers lurek.binary.encode
   it("round-trips hex", function()
@@ -397,7 +368,6 @@ describe("data.encode + data.decode", function()
     local decoded = lurek.binary.decode("hex", encoded)
     expect_equal(decoded, original)
   end)
-
   -- @covers lurek.binary.encode
   it("base64 encodes empty string", function()
     local encoded = lurek.binary.encode("base64", "")
@@ -483,7 +453,6 @@ describe("data.newByteData", function()
     expect_equal(bd:getSize(), 10)
     expect_equal(bd:getByte(0), 0)
   end)
-
   -- @covers lurek.binary.newByteData
   it("creates buffer from string", function()
     local new_byte_data = lurek.binary.newByteData
@@ -501,7 +470,6 @@ describe("data.newByteData", function()
     expect_equal(bd:getSize(), 0)
     expect_equal(bd:getString(), "")
   end)
-
   -- @covers LByteData:getByte
   -- @covers LByteData:setByte
   -- @covers lurek.binary.newByteData
@@ -512,11 +480,16 @@ describe("data.newByteData", function()
     expect_equal(bd:getByte(0), 65)
     expect_equal(bd:getByte(1), 66)
   end)
-
-
   -- @covers LByteData:getByte
+  it("getByte out of bounds raises an error [LByteData:getByte]", function()
+    local bd = lurek.binary.newByteData(4)
+    expect_error(function()
+      bd:getByte(99)
+    end)
+  end)
+
   -- @covers lurek.binary.newByteData
-  it("getByte out of bounds raises an error", function()
+  it("getByte out of bounds raises an error [lurek.binary.newByteData]", function()
     local bd = lurek.binary.newByteData(4)
     expect_error(function()
       bd:getByte(99)
@@ -524,8 +497,15 @@ describe("data.newByteData", function()
   end)
 
   -- @covers LByteData:setByte
+  it("setByte out of bounds raises an error [LByteData:setByte]", function()
+    local bd = lurek.binary.newByteData(4)
+    expect_error(function()
+      bd:setByte(99, 1)
+    end)
+  end)
+
   -- @covers lurek.binary.newByteData
-  it("setByte out of bounds raises an error", function()
+  it("setByte out of bounds raises an error [lurek.binary.newByteData]", function()
     local bd = lurek.binary.newByteData(4)
     expect_error(function()
       bd:setByte(99, 1)
@@ -603,7 +583,6 @@ describe("data.parseToml + data.encodeToml", function()
     expect_equal(decoded.title, "game")
     expect_equal(decoded.debug, true)
   end)
-
   -- @covers lurek.binary.encodeToml
   it("encodes an empty table to an empty document", function()
     local encoded = lurek.binary.encodeToml({})
@@ -640,7 +619,6 @@ describe("data.write + data.read (Binary Pack Format)", function()
     expect_equal(v1, 42)
     expect_near(v2, 3.14, 0.01)
   end)
-
   -- @covers lurek.binary.read
   -- @covers lurek.binary.write
   it("round-trips str", function()
@@ -648,7 +626,6 @@ describe("data.write + data.read (Binary Pack Format)", function()
     local v = lurek.binary.read("str", b)
     expect_equal(v, "hello")
   end)
-
   -- @covers lurek.binary.read
   -- @covers lurek.binary.write
   it("round-trips cstr (null-terminated)", function()
@@ -656,7 +633,6 @@ describe("data.write + data.read (Binary Pack Format)", function()
     local v = lurek.binary.read("cstr", b)
     expect_equal(v, "world")
   end)
-
   -- @covers lurek.binary.read
   -- @covers lurek.binary.write
   it("round-trips bool", function()
@@ -665,7 +641,6 @@ describe("data.write + data.read (Binary Pack Format)", function()
     expect_equal(v1, true)
     expect_equal(v2, false)
   end)
-
   -- @covers lurek.binary.size
   it("data.size returns correct byte count", function()
     expect_equal(lurek.binary.size("u8 u16 u32 u64 i8 i16 i32 i64"), 30)
@@ -716,7 +691,6 @@ describe("data.newByteData bit operations", function()
     expect_true(bd:getBit(0, 3), "bit 3 should be true after setBit")
     expect_false(bd:getBit(0, 2), "bit 2 should remain false")
   end)
-
   -- @covers LByteData:getBit
   -- @covers LByteData:setBit
   -- @covers lurek.binary.newByteData
@@ -726,7 +700,6 @@ describe("data.newByteData bit operations", function()
     bd:setBit(0, 3, false)
     expect_false(bd:getBit(0, 3), "bit should be false after clearing")
   end)
-
   -- @covers LByteData:readBits
   -- @covers LByteData:setByte
   -- @covers lurek.binary.newByteData
@@ -736,7 +709,6 @@ describe("data.newByteData bit operations", function()
     local val = bd:readBits(0, 0, 8)
     expect_equal(val, 255, "reading all 8 bits of 0xFF should give 255")
   end)
-
   -- @covers LByteData:readBits
   -- @covers LByteData:setByte
   -- @covers lurek.binary.newByteData
@@ -747,10 +719,16 @@ describe("data.newByteData bit operations", function()
     local val = bd:readBits(0, 4, 8)
     expect_equal(val, 31, "spanning read of 0xFF / 0x01 from bit 4 should yield 0x1F = 31")
   end)
-
   -- @covers LByteData:setBit
+  it("bytedata_setBit_out_of_range_raises_error [LByteData:setBit]", function()
+    local bd = lurek.binary.newByteData(2)
+    expect_error(function()
+      bd:setBit(0, 8, true)
+    end)
+  end)
+
   -- @covers lurek.binary.newByteData
-  it("bytedata_setBit_out_of_range_raises_error", function()
+  it("bytedata_setBit_out_of_range_raises_error [lurek.binary.newByteData]", function()
     local bd = lurek.binary.newByteData(2)
     expect_error(function()
       bd:setBit(0, 8, true)
@@ -771,7 +749,6 @@ describe("data.msgpack", function()
         local val = lurek.binary.fromMsgPack(bytes)
         expect_equal(val, true)
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips an integer", function()
@@ -779,7 +756,6 @@ describe("data.msgpack", function()
         local val = lurek.binary.fromMsgPack(bytes)
         expect_equal(val, 42)
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips a float", function()
@@ -787,7 +763,6 @@ describe("data.msgpack", function()
         local val = lurek.binary.fromMsgPack(bytes)
         expect_near(val, 3.14, 1e-10)
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips a string", function()
@@ -795,7 +770,6 @@ describe("data.msgpack", function()
         local val = lurek.binary.fromMsgPack(bytes)
         expect_equal(val, "hello msgpack")
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips nil", function()
@@ -803,7 +777,6 @@ describe("data.msgpack", function()
         local val = lurek.binary.fromMsgPack(bytes)
         expect_equal(val, nil)
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips a flat table (object)", function()
@@ -816,7 +789,6 @@ describe("data.msgpack", function()
         expect_equal(val.y, 2)
         expect_equal(val.name, "test")
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips a sequence table (array)", function()
@@ -829,7 +801,6 @@ describe("data.msgpack", function()
         expect_equal(val[2], 20)
         expect_equal(val[3], 30)
     end)
-
     -- @covers lurek.binary.fromMsgPack
     -- @covers lurek.binary.toMsgPack
     it("roundtrips a nested table", function()
@@ -842,8 +813,6 @@ describe("data.msgpack", function()
         expect_equal(val.player.name, "hero")
         expect_equal(val.player.hp, 100)
     end)
-
-
     -- @covers lurek.binary.toMsgPack
     it("produces a binary string shorter than JSON for integers", function()
         local data = { a = 1, b = 2, c = 3 }
@@ -891,28 +860,24 @@ describe("lurek.binary.newRingBuffer factory", function()
     local rb = lurek.binary.newRingBuffer(8)
     expect_equal(rb:capacity(), 8)
   end)
-
   -- @covers LRingBuffer:len
   -- @covers lurek.binary.newRingBuffer
   it("new buffer has len 0", function()
     local rb = lurek.binary.newRingBuffer(4)
     expect_equal(rb:len(), 0)
   end)
-
   -- @covers LRingBuffer:isEmpty
   -- @covers lurek.binary.newRingBuffer
   it("new buffer isEmpty is true", function()
     local rb = lurek.binary.newRingBuffer(4)
     expect_equal(rb:isEmpty(), true)
   end)
-
   -- @covers LRingBuffer:isFull
   -- @covers lurek.binary.newRingBuffer
   it("new buffer isFull is false", function()
     local rb = lurek.binary.newRingBuffer(4)
     expect_equal(rb:isFull(), false)
   end)
-
   -- @covers lurek.binary.newRingBuffer
   it("capacity 0 raises an error", function()
     expect_error(function() lurek.binary.newRingBuffer(0) end)
@@ -928,7 +893,6 @@ describe("RingBuffer push/pop", function()
     local overwrote = rb:push(42)
     expect_equal(overwrote, false)
   end)
-
   -- @covers LRingBuffer:push
   -- @covers lurek.binary.newRingBuffer
   it("push returns true when buffer is full", function()
@@ -938,7 +902,6 @@ describe("RingBuffer push/pop", function()
     local overwrote = rb:push(3)
     expect_equal(overwrote, true)
   end)
-
   -- @covers LRingBuffer:len
   -- @covers LRingBuffer:push
   -- @covers lurek.binary.newRingBuffer
@@ -947,14 +910,12 @@ describe("RingBuffer push/pop", function()
     rb:push("hello")
     expect_equal(rb:len(), 1)
   end)
-
   -- @covers LRingBuffer:pop
   -- @covers lurek.binary.newRingBuffer
   it("pop on empty returns nil", function()
     local rb = lurek.binary.newRingBuffer(4)
     expect_equal(rb:pop(), nil)
   end)
-
   -- @covers LRingBuffer:pop
   -- @covers LRingBuffer:push
   -- @covers lurek.binary.newRingBuffer
@@ -963,7 +924,6 @@ describe("RingBuffer push/pop", function()
     rb:push(99)
     expect_equal(rb:pop(), 99)
   end)
-
   -- @covers LRingBuffer:len
   -- @covers LRingBuffer:pop
   -- @covers LRingBuffer:push
@@ -974,7 +934,6 @@ describe("RingBuffer push/pop", function()
     rb:pop()
     expect_equal(rb:len(), 0)
   end)
-
   -- @covers LRingBuffer:pop
   -- @covers LRingBuffer:push
   -- @covers lurek.binary.newRingBuffer
@@ -987,7 +946,6 @@ describe("RingBuffer push/pop", function()
     expect_equal(rb:pop(), 20)
     expect_equal(rb:pop(), 30)
   end)
-
   -- @covers LRingBuffer:pop
   -- @covers LRingBuffer:push
   -- @covers lurek.binary.newRingBuffer
@@ -1012,14 +970,12 @@ describe("RingBuffer peek / peekNewest", function()
     local rb = lurek.binary.newRingBuffer(4)
     expect_equal(rb:peek(), nil)
   end)
-
   -- @covers LRingBuffer:peekNewest
   -- @covers lurek.binary.newRingBuffer
   it("peekNewest on empty returns nil", function()
     local rb = lurek.binary.newRingBuffer(4)
     expect_equal(rb:peekNewest(), nil)
   end)
-
   -- @covers LRingBuffer:len
   -- @covers LRingBuffer:peek
   -- @covers LRingBuffer:push
@@ -1031,7 +987,6 @@ describe("RingBuffer peek / peekNewest", function()
     expect_equal(rb:peek(), 1)
     expect_equal(rb:len(), 2) -- unchanged
   end)
-
   -- @covers LRingBuffer:len
   -- @covers LRingBuffer:peekNewest
   -- @covers LRingBuffer:push
@@ -1056,7 +1011,6 @@ describe("RingBuffer isFull / isEmpty", function()
     rb:push(1); rb:push(2); rb:push(3)
     expect_equal(rb:isFull(), true)
   end)
-
   -- @covers LRingBuffer:isEmpty
   -- @covers LRingBuffer:push
   -- @covers lurek.binary.newRingBuffer
@@ -1065,7 +1019,6 @@ describe("RingBuffer isFull / isEmpty", function()
     rb:push("x")
     expect_equal(rb:isEmpty(), false)
   end)
-
   -- @covers LRingBuffer:isEmpty
   -- @covers LRingBuffer:pop
   -- @covers LRingBuffer:push
@@ -1092,7 +1045,6 @@ describe("RingBuffer clear", function()
     expect_equal(rb:len(), 0)
     expect_equal(rb:isEmpty(), true)
   end)
-
   -- @covers LRingBuffer:clear
   -- @covers LRingBuffer:pop
   -- @covers LRingBuffer:push
@@ -1115,7 +1067,6 @@ describe("RingBuffer toTable", function()
     expect_type("table", t)
     expect_equal(#t, 0)
   end)
-
   -- @covers LRingBuffer:push
   -- @covers LRingBuffer:toTable
   -- @covers lurek.binary.newRingBuffer
@@ -1128,7 +1079,6 @@ describe("RingBuffer toTable", function()
     expect_equal(t[2], "y")
     expect_equal(t[3], "z")
   end)
-
   -- @covers LRingBuffer:push
   -- @covers LRingBuffer:toTable
   -- @covers lurek.binary.newRingBuffer
@@ -1185,7 +1135,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     local w = lurek.binary.newWriter()
     expect_equal(0, w:len())
   end)
-
   -- @covers LDataWriter:len
   -- @covers LDataWriter:writeU8
   -- @covers lurek.binary.newWriter
@@ -1194,7 +1143,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     w:writeU8(42)
     expect_equal(1, w:len())
   end)
-
   -- @covers LDataWriter:toBytes
   -- @covers LDataWriter:writeU8
   -- @covers lurek.binary.newWriter
@@ -1205,7 +1153,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     expect_type("string", b)
     expect_equal("A", b)
   end)
-
   -- @covers LDataWriter:len
   -- @covers LDataWriter:writeU32LE
   -- @covers lurek.binary.newWriter
@@ -1214,7 +1161,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     w:writeU32LE(0)
     expect_equal(4, w:len())
   end)
-
   -- @covers LDataWriter:len
   -- @covers LDataWriter:writeString
   -- @covers lurek.binary.newWriter
@@ -1224,7 +1170,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     -- 4 bytes (u32 LE length) + 2 bytes ("hi") = 6
     expect_equal(6, w:len())
   end)
-
   -- @covers LDataWriter:toBytes
   -- @covers LDataWriter:writeString
   -- @covers lurek.binary.newWriter
@@ -1236,7 +1181,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     expect_equal(string.byte("A"), string.byte(b, 5))
     expect_equal(string.byte("B"), string.byte(b, 6))
   end)
-
   -- @covers LDataWriter:tell
   -- @covers LDataWriter:writeU8
   -- @covers lurek.binary.newWriter
@@ -1248,7 +1192,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     w:writeU8(2)
     expect_equal(2, w:tell())
   end)
-
   -- @covers LDataWriter:seek
   -- @covers LDataWriter:tell
   -- @covers LDataWriter:writeU8
@@ -1261,7 +1204,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     w:seek(1)
     expect_equal(1, w:tell())
   end)
-
   -- @covers LDataWriter:len
   -- @covers LDataWriter:seek
   -- @covers lurek.binary.newWriter
@@ -1270,7 +1212,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     w:seek(4)
     expect_equal(4, w:len())
   end)
-
   -- @covers LDataWriter:seek
   -- @covers LDataWriter:toBytes
   -- @covers LDataWriter:writeU8
@@ -1286,7 +1227,6 @@ describe("lurek.binary.newWriter DataWriter", function()
     expect_equal(0xFF, string.byte(b, 1))
     expect_equal(0x00, string.byte(b, 2))
   end)
-
   -- @covers LDataWriter:len
   -- @covers LDataWriter:toBytes
   -- @covers LDataWriter:writeU8
@@ -1361,7 +1301,6 @@ describe("RingBuffer:pop and RingBuffer:len ", function()
         expect_not_nil(v)
         expect_equal(42, v)
     end)
-
     -- @covers LRingBuffer:len
     -- @covers LRingBuffer:push
     -- @covers lurek.binary.newRingBuffer
@@ -1410,7 +1349,6 @@ describe("DataView/DataWriter signed and LE helpers", function()
     expect_equal(-300, dv:getInt16(1))
     expect_equal(-123456, dv:getInt32(3))
   end)
-
   -- @covers LDataWriter:toBytes
   -- @covers LDataWriter:writeBytes
   -- @covers LDataWriter:writeF32LE
@@ -1441,7 +1379,6 @@ describe("data strict: LRingBuffer / LDataView / LDataWriter type/typeOf", funct
         expect_type("string", rb:type())
         expect_type("boolean", rb:typeOf("LObject"))
     end)
-
     -- @covers LDataView:type
     -- @covers LDataView:typeOf
     -- @covers lurek.binary.newDataView
@@ -1450,7 +1387,6 @@ describe("data strict: LRingBuffer / LDataView / LDataWriter type/typeOf", funct
         expect_type("string", dv:type())
         expect_type("boolean", dv:typeOf("LObject"))
     end)
-
     -- @covers LDataWriter:type
     -- @covers LDataWriter:typeOf
     -- @covers lurek.binary.newWriter
@@ -1563,7 +1499,6 @@ describe("unit: migrated from integration/test_compute_dataframe.lua", function(
 
             expect_equal(original, result, "full pipeline preserves data")
         end)
-
         -- @covers lurek.binary.compress
         -- @covers lurek.binary.hash
         it("hash of compressed data is stable", function()
@@ -1576,7 +1511,6 @@ describe("unit: migrated from integration/test_compute_dataframe.lua", function(
             expect_equal(hash1, hash2, "hash is deterministic")
             expect_equal(64, #hash1, "SHA-256 produces 64 hex chars")
         end)
-
 end)
 
 -- @describe property: data pack/unpack invariants
@@ -1590,7 +1524,6 @@ describe("property: data pack/unpack invariants", function()
                 expect_equal(i, value, "roundtrip for B=" .. tostring(i))
             end
         end)
-
         -- @covers lurek.binary.pack
         -- @covers lurek.binary.unpack
         it("pack/unpack preserves float within tolerance", function()

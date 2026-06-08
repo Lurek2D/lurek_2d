@@ -1,8 +1,4 @@
 -- Integration: camera position driving parallax layer rendering
--- @covers lurek.camera.new
--- @covers lurek.parallax.newLayer
--- @covers lurek.parallax.newSet
--- @covers lurek.render.newImage
 
 
 
@@ -24,6 +20,8 @@ describe("camera + parallax integration", function()
     -- @integration LParallaxLayer:render
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
+    -- @covers lurek.parallax.newLayer
+    -- @covers lurek.camera.new
     it("camera position feeds layer render coordinates", function()
         local cam = lurek.camera.new(800, 600)
         local layer = lurek.parallax.newLayer({ texture = load_image(), scroll_factor_x = 0.5 })
@@ -45,6 +43,7 @@ describe("camera + parallax integration", function()
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
     -- @integration lurek.parallax.newSet
+    -- @covers lurek.parallax.newSet
     it("camera position drives multi-layer set render", function()
         local img = load_image()
         local set = lurek.parallax.newSet("bg_auto")

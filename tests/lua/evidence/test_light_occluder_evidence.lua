@@ -2,16 +2,6 @@
 -- Evidence test: multi-color lights + occluders produce realistic shadows.
 -- Proves the system can generate the "vending machine glow" effect:
 -- dark ambient, colored point lights, rectangle occluders blocking light.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.light.clear
--- @covers lurek.light.getLightCount
--- @covers lurek.light.getOccluderCount
--- @covers lurek.light.isEnabled
--- @covers lurek.light.newLight
--- @covers lurek.light.newOccluder
--- @covers lurek.light.setAmbient
--- @covers lurek.light.setEnabled
 
 
 
@@ -61,6 +51,16 @@ end
 describe("Evidence: light + occluder shadows (vending machine scene)", function()
 
     -- @evidence file
+    -- @covers lurek.light.setEnabled
+    -- @covers lurek.light.setAmbient
+    -- @covers lurek.light.newOccluder
+    -- @covers lurek.light.newLight
+    -- @covers lurek.light.isEnabled
+    -- @covers lurek.light.getOccluderCount
+    -- @covers lurek.light.getLightCount
+    -- @covers lurek.light.clear
+    -- @covers lurek.image.savePNG
+    -- @covers lurek.image.newImageData
     it("PNG: vending_lights_scene.png — 4 colored lights with occluder shadows", function()
         lurek.light.clear()
         lurek.light.setEnabled(true)

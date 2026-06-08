@@ -25,7 +25,7 @@ fn parse_gamepad_binding(binding: &str) -> Option<(usize, u32)> {
 fn parse_mouse_binding(binding: &str) -> Option<usize> {
     let binding = binding.trim().to_ascii_lowercase();
     let button = binding.strip_prefix("mouse")?.parse::<usize>().ok()?;
-    (button >= 1 && button <= 5).then_some(button - 1)
+    (1..=5).contains(&button).then_some(button - 1)
 }
 
 /// Returns whether a keyboard, mouse, or gamepad binding is currently down.

@@ -217,7 +217,7 @@ impl DialogSequencer {
 
     /// Returns only the typewriter-revealed portion of the text.
     pub fn revealed_text(&self) -> &str {
-        if self.current_text.len() > 0 && self.revealed_chars > 0 {
+        if !self.current_text.is_empty() && self.revealed_chars > 0 {
             &self.current_text[..self.revealed_chars.min(self.current_text.len())]
         } else {
             ""
