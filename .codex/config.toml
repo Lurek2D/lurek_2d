@@ -1,5 +1,20 @@
+# Repo-wide defaults for Codex in this workspace.
+model = "gpt-5.2-codex"
+model_reasoning_effort = "medium"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
+web_search = "cached"
+
 [features]
+fast_mode = true
+hooks = true
+memories = true
 multi_agent = true
+personality = true
+shell_snapshot = true
+shell_tool = true
+undo = true
 child_agents_md = true
 
 [mcp_servers.lurek_tools]

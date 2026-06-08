@@ -12,7 +12,7 @@ Current contents:
 
 Project MCP:
 - `config.toml` also registers the repo-local `lurek_tools` MCP server.
-- That server exposes RAG search/reindex plus Lua API quality audits from `tools/mcp/lurek_mcp_server.py`.
+- That server exposes RAG search/reindex plus docs, examples, specs, tests, and repo quality gates from `tools/mcp/lurek_mcp_server.py`.
 
 Legacy note:
 - `.github/agents`, `.github/prompts`, and `.github/skills` remain as migration reference only.

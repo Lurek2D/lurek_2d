@@ -122,7 +122,7 @@
 
 ## mcp
 
-- **`mcp/lurek_mcp_server.py`**: Expose Lurek2D RAG and Lua API quality audits as a minimal stdio MCP server.
+- **`mcp/lurek_mcp_server.py`**: Expose Lurek2D RAG and repo quality audits as a minimal stdio MCP server.
 
 ## mods
 

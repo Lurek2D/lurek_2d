@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Expose Lurek2D RAG and Lua API quality audits as a minimal stdio MCP server."""
+"""Expose Lurek2D RAG and repo quality audits as a minimal stdio MCP server."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from typing import Any, Callable
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PYTHON = sys.executable
 SERVER_NAME = "lurek-tools"
-SERVER_VERSION = "0.1.0"
+SERVER_VERSION = "0.2.0"
 
 
 @dataclass(frozen=True)
@@ -144,6 +144,14 @@ def _top_module_lines(modules: dict[str, Any], field: str, *, descending: bool =
     return lines
 
 
+def _count_nested_list_issues(value: Any) -> int:
+    if isinstance(value, list):
+        return len(value)
+    if isinstance(value, dict):
+        return sum(_count_nested_list_issues(item) for item in value.values())
+    return 0
+
+
 def _parse_json_stdout(data: dict[str, Any]) -> Any:
     stdout = data.get("stdout", "").strip()
     if not stdout:
@@ -183,6 +191,279 @@ def handle_rag_rebuild(args: dict[str, Any]) -> dict[str, Any]:
     stdout = data.get("stdout", "").strip()
     summary = stdout or "RAG index build finished."
     return _text_result(summary, data)
+
+
+def handle_quality_report(args: dict[str, Any]) -> dict[str, Any]:
+    data = _run_python_tool(
+        "tools/audit/quality_report.py",
+        [],
+        timeout_sec=900,
+        json_mode="flag",
+    )
+    report = data.get("parsed") or {}
+    docs = report.get("docs-general", {})
+    test = report.get("test_coverage", {})
+    modules = report.get("modules", {})
+    validation = report.get("validation", {})
+    lines = [
+        f"Docs-general: Rust {docs.get('rust', {}).get('coverage_pct', 0)}%, Lua {docs.get('lua_api', {}).get('coverage_pct', 0)}%.",
+        f"Test coverage: Rust {test.get('rust', {}).get('coverage_pct', 0)}%, Lua {test.get('lua', {}).get('coverage_pct', 0)}%.",
+        f"Validation issues: {_count_nested_list_issues(validation)}.",
+        f"Modules audited: {len(modules) if isinstance(modules, dict) else 0}.",
+    ]
+    return _text_result("\n".join(lines), data)
+
+
+def handle_doc_audit(args: dict[str, Any]) -> dict[str, Any]:
+    data = _run_python_tool(
+        "tools/audit/doc_audit.py",
+        [],
+        timeout_sec=900,
+        json_mode="flag",
+    )
+    report = data.get("parsed") or {}
+    rust = report.get("rust", {})
+    lua = report.get("lua_api", {})
+    lines = [
+        f"Rust docs: {rust.get('coverage_pct', 0)}% ({rust.get('documented', 0)}/{rust.get('total_items', 0)}).",
+        f"Lua docs: {lua.get('coverage_pct', 0)}% ({lua.get('documented', 0)}/{lua.get('total_functions', 0)}).",
+        f"Lua missing items: {len(lua.get('missing_items', []))}.",
+    ]
+    return _text_result("\n".join(lines), data)
+
+
+def handle_doc_coverage(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = []
+    module = args.get("module")
+    if module:
+        cmd.extend(["--module", str(module)])
+    if args.get("lua_only"):
+        cmd.append("--lua-only")
+    if args.get("rust_only"):
+        cmd.append("--rust-only")
+    if args.get("report_missing"):
+        cmd.append("--report-missing")
+
+    data = _run_python_tool(
+        "tools/audit/doc_coverage.py",
+        cmd,
+        timeout_sec=900,
+        json_mode="flag",
+    )
+    report = data.get("parsed") or {}
+    summary = report.get("summary", {})
+    lines = [
+        f"Rust docs: {summary.get('rust', {}).get('pct', 0)}% ({summary.get('rust', {}).get('covered', 0)}/{summary.get('rust', {}).get('total', 0)}).",
+        f"Lua docs: {summary.get('lua_api', {}).get('pct', 0)}% ({summary.get('lua_api', {}).get('covered', 0)}/{summary.get('lua_api', {}).get('total', 0)}).",
+        f"Missing items: {len(report.get('missing', []))}.",
+    ]
+    return _text_result("\n".join(lines), data)
+
+
+def handle_module_docstring_audit(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = []
+    src_dir = args.get("src")
+    if src_dir:
+        cmd.extend(["--src", str(src_dir)])
+    if args.get("check"):
+        cmd.append("--check")
+
+    data = _run_python_tool(
+        "tools/audit/module_docstring_audit.py",
+        cmd,
+        timeout_sec=300,
+        json_mode="flag",
+    )
+    violations = data.get("parsed") or []
+    top = sorted(violations, key=lambda item: (item.get("deficit", 0), item.get("loc", 0)), reverse=True)[:5]
+    lines = [
+        f"Module docstring violations: {len(violations)}.",
+    ]
+    for item in top:
+        lines.append(
+            f"- {item.get('file')}: deficit {item.get('deficit', 0)} "
+            f"(actual {item.get('actual_doc_lines', 0)}/{item.get('required_doc_lines', 0)})"
+        )
+    return _text_result("\n".join(lines), data)
+
+
+def handle_unit_test_api_coverage(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = []
+    module = args.get("module")
+    if module:
+        cmd.extend(["--module", str(module)])
+    if args.get("strict"):
+        cmd.append("--strict")
+    threshold = args.get("threshold")
+    if threshold is not None:
+        cmd.extend(["--threshold", str(threshold)])
+
+    data = _run_python_tool(
+        "tools/audit/unit_test_api_coverage.py",
+        cmd,
+        timeout_sec=600,
+        json_mode="flag",
+    )
+    report = data.get("parsed") or {}
+    summary = report.get("summary", {})
+    modules = report.get("modules", {})
+    worst = sorted(modules.items(), key=lambda item: item[1].get("pct_explicit", 0))[:5]
+    lines = [
+        f"Explicit coverage: {summary.get('pct_explicit', 0)}% ({summary.get('covered_explicit', 0)}/{summary.get('total_apis', 0)}).",
+        f"Any-coverage: {summary.get('pct_any', 0)}% ({summary.get('covered_heuristic', 0)} heuristic hits).",
+        f"Modules inspected: {summary.get('total_modules', len(modules))}.",
+    ]
+    if worst:
+        lines.append("Lowest modules:")
+        for name, payload in worst:
+            lines.append(
+                f"- {name}: explicit {payload.get('pct_explicit', 0)}%, "
+                f"any {payload.get('pct_any', 0)}%, uncovered {payload.get('uncovered', 0)}"
+            )
+    return _text_result("\n".join(lines), data)
+
+
+def handle_library_coverage(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = []
+    library = args.get("library")
+    if library:
+        cmd.extend(["--library", str(library)])
+    threshold = args.get("threshold")
+    if threshold is not None:
+        cmd.extend(["--threshold", str(threshold)])
+
+    data = _run_python_tool(
+        "tools/audit/library_coverage.py",
+        cmd,
+        timeout_sec=600,
+        json_mode="flag",
+    )
+    report = data.get("parsed") or []
+    avg_doc = round(sum(item.get("doc_pct", 0) for item in report) / len(report), 1) if report else 0.0
+    avg_test = round(sum(item.get("test_pct", 0) for item in report) / len(report), 1) if report else 0.0
+    worst = sorted(report, key=lambda item: item.get("test_pct", 0))[:5]
+    lines = [
+        f"Libraries inspected: {len(report)}.",
+        f"Average doc coverage: {avg_doc}%.",
+        f"Average test coverage: {avg_test}%.",
+    ]
+    if worst:
+        lines.append("Lowest libraries:")
+        for item in worst:
+            lines.append(
+                f"- {item.get('library')}: doc {item.get('doc_pct', 0)}%, "
+                f"API {item.get('api_md_pct', 0)}%, test {item.get('test_pct', 0)}%"
+            )
+    return _text_result("\n".join(lines), data)
+
+
+def handle_validate_example_coverage(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = ["--report", "--no-stubs"]
+    data = _run_python_tool(
+        "tools/validate/validate_example_coverage.py",
+        cmd,
+        timeout_sec=300,
+    )
+    stdout = data.get("stdout", "").strip()
+    return _text_result(stdout or "Example coverage validation finished.", data)
+
+
+def handle_validate_module_coverage(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = []
+    if args.get("fix_readme"):
+        cmd.append("--fix-readme")
+    data = _run_python_tool(
+        "tools/validate/validate_module_coverage.py",
+        cmd,
+        timeout_sec=300,
+    )
+    stdout = data.get("stdout", "").strip()
+    return _text_result(stdout or "Module/spec coverage validation finished.", data)
+
+
+def handle_tool_registry_audit(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = ["--format", "json"]
+    if args.get("strict"):
+        cmd.append("--strict")
+    data = _run_python_tool(
+        "tools/audit/tool_registry_audit.py",
+        cmd,
+        timeout_sec=300,
+        json_mode="format",
+    )
+    report = data.get("parsed") or {}
+    findings = report.get("findings", [])
+    errors = sum(1 for item in findings if item.get("level") == "ERROR")
+    warns = sum(1 for item in findings if item.get("level") == "WARN")
+    lines = [
+        f"Tool registry audit: {errors} error(s), {warns} warning(s).",
+        f"Scripts audited: {report.get('total_scripts', 0)}.",
+    ]
+    return _text_result("\n".join(lines), data)
+
+
+def handle_cag_validate(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = ["--format", "json"]
+    if args.get("type"):
+        cmd.extend(["--type", str(args["type"])])
+    if args.get("file"):
+        cmd.extend(["--file", str(args["file"])])
+    if args.get("baseline"):
+        cmd.append("--baseline")
+    if args.get("write_baseline"):
+        cmd.append("--write-baseline")
+
+    data = _run_python_tool(
+        "tools/validate/cag_validate.py",
+        cmd,
+        timeout_sec=300,
+        json_mode="format",
+    )
+    report = data.get("parsed") or {}
+    summary = report.get("summary", {})
+    scanned = report.get("scanned", {})
+    lines = [
+        f"CAG validation: {summary.get('errors', 0)} error(s), {summary.get('warnings', 0)} warning(s).",
+        f"Scanned files: {sum(scanned.values()) if isinstance(scanned, dict) else 0}.",
+    ]
+    return _text_result("\n".join(lines), data)
+
+
+def handle_cag_link_check(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = ["--format", "json"]
+    if args.get("strict"):
+        cmd.append("--strict")
+    data = _run_python_tool(
+        "tools/audit/cag_link_check.py",
+        cmd,
+        timeout_sec=300,
+        json_mode="format",
+    )
+    report = data.get("parsed") or {}
+    lines = [
+        f"CAG link check: {report.get('broken_total', 0)} broken link(s) in {report.get('files_scanned', 0)} file(s).",
+    ]
+    return _text_result("\n".join(lines), data)
+
+
+def handle_strict_api_check(args: dict[str, Any]) -> dict[str, Any]:
+    data = _run_python_tool(
+        "tools/audit/strict_api_check.py",
+        [],
+        timeout_sec=300,
+    )
+    stdout = data.get("stdout", "").strip()
+    return _text_result(stdout or "Strict API check finished.", data)
+
+
+def handle_strict_api_check_math(args: dict[str, Any]) -> dict[str, Any]:
+    data = _run_python_tool(
+        "tools/audit/strict_api_check_math.py",
+        [],
+        timeout_sec=300,
+    )
+    stdout = data.get("stdout", "").strip()
+    return _text_result(stdout or "Math strict API check finished.", data)
 
 
 def handle_lua_api_test_coverage(args: dict[str, Any]) -> dict[str, Any]:
@@ -415,6 +696,81 @@ TOOLS: dict[str, ToolSpec] = {
         },
         handler=handle_rag_rebuild,
     ),
+    "quality_report": ToolSpec(
+        name="quality_report",
+        description="Run the repository-wide quality dashboard that combines docs, tests, module checks, and validation.",
+        input_schema={
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+        handler=handle_quality_report,
+    ),
+    "doc_audit": ToolSpec(
+        name="doc_audit",
+        description="Run the unified docs-general audit for Rust source docs and Lua API docs.",
+        input_schema={
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+        handler=handle_doc_audit,
+    ),
+    "doc_coverage": ToolSpec(
+        name="doc_coverage",
+        description="Measure Rust and Lua API docstring coverage across `src/`.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "module": {"type": "string"},
+                "lua_only": {"type": "boolean", "default": False},
+                "rust_only": {"type": "boolean", "default": False},
+                "report_missing": {"type": "boolean", "default": False},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_doc_coverage,
+    ),
+    "module_docstring_audit": ToolSpec(
+        name="module_docstring_audit",
+        description="Audit Rust module-level //! docstrings for size and completeness.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "src": {"type": "string"},
+                "check": {"type": "boolean", "default": False},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_module_docstring_audit,
+    ),
+    "unit_test_api_coverage": ToolSpec(
+        name="unit_test_api_coverage",
+        description="Measure explicit Lua unit-test coverage for APIs and methods.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "module": {"type": "string"},
+                "strict": {"type": "boolean", "default": False},
+                "threshold": {"type": "number"},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_unit_test_api_coverage,
+    ),
+    "library_coverage": ToolSpec(
+        name="library_coverage",
+        description="Audit Lua library coverage across docs, docstrings, and tests.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "library": {"type": "string"},
+                "threshold": {"type": "number"},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_library_coverage,
+    ),
     "lua_api_test_coverage": ToolSpec(
         name="lua_api_test_coverage",
         description="Measure Lua API coverage in `tests/lua/unit` using explicit `@covers` markers, describe() targets, and optional heuristic fallback.",
@@ -492,6 +848,65 @@ TOOLS: dict[str, ToolSpec] = {
             "additionalProperties": False,
         },
         handler=handle_test_coverage,
+    ),
+    "cag_validate": ToolSpec(
+        name="cag_validate",
+        description="Validate Codex agent, skill, and prompt files against the CAG contract.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "type": {"type": "string", "enum": ["system_prompt", "agent", "skill", "prompt"]},
+                "file": {"type": "string"},
+                "baseline": {"type": "boolean", "default": False},
+                "write_baseline": {"type": "boolean", "default": False},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_cag_validate,
+    ),
+    "cag_link_check": ToolSpec(
+        name="cag_link_check",
+        description="Check .github markdown files for broken links and stale references.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "strict": {"type": "boolean", "default": False},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_cag_link_check,
+    ),
+    "tool_registry_audit": ToolSpec(
+        name="tool_registry_audit",
+        description="Audit the checked-in tools registry for missing or phantom entries.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "strict": {"type": "boolean", "default": False},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_tool_registry_audit,
+    ),
+    "strict_api_check": ToolSpec(
+        name="strict_api_check",
+        description="Validate that example stubs actually reference the Lua APIs they claim to cover.",
+        input_schema={
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+        handler=handle_strict_api_check,
+    ),
+    "strict_api_check_math": ToolSpec(
+        name="strict_api_check_math",
+        description="Validate the math example stubs against the math API contract.",
+        input_schema={
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+        handler=handle_strict_api_check_math,
     ),
     "lua_api_health_suite": ToolSpec(
         name="lua_api_health_suite",

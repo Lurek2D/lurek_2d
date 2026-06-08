@@ -112,7 +112,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `github/sync_agent_rules.py` - sync_agent_rules.py — Synchronize workspace rules files with Lurek2D system prompt.
 
 ### /mcp
-- `mcp/lurek_mcp_server.py` - Expose Lurek2D RAG and Lua API quality audits as a minimal stdio MCP server.
+- `mcp/lurek_mcp_server.py` - Expose Lurek2D RAG and repo quality audits as a minimal stdio MCP server.
 
 ### /mods
 - `mods/mod_init.py` - mod_init.py — Scaffold a minimal Lurek2D mod project.

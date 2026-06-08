@@ -20,8 +20,21 @@ Implication for `lurek_2D`:
 
 ## 2. What this repo already has
 
-- `.codex/config.toml` already enables:
+- `.codex/config.toml` keeps the repo-local performance and capability toggles explicit:
+  - `model = "gpt-5.2-codex"`
+  - `model_reasoning_effort = "medium"`
+  - `approval_policy = "on-failure"`
+  - `sandbox_mode = "workspace-write"`
+  - `personality = "pragmatic"`
+  - `web_search = "cached"`
+  - `fast_mode = true`
+  - `hooks = true`
+  - `memories = true`
   - `multi_agent = true`
+  - `personality = true`
+  - `shell_snapshot = true`
+  - `shell_tool = true`
+  - `undo = true`
   - `child_agents_md = true`
 - `.codex/config.toml` already registers these role profiles:
   - `developer`
@@ -37,6 +50,7 @@ Implication for `lurek_2D`:
 - `.codex/skills/` is the background skill library.
 - `.codex/task-skills/` is for user-invoked workflows.
 - `.codex/AGENTS.md` explicitly treats `.github/agents`, `.github/skills`, `.github/prompts`, and `copilot-instructions.md` as legacy reference only.
+- Project config should stay focused on defaults that apply to every role. Per-role differences such as sandbox level, approval policy, and reasoning effort belong in `.codex/agents/*.toml`.
 
 ## 3. Lurek-specific guardrails Codex should always obey
 
@@ -145,12 +159,23 @@ Primary tools:
 - `rag_search`
 - `rag_rebuild_index`
 - `lua_api_health_suite`
+- `quality_report`
+- `doc_audit`
+- `doc_coverage`
+- `module_docstring_audit`
+- `unit_test_api_coverage`
+- `library_coverage`
 - `lua_api_test_coverage`
 - `lua_api_docstring_audit`
 - `lua_example_coverage`
 - `lua_spec_coverage`
 - `lua_binding_validation`
 - `repo_test_coverage`
+- `cag_validate`
+- `cag_link_check`
+- `tool_registry_audit`
+- `strict_api_check`
+- `strict_api_check_math`
 
 Use these when you want structured audit output inside Codex instead of raw CLI stdout.
 The server shells out to the checked-in Python scripts under `tools/`, so the MCP view stays aligned with the repo source of truth.
@@ -163,16 +188,55 @@ Useful knobs for this repo:
 
 - `skills.config`
   - Disable a skill without deleting it.
+- `model`
+  - Sets the default model for the CLI and IDE.
 - `shell_environment_policy`
   - Use `inherit = all | core | none` to control baseline subprocess environment inheritance.
   - Use `set` for explicit environment overrides.
   - Use `include_only` to whitelist only the env vars you want Codex to keep.
+- `approval_policy`
+  - Controls when Codex pauses before running generated commands.
+- `sandbox_mode`
+  - Controls filesystem and network access while commands run.
+- `model_reasoning_effort`
+  - Raises or lowers how much reasoning the model spends on a turn.
+- `web_search`
+  - `cached` is the fast, safer default for local work; `live` fetches the most recent data.
+- `personality`
+  - Sets the default communication style for supported models.
 - `show_raw_agent_reasoning`
   - Only enable if you have a reason to inspect raw reasoning output.
+- `log_dir`
+  - Sends Codex logs to a fixed directory and also enables the plaintext TUI log there.
 - `--profile <name>`
   - Selects `~/.codex/<profile>.config.toml` when you need a separate global profile.
 
-For `lurek_2D`, the safest default is a small, explicit environment and no extra global complexity unless a task needs it.
+Advanced details that matter in this repo:
+
+- Project-scoped `.codex/config.toml` files load from the repo root down to the current working directory, and the closest file wins on conflicts.
+- Project config only applies when the project is trusted. If the project is untrusted, Codex skips local `.codex/` layers, including config, hooks, and rules.
+- Relative paths inside project config resolve relative to the containing `.codex/` directory.
+- Project config should not be used for provider or telemetry redirection knobs; keep those in user config.
+- `project_root_markers` changes how Codex decides what counts as the project root. The default is to treat `.git` as the root marker.
+- Custom model providers can be defined in config, but built-in provider IDs like `openai`, `ollama`, and `lmstudio` are reserved.
+
+For `lurek_2D`, keep the repo config narrow:
+
+- use `.codex/config.toml` for shared capability toggles and repo-local MCP servers
+- keep role-specific sandbox, approval, and reasoning settings in `.codex/agents/*.toml`
+- keep other experimental features disabled unless a task explicitly needs them
+- prefer `web_search = "cached"` for speed unless you need fresh live results
+- use `shell_snapshot = true` and `fast_mode = true` for the best routine command performance
+- `memories = true` helps Codex keep relevant repo context across turns
+- `undo = true` adds per-turn git ghost snapshots and makes iterative changes safer, at the cost of extra repo activity
+
+## 6a. Hooks and config layers
+
+- Codex can load hooks from either `hooks.json` files or inline `[hooks]` tables in `config.toml`.
+- The main places to look are `~/.codex/hooks.json`, `~/.codex/config.toml`, `<repo>/.codex/hooks.json`, and `<repo>/.codex/config.toml`.
+- Project-local hooks follow the same trust boundary as project config.
+- If a single layer contains both `hooks.json` and inline `[hooks]`, Codex loads both and warns, so keep one representation per layer.
+- For this repo, keep hook logic close to the layer it applies to and avoid duplicating the same rule in both global and project config.
 
 ## 7. Recommended repo layout for Codex work in Lurek
 
@@ -230,5 +294,7 @@ If a task changes behavior, leave a command trail that shows how it was validate
 - https://developers.openai.com/codex/guides/agents-md
 - https://developers.openai.com/codex/skills
 - https://developers.openai.com/codex/subagents
+- https://developers.openai.com/codex/config-basic
+- https://developers.openai.com/codex/config-advanced
 - https://developers.openai.com/codex/config-reference
 - https://developers.openai.com/codex/config-sample
