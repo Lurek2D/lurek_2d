@@ -1,10 +1,10 @@
-# Repo-wide defaults for Codex in this workspace.
-model = "gpt-5.2-codex"
-model_reasoning_effort = "medium"
-approval_policy = "on-failure"
-sandbox_mode = "workspace-write"
-personality = "pragmatic"
-web_search = "cached"
+# # Repo-wide defaults for Codex in this workspace.
+# model = "gpt-5.2-codex"
+# model_reasoning_effort = "medium"
+# approval_policy = "on-failure"
+# sandbox_mode = "workspace-write"
+# personality = "pragmatic"
+# web_search = "cached"
 
 [features]
 fast_mode = true
@@ -18,8 +18,9 @@ undo = true
 child_agents_md = true
 
 [mcp_servers.lurek_tools]
-command = "python"
-args = ["tools/mcp/lurek_mcp_server.py"]
+command = "C:\\Users\\tombl\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"
+args = ["C:\\Users\\tombl\\Documents\\lurek_2D\\tools\\mcp\\lurek_mcp_server.py"]
+cwd = "C:\\Users\\tombl\\Documents\\lurek_2D"
 startup_timeout_sec = 120
 
 [mcp_servers.lurek_tools.env]

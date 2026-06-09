@@ -58,6 +58,7 @@
 - **No prose paragraphs.** Every rule is a bullet. No explanatory paragraphs in the system prompt — those belong in `docs/architecture/philosophy.md` or the relevant skill.
 - **Keep total length under 300 lines.** Agent files and skills carry the HOW-TO detail. The system prompt carries only the invariants.
 - **Update sync.** Any change to the system prompt that adds, removes, or renames a binding constraint, sync rule, or quality gate must also update `docs/architecture/cag-system.md` and `docs/CHANGELOG.md` in the same commit.
+- **Template pairing.** `AGENT_TEMPLATE.md` is the nested-contract scaffold, `SKILL_TEMPLATE.md` is the reusable skill scaffold, and `PROMPT_TEMPLATE.md` is for workflow wrappers or migration notes.
 
 ---
 

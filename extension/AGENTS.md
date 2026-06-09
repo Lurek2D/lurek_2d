@@ -23,10 +23,12 @@ This file adds local rules for work under `extension/`.
 - Do not move engine or packaging logic into extension code.
 - Validate extension build or activation flow after meaningful changes.
 - Keep editor-facing labels, menus, and commands explicit.
+- Treat `extension/vscode/data/` and `extension/vscode/src/generated/` as generated-consumer surfaces; fix the generator or input data instead of hand-editing outputs.
+- Keep debug-bridge protocol changes synchronized with the engine-side `src/debugbridge/` contract.
 
 ## Workflow
 - Read the extension entry points, package manifest, and nearby generated data first.
-- Load `vscode-extension`, `ui-html`, and `ui-layout` when editing editor UX.
+- Use this file and `extension/vscode/AGENTS.md` as the source of truth for extension UX work.
 - Refresh generated data before checking the extension build if the source contract changed.
 - Validate the narrowest extension path that touches the change.
 

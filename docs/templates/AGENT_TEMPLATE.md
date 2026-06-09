@@ -5,6 +5,9 @@ tools: [read, search, execute, edit]
 ---
 # Agent-Name
 
+> Use this template when creating or restructuring repo-local `AGENTS.md` files.
+> Copy it into the nearest folder that needs a durable contract and then fill in folder-specific detail.
+
 ## TL;DR
 
 - TODO: Write summary.

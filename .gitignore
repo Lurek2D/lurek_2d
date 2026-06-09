@@ -7,9 +7,6 @@
 # Runtime save data written by the engine during test runs
 /save/
 
-# Golden test actual outputs (generated during test runs; only expected/ is committed)
-/tests/rust/golden/actual/
-
 # Session and planning artifacts
 /work/
 /scratch/

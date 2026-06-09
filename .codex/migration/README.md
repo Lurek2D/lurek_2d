@@ -8,7 +8,6 @@ Active source of truth:
 - `.codex/agents/`
 - `.codex/config.toml`
 - `.codex/skills/`
-- `.codex/task-skills/`
 
 Legacy reference:
 - `.github/copilot-instructions.md`

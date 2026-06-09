@@ -1,6 +1,6 @@
 ---
 name: skill-name
-description: "Load this skill when the task clearly matches this domain. Skip it for adjacent work owned by another skill."
+description: "Use this skill when the task clearly matches this domain. Skip it for adjacent work owned by another skill."
 ---
 # skill-name
 
@@ -29,3 +29,7 @@ description: "Load this skill when the task clearly matches this domain. Skip it
 
 ## References
 - Path to the main source file, folder, or tool.
+
+## Template Notes
+- Copy this file to `.codex/skills/<skill-name>/SKILL.md`.
+- Keep the skill narrow and concrete; use the nearest `AGENTS.md` for folder-local invariants.

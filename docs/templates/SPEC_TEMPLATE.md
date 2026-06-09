@@ -5,6 +5,7 @@
   Copy this file to docs/specs/<module>.md and fill in every section.
   Summary is manual prose.
   Imports, Files, and Lua API Ref are scaffolded by tools/docs/gen_module_specs.py.
+  Keep this aligned with docs/specs/AGENTS.md and the live module layout.
 -->
 
 ## TL;DR

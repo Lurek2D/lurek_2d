@@ -24,10 +24,14 @@ This file adds local rules for work under `library/`.
 - Sync docs and validation artifacts when a library API changes.
 - Keep package entry points small and obvious.
 - Avoid adding library-specific hacks that only work in one demo.
+- Each library module should keep the fixed trio: `init.lua`, `example.lua`, and `README.md`.
+- Library code stays pure Lua; it may call `lurek.*` but should not depend on Rust internals or ad hoc engine-only hooks.
+- Regenerate `docs/api/lureksome.md` and `docs/api/lureksome.lua` with `python tools/docs/gen_lib_docs.py` after public library API changes.
+- Update the module, example, tests, and generated docs in the same task when the public library surface changes.
 
 ## Workflow
 - Read the public API shape and nearest examples before editing a module.
-- Load `library-authoring`, `lua-scripting`, and `examples-management` when relevant.
+- Use this file, the matching example, and the nearest Lua test or example contracts as the source of truth.
 - Update the module, its example, and the docs together.
 - Validate with the narrowest runnable proof that exercises the module contract.
 

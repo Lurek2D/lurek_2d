@@ -22,14 +22,23 @@ This file adds local rules for work under `docs/architecture/`.
 ## Local rules
 - Define ownership, dependency direction, and gates before large refactors.
 - Compare real options when the design choice is non-trivial.
+- Keep real option sets to 2-4 choices and include status quo when the repo may not need a change yet.
 - Prefer small migration steps that another implementer can execute safely.
 - Flag cyclic dependencies, boundary leaks, and missing fallback paths.
 - Keep architecture notes decision-oriented rather than tutorial-like.
 - Include fallback and rollback paths when a change carries migration risk.
+- Follow the authority chain: binding constraints -> engine structure -> module specs -> CAG layer. Lower layers may refine, not contradict, higher ones.
+- Treat code-vs-doc divergence as a governance gap; record the gap in `work/` when the fix is not completed in the same task.
+- A cross-module architecture change is not settled until it updates the relevant architecture note, affected specs, and at least one enforcement mechanism or validator.
+- Record the chosen path, rejected alternatives, residual risk, and next owner so the handoff is executable.
+- When a task explicitly uses TOGAF, read `togaf.md` first and keep TOGAF as an analysis lens rather than forcing every concept into a repo convention.
+- Apply the four-domain lens concretely to this repo: contributor workflow and adoption goals, serialized/runtime data contracts, engine/application structure, and tooling/runtime infrastructure.
+- If a TOGAF comparison finds no meaningful repo equivalent, name the mismatch instead of padding the note with checkbox mapping.
+- Keep generic architecture assets in `docs/architecture/`; keep module- or workflow-specific detail in specs and nested contracts below this layer.
 
 ## Workflow
 - Read the nearest specs, module layout, and existing architecture notes first.
-- Load `architecture-decisions`, `enterprise-architecture`, and `module-architecture` when the task is a real design problem.
+- Use this file together with the affected specs and architecture notes as the authority for design work.
 - Write the chosen path, the rejected alternatives, and the gate the implementer should use.
 - Keep the change sequence small enough to be executed and reviewed independently.
 

@@ -25,10 +25,18 @@ This file adds local rules for work under `content/`.
 - Treat engine Rust work as out of scope from this folder.
 - Prefer small, legible content slices over giant stitched examples.
 - Ensure content uses the same public API shape that docs describe.
+- Multiply frame-based movement, timers, and tweens by `dt` instead of hardcoded per-frame increments.
+- Keep gameplay state in locals or explicit tables, not stale cross-scene upvalues.
+- Use content-relative asset paths with forward slashes.
+- Prefer `lurek.log.*` or `lurek.log.event(...)` over `print()` when the output should be filterable or analytics-friendly.
+- For HTML UI content, keep structure and visual rules in HTML or CSS and keep state transitions in Lua.
+- Do not rebuild full HTML documents every frame when a text update or class toggle is enough.
+- Check the supported HTML and CSS subset before depending on uncommon tags or layout features.
+- Prefer targeted HTML document updates and callback registration over ad hoc full-document regeneration loops.
 
 ## Workflow
 - Read the nearest API docs and examples before changing content.
-- Load `lua-scripting`, `demo-creation`, or `examples-management` depending on the task.
+- Use the nearer nested contracts under `content/` plus the current API docs as the source of truth.
 - Keep README, registration, and runnable entry points in sync.
 - Validate the content path with the narrowest runnable check available.
 

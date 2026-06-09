@@ -17,16 +17,16 @@
 ## Agents to role configs or skills
 - `developer.agent.md` -> `.codex/agents/developer.toml`
 - `tester.agent.md` -> `.codex/agents/tester.toml`
-- `verifier.agent.md` -> `.codex/agents/reviewer.toml` plus `reviewer-gate`
+- `verifier.agent.md` -> `.codex/agents/reviewer.toml` plus review rules in `.codex/AGENTS.md` and review skills
 - `architect.agent.md` -> `.codex/agents/architect.toml`
 - `content-maker.agent.md` -> `.codex/agents/content.toml`
 - `extension-engineer.agent.md` -> `.codex/agents/extension.toml`
 - `build-engineer.agent.md` -> `.codex/agents/builder.toml`
 - `manager.agent.md` -> `.codex/agents/manager.toml`
-- `planner.agent.md` -> planning mode and future planning task-skills
+- `planner.agent.md` -> planning mode and future planning skills
 
-## Prompts to task-skills
-- `.github/prompts/*.prompt.md` -> `.codex/task-skills/*/SKILL.md`
+## Prompts to skills
+- `.github/prompts/*.prompt.md` -> `.codex/skills/*/SKILL.md` or the nearest nested `AGENTS.md` when the prompt collapses into durable folder guidance
 
 ## Skills
 - `.github/skills/*/SKILL.md` -> `.codex/skills/*/SKILL.md`

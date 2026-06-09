@@ -6,8 +6,7 @@ Current contents:
 - `AGENTS.md` for Codex workspace rules.
 - `config.toml` for Codex role registration.
 - `agents/` for per-role runtime overlays.
-- `skills/` for background procedural skills.
-- `task-skills/` for user-invoked workflows.
+- `skills/` for background procedural skills and reusable workflows.
 - `migration/` for old-to-new mapping notes.
 
 Project MCP:

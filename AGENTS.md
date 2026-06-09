@@ -24,10 +24,13 @@ This file is the always-loaded repository contract for Codex work in `lurek_2D`.
 - `src/lua_api/` contains Lua bindings and API docstrings only.
 - `tests/` contains Lua and Rust tests.
 - `docs/` contains specs, guides, and architecture docs.
+- `docs/api/` contains generated API reference output.
 - `content/` contains games, demos, and content-side examples.
 - `library/` contains reusable Lua modules.
 - `tools/` contains scripts, validation, packaging, and CI helpers.
 - `extension/` contains the VS Code extension.
+- `pages/` contains generated static-site output.
+- `tests/rust/` contains Rust-side integration, unit, golden, and stress tests.
 - `work/` contains temporary repros, reports, notes, and disposable artifacts.
 - `.codex/` contains Codex-local agents, skills, task-skills, and migration notes.
 

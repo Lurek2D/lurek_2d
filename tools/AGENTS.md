@@ -27,10 +27,19 @@ This file adds local rules for work under `tools/`.
 - Update tool docs when script behavior changes.
 - Record platform assumptions and cache assumptions when they matter.
 - Keep generated or cached outputs out of source control unless they are part of the contract.
+- Prefer `python tools/dev/parallel_cargo.py` over raw `cargo` for repo-standard build, fmt, clippy, test, and doc flows.
+- Keep quality gates ordered from cheapest to most expensive when you document or automate them.
+- Generated artifacts should land in the same change as the source or generator update that produced them.
+- Windows is the primary local platform; document any Linux-only or PowerShell-only path explicitly in tool docs.
+- Prefer repo-relative path handling and avoid hardcoded separator or drive-specific assumptions when tool work affects runtime-facing paths.
+- If CI or release automation is added, define the quality stages before the packaging stages and keep the sequence readable as named steps rather than long inline shell blocks.
+- There is currently no committed `.github/workflows/` directory. Any CI workflow added from tool work should assume a fresh setup rather than patching an existing pipeline.
+- Pin build-tool versions explicitly in automation instead of using floating `latest` tags.
+- Keep local packaging layout and CI artifact layout identical so release outputs can be compared structurally.
 
 ## Workflow
 - Read the script or CLI entry point before editing supporting helpers.
-- Load `build-system`, `ci-cd-pipeline`, `cross-platform`, and `quality-pipeline` when the task touches automation.
+- Use this file, the touched script entry point, and any relevant README or architecture note as the source of truth for automation work.
 - Validate the narrowest command path first, then the broader release or CI gate.
 - Update docs whenever the operator flow or command contract changes.
 
