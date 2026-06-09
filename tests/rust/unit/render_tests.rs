@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/render_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use std::collections::HashMap;
 
 use lurek2d::render::canvas::Canvas;

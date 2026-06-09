@@ -13,7 +13,7 @@ description: "Review docstrings for specific module, on rust level evreything on
 - Agent must collect Rust docstring standards and generator expectations
 
 ## Profile hint
-- `reviewer`
+- `doc_writer`
 
 ## Read these contracts
 - `AGENTS.md`
@@ -44,6 +44,6 @@ description: "Review docstrings for specific module, on rust level evreything on
 ## References
 - `contracts: AGENTS.md, src/lua_api/AGENTS.md`
 - `tools: python tools/audit/docstring_audit.py, cargo test`
-- `agent: Doc-Writer`
+- `agent: doc_writer`
 
 

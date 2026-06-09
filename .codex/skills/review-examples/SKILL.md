@@ -13,7 +13,7 @@ description: "Review example coverage and fix all the gaps, ensure all practices
 - Agent must collect output from `python tools/audit/example_coverage.py`
 
 ## Profile hint
-- `reviewer`
+- `content`
 
 ## Read these contracts
 - `AGENTS.md`
@@ -45,6 +45,6 @@ description: "Review example coverage and fix all the gaps, ensure all practices
 ## References
 - `contracts: AGENTS.md, content/AGENTS.md, content/examples/AGENTS.md`
 - `tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py`
-- `agent: Content-Maker`
+- `agent: content`
 
 

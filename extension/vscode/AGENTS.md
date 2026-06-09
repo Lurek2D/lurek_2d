@@ -20,9 +20,9 @@ Covers work under `extension/vscode/`.
 - Keep editor logic decoupled; delegate heavy execution tasks to the engine or background scripts rather than running them in the main extension thread.
 
 ## Workflow
-- Build the bundle via `npm run build` after editing TypeScript source or webview assets.
-- Verify visual panels and commands inside the VS Code Extension Development Host via local launch configurations.
-- Package and lint the extension using `npx @vscode/vsce package --no-dependencies --allow-missing-repository`.
+- Build the bundle via `npm run build` after editing TypeScript source, webview assets, or extension manifest wiring.
+- Verify visual panels and commands inside the VS Code Extension Development Host when UI, commands, or message passing behavior changes.
+- Package and lint the extension using `npx @vscode/vsce package --no-dependencies --allow-missing-repository` only when release packaging or VSIX validation is part of the task.
 
 ## References
 - extension/vscode/package.json

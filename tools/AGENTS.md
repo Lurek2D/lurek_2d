@@ -20,8 +20,9 @@ Covers work under `tools/`.
 - Keep build/quality assurance checks ordered by speed, running lightweight syntax and link checkers before executing heavy cargo compiles.
 
 ## Workflow
-- Run code generation tasks via `python tools/gen_all_docs.py` before committing changes to source headers.
-- Run complete workspace checks with `python tools/validate/cag_validate.py`.
+- Start from the nearest nested tools contract or tool README before changing a specific tool family.
+- Run only the generator, audit, or validator that matches the edited tool area before escalating to broader workspace checks.
+- Run complete workspace checks with `python tools/validate/cag_validate.py` when tool changes affect shared contracts, generators, or CAG metadata.
 
 ## References
 - tools/validate/cag_validate.py

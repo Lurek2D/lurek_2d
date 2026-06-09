@@ -45,6 +45,6 @@ description: "Create or update new lua pure library part of lureksome."
 ## References
 - `contracts: library/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
 - `tools: python tools/audit/library_coverage.py, python tools/validate/validate_library.py`
-- `agent: Content-Maker`
+- `agent: content`
 
 

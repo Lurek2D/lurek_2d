@@ -41,6 +41,6 @@ description: "Find the best prompt for the current work context."
 ## References
 - `contracts: .codex/AGENTS.md`
 - `tools: file system read over `.github/prompts/``
-- `agent: Manager`
+- `agent: manager`
 
 

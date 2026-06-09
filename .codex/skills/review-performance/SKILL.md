@@ -45,6 +45,6 @@ description: "Review performance using tools/audit/perf_regression_gate.py."
 ## References
 - `contracts: .codex/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md`
 - `tools: python tools/audit/perf_regression_gate.py, cargo flamegraph`
-- `agent: Verifier`
+- `agent: reviewer`
 
 

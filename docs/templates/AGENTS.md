@@ -15,7 +15,7 @@ Covers work under `docs/templates/`.
 
 ## Rules
 - Templates must contain only structural headers and placeholder annotations; do not hardcode feature-specific rules.
-- If a template format is updated, manually audit all downstream files using it to ensure complete compliance.
+- If a template format is updated, run the validator or generator that proves downstream files still conform, then audit only the affected outputs.
 - Any template changes must match the layout rules checked by the workspace validation suites.
 
 ## Workflow

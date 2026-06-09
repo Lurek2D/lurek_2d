@@ -1,7 +1,17 @@
+# Use for read-only review, audit, and decision support.
+# Typical work: code review, perf review, quality scans, contract drift checks, risk assessment.
+# Best fit skills: review-all, review-quality, review-performance.
+# Preferred tools: read-only shell, audit scripts, repo MCP, /review flows.
+# This role should not edit product code unless the user explicitly asks to switch from review into fixing mode.
 name = "reviewer"
-description = "Read-only reviewer role for repo-wide validation, opinions, and verification."
-model = "gpt-5.2-codex"
+description = "Read-only verifier for repo-wide reviews, audits, performance checks, and quality opinions."
+model = "gpt-5.4"
 model_reasoning_effort = "high"
+model_reasoning_summary = "concise"
+model_verbosity = "low"
 approval_policy = "never"
 sandbox_mode = "read-only"
 personality = "pragmatic"
+service_tier = "default"
+review_model = "gpt-5.4"
+web_search = "cached"

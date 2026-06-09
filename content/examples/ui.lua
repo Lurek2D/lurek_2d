@@ -3309,15 +3309,6 @@ do
 end
 
 -- Duplicate coverage lives in content/examples/charts.lua.
-do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    print("bar series count example ok")
-end
-
 --@api-stub: LBarChart:drawToImage
 do
     local chart = lurek.ui.newBarChart({width = 200, height = 100})
@@ -3661,12 +3652,19 @@ do
 end
 
 --@api-stub: LDialog:getDefaultAction
---@api-stub: LDialog:setDefaultAction
 do
     local dlg = lurek.ui.newDialog("Default")
     local idx = dlg:addAction("Confirm", nil, "default", true)
     dlg:setDefaultAction(idx)
     print("default action:", dlg:getDefaultAction())
+end
+
+--@api-stub: LDialog:setDefaultAction
+do
+    local dlg = lurek.ui.newDialog("Default Setter")
+    local idx = dlg:addAction("Confirm", nil, "default", true)
+    dlg:setDefaultAction(idx)
+    print("set default action:", idx)
 end
 
 --@api-stub: LDialog:getCenterOnOpen
@@ -3708,22 +3706,42 @@ do
 end
 
 --@api-stub: LDialog:isCloseable
+do
+    local dlg = lurek.ui.newDialog("Closeable")
+    print("isCloseable:", dlg:isCloseable())
+end
+
 --@api-stub: LDialog:isDraggable
+do
+    local dlg = lurek.ui.newDialog("Draggable")
+    print("isDraggable:", dlg:isDraggable())
+end
+
 --@api-stub: LDialog:isResizable
 do
-    local dlg = lurek.ui.newDialog("Flags")
-    print("flags:", dlg:isCloseable(), dlg:isDraggable(), dlg:isResizable())
+    local dlg = lurek.ui.newDialog("Resizable")
+    print("isResizable:", dlg:isResizable())
 end
 
 --@api-stub: LDialog:setCloseable
+do
+    local dlg = lurek.ui.newDialog("Closeable Setter")
+    dlg:setCloseable(false)
+    print("setCloseable:", false)
+end
+
 --@api-stub: LDialog:setDraggable
+do
+    local dlg = lurek.ui.newDialog("Draggable Setter")
+    dlg:setDraggable(true)
+    print("setDraggable:", true)
+end
+
 --@api-stub: LDialog:setResizable
 do
-    local dlg = lurek.ui.newDialog("Config")
-    dlg:setCloseable(false)
-    dlg:setDraggable(true)
+    local dlg = lurek.ui.newDialog("Resizable Setter")
     dlg:setResizable(true)
-    print("config ok")
+    print("setResizable:", true)
 end
 
 --@api-stub: LDialog:setFooter
@@ -3735,12 +3753,17 @@ do
 end
 
 --@api-stub: LDialog:setMaxSize
+do
+    local dlg = lurek.ui.newDialog("Max Size")
+    dlg:setMaxSize(480, 320)
+    print("setMaxSize:", 480, 320)
+end
+
 --@api-stub: LDialog:setMinSize
 do
-    local dlg = lurek.ui.newDialog("Sizing")
+    local dlg = lurek.ui.newDialog("Min Size")
     dlg:setMinSize(200, 120)
-    dlg:setMaxSize(480, 320)
-    print("size constraints set")
+    print("setMinSize:", 200, 120)
 end
 
 --@api-stub: LDialog:setDismissOnOutsideClick
@@ -7270,15 +7293,3 @@ do
 end
 
 -- Duplicate coverage lives in content/examples/charts.lua.
-do
-    local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
-    chart:addSeries("sales", { {1, 1}, {2, 4}, {3, 2}, {4, 7}, {5, 3} }, 0.2, 0.7, 1.0)
-    print("line series added")
-end
-
--- Duplicate coverage lives in content/examples/charts.lua.
-do
-    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
-    chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} }, 1.0, 0.4, 0.2)
-    print("scatter series added")
-end

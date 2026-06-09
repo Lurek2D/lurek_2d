@@ -45,6 +45,6 @@ description: "Review unit lua test coverage and fix all gaps, ensure all practic
 ## References
 - `contracts: AGENTS.md, tests/AGENTS.md, tests/lua/AGENTS.md`
 - `tools: python tools/audit/lua_api_test_coverage.py, python tools/audit/lua_test_structure_audit.py, cargo test`
-- `agent: Tester`
+- `agent: tester`
 
 

@@ -42,6 +42,6 @@ description: "Create or update python or powershell tool in tools, review if all
 ## References
 - `contracts: tools/AGENTS.md, tools/audit/AGENTS.md`
 - `tools: python tools/audit/tool_registry_audit.py`
-- `agent: Build-Engineer`
+- `agent: builder`
 
 

@@ -20,7 +20,7 @@ Covers work under `content/layouts/`.
 ## Workflow
 - Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` to enforce grid snapping.
 - Auto-format layout syntax using `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
-- Verify visual output with `tests/lua/evidence/test_gui_evidence.lua` or `content/games/tools/layout_toml_renderer/`.
+- Verify visual output with the existing GUI evidence tests or another checked-in layout rendering path that exists in the repo.
 
 ## References
 - tools/ui/snap_to_grid.py

@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/html_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::html::parse_css_color_rgba;
 
 fn assert_rgba_near(actual: [f32; 4], expected: [f32; 4]) {

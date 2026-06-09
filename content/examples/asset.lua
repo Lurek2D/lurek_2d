@@ -54,9 +54,7 @@ do
     local ha = lurek.asset.load(PATH_BIN, "audio")
     print("audio loaded: " .. tostring(lurek.asset.isLoaded(ha)))
     lurek.asset.unload(ha)
-end
 
-do
     -- load with opts: name, group, and tags supplied inline.
     local h = lurek.asset.load(PATH_TOML, "toml", {
         name  = "build_config",

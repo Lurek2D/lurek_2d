@@ -14,6 +14,7 @@ Covers work under `src/lua_api/`.
 - Keep binding files thin; restrict content to registration, conversions, `LuaUserData` implementations, and parameter validation.
 - Validate argument ranges, patterns, and sizes at the Lua boundary before parsing.
 - Clamp or reject integer casts and enum-like strings at the entry boundary.
+- Do not use Lua type casts here. Use `any` in Rust bindings if a looser type is needed.
 - Keep naming conventions, default parameters, and returns consistent with `lurek.*` specs.
 - Do not manually edit generated Lua documentation files (`docs/api/lurek.lua`).
 - Use concise docstrings matching the actual Rust-exposed callable signature.

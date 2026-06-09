@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/parallax_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::parallax::layer::ParallaxDrawBatch;
 use lurek2d::parallax::render::batch_to_render_commands;
 use lurek2d::parallax::ParallaxLayer;

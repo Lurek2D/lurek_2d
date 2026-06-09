@@ -14,7 +14,7 @@ description: "Create or update new prompt, agent, skill or update them, revalida
 - Agent must collect the current CAG validation rules before editing
 
 ## Profile hint
-- `manager`
+- `cag_architect`
 
 ## Read these contracts
 - `AGENTS.md`
@@ -42,6 +42,6 @@ description: "Create or update new prompt, agent, skill or update them, revalida
 ## References
 - `contracts: AGENTS.md, .codex/AGENTS.md`
 - `tools: python tools/validate/cag_validate.py, python tools/audit/cag_link_check.py`
-- `agent: CAG-Architect`
+- `agent: cag_architect`
 
 

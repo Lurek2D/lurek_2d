@@ -45,6 +45,6 @@ description: "Review overall code quality using tools/audit/quality_report.py."
 ## References
 - `contracts: AGENTS.md, src/AGENTS.md, tools/AGENTS.md`
 - `tools: python tools/audit/quality_report.py, cargo clippy`
-- `agent: Verifier`
+- `agent: reviewer`
 
 

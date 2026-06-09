@@ -44,6 +44,6 @@ description: "Perform all below reviews one by one."
 ## References
 - `contracts: AGENTS.md, tools/AGENTS.md`
 - `skills: review-api, review-architecture, review-docstrings, review-examples, review-performance, review-quality, review-specs, review-tests`
-- `agent: Verifier`
+- `agent: reviewer`
 
 

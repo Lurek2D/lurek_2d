@@ -43,6 +43,6 @@ description: "Create or update new demo game using specific scope or specific mo
 ## References
 - `contracts: content/AGENTS.md, content/games/AGENTS.md, tests/lua/AGENTS.md`
 - `tools: python tools/validate/validate_game.py, cargo test`
-- `agent: Content-Maker`
+- `agent: content`
 
 

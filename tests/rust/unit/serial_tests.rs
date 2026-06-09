@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/serial_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 // â”€â”€ lua_table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod lua_table_tests {
@@ -107,107 +109,6 @@ mod lua_table_tests {
         let func = lua.create_function(|_, ()| Ok(())).unwrap();
         let val = LuaValue::Function(func);
         assert!(from_lua(&val).is_err());
-    }
-}
-
-mod codec_tests {
-    use lurek2d::serial::{
-        decode_bytes, decode_text, detect_format, encode, from_csv, DecodeOptions, EncodeOptions,
-        EncodedValue, SerialFormat, SerialValue,
-    };
-
-    fn lcg_next(state: &mut u64) -> u64 {
-        *state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
-        *state
-    }
-
-    fn random_ascii(seed: u64, len: usize) -> String {
-        let mut s = String::with_capacity(len);
-        let mut st = seed;
-        for _ in 0..len {
-            let v = (lcg_next(&mut st) % 95) as u8 + 32;
-            s.push(v as char);
-        }
-        s
-    }
-
-    #[test]
-    fn detect_format_finds_json() {
-        assert_eq!(
-            detect_format("{\"name\":\"hero\"}"),
-            Some(SerialFormat::Json)
-        );
-    }
-
-    #[test]
-    fn detect_format_finds_toml() {
-        assert_eq!(detect_format("title = \"demo\""), Some(SerialFormat::Toml));
-    }
-
-    #[test]
-    fn decode_text_auto_json() {
-        let val = decode_text("{\"hp\":10}", None, DecodeOptions::default()).unwrap();
-        match val {
-            SerialValue::Map(m) => assert!(matches!(m.get("hp"), Some(SerialValue::Int(10)))),
-            other => panic!("expected map, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn encode_decode_msgpack_round_trip() {
-        let src = SerialValue::Seq(vec![SerialValue::Int(1), SerialValue::Int(2)]);
-        let bytes = match encode(&src, SerialFormat::MsgPack, EncodeOptions::default()).unwrap() {
-            EncodedValue::Binary(b) => b,
-            EncodedValue::Text(_) => panic!("expected binary output"),
-        };
-        let back = decode_bytes(&bytes, SerialFormat::MsgPack).unwrap();
-        match back {
-            SerialValue::Seq(items) => assert_eq!(items.len(), 2),
-            other => panic!("expected seq, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn from_csv_parses_rows() {
-        let val = from_csv("name,score\nalice,10\n", Default::default()).unwrap();
-        match val {
-            SerialValue::Seq(rows) => assert_eq!(rows.len(), 1),
-            other => panic!("expected seq, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn decode_text_ini_returns_section_map() {
-        let val = decode_text(
-            "[player]\nname=hero\n",
-            Some(SerialFormat::Ini),
-            DecodeOptions::default(),
-        )
-        .unwrap();
-        match val {
-            SerialValue::Map(root) => {
-                assert!(matches!(root.get("player"), Some(SerialValue::Map(_))));
-            }
-            other => panic!("expected map, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn fuzz_text_parsers_do_not_panic_on_random_inputs() {
-        let formats = [
-            SerialFormat::Json,
-            SerialFormat::Toml,
-            SerialFormat::Csv,
-            SerialFormat::Xml,
-            SerialFormat::Ini,
-        ];
-
-        for i in 0..128_u64 {
-            let input = random_ascii(0xDEADBEEF_u64 ^ i, (i as usize % 128) + 1);
-            for fmt in formats {
-                let _ = decode_text(&input, Some(fmt), DecodeOptions::default());
-            }
-        }
     }
 }
 

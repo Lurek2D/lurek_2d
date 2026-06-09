@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/minimap_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::minimap::*;
 use lurek2d::raycaster::Raycaster2D;
 

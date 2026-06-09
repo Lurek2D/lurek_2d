@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/animation_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::animation::render::{quad_to_draw_command, AnimRenderParams};
 use lurek2d::animation::sync_group::AnimSyncGroup;
 use lurek2d::animation::{

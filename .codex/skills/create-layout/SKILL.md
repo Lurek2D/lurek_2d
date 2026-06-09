@@ -44,6 +44,6 @@ description: "Create or update new user interface layout and review it, regenera
 ## References
 - `contracts: content/AGENTS.md, content/layouts/AGENTS.md, content/examples/AGENTS.md`
 - `tools: python tools/ui/snap_to_grid.py, python tools/ui/fix_layouts.py, tests/lua/evidence/test_gui_evidence.lua`
-- `agent: Content-Maker`
+- `agent: content`
 
 

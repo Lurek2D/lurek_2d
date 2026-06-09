@@ -43,6 +43,6 @@ description: "Create or update rust test for specific module and check test cove
 ## References
 - `contracts: src/AGENTS.md, tests/AGENTS.md`
 - `tools: cargo test, cargo clippy`
-- `agent: Tester`
+- `agent: tester`
 
 

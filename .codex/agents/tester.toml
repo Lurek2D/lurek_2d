@@ -1,7 +1,16 @@
+# Use when the primary artifact is a test or validation proof.
+# Typical work: unit tests, integration tests, stress tests, golden evidence, harness registration, repro cases.
+# Best fit skills: create-test-rust, create-test-lua, create-test-stress, create-test-evidence, create-integration-test, review-tests.
+# Preferred tools: shell, cargo test, coverage audits, golden/evidence tooling.
+# Do not use for feature design unless the user explicitly wants a test-first change.
 name = "tester"
-description = "Tester role for work in tests/ and harness registration."
-model = "gpt-5.2-codex"
-model_reasoning_effort = "high"
+description = "Test engineer for tests/, coverage closure, regression repros, and validation artifacts."
+model = "gpt-5.4-mini"
+model_reasoning_effort = "medium"
+model_reasoning_summary = "concise"
+model_verbosity = "low"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 personality = "pragmatic"
+service_tier = "default"
+web_search = "disabled"

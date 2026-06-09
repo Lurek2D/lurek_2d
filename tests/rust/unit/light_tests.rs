@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/light_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::light::attenuation::Attenuation;
 use lurek2d::light::flicker::FlickerConfig;
 use lurek2d::light::light2d::Light2D;

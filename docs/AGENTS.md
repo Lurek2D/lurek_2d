@@ -19,8 +19,9 @@ Covers work under `docs/`.
 - Contributor documentation must target developers and modders, explaining technical constraints clearly.
 
 ## Workflow
-- Verify doc link coverage and document formatting by running the link checker.
-- Rebuild API references using `python tools/gen_all_docs.py` after editing binding doc comments.
+- Start from the nearest nested docs contract (`docs/specs/`, `docs/architecture/`, `docs/api/`, or `docs/templates/`) before making subtree-specific changes.
+- Run the strict link checker after doc moves, renames, or structural edits that can affect references.
+- Rebuild generated API references only when editing binding doc comments or generated-doc inputs.
 
 ## References
 - `docs/specs/`

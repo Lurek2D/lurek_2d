@@ -14,7 +14,7 @@ description: "Create or update integration lua test combining 2 or more modules 
 - Agent must collect API surfaces of all involved modules
 
 ## Profile hint
-- `manager`
+- `tester`
 
 ## Read these contracts
 - `tests/AGENTS.md`
@@ -43,6 +43,6 @@ description: "Create or update integration lua test combining 2 or more modules 
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
 - `tools: python tools/audit/integration_coverage.py`
-- `agent: Tester`
+- `agent: tester`
 
 

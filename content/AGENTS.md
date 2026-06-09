@@ -19,10 +19,13 @@ Covers work under `content/`.
 - Keep game state contained in local variables or context state tables; avoid global variable pollution.
 - Format file lookup strings with forward slashes exclusively.
 - Use `lurek.log.*` channels instead of raw print functions to support category filtering.
+- Do not silence warnings in `.vscode/settings.json` or hide Lua API issues with `---@diagnostic disable`.
+
 
 ## Workflow
-- Verify layout coordinate adjustments using `tools/ui/fix_layouts.py` and `tools/ui/snap_to_grid.py`.
-- Run layout rendering demos to visually test layout file adjustments.
+- Start from the nearest nested content contract (`content/examples/`, `content/games/`, `content/layouts/`, or `content/snippets/`) before making subtree-specific changes.
+- Run only the validators and smoke flows that match the edited content type.
+- For layout edits, use `tools/ui/fix_layouts.py` and `tools/ui/snap_to_grid.py`, then verify visual output.
 
 ## References
 - `library/`

@@ -17,6 +17,7 @@ Covers work under `library/`.
 - Never write stateful global variables inside libraries; return module tables containing constructors or local states.
 - If a package API interface changes, immediately update the matching `example.lua` and rebuild documentation.
 - All library modules must run correctly under both LuaJIT and Lua 5.4.
+- Do not silence warnings in `.vscode/settings.json` or hide Lua API issues with `---@diagnostic disable`.
 
 ## Workflow
 - Run and test library updates against their corresponding unit test files under `tests/lua/`.

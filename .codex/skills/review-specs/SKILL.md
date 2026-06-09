@@ -13,7 +13,7 @@ description: "Regenerate specs via script, then explicitly review and rewrite th
 - Agent must collect current source code vs existing spec state
 
 ## Profile hint
-- `reviewer`
+- `doc_writer`
 
 ## Read these contracts
 - `AGENTS.md`
@@ -45,6 +45,6 @@ description: "Regenerate specs via script, then explicitly review and rewrite th
 ## References
 - `contracts: AGENTS.md, docs/AGENTS.md, docs/specs/AGENTS.md`
 - `tools: python tools/docs/gen_module_specs.py, python tools/audit/lua_spec_coverage.py`
-- `agent: Doc-Writer`
+- `agent: doc_writer`
 
 

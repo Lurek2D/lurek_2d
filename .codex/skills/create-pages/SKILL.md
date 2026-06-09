@@ -13,7 +13,7 @@ description: "Create or modify the generated docs site and the templates that fe
 - Agent must collect the site generation pipeline scripts
 
 ## Profile hint
-- `architect`
+- `doc_writer`
 
 ## Read these contracts
 - `docs/AGENTS.md`
@@ -43,5 +43,5 @@ description: "Create or modify the generated docs site and the templates that fe
 ## References
 - `contracts: docs/AGENTS.md, docs/templates/AGENTS.md, content/AGENTS.md, pages/AGENTS.md`
 - `tools: python tools/gen_all_docs.py, python tools/audit/cag_link_check.py`
-- `agent: Doc-Writer`
+- `agent: doc_writer`
 

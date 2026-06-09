@@ -17,7 +17,7 @@ Covers work under `tests/rust/`.
 - Do not add unit tests for functions that can be fully verified in the Lua scripting layer; port those cases into `tests/lua/unit/` instead.
 - Treat public `lurek.*` behavior as Lua-first coverage and keep Rust tests limited to private/internal implementations or wrapper glue that cannot be exercised from Lua.
 - Use golden tests exclusively for deterministic output structures (like coordinate mappings or static TOML layouts).
-- Use local resources inside `tests/fixtures/` instead of downloading files or relying on external global resources.
+- Use local resources inside `tests/rust/fixtures/` or another checked-in Rust test fixture path instead of downloading files or relying on external global resources.
 
 ## Workflow
 - Run local unit tests targeting a single module using `cargo test --test <name>`.

@@ -16,6 +16,11 @@ Covers work under `tests/`.
 ## Rules
 - Direct all public API tests to the Lua layer; do not test `lurek.*` features using Rust unit test files.
 - If a behavior is reachable from `lurek.*`, keep the canonical coverage in `tests/lua/unit/` and reserve `tests/rust/unit/` for private Rust seams, helper logic, and wrapper-only glue.
+- Keep `tests/lua/` as the home for `lurek.*` tests.
+- Keep `tests/rust/unit/` for internal Rust unit tests only.
+- Put demos in `tests/lua/demos/`.
+- Put demo screenshot smoke coverage in `tests/demo_smoke_tests.rs`; keep Rust golden screenshots and other evidence in their existing test-specific locations.
+- Use one test file per module per layer: `test_<module>_<layer>.lua`.
 - Keep test executions completely deterministic; float checks must use epsilon tolerance ranges.
 - Register new Lua test suites inside `tests/lua/harness.rs` to wire them into the default test runners.
 - Use explicit state assertions rather than side-effect checks when verifying frame changes.

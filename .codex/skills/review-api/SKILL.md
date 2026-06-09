@@ -13,7 +13,7 @@ description: "Review lua api coverage (if public rust methods are covered by lua
 - Agent must collect Rust source public methods and their Lua API counterparts
 
 ## Profile hint
-- `reviewer`
+- `lua_designer`
 
 ## Read these contracts
 - `AGENTS.md`
@@ -45,6 +45,6 @@ description: "Review lua api coverage (if public rust methods are covered by lua
 ## References
 - `contracts: AGENTS.md, src/lua_api/AGENTS.md, docs/specs/AGENTS.md`
 - `tools: python tools/audit/lua_covers_lurek_api_audit.py, python tools/audit/thin_wrapper_audit.py`
-- `agent: Lua-Designer`
+- `agent: lua_designer`
 
 

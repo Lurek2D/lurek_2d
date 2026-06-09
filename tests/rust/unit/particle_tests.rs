@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/particle_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::particle::visualization::draw_to_image;
 use lurek2d::particle::{AreaDistribution, ParticleConfig, ParticleSystem};
 

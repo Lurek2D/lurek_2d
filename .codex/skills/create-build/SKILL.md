@@ -42,6 +42,6 @@ description: "Create or update build (release, debug, dist) settings."
 ## References
 - `contracts: tools/AGENTS.md, AGENTS.md`
 - `tools: cargo build --profile`
-- `agent: Build-Engineer`
+- `agent: builder`
 
 

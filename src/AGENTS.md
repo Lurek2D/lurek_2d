@@ -4,7 +4,7 @@ Covers work under `src/`.
 
 ## Mission & Scope
 - Own the Rust engine runtime codebase, including the renderer, physics, audio, asset manager, and main window.
-- Keep the Lua-to-Rust binding edge (`src/lua_api/`) thin, restricted strictly to serialization and API routing.
+- Keep the Lua-to-Rust binding edge (`src/lua_api/`) thin; keep gameplay logic and state management inside dedicated Rust modules in `src/`.
 - Maintain decoupled internal module boundaries and narrow testability seams without exposing internal data structures.
 
 ## Files
@@ -14,7 +14,7 @@ Covers work under `src/`.
 - `app/` / `runtime/`: Application core orchestrators and execution frameworks.
 
 ## Rules
-- Keep `src/lua_api/` thin; write all gameplay logic and state management inside dedicated Rust modules in `src/`.
+- Do not add `#[cfg(test)]` to files under `src/`.
 - Do not hold mutable borrow locks (`borrow_mut()`) on shared state across mlua callbacks or yielding frames.
 - Use `pub(crate)` visibility to expose test seams and document the testing invariant.
 - Document any `unsafe` block with a clear, verifiable `// SAFETY:` invariant comment.

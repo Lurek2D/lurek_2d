@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/pathfind_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::pathfind::{DiagonalMode, IsoGrid, NavGrid, PathThreadPool};
 
 mod async_pool_tests {

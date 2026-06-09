@@ -13,7 +13,7 @@ description: "Review if docs in architecture are in sync with specs and lurek ap
 - Agent must collect `docs/architecture/` files, specs, and API definitions
 
 ## Profile hint
-- `reviewer`
+- `architect`
 
 ## Read these contracts
 - `AGENTS.md`
@@ -45,6 +45,6 @@ description: "Review if docs in architecture are in sync with specs and lurek ap
 ## References
 - `contracts: AGENTS.md, docs/AGENTS.md, docs/architecture/AGENTS.md`
 - `tools: python tools/audit/cag_link_check.py`
-- `agent: Architect`
+- `agent: architect`
 
 

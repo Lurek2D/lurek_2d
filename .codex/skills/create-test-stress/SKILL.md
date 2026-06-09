@@ -44,6 +44,6 @@ description: "Create or update heavy stress test for specific module and check t
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md`
 - `tools: python tools/audit/stress_report.py`
-- `agent: Tester`
+- `agent: tester`
 
 

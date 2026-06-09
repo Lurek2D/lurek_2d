@@ -48,6 +48,6 @@ description: "Create or update module in src, perform all needed steps to make i
 ## References
 - `contracts: src/AGENTS.md, src/lua_api/AGENTS.md, docs/architecture/AGENTS.md, docs/specs/AGENTS.md`
 - `tools: python tools/validate/cag_validate.py, python tools/gen_all_docs.py, cargo test`
-- `agent: Developer`
+- `agent: developer`
 
 

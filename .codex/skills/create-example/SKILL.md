@@ -43,6 +43,6 @@ description: "Create new example or update example for specific module."
 ## References
 - `contracts: content/AGENTS.md, content/examples/AGENTS.md, docs/AGENTS.md`
 - `tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py`
-- `agent: Content-Maker`
+- `agent: content`
 
 

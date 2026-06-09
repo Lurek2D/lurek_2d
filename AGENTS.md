@@ -1,42 +1,50 @@
 # Repository Contract
 
-Covers work across the whole repository.
+- Lurek2D is a 1-Rust-binary runtime for Lua game scripts.
+- The stack is Rust 1.78+, LuaJIT with mlua 0.9, wgpu 22, winit 0.30, rapier2d 0.32, rodio 0.17, and fontdue 0.9.
+- This is AI-first project, coding is agent, human is review.
 
 ## Mission & Scope
-- Lurek2D is a desktop-only 2D Rust runtime for Lua game scripts.
-- LuaJIT is primary; Lua 5.4 is fallback.
-- Public Lua surface is `lurek.*`.
-- This file applies to the repo root and all child paths. Deeper `AGENTS.md` files override it for their subtree. `.codex/` holds local CAG config, roles, skills, and task skills. `.github/` is migration-era reference only unless `.codex/` is missing the needed rule.
+- Keep repository-wide agent guidance concise, actionable, and consistent with the current codebase and docs.
+- Define the default workflow and validation expectations that apply unless a deeper `AGENTS.md` adds subtree-specific rules.
+- Point agents to canonical sources instead of duplicating large blocks of policy text across nested files.
+
+## Notes
+- Use Codex skills when they help.
+- Use RAG before broad search or many-file reads. Query `tools/rag/query.py "<keywords>" --profile all|game|engine`, start from the top hits, then expand only if needed.
+- Use CAG context every time: read root `AGENTS.md` first, then every nested `AGENTS.md` on the path to the target folder; also load relevant skills, agents, and local `.codex/` guidance before editing.
+- Use MCP tools and repo CLI tools first when they fit the task; prefer tool-driven workflows over manual scanning or ad hoc scripts.
+- Keep tool output short. Prefer commands and flags that limit output size in the current shell.
+- When running scripts or commands that can print a lot, always cap captured output to at most 1000 lines before bringing it into context.
+- Do not read huge files.
+- Test and compile before done.
+- Ask questions if instructions are unclear.
+- Write simple English, bullet points, pragmatic.
+- This file applies to the repo root and all child paths.
+- Deeper nested `AGENTS.md` files enhance content for their subtree on the path.
+- `.codex/` holds local CAG config, roles, skills, and task skills.
+- Put every temporary task note, repro, export, or scratch file under `work/{short-chat-name}/`.
 
 ## Files
-- `src/` is engine code; `src/lua_api/` is the binding edge.
-- `docs/specs/` is the per-module contract layer.
-- `content/`, `library/`, `tests/`, `tools/`, `extension/`, `pages/`, and `ideas/` are the main work areas.
-- `work/` is disposable scratch.
+- `src/` rust source code engine.
+- `docs/` docs, specs, api.
+- `content/` lua based content, examples.
+- `library/` pure lua extension to lurek.
+- `tests/` tests framework.
+- `tools/` mcp tools, cli scripts.
+- `extension/` ms vs code extension.
+- `pages/` github pages wiki.
+- `ideas/` sandbox for ideas, roadmap.
+- `work/` current work, temp files.
 
 ## Rules
-- Use the nearest nested `AGENTS.md` first.
-- Keep `src/lua_api/` thin; keep business logic in `src/`.
-- Do not edit generated docs directly.
-- Do not add `#[cfg(test)]` to `src/`.
-- Do not silence warnings in `.vscode/settings.json` or hide Lua API issues with `---@diagnostic disable`.
 - Keep public API changes synced with specs, examples, and coverage.
-- Before broad filesystem search or many-file reads, run `python tools/rag/query.py "<keywords>" --profile all|game|engine`.
-- Rebuild the index after changing indexed sources or `tools/rag/rag.toml`.
-- Run `cargo test`, `cargo clippy -- -D warnings`, `python tools/validate/cag_validate.py`, and `python tools/audit/cag_link_check.py --strict` when behavior or contracts change.
 - Keep scope narrow and do not revert unrelated user changes.
+- Leave validation proof when behavior changes.
+- Run `cargo test`, `cargo clippy -- -D warnings`, `python tools/validate/cag_validate.py`, and `python tools/audit/cag_link_check.py --strict` when behavior or contracts change.
 
 ## Workflow
-- Read the nearest source or spec before editing.
-- Use `work/` for disposable repros and notes.
-- Leave validation proof when behavior changes.
-
-## References
-- `docs/architecture/developer-ecosystem.md`
-- `docs/specs/`
-- `.codex/config.toml`
-- `.codex/agents/`
-- `.codex/skills/`
-- `.codex/task-skills/`
-- `.codex/howto.md`
-- `work/`
+- Load instructions in this order: root `AGENTS.md`, then nested `AGENTS.md` files along the target path, then task-relevant skills/agents/CAG files.
+- Start discovery with RAG, then read only the nearest source, spec, or docstrings needed for the task.
+- Read the nearest source or spec before editing; prefer source docstrings over broad file loading.
+- Use `work/{short-chat-name}/` for disposable repros, notes, generated files, and temporary task artifacts.

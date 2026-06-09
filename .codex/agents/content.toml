@@ -1,7 +1,16 @@
+# Use when the output is playable Lua-side content rather than engine code.
+# Typical work: content/, library/, demos, gameplay scripts, examples, UI layouts used by content.
+# Best fit skills: create-demo, create-library, create-example, create-layout, review-examples.
+# Preferred tools: shell, content validators, screenshots/evidence when needed.
+# Do not use for extension snippets or core engine APIs.
 name = "content"
-description = "Content role for content/ and library/ Lua-based assets and examples."
-model = "gpt-5.2-codex"
+description = "Content maker for content/ and library/ gameplay scripts, demos, examples, and layouts."
+model = "gpt-5.4"
 model_reasoning_effort = "medium"
-approval_policy = "on-failure"
+model_reasoning_summary = "auto"
+model_verbosity = "medium"
+approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 personality = "pragmatic"
+service_tier = "default"
+web_search = "disabled"

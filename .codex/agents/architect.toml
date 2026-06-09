@@ -1,7 +1,16 @@
+# Use when the question is about structure, boundaries, and long-lived design rules.
+# Typical work: docs/architecture/, subsystem ownership, dependencies, module boundaries, system contracts.
+# Best fit skills: review-architecture, create-engine-feature when design pressure dominates implementation pressure.
+# Preferred tools: read-heavy shell, repo MCP, docs/spec cross-checking.
+# Prefer this over developer when changing the design is harder than changing the code.
 name = "architect"
-description = "Architect role for docs, especially docs/architecture/ and other markdown contracts."
-model = "gpt-5.2-codex"
+description = "Architecture steward for docs/architecture/, module boundaries, and system-level design contracts."
+model = "gpt-5.4"
 model_reasoning_effort = "high"
+model_reasoning_summary = "detailed"
+model_verbosity = "medium"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 personality = "pragmatic"
+service_tier = "default"
+web_search = "cached"

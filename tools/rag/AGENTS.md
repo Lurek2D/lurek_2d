@@ -13,10 +13,11 @@ Covers work under `tools/rag/`.
 - `rag.toml`: Configuration schema setting file filters, priority ranks, and chunk weights.
 
 ## Rules
+- Before broad filesystem search or many-file reads, run `python tools/rag/query.py "<keywords>" --profile all|game|engine`.
 - Prioritize design specs and core system prompts over code examples and generated web pages.
 - Enforce logic-based file chunking (e.g., class, function, or spec section boundaries) rather than static byte-based slicing.
 - Keep the generated vector database outside of version control; always treat it as local build-derived data.
-- Automatically trigger index rebuilds when structural specification changes are introduced.
+- Rebuild the index after changing indexed sources or `tools/rag/rag.toml`.
 
 ## Workflow
 - Rebuild the search corpus index by running `python tools/rag/build_index.py`.

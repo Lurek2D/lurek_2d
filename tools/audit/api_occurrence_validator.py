@@ -2,7 +2,8 @@
 """API Occurrence Validator -- Check that each lurek.* API has examples.
 
 This tool validates coverage: each API should have at least one --@api-stub:
-marker across all example files. It counts stub markers only (not actual usage).
+marker across all example files. It also flags APIs whose marker appears more
+than once across example files. It counts stub markers only (not actual usage).
 
 Usage:
     python tools/audit/api_occurrence_validator.py                # coverage report
@@ -11,7 +12,7 @@ Usage:
 
 Exit codes:
     0  - all APIs have at least one stub
-    1  - some APIs missing from examples (--report only)
+    1  - some APIs missing from examples or duplicated (--report only)
     2  - fatal error
 """
 
@@ -124,6 +125,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Determine coverage
     covered = len(all_apis & set(stubs.keys()))
     missing = sorted(all_apis - set(stubs.keys()))
+    duplicates = sorted(api for api, files in stubs.items() if len(files) > 1)
 
     # Build report
     report_data = {
@@ -131,6 +133,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         "covered": covered,
         "missing": len(missing),
         "missing_apis": missing,
+        "duplicate": len(duplicates),
+        "duplicate_apis": duplicates,
         "stub_counts": {api: len(files) for api, files in stubs.items()},
     }
 
@@ -148,6 +152,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     print(f"Total APIs: {len(all_apis)}")
     print(f"With stubs: {covered} ({pct:.1f}%)")
     print(f"Missing: {len(missing)}")
+    print(f"Duplicated: {len(duplicates)}")
     print()
 
     if missing:
@@ -158,9 +163,17 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"  ... and {len(missing) - 20} more")
         print()
 
+    if duplicates:
+        print("Duplicated API stubs:")
+        for api in duplicates[:20]:
+            print(f"  - {api}  [{len(stubs.get(api, []))} markers]")
+        if len(duplicates) > 20:
+            print(f"  ... and {len(duplicates) - 20} more")
+        print()
+
     print(f"Report: {OUTPUT_JSON}")
 
-    if missing and args.report:
+    if (missing or duplicates) and args.report:
         return 1
 
     return 0

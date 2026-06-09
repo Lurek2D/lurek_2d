@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/tween_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 mod state_tests {
     use lurek2d::tween::{builtin_easing_names, TweenState};
 

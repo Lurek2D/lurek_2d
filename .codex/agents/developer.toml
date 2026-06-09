@@ -1,7 +1,16 @@
+# Use when the task changes engine internals in Rust.
+# Typical work: runtime systems, rendering, physics, audio, resource flow, shader integration.
+# Best fit skills: create-module, create-shader, create-engine-feature.
+# Preferred tools: shell, cargo, rust tests, repo MCP, apply_patch.
+# Do not use as the default for docs, tests-first work, Lua API ergonomics, or VS Code extension tasks.
 name = "developer"
-description = "Developer role for Rust engine work in src/ and src/lua_api/."
-model = "gpt-5.2-codex"
-model_reasoning_effort = "medium"
-approval_policy = "on-failure"
+description = "Rust engine implementer for src/ internals and engine-side feature delivery."
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+model_reasoning_summary = "auto"
+model_verbosity = "medium"
+approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 personality = "pragmatic"
+service_tier = "default"
+web_search = "disabled"

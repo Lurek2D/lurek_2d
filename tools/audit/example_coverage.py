@@ -13,6 +13,8 @@ Structural lint checks (E-codes) run automatically after the summary:
     E3 -- two or more stubs stacked with no ``do`` block between them
     E4 -- ``do`` block body is thin (< 2 non-blank lines)
     E5 -- marker text is not a clean API identifier
+    E6 -- marker text appears more than once across example files
+    E7 -- top-level ``do`` block has no immediately preceding ``--@api-stub:``
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
@@ -329,10 +331,6 @@ def _is_outer_block_end(stripped: str, depth: int) -> bool:
 def classify_block(block: dict | None) -> str:
     if not block:
         return 'MISS'
-    # doc-alias: stub without a do block immediately followed by another stub tag.
-    # The following stub provides the example code; this one is a coverage alias.
-    if block.get('is_alias'):
-        return 'FULL'
     if block['has_todo'] or block['body_line_count'] == 0:
         return 'TODO'
     if block['body_line_count'] >= FULL_BLOCK_MIN_LINES:
@@ -364,24 +362,23 @@ def load_texts(d: Path) -> dict[str, dict]:
             if stripped.startswith('--@api-stub:'):
                 marker = stripped[len('--@api-stub:'):].strip()
                 if marker in blocks:
-                    import sys
-                    print(f"WARN: Duplicate stub marker '{marker}' found twice in {p.name}", file=sys.stderr)
+                    prev_file, prev_line = global_markers.get(marker, (p.name, line_no))
+                    EXTRA_LINT_ISSUES.append((
+                        p.name,
+                        line_no,
+                        'E6',
+                        f"stub '{marker}' duplicated; first seen at {prev_file}:{prev_line}",
+                    ))
                     continue
                 if marker in global_markers:
-                    import sys
                     prev_file, prev_line = global_markers[marker]
-                    print(
-                        f"WARN: Stub '{marker}' appears in both {prev_file}:{prev_line} and {p.name}:{line_no}"
-                        f" (class registered in multiple modules)",
-                        file=sys.stderr,
-                    )
-                    # still register in blocks so this file's module shows as covered
+                    EXTRA_LINT_ISSUES.append((
+                        p.name,
+                        line_no,
+                        'E6',
+                        f"stub '{marker}' duplicated; first seen at {prev_file}:{prev_line}",
+                    ))
                 global_markers[marker] = (p.name, line_no)
-                # Mark the previous stub as a doc-alias if it never received a do block.
-                # Doc-alias: intentional no-do stub pointing to the next stub's example.
-                if current_stub is not None and current_block is not None:
-                    if not current_block.get('found_block', False):
-                        current_block['is_alias'] = True
                 current_stub = marker
                 current_block = {'has_todo': False, 'body_line_count': 0, 'found_block': False, 'is_alias': False}
                 blocks[current_stub] = current_block
@@ -663,6 +660,8 @@ STUB_MARKER_VALID_RE = re.compile(
 )
 LINT_MIN_BODY_LINES = 2  # non-blank lines (code OR comment) inside a do block
 
+EXTRA_LINT_ISSUES: list[tuple[str, int, str, str]] = []
+
 
 def _collect_do_block(lines: list, start: int) -> tuple:
     """Collect lines inside the do...end block starting at index `start`.
@@ -692,11 +691,13 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
     Returns a list of (filename, lineno, error_code, message) tuples.
 
     Checks:
-      E1  stub has no ``do`` block below it (not a recognised alias)
+      E1  stub has no ``do`` block below it
       E2  non-blank, non-stub line between stub marker and ``do``
       E3  two or more stubs stacked with no ``do`` block between them
       E4  ``do`` block body is thin (< LINT_MIN_BODY_LINES non-blank lines)
       E5  marker text is not a clean API identifier
+      E6  marker text appears more than once across example files
+      E7  top-level ``do`` block has no immediately preceding stub marker
     """
     issues: list = []
 
@@ -707,11 +708,26 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
         lines = p.read_text(encoding='utf-8', errors='replace').splitlines()
         n = len(lines)
         i = 0
+        top_level_depth = 0
 
         while i < n:
             stripped = lines[i].strip()
+
+            if top_level_depth > 0:
+                top_level_depth += _count_scope_openings(stripped)
+                top_level_depth -= _count_scope_closures(stripped)
+                i += 1
+                continue
+
             m = STUB_TAG_RE.match(stripped)
             if not m:
+                if top_level_depth == 0 and DO_LINE_RE.match(stripped):
+                    issues.append((p.name, i + 1, 'E7',
+                        'top-level do block is missing an immediately preceding --@api-stub: marker'))
+                    end_idx, _ = _collect_do_block(lines, i)
+                    top_level_depth = 0
+                    i = end_idx + 1
+                    continue
                 i += 1
                 continue
 
@@ -763,6 +779,10 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
 
             i = end_idx + 1
 
+    issues.extend(
+        issue for issue in EXTRA_LINT_ISSUES
+        if not filt or filt.lower() in issue[0].lower()
+    )
     return issues
 
 
@@ -807,6 +827,7 @@ def main() -> int:
     p.add_argument('--module',    metavar='NAME',      help='Filter to one module')
     p.add_argument('--markdown',  metavar='FILE',      nargs='?', const='__AUTO__', help='Export Markdown report to FILE')
     args = p.parse_args()
+    EXTRA_LINT_ISSUES.clear()
 
     if not API_JSON.exists():
         print(f'ERROR: {API_JSON} not found â€” run python tools/gen_all_docs.py first')
@@ -868,6 +889,8 @@ def main() -> int:
         return 0
     else:
         print_summary(bk, filt=args.module)
+        if args.report:
+            print_missing(bk, filt=args.module)
         lint_count = print_lint(examples_dir, filt=args.module)
         if lint_count:
             has_lint = True

@@ -15,7 +15,7 @@ Covers work under `tools/audit/`.
 
 ## Rules
 - Audits must print precise, actionable diagnostics, detailing the target file, line number, and exact policy violation.
-- Flag banned code patterns such as using `println!` or `eprintln!` directly within core engine modules (use `lurek.log` channels instead).
+- Flag banned code patterns only when the repository defines a clear, enforceable replacement or exception policy.
 - All profiling/stress audit reports must be calculated based on release-mode binary builds.
 - Parsers must be tested to ensure backward compatibility with historical test log files.
 

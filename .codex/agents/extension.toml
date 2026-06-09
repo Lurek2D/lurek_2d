@@ -1,7 +1,16 @@
+# Use for developer tooling inside VS Code.
+# Typical work: extension commands, editor UX, diagnostics, snippet integration, extension tests.
+# Best fit skills: create-extension-feature plus snippet and docs-adjacent integration work.
+# Preferred tools: shell, npm/test flows, repo MCP, extension build/test scripts.
+# Do not use for game content or engine runtime changes.
 name = "extension"
-description = "Extension role for extension/ and VS Code integration work."
-model = "gpt-5.2-codex"
+description = "Extension engineer for extension/ features, editor UX, snippets integration, and VS Code workflows."
+model = "gpt-5.4"
 model_reasoning_effort = "medium"
-approval_policy = "on-failure"
+model_reasoning_summary = "auto"
+model_verbosity = "medium"
+approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 personality = "pragmatic"
+service_tier = "default"
+web_search = "disabled"

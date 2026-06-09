@@ -1,59 +1,106 @@
-# # Repo-wide defaults for Codex in this workspace.
-# model = "gpt-5.2-codex"
-# model_reasoning_effort = "medium"
-# approval_policy = "on-failure"
-# sandbox_mode = "workspace-write"
-# personality = "pragmatic"
-# web_search = "cached"
+# Repo-wide defaults for Codex in this workspace.
+# Keep these generic. Narrow role behavior should live in per-agent TOML files.
+model_reasoning_effort = "medium"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
+web_search = "cached"
 
 [features]
-fast_mode = true
-hooks = true
-memories = true
-multi_agent = true
+fast_mode = false
+hooks = false
+memories = false
+multi_agent = false
 personality = true
-shell_snapshot = true
+shell_snapshot = false
 shell_tool = true
 undo = true
-child_agents_md = true
+child_agents_md = false
 
 [mcp_servers.lurek_tools]
-command = "C:\\Users\\tombl\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"
-args = ["C:\\Users\\tombl\\Documents\\lurek_2D\\tools\\mcp\\lurek_mcp_server.py"]
-cwd = "C:\\Users\\tombl\\Documents\\lurek_2D"
+command = "C:\\venv_portable\\Scripts\\python.exe"
+args = ["tools\\mcp\\lurek_mcp_server.py"]
+cwd = "."
 startup_timeout_sec = 120
 
 [mcp_servers.lurek_tools.env]
 PYTHONUTF8 = "1"
 
+# Agent registry.
+# Rule of thumb for users:
+# - choose the narrowest agent that owns the target folder and artifact type
+# - do not use manager as a default coder; use it to scope, split, or route work
+# - skills and tools are not hard-bound per role in this TOML layer; use comments below as intended operating guidance
+
+# Subagent guardrails.
+# Keep nesting shallow so specialized roles stay explicit and predictable.
+[agents]
+max_depth = 1
+max_threads = 4
+job_max_runtime_seconds = 1800
+
+# Engine internals in Rust: runtime systems, rendering, audio, physics, shader plumbing.
 [agents.developer]
-description = "Developer role for Rust engine work in src/ and src/lua_api/."
+description = "Rust engine implementer for src/ internals and engine-side feature delivery."
 config_file = "agents/developer.toml"
+nickname_candidates = ["engine", "runtime", "rust-dev"]
 
+# Rust<->Lua API surface: wrappers, parity, ergonomics, thin bindings, public scripting surface.
+[agents.lua_designer]
+description = "Lua API designer for src/lua_api/ bindings, wrapper thinness, and public scripting ergonomics."
+config_file = "agents/lua_designer.toml"
+nickname_candidates = ["lua-api", "binding", "surface"]
+
+# Test-only work: unit, integration, stress, evidence, harnesses, regression reproduction.
 [agents.tester]
-description = "Tester role for work in tests/ and harness registration."
+description = "Test engineer for tests/, coverage closure, regression repros, and validation artifacts."
 config_file = "agents/tester.toml"
+nickname_candidates = ["tests", "coverage", "regression"]
 
+# Read-only audit and verdicts. Prefer this role for reviews, risk scans, and performance checks.
 [agents.reviewer]
-description = "Read-only reviewer role for repo-wide validation, opinions, and verification."
+description = "Read-only verifier for repo-wide reviews, audits, performance checks, and quality opinions."
 config_file = "agents/reviewer.toml"
+nickname_candidates = ["review", "audit", "verifier"]
 
+# Architectural contracts and subsystem boundaries, not day-to-day feature coding.
 [agents.architect]
-description = "Architect role for docs, especially docs/architecture/ and other markdown contracts."
+description = "Architecture steward for docs/architecture/, module boundaries, and system-level design contracts."
 config_file = "agents/architect.toml"
+nickname_candidates = ["architecture", "boundaries", "design"]
 
+# Docs and generated docs surfaces: specs, docstrings, pages, snippets, API-facing written material.
+[agents.doc_writer]
+description = "Documentation writer for docs/, pages/, specs, docstrings, snippets, and generated docs content."
+config_file = "agents/doc_writer.toml"
+nickname_candidates = ["docs", "specs", "writer"]
+
+# Lua-side content and playable artifacts, not engine internals.
 [agents.content]
-description = "Content role for content/ and library/ Lua-based assets and examples."
+description = "Content maker for content/ and library/ gameplay scripts, demos, examples, and layouts."
 config_file = "agents/content.toml"
+nickname_candidates = ["content", "gameplay", "examples"]
 
+# VS Code extension and editor workflow only.
 [agents.extension]
-description = "Extension role for extension/ and VS Code integration work."
+description = "Extension engineer for extension/ features, editor UX, snippets integration, and VS Code workflows."
 config_file = "agents/extension.toml"
+nickname_candidates = ["vscode", "extension", "editor"]
 
+# Build, tooling, packaging, CI, scripts, and repository automation.
 [agents.builder]
-description = "Builder role for tools/ scripts, packaging, CI, and release workflow work."
+description = "Build engineer for tools/, CI, packaging, automation, and developer-facing CLI scripts."
 config_file = "agents/builder.toml"
+nickname_candidates = ["build", "tools", "ci"]
 
+# Codex-local configuration and retrieval layer, not product code.
+[agents.cag_architect]
+description = "CAG architect for .codex/, agent and skill definitions, prompts, RAG inputs, and retrieval tuning."
+config_file = "agents/cag_architect.toml"
+nickname_candidates = ["cag", "rag", "codex-layer"]
+
+# Planning, decomposition, routing, and cross-role coordination.
 [agents.manager]
-description = "Manager role for long-running multi-step tasks, orchestration, and handoffs."
+description = "Planning manager for task scoping, execution sequencing, role selection, and cross-domain orchestration."
 config_file = "agents/manager.toml"
+nickname_candidates = ["planner", "router", "manager"]

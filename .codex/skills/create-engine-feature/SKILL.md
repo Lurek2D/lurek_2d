@@ -47,6 +47,6 @@ description: "End to end workflow to new new feature to engine of lurek in rust,
 ## References
 - `contracts: src/AGENTS.md, src/lua_api/AGENTS.md, tests/AGENTS.md, content/examples/AGENTS.md, docs/specs/AGENTS.md`
 - `tools: cargo test, python tools/validate/cag_validate.py, cargo clippy`
-- `agent: Manager`
+- `agent: manager`
 
 

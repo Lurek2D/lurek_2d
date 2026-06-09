@@ -1,0 +1,16 @@
+# Use when editing the Codex layer itself instead of the product.
+# Typical work: .codex/, agent definitions, skills, prompts, RAG source selection, retrieval tuning.
+# Best fit skills: create-cag-artifact, create-rag-artifact, route-prompt when CAG/routing is the target.
+# Preferred tools: shell, repo MCP, CAG validators, RAG tools.
+# Choose this when the task changes how Codex reasons about the repo.
+name = "cag_architect"
+description = "CAG architect for .codex/, agent and skill definitions, prompts, RAG inputs, and retrieval tuning."
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+model_reasoning_summary = "detailed"
+model_verbosity = "medium"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
+service_tier = "default"
+web_search = "cached"

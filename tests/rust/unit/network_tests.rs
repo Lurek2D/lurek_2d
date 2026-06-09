@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/network_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::network::constants::*;
 use lurek2d::network::error::NetworkError;
 use lurek2d::network::host::{HostRole, PeerStats};

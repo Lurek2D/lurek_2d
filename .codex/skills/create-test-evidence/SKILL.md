@@ -44,6 +44,6 @@ description: "Create or update lua tests with evidences/artifacts for a specific
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/games/AGENTS.md`
 - `tools: python tools/audit/lua_evidence_golden_contract_audit.py, python tools/audit/golden_test.py`
-- `agent: Tester`
+- `agent: tester`
 
 

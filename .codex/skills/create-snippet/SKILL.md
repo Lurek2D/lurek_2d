@@ -14,7 +14,7 @@ description: "Create or update new snippet code for specific module with API."
 - Agent must collect the most idiomatic API usage patterns
 
 ## Profile hint
-- `developer`
+- `doc_writer`
 
 ## Read these contracts
 - `content/snippets/AGENTS.md`
@@ -43,6 +43,6 @@ description: "Create or update new snippet code for specific module with API."
 ## References
 - `contracts: content/snippets/AGENTS.md, docs/AGENTS.md`
 - `tools: python tools/audit/snippet_coverage.py, python tools/validate/validate_snippets.py, python tools/snippets/gen_vscode_snippets.py`
-- `agent: Doc-Writer`
+- `agent: doc_writer`
 
 

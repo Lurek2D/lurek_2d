@@ -79,6 +79,16 @@ describe("lurek.agent module", function()
     it("LAgent:addSkill appends a named skill", function()
         local agent = lurek.agent.new({})
         agent:addSkill("math", "You are good at mathematics.")
+        agent:addSkill("logic", "You are good at logic.")
+
+        expect_equal(2, agent:skillCount())
+        expect_true(agent:hasSkill("math"))
+        expect_true(agent:hasSkill("logic"))
+
+        local skills = agent:listSkills()
+        expect_type("table", skills)
+        expect_equal("math", skills[1])
+        expect_equal("logic", skills[2])
     end)
 
     -- @covers lurek.agent

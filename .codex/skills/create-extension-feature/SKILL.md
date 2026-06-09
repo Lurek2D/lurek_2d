@@ -42,6 +42,6 @@ description: "End to end workflow to add new feature to extension for lurek, MS 
 ## References
 - `contracts: extension/AGENTS.md, extension/vscode/AGENTS.md`
 - `tools: npm run compile, npm run test`
-- `agent: Extension-Engineer`
+- `agent: extension`
 
 

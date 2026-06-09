@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/tilemap_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::color::Color;
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::tilemap::ldtk::load_ldtk;

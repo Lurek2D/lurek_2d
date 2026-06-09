@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/save_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::save::*;
 use std::collections::HashMap;
 

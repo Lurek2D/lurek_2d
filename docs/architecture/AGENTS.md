@@ -16,14 +16,16 @@ Covers work under `docs/architecture/`.
 ## Rules
 - Always identify architectural options, comparing trade-offs, residual risks, and rollback strategies before large refactors.
 - Strictly flag cyclic module dependencies, state leaks, and missing API fallback paths.
-- Ensure all architecture modifications preserve constraints from the main system prompt (e.g., desktop-only, wgpu 22, LuaJIT main).
+- Ensure architecture docs stay aligned with the canonical project constraints defined in the root `AGENTS.md`, active specs, and current engine implementation.
 - Keep high-level architecture documents in this folder; do not duplicate low-level module implementation specifications.
+- When a durable constraint changes, update the canonical spec or architecture document first, then adjust related summaries here only if needed.
 
 ## Workflow
 - Run `python tools/audit/cag_link_check.py --strict` to verify internal document link integrity.
 - Review current specs in `docs/specs/` before drafting any design change proposal.
 
 ## References
+- `AGENTS.md`
 - docs/specs/
 - src/
 - docs/architecture/developer-ecosystem.md

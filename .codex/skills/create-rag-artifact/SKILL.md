@@ -14,7 +14,7 @@ description: "Create or update the RAG corpus, change retrieval sources or ranki
 - Agent must collect RAG tooling configuration
 
 ## Profile hint
-- `manager`
+- `cag_architect`
 
 ## Read these contracts
 - `.codex/AGENTS.md`
@@ -44,6 +44,6 @@ description: "Create or update the RAG corpus, change retrieval sources or ranki
 ## References
 - `contracts: .codex/AGENTS.md, tools/AGENTS.md, tools/rag/AGENTS.md`
 - `tools: python tools/rag/build_index.py, python tools/rag/query.py, tools/rag/rag.toml`
-- `agent: CAG-Architect`
+- `agent: cag_architect`
 
 

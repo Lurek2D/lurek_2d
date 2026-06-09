@@ -44,6 +44,6 @@ description: "Create or update shader code which is used by GPU to render things
 ## References
 - `contracts: src/AGENTS.md, src/render/AGENTS.md`
 - `tools: cargo check, cargo test`
-- `agent: Developer`
+- `agent: developer`
 
 

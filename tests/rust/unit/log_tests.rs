@@ -1,21 +1,6 @@
 //! File: tests/rust/unit/log_tests.rs
 
-mod log_mod_tests {
-    use lurek2d::log::{get_level, set_level};
-
-    #[test]
-    fn set_level_accepts_warning_alias() {
-        set_level("warning");
-        assert_eq!(get_level(), "warn");
-    }
-
-    #[test]
-    fn set_level_rejects_unknown_and_keeps_previous() {
-        set_level("info");
-        set_level("garbage");
-        assert_eq!(get_level(), "info");
-    }
-}
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 mod sinks_tests {
     use lurek2d::log::sinks::SinkLevel;

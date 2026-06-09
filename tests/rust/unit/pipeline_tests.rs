@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/pipeline_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::pipeline::dag::Pipeline;
 use lurek2d::pipeline::scheduler::PipelineScheduler;
 use lurek2d::pipeline::step::{PipelineStep, StepStatus};

@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/docs_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use std::fs;
 
 use lurek2d::docs::{

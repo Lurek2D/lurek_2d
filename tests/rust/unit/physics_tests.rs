@@ -1,5 +1,7 @@
 //! File: tests/rust/unit/physics_tests.rs
 
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+
 use lurek2d::physics::zone::ZoneTracker;
 use lurek2d::physics::*;
 use std::collections::HashSet;

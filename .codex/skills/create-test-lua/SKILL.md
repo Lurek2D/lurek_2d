@@ -47,6 +47,6 @@ description: "Create or update lua test for specific module and check test cover
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
 - `tools: python tools/validate/cag_validate.py, python tools/audit/test_coverage.py`
-- `agent: Tester`
+- `agent: tester`
 
 

@@ -1,0 +1,16 @@
+# Use when the main deliverable is documentation or generated docs content.
+# Typical work: specs, docstrings, docs pages, docs templates, snippets, API-facing explanations.
+# Best fit skills: create-pages, create-snippet, review-docstrings, review-specs.
+# Preferred tools: docs generators, link checks, shell, repo MCP.
+# Do not use for architecture decisions or engine implementation unless the docs change depends on them.
+name = "doc_writer"
+description = "Documentation writer for docs/, pages/, specs, docstrings, snippets, and generated docs content."
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+model_reasoning_summary = "auto"
+model_verbosity = "high"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
+service_tier = "default"
+web_search = "cached"
