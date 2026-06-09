@@ -7,7 +7,9 @@ use crate::charts::ChartDataFrameOptions;
 use crate::color::Color;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
-use crate::ui::extras::{AccordionSection, TableColumn, TableDataFrameOptions, Toast};
+use crate::ui::extras::{
+    AccordionSection, DialogAction, DialogActionRole, TableColumn, TableDataFrameOptions, Toast,
+};
 use crate::ui::theme::{Theme, ThemeToken, WidgetStyle};
 use crate::ui::widget::{EasingFunction, MouseFilter, WidgetState, WidgetType};
 use mlua::prelude::*;
@@ -25,6 +27,7 @@ struct GuiCallbacks {
     on_change: HashMap<usize, LuaRegistryKey>,
     on_close: HashMap<usize, LuaRegistryKey>,
     on_select: HashMap<usize, LuaRegistryKey>,
+    dialog_action: HashMap<(usize, usize), LuaRegistryKey>,
     on_draw: HashMap<usize, LuaRegistryKey>,
 }
 
@@ -44,6 +47,26 @@ fn render_to_image_string_arg(name: &str, value: LuaValue) -> LuaResult<String> 
         _ => Err(LuaError::RuntimeError(format!(
             "lurek.ui.renderToImage: {name} must be a string"
         ))),
+    }
+}
+
+fn dialog_action_label_closes(label: &str) -> bool {
+    matches!(
+        label.trim().to_ascii_lowercase().as_str(),
+        "ok" | "close" | "cancel"
+    )
+}
+
+fn dialog_action_index_from_lua(
+    method_name: &str,
+    index: Option<usize>,
+) -> LuaResult<Option<usize>> {
+    match index {
+        Some(0) => Err(LuaError::RuntimeError(format!(
+            "lurek.ui.{method_name}: action indices are 1-based"
+        ))),
+        Some(value) => Ok(Some(value - 1)),
+        None => Ok(None),
     }
 }
 
@@ -4477,10 +4500,6 @@ fn add_dialog_methods(
     cbs: &Rc<RefCell<GuiCallbacks>>,
 ) -> LuaResult<()> {
     let c = ctx.clone();
-    // -- getTitle --
-    /// Returns the title text of this dialog.
-    /// @param | self | LDialog | The widget instance.
-    /// @return | string | The dialog title.
     t.set(
         "getTitle",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4492,10 +4511,6 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
-    // -- setTitle --
-    /// Sets the title text of this dialog widget.
-    /// @param | self | LDialog | The widget instance.
-    /// @param | title | string | The dialog title.
     t.set(
         "setTitle",
         lua.create_function(move |_, (_self, title): (LuaValue, String)| {
@@ -4507,25 +4522,14 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
-    // -- isModal --
-    /// Returns whether this dialog is modal (blocks interaction with other widgets).
-    /// @param | self | LDialog | The widget instance.
-    /// @return | boolean | True if modal.
     t.set(
         "isModal",
         lua.create_function(move |_, _self: LuaValue| {
             let g = c.borrow();
-            Ok(match g.widgets.get(idx) {
-                Some(WidgetKind::Dialog(d)) => d.modal,
-                _ => true,
-            })
+            Ok(matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.modal))
         })?,
     )?;
     let c = ctx.clone();
-    // -- setModal --
-    /// Sets whether this dialog widget is modal.
-    /// @param | self | LDialog | The widget instance.
-    /// @param | v | boolean | True to make modal.
     t.set(
         "setModal",
         lua.create_function(move |_, (_self, v): (LuaValue, bool)| {
@@ -4537,57 +4541,30 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
-    // -- isOpen --
-    /// Returns whether this dialog is currently open and visible.
-    /// @param | self | LDialog | The widget instance.
-    /// @return | boolean | True if open.
     t.set(
         "isOpen",
         lua.create_function(move |_, _self: LuaValue| {
             let g = c.borrow();
-            Ok(match g.widgets.get(idx) {
-                Some(WidgetKind::Dialog(d)) => d.open,
-                _ => false,
-            })
+            Ok(matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.open))
         })?,
     )?;
     let c = ctx.clone();
-    // -- open --
-    /// Opens this dialog, making it visible.
-    /// @param | self | LDialog | The widget instance.
     t.set(
         "open",
         lua.create_function(move |_, _self: LuaValue| {
-            let mut g = c.borrow_mut();
-            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
-                d.open = true;
-            }
+            c.borrow_mut().open_dialog_widget(idx);
             Ok(())
         })?,
     )?;
-    let c2 = ctx.clone();
-    // -- close --
-    /// Closes this dialog and fires the onClose callback if it was open.
-    /// @param | self | LDialog | The widget instance.
+    let c = ctx.clone();
     t.set(
         "close",
         lua.create_function(move |_, _self: LuaValue| {
-            let mut g = c2.borrow_mut();
-            let was_open = matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.open);
-            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
-                d.open = false;
-            }
-            if was_open {
-                g.pending_events.push(GuiEvent::Close(idx));
-            }
+            c.borrow_mut().close_dialog_widget(idx);
             Ok(())
         })?,
     )?;
     let cbs2 = cbs.clone();
-    // -- setOnClose --
-    /// Registers a callback invoked when this dialog is closed.
-    /// @param | self | LDialog | The widget instance.
-    /// @param | f | function | Callback receiving the widget index.
     t.set(
         "setOnClose",
         lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
@@ -4597,10 +4574,6 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
-    // -- setContent --
-    /// Sets the content widget for this dialog.
-    /// @param | self | LDialog | The widget instance.
-    /// @param | content_idx | integer? | The widget index to show as content, or nil to clear.
     t.set(
         "setContent",
         lua.create_function(move |_, (_self, content_idx): (LuaValue, Option<usize>)| {
@@ -4612,10 +4585,6 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
-    // -- getContent --
-    /// Returns the widget index of this dialog's content, or nil if not set.
-    /// @param | self | LDialog | The widget instance.
-    /// @return | integer | The content widget index.
     t.set(
         "getContent",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4627,25 +4596,428 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
-    // -- addButton --
-    /// Adds a footer button to this dialog and returns its 1-based index.
+    // -- setFooter --
+    /// Assigns an optional footer content root for this dialog.
     /// @param | self | LDialog | The widget instance.
-    /// @param | text | string | The button label.
-    /// @param | cb | function? | Optional click callback (reserved for future use).
-    /// @return | integer | The 1-based button index.
+    /// @param | footer_idx | integer? | Optional widget index rendered in the footer slot.
+    t.set(
+        "setFooter",
+        lua.create_function(move |_, (_self, footer_idx): (LuaValue, Option<usize>)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                d.footer_idx = footer_idx;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getFooter --
+    /// Returns the optional footer content widget index.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | integer? | Footer widget index if one is assigned.
+    t.set(
+        "getFooter",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::Dialog(d)) => d.footer_idx,
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isCloseable --
+    /// Returns whether this dialog exposes user-driven close affordances.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | boolean | True if the dialog can be dismissed by the user.
+    t.set(
+        "isCloseable",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.closeable))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setCloseable --
+    /// Sets whether this dialog can be dismissed by close affordances or Escape fallback.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | value | boolean | True to allow user dismissal.
+    t.set(
+        "setCloseable",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                d.closeable = value;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isDraggable --
+    /// Returns whether this dialog can be dragged by its title bar.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | boolean | True if title-bar dragging is enabled.
+    t.set(
+        "isDraggable",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.draggable))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setDraggable --
+    /// Enables or disables title-bar dragging for this dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | value | boolean | True to allow dragging.
+    t.set(
+        "setDraggable",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                d.draggable = value;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isResizable --
+    /// Returns whether this dialog can be resized from its edges or corners.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | boolean | True if resize handles are active.
+    t.set(
+        "isResizable",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.resizable))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setResizable --
+    /// Enables or disables edge and corner resizing for this dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | value | boolean | True to allow resizing.
+    t.set(
+        "setResizable",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                d.resizable = value;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setMinSize --
+    /// Sets the minimum popup size for this dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | width | number | Minimum width in pixels.
+    /// @param | height | number | Minimum height in pixels.
+    t.set(
+        "setMinSize",
+        lua.create_function(move |_, (_self, width, height): (LuaValue, f32, f32)| {
+            let mut g = c.borrow_mut();
+            if let Some(dialog) = g.widgets.get_mut(idx) {
+                let base = dialog.base_mut();
+                base.min_width = width.max(0.0);
+                base.min_height = height.max(0.0);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getMinSize --
+    /// Returns the minimum popup size for this dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | number, number | Minimum width and height in pixels.
+    t.set(
+        "getMinSize",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(dialog) => (dialog.base().min_width, dialog.base().min_height),
+                None => (0.0, 0.0),
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setMaxSize --
+    /// Sets optional maximum popup dimensions for this dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | width | number? | Maximum width in pixels, or nil for no horizontal cap.
+    /// @param | height | number? | Maximum height in pixels, or nil for no vertical cap.
+    t.set(
+        "setMaxSize",
+        lua.create_function(
+            move |_, (_self, width, height): (LuaValue, Option<f32>, Option<f32>)| {
+                let mut g = c.borrow_mut();
+                if let Some(dialog) = g.widgets.get_mut(idx) {
+                    let base = dialog.base_mut();
+                    base.max_width = width
+                        .map(|value| value.max(base.min_width))
+                        .unwrap_or(f32::INFINITY);
+                    base.max_height = height
+                        .map(|value| value.max(base.min_height))
+                        .unwrap_or(f32::INFINITY);
+                }
+                Ok(())
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    // -- getMaxSize --
+    /// Returns the optional maximum popup dimensions for this dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | number?, number? | Maximum width and height, or nil when unbounded.
+    t.set(
+        "getMaxSize",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(dialog) => (
+                    dialog.base().max_width.is_finite().then_some(dialog.base().max_width),
+                    dialog.base().max_height.is_finite().then_some(dialog.base().max_height),
+                ),
+                None => (None, None),
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setDismissOnOutsideClick --
+    /// Controls whether clicking outside a non-modal dialog closes it.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | value | boolean | True to dismiss on outside click for non-modal dialogs.
+    t.set(
+        "setDismissOnOutsideClick",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                d.dismiss_on_outside_click = value;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getDismissOnOutsideClick --
+    /// Returns whether outside clicks dismiss this non-modal dialog.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | boolean | True if outside dismissal is enabled.
+    t.set(
+        "getDismissOnOutsideClick",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(matches!(
+                g.widgets.get(idx),
+                Some(WidgetKind::Dialog(d)) if d.dismiss_on_outside_click
+            ))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setCenterOnOpen --
+    /// Controls whether opening this dialog recenters it in the viewport.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | value | boolean | True to center the dialog each time it opens from closed state.
+    t.set(
+        "setCenterOnOpen",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
+                d.center_on_open = value;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getCenterOnOpen --
+    /// Returns whether opening this dialog recenters it in the viewport.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | boolean | True if the dialog recenters when opened.
+    t.set(
+        "getCenterOnOpen",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(matches!(
+                g.widgets.get(idx),
+                Some(WidgetKind::Dialog(d)) if d.center_on_open
+            ))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- centerInViewport --
+    /// Repositions this dialog to the center of the active viewport immediately.
+    /// @param | self | LDialog | The widget instance.
+    t.set(
+        "centerInViewport",
+        lua.create_function(move |_, _self: LuaValue| {
+            c.borrow_mut().center_dialog_widget(idx);
+            Ok(())
+        })?,
+    )?;
+    let c_add_action = ctx.clone();
+    let cbs_add_action = cbs.clone();
+    // -- addAction --
+    /// Adds a footer action button and returns its 1-based index.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | text | string | Visible button label.
+    /// @param | cb | function? | Optional callback fired when the action activates.
+    /// @param | role | string? | Optional semantic role: "custom", "default", or "cancel".
+    /// @param | close_on_activate | boolean? | Optional override for auto-close behavior.
+    /// @return | integer | The new 1-based action index.
+    t.set(
+        "addAction",
+        lua.create_function(
+            move |lua,
+                  (_self, text, cb, role, close_on_activate): (
+                LuaValue,
+                String,
+                Option<LuaFunction>,
+                Option<String>,
+                Option<bool>,
+            )| {
+                let callback_key = match cb {
+                    Some(callback) => Some(lua.create_registry_value(callback)?),
+                    None => None,
+                };
+                let mut g = c_add_action.borrow_mut();
+                let Some(WidgetKind::Dialog(dialog)) = g.widgets.get_mut(idx) else {
+                    return Ok(0usize);
+                };
+                let role = match role {
+                    Some(value) => DialogActionRole::parse_str(&value.to_ascii_lowercase())
+                        .ok_or_else(|| {
+                            LuaError::RuntimeError(format!(
+                                "lurek.ui.addAction: unsupported dialog role '{value}'"
+                            ))
+                        })?,
+                    None => DialogActionRole::Custom,
+                };
+                let close_on_activate =
+                    close_on_activate.unwrap_or(matches!(role, DialogActionRole::Default | DialogActionRole::Cancel));
+                dialog
+                    .actions
+                    .push(DialogAction::new(text, role, close_on_activate));
+                let action_idx = dialog.actions.len() - 1;
+                drop(g);
+                if let Some(key) = callback_key {
+                    cbs_add_action
+                        .borrow_mut()
+                        .dialog_action
+                        .insert((idx, action_idx), key);
+                }
+                Ok(action_idx + 1)
+            },
+        )?,
+    )?;
+    let c = ctx.clone();
+    let cbs_add_button = cbs.clone();
     t.set(
         "addButton",
         lua.create_function(
-            move |_, (_self, text, _cb): (LuaValue, String, Option<LuaFunction>)| {
+            move |lua, (_self, text, cb): (LuaValue, String, Option<LuaFunction>)| {
+                let callback_key = match cb {
+                    Some(callback) => Some(lua.create_registry_value(callback)?),
+                    None => None,
+                };
                 let mut g = c.borrow_mut();
-                if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
-                    d.footer_buttons.push(text);
-                    Ok(d.footer_buttons.len())
-                } else {
-                    Ok(0)
+                let Some(WidgetKind::Dialog(dialog)) = g.widgets.get_mut(idx) else {
+                    return Ok(0usize);
+                };
+                let action = DialogAction::new(
+                    text.clone(),
+                    DialogActionRole::Custom,
+                    dialog_action_label_closes(&text),
+                );
+                dialog.actions.push(action);
+                let action_idx = dialog.actions.len() - 1;
+                drop(g);
+                if let Some(key) = callback_key {
+                    cbs_add_button
+                        .borrow_mut()
+                        .dialog_action
+                        .insert((idx, action_idx), key);
                 }
+                Ok(action_idx + 1)
             },
         )?,
+    )?;
+    let c = ctx.clone();
+    // -- setDefaultAction --
+    /// Sets the action triggered by Enter, using a 1-based action index.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | index | integer? | Action index to bind, or nil to clear the default action.
+    t.set(
+        "setDefaultAction",
+        lua.create_function(move |_, (_self, index): (LuaValue, Option<usize>)| {
+            let action_idx = dialog_action_index_from_lua("setDefaultAction", index)?;
+            let mut g = c.borrow_mut();
+            let Some(WidgetKind::Dialog(dialog)) = g.widgets.get_mut(idx) else {
+                return Ok(());
+            };
+            if let Some(action_idx) = action_idx {
+                if action_idx >= dialog.actions.len() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.ui.setDefaultAction: action {} does not exist",
+                        action_idx + 1
+                    )));
+                }
+            }
+            dialog.default_action_idx = action_idx;
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getDefaultAction --
+    /// Returns the 1-based action index triggered by Enter, if any.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | integer? | The default action index.
+    t.set(
+        "getDefaultAction",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::Dialog(dialog)) => dialog.default_action_idx.map(|value| value + 1),
+                _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setCancelAction --
+    /// Sets the action triggered by Escape, using a 1-based action index.
+    /// @param | self | LDialog | The widget instance.
+    /// @param | index | integer? | Action index to bind, or nil to clear the cancel action.
+    t.set(
+        "setCancelAction",
+        lua.create_function(move |_, (_self, index): (LuaValue, Option<usize>)| {
+            let action_idx = dialog_action_index_from_lua("setCancelAction", index)?;
+            let mut g = c.borrow_mut();
+            let Some(WidgetKind::Dialog(dialog)) = g.widgets.get_mut(idx) else {
+                return Ok(());
+            };
+            if let Some(action_idx) = action_idx {
+                if action_idx >= dialog.actions.len() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.ui.setCancelAction: action {} does not exist",
+                        action_idx + 1
+                    )));
+                }
+            }
+            dialog.cancel_action_idx = action_idx;
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getCancelAction --
+    /// Returns the 1-based action index triggered by Escape, if any.
+    /// @param | self | LDialog | The widget instance.
+    /// @return | integer? | The cancel action index.
+    t.set(
+        "getCancelAction",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::Dialog(dialog)) => dialog.cancel_action_idx.map(|value| value + 1),
+                _ => None,
+            })
+        })?,
     )?;
     Ok(())
 }
@@ -6649,6 +7021,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                             let f: LuaFunction = lua.registry_value(key)?;
                             f.call::<_, ()>((widget_idx as u64, item_idx as u64))?;
                         }
+                        if let Some(key) = cbs_update.borrow().dialog_action.get(&(widget_idx, item_idx))
+                        {
+                            let f: LuaFunction = lua.registry_value(key)?;
+                            f.call::<_, ()>((widget_idx as u64, (item_idx + 1) as u64))?;
+                        }
                     }
                 }
             }
@@ -7155,6 +7532,25 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
     } else {
         None
     };
+    let actions_table: Option<mlua::Table> = table.get("actions").ok();
+    let actions = if let Some(at) = actions_table {
+        let len = at.raw_len();
+        let mut result = Vec::with_capacity(len);
+        for i in 1..=len {
+            let action_table: mlua::Table = at.get(i)?;
+            result.push(crate::ui::layout_loader::DialogActionDef {
+                text: action_table.get("text").unwrap_or_default(),
+                role: action_table.get("role").ok(),
+                close_on_activate: action_table
+                    .get("close_on_activate")
+                    .or_else(|_| action_table.get("closeOnActivate"))
+                    .ok(),
+            });
+        }
+        Some(result)
+    } else {
+        None
+    };
     Ok(crate::ui::WidgetDef {
         widget_type,
         id: table.get("id").ok(),
@@ -7176,6 +7572,23 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
         spacing: table.get("spacing").ok(),
         orientation: table.get("orientation").ok(),
         group: table.get("group").ok(),
+        modal: table.get("modal").ok(),
+        open: table.get("open").ok(),
+        closeable: table.get("closeable").ok(),
+        draggable: table.get("draggable").ok(),
+        resizable: table.get("resizable").ok(),
+        dismiss_on_outside_click: table
+            .get("dismiss_on_outside_click")
+            .or_else(|_| table.get("dismissOnOutsideClick"))
+            .ok(),
+        center_on_open: table
+            .get("center_on_open")
+            .or_else(|_| table.get("centerOnOpen"))
+            .ok(),
+        min_size: table.get("min_size").or_else(|_| table.get("minSize")).ok(),
+        max_size: table.get("max_size").or_else(|_| table.get("maxSize")).ok(),
+        slot: table.get("slot").ok(),
+        actions,
         children,
     })
 }

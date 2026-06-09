@@ -1419,25 +1419,50 @@ end
 
 --@api-stub: lurek.ui.newDialog
 do
-    local dlg = lurek.ui.newDialog("Confirm Action")
-    local content = lurek.ui.newPanel()
-    content:setSize(300, 200)
-    dlg:setModal(true)
-    dlg:setContent(content._idx)
-    dlg:addButton("OK")
-    dlg:addButton("Cancel")
-    dlg:setOnClose(function(idx)
-        print("dialog closed, widget index:", idx)
-    end)
-    dlg:open()
-    print("dialog title:", dlg:getTitle())
-    print("is modal:", dlg:isModal())
-    print("is open:", dlg:isOpen())
-    dlg:setTitle("Advanced Settings")
-    print("dialog content index:", dlg:getContent())
-    print("new title:", dlg:getTitle())
-    dlg:close()
-    print("after close, is open:", dlg:isOpen())
+    local modal = lurek.ui.newDialog("Quest Reward")
+    modal:setPosition(120, 100)
+    modal:setSize(320, 220)
+    modal:setModal(true)
+    modal:setDraggable(true)
+    modal:setResizable(true)
+    modal:setCenterOnOpen(false)
+    modal:setCloseable(false)
+
+    local body = lurek.ui.newPanel()
+    body:setSize(300, 150)
+    local preview = lurek.ui.newImageWidget()
+    preview:setSize(64, 64)
+    local copy = lurek.ui.newLabel("Choose your reward and confirm.")
+    copy:setPosition(76, 8)
+    body:addChild(preview)
+    body:addChild(copy)
+
+    local footer = lurek.ui.newLayout("horizontal")
+    footer:setSize(300, 26)
+    modal:setContent(body._idx)
+    modal:setFooter(footer._idx)
+    modal:addAction("Equip", function(_, action_idx)
+        print("default action fired:", action_idx)
+    end, "default", true)
+    modal:addAction("Back", function(_, action_idx)
+        print("cancel action fired:", action_idx)
+    end, "cancel", true)
+    modal:setDefaultAction(1)
+    modal:setCancelAction(2)
+    modal:open()
+
+    local inspector = lurek.ui.newDialog("Companion Notes")
+    inspector:setModal(false)
+    inspector:setDismissOnOutsideClick(true)
+    inspector:setDraggable(true)
+    inspector:setResizable(true)
+    inspector:setCenterOnOpen(false)
+    inspector:setPosition(470, 110)
+    inspector:setSize(260, 180)
+    inspector:addButton("Close")
+    inspector:open()
+
+    print("modal open:", modal:isOpen(), "non modal open:", inspector:isOpen())
 end
 
 --@api-stub: lurek.ui.newWindow
@@ -3609,6 +3634,136 @@ do
     local dp = lurek.ui.newDockPanel()
     local btn = lurek.ui.newButton("Side")
     print("setTitle/setOnClose ok; DockPanel created")
+end
+
+--@api-stub: LDialog:addAction
+do
+    local dlg = lurek.ui.newDialog("Actions")
+    local idx = dlg:addAction("Apply", nil, "default", true)
+    dlg:setDefaultAction(idx)
+    print("addAction/default:", idx, dlg:getDefaultAction())
+end
+
+--@api-stub: LDialog:centerInViewport
+do
+    local dlg = lurek.ui.newDialog("Center")
+    dlg:setCenterOnOpen(false)
+    dlg:centerInViewport()
+    print("centerInViewport ok")
+end
+
+--@api-stub: LDialog:getCancelAction
+do
+    local dlg = lurek.ui.newDialog("Cancel")
+    local idx = dlg:addAction("Cancel", nil, "cancel", true)
+    dlg:setCancelAction(idx)
+    print("cancel action:", dlg:getCancelAction())
+end
+
+--@api-stub: LDialog:getDefaultAction
+--@api-stub: LDialog:setDefaultAction
+do
+    local dlg = lurek.ui.newDialog("Default")
+    local idx = dlg:addAction("Confirm", nil, "default", true)
+    dlg:setDefaultAction(idx)
+    print("default action:", dlg:getDefaultAction())
+end
+
+--@api-stub: LDialog:getCenterOnOpen
+do
+    local dlg = lurek.ui.newDialog("Center Flag")
+    dlg:setCenterOnOpen(false)
+    print("centerOnOpen:", dlg:getCenterOnOpen())
+end
+
+--@api-stub: LDialog:getDismissOnOutsideClick
+do
+    local dlg = lurek.ui.newDialog("Dismiss Flag")
+    dlg:setDismissOnOutsideClick(true)
+    print("dismissOnOutsideClick:", dlg:getDismissOnOutsideClick())
+end
+
+--@api-stub: LDialog:getFooter
+do
+    local dlg = lurek.ui.newDialog("Footer")
+    local footer = lurek.ui.newPanel()
+    dlg:setFooter(footer._idx)
+    print("footer idx:", dlg:getFooter())
+end
+
+--@api-stub: LDialog:getMaxSize
+do
+    local dlg = lurek.ui.newDialog("Max")
+    dlg:setMaxSize(420, 260)
+    local w, h = dlg:getMaxSize()
+    print("max size:", w, h)
+end
+
+--@api-stub: LDialog:getMinSize
+do
+    local dlg = lurek.ui.newDialog("Min")
+    dlg:setMinSize(220, 140)
+    local w, h = dlg:getMinSize()
+    print("min size:", w, h)
+end
+
+--@api-stub: LDialog:isCloseable
+--@api-stub: LDialog:isDraggable
+--@api-stub: LDialog:isResizable
+do
+    local dlg = lurek.ui.newDialog("Flags")
+    print("flags:", dlg:isCloseable(), dlg:isDraggable(), dlg:isResizable())
+end
+
+--@api-stub: LDialog:setCloseable
+--@api-stub: LDialog:setDraggable
+--@api-stub: LDialog:setResizable
+do
+    local dlg = lurek.ui.newDialog("Config")
+    dlg:setCloseable(false)
+    dlg:setDraggable(true)
+    dlg:setResizable(true)
+    print("config ok")
+end
+
+--@api-stub: LDialog:setFooter
+do
+    local dlg = lurek.ui.newDialog("Footer Setter")
+    local footer = lurek.ui.newLayout("horizontal")
+    dlg:setFooter(footer._idx)
+    print("setFooter:", dlg:getFooter())
+end
+
+--@api-stub: LDialog:setMaxSize
+--@api-stub: LDialog:setMinSize
+do
+    local dlg = lurek.ui.newDialog("Sizing")
+    dlg:setMinSize(200, 120)
+    dlg:setMaxSize(480, 320)
+    print("size constraints set")
+end
+
+--@api-stub: LDialog:setDismissOnOutsideClick
+do
+    local dlg = lurek.ui.newDialog("Dismiss")
+    dlg:setModal(false)
+    dlg:setDismissOnOutsideClick(true)
+    print("dismiss setter ok")
+end
+
+--@api-stub: LDialog:setCenterOnOpen
+do
+    local dlg = lurek.ui.newDialog("Center Setter")
+    dlg:setCenterOnOpen(false)
+    print("setCenterOnOpen ok")
+end
+
+--@api-stub: LDialog:setCancelAction
+do
+    local dlg = lurek.ui.newDialog("Cancel Setter")
+    local idx = dlg:addAction("Abort", nil, "cancel", true)
+    dlg:setCancelAction(idx)
+    print("setCancelAction:", dlg:getCancelAction())
 end
 
 --@api-stub: LDockPanel:getSplitSize.2
@@ -6787,6 +6942,7 @@ end
 --@api-stub: LDialog:setPosition
 do
     local dialog = lurek.ui.newDialog("Confirm")
+    dialog:setCenterOnOpen(false)
     dialog:setPosition(720, 650)
     dialog:setSize(180, 100)
     dialog:setZOrder(2660)

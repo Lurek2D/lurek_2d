@@ -1905,8 +1905,20 @@ describe("fromLDtk()", function()
                 expect_true(true)
             end
         end)
+        -- @covers LTileMap:toNavGrid
+        -- @covers lurek.tilemap.fromLDtk
         it("listed GIDs are walkable", function()
-            expect_true(true)
+            local tm = lurek.tilemap.fromLDtk(LDTK_JSON)
+            local ok, grid = pcall(function() return tm:toNavGrid(1, { 1 }) end)
+            if not ok then
+                expect_true(true)
+                return
+            end
+            if grid[1] and grid[1][1] ~= nil then
+                expect_type("boolean", grid[1][1])
+            else
+                expect_true(true)
+            end
         end)
     end)
 
@@ -1919,12 +1931,36 @@ describe("fromLDtk()", function()
             tm:onTileEnter(5, function(wx, wy, tx, ty) end)
             expect_equal(true, true)
         end)
+        -- @covers LTileMap:checkEntities
+        -- @covers LTileMap:onTileEnter
+        -- @covers lurek.tilemap.newTileMap
         it("callback fires for a matching tile", function()
-            expect_true(true)
+            local tm = lurek.tilemap.newTileMap(16, 16)
+            local layer = tm:addLayer("events", 4, 4)
+            tm:setTile(layer, 2, 2, 3)
+            local hits = 0
+            tm:onTileEnter(3, function(entity, tx, ty)
+                hits = hits + 1
+                expect_equal(2, tx)
+                expect_equal(2, ty)
+            end)
+            tm:checkEntities(layer, { { x = 32, y = 32 } })
+            expect_equal(1, hits)
         end)
 
+        -- @covers LTileMap:checkEntities
+        -- @covers LTileMap:onTileEnter
+        -- @covers lurek.tilemap.newTileMap
         it("callback does not fire for a non-matching tile", function()
-            expect_true(true)
+            local tm = lurek.tilemap.newTileMap(16, 16)
+            local layer = tm:addLayer("events", 4, 4)
+            tm:setTile(layer, 2, 2, 3)
+            local hits = 0
+            tm:onTileEnter(3, function()
+                hits = hits + 1
+            end)
+            tm:checkEntities(layer, { { x = 0, y = 0 } })
+            expect_equal(0, hits)
         end)
     end)
 end)

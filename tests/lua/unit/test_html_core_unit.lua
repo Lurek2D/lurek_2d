@@ -168,6 +168,7 @@ describe("HtmlDocument content API", function()
         doc:relayout()
         expect_false(doc:isDirty(), "isDirty must be false after relayout")
     end)
+    -- @covers LHtmlDocument:update
     it("update(dt) does not error", function()
         local doc = make_doc()
         local ok, err = pcall(function() doc:update(1/60) end)
@@ -274,6 +275,7 @@ describe("HtmlDocument event and input API", function()
         return doc
     end
 
+    -- @covers LHtmlDocument:on
     it("on() returns a non-nil handle", function()
         local doc = make_doc()
         local handle = doc:on("click", function() end)
@@ -475,6 +477,7 @@ describe("HtmlElement DOM manipulation API", function()
         expect_type("table", results,
             "element:queryAll must return a table")
     end)
+    -- @covers LHtmlElement:on
     it("element:on returns a handle", function()
         local el = make_el()
         local h = el:on("click", function() end)

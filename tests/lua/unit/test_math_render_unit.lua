@@ -15,61 +15,89 @@ describe("math for graphics transformations", function()
         expect_near(1, sin_a, 0.001, "sin(90)")
     end)
 
+    -- @covers lurek.compute.affine2d
+    -- @covers lurek.compute.fromTable
+    -- @covers LArray:get
+    -- @covers LArray:reshape
+    -- @covers LArray:transformPoints
     it("scale + translate point", function()
-        -- Apply scale then translate
         local x, y = 10, 20
         local sx, sy = 2, 3
         local tx, ty = 100, 200
 
-        local result_x = x * sx + tx
-        local result_y = y * sy + ty
+        local m = lurek.compute.affine2d(tx, ty, 0, sx, sy)
+        local pts = lurek.compute.fromTable({ x, y }, nil, "float64"):reshape({ 1, 2 })
+        local out = m:transformPoints(pts)
 
-        expect_near(120, result_x, 0.001, "scaled + translated x")
-        expect_near(260, result_y, 0.001, "scaled + translated y")
+        expect_near(120, out:get(1, 1), 0.001, "scaled + translated x")
+        expect_near(260, out:get(1, 2), 0.001, "scaled + translated y")
     end)
 
+    -- @covers lurek.compute.affine2d
+    -- @covers lurek.compute.fromTable
+    -- @covers LArray:get
+    -- @covers LArray:reshape
+    -- @covers LArray:transformPoints
     it("screen to world coordinates", function()
-        -- Camera at (100, 200), screen point at (400, 300), zoom 2x
         local cam_x, cam_y = 100, 200
         local screen_x, screen_y = 400, 300
         local zoom = 2.0
         local screen_w, screen_h = 800, 600
 
-        local world_x = cam_x + (screen_x - screen_w / 2) / zoom
-        local world_y = cam_y + (screen_y - screen_h / 2) / zoom
+        local m = lurek.compute.affine2d(
+            cam_x - screen_w / (2 * zoom),
+            cam_y - screen_h / (2 * zoom),
+            0,
+            1 / zoom,
+            1 / zoom
+        )
+        local pts = lurek.compute.fromTable({ screen_x, screen_y }, nil, "float64"):reshape({ 1, 2 })
+        local out = m:transformPoints(pts)
 
-        expect_near(100, world_x, 0.001, "world x")
-        expect_near(200, world_y, 0.001, "world y at center")
+        expect_near(100, out:get(1, 1), 0.001, "world x")
+        expect_near(200, out:get(1, 2), 0.001, "world y at center")
     end)
 
+    -- @covers lurek.compute.affine2d
+    -- @covers lurek.compute.fromTable
+    -- @covers LArray:get
+    -- @covers LArray:reshape
+    -- @covers LArray:transformPoints
     it("world to screen coordinates", function()
         local cam_x, cam_y = 100, 200
         local world_x, world_y = 100, 200
         local zoom = 2.0
         local screen_w, screen_h = 800, 600
 
-        local screen_x = (world_x - cam_x) * zoom + screen_w / 2
-        local screen_y = (world_y - cam_y) * zoom + screen_h / 2
+        local m = lurek.compute.affine2d(
+            screen_w / 2 - cam_x * zoom,
+            screen_h / 2 - cam_y * zoom,
+            0,
+            zoom,
+            zoom
+        )
+        local pts = lurek.compute.fromTable({ world_x, world_y }, nil, "float64"):reshape({ 1, 2 })
+        local out = m:transformPoints(pts)
 
-        expect_near(400, screen_x, 0.001, "screen center x")
-        expect_near(300, screen_y, 0.001, "screen center y")
+        expect_near(400, out:get(1, 1), 0.001, "screen center x")
+        expect_near(300, out:get(1, 2), 0.001, "screen center y")
     end)
 end)
 
 -- @describe math color operations
 describe("math color operations", function()
+    -- @covers lurek.color.lerp
     it("lerp between colors", function()
         local r1, g1, b1 = 1.0, 0.0, 0.0  -- red
         local r2, g2, b2 = 0.0, 0.0, 1.0  -- blue
         local t = 0.5
 
-        local r = r1 + (r2 - r1) * t
-        local g = g1 + (g2 - g1) * t
-        local b = b1 + (b2 - b1) * t
+        local c = lurek.color.lerp({ r1, g1, b1, 1.0 }, { r2, g2, b2, 1.0 }, t)
 
-        expect_near(0.5, r, 0.001, "interpolated red")
-        expect_near(0.0, g, 0.001, "interpolated green")
-        expect_near(0.5, b, 0.001, "interpolated blue")
+        expect_near(0.5, c[1], 0.001, "interpolated red")
+        expect_near(0.0, c[2], 0.001, "interpolated green")
+        expect_near(0.5, c[3], 0.001, "interpolated blue")
+        expect_near(1.0, c[4], 0.001, "interpolated alpha")
     end)
 
     -- @covers lurek.math.floor
@@ -100,9 +128,10 @@ end)
 
 -- @describe math geometry utilities
 describe("math geometry utilities", function()
+    -- @covers lurek.math.rectFromCenter
     it("point inside rectangle", function()
         local px, py = 5, 5
-        local rx, ry, rw, rh = 0, 0, 10, 10
+        local rx, ry, rw, rh = lurek.math.rectFromCenter(5, 5, 10, 10)
 
         local inside = px >= rx and px <= rx + rw and py >= ry and py <= ry + rh
         expect_true(inside, "point is inside rect")
@@ -112,14 +141,12 @@ describe("math geometry utilities", function()
         expect_false(outside, "point is outside rect")
     end)
 
+    -- @covers lurek.math.circleContainsPoint
     it("point inside circle", function()
         local px, py = 3, 4
         local cx, cy, cr = 0, 0, 6
 
-        local dist_sq = (px - cx)^2 + (py - cy)^2
-        local inside = dist_sq <= cr * cr
-
-        expect_true(inside, "point inside circle (dist=5, radius=6)")
+        expect_true(lurek.math.circleContainsPoint(cx, cy, cr, px, py), "point inside circle (dist=5, radius=6)")
     end)
 
     -- @covers lurek.math.abs

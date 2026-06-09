@@ -483,6 +483,8 @@ end)
 -- =========================================================================
 -- @describe Edge properties
 describe("Edge properties", function()
+    -- @covers LGraphEdge:getType
+    -- @covers LGraphEdge:setType
     it("getType and setType", function()
         local g, n1, n2, e = make_simple_graph()
         e:setType("pipe")
@@ -498,6 +500,8 @@ describe("Edge properties", function()
         expect_type("userdata", from)
         expect_type("userdata", to)
     end)
+    -- @covers LGraphEdge:getCapacity
+    -- @covers LGraphEdge:setCapacity
     it("getCapacity and setCapacity", function()
         local g, n1, n2, e = make_simple_graph()
         e:setCapacity(5)
@@ -1221,6 +1225,7 @@ end)
 -- =========================================================================
 -- @describe Pathfinding
 describe("Pathfinding", function()
+    -- @covers LGraph:findPath
     it("findPath returns path between connected nodes", function()
         local g, n1, n2, e = make_simple_graph()
         local path = g:findPath(n1, n2)
@@ -1265,6 +1270,7 @@ describe("Pathfinding", function()
         local path = g:findPathForItem(item, n1, n2)
         expect_not_nil(path)
     end)
+    -- @covers LGraph:getDistance
     it("getDistance returns number for connected nodes", function()
         local g, n1, n2, e = make_simple_graph()
         local dist = g:getDistance(n1, n2)
@@ -1385,6 +1391,7 @@ describe("Algorithms", function()
         local sorted = g:topologicalSort()
         expect_nil(sorted)
     end)
+    -- @covers LGraph:getComponents
     it("getComponents on single connected component", function()
         local g, n1, n2, e = make_simple_graph()
         local comps = g:getComponents()
@@ -1993,11 +2000,13 @@ describe("Type system", function()
         local n = g:addNode()
         expect_true(n:typeOf("LGraphNode"))
     end)
+    -- @covers LGraphEdge:type
     it("Edge type() returns LGraphEdge", function()
         local g, n1, n2, e = make_simple_graph()
         expect_equal("LGraphEdge", e:type())
     end)
 
+    -- @covers LGraphEdge:typeOf
     it("Edge typeOf GraphEdge", function()
         local g, n1, n2, e = make_simple_graph()
         expect_true(e:typeOf("LGraphEdge"))

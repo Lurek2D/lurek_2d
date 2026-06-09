@@ -1825,23 +1825,34 @@ describe("lurek.physics terrain cell access", function()
         terrain = lurek.physics.newTerrain(16, 16, 8, world)
     end)
 
+    -- @covers LTerrain:getCell
+    -- @covers lurek.physics.newTerrain
     it("all cells start empty", function()
         expect_false(terrain:getCell(0, 0))
         expect_false(terrain:getCell(7, 7))
         expect_false(terrain:getCell(15, 15))
     end)
 
+    -- @covers LTerrain:getCell
+    -- @covers LTerrain:setCell
+    -- @covers lurek.physics.newTerrain
     it("setCell true makes cell solid", function()
         terrain:setCell(3, 3, true)
         expect_true(terrain:getCell(3, 3))
     end)
 
+    -- @covers LTerrain:getCell
+    -- @covers LTerrain:setCell
+    -- @covers lurek.physics.newTerrain
     it("setCell false clears a solid cell", function()
         terrain:setCell(5, 5, true)
         terrain:setCell(5, 5, false)
         expect_false(terrain:getCell(5, 5))
     end)
 
+    -- @covers LTerrain:isDirty
+    -- @covers LTerrain:setCell
+    -- @covers lurek.physics.newTerrain
     it("isDirty is true after setCell", function()
         expect_false(terrain:isDirty())
         terrain:setCell(0, 0, true)
@@ -2104,6 +2115,7 @@ describe("lurek.physics zone configuration", function()
         zone = world:addZone(0, 0, 1000, 1000)
     end)
 
+    -- @covers LZone:setEnabled
     it("setEnabled false does not error", function()
         expect_no_error(function()
             zone:setEnabled(false)

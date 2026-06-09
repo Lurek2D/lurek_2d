@@ -28,8 +28,8 @@ use crate::ui::controls::{
     SpinBox, Switch, TabBar, TextInput,
 };
 use crate::ui::extras::{
-    Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
-    Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
+    Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar,
+    MenuItem, Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
 };
 use crate::ui::theme::Theme;
 use crate::ui::widget::{
@@ -49,6 +49,7 @@ const DIALOG_TITLE_HEIGHT: f32 = 28.0;
 const DIALOG_FOOTER_HEIGHT: f32 = 34.0;
 const DIALOG_FOOTER_BUTTON_WIDTH: f32 = 70.0;
 const DIALOG_FOOTER_BUTTON_GAP: f32 = 6.0;
+const POPUP_RESIZE_HANDLE_SIZE: f32 = 10.0;
 const TOOLBAR_BUTTON_GAP: f32 = 4.0;
 const COLOR_PICKER_HUE_BAR_HEIGHT: f32 = 14.0;
 const COLOR_PICKER_HUE_BAR_BOTTOM_PAD: f32 = 6.0;
@@ -235,6 +236,42 @@ impl WidgetKind {
         }
     }
 }
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum PopupSurface {
+    Window,
+    Dialog,
+}
+#[derive(Debug, Clone, Copy)]
+struct PopupResizeEdges {
+    left: bool,
+    right: bool,
+    top: bool,
+    bottom: bool,
+}
+impl PopupResizeEdges {
+    fn any(self) -> bool {
+        self.left || self.right || self.top || self.bottom
+    }
+}
+#[derive(Debug, Clone, Copy)]
+enum PointerCapture {
+    Slider(usize),
+    ScrollBar(usize),
+    PopupMove {
+        idx: usize,
+        surface: PopupSurface,
+        offset_x: f32,
+        offset_y: f32,
+    },
+    PopupResize {
+        idx: usize,
+        surface: PopupSurface,
+        edges: PopupResizeEdges,
+        start_mouse_x: f32,
+        start_mouse_y: f32,
+        start_rect: Rect,
+    },
+}
 /// Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.
 #[derive(Debug, Clone)]
 pub struct GuiContext {
@@ -264,8 +301,8 @@ pub struct GuiContext {
     pub viewport_h: f32,
     /// Widget index currently being dragged via the drag-and-drop API, if any.
     pub drag_widget: Option<usize>,
-    /// Widget index currently capturing pointer movement during a mouse drag.
-    pub captured_widget: Option<usize>,
+    /// Current pointer capture state for sliders, scroll bars, or popup drag/resize interactions.
+    captured_pointer: Option<PointerCapture>,
     /// Last known mouse position, used by wheel routing for hover-based scroll targets.
     pub last_mouse_pos: Option<(f32, f32)>,
     /// FNV hash of the last rendered widget tree; used to detect changes without full diff.
@@ -294,7 +331,7 @@ impl GuiContext {
             viewport_w: 0.0,
             viewport_h: 0.0,
             drag_widget: None,
-            captured_widget: None,
+            captured_pointer: None,
             last_mouse_pos: None,
             last_render_signature: 0,
             base_resolution: (1920.0, 1080.0),
@@ -325,6 +362,99 @@ impl GuiContext {
     pub fn drain_events(&mut self) -> Vec<GuiEvent> {
         self.pending_events.drain(..).collect()
     }
+    fn dialog_has_footer_chrome(dialog: &Dialog) -> bool {
+        dialog.footer_idx.is_some() || !dialog.actions.is_empty()
+    }
+    fn dialog_body_rect(rect: Rect, dialog: &Dialog) -> Rect {
+        let pad = 8.0;
+        let footer_h = if Self::dialog_has_footer_chrome(dialog) {
+            DIALOG_FOOTER_HEIGHT
+        } else {
+            0.0
+        };
+        let body_y = rect.y + DIALOG_TITLE_HEIGHT + pad;
+        let body_h = (rect.height - DIALOG_TITLE_HEIGHT - footer_h - pad * 2.0).max(0.0);
+        Rect::new(
+            rect.x + pad,
+            body_y,
+            (rect.width - pad * 2.0).max(0.0),
+            body_h,
+        )
+    }
+    fn dialog_footer_rect(rect: Rect) -> Rect {
+        let pad = 8.0;
+        Rect::new(
+            rect.x + pad,
+            rect.y + rect.height - DIALOG_FOOTER_HEIGHT + 4.0,
+            (rect.width - pad * 2.0).max(0.0),
+            (DIALOG_FOOTER_HEIGHT - 8.0).max(0.0),
+        )
+    }
+    fn traversal_children(&self, idx: usize) -> Vec<usize> {
+        let mut out = self
+            .widgets
+            .get(idx)
+            .and_then(|w| w.children())
+            .cloned()
+            .unwrap_or_default();
+        if let Some(WidgetKind::Dialog(dialog)) = self.widgets.get(idx) {
+            if let Some(child_idx) = dialog.content_idx {
+                if !out.contains(&child_idx) {
+                    out.push(child_idx);
+                }
+            }
+            if let Some(child_idx) = dialog.footer_idx {
+                if !out.contains(&child_idx) {
+                    out.push(child_idx);
+                }
+            }
+        }
+        out
+    }
+    fn is_descendant_of(&self, root_idx: usize, needle_idx: usize) -> bool {
+        if root_idx >= self.widgets.len() {
+            return false;
+        }
+        for child_idx in self.traversal_children(root_idx) {
+            if child_idx == needle_idx || self.is_descendant_of(child_idx, needle_idx) {
+                return true;
+            }
+        }
+        false
+    }
+    fn active_modal_dialog(&self) -> Option<usize> {
+        let mut best: Option<(usize, i32, usize)> = None;
+        for (idx, widget) in self.widgets.iter().enumerate().skip(1) {
+            let WidgetKind::Dialog(dialog) = widget else {
+                continue;
+            };
+            let base = widget.base();
+            if !(dialog.open && dialog.modal && base.visible && base.is_visible && base.enabled) {
+                continue;
+            }
+            best = Self::choose_topmost(best, idx, base.z_order);
+        }
+        best.map(|(idx, _, _)| idx)
+    }
+    fn widget_in_active_input_scope(&self, idx: usize) -> bool {
+        match self.active_modal_dialog() {
+            Some(dialog_idx) => idx == dialog_idx || self.is_descendant_of(dialog_idx, idx),
+            None => true,
+        }
+    }
+    fn effective_viewport_size(&self) -> (f32, f32) {
+        let width = if self.viewport_w > 0.0 {
+            self.viewport_w
+        } else {
+            self.base_resolution.0.max(1.0)
+        };
+        let height = if self.viewport_h > 0.0 {
+            self.viewport_h
+        } else {
+            self.base_resolution.1.max(1.0)
+        };
+        (width, height)
+    }
     /// Recursively compute and write `computed_rect` and `is_visible` for all widgets from root.
     pub fn run_layout_pass(&mut self) {
         // Phase 1: Enforce minimum sizes on widgets with zero or undersize dimensions.
@@ -340,7 +470,8 @@ impl GuiContext {
         }
 
         // Phase 2: Top-down layout pass computing absolute rects.
-        let root_rect = Rect::new(0.0, 0.0, self.viewport_w.max(0.0), self.viewport_h.max(0.0));
+        let (viewport_w, viewport_h) = self.effective_viewport_size();
+        let root_rect = Rect::new(0.0, 0.0, viewport_w, viewport_h);
         let root_visible = if let Some(root) = self.widgets.first_mut() {
             let base = root.base_mut();
             base.computed_rect = root_rect;
@@ -349,12 +480,7 @@ impl GuiContext {
         } else {
             true
         };
-        let root_children: Vec<usize> = self
-            .widgets
-            .first()
-            .and_then(|w| w.children())
-            .cloned()
-            .unwrap_or_default();
+        let root_children = self.traversal_children(0);
         for &child_idx in &root_children {
             self.layout_widget(child_idx, &root_rect, root_visible, None);
         }
@@ -543,6 +669,26 @@ impl GuiContext {
                 .find(|(i, _)| *i == child_idx)
                 .map(|(_, r)| *r);
             self.layout_widget(child_idx, &computed, visible, child_override);
+        }
+        if let Some((content_idx, footer_idx, body_rect, footer_rect)) =
+            self.widgets.get(idx).and_then(|widget| {
+                let WidgetKind::Dialog(dialog) = widget else {
+                    return None;
+                };
+                Some((
+                    dialog.content_idx,
+                    dialog.footer_idx,
+                    Self::dialog_body_rect(computed, dialog),
+                    Self::dialog_footer_rect(computed),
+                ))
+            })
+        {
+            if let Some(content_idx) = content_idx {
+                self.layout_widget(content_idx, &body_rect, visible, Some(body_rect));
+            }
+            if let Some(footer_idx) = footer_idx {
+                self.layout_widget(footer_idx, &footer_rect, visible, Some(footer_rect));
+            }
         }
     }
     /// Add a `Button` widget and return its index.
@@ -1160,6 +1306,7 @@ impl GuiContext {
     /// Move focus to `widget_idx`, updating `WidgetState` for the previous and new focused widgets.
     pub fn set_focus(&mut self, widget_idx: Option<usize>) {
         let previous_focus = self.focused_widget;
+        let widget_idx = widget_idx.filter(|idx| self.widget_in_active_input_scope(*idx));
         if let Some(prev) = self.focused_widget {
             if let Some(w) = self.widgets.get_mut(prev) {
                 let base = w.base_mut();
@@ -1203,10 +1350,16 @@ impl GuiContext {
                 if !(b.visible && b.enabled && b.focusable) {
                     return None;
                 }
+                if matches!(w, WidgetKind::Dialog(dialog) if !dialog.open) {
+                    return None;
+                }
                 if let Some(g) = group {
                     if !g.is_empty() && b.focus_group != g {
                         return None;
                     }
+                }
+                if !self.widget_in_active_input_scope(idx) {
+                    return None;
                 }
                 Some(idx)
             })
@@ -1371,11 +1524,9 @@ impl GuiContext {
         if self.widgets[start_idx].base().id == id {
             return Some(start_idx);
         }
-        if let Some(children) = self.widgets[start_idx].children() {
-            for &child_idx in children {
-                if let Some(found) = self.find_by_id(child_idx, id) {
-                    return Some(found);
-                }
+        for child_idx in self.traversal_children(start_idx) {
+            if let Some(found) = self.find_by_id(child_idx, id) {
+                return Some(found);
             }
         }
         None
@@ -1475,6 +1626,43 @@ impl GuiContext {
                 }
                 (max_w + pad_h, max_h + pad_v)
             }
+            WidgetKind::GUIWindow(window) => {
+                let mut max_w = 0.0_f32;
+                let mut max_h = 0.0_f32;
+                for &child_idx in &window.children {
+                    let (cw, ch) = self.calculate_minimum_size(child_idx, font);
+                    max_w = max_w.max(cw);
+                    max_h = max_h.max(ch);
+                }
+                (
+                    max_w + pad_h + 16.0,
+                    max_h + pad_v + WINDOW_TITLE_HEIGHT + 8.0,
+                )
+            }
+            WidgetKind::Dialog(dialog) => {
+                let mut max_w = 0.0_f32;
+                let mut max_h = 0.0_f32;
+                if let Some(content_idx) = dialog.content_idx {
+                    let (cw, ch) = self.calculate_minimum_size(content_idx, font);
+                    max_w = max_w.max(cw);
+                    max_h = max_h.max(ch);
+                }
+                if let Some(footer_idx) = dialog.footer_idx {
+                    let (cw, ch) = self.calculate_minimum_size(footer_idx, font);
+                    max_w = max_w.max(cw);
+                    max_h += ch.max(24.0);
+                } else if !dialog.actions.is_empty() {
+                    max_w = max_w.max(
+                        dialog.actions.len() as f32
+                            * (DIALOG_FOOTER_BUTTON_WIDTH + DIALOG_FOOTER_BUTTON_GAP),
+                    );
+                    max_h += DIALOG_FOOTER_HEIGHT;
+                }
+                (
+                    max_w + pad_h + 16.0,
+                    max_h + pad_v + DIALOG_TITLE_HEIGHT + 16.0,
+                )
+            }
             _ => {
                 let (dw, dh) = base.widget_type.default_size();
                 (
@@ -1514,6 +1702,9 @@ impl GuiContext {
             }
             let base = widget.base();
             if !(base.is_visible && base.enabled && base.focusable) {
+                continue;
+            }
+            if !self.widget_in_active_input_scope(idx) {
                 continue;
             }
             let rect = base.computed_rect;
@@ -1608,12 +1799,10 @@ impl GuiContext {
     fn ensure_input_layout(&mut self) {
         self.run_layout_pass();
         let mut is_child = vec![false; self.widgets.len()];
-        for widget in &self.widgets {
-            if let Some(children) = widget.children() {
-                for &child_idx in children {
-                    if child_idx < is_child.len() {
-                        is_child[child_idx] = true;
-                    }
+        for idx in 0..self.widgets.len() {
+            for child_idx in self.traversal_children(idx) {
+                if child_idx < is_child.len() {
+                    is_child[child_idx] = true;
                 }
             }
         }
@@ -1642,7 +1831,7 @@ impl GuiContext {
     }
 
     fn widget_accepts_input(&self, idx: usize) -> bool {
-        self.widgets.get(idx).is_some_and(|w| {
+        self.widget_in_active_input_scope(idx) && self.widgets.get(idx).is_some_and(|w| {
             let base = w.base();
             if let WidgetKind::Dialog(dialog) = w {
                 base.visible && base.is_visible && base.enabled && dialog.open
@@ -1681,6 +1870,9 @@ impl GuiContext {
             if !base.is_visible || !base.enabled {
                 continue;
             }
+            if !self.widget_in_active_input_scope(idx) {
+                continue;
+            }
             // Ignore: the widget itself is not an event target (children are separate entries).
             // Pass: the widget receives hover styling but is not the authoritative event target.
             // Both are skipped here; only Stop widgets claim events.
@@ -1701,6 +1893,9 @@ impl GuiContext {
         for idx in 1..self.widgets.len() {
             let base = self.widgets[idx].base();
             if !base.is_visible || !base.enabled {
+                continue;
+            }
+            if !self.widget_in_active_input_scope(idx) {
                 continue;
             }
             if base.mouse_filter == crate::ui::widget::MouseFilter::Ignore {
@@ -2317,19 +2512,7 @@ impl GuiContext {
     }
 
     fn gui_window_close_hit(&self, idx: usize, x: f32, y: f32) -> bool {
-        let Some(WidgetKind::GUIWindow(window)) = self.widgets.get(idx) else {
-            return false;
-        };
-        if !window.closeable {
-            return false;
-        }
-        let Some(rect) = self.widget_rect(idx) else {
-            return false;
-        };
-        y >= rect.y
-            && y < rect.y + WINDOW_TITLE_HEIGHT
-            && x >= rect.x + rect.width - WINDOW_TITLE_HEIGHT
-            && x <= rect.x + rect.width
+        self.popup_close_hit(idx, PopupSurface::Window, x, y)
     }
 
     fn close_gui_window(&mut self, idx: usize) -> bool {
@@ -2346,38 +2529,319 @@ impl GuiContext {
     }
 
     fn dialog_close_hit(&self, idx: usize, x: f32, y: f32) -> bool {
-        let Some(WidgetKind::Dialog(dialog)) = self.widgets.get(idx) else {
-            return false;
-        };
-        if !dialog.open {
+        self.popup_close_hit(idx, PopupSurface::Dialog, x, y)
+    }
+
+    fn popup_title_height(surface: PopupSurface) -> f32 {
+        match surface {
+            PopupSurface::Window => WINDOW_TITLE_HEIGHT,
+            PopupSurface::Dialog => DIALOG_TITLE_HEIGHT,
+        }
+    }
+
+    fn popup_is_open(&self, idx: usize, surface: PopupSurface) -> bool {
+        match (surface, self.widgets.get(idx)) {
+            (PopupSurface::Window, Some(WidgetKind::GUIWindow(window))) => window.base.visible,
+            (PopupSurface::Dialog, Some(WidgetKind::Dialog(dialog))) => dialog.open,
+            _ => false,
+        }
+    }
+
+    fn popup_is_closeable(&self, idx: usize, surface: PopupSurface) -> bool {
+        match (surface, self.widgets.get(idx)) {
+            (PopupSurface::Window, Some(WidgetKind::GUIWindow(window))) => window.closeable,
+            (PopupSurface::Dialog, Some(WidgetKind::Dialog(dialog))) => dialog.closeable,
+            _ => false,
+        }
+    }
+
+    fn popup_is_draggable(&self, idx: usize, surface: PopupSurface) -> bool {
+        match (surface, self.widgets.get(idx)) {
+            (PopupSurface::Window, Some(WidgetKind::GUIWindow(window))) => window.draggable,
+            (PopupSurface::Dialog, Some(WidgetKind::Dialog(dialog))) => dialog.draggable,
+            _ => false,
+        }
+    }
+
+    fn popup_is_resizable(&self, idx: usize, surface: PopupSurface) -> bool {
+        match (surface, self.widgets.get(idx)) {
+            (PopupSurface::Window, Some(WidgetKind::GUIWindow(window))) => window.resizable,
+            (PopupSurface::Dialog, Some(WidgetKind::Dialog(dialog))) => dialog.resizable,
+            _ => false,
+        }
+    }
+
+    fn popup_close_hit(&self, idx: usize, surface: PopupSurface, x: f32, y: f32) -> bool {
+        if !self.popup_is_open(idx, surface) || !self.popup_is_closeable(idx, surface) {
             return false;
         }
         let Some(rect) = self.widget_rect(idx) else {
             return false;
         };
+        let title_h = Self::popup_title_height(surface);
         y >= rect.y
-            && y < rect.y + DIALOG_TITLE_HEIGHT
-            && x >= rect.x + rect.width - DIALOG_TITLE_HEIGHT
+            && y < rect.y + title_h
+            && x >= rect.x + rect.width - title_h
             && x <= rect.x + rect.width
+    }
+
+    fn popup_title_bar_hit(&self, idx: usize, surface: PopupSurface, x: f32, y: f32) -> bool {
+        if !self.popup_is_open(idx, surface) || !self.popup_is_draggable(idx, surface) {
+            return false;
+        }
+        let Some(rect) = self.widget_rect(idx) else {
+            return false;
+        };
+        rect.contains(x, y)
+            && y < rect.y + Self::popup_title_height(surface)
+            && !self.popup_close_hit(idx, surface, x, y)
+    }
+
+    fn popup_resize_edges_at(
+        &self,
+        idx: usize,
+        surface: PopupSurface,
+        x: f32,
+        y: f32,
+    ) -> Option<PopupResizeEdges> {
+        if !self.popup_is_open(idx, surface) || !self.popup_is_resizable(idx, surface) {
+            return None;
+        }
+        let rect = self.widget_rect(idx)?;
+        if x < rect.x || x > rect.x + rect.width || y < rect.y || y > rect.y + rect.height {
+            return None;
+        }
+        let edges = PopupResizeEdges {
+            left: x <= rect.x + POPUP_RESIZE_HANDLE_SIZE,
+            right: x >= rect.x + rect.width - POPUP_RESIZE_HANDLE_SIZE,
+            top: y <= rect.y + POPUP_RESIZE_HANDLE_SIZE,
+            bottom: y >= rect.y + rect.height - POPUP_RESIZE_HANDLE_SIZE,
+        };
+        edges.any().then_some(edges)
+    }
+
+    fn popup_resize_limits(&self, idx: usize) -> (f32, f32, f32, f32) {
+        let base = self.widgets[idx].base();
+        let (calc_min_w, calc_min_h) = self.calculate_minimum_size(idx, None);
+        let min_w = base.min_width.max(calc_min_w).max(48.0);
+        let min_h = base.min_height.max(calc_min_h).max(32.0);
+        let max_w = if base.max_width.is_finite() {
+            base.max_width.max(min_w)
+        } else {
+            f32::INFINITY
+        };
+        let max_h = if base.max_height.is_finite() {
+            base.max_height.max(min_h)
+        } else {
+            f32::INFINITY
+        };
+        (min_w, min_h, max_w, max_h)
+    }
+
+    fn clamp_popup_rect(&self, idx: usize, rect: Rect) -> Rect {
+        let (min_w, min_h, max_w, max_h) = self.popup_resize_limits(idx);
+        let (viewport_w, viewport_h) = self.effective_viewport_size();
+        let width_floor = min_w.min(viewport_w.max(min_w.min(1.0)));
+        let height_floor = min_h.min(viewport_h.max(min_h.min(1.0)));
+        let width_ceil = max_w.min(viewport_w.max(width_floor)).max(width_floor);
+        let height_ceil = max_h.min(viewport_h.max(height_floor)).max(height_floor);
+        let width = rect.width.clamp(width_floor, width_ceil);
+        let height = rect.height.clamp(height_floor, height_ceil);
+        let x = rect.x.clamp(0.0, (viewport_w - width).max(0.0));
+        let y = rect.y.clamp(0.0, (viewport_h - height).max(0.0));
+        Rect::new(x, y, width, height)
+    }
+
+    fn apply_popup_rect(&mut self, idx: usize, rect: Rect) -> bool {
+        let next = self.clamp_popup_rect(idx, rect);
+        let base = self.widgets[idx].base_mut();
+        let changed = (base.x - next.x).abs() > f32::EPSILON
+            || (base.y - next.y).abs() > f32::EPSILON
+            || (base.width - next.width).abs() > f32::EPSILON
+            || (base.height - next.height).abs() > f32::EPSILON;
+        if changed {
+            base.x = next.x;
+            base.y = next.y;
+            base.width = next.width;
+            base.height = next.height;
+            base.computed_rect = next;
+            self.dirty = true;
+        }
+        changed
+    }
+
+    fn center_popup_in_viewport(&mut self, idx: usize) -> bool {
+        let base = self.widgets[idx].base();
+        let (viewport_w, viewport_h) = self.effective_viewport_size();
+        let rect = Rect::new(
+            (viewport_w - base.width).max(0.0) * 0.5,
+            (viewport_h - base.height).max(0.0) * 0.5,
+            base.width,
+            base.height,
+        );
+        self.apply_popup_rect(idx, rect)
+    }
+
+    fn begin_popup_move(&mut self, idx: usize, surface: PopupSurface, x: f32, y: f32) -> bool {
+        if !self.popup_title_bar_hit(idx, surface, x, y) {
+            return false;
+        }
+        let Some(rect) = self.widget_rect(idx) else {
+            return false;
+        };
+        self.captured_pointer = Some(PointerCapture::PopupMove {
+            idx,
+            surface,
+            offset_x: x - rect.x,
+            offset_y: y - rect.y,
+        });
+        true
+    }
+
+    fn begin_popup_resize(&mut self, idx: usize, surface: PopupSurface, x: f32, y: f32) -> bool {
+        let Some(edges) = self.popup_resize_edges_at(idx, surface, x, y) else {
+            return false;
+        };
+        let Some(rect) = self.widget_rect(idx) else {
+            return false;
+        };
+        self.captured_pointer = Some(PointerCapture::PopupResize {
+            idx,
+            surface,
+            edges,
+            start_mouse_x: x,
+            start_mouse_y: y,
+            start_rect: rect,
+        });
+        true
+    }
+
+    fn update_popup_move(&mut self, idx: usize, surface: PopupSurface, x: f32, y: f32) -> bool {
+        if !self.popup_is_open(idx, surface) {
+            return false;
+        }
+        let Some(PointerCapture::PopupMove {
+            offset_x,
+            offset_y,
+            ..
+        }) = self.captured_pointer
+        else {
+            return false;
+        };
+        self.apply_popup_rect(
+            idx,
+            Rect::new(x - offset_x, y - offset_y, self.widgets[idx].base().width, self.widgets[idx].base().height),
+        )
+    }
+
+    fn update_popup_resize(
+        &mut self,
+        idx: usize,
+        surface: PopupSurface,
+        edges: PopupResizeEdges,
+        start_mouse_x: f32,
+        start_mouse_y: f32,
+        start_rect: Rect,
+        x: f32,
+        y: f32,
+    ) -> bool {
+        if !self.popup_is_open(idx, surface) || !self.popup_is_resizable(idx, surface) {
+            return false;
+        }
+        let mut next = start_rect;
+        let delta_x = x - start_mouse_x;
+        let delta_y = y - start_mouse_y;
+        if edges.left {
+            next.x += delta_x;
+            next.width -= delta_x;
+        }
+        if edges.right {
+            next.width += delta_x;
+        }
+        if edges.top {
+            next.y += delta_y;
+            next.height -= delta_y;
+        }
+        if edges.bottom {
+            next.height += delta_y;
+        }
+        let (min_w, min_h, max_w, max_h) = self.popup_resize_limits(idx);
+        if next.width < min_w {
+            if edges.left {
+                next.x = start_rect.x + start_rect.width - min_w;
+            }
+            next.width = min_w;
+        }
+        if next.height < min_h {
+            if edges.top {
+                next.y = start_rect.y + start_rect.height - min_h;
+            }
+            next.height = min_h;
+        }
+        if next.width > max_w {
+            if edges.left {
+                next.x = start_rect.x + start_rect.width - max_w;
+            }
+            next.width = max_w;
+        }
+        if next.height > max_h {
+            if edges.top {
+                next.y = start_rect.y + start_rect.height - max_h;
+            }
+            next.height = max_h;
+        }
+        self.apply_popup_rect(idx, next)
+    }
+
+    fn topmost_open_dialog(&self) -> Option<usize> {
+        let mut best: Option<(usize, i32, usize)> = None;
+        for (idx, widget) in self.widgets.iter().enumerate().skip(1) {
+            let WidgetKind::Dialog(dialog) = widget else {
+                continue;
+            };
+            let base = widget.base();
+            if !(dialog.open && base.visible && base.is_visible && base.enabled) {
+                continue;
+            }
+            best = Self::choose_topmost(best, idx, base.z_order);
+        }
+        best.map(|(idx, _, _)| idx)
+    }
+
+    fn dismiss_dialog_on_outside_click(&mut self, x: f32, y: f32) -> bool {
+        let Some(idx) = self.topmost_open_dialog() else {
+            return false;
+        };
+        let Some(WidgetKind::Dialog(dialog)) = self.widgets.get(idx) else {
+            return false;
+        };
+        if dialog.modal || !dialog.dismiss_on_outside_click || !dialog.open {
+            return false;
+        }
+        let Some(rect) = self.widget_rect(idx) else {
+            return false;
+        };
+        if rect.contains(x, y) {
+            return false;
+        }
+        self.close_dialog(idx)
     }
 
     fn dialog_footer_button_at(&self, idx: usize, x: f32, y: f32) -> Option<usize> {
         let WidgetKind::Dialog(dialog) = &self.widgets[idx] else {
             return None;
         };
-        if !dialog.open || dialog.footer_buttons.is_empty() {
+        if !dialog.open || dialog.actions.is_empty() {
             return None;
         }
-        let rect = self.widget_rect(idx)?;
-        let footer_y = rect.y + rect.height - DIALOG_FOOTER_HEIGHT;
-        if y < footer_y + 4.0 || y > footer_y + 28.0 {
-            return None;
-        }
-        let total_width = dialog.footer_buttons.len() as f32
-            * (DIALOG_FOOTER_BUTTON_WIDTH + DIALOG_FOOTER_BUTTON_GAP);
-        let mut button_x = rect.x + rect.width - total_width;
-        for button_idx in 0..dialog.footer_buttons.len() {
-            let button_rect = Rect::new(button_x, footer_y + 4.0, DIALOG_FOOTER_BUTTON_WIDTH, 24.0);
+        let footer_rect = Self::dialog_footer_rect(self.widget_rect(idx)?);
+        let total_width = dialog.actions.len() as f32
+            * (DIALOG_FOOTER_BUTTON_WIDTH + DIALOG_FOOTER_BUTTON_GAP)
+            - DIALOG_FOOTER_BUTTON_GAP;
+        let mut button_x = footer_rect.x + (footer_rect.width - total_width).max(0.0);
+        for (button_idx, _action) in dialog.actions.iter().enumerate() {
+            let button_rect =
+                Rect::new(button_x, footer_rect.y, DIALOG_FOOTER_BUTTON_WIDTH, footer_rect.height.min(24.0));
             if button_rect.contains(x, y) {
                 return Some(button_idx);
             }
@@ -2394,43 +2858,95 @@ impl GuiContext {
             return false;
         }
         dialog.open = false;
+        if matches!(
+            self.captured_pointer,
+            Some(PointerCapture::PopupMove { idx: capture_idx, .. }
+                | PointerCapture::PopupResize { idx: capture_idx, .. })
+                if capture_idx == idx
+        ) {
+            self.captured_pointer = None;
+        }
+        if self
+            .focused_widget
+            .is_some_and(|focused| focused == idx || self.is_descendant_of(idx, focused))
+        {
+            self.focused_widget = None;
+        }
         self.pending_events.push(GuiEvent::Close(idx));
         self.dirty = true;
         true
     }
 
-    fn activate_dialog_footer_button(&mut self, idx: usize, button_idx: usize) -> bool {
-        let label = match self.widgets.get(idx) {
-            Some(WidgetKind::Dialog(dialog)) => dialog.footer_buttons.get(button_idx).cloned(),
+    fn activate_dialog_action(&mut self, idx: usize, button_idx: usize) -> bool {
+        let action = match self.widgets.get(idx) {
+            Some(WidgetKind::Dialog(dialog)) => dialog.actions.get(button_idx).cloned(),
             _ => None,
         };
-        let Some(label) = label else {
+        let Some(action) = action else {
             return false;
         };
         self.pending_events.push(GuiEvent::Select(idx, button_idx));
         self.pending_events.push(GuiEvent::Click(idx));
-        let normalized_label = label.to_ascii_lowercase();
-        if matches!(normalized_label.as_str(), "ok" | "close" | "cancel") {
+        if action.close_on_activate {
             self.close_dialog(idx);
         }
         true
     }
 
-    fn close_open_dialogs(&mut self) -> bool {
-        let open_dialogs: Vec<usize> = self
-            .widgets
-            .iter()
-            .enumerate()
-            .filter_map(|(widget_idx, widget)| match widget {
-                WidgetKind::Dialog(dialog) if dialog.open => Some(widget_idx),
-                _ => None,
-            })
-            .collect();
-        let mut closed = false;
-        for widget_idx in open_dialogs {
-            closed |= self.close_dialog(widget_idx);
+    fn activate_dialog_default_action(&mut self, idx: usize) -> bool {
+        let action_idx = match self.widgets.get(idx) {
+            Some(WidgetKind::Dialog(dialog)) => dialog.default_action_idx,
+            _ => None,
+        };
+        action_idx.is_some_and(|action_idx| self.activate_dialog_action(idx, action_idx))
+    }
+
+    fn activate_dialog_cancel_action(&mut self, idx: usize) -> bool {
+        let (cancel_idx, closeable) = match self.widgets.get(idx) {
+            Some(WidgetKind::Dialog(dialog)) => (dialog.cancel_action_idx, dialog.closeable),
+            _ => return false,
+        };
+        if let Some(cancel_idx) = cancel_idx {
+            return self.activate_dialog_action(idx, cancel_idx);
         }
-        closed
+        if closeable {
+            return self.close_dialog(idx);
+        }
+        false
+    }
+
+    /// Open a dialog widget, enforcing size constraints and optional centering.
+    pub(crate) fn open_dialog_widget(&mut self, idx: usize) -> bool {
+        let (was_open, center_on_open) = match self.widgets.get(idx) {
+            Some(WidgetKind::Dialog(dialog)) => (dialog.open, dialog.center_on_open),
+            _ => return false,
+        };
+        if let Some(WidgetKind::Dialog(dialog)) = self.widgets.get_mut(idx) {
+            dialog.open = true;
+        }
+        let current = {
+            let base = self.widgets[idx].base();
+            Rect::new(base.x, base.y, base.width, base.height)
+        };
+        let _ = self.apply_popup_rect(idx, current);
+        if center_on_open && !was_open {
+            let _ = self.center_popup_in_viewport(idx);
+        }
+        if self.active_modal_dialog() == Some(idx) {
+            self.set_focus(None);
+            self.focus_next();
+        }
+        true
+    }
+
+    /// Close a dialog widget and emit its close event when needed.
+    pub(crate) fn close_dialog_widget(&mut self, idx: usize) -> bool {
+        self.close_dialog(idx)
+    }
+
+    /// Center a dialog widget within the active viewport while keeping it clamped.
+    pub(crate) fn center_dialog_widget(&mut self, idx: usize) -> bool {
+        matches!(self.widgets.get(idx), Some(WidgetKind::Dialog(_))) && self.center_popup_in_viewport(idx)
     }
 
     fn toolbar_button_at(&self, idx: usize, x: f32, y: f32) -> Option<usize> {
@@ -2701,6 +3217,7 @@ impl GuiContext {
             self.dirty = true;
             return true;
         }
+        self.dismiss_dialog_on_outside_click(x, y);
         let hit = self.hit_test(x, y);
         if let Some(idx) = hit {
             let keep_combo = matches!(self.widgets[idx], WidgetKind::ComboBox(_)).then_some(idx);
@@ -2724,7 +3241,7 @@ impl GuiContext {
                     self.dirty = true;
                 }
                 WidgetType::Slider => {
-                    self.captured_widget = Some(idx);
+                    self.captured_pointer = Some(PointerCapture::Slider(idx));
                     self.set_slider_value_from_x(idx, x);
                 }
                 WidgetType::TabBar => {
@@ -2759,19 +3276,25 @@ impl GuiContext {
                     self.toggle_accordion_section_at(idx, x, y);
                 }
                 WidgetType::ScrollBar => {
-                    self.captured_widget = Some(idx);
+                    self.captured_pointer = Some(PointerCapture::ScrollBar(idx));
                     self.set_scroll_bar_position_from_point(idx, x, y);
                 }
                 WidgetType::GUIWindow => {
                     if self.gui_window_close_hit(idx, x, y) {
                         self.close_gui_window(idx);
+                    } else if self.begin_popup_resize(idx, PopupSurface::Window, x, y) {
+                    } else {
+                        self.begin_popup_move(idx, PopupSurface::Window, x, y);
                     }
                 }
                 WidgetType::Dialog => {
                     if self.dialog_close_hit(idx, x, y) {
                         self.close_dialog(idx);
                     } else if let Some(button_idx) = self.dialog_footer_button_at(idx, x, y) {
-                        self.activate_dialog_footer_button(idx, button_idx);
+                        self.activate_dialog_action(idx, button_idx);
+                    } else if self.begin_popup_resize(idx, PopupSurface::Dialog, x, y) {
+                    } else {
+                        self.begin_popup_move(idx, PopupSurface::Dialog, x, y);
                     }
                 }
                 WidgetType::Toolbar => {
@@ -2796,15 +3319,22 @@ impl GuiContext {
         self.last_mouse_pos = Some((x, y));
         self.ensure_input_layout();
         let mut consumed = false;
-        if let Some(idx) = self.captured_widget.take() {
-            if idx < self.widgets.len() {
-                let inside = self.widget_contains_point(idx, x, y);
-                self.widgets[idx].base_mut().state = if inside {
-                    WidgetState::Hovered
-                } else {
-                    WidgetState::Normal
-                };
-                consumed = true;
+        if let Some(capture) = self.captured_pointer.take() {
+            match capture {
+                PointerCapture::Slider(idx)
+                | PointerCapture::ScrollBar(idx)
+                | PointerCapture::PopupMove { idx, .. }
+                | PointerCapture::PopupResize { idx, .. } => {
+                    if idx < self.widgets.len() {
+                        let inside = self.widget_contains_point(idx, x, y);
+                        self.widgets[idx].base_mut().state = if inside {
+                            WidgetState::Hovered
+                        } else {
+                            WidgetState::Normal
+                        };
+                        consumed = true;
+                    }
+                }
             }
         }
         for i in 1..self.widgets.len() {
@@ -2846,24 +3376,41 @@ impl GuiContext {
         self.last_mouse_pos = Some((x, y));
         self.ensure_input_layout();
         let mut changed = false;
-        if let Some(idx) = self.captured_widget {
-            match self
-                .widgets
-                .get(idx)
-                .map(|widget| widget.base().widget_type)
-            {
-                Some(WidgetType::Slider) => {
+        if let Some(capture) = self.captured_pointer {
+            match capture {
+                PointerCapture::Slider(idx) => {
                     changed |= self.set_slider_value_from_x(idx, x);
                 }
-                Some(WidgetType::ScrollBar) => {
+                PointerCapture::ScrollBar(idx) => {
                     changed |= self.set_scroll_bar_position_from_point(idx, x, y);
                 }
-                _ => {}
+                PointerCapture::PopupMove { idx, surface, .. } => {
+                    changed |= self.update_popup_move(idx, surface, x, y);
+                }
+                PointerCapture::PopupResize {
+                    idx,
+                    surface,
+                    edges,
+                    start_mouse_x,
+                    start_mouse_y,
+                    start_rect,
+                } => {
+                    changed |= self.update_popup_resize(
+                        idx,
+                        surface,
+                        edges,
+                        start_mouse_x,
+                        start_mouse_y,
+                        start_rect,
+                        x,
+                        y,
+                    );
+                }
             }
         }
         for i in 1..self.widgets.len() {
             let base = self.widgets[i].base();
-            if !base.visible || !base.is_visible || !base.enabled {
+            if !base.visible || !base.is_visible || !base.enabled || !self.widget_in_active_input_scope(i) {
                 continue;
             }
             // Ignore widgets do not receive hover state changes.
@@ -2932,11 +3479,28 @@ impl GuiContext {
                 self.navigate_focused_widget(&normalized_key)
             }
             "up" | "down" => self.navigate_focused_widget(&normalized_key),
-            "return" | "enter" | "space" => self.activate_focused_widget(),
+            "return" | "enter" => {
+                if let Some(dialog_idx) = self.active_modal_dialog() {
+                    let focused_is_text_input = self.focused_widget.is_some_and(|idx| {
+                        matches!(self.widgets.get(idx), Some(WidgetKind::TextInput(_)))
+                    });
+                    let focused_is_dialog_shell = self.focused_widget == Some(dialog_idx);
+                    if focused_is_text_input || focused_is_dialog_shell || self.focused_widget.is_none() {
+                        return self.activate_dialog_default_action(dialog_idx);
+                    }
+                }
+                self.activate_focused_widget()
+            }
+            "space" => self.activate_focused_widget(),
             "escape" => {
                 let closed_combos = self.close_open_combos_except(None);
-                let closed_dialogs = self.close_open_dialogs();
-                closed_combos || closed_dialogs
+                if closed_combos {
+                    return true;
+                }
+                if let Some(dialog_idx) = self.active_modal_dialog().or_else(|| self.topmost_open_dialog()) {
+                    return self.activate_dialog_cancel_action(dialog_idx);
+                }
+                false
             }
             _ => false,
         }

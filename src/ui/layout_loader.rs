@@ -6,7 +6,14 @@
 //! It enables fast iteration on UI structure without hardcoding full trees in Lua scripts.
 
 use crate::ui::context::{GuiContext, WidgetKind};
+use crate::ui::extras::{DialogAction, DialogActionRole};
 use serde::Deserialize;
+#[derive(Debug, Clone, Deserialize, Default)]
+pub struct DialogActionDef {
+    pub text: String,
+    pub role: Option<String>,
+    pub close_on_activate: Option<bool>,
+}
 /// Flat description of a single widget produced by TOML deserialisation; children are nested inline.
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct WidgetDef {
@@ -50,6 +57,18 @@ pub struct WidgetDef {
     pub orientation: Option<String>,
     /// Radio-button group identifier.
     pub group: Option<String>,
+    /// Dialog/window modal and popup flags.
+    pub modal: Option<bool>,
+    pub open: Option<bool>,
+    pub closeable: Option<bool>,
+    pub draggable: Option<bool>,
+    pub resizable: Option<bool>,
+    pub dismiss_on_outside_click: Option<bool>,
+    pub center_on_open: Option<bool>,
+    pub min_size: Option<[f32; 2]>,
+    pub max_size: Option<[f32; 2]>,
+    pub slot: Option<String>,
+    pub actions: Option<Vec<DialogActionDef>>,
     /// Nested child widget definitions; loaded recursively by `load_layout_def`.
     pub children: Option<Vec<WidgetDef>>,
 }
@@ -67,7 +86,49 @@ pub fn load_layout_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, S
     if let Some(children) = &def.children {
         for child_def in children {
             let child_idx = load_layout_def(ctx, child_def)?;
-            ctx.add_child(idx, child_idx);
+            match child_def.slot.as_deref() {
+                Some("content") => match ctx.widgets.get_mut(idx) {
+                    Some(WidgetKind::Dialog(dialog)) => {
+                        if dialog.content_idx.replace(child_idx).is_some() {
+                            return Err(format!(
+                                "dialog \"{}\" defines more than one content slot child",
+                                def.id.as_deref().unwrap_or(&def.widget_type)
+                            ));
+                        }
+                    }
+                    _ => {
+                        return Err(format!(
+                            "slot=\"content\" is only supported for dialog children (parent: {})",
+                            def.widget_type
+                        ))
+                    }
+                },
+                Some("footer") => match ctx.widgets.get_mut(idx) {
+                    Some(WidgetKind::Dialog(dialog)) => {
+                        if dialog.footer_idx.replace(child_idx).is_some() {
+                            return Err(format!(
+                                "dialog \"{}\" defines more than one footer slot child",
+                                def.id.as_deref().unwrap_or(&def.widget_type)
+                            ));
+                        }
+                    }
+                    _ => {
+                        return Err(format!(
+                            "slot=\"footer\" is only supported for dialog children (parent: {})",
+                            def.widget_type
+                        ))
+                    }
+                },
+                Some(other) => {
+                    return Err(format!(
+                        "unsupported slot value \"{other}\" for child of {}",
+                        def.widget_type
+                    ))
+                }
+                None => {
+                    ctx.add_child(idx, child_idx);
+                }
+            }
         }
     }
     Ok(idx)
@@ -168,11 +229,12 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "custom" => ctx.add_custom_widget(),
         unknown => return Err(format!("Unknown widget type: \"{unknown}\"")),
     };
-    apply_base_props(ctx, idx, def);
+    apply_base_props(ctx, idx, def)?;
     Ok(idx)
 }
 /// Apply position, size, id, visibility, enabled, tooltip, and type-specific value props from `def` onto widget `idx`.
-fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
+fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result<(), String> {
+    let mut dialog_should_open = false;
     if let Some(w) = ctx.widgets.get_mut(idx) {
         let base = w.base_mut();
         if let Some(x) = def.x {
@@ -198,6 +260,14 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
         }
         if let Some(ref tt) = def.tooltip {
             base.tooltip = tt.clone();
+        }
+        if let Some([min_w, min_h]) = def.min_size {
+            base.min_width = min_w.max(0.0);
+            base.min_height = min_h.max(0.0);
+        }
+        if let Some([max_w, max_h]) = def.max_size {
+            base.max_width = max_w.max(base.min_width);
+            base.max_height = max_h.max(base.min_height);
         }
     }
     match ctx.widgets.get_mut(idx) {
@@ -239,6 +309,75 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
                 lay.spacing = sp;
             }
         }
+        Some(WidgetKind::GUIWindow(window)) => {
+            if let Some(value) = def.closeable {
+                window.closeable = value;
+            }
+            if let Some(value) = def.draggable {
+                window.draggable = value;
+            }
+            if let Some(value) = def.resizable {
+                window.resizable = value;
+            }
+        }
+        Some(WidgetKind::Dialog(dialog)) => {
+            if let Some(value) = def.modal {
+                dialog.modal = value;
+            }
+            if let Some(value) = def.closeable {
+                dialog.closeable = value;
+            }
+            if let Some(value) = def.draggable {
+                dialog.draggable = value;
+            }
+            if let Some(value) = def.resizable {
+                dialog.resizable = value;
+            }
+            if let Some(value) = def.dismiss_on_outside_click {
+                dialog.dismiss_on_outside_click = value;
+            }
+            if let Some(value) = def.center_on_open {
+                dialog.center_on_open = value;
+            }
+            if let Some(actions) = &def.actions {
+                dialog.actions.clear();
+                dialog.default_action_idx = None;
+                dialog.cancel_action_idx = None;
+                for action_def in actions {
+                    let normalized_role =
+                        action_def.role.as_deref().unwrap_or("custom").to_ascii_lowercase();
+                    let role = DialogActionRole::parse_str(&normalized_role).ok_or_else(|| {
+                        format!("unsupported dialog action role \"{}\"", normalized_role)
+                    })?;
+                    let close_on_activate = action_def
+                        .close_on_activate
+                        .unwrap_or(matches!(
+                            role,
+                            DialogActionRole::Default | DialogActionRole::Cancel
+                        ));
+                    dialog.actions.push(DialogAction::new(
+                        action_def.text.clone(),
+                        role,
+                        close_on_activate,
+                    ));
+                    let action_idx = dialog.actions.len() - 1;
+                    match role {
+                        DialogActionRole::Default if dialog.default_action_idx.is_none() => {
+                            dialog.default_action_idx = Some(action_idx)
+                        }
+                        DialogActionRole::Cancel if dialog.cancel_action_idx.is_none() => {
+                            dialog.cancel_action_idx = Some(action_idx)
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            dialog_should_open = def.open.unwrap_or(false);
+        }
         _ => {}
     }
+    if dialog_should_open {
+        let _ = ctx.open_dialog_widget(idx);
+    }
+    Ok(())
 }

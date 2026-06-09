@@ -1042,6 +1042,7 @@ describe("analytics", function()
         expect_near(267, df:sum("score"), 1e-5)
     end)
 
+    -- @covers LDataFrame:sum
     it("analytics by column index", function()
         local df = make_test_df()
         -- column 2 = age, sum = 90

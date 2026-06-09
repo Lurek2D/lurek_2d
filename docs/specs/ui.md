@@ -21,6 +21,8 @@
 ## Summary
 
 - The ui module provides a retained-mode interface system for HUDs, menus, overlays, and tool screens.
+- Dialogs now act as full popup windows with modal or non-modal behavior, footer slots, semantic actions, default/cancel shortcuts, and close-policy controls.
+- Popup shells support shared drag and resize behavior with viewport clamping, so dialogs and tool windows stay aligned in runtime behavior and rendering defaults.
 - It centralizes widget ownership in a context-managed arena with stable handles.
 - Stable IDs make per-frame mutation safe for large interactive trees.
 - The context owns lifecycle, layout, input routing, and event queue behavior.

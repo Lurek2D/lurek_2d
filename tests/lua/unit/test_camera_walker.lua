@@ -57,6 +57,7 @@ it("sets walker world position", function()
     assert_near(y, 150, 0.1)
 end)
 -- -- getPosition --
+-- @covers LCameraWalker:getPosition
 it("returns walker world position", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 64, y = 96 })
@@ -75,6 +76,7 @@ it("sets walker tile position (1-based)", function()
     assert_equal(2, ty)
 end)
 -- -- getTilePosition --
+-- @covers LCameraWalker:getTilePosition
 it("returns walker tile position (1-based)", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32, x = 96, y = 64 })
@@ -130,6 +132,7 @@ it("updates walker camera target", function()
     assert_near(y, 100, 0.1)
 end)
 -- -- getCamera --
+-- @covers LCameraWalker:getCamera
 it("returns associated camera", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map)

@@ -1232,12 +1232,34 @@ describe("ui remaining api sweep", function()
     -- @covers LDialog.setOnClose
     -- @covers LDialog.setContent
     -- @covers LDialog.getContent
+    -- @covers LDialog.setFooter
+    -- @covers LDialog.getFooter
     -- @covers LDialog.addButton
+    -- @covers LDialog.addAction
+    -- @covers LDialog.isCloseable
+    -- @covers LDialog.setCloseable
+    -- @covers LDialog.isDraggable
+    -- @covers LDialog.setDraggable
+    -- @covers LDialog.isResizable
+    -- @covers LDialog.setResizable
+    -- @covers LDialog.setMinSize
+    -- @covers LDialog.getMinSize
+    -- @covers LDialog.setMaxSize
+    -- @covers LDialog.getMaxSize
+    -- @covers LDialog.setDefaultAction
+    -- @covers LDialog.getDefaultAction
+    -- @covers LDialog.setCancelAction
+    -- @covers LDialog.getCancelAction
+    -- @covers LDialog.setDismissOnOutsideClick
+    -- @covers LDialog.getDismissOnOutsideClick
+    -- @covers LDialog.setCenterOnOpen
+    -- @covers LDialog.getCenterOnOpen
+    -- @covers LDialog.centerInViewport
     -- @covers lurek.ui.newDialog
     it("dialog methods are callable", function()
         local d = lurek.ui.newDialog("D")
-        ---@type unknown
-        local any_content = "body"
+        local content = lurek.ui.newPanel()
+        local footer = lurek.ui.newPanel()
         try_call(function() d:getTitle() end)
         try_call(function() d:setTitle("DD") end)
         try_call(function() d:isModal() end)
@@ -1246,9 +1268,31 @@ describe("ui remaining api sweep", function()
         try_call(function() d:open() end)
         try_call(function() d:close() end)
         try_call(function() d:setOnClose(function() end) end)
-        try_call(function() d:setContent(any_content) end)
+        try_call(function() d:setContent(content._idx) end)
         try_call(function() d:getContent() end)
+        try_call(function() d:setFooter(footer._idx) end)
+        try_call(function() d:getFooter() end)
         try_call(function() d:addButton("ok", function() end) end)
+        try_call(function() d:addAction("Apply", function() end, "default", true) end)
+        try_call(function() d:isCloseable() end)
+        try_call(function() d:setCloseable(true) end)
+        try_call(function() d:isDraggable() end)
+        try_call(function() d:setDraggable(true) end)
+        try_call(function() d:isResizable() end)
+        try_call(function() d:setResizable(true) end)
+        try_call(function() d:setMinSize(180, 90) end)
+        try_call(function() d:getMinSize() end)
+        try_call(function() d:setMaxSize(420, 260) end)
+        try_call(function() d:getMaxSize() end)
+        try_call(function() d:setDefaultAction(1) end)
+        try_call(function() d:getDefaultAction() end)
+        try_call(function() d:setCancelAction(1) end)
+        try_call(function() d:getCancelAction() end)
+        try_call(function() d:setDismissOnOutsideClick(true) end)
+        try_call(function() d:getDismissOnOutsideClick() end)
+        try_call(function() d:setCenterOnOpen(false) end)
+        try_call(function() d:getCenterOnOpen() end)
+        try_call(function() d:centerInViewport() end)
         expect_true(true)
     end)
     -- @covers LStatusBar.addSection
@@ -3082,6 +3126,20 @@ describe("lurek.ui.newDialog", function()
         local d = lurek.ui.newDialog("D")
         expect_equal(true, d:isModal())
     end)
+    -- @covers LDialog.isCloseable
+    -- @covers LDialog.isDraggable
+    -- @covers LDialog.isResizable
+    -- @covers LDialog.getDismissOnOutsideClick
+    -- @covers LDialog.getCenterOnOpen
+    -- @covers lurek.ui.newDialog
+    it("defaults popup flags for dialog chrome", function()
+        local d = lurek.ui.newDialog("Flags")
+        expect_equal(true, d:isCloseable())
+        expect_equal(false, d:isDraggable())
+        expect_equal(false, d:isResizable())
+        expect_equal(false, d:getDismissOnOutsideClick())
+        expect_equal(true, d:getCenterOnOpen())
+    end)
     -- @covers lurek.ui.newDialog
     it("defaults not open", function()
         local d = lurek.ui.newDialog("D")
@@ -3121,6 +3179,41 @@ describe("lurek.ui.newDialog", function()
         expect_equal(1, count1)
         local count2 = d:addButton("Cancel")
         expect_equal(2, count2)
+    end)
+    -- @covers LDialog.addAction
+    -- @covers LDialog.setDefaultAction
+    -- @covers LDialog.getDefaultAction
+    -- @covers LDialog.setCancelAction
+    -- @covers LDialog.getCancelAction
+    -- @covers LDialog.setFooter
+    -- @covers LDialog.getFooter
+    -- @covers LDialog.setMinSize
+    -- @covers LDialog.getMinSize
+    -- @covers LDialog.setMaxSize
+    -- @covers LDialog.getMaxSize
+    -- @covers lurek.ui.newDialog
+    it("stores action metadata footer slot and size constraints", function()
+        local d = lurek.ui.newDialog("Advanced")
+        local footer = lurek.ui.newPanel()
+        local ok_idx = d:addAction("Apply", nil, "default", true)
+        local cancel_idx = d:addAction("Back", nil, "cancel", false)
+        d:setDefaultAction(ok_idx)
+        d:setCancelAction(cancel_idx)
+        d:setFooter(footer._idx)
+        d:setMinSize(220, 140)
+        d:setMaxSize(480, 300)
+
+        local min_w, min_h = d:getMinSize()
+        local max_w, max_h = d:getMaxSize()
+        expect_equal(1, ok_idx)
+        expect_equal(2, cancel_idx)
+        expect_equal(1, d:getDefaultAction())
+        expect_equal(2, d:getCancelAction())
+        expect_equal(footer._idx, d:getFooter())
+        expect_equal(220, min_w)
+        expect_equal(140, min_h)
+        expect_equal(480, max_w)
+        expect_equal(300, max_h)
     end)
 end)
 

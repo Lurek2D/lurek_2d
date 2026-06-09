@@ -760,6 +760,8 @@ describe("lurek.agent module", function()
         expect_not_nil(memory)
         expect_equal(16, memory:capacity())
     end)
+    -- @covers LWorkingMemory:push
+    -- @covers LWorkingMemory:get
     it("LWorkingMemory stores and returns scalar values", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("hp", 100)

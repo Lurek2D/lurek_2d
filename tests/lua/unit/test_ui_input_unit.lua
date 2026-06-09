@@ -759,6 +759,7 @@ describe("input + ui integration", function()
         dialog:setPosition(520, 840)
         dialog:setSize(180, 100)
         dialog:setZOrder(1200)
+        dialog:setCenterOnOpen(false)
         dialog:addButton("Close")
         dialog:open()
 
@@ -771,6 +772,152 @@ describe("input + ui integration", function()
         lurek.ui.update(0.0)
         expect_false(dialog:isOpen())
         expect_equal(1, dialog_closed)
+    end)
+
+    -- @covers LButton.setOnClick
+    -- @covers LDialog.isOpen
+    -- @covers LDialog.open
+    -- @covers LDialog.setModal
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newButton
+    -- @covers lurek.ui.newDialog
+    -- @covers lurek.ui.update
+    it("blocks underlying clicks while a modal dialog is open", function()
+        local button = lurek.ui.newButton("Under Modal")
+        button:setPosition(760, 960)
+        button:setSize(120, 32)
+        button:setZOrder(1210)
+        button:setFocusable(false)
+
+        local clicks = 0
+        button:setOnClick(function()
+            clicks = clicks + 1
+        end)
+
+        local dialog = lurek.ui.newDialog("Blocking")
+        dialog:setModal(true)
+        dialog:setPosition(520, 900)
+        dialog:setSize(180, 110)
+        dialog:setZOrder(1220)
+        dialog:setFocusable(false)
+        dialog:open()
+
+        local pressed = lurek.ui.mousepressed(780, 976, 1)
+        local released = lurek.ui.mousereleased(780, 976, 1)
+        lurek.ui.update(0.0)
+
+        expect_false(pressed)
+        expect_false(released)
+        expect_equal(0, clicks)
+        expect_true(dialog:isOpen())
+        dialog:close()
+    end)
+
+    -- @covers LDialog.addAction
+    -- @covers LDialog.setCancelAction
+    -- @covers LDialog.setDefaultAction
+    -- @covers LDialog.isOpen
+    -- @covers LDialog.open
+    -- @covers lurek.ui.keypressed
+    -- @covers lurek.ui.newDialog
+    -- @covers lurek.ui.update
+    it("routes enter and escape through dialog default and cancel actions", function()
+        local dialog = lurek.ui.newDialog("Keyboard Dialog")
+        dialog:setPosition(720, 900)
+        dialog:setSize(180, 110)
+        dialog:setZOrder(1230)
+        dialog:setFocusable(false)
+
+        local activated_default = 0
+        local activated_cancel = 0
+        dialog:addAction("Apply", function(_, action_idx)
+            activated_default = action_idx
+        end, "default", false)
+        dialog:addAction("Dismiss", function(_, action_idx)
+            activated_cancel = action_idx
+        end, "cancel", true)
+        dialog:setDefaultAction(1)
+        dialog:setCancelAction(2)
+        dialog:open()
+
+        expect_true(lurek.ui.keypressed("enter"))
+        lurek.ui.update(0.0)
+        expect_equal(1, activated_default)
+        expect_true(dialog:isOpen())
+
+        expect_true(lurek.ui.keypressed("escape"))
+        lurek.ui.update(0.0)
+        expect_equal(2, activated_cancel)
+        expect_false(dialog:isOpen())
+    end)
+
+    -- @covers LDialog.getPosition
+    -- @covers LDialog.getSize
+    -- @covers LDialog.isOpen
+    -- @covers LDialog.open
+    -- @covers LDialog.setCenterOnOpen
+    -- @covers LDialog.setDismissOnOutsideClick
+    -- @covers LDialog.setDraggable
+    -- @covers LDialog.setModal
+    -- @covers LDialog.setResizable
+    -- @covers LGuiWindow.getSize
+    -- @covers LGuiWindow.setResizable
+    -- @covers lurek.ui.mousemoved
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newDialog
+    -- @covers lurek.ui.newWindow
+    it("supports outside dismiss dragging dialog and resizing popup shells", function()
+        local dialog = lurek.ui.newDialog("Move Me")
+        dialog:setModal(false)
+        dialog:setDismissOnOutsideClick(true)
+        dialog:setDraggable(true)
+        dialog:setResizable(true)
+        dialog:setCenterOnOpen(false)
+        dialog:setPosition(520, 720)
+        dialog:setSize(180, 110)
+        dialog:setZOrder(1240)
+        dialog:setFocusable(false)
+        dialog:open()
+
+        local start_x, start_y = dialog:getPosition()
+        lurek.ui.mousepressed(start_x + 20, start_y + 12, 1)
+        lurek.ui.mousemoved(start_x + 80, start_y + 52)
+        lurek.ui.mousereleased(start_x + 80, start_y + 52, 1)
+        lurek.ui.update(0.0)
+        local moved_x, moved_y = dialog:getPosition()
+        expect_true(moved_x > start_x)
+        expect_true(moved_y > start_y)
+
+        local start_w, start_h = dialog:getSize()
+        lurek.ui.mousepressed(moved_x + start_w - 2, moved_y + start_h - 2, 1)
+        lurek.ui.mousemoved(moved_x + start_w + 36, moved_y + start_h + 28)
+        lurek.ui.mousereleased(moved_x + start_w + 36, moved_y + start_h + 28, 1)
+        lurek.ui.update(0.0)
+        local resized_w, resized_h = dialog:getSize()
+        expect_true(resized_w > start_w)
+        expect_true(resized_h > start_h)
+
+        lurek.ui.mousepressed(moved_x - 40, moved_y - 40, 1)
+        lurek.ui.mousereleased(moved_x - 40, moved_y - 40, 1)
+        lurek.ui.update(0.0)
+        expect_false(dialog:isOpen())
+
+        local window = lurek.ui.newWindow("Resizable Window")
+        window:setPosition(740, 720)
+        window:setSize(150, 90)
+        window:setResizable(true)
+        window:setZOrder(1250)
+        window:setFocusable(false)
+        local win_w, win_h = window:getSize()
+        lurek.ui.mousepressed(740 + win_w - 2, 720 + win_h - 2, 1)
+        lurek.ui.mousemoved(740 + win_w + 30, 720 + win_h + 22)
+        lurek.ui.mousereleased(740 + win_w + 30, 720 + win_h + 22, 1)
+        lurek.ui.update(0.0)
+        local next_w, next_h = window:getSize()
+        expect_true(next_w > win_w)
+        expect_true(next_h > win_h)
     end)
     -- @covers LUiWidget:setMouseFilter
     -- @covers lurek.ui.mousepressed

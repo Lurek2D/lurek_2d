@@ -86,6 +86,7 @@ describe("lurek.math.newLootTable", function()
         T.assert_equal(a:entryCount(), 2)
     end)
 
+    -- @covers lurek.math.lootFromList
     it("lootFromList creates table with entries", function()
         local lt = math.lootFromList({
             { id = "common", weight = 10.0, meta = { tier = "c" } },
@@ -97,6 +98,7 @@ describe("lurek.math.newLootTable", function()
         T.assert_not_nil(sample.meta)
     end)
 
+    -- @covers lurek.math.lootFromToml
     it("lootFromToml loads entries from file", function()
         local path = "save/loot_table_unit_test.toml"
         local toml_src = [=[

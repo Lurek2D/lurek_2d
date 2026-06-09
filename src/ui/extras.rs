@@ -452,7 +452,60 @@ impl MenuItem {
         }
     }
 }
-/// Modal or non-modal overlay dialog with a title bar, content slot, and footer buttons.
+/// Semantic role of a dialog action button.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DialogActionRole {
+    /// Generic action with no default dialog semantics.
+    Custom,
+    /// Primary affirmative action such as "OK", "Apply", or "Yes".
+    Default,
+    /// Dismissive action such as "Cancel", "Back", or "No".
+    Cancel,
+}
+impl DialogActionRole {
+    /// Return the lowercase role name used by declarative layouts and Lua bindings.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Custom => "custom",
+            Self::Default => "default",
+            Self::Cancel => "cancel",
+        }
+    }
+    /// Parse a lowercase role name into a dialog action role.
+    pub fn parse_str(value: &str) -> Option<Self> {
+        match value {
+            "custom" => Some(Self::Custom),
+            "default" | "primary" | "ok" => Some(Self::Default),
+            "cancel" | "secondary" => Some(Self::Cancel),
+            _ => None,
+        }
+    }
+}
+/// Metadata for a dialog footer action button.
+#[derive(Debug, Clone)]
+pub struct DialogAction {
+    /// Visible label rendered in the action row.
+    pub label: String,
+    /// Semantic role used for keyboard shortcuts and default affordances.
+    pub role: DialogActionRole,
+    /// Whether activating this action should close the dialog automatically.
+    pub close_on_activate: bool,
+}
+impl DialogAction {
+    /// Create a dialog action with an explicit role and close behavior.
+    pub fn new(
+        label: impl Into<String>,
+        role: DialogActionRole,
+        close_on_activate: bool,
+    ) -> Self {
+        Self {
+            label: label.into(),
+            role,
+            close_on_activate,
+        }
+    }
+}
+/// Modal or non-modal popup dialog with title bar, body slot, footer slot, and action row.
 #[derive(Debug, Clone)]
 pub struct Dialog {
     /// Shared layout, style, and state fields.
@@ -463,21 +516,45 @@ pub struct Dialog {
     pub modal: bool,
     /// Whether the dialog is currently shown.
     pub open: bool,
+    /// Whether the dialog shows an explicit close affordance in the title bar.
+    pub closeable: bool,
+    /// Whether the dialog may be repositioned by dragging the title bar.
+    pub draggable: bool,
+    /// Whether the dialog may be resized from its edges and corners.
+    pub resizable: bool,
     /// Optional widget index used as the dialog body content.
     pub content_idx: Option<usize>,
-    /// Labels for footer action buttons (e.g. `"OK"`, `"Cancel"`).
-    pub footer_buttons: Vec<String>,
+    /// Optional widget index used as a custom footer content root.
+    pub footer_idx: Option<usize>,
+    /// Declarative footer action buttons rendered by the dialog chrome.
+    pub actions: Vec<DialogAction>,
+    /// Optional 0-based index of the action triggered by Enter.
+    pub default_action_idx: Option<usize>,
+    /// Optional 0-based index of the action triggered by Escape.
+    pub cancel_action_idx: Option<usize>,
+    /// Whether a non-modal dialog should dismiss when clicking outside its bounds.
+    pub dismiss_on_outside_click: bool,
+    /// Whether opening the dialog should recenter it within the viewport.
+    pub center_on_open: bool,
 }
 impl Dialog {
-    /// Create a closed modal dialog with the given title and no content or buttons.
+    /// Create a closed modal dialog with popup-oriented defaults.
     pub fn new(title: impl Into<String>) -> Self {
         Self {
             base: WidgetBase::new(WidgetType::Dialog),
             title: title.into(),
             modal: true,
             open: false,
+            closeable: true,
+            draggable: false,
+            resizable: false,
             content_idx: None,
-            footer_buttons: Vec::new(),
+            footer_idx: None,
+            actions: Vec::new(),
+            default_action_idx: None,
+            cancel_action_idx: None,
+            dismiss_on_outside_click: false,
+            center_on_open: true,
         }
     }
 }

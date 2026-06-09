@@ -2,6 +2,7 @@
 
 use lurek2d::ui::context::GuiContext;
 use lurek2d::ui::controls::Switch;
+use lurek2d::ui::extras::Dialog;
 use lurek2d::ui::theme::{Theme, WidgetStyle};
 use lurek2d::ui::widget::{WidgetBase, WidgetType};
 
@@ -270,6 +271,112 @@ fn gui_context_add_spin_box_returns_valid_index() {
         idx < ctx.widgets.len(),
         "returned index must be within widgets pool"
     );
+}
+
+#[test]
+fn dialog_new_uses_popup_oriented_defaults() {
+    let dialog = Dialog::new("Popup");
+    assert!(dialog.modal);
+    assert!(!dialog.open);
+    assert!(dialog.closeable);
+    assert!(!dialog.draggable);
+    assert!(!dialog.resizable);
+    assert!(dialog.footer_idx.is_none());
+    assert!(dialog.actions.is_empty());
+    assert!(dialog.default_action_idx.is_none());
+    assert!(dialog.cancel_action_idx.is_none());
+    assert!(!dialog.dismiss_on_outside_click);
+    assert!(dialog.center_on_open);
+}
+
+#[test]
+fn gui_window_resizable_runtime_drag_updates_size() {
+    let mut ctx = GuiContext::new();
+    ctx.set_viewport(1280.0, 720.0);
+    let window_idx = ctx.add_gui_window("Inspector");
+    ctx.add_child(0, window_idx);
+    {
+        let window = match &mut ctx.widgets[window_idx] {
+            lurek2d::ui::context::WidgetKind::GUIWindow(window) => window,
+            _ => panic!("expected GUIWindow"),
+        };
+        window.resizable = true;
+        window.base.x = 100.0;
+        window.base.y = 80.0;
+        window.base.width = 180.0;
+        window.base.height = 120.0;
+        window.base.z_order = 10;
+    }
+
+    assert!(ctx.mouse_pressed(278.0, 198.0, 1));
+    assert!(ctx.mouse_moved(332.0, 244.0));
+    assert!(ctx.mouse_released(332.0, 244.0, 1));
+
+    let base = ctx.widgets[window_idx].base();
+    assert!(base.width > 180.0, "resize drag should grow width");
+    assert!(base.height > 120.0, "resize drag should grow height");
+}
+
+#[test]
+fn dialog_footer_action_click_can_close_dialog() {
+    let mut ctx = GuiContext::new();
+    ctx.set_viewport(1920.0, 1440.0);
+    let dialog_idx = ctx.add_dialog("Footer");
+    {
+        let dialog = match &mut ctx.widgets[dialog_idx] {
+            lurek2d::ui::context::WidgetKind::Dialog(dialog) => dialog,
+            _ => panic!("expected Dialog"),
+        };
+        dialog.open = true;
+        dialog.center_on_open = false;
+        dialog.base.x = 520.0;
+        dialog.base.y = 840.0;
+        dialog.base.width = 180.0;
+        dialog.base.height = 100.0;
+        dialog.base.z_order = 1200;
+        dialog
+            .actions
+            .push(lurek2d::ui::extras::DialogAction::new(
+                "Close",
+                lurek2d::ui::extras::DialogActionRole::Custom,
+                true,
+            ));
+    }
+
+    assert!(ctx.mouse_pressed(630.0, 914.0, 1));
+
+    let dialog = match &ctx.widgets[dialog_idx] {
+        lurek2d::ui::context::WidgetKind::Dialog(dialog) => dialog,
+        _ => panic!("expected Dialog"),
+    };
+    assert!(!dialog.open, "footer action should close dialog on activation");
+}
+
+#[test]
+fn gui_window_resize_without_explicit_viewport_uses_base_resolution_fallback() {
+    let mut ctx = GuiContext::new();
+    let window_idx = ctx.add_gui_window("Fallback");
+    {
+        let window = match &mut ctx.widgets[window_idx] {
+            lurek2d::ui::context::WidgetKind::GUIWindow(window) => window,
+            _ => panic!("expected GUIWindow"),
+        };
+        window.resizable = true;
+        window.base.x = 100.0;
+        window.base.y = 80.0;
+        window.base.width = 180.0;
+        window.base.height = 120.0;
+        window.base.z_order = 10;
+    }
+
+    assert!(ctx.mouse_pressed(278.0, 198.0, 1));
+    assert!(ctx.mouse_moved(332.0, 244.0));
+    assert!(ctx.mouse_released(332.0, 244.0, 1));
+
+    let base = ctx.widgets[window_idx].base();
+    assert!(base.x >= 0.0 && base.y >= 0.0);
+    assert!(base.width > 180.0, "resize drag should grow width");
+    assert!(base.height > 120.0, "resize drag should grow height");
 }
 
 // â”€â”€â”€ EasingFunction evaluations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

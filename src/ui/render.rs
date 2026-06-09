@@ -856,6 +856,9 @@ fn widget_render_children(widget: &WidgetKind) -> Vec<usize> {
             if let Some(child) = w.content_idx {
                 children.push(child);
             }
+            if let Some(child) = w.footer_idx {
+                children.push(child);
+            }
         }
         WidgetKind::Accordion(w) => {
             for section in &w.sections {
@@ -880,6 +883,40 @@ fn widget_render_children(widget: &WidgetKind) -> Vec<usize> {
     children.sort_unstable();
     children.dedup();
     children
+}
+
+fn topmost_modal_dialog(ctx: &GuiContext) -> Option<usize> {
+    let mut best: Option<(usize, i32)> = None;
+    for (idx, widget) in ctx.widgets.iter().enumerate().skip(1) {
+        let WidgetKind::Dialog(dialog) = widget else {
+            continue;
+        };
+        let base = widget.base();
+        if !(dialog.open && dialog.modal && base.visible && base.is_visible && base.enabled) {
+            continue;
+        }
+        match best {
+            Some((best_idx, best_z))
+                if best_z > base.z_order || (best_z == base.z_order && best_idx > idx) => {}
+            _ => best = Some((idx, base.z_order)),
+        }
+    }
+    best.map(|(idx, _)| idx)
+}
+
+fn emit_modal_scrim(ctx: &GuiContext, cmds: &mut Vec<RenderCommand>) {
+    let Some(root) = ctx.widgets.first() else {
+        return;
+    };
+    let rect = root.base().computed_rect;
+    cmds.push(RenderCommand::SetColor(0.03, 0.05, 0.09, 0.58));
+    cmds.push(RenderCommand::Rectangle {
+        mode: DrawMode::Fill,
+        x: rect.x,
+        y: rect.y,
+        w: rect.width,
+        h: rect.height,
+    });
 }
 /// Look up `base`'s theme style, then scale all alpha channels by `base.alpha`.
 fn resolve_style_with_alpha(
@@ -982,8 +1019,14 @@ impl<'a> WidgetRenderer<'a> {
                     .map(|w| w.base().z_order)
                     .unwrap_or(0)
             });
+            let active_modal = topmost_modal_dialog(self.ctx);
+            let mut scrim_drawn = false;
             for child_idx in sorted {
                 if child_idx < self.ctx.widgets.len() {
+                    if !scrim_drawn && active_modal == Some(child_idx) {
+                        emit_modal_scrim(self.ctx, self.cmds);
+                        scrim_drawn = true;
+                    }
                     render_widget(
                         self.ctx,
                         child_idx,
@@ -1366,6 +1409,16 @@ fn render_widget(
             emit_badge(base, &w.display_text(), font_key, font, style, cmds);
         }
         WidgetKind::GUIWindow(w) => {
+            cmds.push(RenderCommand::SetColor(0.12, 0.14, 0.19, 0.96));
+            cmds.push(RenderCommand::RoundedRectangle {
+                mode: DrawMode::Fill,
+                x: base.x,
+                y: base.y,
+                w: base.width,
+                h: base.height,
+                rx: style.corner_radius + 2.0,
+                ry: style.corner_radius + 2.0,
+            });
             cmds.push(RenderCommand::SetColor(0.18, 0.22, 0.32, 1.0));
             cmds.push(RenderCommand::RoundedRectangle {
                 mode: DrawMode::Fill,
@@ -1398,6 +1451,21 @@ fn render_widget(
                     y1: base.y + 7.0,
                     x2: base.x + base.width - 16.0,
                     y2: base.y + 15.0,
+                });
+            }
+            if w.resizable {
+                cmds.push(RenderCommand::SetColor(0.66, 0.70, 0.78, 0.9));
+                cmds.push(RenderCommand::Line {
+                    x1: base.x + base.width - 14.0,
+                    y1: base.y + base.height - 6.0,
+                    x2: base.x + base.width - 6.0,
+                    y2: base.y + base.height - 14.0,
+                });
+                cmds.push(RenderCommand::Line {
+                    x1: base.x + base.width - 10.0,
+                    y1: base.y + base.height - 6.0,
+                    x2: base.x + base.width - 6.0,
+                    y2: base.y + base.height - 10.0,
                 });
             }
         }
@@ -1506,6 +1574,16 @@ fn render_widget(
             }
         }
         WidgetKind::Dialog(w) => {
+            cmds.push(RenderCommand::SetColor(0.10, 0.12, 0.17, 0.98));
+            cmds.push(RenderCommand::RoundedRectangle {
+                mode: DrawMode::Fill,
+                x: base.x,
+                y: base.y,
+                w: base.width,
+                h: base.height,
+                rx: style.corner_radius + 3.0,
+                ry: style.corner_radius + 3.0,
+            });
             cmds.push(RenderCommand::SetColor(0.18, 0.22, 0.32, 1.0));
             cmds.push(RenderCommand::RoundedRectangle {
                 mode: DrawMode::Fill,
@@ -1525,28 +1603,47 @@ fn render_widget(
                 style,
                 cmds,
             );
-            cmds.push(RenderCommand::SetColor(0.78, 0.26, 0.26, 1.0));
-            let close_x = base.x + base.width - 18.0;
-            let close_y = base.y + 10.0;
-            cmds.push(RenderCommand::Line {
-                x1: close_x,
-                y1: close_y,
-                x2: close_x + 8.0,
-                y2: close_y + 8.0,
-            });
-            cmds.push(RenderCommand::Line {
-                x1: close_x + 8.0,
-                y1: close_y,
-                x2: close_x,
-                y2: close_y + 8.0,
-            });
-            if !w.footer_buttons.is_empty() {
+            if w.closeable {
+                cmds.push(RenderCommand::SetColor(0.78, 0.26, 0.26, 1.0));
+                let close_x = base.x + base.width - 18.0;
+                let close_y = base.y + 10.0;
+                cmds.push(RenderCommand::Line {
+                    x1: close_x,
+                    y1: close_y,
+                    x2: close_x + 8.0,
+                    y2: close_y + 8.0,
+                });
+                cmds.push(RenderCommand::Line {
+                    x1: close_x + 8.0,
+                    y1: close_y,
+                    x2: close_x,
+                    y2: close_y + 8.0,
+                });
+            }
+            let has_footer = w.footer_idx.is_some() || !w.actions.is_empty();
+            if has_footer {
+                let footer_y = base.y + base.height - 34.0;
+                cmds.push(RenderCommand::SetColor(0.25, 0.28, 0.36, 1.0));
+                cmds.push(RenderCommand::Line {
+                    x1: base.x,
+                    y1: footer_y,
+                    x2: base.x + base.width,
+                    y2: footer_y,
+                });
+            }
+            if !w.actions.is_empty() {
                 let footer_y = base.y + base.height - 30.0;
                 let button_w = 70.0;
-                let total_w = w.footer_buttons.len() as f32 * (button_w + 6.0);
-                let mut button_x = base.x + base.width - total_w;
-                for label in &w.footer_buttons {
-                    cmds.push(RenderCommand::SetColor(0.18, 0.22, 0.32, 1.0));
+                let total_w =
+                    w.actions.len() as f32 * (button_w + 6.0) - 6.0;
+                let mut button_x = base.x + base.width - total_w - 8.0;
+                for action in &w.actions {
+                    let is_primary = action.role.as_str() == "default";
+                    if is_primary {
+                        cmds.push(RenderCommand::SetColor(0.28, 0.46, 0.76, 1.0));
+                    } else {
+                        cmds.push(RenderCommand::SetColor(0.18, 0.22, 0.32, 1.0));
+                    }
                     cmds.push(RenderCommand::RoundedRectangle {
                         mode: DrawMode::Fill,
                         x: button_x,
@@ -1557,7 +1654,7 @@ fn render_widget(
                         ry: 4.0,
                     });
                     emit_text_at(
-                        label,
+                        &action.label,
                         button_x + 14.0,
                         footer_y + 4.0,
                         font_key,
@@ -1567,6 +1664,21 @@ fn render_widget(
                     );
                     button_x += button_w + 6.0;
                 }
+            }
+            if w.resizable {
+                cmds.push(RenderCommand::SetColor(0.72, 0.76, 0.84, 0.9));
+                cmds.push(RenderCommand::Line {
+                    x1: base.x + base.width - 14.0,
+                    y1: base.y + base.height - 6.0,
+                    x2: base.x + base.width - 6.0,
+                    y2: base.y + base.height - 14.0,
+                });
+                cmds.push(RenderCommand::Line {
+                    x1: base.x + base.width - 10.0,
+                    y1: base.y + base.height - 6.0,
+                    x2: base.x + base.width - 6.0,
+                    y2: base.y + base.height - 10.0,
+                });
             }
         }
         WidgetKind::StatusBar(w) => {
@@ -1858,8 +1970,41 @@ impl GuiContext {
         let Some(children) = layout_ctx.widgets.first().and_then(|w| w.children()) else {
             return img;
         };
-        let mut stack: Vec<usize> = children.to_vec();
+        let mut sorted_children = children.to_vec();
+        sorted_children.sort_by_key(|&i| {
+            layout_ctx
+                .widgets
+                .get(i)
+                .map(|w| w.base().z_order)
+                .unwrap_or(0)
+        });
+        let active_modal = topmost_modal_dialog(&layout_ctx);
+        let root_rect = layout_ctx
+            .widgets
+            .first()
+            .map(|w| w.base().computed_rect)
+            .unwrap_or(Rect::new(0.0, 0.0, width as f32, height as f32));
+        let mut stack: Vec<usize> = Vec::new();
+        for child_idx in sorted_children.into_iter().rev() {
+            stack.push(child_idx);
+            if active_modal == Some(child_idx) {
+                stack.push(usize::MAX);
+            }
+        }
         while let Some(idx) = stack.pop() {
+            if idx == usize::MAX {
+                img.draw_rect(
+                    root_rect.x as i32,
+                    root_rect.y as i32,
+                    root_rect.width.max(1.0) as u32,
+                    root_rect.height.max(1.0) as u32,
+                    8,
+                    13,
+                    23,
+                    148,
+                );
+                continue;
+            }
             let Some(widget) = layout_ctx.widgets.get(idx) else {
                 continue;
             };
@@ -2455,6 +2600,7 @@ impl GuiContext {
                 }
                 WidgetKind::GUIWindow(win) => {
                     let bar_h = 24u32;
+                    img.draw_rect(x, y, w, h, 18, 21, 28, 245);
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
                     draw_cpu_text(
@@ -2473,10 +2619,33 @@ impl GuiContext {
                         img.draw_line(cx, cy, cx + 8, cy + 8, 200, 80, 80, 255);
                         img.draw_line(cx + 8, cy, cx, cy + 8, 200, 80, 80, 255);
                     }
+                    if win.resizable {
+                        img.draw_line(
+                            x + w as i32 - 14,
+                            y + h as i32 - 6,
+                            x + w as i32 - 6,
+                            y + h as i32 - 14,
+                            185,
+                            190,
+                            205,
+                            255,
+                        );
+                        img.draw_line(
+                            x + w as i32 - 10,
+                            y + h as i32 - 6,
+                            x + w as i32 - 6,
+                            y + h as i32 - 10,
+                            185,
+                            190,
+                            205,
+                            255,
+                        );
+                    }
                     skip_text = true;
                 }
                 WidgetKind::Dialog(dlg) => {
                     let bar_h = 28u32;
+                    img.draw_rect(x, y, w, h, 18, 21, 28, 250);
                     img.draw_rect(x, y, w, bar_h, 38, 42, 60, 255);
                     img.draw_rect(x, y + bar_h as i32, w, 1, 55, 60, 80, 255);
                     draw_cpu_text(
@@ -2489,27 +2658,38 @@ impl GuiContext {
                         fg,
                         fb,
                     );
-                    let close_x = x + w as i32 - 18;
-                    let close_y = y + 10;
-                    img.draw_line(close_x, close_y, close_x + 8, close_y + 8, 200, 80, 80, 255);
-                    img.draw_line(close_x + 8, close_y, close_x, close_y + 8, 200, 80, 80, 255);
-                    if !dlg.footer_buttons.is_empty() {
+                    if dlg.closeable {
+                        let close_x = x + w as i32 - 18;
+                        let close_y = y + 10;
+                        img.draw_line(close_x, close_y, close_x + 8, close_y + 8, 200, 80, 80, 255);
+                        img.draw_line(close_x + 8, close_y, close_x, close_y + 8, 200, 80, 80, 255);
+                    }
+                    let has_footer = dlg.footer_idx.is_some() || !dlg.actions.is_empty();
+                    if has_footer {
                         let footer_y = y + h as i32 - 34;
                         img.draw_rect(x, footer_y, w, 1, 55, 60, 80, 255);
+                    }
+                    if !dlg.actions.is_empty() {
+                        let footer_y = y + h as i32 - 34;
                         let btn_w = 70i32;
-                        let total_w = dlg.footer_buttons.len() as i32 * (btn_w + 6);
-                        let mut bx = x + w as i32 - total_w;
-                        for label in &dlg.footer_buttons {
-                            img.draw_rect(bx, footer_y + 4, btn_w as u32, 24, 48, 52, 72, 255);
+                        let total_w = dlg.actions.len() as i32 * (btn_w + 6) - 6;
+                        let mut bx = x + w as i32 - total_w - 8;
+                        for action in &dlg.actions {
+                            let (br, bg, bb) = if action.role.as_str() == "default" {
+                                (72, 117, 194)
+                            } else {
+                                (48, 52, 72)
+                            };
+                            img.draw_rect(bx, footer_y + 4, btn_w as u32, 24, br, bg, bb, 255);
                             img.draw_rect(bx, footer_y + 4, btn_w as u32, 1, 75, 80, 105, 255);
                             let lw = ui_font
                                 .as_ref()
-                                .map(|f| f.text_width(label) as i32)
-                                .unwrap_or((label.chars().count() as i32) * 6);
+                                .map(|f| f.text_width(&action.label) as i32)
+                                .unwrap_or((action.label.chars().count() as i32) * 6);
                             draw_cpu_text(
                                 &mut img,
                                 ui_font.as_ref(),
-                                label,
+                                &action.label,
                                 bx + ((btn_w - lw) / 2).max(2),
                                 footer_y + 10,
                                 fr,
@@ -2518,6 +2698,28 @@ impl GuiContext {
                             );
                             bx += btn_w + 6;
                         }
+                    }
+                    if dlg.resizable {
+                        img.draw_line(
+                            x + w as i32 - 14,
+                            y + h as i32 - 6,
+                            x + w as i32 - 6,
+                            y + h as i32 - 14,
+                            190,
+                            195,
+                            210,
+                            255,
+                        );
+                        img.draw_line(
+                            x + w as i32 - 10,
+                            y + h as i32 - 6,
+                            x + w as i32 - 6,
+                            y + h as i32 - 10,
+                            190,
+                            195,
+                            210,
+                            255,
+                        );
                     }
                     skip_text = true;
                 }
@@ -2871,8 +3073,16 @@ impl GuiContext {
                     draw_cpu_text(&mut img, ui_font.as_ref(), text, tx, ty, fr, fg, fb);
                 }
             }
-            if let Some(ch) = widget.children() {
-                stack.extend_from_slice(ch);
+            let mut render_children = widget_render_children(widget);
+            render_children.sort_by_key(|&child| {
+                layout_ctx
+                    .widgets
+                    .get(child)
+                    .map(|w| w.base().z_order)
+                    .unwrap_or(0)
+            });
+            for child in render_children.into_iter().rev() {
+                stack.push(child);
             }
         }
         img
