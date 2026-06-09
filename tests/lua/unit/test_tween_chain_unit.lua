@@ -6,15 +6,19 @@ local tween = lurek.tween
 -- @describe lurek.tween.newChain
 describe("lurek.tween.newChain", function()
     -- @covers lurek.tween.newChain
+    -- @covers LTweenChain:type
+    -- @covers LTweenChain:typeOf
     it("newChain creates chain object", function()
         local ch = tween.newChain()
         T.assert_equal(ch:type(), "LTweenChain")
         T.assert_true(ch:typeOf("LTweenChain"))
         T.assert_equal(ch:getProgress(), 0)
         T.assert_equal(ch:getIteration(), 0)
+        T.assert_false(ch:isLooping())
     end)
 
     -- @covers lurek.tween.newChain
+    -- @covers LTweenChain:isComplete
     it("to wait call builds and executes fluent sequence", function()
         local obj = { x = 0 }
         local called = false
@@ -112,6 +116,36 @@ describe("lurek.tween.newChain", function()
     end)
 
     -- @covers lurek.tween.newChain
+    -- @covers LTweenChain:isLooping
+    -- @covers LTweenChain:setLooping
+    it("setLooping toggles infinite loop mode", function()
+        local ch = tween.newChain()
+        T.assert_false(ch:isLooping())
+        ch:setLooping(true)
+        T.assert_true(ch:isLooping())
+        ch:setLooping(false)
+        T.assert_false(ch:isLooping())
+    end)
+
+    -- @covers lurek.tween.newChain
+    -- @covers LTweenChain:clear
+    -- @covers LTweenChain:reset
+    it("clear and reset are callable on legacy chains", function()
+        local ch = tween.newChain()
+        local idx = ch:push({ from = 0.0, to = 1.0, duration = 0.1, label = "b" })
+        T.assert_not_nil(idx)
+        ch:reset()
+        T.assert_type("number", ch:cursor())
+        ch:clear()
+        T.assert_equal(0, ch:len())
+    end)
+
+    -- @covers lurek.tween.newChain
+    -- @covers LTweenChain:isFinished
+    -- @covers LTweenChain:push
+    -- @covers LTweenChain:tick
+    -- @covers LTweenChain:value
+    -- @covers LTweenChain:cursor
     it("legacy push and tick compatibility remains", function()
         local ch = tween.newChain()
         local idx = ch:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
@@ -120,6 +154,8 @@ describe("lurek.tween.newChain", function()
         T.assert_equal(#events, 1)
         T.assert_equal(events[1].label, "a")
         T.assert_true(ch:isFinished())
+        T.assert_type("number", ch:value())
+        T.assert_type("number", ch:cursor())
     end)
 end)
 
