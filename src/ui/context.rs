@@ -254,6 +254,15 @@ impl PopupResizeEdges {
     }
 }
 #[derive(Debug, Clone, Copy)]
+struct PopupResizeCapture {
+    idx: usize,
+    surface: PopupSurface,
+    edges: PopupResizeEdges,
+    start_mouse_x: f32,
+    start_mouse_y: f32,
+    start_rect: Rect,
+}
+#[derive(Debug, Clone, Copy)]
 enum PointerCapture {
     Slider(usize),
     ScrollBar(usize),
@@ -263,14 +272,7 @@ enum PointerCapture {
         offset_x: f32,
         offset_y: f32,
     },
-    PopupResize {
-        idx: usize,
-        surface: PopupSurface,
-        edges: PopupResizeEdges,
-        start_mouse_x: f32,
-        start_mouse_y: f32,
-        start_rect: Rect,
-    },
+    PopupResize(PopupResizeCapture),
 }
 /// Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.
 #[derive(Debug, Clone)]
@@ -2705,14 +2707,14 @@ impl GuiContext {
         let Some(rect) = self.widget_rect(idx) else {
             return false;
         };
-        self.captured_pointer = Some(PointerCapture::PopupResize {
+        self.captured_pointer = Some(PointerCapture::PopupResize(PopupResizeCapture {
             idx,
             surface,
             edges,
             start_mouse_x: x,
             start_mouse_y: y,
             start_rect: rect,
-        });
+        }));
         true
     }
 
@@ -2734,17 +2736,15 @@ impl GuiContext {
         )
     }
 
-    fn update_popup_resize(
-        &mut self,
-        idx: usize,
-        surface: PopupSurface,
-        edges: PopupResizeEdges,
-        start_mouse_x: f32,
-        start_mouse_y: f32,
-        start_rect: Rect,
-        x: f32,
-        y: f32,
-    ) -> bool {
+    fn update_popup_resize(&mut self, capture: PopupResizeCapture, x: f32, y: f32) -> bool {
+        let PopupResizeCapture {
+            idx,
+            surface,
+            edges,
+            start_mouse_x,
+            start_mouse_y,
+            start_rect,
+        } = capture;
         if !self.popup_is_open(idx, surface) || !self.popup_is_resizable(idx, surface) {
             return false;
         }
@@ -2861,7 +2861,10 @@ impl GuiContext {
         if matches!(
             self.captured_pointer,
             Some(PointerCapture::PopupMove { idx: capture_idx, .. }
-                | PointerCapture::PopupResize { idx: capture_idx, .. })
+                | PointerCapture::PopupResize(PopupResizeCapture {
+                    idx: capture_idx,
+                    ..
+                }))
                 if capture_idx == idx
         ) {
             self.captured_pointer = None;
@@ -3324,7 +3327,7 @@ impl GuiContext {
                 PointerCapture::Slider(idx)
                 | PointerCapture::ScrollBar(idx)
                 | PointerCapture::PopupMove { idx, .. }
-                | PointerCapture::PopupResize { idx, .. } => {
+                | PointerCapture::PopupResize(PopupResizeCapture { idx, .. }) => {
                     if idx < self.widgets.len() {
                         let inside = self.widget_contains_point(idx, x, y);
                         self.widgets[idx].base_mut().state = if inside {
@@ -3387,24 +3390,8 @@ impl GuiContext {
                 PointerCapture::PopupMove { idx, surface, .. } => {
                     changed |= self.update_popup_move(idx, surface, x, y);
                 }
-                PointerCapture::PopupResize {
-                    idx,
-                    surface,
-                    edges,
-                    start_mouse_x,
-                    start_mouse_y,
-                    start_rect,
-                } => {
-                    changed |= self.update_popup_resize(
-                        idx,
-                        surface,
-                        edges,
-                        start_mouse_x,
-                        start_mouse_y,
-                        start_rect,
-                        x,
-                        y,
-                    );
+                PointerCapture::PopupResize(capture) => {
+                    changed |= self.update_popup_resize(capture, x, y);
                 }
             }
         }

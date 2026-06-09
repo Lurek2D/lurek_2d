@@ -25,6 +25,8 @@
 - Rust-Lua marshalling keeps payload transfer practical across the boundary.
 - The module delivers deterministic, inspectable runtime event orchestration.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

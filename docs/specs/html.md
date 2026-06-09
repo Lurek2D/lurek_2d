@@ -31,6 +31,8 @@
 - It reduces boilerplate for complex UI state handling and DOM-like interaction logic.
 - Overall, users get a script-controllable UI stack with both declarative styling and imperative control.
 
+This module primarily collaborates with `color`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.

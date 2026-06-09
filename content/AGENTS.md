@@ -2,41 +2,27 @@
 
 Covers work under `content/`.
 
-## Mission
-- Own Lua-based games, demos, examples, and config-side content.
-- Keep content runnable and easy to validate.
+## Mission & Scope
+- Own Lua-based game demos, API-teaching examples, layout coordinates assets, and editor snippet files.
+- Keep all script examples, configs, and layout documents fully runnable and validate-safe.
+- Maintain content-side registration lists and default config templates.
 
-## Scope
-- `content/games/`, `content/examples/`, `content/layouts/`, and `content/snippets/`.
-- Demo registrations and content-side config templates.
-
-## Local map
-- `examples/` should stay small and API-teaching focused.
-- `games/` holds runnable multi-file projects.
-- `layouts/` contains UI or scene layout data.
-- `snippets/` is source material for editor snippets.
-- `zips/` is packaged output, not source authoring.
+## Files
+- `examples/`: Single-file scripts demonstrating individual API concepts.
+- `games/`: Runnable multi-file game directories and category indices.
+- `layouts/`: TOML-formatted flexbox configurations for menus and overlays.
+- `snippets/`: Target templates consumed by the VS Code editor snippet generator.
 
 ## Rules
-- Use real `lurek.*` calls, not placeholders.
-- Keep demos runnable and scoped to one teaching goal.
-- Sync registrations and validation when content structure changes.
-- Treat engine Rust work as out of scope.
-- Prefer small, legible content slices over giant stitched examples.
-- Keep content aligned with the public API shape docs describe.
-- Multiply frame-based movement, timers, and tweens by `dt`.
-- Keep gameplay state in locals or explicit tables.
-- Use forward-slash asset paths.
-- Prefer `lurek.log.*` or `lurek.log.event(...)` over `print()` when output should be filterable.
-- For HTML UI content, keep structure and visual rules in HTML or CSS and state transitions in Lua.
-- Do not rebuild full HTML documents every frame when a smaller update is enough.
-- Check the supported HTML and CSS subset before using uncommon tags or layout features.
+- Use fully functional `lurek.*` calls; do not add stub calls or placeholder tables.
+- Scale frame-based movements, color fades, and tweens by delta time (`dt`) for frame-rate independence.
+- Keep game state contained in local variables or context state tables; avoid global variable pollution.
+- Format file lookup strings with forward slashes exclusively.
+- Use `lurek.log.*` channels instead of raw print functions to support category filtering.
 
 ## Workflow
-- Read the nearest API docs and examples before changing content.
-- Use the nearest nested contracts under `content/` plus the current API docs as the source of truth.
-- Keep README, registration, and runnable entry points in sync.
-- Validate the content path with the narrowest runnable check available.
+- Verify layout coordinate adjustments using `tools/ui/fix_layouts.py` and `tools/ui/snap_to_grid.py`.
+- Run layout rendering demos to visually test layout file adjustments.
 
 ## References
 - `library/`

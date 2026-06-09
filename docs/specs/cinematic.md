@@ -25,6 +25,8 @@
 - Signal tracks fire named events at specific times for gameplay triggers and branching logic.
 - Playback can be played, paused, seeked, looped, and branched through labels.
 
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

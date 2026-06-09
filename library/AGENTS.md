@@ -2,37 +2,27 @@
 
 Covers work under `library/`.
 
-## Mission
-- Own reusable Lua modules and module-package style content.
-- Keep modules easy to import, document, and test.
+## Mission & Scope
+- Own reusable, pure Lua gameplay systems (e.g., inventory management, quest tracking, card battling, narrative loops).
+- Provide encapsulated packages that can be easily loaded and integrated into any Lurek2D game.
+- Maintain comprehensive documentation, usage examples, and tests for each library package.
 
-## Scope
-- `library/*/init.lua` modules.
-- Supporting examples, docs, tests, and packaging files.
-
-## Local map
-- Each top-level folder is a reusable package domain.
-- `README.md` is the local index.
-- `init.lua` is usually the package entrypoint.
-- Demo-specific behavior belongs under `content/`.
+## Files
+- `README.md`: Consolidated guide mapping each library subdirectory to its design goal.
+- `*/init.lua`: Canonical entrypoint module for a package (e.g., `inventory/init.lua`).
+- `*/example.lua`: Minimal runnable example illustrating standard integration.
 
 ## Rules
-- Keep `init.lua`, examples, docs, and tests aligned.
-- Prefer reusable Lua patterns over demo-only scripts.
-- Keep library modules grounded in accepted `lurek.*` contracts.
-- Keep package entry points small and obvious.
-- Avoid hacks that only work in one demo.
-- Each library module should keep `init.lua`, `example.lua`, and `README.md`.
-- Library code stays pure Lua.
-- After public library API changes, regenerate `docs/api/lureksome.md` and `docs/api/lureksome.lua` with `python tools/docs/gen_lib_docs.py`.
+- Library modules must be written in pure Lua and remain agnostic of specific game assets or hardcoded textures.
+- Never write stateful global variables inside libraries; return module tables containing constructors or local states.
+- If a package API interface changes, immediately update the matching `example.lua` and rebuild documentation.
+- All library modules must run correctly under both LuaJIT and Lua 5.4.
 
 ## Workflow
-- Read the public API shape and nearest examples before editing a module.
-- Use this file, the matching example, and the nearest Lua test or example contract as the source of truth.
-- Update the module, its example, and the docs together.
-- Validate with the narrowest runnable proof that exercises the module contract.
+- Run and test library updates against their corresponding unit test files under `tests/lua/`.
+- Rebuild markdown documentation blocks using `python tools/docs/gen_lib_docs.py`.
 
 ## References
-- `content/examples/`
-- `tests/lua/`
-- `docs/specs/`
+- content/examples/
+- tests/lua/
+- tools/docs/gen_lib_docs.py

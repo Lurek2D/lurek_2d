@@ -38,6 +38,8 @@
 - Overall, users get both ergonomic control APIs and advanced tooling hooks in one module.
 - This makes input behavior easier to tune, test, and ship confidently.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

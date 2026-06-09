@@ -2,30 +2,28 @@
 
 Covers work under `tests/lua/`.
 
-## Mission
-- Own Lua-facing contract tests, integration checks, demos, evidence, and security coverage.
-- Keep harness-visible metadata and assertions consistent.
+## Mission & Scope
+- Own Lua-facing unit, integration, security, stress, and visual evidence tests for public namespaces.
+- Enforce the Lua test harness syntax conventions, metadata annotation markers, and assertion styles.
+- Maintain colocated tests for games and headless execution suites verifying game loops.
 
-## Scope
-- `tests/lua/**`.
-- Harness markers, `test_summary()`, and Lua assertion conventions.
-
-## Local map
-- `unit/`, `security/`, `integration/`, `stress/`, and `evidence/` use folder-specific markers.
-- `demos/` holds headless demo contract tests.
-- `content/games/**/test.lua` holds colocated game tests.
+## Files
+- `unit/`: Core contract tests verifying individual API parameters and outputs.
+- `security/` / `stress/`: Robustness tests checking sandbox boundaries and high allocations.
+- `demos/`: Headless scripts running game category demos for a fixed amount of frames.
+- `harness.rs`: Rust entrypoint executing the Lua test suite.
 
 ## Rules
-- End harness-run test files with `test_summary()`.
-- Use `assert_equal`, `assert_true`, `assert_false`, `assert_near`, and `assert_error` instead of bare `assert()`.
-- Keep marker comments directly above the covered `it()` block.
-- Use `@covers` in `unit/`, `@security` in `security/`, `@integration` in `integration/`, `@stress` in `stress/`, and `@evidence` in `evidence/`.
-- Use `assert_near(...)` for float expectations.
+- Every test file executed by the test runner must terminate with `test_summary()`.
+- Use specific assertion methods (like `assert_equal`, `assert_true`, `assert_near`) rather than raw Lua `assert`.
+- Place appropriate metadata tags (e.g., `@covers`, `@security`, `@integration`) immediately above the target `it()` block.
+- When a public Rust-facing behavior is moved out of `tests/rust/unit/`, add the canonical Lua coverage here and keep the `@covers` markers on the public `lurek.*` entry points.
+- Always use `assert_near` with epsilon parameters for coordinate, color, or matrix floating-point checks.
 
 ## Workflow
-- Read `tests/lua/harness.rs` and the nearest peer suite before adding a new Lua test file.
-- Run `python tools/audit/lua_test_structure_audit.py --path <file>` after marker-heavy edits.
+- Add newly created test files to the execution list inside `tests/lua/harness.rs`.
+- Audit marker and tag syntax validity using `python tools/audit/lua_test_structure_audit.py --path tests/lua/`.
 
 ## References
-- `tests/lua/harness.rs`
-- `tools/audit/lua_test_structure_audit.py`
+- tests/lua/harness.rs
+- tools/audit/lua_test_structure_audit.py

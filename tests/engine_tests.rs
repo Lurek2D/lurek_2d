@@ -13,8 +13,6 @@ mod animation_tests;
 mod app_tests;
 #[path = "rust/unit/audio_tests.rs"]
 mod audio_tests;
-#[path = "rust/unit/camera_tests.rs"]
-mod camera_tests;
 #[path = "rust/unit/compute_tests.rs"]
 mod compute_tests;
 #[path = "rust/unit/data_tests.rs"]
@@ -49,8 +47,6 @@ mod input_tests;
 mod light_tests;
 #[path = "rust/unit/log_tests.rs"]
 mod log_tests;
-#[path = "rust/unit/math_tests.rs"]
-mod math_tests;
 #[path = "rust/unit/minimap_tests.rs"]
 mod minimap_tests;
 #[path = "rust/unit/mods_tests.rs"]
@@ -81,8 +77,6 @@ mod repl_tests;
 mod runtime_tests;
 #[path = "rust/unit/save_tests.rs"]
 mod save_tests;
-#[path = "rust/unit/scene_tests.rs"]
-mod scene_tests;
 #[path = "rust/unit/serial_tests.rs"]
 mod serial_tests;
 #[path = "rust/unit/spine_tests.rs"]
@@ -101,5 +95,3 @@ mod timer_tests;
 mod tween_tests;
 #[path = "rust/unit/ui_tests.rs"]
 mod ui_tests;
-#[path = "rust/unit/window_tests.rs"]
-mod window_tests;

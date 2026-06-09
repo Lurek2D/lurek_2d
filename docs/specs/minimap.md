@@ -31,6 +31,8 @@
 - It reduces custom HUD glue and keeps tactical overlays consistent.
 - Overall, it turns minimaps into interactive gameplay surfaces rather than static decorations.
 
+This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.

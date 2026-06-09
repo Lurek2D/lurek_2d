@@ -56,6 +56,8 @@
 - The module is robust enough for production maps and iterative prototypes.
 - It supports deterministic behavior needed by evidence-style tests.
 
+This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

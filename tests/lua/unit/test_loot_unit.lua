@@ -7,12 +7,15 @@ local math = lurek.math
 -- @describe lurek.math.newLootTable
 describe("lurek.math.newLootTable", function()
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:entryCount
     it("creates an empty table", function()
         local lt = math.newLootTable()
         T.assert_equal(lt:entryCount(), 0)
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:entryCount
     it("add / entryCount", function()
         local lt = math.newLootTable()
         lt:add("sword",  10.0)
@@ -21,6 +24,9 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:build
+    -- @covers LLootTable:sample
     it("sample returns valid id after build", function()
         local lt = math.newLootTable(42)
         lt:add("gold",  80.0)
@@ -33,6 +39,9 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:build
+    -- @covers LLootTable:sampleN
     it("sampleN returns n results", function()
         local lt = math.newLootTable(1)
         lt:add("apple", 1.0)
@@ -43,6 +52,9 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:build
+    -- @covers LLootTable:sampleUnique
     it("sampleUnique returns no duplicates", function()
         local lt = math.newLootTable(99)
         lt:add("a", 1.0)
@@ -59,6 +71,9 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:remove
+    -- @covers LLootTable:entryCount
     it("remove decreases entryCount", function()
         local lt = math.newLootTable()
         lt:add("x", 5.0)
@@ -69,6 +84,8 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:setWeight
     it("setWeight updates weight", function()
         local lt = math.newLootTable()
         lt:add("rare", 1.0)
@@ -77,6 +94,9 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:merge
+    -- @covers LLootTable:entryCount
     it("merge combines entries from another table", function()
         local a = math.newLootTable(5)
         a:add("sword", 1.0)
@@ -87,6 +107,8 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.lootFromList
+    -- @covers LLootTable:entryCount
+    -- @covers LLootTable:sample
     it("lootFromList creates table with entries", function()
         local lt = math.lootFromList({
             { id = "common", weight = 10.0, meta = { tier = "c" } },
@@ -99,6 +121,8 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.lootFromToml
+    -- @covers LLootTable:entryCount
+    -- @covers LLootTable:sample
     it("lootFromToml loads entries from file", function()
         local path = "save/loot_table_unit_test.toml"
         local toml_src = [=[
@@ -125,6 +149,11 @@ weight = 1
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:build
+    -- @covers LLootTable:save
+    -- @covers LLootTable:restore
+    -- @covers LLootTable:entryCount
     it("save / restore round-trips loot table state", function()
         local lt = math.newLootTable(123)
         lt:add("a", 1.0)
@@ -141,6 +170,9 @@ weight = 1
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:add
+    -- @covers LLootTable:build
+    -- @covers LLootTable:setSeed
     it("setSeed makes results deterministic", function()
         local function make_and_sample(seed)
             local lt = math.newLootTable(seed)
@@ -155,6 +187,8 @@ weight = 1
     end)
 
     -- @covers lurek.math.newLootTable
+    -- @covers LLootTable:type
+    -- @covers LLootTable:typeOf
     it("typeOf returns LLootTable", function()
         local lt = math.newLootTable()
         T.assert_true(lt:typeOf("LLootTable"))
@@ -166,6 +200,8 @@ end)
 -- @describe lurek.math.newPityTracker
 describe("lurek.math.newPityTracker", function()
     -- @covers lurek.math.newPityTracker
+    -- @covers LPityTracker:counter
+    -- @covers LPityTracker:isPrimed
     it("creates tracker with zero counter", function()
         local pt = math.newPityTracker("rare", 5)
         T.assert_equal(pt:counter(), 0)
@@ -173,6 +209,8 @@ describe("lurek.math.newPityTracker", function()
     end)
 
     -- @covers lurek.math.newPityTracker
+    -- @covers LPityTracker:notice
+    -- @covers LPityTracker:isPrimed
     it("primes after threshold misses", function()
         local pt = math.newPityTracker("rare", 3)
         pt:notice("common")
@@ -183,6 +221,9 @@ describe("lurek.math.newPityTracker", function()
     end)
 
     -- @covers lurek.math.newPityTracker
+    -- @covers LPityTracker:notice
+    -- @covers LPityTracker:isPrimed
+    -- @covers LPityTracker:counter
     it("resets on target hit", function()
         local pt = math.newPityTracker("rare", 3)
         pt:notice("common")
@@ -194,6 +235,10 @@ describe("lurek.math.newPityTracker", function()
     end)
 
     -- @covers lurek.math.newPityTracker
+    -- @covers LPityTracker:notice
+    -- @covers LPityTracker:reset
+    -- @covers LPityTracker:isPrimed
+    -- @covers LPityTracker:counter
     it("reset() clears counter and primed", function()
         local pt = math.newPityTracker("epic", 2)
         pt:notice("trash")
@@ -205,6 +250,12 @@ describe("lurek.math.newPityTracker", function()
     end)
 
     -- @covers lurek.math.newPityTracker
+    -- @covers LPityTracker:notice
+    -- @covers LPityTracker:export
+    -- @covers LPityTracker:import
+    -- @covers LPityTracker:save
+    -- @covers LPityTracker:restore
+    -- @covers LPityTracker:counter
     it("export / import round-trips state", function()
         local pt = math.newPityTracker("gold", 4)
         pt:notice("silver")
@@ -217,6 +268,10 @@ describe("lurek.math.newPityTracker", function()
     end)
 
     -- @covers lurek.math.newPityTracker
+    -- @covers lurek.math.sampleWithPity
+    -- @covers LLootTable:add
+    -- @covers LLootTable:build
+    -- @covers LPityTracker:isPrimed
     it("sampleWithPity forces target when primed", function()
         local lt = math.newLootTable(2)
         lt:add("common", 100.0)
@@ -234,6 +289,8 @@ describe("lurek.math.newPityTracker", function()
     end)
 
     -- @covers lurek.math.newPityTracker
+    -- @covers LPityTracker:type
+    -- @covers LPityTracker:typeOf
     it("typeOf returns LPityTracker", function()
         local pt = math.newPityTracker("x", 1)
         T.assert_true(pt:typeOf("LPityTracker"))

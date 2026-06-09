@@ -34,6 +34,8 @@
 - Overall, users get a full motion orchestration toolkit in one runtime module.
 - The practical value is faster iteration on polished, deterministic animation behavior.
 
+This module primarily collaborates with `math`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `math`: Imports or references `math` from `src/math/`.

@@ -24,6 +24,8 @@
 - Provides basic session hardening through handshake and nonce-based access checks.
 - Gives teams one remote diagnostics channel for live observability and command dispatch.
 
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

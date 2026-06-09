@@ -20,6 +20,8 @@
 - Enables automation-oriented use cases like validation, packaging, and screenshot batches without opening a game window.
 - Gives one consistent entry layer so teams can switch between local playtesting and pipeline tooling with minimal friction.
 
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

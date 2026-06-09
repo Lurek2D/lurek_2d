@@ -28,6 +28,8 @@
 - Real-time timer paths support out-of-timescale callback scheduling.
 - For users, this module centralizes timing semantics and deferred execution behavior.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

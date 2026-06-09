@@ -1967,9 +1967,27 @@ end)
 -- @describe pathfind GoalMap and newGoalMap
 describe("pathfind GoalMap and newGoalMap", function()
     -- @covers lurek.pathfind.newGoalMap
+    -- @covers LGoalMap:type
+    -- @covers LGoalMap:typeOf
     it("newGoalMap constructs with dimensions", function()
         local goalMap = lurek.pathfind.newGoalMap(20, 20)
         expect_type("userdata", goalMap)
+        expect_equal("LGoalMap", goalMap:type())
+        expect_true(goalMap:typeOf("LGoalMap"))
+        expect_true(goalMap:typeOf("LObject"))
+    end)
+
+    -- @covers LGoalMap:setBlocker
+    -- @covers LGoalMap:bake
+    -- @covers LGoalMap:isReady
+    it("setBlocker registers a blocker and bake marks the field ready", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:setBlocker(function(x, y)
+            return x == 6 and y == 5
+        end)
+        goalMap:bake()
+        expect_true(goalMap:isReady())
     end)
 
     -- @covers LGoalMap:addSource
@@ -2027,6 +2045,40 @@ describe("pathfind GoalMap and newGoalMap", function()
         local gx, gy = goalMap:gradientAt(6, 5)
         expect_type("number", gx)
         expect_type("number", gy)
+    end)
+
+    -- @covers LGoalMap:flee
+    it("flee returns a direction away from the source field", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:bake()
+        local dx, dy = goalMap:flee(6, 5, 1.0)
+        expect_type("number", dx)
+        expect_type("number", dy)
+    end)
+
+    -- @covers LGoalMap:floodFill
+    it("floodFill returns reachable cells around the origin", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:bake()
+        local cells = goalMap:floodFill(5, 5, 2)
+        expect_type("table", cells)
+        expect_true(#cells > 0)
+    end)
+
+    -- @covers LGoalMap:save
+    -- @covers LGoalMap:restore
+    it("save and restore round-trip the goal map state", function()
+        local goalMap = lurek.pathfind.newGoalMap(20, 20)
+        goalMap:addSource(5, 5)
+        goalMap:bake()
+        local blob = goalMap:save()
+        expect_type("string", blob)
+
+        local restored = lurek.pathfind.newGoalMap(20, 20)
+        restored:restore(blob)
+        expect_equal(goalMap:distanceAt(6, 5), restored:distanceAt(6, 5))
     end)
 
     -- @covers LNavGrid:findHpaPath

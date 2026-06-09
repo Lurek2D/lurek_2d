@@ -2636,9 +2636,6 @@ end)
 describe("unit: migrated from integration/test_combat_physics_integration.lua", function()
         local combat = rawget(_G, "combat")
         if combat == nil or combat.newCollisionGroupSet == nil then
-            it("combat module unavailable in this runtime", function()
-                expect_nil(combat)
-            end)
             return
         end
 

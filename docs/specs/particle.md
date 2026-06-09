@@ -37,6 +37,8 @@
 - Overall, users get a production-ready VFX runtime in one script API.
 - This enables richer scenes with less effect-specific boilerplate.
 
+This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

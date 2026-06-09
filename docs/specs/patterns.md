@@ -70,6 +70,8 @@
 - Overall, patterns is the reusable orchestration layer beneath gameplay features.
 - It exists to help teams ship complex behavior with less structural debt.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.

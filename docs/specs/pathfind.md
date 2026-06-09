@@ -54,6 +54,8 @@
 - It supports both direct movement and higher-level strategic navigation logic.
 - In short, it is the engine's navigation backbone for diverse world topologies.
 
+This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

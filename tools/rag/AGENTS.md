@@ -2,34 +2,27 @@
 
 Covers work under `tools/rag/`.
 
-## Mission
-- Own retrieval corpus shape, indexing rules, source priority, and freshness handling for the repository RAG system.
+## Mission & Scope
+- Own the repository's search corpus, vector indexing rules, and chunking parameters for retrieval-augmented generation.
+- Manage similarity queries, search weighting, and source prioritization algorithms.
+- Maintain indices of documentation specs, architecture notes, and codebases to feed developer tooling.
 
-## Scope
-- `tools/rag/` retrieval and indexing code.
-
-## Local map
-- `query.py` is the query entry point.
-- `build_index.py` rebuilds the index.
-- `rag.toml` defines corpus and ranking config.
-- `docs/specs/` and `docs/architecture/` are the main source groups.
+## Files
+- `query.py`: Search execution script parsing natural language keywords and queries.
+- `build_index.py`: Script indexing files and computing text embeddings.
+- `rag.toml`: Configuration schema setting file filters, priority ranks, and chunk weights.
 
 ## Rules
-- Query first when canonical repository context should come from indexed sources.
-- Keep source priority aligned with repository authority: binding constraints, CAG layer, module specs, architecture docs, contributor docs, then examples and generated outputs.
-- Prefer ownership-sized chunks over arbitrary byte slicing.
-- Generated outputs should rank below editable sources.
-- Freshness rules must account for source-generated relationships such as Lua API bindings driving generated docs or specs.
-- Retrieval evaluation should test contract, workflow, ownership, and stale-content traps.
-- Treat the index database as derived data.
+- Prioritize design specs and core system prompts over code examples and generated web pages.
+- Enforce logic-based file chunking (e.g., class, function, or spec section boundaries) rather than static byte-based slicing.
+- Keep the generated vector database outside of version control; always treat it as local build-derived data.
+- Automatically trigger index rebuilds when structural specification changes are introduced.
 
 ## Workflow
-- Inspect `rag.toml` and the current source set before changing corpus coverage, chunking, or ranking behavior.
-- Rebuild the index after source or config changes, then verify with representative queries that the canonical source wins.
+- Rebuild the search corpus index by running `python tools/rag/build_index.py`.
+- Query the index to test rank ordering using `python tools/rag/query.py "<terms>"`.
 
 ## References
-- `tools/rag/query.py`
-- `tools/rag/build_index.py`
-- `tools/rag/rag.toml`
-- `docs/specs/`
-- `docs/architecture/`
+- tools/rag/query.py
+- tools/rag/build_index.py
+- tools/rag/rag.toml

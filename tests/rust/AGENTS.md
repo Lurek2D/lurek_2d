@@ -2,34 +2,27 @@
 
 Covers work under `tests/rust/`.
 
-## Mission
-- Own the Rust-side integration, unit, golden, config, security, and stress layers.
-- Keep Rust tests focused on internal engine behavior not best covered through Lua-first checks.
+## Mission & Scope
+- Own the Rust-side unit, integration, golden/snapshot, security, and performance stress test suites.
+- Verify engine internal behaviors, private crate functions, and serialization layers not accessible from public Lua bindings.
+- Maintain deterministic, headless test execution flows that run within standard Cargo pipelines.
 
-## Scope
-- `tests/rust/unit/`, `tests/rust/golden/`, `tests/rust/security/`, and `tests/rust/stress/`.
-- Cargo-registered test binaries and related fixtures.
-
-## Local map
-- `unit/` holds internal engine checks.
-- `golden/` holds snapshot-style evidence.
-- `security/` and `stress/` stay isolated from the fast path.
+## Files
+- `unit/`: Crate-level unit tests testing private helper methods and module implementations.
+- `golden/`: Snapshot-style regression tests verifying layout node coordinates and render outputs.
+- `fixtures/`: Pre-constructed data files and configs loaded during test runs.
 
 ## Rules
-- Register every Rust test binary explicitly in `Cargo.toml`.
-- Keep unit tests under `tests/rust/unit/` and name files `<module>_tests.rs`.
-- Keep function names descriptive and scenario-based.
-- Use golden tests for deterministic output.
-- Keep Rust tests deterministic and headless.
-- Reuse fixtures from `tests/rust/fixtures/`.
+- Keep all unit tests contained under `tests/rust/unit/` using the file suffix `_tests.rs`.
+- Do not add unit tests for functions that can be fully verified in the Lua scripting layer; port those cases into `tests/lua/unit/` instead.
+- Treat public `lurek.*` behavior as Lua-first coverage and keep Rust tests limited to private/internal implementations or wrapper glue that cannot be exercised from Lua.
+- Use golden tests exclusively for deterministic output structures (like coordinate mappings or static TOML layouts).
+- Use local resources inside `tests/fixtures/` instead of downloading files or relying on external global resources.
 
 ## Workflow
-- Read the relevant spec and source module before writing or changing a Rust test.
-- Register the new test binary, then run the narrowest `cargo test --test <name>` target that proves the behavior.
+- Run local unit tests targeting a single module using `cargo test --test <name>`.
+- Format and check code quality using `cargo clippy --all-targets -- -D warnings`.
 
 ## References
-- `Cargo.toml`
-- `tests/rust/unit/`
-- `tests/rust/golden/`
-- `tests/rust/security/`
-- `tests/rust/stress/`
+- tests/rust/unit/
+- Cargo.toml

@@ -38,6 +38,8 @@
 - Overall, users get a comprehensive 2D illumination toolkit integrated with runtime scripting.
 - This helps teams balance style, performance, and legibility in one place.
 
+This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.

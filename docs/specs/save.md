@@ -25,6 +25,8 @@
 - Schema versioning and migration callbacks support forward compatibility of older saves.
 - Persistence stays controlled and extensible instead of ad-hoc.
 
+This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

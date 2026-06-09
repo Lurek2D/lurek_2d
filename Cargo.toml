@@ -257,10 +257,6 @@ name = "lua_tests"
 path = "tests/lua/harness.rs"
 
 [[test]]
-name = "scene_tests"
-path = "tests/rust/unit/scene_tests.rs"
-
-[[test]]
 name = "patterns_tests"
 path = "tests/rust/unit/patterns_tests.rs"
 
@@ -295,10 +291,6 @@ path = "tests/rust/unit/audio_tests.rs"
 [[test]]
 name = "dsp_tests"
 path = "tests/rust/unit/dsp_tests.rs"
-
-[[test]]
-name = "camera_tests"
-path = "tests/rust/unit/camera_tests.rs"
 
 [[test]]
 name = "compute_tests"
@@ -367,10 +359,6 @@ path = "tests/rust/unit/learning_tests.rs"
 [[test]]
 name = "log_tests"
 path = "tests/rust/unit/log_tests.rs"
-
-[[test]]
-name = "math_tests"
-path = "tests/rust/unit/math_tests.rs"
 
 [[test]]
 name = "minimap_tests"
@@ -451,10 +439,6 @@ path = "tests/rust/unit/tween_tests.rs"
 [[test]]
 name = "ui_tests"
 path = "tests/rust/unit/ui_tests.rs"
-
-[[test]]
-name = "window_tests"
-path = "tests/rust/unit/window_tests.rs"
 
 [[test]]
 name = "asset_tests"

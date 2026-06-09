@@ -24,6 +24,8 @@
 - Script APIs expose line height, glyph availability, and metadata for fallback logic.
 - The module keeps text layout predictable and easier to iterate on.
 
+This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

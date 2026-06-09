@@ -33,6 +33,8 @@
 - It supports both gameplay persistence and build/test tooling workflows.
 - Overall, it is the core storage abstraction for safe and flexible runtime file operations.
 
+This module primarily collaborates with `dataframe`, `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.

@@ -42,6 +42,8 @@
 - Overall, users get a complete planetary map feature stack rather than isolated rendering primitives.
 - That makes globe-driven experiences feasible without external GIS-style toolchains.
 
+This module primarily collaborates with `math`, `pathfind`, `province`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.

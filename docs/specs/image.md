@@ -46,6 +46,8 @@
 - In short, the module is the engine's central surface for script-driven image operations.
 - That makes it foundational for UI, VFX prep, map pipelines, and visual diagnostics.
 
+This module primarily collaborates with `animation`, `camera`, `color`, `math`, `province`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `animation`: Imports or references `animation` from `src/animation/`.

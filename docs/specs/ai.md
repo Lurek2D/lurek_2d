@@ -71,6 +71,8 @@
 - Contracts emphasize explicit ownership of AI state and transition rules.
 - Overall, ai is the Feature Systems intelligence platform for production gameplay behavior.
 
+This module primarily collaborates with `dialog`, `image`, `learning`, `patterns`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

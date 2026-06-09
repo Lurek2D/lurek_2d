@@ -8,6 +8,7 @@ Validates the four CAG file types against the current CAG schema described in
 * ``.github/agents/*.agent.md``                               — rules E101-E113, W108
 * ``.github/skills/*/SKILL.md``                               — rules E201-E205, W206
 * ``.github/prompts/*.prompt.md``                             — rules E301-E307, W306
+* ``**/AGENTS.md`` (Repo-local agents)                        — rules E401-E403
 
 Usage::
 
@@ -40,6 +41,7 @@ from _cag_common import (  # noqa: E402
     GITHUB_DIR,
     PERSONAS,
     PROMPT_REQUIRED_SECTIONS,
+    REPO_AGENT_REQUIRED_SECTIONS,
     SKILL_REQUIRED_SECTIONS,
     SYSTEM_PROMPT,
     SYSTEM_PROMPT_POINTER,
@@ -49,6 +51,7 @@ from _cag_common import (  # noqa: E402
     body_after_frontmatter,
     discover_agents,
     discover_prompts,
+    discover_repo_agents,
     discover_skills,
     extract_links,
     find_fenced_block_lines,
@@ -569,6 +572,34 @@ def check_prompt(
     return out
 
 
+# ─── Repo Agent rules ─────────────────────────────────────────────────────────
+
+
+def check_repo_agent(path: Path) -> list[Violation]:
+    """Apply E401–E403 to a repo-local AGENTS.md file."""
+    rel = relpath(path)
+    text = safe_read(path)
+    out: list[Violation] = []
+
+    out.extend(_check_required_sections(rel, text, REPO_AGENT_REQUIRED_SECTIONS, "E401"))
+
+    # Mission & Scope: 2 to 4 bullet points
+    ms_start, _ = _section_window(text, "Mission & Scope")
+    if ms_start is not None:
+        ms_bullets = _section_bullets(text, "Mission & Scope")
+        if not (2 <= len(ms_bullets) <= 4):
+            out.append(Violation(rel, "E402", "error", f"Mission & Scope must have 2 to 4 bullet points (found {len(ms_bullets)})", ms_start))
+
+    # Workflow: 0 to 4 bullet points
+    wf_start, _ = _section_window(text, "Workflow")
+    if wf_start is not None:
+        wf_bullets = _section_bullets(text, "Workflow")
+        if len(wf_bullets) > 4:
+            out.append(Violation(rel, "E403", "error", f"Workflow must have at most 4 bullet points (found {len(wf_bullets)})", wf_start))
+
+    return out
+
+
 # ─── Driver ───────────────────────────────────────────────────────────────────
 
 
@@ -579,7 +610,7 @@ def run_validation(
     skills = known_skill_names()
     agents = known_agent_names()
     violations: list[Violation] = []
-    scanned = {"system_prompt": 0, "agent": 0, "skill": 0, "prompt": 0}
+    scanned = {"system_prompt": 0, "agent": 0, "skill": 0, "prompt": 0, "repo_agent": 0}
 
     if single_file is not None:
         if single_file.name == "copilot-instructions.md":
@@ -596,6 +627,9 @@ def run_validation(
         elif single_file.name.endswith(".prompt.md"):
             violations.extend(check_prompt(single_file, skills=skills, agents=agents))
             scanned["prompt"] = 1
+        elif single_file.name == "AGENTS.md":
+            violations.extend(check_repo_agent(single_file))
+            scanned["repo_agent"] = 1
         return violations, scanned
 
     if type_filter in (None, "system_prompt"):
@@ -616,6 +650,10 @@ def run_validation(
         for p in discover_prompts():
             violations.extend(check_prompt(p, skills=skills, agents=agents))
             scanned["prompt"] += 1
+    if type_filter in (None, "repo_agent"):
+        for a in discover_repo_agents():
+            violations.extend(check_repo_agent(a))
+            scanned["repo_agent"] += 1
     return violations, scanned
 
 
@@ -693,7 +731,8 @@ def format_text(violations: list[Violation], scanned: dict[str, int]) -> str:
         f"Scanned: system_prompt={scanned.get('system_prompt', 0)} "
         f"agents={scanned.get('agent', 0)} "
         f"skills={scanned.get('skill', 0)} "
-        f"prompts={scanned.get('prompt', 0)}"
+        f"prompts={scanned.get('prompt', 0)} "
+        f"repo_agents={scanned.get('repo_agent', 0)}"
     )
     lines.append(f"Summary: {summ['errors']} errors, {summ['warnings']} warnings")
     if summ["by_rule"]:
@@ -710,7 +749,7 @@ def build_parser() -> argparse.ArgumentParser:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     p.add_argument("--type",
-                   choices=["system_prompt", "agent", "skill", "prompt"])
+                   choices=["system_prompt", "agent", "skill", "prompt", "repo_agent"])
     p.add_argument("--file", metavar="PATH",
                    help="Validate a single CAG file (relative or absolute)")
     p.add_argument("--baseline", action="store_true",

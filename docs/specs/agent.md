@@ -42,6 +42,8 @@
 - It is not just a chat wrapper.
 - It is the engine's user-facing runtime for building persistent, configurable, multi-agent AI behavior on top of external or local language models.
 
+This module primarily collaborates with `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `network`: `src/agent/client.rs` delegates HTTP transport to `crate::network::http::execute_request`.

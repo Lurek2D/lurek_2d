@@ -55,6 +55,8 @@
 - Helps user-facing features like subtitles timing and hit feedback stay synchronized with actual playback state.
 - Serves as the core module for making game audio responsive, legible, and production-ready from script level.
 
+This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `dsp`: Imports or references `src/dsp/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.

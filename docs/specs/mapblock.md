@@ -34,6 +34,8 @@
 - Overall, users get a complete block-based map generation pipeline in one module.
 - The practical value is reliable procedural layout with explicit constraint control.
 
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

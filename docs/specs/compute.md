@@ -39,6 +39,8 @@
 - Improves iteration speed by keeping experimentation, diagnostics, and math-heavy logic in-engine.
 - Serves as the practical foundation for data-driven systems that depend on robust numeric primitives.
 
+This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

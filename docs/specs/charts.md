@@ -30,6 +30,8 @@
 - Helps turn raw counters into actionable feedback for tuning gameplay systems.
 - Gives projects a practical path from data collection to readable visual output in one module.
 
+This module primarily collaborates with `color`, `dataframe`, `image`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Cross-group dependency from ``Feature Systems`` into `Edge/Integration`.

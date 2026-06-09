@@ -23,6 +23,8 @@
 - Retro palettes accelerate thematic prototyping without manual color picking.
 - The module bridges art-facing color intent with runtime-safe numeric operations.
 
+This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

@@ -21,6 +21,8 @@
 - Channel and track controls support mute, solo, volume shaping, and instrument-level adjustment.
 - The module gives users scriptable MIDI sequencing that plugs cleanly into the engine audio runtime.
 
+This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.

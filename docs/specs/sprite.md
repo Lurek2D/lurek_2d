@@ -37,6 +37,8 @@
 - This makes sprite-heavy projects easier to scale and maintain.
 - Users gain consistent APIs from import through playback to batching.
 
+This module primarily collaborates with `animation`, `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `animation`: Imports or references `src/animation/`. Dependency stays inside `Feature Systems` and should remain acyclic.

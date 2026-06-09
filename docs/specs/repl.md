@@ -22,6 +22,8 @@
 - Completion scans keywords and live globals, including dot-path suggestions.
 - Value formatting produces readable output suited to interactive debugging sessions.
 
+This module is mostly self-contained inside the `Core Runtime` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

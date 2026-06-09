@@ -27,6 +27,8 @@
 - State export/import supports save persistence of visibility history.
 - The module owns visibility semantics, not renderer or AI policy.
 
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

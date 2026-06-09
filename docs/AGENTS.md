@@ -2,38 +2,27 @@
 
 Covers work under `docs/`.
 
-## Mission
-- Own repository docs, specs, contributor docs, and generated-doc policy.
-- Keep docs aligned with code and generators.
+## Mission & Scope
+- Manage the engine documentation architecture, including specifications, design documents, APIs reference, and contribution guidelines.
+- Enforce consistency rules between source code implementation, Lua annotations, and generated Markdown docs.
 
-## Scope
-- `docs/specs/`, `docs/architecture/`, `docs/api/`, and `docs/templates/`.
-- Root docs, indexes, and contributor-facing references.
-
-## Local map
-- `specs/` is the contract layer for module behavior.
-- `architecture/` holds design doctrine and migration notes.
-- `api/` is generated output.
-- `templates/` holds starter files for repo-local docs and guidance.
-- `modules/` and `wiki/` are downstream surfaces.
-- Root topic docs are downstream surfaces.
+## Files
+- `specs/`: Per-module specification files detailing boundaries, rules, and Lua API signatures.
+- `architecture/`: Holds system design diagrams and core platform constraints.
+- `api/`: Output directories for generated Lua types definitions and Markdown references.
+- `templates/`: Document structures blueprints for contracts, specs, and playbooks.
 
 ## Rules
-- Treat `docs/specs/` as canonical.
-- Do not hand-edit generated API output.
-- Resolve code drift before expanding prose.
-- Update the spec before dependent docs.
-- Keep one audience per section.
-- When Lua API docs drift, fix `src/lua_api/` and regenerate.
-- After large doc reshapes, run `python tools/audit/doc_coverage.py`.
+- Do not edit generated API document outputs directly; update Rust doc comments under `src/lua_api/` and rebuild them.
+- Keep Markdown file links functional; verify that document moves or renames do not break links.
+- When expanding specifications, preserve hand-written `## Summary` sections across regenerations.
+- Contributor documentation must target developers and modders, explaining technical constraints clearly.
 
 ## Workflow
-- Read the production code and affected spec first.
-- Update the spec, then the index, then dependent docs.
-- Preserve manual `Summary` content in `docs/specs/` and regenerate structure.
+- Verify doc link coverage and document formatting by running the link checker.
+- Rebuild API references using `python tools/gen_all_docs.py` after editing binding doc comments.
 
 ## References
 - `docs/specs/`
 - `CONTRIBUTING.md`
 - `README.md`
-- `docs/templates/`

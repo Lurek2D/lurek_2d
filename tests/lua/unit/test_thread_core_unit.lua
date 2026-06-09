@@ -148,6 +148,7 @@ describe("Thread handle creation", function()
     end)
 
     -- @covers LThread:isRunning
+    -- @covers LThreadHandle:isRunning
     -- @covers lurek.thread.newThread
     it("newThread isRunning returns false before start", function()
         local t = lurek.thread.newThread("return")
@@ -155,6 +156,7 @@ describe("Thread handle creation", function()
     end)
 
     -- @covers LThread:getError
+    -- @covers LThreadHandle:getError
     -- @covers lurek.thread.newThread
     it("newThread getError returns nil before start", function()
         local t = lurek.thread.newThread("return")
@@ -539,6 +541,8 @@ end)
 describe("thread strict: LThread start/wait", function()
     -- @covers LThread:start
     -- @covers LThread:wait
+    -- @covers LThreadHandle:start
+    -- @covers LThreadHandle:wait
     -- @covers lurek.thread.newThread
     it("LThread start and wait complete for trivial script", function()
         local t = lurek.thread.newThread("return 42")

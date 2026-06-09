@@ -28,6 +28,8 @@
 - Layer sets help organize multiple planes into reusable scene groups.
 - For users, this module turns depth presentation into a configurable runtime system.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

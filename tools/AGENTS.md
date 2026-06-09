@@ -2,46 +2,28 @@
 
 Covers work under `tools/`.
 
-## Mission
-- Own scripts, validation, packaging helpers, CI support, and tool documentation.
-- Keep automation reproducible from the repository itself.
+## Mission & Scope
+- Own the repository's scripting tools, code generator pipelines, code formatting and styling scripts, and release packaging logic.
+- Keep workspace development routines automated, repeatable, and fully self-contained.
+- Enforce policy gates, static link checks, and documentation generation scripts.
 
-## Scope
-- `tools/` scripts and command-line helpers.
-- Validation scripts, packaging helpers, and release support.
-
-## Local map
-- `audit/` and `validate/` are policy gates.
-- `rag/` owns repository retrieval and must match the root search workflow.
-- `docs/` and `snippets/` are generator layers.
-- `demos/`, `dist/`, and `mods/` are operator-facing helpers.
-- `dev/` contains local orchestration helpers.
-- `github/` contains migration and sync helpers.
-- `gen_all_docs.py` is the umbrella docs pipeline entrypoint.
+## Files
+- `audit/`: Auditing scripts verifying doc strings, examples, and link structures.
+- `validate/`: Validation suites verifying file schemas and CAG constraints.
+- `rag/`: Vector embedding and similarity query engine used for workspace search.
+- `gen_all_docs.py`: Umbrella documentation build script.
 
 ## Rules
-- Prefer checked-in scripts and explicit commands over hidden CI-only logic.
-- Keep local workflows, packaging scripts, and CI behavior aligned.
-- Update tool docs when script behavior changes.
-- Record platform and cache assumptions when they matter.
-- Keep generated or cached outputs out of source control unless they are part of the contract.
-- Prefer `python tools/dev/parallel_cargo.py` over raw `cargo` for repo-standard build, fmt, clippy, test, and doc flows.
-- Keep quality gates ordered from cheapest to most expensive.
-- Generated artifacts should land in the same change as the source or generator update.
-- Windows is the primary local platform.
-- Prefer repo-relative path handling.
-- If CI or release automation is added, define quality stages before packaging stages.
-- There is currently no committed `.github/workflows/` directory.
-- Pin build-tool versions explicitly.
-- Keep local packaging layout and CI artifact layout identical.
+- Avoid CI-only script setups; all build, packaging, and validation steps must be runnable locally on Windows.
+- Keep tool dependencies minimal; pin third-party Python or shell packages explicitly in tool documentation.
+- All code generation tools must output relative file paths inside the workspace directory.
+- Keep build/quality assurance checks ordered by speed, running lightweight syntax and link checkers before executing heavy cargo compiles.
 
 ## Workflow
-- Read the script or CLI entry point before editing supporting helpers.
-- Use this file, the touched script entry point, and any relevant README or architecture note as the source of truth.
-- Validate the narrowest command path first, then the broader release or CI gate.
-- Update docs whenever the operator flow or command contract changes.
+- Run code generation tasks via `python tools/gen_all_docs.py` before committing changes to source headers.
+- Run complete workspace checks with `python tools/validate/cag_validate.py`.
 
 ## References
-- `tools/README.md`
-- `.github/workflows/`
-- `.vscode/`
+- tools/validate/cag_validate.py
+- tools/audit/cag_link_check.py
+- tools/rag/

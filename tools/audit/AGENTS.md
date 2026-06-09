@@ -2,37 +2,28 @@
 
 Covers work under `tools/audit/`.
 
-## Mission
-- Own repository audit scripts, coverage reports, log parsers, and quality or profiling evidence tooling.
+## Mission & Scope
+- Own code quality audits, documentation coverage analyzers, and static analysis checkers.
+- Maintain tools that inspect code boundaries, verify spec alignment, and parse test logs.
+- Provide objective, script-driven reports on performance profiling, stress testing, and code health.
 
-## Scope
-- `tools/audit/` audit scripts, reports, and parsers.
-
-## Local map
-- `audit_module.py` is the module audit entry point.
-- `doc_coverage.py`, `test_coverage.py`, `parse_test_log.py`, and `stress_report.py` are the main helpers.
-- `logs/data/` and `logs/quality/` are primary analysis sources.
+## Files
+- `audit_module.py`: Main module-auditing entry point verifying specifications and test presence.
+- `cag_link_check.py`: Static analysis tool validating Markdown link target existence.
+- `doc_coverage.py`: Script evaluating complete API doc coverage in Rust and Lua source files.
+- `test_coverage.py`: Script calculating test-to-module coverage ratios.
 
 ## Rules
-- Keep audit outputs actionable: name the phase or gate, file or module, and failing condition.
-- Keep module audits checking boundaries, spec presence, Lua API coverage, example or wiki coverage, dependency direction, and banned patterns such as `println!` in engine modules.
-- Coverage tools and quality reports are evidence generators, not replacements for the governing spec or test contract.
-- Prefer reproducible scripts over manual interpretation.
-- Stress and performance helpers should point to a baseline-first workflow.
-- Parser changes must preserve compatibility with the harness or log format, or update the paired producer in the same task.
-- Check schema shape before aggregating telemetry.
-- Statistical claims need enough comparable samples and a single engine version.
-- Performance gates should assume release-mode measurements.
-- Use `stress_report.py` or the existing perf gate before ad hoc profiling.
-- Keep performance reports attributable.
+- Audits must print precise, actionable diagnostics, detailing the target file, line number, and exact policy violation.
+- Flag banned code patterns such as using `println!` or `eprintln!` directly within core engine modules (use `lurek.log` channels instead).
+- All profiling/stress audit reports must be calculated based on release-mode binary builds.
+- Parsers must be tested to ensure backward compatibility with historical test log files.
 
 ## Workflow
-- Read the audit script entry point before changing helper modules or report formats.
-- Validate the narrowest script or report path first, then rerun the broader gate that depends on it.
+- Run individual checks (e.g., `python tools/audit/cag_link_check.py --strict`) to trace links.
+- Audit a specific engine module using `python tools/audit/audit_module.py --module <name>`.
 
 ## References
-- `tools/audit/audit_module.py`
-- `tools/audit/doc_coverage.py`
-- `tools/audit/test_coverage.py`
-- `tools/audit/parse_test_log.py`
-- `tools/audit/stress_report.py`
+- tools/audit/audit_module.py
+- tools/audit/cag_link_check.py
+- tools/audit/doc_coverage.py

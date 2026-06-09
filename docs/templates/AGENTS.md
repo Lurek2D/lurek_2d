@@ -2,33 +2,26 @@
 
 Covers work under `docs/templates/`.
 
-## Mission
-- Own the starter templates for repo contracts, skills, prompts, specs, and system guidance.
-- Keep template text aligned with the live directory structure.
+## Mission & Scope
+- Own the blueprint and template files defining structural guidelines for role configs, skills, specifications, and scripts.
+- Enforce visual layout standards and metadata properties for all system documentation templates.
+- Guide developers in initializing workspace documents consistently, ensuring zero structural drift.
 
-## Scope
-- `docs/templates/` template files.
-- Repo-local contract, skill, prompt, spec, and system scaffolds.
-
-## Local map
-- `AGENT_TEMPLATE.md` is the source for repo-local `AGENTS.md` files.
-- `SKILL_TEMPLATE.md` is the source for `.codex/skills/*/SKILL.md`.
-- `PROMPT_TEMPLATE.md` is the source for workflow prompt scaffolds.
-- `SPEC_TEMPLATE.md` is the source for `docs/specs/<module>.md`.
-- `SYSTEM_PROMPT_TEMPLATE.md` is the source for the always-loaded repo contract.
+## Files
+- `AGENT_TEMPLATE.md`: Reference configuration format for active Codex role profiles.
+- `SKILL_TEMPLATE.md`: Reusable playbook outline representing codex task procedures.
+- `PROMPT_TEMPLATE.md`: Blueprint structure for system workflow prompt files.
+- `SPEC_TEMPLATE.md`: Document structure guideline for module specifications under `docs/specs/`.
 
 ## Rules
-- Keep template files lean and specific.
-- Update templates when the folder layout changes.
-- Update downstream docs or scaffolds after a template change.
+- Templates must contain only structural headers and placeholder annotations; do not hardcode feature-specific rules.
+- If a template format is updated, manually audit all downstream files using it to ensure complete compliance.
+- Any template changes must match the layout rules checked by the workspace validation suites.
 
 ## Workflow
-- Copy the nearest template, then fill it with folder-specific detail.
-- If a template changes, update the files generated from it.
+- Copy the target template layout when creating a new specification, agent role, or skill handbook.
+- Validate the workspace following template updates with `python tools/validate/cag_validate.py`.
 
 ## References
-- `AGENT_TEMPLATE.md`
-- `SKILL_TEMPLATE.md`
-- `PROMPT_TEMPLATE.md`
-- `SPEC_TEMPLATE.md`
-- `SYSTEM_PROMPT_TEMPLATE.md`
+- docs/specs/SPEC_TEMPLATE.md
+- tools/validate/cag_validate.py

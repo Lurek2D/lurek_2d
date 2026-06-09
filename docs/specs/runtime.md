@@ -45,6 +45,8 @@
 - It keeps shared execution behavior explicit, observable, and maintainable.
 - Without it, resource and lifecycle ownership would fragment across subsystems.
 
+This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `audio`: Imports or references `audio` from `src/audio/`.

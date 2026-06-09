@@ -52,6 +52,8 @@
 - Overall, procgen is the data-synthesis backbone for procedural world workflows.
 - It lets teams scale content variety without proportional authoring cost.
 
+This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

@@ -35,6 +35,8 @@
 - The module owns process lifecycle, frame orchestration, callback safety, and top-level diagnostics.
 - Domain modules provide behavior, but `app` keeps the host responsive, ordered, and recoverable.
 
+This module primarily collaborates with `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, and adjacent engine modules. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `event`: Imports or references `event` from `src/event/`.

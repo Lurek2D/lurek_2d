@@ -41,3 +41,5 @@ describe("High-level audio manager API", function()
         end)
     end)
 end)
+
+test_summary()

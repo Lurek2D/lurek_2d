@@ -2,29 +2,27 @@
 
 Covers work under `content/layouts/`.
 
-## Mission
-- Own TOML UI layout assets used by the engine UI system.
-- Keep layout data clean, grid-aligned, and compatible with engine evidence paths.
+## Mission & Scope
+- Own TOML UI layout coordinate files defining screen alignments, flexboxes, and node structures.
+- Maintain coordinate alignment and syntax validity for all standalone apps and game layouts.
+- Keep coordinate data structured and snapped to consistent pixel boundaries for multi-resolution support.
 
-## Scope
-- `content/layouts/apps/` and `content/layouts/games/`.
-- TOML layout authoring conventions and layout maintenance helpers.
-
-## Local map
-- `apps/` is for standalone application layouts.
-- `games/` is for in-game HUD or menu layouts.
+## Files
+- `apps/`: UI layouts for standalone tools and debug overlays (e.g., settings panels, debugger).
+- `games/`: In-game HUDs, health bars, inventory grids, and main menus.
 
 ## Rules
-- Use `snake_case` IDs and keep them unique within a file.
-- Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` before finalizing coordinate-heavy edits.
-- Run `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix` after hand-editing.
-- Do not rely on the removed `tools/ui/render_layout.py` flow.
+- Component IDs must use `snake_case` and remain unique within a single layout file.
+- Always snap layout coordinates to an 8-pixel boundary to prevent subpixel layout rendering issues.
+- Prefer dynamic flexbox directions, wrapping, and alignment properties over hardcoded coordinate offsets where possible.
+- Never add custom/undocumented keys that are not supported by the engine layout deserializer.
 
 ## Workflow
-- Use engine-driven validation paths such as `tests/lua/evidence/test_gui_evidence.lua` or the layout renderer game under `content/games/tools/` when you need visual proof.
+- Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` to enforce grid snapping.
+- Auto-format layout syntax using `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
+- Verify visual output with `tests/lua/evidence/test_gui_evidence.lua` or `content/games/tools/layout_toml_renderer/`.
 
 ## References
-- `tools/ui/snap_to_grid.py`
-- `tools/ui/fix_layouts.py`
-- `tests/lua/evidence/test_gui_evidence.lua`
-- `content/games/tools/layout_toml_renderer/`
+- tools/ui/snap_to_grid.py
+- tools/ui/fix_layouts.py
+- tests/lua/evidence/test_gui_evidence.lua

@@ -37,6 +37,8 @@
 - It collaborates with image/render/runtime/spine, but animation state policy lives here.
 - Use it when animation must be authorable, queryable, synchronized, and blendable at runtime.
 
+This module primarily collaborates with `image`, `math`, `render`, `runtime`, `spine`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.

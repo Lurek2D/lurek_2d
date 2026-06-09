@@ -25,6 +25,8 @@
 - Cache identity and discovery are centralized here for predictable sharing.
 - Decoding and rendering stay in feature-specific modules instead of the cache layer.
 
+This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

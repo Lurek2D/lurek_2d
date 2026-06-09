@@ -23,7 +23,7 @@ local function make_test_tilemap()
     return map
 end
 -- -- newWalker --
--- @covers lurek.camera
+-- @covers lurek.camera.newWalker
 it("creates a walker from a tilemap", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, {
@@ -39,7 +39,7 @@ it("creates a walker from a tilemap", function()
     assert_equal("LCameraWalker", walker:type())
 end)
 -- -- newWalker --
--- @covers lurek.camera
+-- @covers lurek.camera.newWalker
 it("creates walker with default options", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map)
@@ -47,7 +47,7 @@ it("creates walker with default options", function()
     assert_equal("LCameraWalker", walker:type())
 end)
 -- -- setPosition --
--- @covers lurek.camera
+-- @covers LCameraWalker:setPosition
 it("sets walker world position", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map)
@@ -66,7 +66,7 @@ it("returns walker world position", function()
     assert_near(y, 96, 0.1)
 end)
 -- -- setTilePosition --
--- @covers lurek.camera
+-- @covers LCameraWalker:setTilePosition
 it("sets walker tile position (1-based)", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
@@ -85,7 +85,7 @@ it("returns walker tile position (1-based)", function()
     assert_equal(3, ty)
 end)
 -- -- moveUp --
--- @covers lurek.camera
+-- @covers LCameraWalker:moveUp
 it("moves walker up (negative Y)", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 100, y = 100, speed = 50 })
@@ -94,7 +94,7 @@ it("moves walker up (negative Y)", function()
     assert_true(y < 100)
 end)
 -- -- moveDown --
--- @covers lurek.camera
+-- @covers LCameraWalker:moveDown
 it("moves walker down (positive Y)", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 100, y = 100, speed = 50 })
@@ -103,7 +103,7 @@ it("moves walker down (positive Y)", function()
     assert_true(y > 100)
 end)
 -- -- moveLeft --
--- @covers lurek.camera
+-- @covers LCameraWalker:moveLeft
 it("moves walker left (negative X)", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 100, y = 100, speed = 50 })
@@ -112,7 +112,7 @@ it("moves walker left (negative X)", function()
     assert_true(x < 100)
 end)
 -- -- moveRight --
--- @covers lurek.camera
+-- @covers LCameraWalker:moveRight
 it("moves walker right (positive X)", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 100, y = 100, speed = 50 })
@@ -121,7 +121,7 @@ it("moves walker right (positive X)", function()
     assert_true(x > 100)
 end)
 -- -- update --
--- @covers lurek.camera
+-- @covers LCameraWalker:update
 it("updates walker camera target", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 50, y = 50 })
@@ -140,14 +140,14 @@ it("returns associated camera", function()
     assert_equal("LCamera", cam:type())
 end)
 -- -- type --
--- @covers lurek.camera
+-- @covers LCameraWalker:type
 it("reports correct type name", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map)
     assert_equal("LCameraWalker", walker:type())
 end)
 -- -- typeOf --
--- @covers lurek.camera
+-- @covers LCameraWalker:typeOf
 it("checks type via typeOf", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map)
@@ -156,7 +156,7 @@ it("checks type via typeOf", function()
     assert_false(walker:typeOf("LCamera"))
 end)
 -- -- moveUp --
--- @covers lurek.camera
+-- @covers LCameraWalker:moveUp
 it("respects small time delta for movement", function()
     local map = make_test_tilemap()
     local walker = lurek.camera.newWalker(map, { x = 100, y = 100, speed = 100 })

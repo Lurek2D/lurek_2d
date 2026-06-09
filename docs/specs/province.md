@@ -47,6 +47,8 @@
 - It balances import flexibility with strict runtime state ownership.
 - The module supports both game presentation and tooling workflows.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.

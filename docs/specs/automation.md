@@ -25,6 +25,8 @@
 - Script replay reduces manual smoke testing across gameplay, UI, and input-heavy systems.
 - The module exists as the user-facing foundation for regression automation.
 
+This module primarily collaborates with `event`, `input`, `runtime`, `timer`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `event`: Imports or references `event` from `src/event/`.

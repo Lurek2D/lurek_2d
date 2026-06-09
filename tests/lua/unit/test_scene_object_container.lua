@@ -36,7 +36,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(container:getCount() == 3, "container should have three objects")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:remove
+    -- @covers LSceneObjectContainer:remove
     it("removes an object from the container", function()
         local container = lurek.scene.newObjectContainer()
         local obj = { layer = 1 }
@@ -46,7 +46,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(container:getCount() == 0, "should have zero objects after remove")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:remove
+    -- @covers LSceneObjectContainer:remove
     it("silently ignores remove of non-present object", function()
         local container = lurek.scene.newObjectContainer()
         local obj1 = { layer = 1 }
@@ -56,7 +56,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(container:getCount() == 1, "removing non-present object should not affect others")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:clear
+    -- @covers LSceneObjectContainer:clear
     it("removes all objects", function()
         local container = lurek.scene.newObjectContainer()
         container:add({ layer = 1 })
@@ -67,7 +67,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(container:getCount() == 0, "container should be empty after clear")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:update
+    -- @covers LSceneObjectContainer:update
     it("calls update on objects with update method", function()
         local container = lurek.scene.newObjectContainer()
         local update_called = false
@@ -82,7 +82,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(update_called == true, "update method should be called on objects")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:update
+    -- @covers LSceneObjectContainer:update
     it("passes dt parameter to update method", function()
         local container = lurek.scene.newObjectContainer()
         local dt_value = nil
@@ -97,7 +97,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(dt_value == 0.033, "update should receive correct dt value")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:update
+    -- @covers LSceneObjectContainer:update
     it("ignores objects without update method", function()
         local container = lurek.scene.newObjectContainer()
         local obj = { layer = 1, x = 5 }  -- no update method
@@ -107,7 +107,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(true, "should not error on objects without update")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:draw
+    -- @covers LSceneObjectContainer:draw
     it("calls draw on objects with draw method", function()
         local container = lurek.scene.newObjectContainer()
         local draw_called = false
@@ -122,7 +122,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(draw_called == true, "draw method should be called on objects")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:draw
+    -- @covers LSceneObjectContainer:draw
     it("ignores objects without draw method", function()
         local container = lurek.scene.newObjectContainer()
         local obj = { layer = 1 }  -- no draw method
@@ -132,7 +132,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(true, "should not error on objects without draw")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:draw
+    -- @covers LSceneObjectContainer:draw
     it("draws objects in layer order (ascending)", function()
         local container = lurek.scene.newObjectContainer()
         local draw_order = {}
@@ -165,7 +165,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(draw_order[3] == 2, "layer 2 should be drawn third")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:draw
+    -- @covers LSceneObjectContainer:draw
     it("draws same-layer objects in insertion order", function()
         local container = lurek.scene.newObjectContainer()
         local draw_order = {}
@@ -201,7 +201,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(draw_order[3] == "third", "third object should be drawn third")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:getCount
+    -- @covers LSceneObjectContainer:getCount
     it("reports correct object count", function()
         local container = lurek.scene.newObjectContainer()
         assert(container:getCount() == 0, "initial count is 0")
@@ -216,7 +216,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(container:getCount() == 0, "count is 0 after clear")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:getObjects
+    -- @covers LSceneObjectContainer:getObjects
     it("returns objects table", function()
         local container = lurek.scene.newObjectContainer()
         local obj1 = { id = 1 }
@@ -239,7 +239,7 @@ describe("lurek.scene.newObjectContainer", function()
         assert(container:has(missing) == false, "has should be false for missing object")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:getByLayer
+    -- @covers LSceneObjectContainer:getByLayer
     it("getByLayer returns only objects from the requested layer", function()
         local container = lurek.scene.newObjectContainer()
         local a = { id = "a", layer = 2 }
@@ -255,13 +255,13 @@ describe("lurek.scene.newObjectContainer", function()
         assert(layer2[1] == a and layer2[2] == b, "layer list should preserve insertion order")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:type
+    -- @covers LSceneObjectContainer:type
     it("reports correct type name", function()
         local container = lurek.scene.newObjectContainer()
         assert(container:type() == "LSceneObjectContainer", "type() should return LSceneObjectContainer")
     end)
 
-    -- @covers lurek.scene.newObjectContainer:typeOf
+    -- @covers LSceneObjectContainer:typeOf
     it("checks type by name via typeOf", function()
         local container = lurek.scene.newObjectContainer()
         assert(container:typeOf("LSceneObjectContainer") == true, "typeOf should recognize LSceneObjectContainer")

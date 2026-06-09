@@ -32,6 +32,8 @@
 - The result is faster experimentation and more consistent presentation quality.
 - Overall, it provides the practical runtime layer for stylized rendering workflows.
 
+This module primarily collaborates with `image`, `overlay`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

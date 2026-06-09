@@ -31,6 +31,8 @@
 - The module is useful for character animation, articulated props, and procedural pose adjustments.
 - For users, it centralizes rig playback and control without custom per-character math.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

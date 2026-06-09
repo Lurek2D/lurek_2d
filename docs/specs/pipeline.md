@@ -33,6 +33,8 @@
 - The module is useful for content pipelines, setup sequences, and orchestration-heavy tools.
 - For users, it replaces fragile ad-hoc sequencing with explicit, reusable workflow contracts.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

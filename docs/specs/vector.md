@@ -23,6 +23,8 @@
 - Bounds and sampled points support gameplay and tooling workflows.
 - Subtree canvas caching reduces repeated draw cost for complex vector groups.
 
+This module primarily collaborates with `math`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.

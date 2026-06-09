@@ -25,6 +25,8 @@
 - File rotation controls support long sessions without unbounded log growth.
 - For users, this module centralizes diagnostics flow instead of scattering print logic across scripts.
 
+This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `binary`: Imports or references `src/binary/`. Cross-group dependency from `Foundations` into `Edge/Integration`.

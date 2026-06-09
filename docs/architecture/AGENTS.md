@@ -2,40 +2,28 @@
 
 Covers work under `docs/architecture/`.
 
-## Mission
-- Own architecture decisions, boundaries, dependency direction, migration paths, and option analysis.
-- Keep design work separate from implementation work.
+## Mission & Scope
+- Design the overarching architectural patterns, dependency structures, and boundary directions for Lurek2D.
+- Maintain comprehensive, high-level design documents (such as rendering pipeline logic and scripting bridges).
+- Document and govern major technical decisions, comparing concrete design options before execution.
 
-## Scope
-- `docs/architecture/` design notes and decisions.
-- Cross-module contracts, dependency maps, and migration paths.
-
-## Local map
-- `developer-ecosystem.md` is the current CAG doctrine.
-- `cag-system.md` is only a compatibility pointer.
-- `developer-workflow.md` is for contributor-flow or setup changes.
-- `engine-core.md`, `render-pipeline.md`, and `scripting-bridge.md` are the main technical anchors.
-- `quality-assurance.md` and `build-and-distribution.md` cover delivery and validation.
+## Files
+- `developer-ecosystem.md`: Doctrine for active context-augmented guidance (CAG) and roles.
+- `developer-workflow.md`: Contributor workflow guidelines, setup procedures, and branch conventions.
+- `engine-core.md` / `render-pipeline.md` / `scripting-bridge.md`: Technical anchor documents detailing engine internals.
+- `quality-assurance.md` / `build-and-distribution.md`: Governance files covering testing frameworks and deployment.
 
 ## Rules
-- Define ownership, dependency direction, and gates before large refactors.
-- Compare real options when the choice is non-trivial.
-- Keep option sets small and include status quo when no change may be needed.
-- Prefer small migration steps with fallback and rollback paths.
-- Flag cyclic dependencies, boundary leaks, and missing fallback paths.
-- Keep notes decision-oriented.
-- Follow the authority chain: binding constraints -> engine structure -> module specs -> CAG layer.
-- Record the chosen path, rejected alternatives, residual risk, and next owner.
-- If a task uses TOGAF, read `togaf.md` first and treat it as an analysis lens.
-- Keep generic architecture assets in `docs/architecture/`; keep module or workflow detail in specs and nested contracts.
+- Always identify architectural options, comparing trade-offs, residual risks, and rollback strategies before large refactors.
+- Strictly flag cyclic module dependencies, state leaks, and missing API fallback paths.
+- Ensure all architecture modifications preserve constraints from the main system prompt (e.g., desktop-only, wgpu 22, LuaJIT main).
+- Keep high-level architecture documents in this folder; do not duplicate low-level module implementation specifications.
 
 ## Workflow
-- Read the nearest specs, module layout, and existing architecture notes first.
-- Use this file plus the affected specs and notes as the authority for design work.
-- Write the chosen path, rejected alternatives, and the gate the implementer should use.
-- Keep the change sequence small enough to review independently.
+- Run `python tools/audit/cag_link_check.py --strict` to verify internal document link integrity.
+- Review current specs in `docs/specs/` before drafting any design change proposal.
 
 ## References
-- `docs/specs/`
-- `src/`
-- `tests/`
+- docs/specs/
+- src/
+- docs/architecture/developer-ecosystem.md

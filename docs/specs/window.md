@@ -31,6 +31,8 @@
 - For users, it centralizes OS window interactions behind one scriptable API surface.
 - It reduces platform-quirk handling in gameplay and UI scripts.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

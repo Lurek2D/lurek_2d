@@ -2,51 +2,30 @@
 
 Covers work under `src/`.
 
-## Mission
-- Own the Rust engine path: runtime, renderer, physics, audio, assets, and internal glue.
-- Keep `src/lua_api/` thin and contract-only.
+## Mission & Scope
+- Own the Rust engine runtime codebase, including the renderer, physics, audio, asset manager, and main window.
+- Keep the Lua-to-Rust binding edge (`src/lua_api/`) thin, restricted strictly to serialization and API routing.
+- Maintain decoupled internal module boundaries and narrow testability seams without exposing internal data structures.
 
-## Scope
-- `src/` Rust modules, services, and internal runtime flow.
-- Engine subsystems and cross-module refactors that stay inside engine code.
-- Narrow testability seams that do not widen the public API.
-
-## Local map
-- `lib.rs` is the shared crate surface; `main.rs` is the desktop entrypoint.
-- `lua_api/` is the binding edge.
-- `app/`, `runtime/`, `window/`, `input/`, `event/`, and `timer/` cover runtime and platform flow.
-- `asset/`, `filesystem/`, `serialize/`, and `save/` cover asset and persistence work.
-- `render/`, `sprite/`, `tilemap/`, `ui/`, `layout/`, `camera/`, `effect/`, and `visibility/` cover rendering and scene composition.
-
-## Nested contracts
-- Keep `docs/specs/<module>.md` as the default contract layer for top-level `src/<module>/` directories.
-- Add a nested `AGENTS.md` only when a subtree has durable, module-specific rules that are not already covered by the spec and would otherwise be rediscovered on repeat work.
-- The current intentional exceptions are `src/lua_api/`, `src/runtime/`, `src/render/`, `src/thread/`, `src/filesystem/`, `src/log/`, and `src/ai/`.
-- If a nested contract is added or removed, keep the matching spec, examples, and coverage in sync in the same task.
+## Files
+- `lib.rs`: Entrypoint library exposing subsystems to the main runner.
+- `main.rs`: Standalone binary bootstrapping the game window, graphics context, and event loop.
+- `lua_api/`: Binding layer exposing the public `lurek.*` namespaces.
+- `app/` / `runtime/`: Application core orchestrators and execution frameworks.
 
 ## Rules
-- Find the root cause before broad refactors.
-- Start from a failing test, demo, or save fixture before reading large areas.
-- Keep bindings thin and move logic into engine modules.
-- Do not hold `borrow_mut()` or equivalent across Lua callbacks.
-- Prefer explicit imports and narrow visibility.
-- Use `pub(crate)` for test-only seams and say so in the doc comment.
-- Prefer `Path` and `PathBuf` over hardcoded separators.
-- Avoid `unsafe`; if needed, add a focused `// SAFETY:` comment with the exact invariant.
-- Keep `mod.rs` export-only.
-- Lua-crossing closures must return `mlua::Result` and add context before the error reaches scripts.
-- When public behavior changes, update matching specs and tests in the same task.
-- Common bug classes here are borrow panics across Lua callbacks, stale registry state after reloads, callback ordering mistakes, skipped runtime init transitions, and dropped thread or channel results.
+- Keep `src/lua_api/` thin; write all gameplay logic and state management inside dedicated Rust modules in `src/`.
+- Do not hold mutable borrow locks (`borrow_mut()`) on shared state across mlua callbacks or yielding frames.
+- Use `pub(crate)` visibility to expose test seams and document the testing invariant.
+- Document any `unsafe` block with a clear, verifiable `// SAFETY:` invariant comment.
+- Keep `mod.rs` files strictly export-only; do not write business logic or types directly inside them.
+- Ensure all mlua-crossing closures handle errors gracefully and return `mlua::Result` instead of panicking.
 
 ## Workflow
-- Read the nearest spec and tests before editing engine code.
-- Use this file, the nearest spec, and the relevant architecture notes as the source of truth.
-- Make the smallest edit that satisfies the gate.
-- Validate with the narrowest relevant test or benchmark first, then the broader gate.
-- If a change touches `lurek.*`, keep `src/lua_api/` and generated docs in sync.
+- Run local unit tests using `cargo test` and format using `cargo clippy -- -D warnings`.
+- If an mlua binding signature is changed, rebuild all public interfaces via `python tools/gen_all_docs.py`.
 
 ## References
-- `docs/specs/`
-- `tests/rust/unit/`
-- `tests/lua/`
-- `src/lua_api/`
+- docs/specs/
+- tests/rust/
+- src/lua_api/

@@ -26,6 +26,8 @@
 - Default-merge helpers fill missing fields from schema definitions.
 - Path-specific validation errors make malformed data easier to diagnose quickly.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.

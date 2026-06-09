@@ -80,6 +80,8 @@
 - In practice, every frame quality issue eventually converges here.
 - The module provides the controls needed to diagnose and fix those issues.
 
+This module primarily collaborates with `font`, `image`, `light`, `math`, `runtime`, `sprite`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.

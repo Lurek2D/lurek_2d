@@ -33,6 +33,8 @@
 - Overall, users get a structured, scriptable mod platform inside the engine.
 - This makes third-party content integration much easier to govern.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

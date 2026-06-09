@@ -42,6 +42,8 @@
 - Overall, this module provides a full graph logistics toolkit for systemic gameplay design.
 - Teams get both expressive modeling and deterministic execution in a single API boundary.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Foundations` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

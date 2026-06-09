@@ -443,7 +443,7 @@ describe("lurek.asset module", function()
         lurek.asset.unload(h)
     end)
 
-    -- @covers lurek.asset
+    -- @covers lurek.asset.getTags
     it("getTags returns array of all added tags", function()
         local h = lurek.asset.load(PATH_JSON, "json")
         lurek.asset.addTag(h, "a")
@@ -454,7 +454,7 @@ describe("lurek.asset module", function()
         lurek.asset.unload(h)
     end)
 
-    -- @covers lurek.asset
+    -- @covers lurek.asset.getTags
     it("getTags is empty for untagged asset", function()
         local h = lurek.asset.load(PATH_JSON, "text")
         local tags = lurek.asset.getTags(h)

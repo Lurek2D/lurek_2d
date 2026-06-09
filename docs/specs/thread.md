@@ -27,6 +27,8 @@
 - For users, this module provides practical concurrency without exposing unsafe memory sharing.
 - It helps offload heavy tasks while keeping frame loop responsiveness.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

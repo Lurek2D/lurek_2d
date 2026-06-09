@@ -61,6 +61,8 @@
 - It keeps mathematical behavior predictable as feature complexity increases.
 - In short, it is the engine's core quantitative infrastructure.
 
+This module primarily collaborates with `globe`, `image`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `globe`: Imports or references `src/globe/`. Cross-group dependency from `Foundations` into `Feature Systems`.

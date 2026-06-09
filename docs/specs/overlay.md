@@ -34,6 +34,8 @@
 - Overall, users get a practical visual polish toolkit tightly integrated with runtime control.
 - This helps teams ship more consistent and expressive scene transitions.
 
+This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.

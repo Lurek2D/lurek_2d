@@ -64,6 +64,13 @@ AGENT_REQUIRED_SECTIONS = (
     "Anti-patterns",
 )
 
+REPO_AGENT_REQUIRED_SECTIONS = (
+    "Mission & Scope",
+    "Files",
+    "Rules",
+    "Workflow",
+)
+
 SKILL_REQUIRED_SECTIONS = (
     "Mission",
     "When To Load",
@@ -374,12 +381,22 @@ def discover_prompts() -> list[Path]:
     return sorted(p for p in PROMPTS_DIR.glob("*.prompt.md"))
 
 
+def discover_repo_agents() -> list[Path]:
+    out: list[Path] = []
+    for p in WORKSPACE_ROOT.rglob("AGENTS.md"):
+        if ".git" in p.parts or "target" in p.parts or "node_modules" in p.parts:
+            continue
+        out.append(p)
+    return sorted(out)
+
+
 def discover_all() -> dict[str, list[Path]]:
     out = {
         "system_prompt": [SYSTEM_PROMPT] if SYSTEM_PROMPT.exists() else [],
         "agent": discover_agents(),
         "skill": discover_skills(),
         "prompt": discover_prompts(),
+        "repo_agent": discover_repo_agents(),
     }
     return out
 
@@ -560,11 +577,11 @@ __all__ = [
     "PERSONAS", "CAG_TYPES",
     "SYSTEM_PROMPT_REQUIRED_SECTIONS", "SYSTEM_PROMPT_POINTER",
     "AGENT_REQUIRED_SECTIONS", "SKILL_REQUIRED_SECTIONS",
-    "PROMPT_REQUIRED_SECTIONS",
+    "PROMPT_REQUIRED_SECTIONS", "REPO_AGENT_REQUIRED_SECTIONS",
     "Frontmatter", "parse_frontmatter", "body_after_frontmatter",
     "parse_cag_metadata_section",
     "LinkRef", "extract_links", "strip_fenced_blocks", "find_fenced_block_lines",
-    "discover_agents", "discover_skills", "discover_prompts", "discover_all",
+    "discover_agents", "discover_skills", "discover_prompts", "discover_repo_agents", "discover_all",
     "known_agent_names", "known_skill_names", "known_prompt_names",
     "find_sections", "has_section", "first_section_line",
     "relpath", "safe_read",

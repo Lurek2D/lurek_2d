@@ -2,31 +2,24 @@
 
 Covers work under `docs/api/`.
 
-## Mission
-- Own the generated API reference for Lua and Rust-facing docs.
-- Keep published API docs synced with source docstrings and specs.
+## Mission & Scope
+- Manage the generated Lua and Rust API reference documentation.
+- Maintain consistency between source code binding annotations and final output formats.
+- Prevent manual edit drift by keeping output documents strictly derived from engine source code.
 
-## Scope
-- `docs/api/` generated API pages.
-- Lua and Rust-facing reference output.
-
-## Local map
-- `lurek.md` and `rust.md` are generated outputs.
-- `src/lua_api/` is the source edge.
-- `docs/specs/` defines ownership and behavior.
+## Files
+- `lurek.md`: Compiled markdown reference sheet for the `lurek.*` namespace.
+- `lurek.lua`: EmmyLua/LDoc type declarations used for IDE code completion.
 
 ## Rules
-- Treat `docs/api/` as generated output.
-- Do not hand-edit rendered pages when docstrings or spec inputs are the real fix.
-- Regenerate API docs when `src/lua_api/<module>_api.rs` changes.
-- Keep anchors and headings stable.
-- If generator output shifts unexpectedly, fix the source docstring or generator and rerun the pipeline.
+- All files in this directory are generated; never edit them directly.
+- Modify the source doc comments under `src/lua_api/` when correcting spelling, signatures, or behavior notes.
+- Verify that regenerations preserve anchor tags and do not break external reference links.
 
 ## Workflow
-- Read the owning spec and source docstrings before editing the API surface.
-- Regenerate with the normal docs pipeline after API-visible changes and verify the diff.
+- Run `python tools/gen_all_docs.py` to rebuild output files after editing Lua binding definitions.
 
 ## References
-- `src/lua_api/`
-- `docs/specs/`
-- `tools/gen_all_docs.py`
+- src/lua_api/
+- docs/api/lurek.md
+- tools/gen_all_docs.py

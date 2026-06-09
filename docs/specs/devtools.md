@@ -37,6 +37,8 @@
 - The practical result is faster root-cause discovery and cleaner release stabilization.
 - Users gain visibility, control, and repeatable evidence from one integrated debug surface.
 
+This module primarily collaborates with `filesystem`, `repl`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.

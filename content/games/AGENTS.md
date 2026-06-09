@@ -2,30 +2,27 @@
 
 Covers work under `content/games/`.
 
-## Mission
-- Own runnable demo and game folders under the category tree.
-- Keep headless checks and runtime entry points aligned.
+## Mission & Scope
+- Deliver category-grouped 2D game demos, simulations, and prototypes showcasing real-world game logic in Lurek2D.
+- Maintain standard configuration templates and lifecycle entry points across all games.
+- Ensure every game is fully runnable and compliant with automated smoke tests and headless runners.
 
-## Scope
-- `content/games/<category>/<name>/`.
-- Demo `main.lua` files and optional local config files.
-
-## Local map
-- Category folders group runnable projects.
-- `main.lua` is the required entry point.
-- `conf.toml` and `conf.lua` are optional local config files.
+## Files
+- `README.md`: List of all games grouped by categories (e.g., `action/`, `arcade/`, `rpg/`, `simulation/`).
+- `*/main.lua`: Required entry points implementing game loops and callbacks.
+- `*/conf.toml`: Optional local configs specifying window settings and asset dependencies.
+- `*/screen.png`: Visual preview screenshots used in catalog indexing.
 
 ## Rules
-- Each game folder needs a real `main.lua`.
-- `main.lua` should expose an entry callback, a tick callback, and `lurek.draw`.
-- Optional config files must still declare meaningful window settings.
-- Do not call `lurek.window.present` directly from demo code.
-- Use the existing category buckets instead of inventing ad hoc top-level groups.
+- Every game folder must have a valid `main.lua` entry script implementing the required callbacks (tick, physics, draw).
+- Never invoke low-level window buffers or manual presentation swaps like `lurek.window.present`; frame swaps are owned by the engine runtime.
+- Keep all local game states isolated inside local tables or module scopes to facilitate hot-reloading.
+- Custom game assets must live exclusively inside the game's subdirectory and be loaded via relative paths.
 
 ## Workflow
-- Read `tests/lua/demos/_common_checks.lua` before changing shared demo structure.
-- Use the narrowest relevant `tests/lua/demos/test_<name>.lua` or other game-facing validation first.
+- Run individual game demos via `python tools/dev/parallel_cargo.py run debug -- content/games/<category>/<name>/main.lua`.
+- Validate all games load and capture screenshots using `python tools/demos/smoke_sweep.py --kind game`.
 
 ## References
-- `tests/lua/demos/_common_checks.lua`
-- `tests/games_load_test.rs`
+- content/games/README.md
+- tests/games_load_test.rs

@@ -2,36 +2,29 @@
 
 This file adds local rules for work under `docs/specs/`.
 
-## Mission
-- Own the per-module reference layer for `src/<module>/`.
-- Keep manual intent and generated structure clearly separated.
+## Mission & Scope
+- Own the per-module reference layer detailing internal and external APIs for every `src/<module>/` package.
+- Keep hand-written architectural intent and programmatically generated documentation clearly separated.
+- Maintain a complete coverage index, ensuring that all engine changes sync with their respective specifications.
 
-## Scope
-- `docs/specs/*.md` module spec files.
-- `docs/specs/README.md` and spec navigation updates.
-- Spec generator and validator sync for module coverage.
+## Files
+- `README.md`: Master index and tiering guide for the specification corpus.
+- `SPEC_TEMPLATE.md`: Template outline showing the required section layout for a new specification.
+- `*.md` files (e.g., `physics.md`, `render.md`): Module-specific specifications.
 
-## Local map
-- `README.md` is the index and production guide for the whole spec corpus.
-- `SPEC_TEMPLATE.md` is the structure reference for new or reworked specs.
-- `tools/docs/gen_module_specs.py` rebuilds the generated sections.
-- `tools/validate/validate_module_coverage.py` is the coverage gate for top-level `src/` modules.
-
-## Local rules
-- Treat each `docs/specs/<module>.md` as the contract for one top-level `src/<module>/` directory.
-- `## Summary` is hand-curated prose; `## General Info`, `## Imports`, `## Files`, and `## Lua API Ref` are generator-owned.
-- Do not hand-edit generated sections; fix source annotations or generators and regenerate instead.
-- Keep the spec index updated when modules are added, removed, renamed, or re-tiered.
-- If a change affects `lurek.*`, keep the spec aligned with generated API docs and the matching example or test surfaces.
+## Rules
+- Treat each spec file as a strict contract; do not allow source implementation to drift from its specification.
+- The `## Summary` section is hand-curated; the sections `## General Info`, `## Imports`, `## Files`, and `## Lua API Ref` are generator-owned and must never be edited manually.
+- When adding, removing, or tiering a top-level module, update the catalog entries in the main index.
+- If a Lua API function signature is updated in Rust code, the specification must be rebuilt to reflect the exact changes.
 
 ## Workflow
-- Read the module source, its current spec, and the spec index before editing.
-- Regenerate specs after structural module changes with `python tools/docs/gen_module_specs.py` or `python tools/gen_all_docs.py`.
-- Run `python tools/validate/validate_module_coverage.py` after adding, removing, or renaming a top-level module.
-- Run `python tools/audit/doc_coverage.py` when editing many specs or reshaping manual prose.
+- Rebuild spec layouts using `python tools/docs/gen_module_specs.py` or `python tools/gen_all_docs.py`.
+- Run coverage verification using `python tools/validate/validate_module_coverage.py`.
+- Audit doc completeness with `python tools/audit/doc_coverage.py`.
 
 ## References
-- `docs/specs/README.md`
-- `docs/templates/SPEC_TEMPLATE.md`
-- `tools/docs/gen_module_specs.py`
-- `tools/validate/validate_module_coverage.py`
+- docs/specs/README.md
+- docs/templates/SPEC_TEMPLATE.md
+- tools/docs/gen_module_specs.py
+- tools/validate/validate_module_coverage.py

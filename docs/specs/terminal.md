@@ -34,6 +34,8 @@
 - It supports both low-level cell drawing and higher-level widget composition.
 - Overall, users get a complete interactive terminal runtime with rendering and input integration.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

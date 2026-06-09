@@ -47,6 +47,8 @@
 - That alignment reduces cross-layer mismatch bugs in multiplayer stacks.
 - Users gain flexibility to mix UDP gameplay and HTTP/WebSocket service traffic.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports runtime config from `src/runtime/`.

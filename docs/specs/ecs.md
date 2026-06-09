@@ -33,6 +33,8 @@
 - The module keeps ECS ergonomics script-friendly while preserving predictable runtime behavior.
 - In practice, it enables maintainable gameplay architecture with better queryability and control.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

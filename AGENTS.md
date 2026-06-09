@@ -2,18 +2,13 @@
 
 Covers work across the whole repository.
 
-## Mission
+## Mission & Scope
 - Lurek2D is a desktop-only 2D Rust runtime for Lua game scripts.
 - LuaJIT is primary; Lua 5.4 is fallback.
 - Public Lua surface is `lurek.*`.
+- This file applies to the repo root and all child paths. Deeper `AGENTS.md` files override it for their subtree. `.codex/` holds local CAG config, roles, skills, and task skills. `.github/` is migration-era reference only unless `.codex/` is missing the needed rule.
 
-## Scope
-- This file applies to the repo root and all child paths.
-- Deeper `AGENTS.md` files override it for their subtree.
-- `.codex/` holds local CAG config, roles, skills, and task skills.
-- `.github/` is migration-era reference only unless `.codex/` is missing the needed rule.
-
-## Local map
+## Files
 - `src/` is engine code; `src/lua_api/` is the binding edge.
 - `docs/specs/` is the per-module contract layer.
 - `content/`, `library/`, `tests/`, `tools/`, `extension/`, `pages/`, and `ideas/` are the main work areas.

@@ -47,6 +47,8 @@
 - Users gain both expressiveness and operational control for serious in-engine analytics workloads.
 - The outcome is better observability, cleaner pipelines, and faster balancing decisions.
 
+This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

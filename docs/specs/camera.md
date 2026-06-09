@@ -38,6 +38,8 @@
 - Reduces implementation friction by packaging common camera patterns behind script-friendly APIs.
 - Improves player comfort by keeping motion framing, zoom, and rotation behavior consistent and bounded.
 
+This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `math`: Imports or references `math` from `src/math/`.
