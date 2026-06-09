@@ -1,28 +1,26 @@
 # VS Code Contract
 
-This file adds local rules for work under `extension/vscode/`.
+Covers work under `extension/vscode/`.
 
 ## Mission
 - Own the shipped VS Code extension workspace.
 - Keep manifest, generated data, tests, and webview security aligned.
 
 ## Scope
-- `extension/vscode/package.json`
-- `extension/vscode/src/`
-- `extension/vscode/tools/`, `data/`, and extension-local tests and docs.
+- `extension/vscode/package.json`, `extension/vscode/src/`, and extension-local tools, data, tests, and docs.
 
 ## Local map
 - `src/commands/` owns command entry points.
 - `src/providers/` owns providers and sidebar integrations.
 - `src/editors/` owns local editor specs plus the shared panel host and factory.
-- `src/services/` owns extension-side logic and wrappers around repo tools.
-- `data/` and `src/generated/` are generated-data consumers, not the primary source of truth.
+- `src/services/` owns extension-side logic and repo-tool wrappers.
+- `data/` and `src/generated/` consume generated data.
 
-## Local rules
-- Every command, activation trigger, view, and contribution point must be declared in `package.json`.
-- Keep generated API data flowing from `python tools/docs/gen_extension_api.py` into `extension/vscode/data/` and then `extension/vscode/src/generated/`; do not patch generated outputs by hand.
-- Webviews must include a `Content-Security-Policy` meta tag and should prefer nonce-scoped scripts and styles where the host path already supports it.
-- Keep editor panel responsibilities split: local editor spec in the concrete editor file, shared runtime in `panelHost.ts`, shared spec helpers in `editorFactory.ts`.
+## Rules
+- Declare every command, activation trigger, view, and contribution point in `package.json`.
+- Keep generated API data flowing from `python tools/docs/gen_extension_api.py` into `extension/vscode/data/` and then `extension/vscode/src/generated/`.
+- Webviews must include a `Content-Security-Policy` meta tag.
+- Keep editor panel responsibilities split between the concrete editor file, `panelHost.ts`, and `editorFactory.ts`.
 - If a change touches debugbridge message shapes, update the engine-side protocol contract in the same task.
 
 ## Workflow

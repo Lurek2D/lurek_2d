@@ -22,7 +22,8 @@ description: "Review performance using tools/audit/perf_regression_gate.py."
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/perf_regression_gate.py` on the selected scenario and capture the baseline report.
+- If the scenario needs a flamegraph or deeper profiling, capture it in `work/` with `cargo flamegraph` and compare the hotspot to the regression gate output.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

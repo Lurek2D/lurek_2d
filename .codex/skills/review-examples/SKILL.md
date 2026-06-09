@@ -10,7 +10,7 @@ description: "Review example coverage and fix all the gaps, ensure all practices
 ## Required inputs
 - Target module or full codebase
 - User defines the scope of the example review
-- Agent must collect output from `example_coverage.py`
+- Agent must collect output from `python tools/audit/example_coverage.py`
 
 ## Profile hint
 - `reviewer`
@@ -22,7 +22,8 @@ description: "Review example coverage and fix all the gaps, ensure all practices
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/example_coverage.py --module <module>` for the selected scope and inspect the uncovered example list.
+- Cross-check the example scripts under `content/examples/` against the current API documentation and module contracts.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

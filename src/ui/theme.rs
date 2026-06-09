@@ -65,7 +65,7 @@ impl Default for WidgetStyle {
             shadow_offset: [0.0, 0.0],
             highlight_alpha: 0.0,
             gradient_end: None,
-            text_align: "center".to_string(),
+            text_align: "left".to_string(),
         }
     }
 }

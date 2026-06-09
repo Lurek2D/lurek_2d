@@ -21,7 +21,8 @@ description: "Perform all below reviews one by one."
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run the full review sequence in this order: `review-api`, `review-architecture`, `review-docstrings`, `review-examples`, `review-performance`, `review-quality`, `review-specs`, and `review-tests`.
+- For each review, run the associated audit or generator, then inspect the changed files and the current source or docs state that the audit covers.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 
@@ -42,7 +43,7 @@ description: "Perform all below reviews one by one."
 
 ## References
 - `contracts: AGENTS.md, tools/AGENTS.md`
-- `tools: All audit tools`
+- `skills: review-api, review-architecture, review-docstrings, review-examples, review-performance, review-quality, review-specs, review-tests`
 - `agent: Verifier`
 
 

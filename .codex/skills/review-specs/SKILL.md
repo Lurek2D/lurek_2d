@@ -22,7 +22,8 @@ description: "Regenerate specs via script, then explicitly review and rewrite th
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/docs/gen_module_specs.py` and `python tools/audit/lua_spec_coverage.py` for the selected module scope.
+- Compare the regenerated spec output to the current source and the existing `docs/specs/` files, then rewrite `## Summary` only when the code reality is clear.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

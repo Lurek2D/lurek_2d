@@ -25,10 +25,10 @@ description: "Create or update lua test for specific module and check test cover
 - Read the listed contracts before writing the test.
 - Execute `python tools/audit/test_coverage.py --module <module>` to get the baseline test coverage percentage.
 - Review the missing coverage areas identified by the script output.
-- Create or update `tests/lua/test_<module>_<layer>.lua`. Write test cases to cover the missing logic paths, including negative testing.
-- Execute `cargo test --test lua_tests` to verify that your new test cases compile and run successfully.
+- Create or update the matching Lua test under `tests/lua/` using the existing `unit`, `integration`, `demos`, `stress`, or `library` conventions as appropriate for the target module.
+- Execute `cargo test --test lua_tests` to verify that the new test cases compile and run successfully.
 - Execute `python tools/validate/cag_validate.py` to ensure the new files respect project constraints.
-- Execute `python tools/audit/test_coverage.py --module <module>` again to measure the new test coverage. If the output coverage is strictly less than 100%, repeat step 4 to write more tests until 100% coverage is achieved.
+- Execute `python tools/audit/test_coverage.py --module <module>` again to measure the new test coverage. If the output coverage is below 100%, add the missing cases and rerun the audit.
 
 ## Outputs
 - New or updated test files in `tests/lua/`

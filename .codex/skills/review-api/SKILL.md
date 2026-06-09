@@ -22,7 +22,8 @@ description: "Review lua api coverage (if public rust methods are covered by lua
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/lua_covers_lurek_api_audit.py` and `python tools/audit/thin_wrapper_audit.py` for the selected module surface.
+- Compare the Rust public API, the `src/lua_api/` wrapper, and the generated docs or specs for missing functions, thin-wrapper drift, or bad signatures.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

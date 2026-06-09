@@ -18,20 +18,18 @@ description: "Create or update new snippet code for specific module with API."
 
 ## Read these contracts
 - `content/snippets/AGENTS.md`
-
-## Read these contracts
-- `content/snippets/AGENTS.md`
 - `docs/AGENTS.md`
 
 ## Steps
 - Read the listed contracts, then keep snippet wording aligned with the current API docs and snippet coverage rules.
-- Execute `python tools/audit/snippet_coverage.py` to identify missing snippets for highly-used public methods.
-- Write a fast, optimized VS Code-compatible snippet in the `tools/snippets/` folder. Ensure variables are correctly tokenized (e.g., `$1`, `$2`).
-- Execute `python tools/validate/validate_snippets.py`. If it returns exit code >0, fix the JSON structure of your snippet.
-- Execute `python tools/audit/snippet_coverage.py`. If the target API coverage is still <100%, return to step 3 to add missing methods.
+- Execute `python tools/audit/snippet_coverage.py` to identify missing snippets for highly used public methods.
+- Write or update a Lua snippet in `content/snippets/`, following the `_template.lua` marker order and the existing library naming conventions.
+- Execute `python tools/snippets/gen_vscode_snippets.py` to regenerate the extension snippet output when snippet inventory changes.
+- Execute `python tools/validate/validate_snippets.py`. If it returns exit code >0, fix the snippet structure and rerun the validation.
+- Execute `python tools/audit/snippet_coverage.py` again. If the target API coverage is still below 100%, add the missing coverage and rerun the audit.
 
 ## Outputs
-- Formatted code snippet file
+- Formatted snippet source in `content/snippets/`
 - Snippet coverage validation
 
 ## Success criteria
@@ -44,7 +42,7 @@ description: "Create or update new snippet code for specific module with API."
 
 ## References
 - `contracts: content/snippets/AGENTS.md, docs/AGENTS.md`
-- `tools: python tools/audit/snippet_coverage.py, python tools/validate/validate_snippets.py`
+- `tools: python tools/audit/snippet_coverage.py, python tools/validate/validate_snippets.py, python tools/snippets/gen_vscode_snippets.py`
 - `agent: Doc-Writer`
 
 

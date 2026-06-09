@@ -22,7 +22,8 @@ description: "Review if docs in architecture are in sync with specs and lurek ap
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/cag_link_check.py --strict` and inspect the broken-link output before comparing architecture text to the codebase.
+- Compare `docs/architecture/`, `docs/specs/`, and `docs/api/lurek.lua` against the current Rust and Lua API surface.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

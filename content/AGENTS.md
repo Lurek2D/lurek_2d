@@ -1,54 +1,42 @@
 # Content Contract
 
-This file adds local rules for work under `content/`.
+Covers work under `content/`.
 
 ## Mission
 - Own Lua-based games, demos, examples, and config-side content.
-- Make content runnable and easy to validate.
+- Keep content runnable and easy to validate.
 
 ## Scope
-- `content/games/`, `content/examples/`, and related content files.
+- `content/games/`, `content/examples/`, `content/layouts/`, and `content/snippets/`.
 - Demo registrations and content-side config templates.
-- Example quality and user-facing content flow.
 
 ## Local map
 - `examples/` should stay small and API-teaching focused.
-- `games/` holds runnable multi-file projects and is the right home for richer play loops.
-- `layouts/` contains UI or scene layout data; keep it aligned with the actual runtime loaders and validation tools.
-- `snippets/` is source material for editor snippets; if snippet markers change, sync the generator path under `tools/snippets/`.
-- `zips/` is packaged output territory, not source authoring territory.
+- `games/` holds runnable multi-file projects.
+- `layouts/` contains UI or scene layout data.
+- `snippets/` is source material for editor snippets.
+- `zips/` is packaged output, not source authoring.
 
-## Local rules
+## Rules
 - Use real `lurek.*` calls, not placeholders.
 - Keep demos runnable and scoped to one teaching goal.
-- Sync content registrations and validation when content structure changes.
-- Treat engine Rust work as out of scope from this folder.
+- Sync registrations and validation when content structure changes.
+- Treat engine Rust work as out of scope.
 - Prefer small, legible content slices over giant stitched examples.
-- Ensure content uses the same public API shape that docs describe.
-- Multiply frame-based movement, timers, and tweens by `dt` instead of hardcoded per-frame increments.
-- Keep gameplay state in locals or explicit tables, not stale cross-scene upvalues.
-- Use content-relative asset paths with forward slashes.
-- Prefer `lurek.log.*` or `lurek.log.event(...)` over `print()` when the output should be filterable or analytics-friendly.
-- For HTML UI content, keep structure and visual rules in HTML or CSS and keep state transitions in Lua.
-- Do not rebuild full HTML documents every frame when a text update or class toggle is enough.
-- Check the supported HTML and CSS subset before depending on uncommon tags or layout features.
-- Prefer targeted HTML document updates and callback registration over ad hoc full-document regeneration loops.
+- Keep content aligned with the public API shape docs describe.
+- Multiply frame-based movement, timers, and tweens by `dt`.
+- Keep gameplay state in locals or explicit tables.
+- Use forward-slash asset paths.
+- Prefer `lurek.log.*` or `lurek.log.event(...)` over `print()` when output should be filterable.
+- For HTML UI content, keep structure and visual rules in HTML or CSS and state transitions in Lua.
+- Do not rebuild full HTML documents every frame when a smaller update is enough.
+- Check the supported HTML and CSS subset before using uncommon tags or layout features.
 
 ## Workflow
 - Read the nearest API docs and examples before changing content.
-- Use the nearer nested contracts under `content/` plus the current API docs as the source of truth.
+- Use the nearest nested contracts under `content/` plus the current API docs as the source of truth.
 - Keep README, registration, and runnable entry points in sync.
 - Validate the content path with the narrowest runnable check available.
-
-## Expected outputs
-- Runnable content changes with validation proof.
-- Updated registration or config files when needed.
-- Notes if a user-facing example intentionally leaves a dependency unresolved.
-
-## Anti-patterns
-- Use placeholder code that does not exercise the real API.
-- Mix demo-only and library-only concerns in the same file.
-- Leave registration or harness metadata stale.
 
 ## References
 - `library/`

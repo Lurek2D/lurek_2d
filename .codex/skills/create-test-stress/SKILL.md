@@ -19,19 +19,15 @@ description: "Create or update heavy stress test for specific module and check t
 ## Read these contracts
 - `tests/AGENTS.md`
 - `tests/lua/AGENTS.md`
-
-## Read these contracts
-- `tests/AGENTS.md`
-- `tests/lua/AGENTS.md`
 - `tools/audit/AGENTS.md`
 - `work/AGENTS.md`
 
 ## Steps
 - Read the listed contracts before setting ceilings, recording baselines, or writing reusable stress evidence.
-- Execute `python tools/audit/stress_report.py` to gather current stress test ceilings.
+- Execute `python tools/audit/stress_report.py` to gather the current stress test ceilings.
 - Write high-volume loops or parallel execution paths that hammer the module's primary functionality in `tests/lua/stress/` or `tests/rust/stress/`.
-- Execute the stress script and monitor output. If the script causes an OOM crash or the frame time exceeds the target threshold (e.g. >16.6ms), adjust the load parameters or implement graceful degradation in step 3.
-- Re-run `python tools/audit/stress_report.py`. If the output ceiling is below the user-provided target, return to step 3.
+- Execute the stress script and monitor output. If the script causes an OOM crash or the frame time exceeds the target threshold, adjust the load parameters or implement graceful degradation and rerun the stress case.
+- Re-run `python tools/audit/stress_report.py`. If the output ceiling is below the user-provided target, return to the stress test and add coverage.
 
 ## Outputs
 - Stress test scripts

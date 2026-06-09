@@ -21,14 +21,14 @@ description: "End to end workflow to add new feature to extension for lurek, MS 
 
 ## Steps
 - Read the listed contracts before editing the extension.
-- Edit `package.json` in the extension root to define new commands or keybindings.
-- Write the feature code (TypeScript/JS) in the extension `src/` directory.
-- Execute `npm run compile`. If it exits with code >0, fix the syntax errors.
-- Execute `npm run test` (or the extension's integration test suite). If tests pass rate is <100%, fix the broken logic and repeat step 4.
+- Edit `extension/vscode/package.json` to define the new contribution points, commands, or keybindings.
+- Write the feature code in `extension/vscode/src/` and keep heavy logic out of the activation path.
+- Execute `npm run compile` from `extension/vscode/`. If it exits with code >0, fix the syntax errors.
+- Execute `npm run test` from `extension/vscode/` or the extension's integration test suite. If tests are failing, fix the broken logic and rerun the test command.
 
 ## Outputs
 - Modified VS Code extension source code
-- Updated `package.json`
+- Updated `extension/vscode/package.json`
 - Test results
 
 ## Success criteria

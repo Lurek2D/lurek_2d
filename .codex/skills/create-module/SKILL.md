@@ -24,17 +24,17 @@ description: "Create or update module in src, perform all needed steps to make i
 
 ## Steps
 - Read the listed contracts before editing module boundaries or bindings.
-- Create `docs/specs/<module>.md` defining boundaries.
-- Implement internal logic in `src/<module>/` and expose the thin Lua wrapper in `src/lua_api/<module>_api.rs`.
+- Create the module spec under `docs/specs/` using the same module name and describe the public contract before implementation.
+- Implement the internal logic in a new module directory under `src/` and expose it through the matching thin Lua wrapper in `src/lua_api/`.
 - Execute `python tools/gen_all_docs.py` to sync bindings into `docs/api/`. If generation throws an error, fix the API wrapper docstrings.
-- Write Lua unit tests and run `cargo test` and `cargo clippy -- -D warnings`. If tests <100% pass rate or clippy >0 warnings, fix the code.
-- Execute `python tools/validate/cag_validate.py`. If exit code is >0, resolve architectural cyclic dependencies and repeat step 6.
+- Write Lua unit tests for the new behavior, then run `cargo test` and `cargo clippy -- -D warnings`. If tests fail or clippy reports warnings, fix the code and rerun the checks.
+- Execute `python tools/validate/cag_validate.py`. If it reports cycles, resolve the dependency issue and rerun the validator.
 
 ## Outputs
-- `src/<module>/` code
-- `src/lua_api/<module>_api.rs`
-- `docs/specs/<module>.md`
-- Updated API docs-general and tests
+- Module implementation code under `src/`
+- Matching Lua API wrapper under `src/lua_api/`
+- Module spec under `docs/specs/`
+- Updated API docs and tests
 
 ## Success criteria
 - [ ] `cargo test` exits with code 0 (100% test pass rate).
@@ -43,7 +43,7 @@ description: "Create or update module in src, perform all needed steps to make i
 
 ## Stop conditions
 - Putting business logic inside the `lua_api` wrapper instead of the domain module.
-- Forgetting to register the module in the global `mod.rs`.
+- Forgetting to register the module in the relevant `mod.rs` files.
 
 ## References
 - `contracts: src/AGENTS.md, src/lua_api/AGENTS.md, docs/architecture/AGENTS.md, docs/specs/AGENTS.md`

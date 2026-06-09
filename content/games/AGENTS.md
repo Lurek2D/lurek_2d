@@ -1,21 +1,26 @@
 # Games Contract
 
-This file adds local rules for work under `content/games/`.
+Covers work under `content/games/`.
 
 ## Mission
 - Own runnable demo and game folders under the category tree.
-- Keep headless checks and real runtime entry points aligned.
+- Keep headless checks and runtime entry points aligned.
 
 ## Scope
-- `content/games/<category>/<name>/`
+- `content/games/<category>/<name>/`.
 - Demo `main.lua` files and optional local config files.
 
-## Local rules
-- Each game folder needs a real `main.lua` entry point.
-- `main.lua` should expose an entry callback (`lurek.init` or `lurek.load`), a tick callback (`lurek.process` or `lurek.update`), and `lurek.draw`.
-- Optional `conf.toml` or `conf.lua` files must still declare meaningful window settings.
-- Do not call `lurek.window.present` directly from demo code; headless checks treat that as a bug.
-- Keep the category split honest: use the existing `action`, `arcade`, `apps`, `retro`, `rpg`, `showcase`, `simulation`, `sports`, `strategy`, and `test` buckets instead of inventing ad hoc top-level groupings.
+## Local map
+- Category folders group runnable projects.
+- `main.lua` is the required entry point.
+- `conf.toml` and `conf.lua` are optional local config files.
+
+## Rules
+- Each game folder needs a real `main.lua`.
+- `main.lua` should expose an entry callback, a tick callback, and `lurek.draw`.
+- Optional config files must still declare meaningful window settings.
+- Do not call `lurek.window.present` directly from demo code.
+- Use the existing category buckets instead of inventing ad hoc top-level groups.
 
 ## Workflow
 - Read `tests/lua/demos/_common_checks.lua` before changing shared demo structure.

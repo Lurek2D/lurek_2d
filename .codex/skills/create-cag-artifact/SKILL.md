@@ -5,13 +5,13 @@ description: "Create or update new prompt, agent, skill or update them, revalida
 # create-cag-artifact
 
 ## Goal
-- Author or modify Context Augmented Guidance (CAG) artifacts in `.github/` and validate their structural integrity.
+- Author or modify Context Augmented Guidance (CAG) artifacts in the active `.codex/` layer and keep the legacy `.github/` mirrors in sync when the migration surface still matters.
 
 ## Required inputs
-- Artifact type (agent, skill, prompt)
+- Artifact type: agent, skill, or prompt
 - Desired behavioral change or definition
 - User must define what the CAG system needs to learn or adjust
-- Agent must collect existing CAG validation rules
+- Agent must collect the current CAG validation rules before editing
 
 ## Profile hint
 - `manager`
@@ -22,7 +22,8 @@ description: "Create or update new prompt, agent, skill or update them, revalida
 
 ## Steps
 - Read the listed contracts before editing CAG artifacts.
-- Edit or create the Markdown file in `.github/agents/`, `.github/skills/`, or `.github/prompts/` applying strict YAML formatting rules.
+- Identify the active target surface first: `.codex/agents/` or `.codex/skills/`; use `.github/agents/`, `.github/skills/`, or `.github/prompts/` only when you are explicitly syncing a legacy mirror.
+- Edit or create the Markdown file with strict YAML formatting and a mandatory metadata block.
 - Execute `python tools/validate/cag_validate.py`. If it exits with code >0, fix the YAML metadata or naming conventions and repeat this step.
 - Execute `python tools/audit/cag_link_check.py --strict`. If it reports >0 broken links, fix the file references and repeat.
 

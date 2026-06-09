@@ -57,7 +57,7 @@ Examples:
 
     spec_files = sorted(
         f.stem for f in SPECS.glob("*.md")
-        if f.name not in {"README.md"}
+        if f.name not in {"README.md", "AGENTS.md"}
         and f.stem not in SPEC_ALLOWLIST
     )
 

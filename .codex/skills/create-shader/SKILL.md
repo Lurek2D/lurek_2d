@@ -22,16 +22,16 @@ description: "Create or update shader code which is used by GPU to render things
 
 ## Steps
 - Read the listed contracts before changing shader code, render passes, or bindings.
-- Write the `.wgsl` shader file ensuring strict WebGPU/wgpu 22 compatibility.
-- Update the relevant `RenderCommand` or pipeline setup in `src/` to compile and bind the new shader.
-- Execute `cargo check`. If the compiler throws WGSL validation errors, fix the shader code in step 2.
-- Execute `cargo test`. Ensure 100% of render tests still pass.
-- Execute a standalone demo locally that utilizes the new shader. Verify visual output. If rendering fails, adjust uniforms and repeat step 4.
+- Write or update the `.wgsl` shader file under `assets/shaders/` and keep the effect name aligned with the renderer loader.
+- Update the relevant render pipeline or shader loader in `src/render/` so the new shader is compiled and bound correctly.
+- Execute `cargo check`. If the compiler throws WGSL validation errors, fix the shader code and rerun the check.
+- Execute `cargo test`. Make sure the render tests still pass.
+- Execute a standalone demo or evidence path that uses the new shader and verify the visual output. If rendering fails, adjust uniforms or pipeline state and repeat the validation step.
 
 ## Outputs
-- `.wgsl` shader file
+- `.wgsl` shader file under `assets/shaders/`
 - Modified Rust rendering code
-- Lua test script
+- Evidence or test script that exercises the shader
 
 ## Success criteria
 - [ ] `cargo check` exits with code 0 (0 compilation/WGSL validation errors).

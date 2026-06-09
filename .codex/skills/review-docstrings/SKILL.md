@@ -21,7 +21,8 @@ description: "Review docstrings for specific module, on rust level evreything on
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/docstring_audit.py` for the selected module and inspect missing, stale, or malformed docstrings.
+- Compare the Rust source comments under `src/` and `src/lua_api/` with the generated docs or docstring expectations.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

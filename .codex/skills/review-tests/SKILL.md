@@ -10,7 +10,7 @@ description: "Review unit lua test coverage and fix all gaps, ensure all practic
 ## Required inputs
 - Target module
 - User defines the module for test review
-- Agent must collect output from `lua_api_test_coverage.py` and `lua_test_structure_audit.py`
+- Agent must collect output from `python tools/audit/lua_api_test_coverage.py` and `python tools/audit/lua_test_structure_audit.py`
 
 ## Profile hint
 - `reviewer`
@@ -22,7 +22,8 @@ description: "Review unit lua test coverage and fix all gaps, ensure all practic
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/lua_api_test_coverage.py` and `python tools/audit/lua_test_structure_audit.py` for the selected module.
+- Compare the audit output with the actual files under `tests/lua/` and confirm the naming, placement, and coverage paths match the current conventions.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 

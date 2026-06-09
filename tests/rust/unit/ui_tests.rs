@@ -73,6 +73,24 @@ mod theme_tests {
     }
 
     #[test]
+    fn theme_class_style_falls_back_to_class_normal() {
+        let mut t = Theme::new();
+        let mut class_style = WidgetStyle::default();
+        class_style.border_width = 3.0;
+        t.set_class_style(
+            WidgetType::Button,
+            WidgetState::Normal,
+            "primary".to_string(),
+            class_style.clone(),
+        );
+
+        let resolved = t
+            .get_style_with_class(WidgetType::Button, WidgetState::Hovered, Some("primary"))
+            .expect("class-specific Normal style should satisfy Hovered fallback");
+        assert_eq!(resolved.border_width, 3.0);
+    }
+
+    #[test]
     fn theme_missing_type_returns_none() {
         let t = Theme::new();
         assert!(t

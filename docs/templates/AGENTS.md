@@ -1,23 +1,30 @@
 # Templates Contract
 
-This file adds local rules for work under `docs/templates/`.
+Covers work under `docs/templates/`.
 
 ## Mission
-- Own the canonical starter templates used to scaffold repo contracts, skills, prompts, specs, and system guidance.
-- Keep template text aligned with the live directory structure and current migration model.
+- Own the starter templates for repo contracts, skills, prompts, specs, and system guidance.
+- Keep template text aligned with the live directory structure.
 
-## Local rules
-- `AGENT_TEMPLATE.md` is the source template for repo-local `AGENTS.md` files.
-- `SKILL_TEMPLATE.md` is the source template for `.codex/skills/*/SKILL.md` files.
-- `PROMPT_TEMPLATE.md` is the source template for workflow prompt scaffolds and any skill-to-prompt migration notes.
-- `SPEC_TEMPLATE.md` is the source template for `docs/specs/<module>.md`.
-- `SYSTEM_PROMPT_TEMPLATE.md` is the source template for the always-loaded repo contract.
-- Keep template files lean, specific, and synchronized with the live structure they describe.
-- When the folder layout changes, update the templates before or together with any generated or copied artifacts.
+## Scope
+- `docs/templates/` template files.
+- Repo-local contract, skill, prompt, spec, and system scaffolds.
+
+## Local map
+- `AGENT_TEMPLATE.md` is the source for repo-local `AGENTS.md` files.
+- `SKILL_TEMPLATE.md` is the source for `.codex/skills/*/SKILL.md`.
+- `PROMPT_TEMPLATE.md` is the source for workflow prompt scaffolds.
+- `SPEC_TEMPLATE.md` is the source for `docs/specs/<module>.md`.
+- `SYSTEM_PROMPT_TEMPLATE.md` is the source for the always-loaded repo contract.
+
+## Rules
+- Keep template files lean and specific.
+- Update templates when the folder layout changes.
+- Update downstream docs or scaffolds after a template change.
 
 ## Workflow
-- Copy the nearest template, then fill it with folder-specific detail rather than inventing a new shape.
-- If a template changes, update the downstream docs or scaffolded files that were generated from it.
+- Copy the nearest template, then fill it with folder-specific detail.
+- If a template changes, update the files generated from it.
 
 ## References
 - `AGENT_TEMPLATE.md`

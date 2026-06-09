@@ -19,17 +19,13 @@ description: "Create or update the RAG corpus, change retrieval sources or ranki
 ## Read these contracts
 - `.codex/AGENTS.md`
 - `tools/AGENTS.md`
-
-## Read these contracts
-- `.codex/AGENTS.md`
-- `tools/AGENTS.md`
 - `tools/rag/AGENTS.md`
 
 ## Steps
 - Read the listed contracts before changing corpus coverage, ranking, or chunking.
-- Inspect `tools/rag/rag.toml` and the current corpus before changing any source list or chunk sizing.
+- Inspect `tools/rag/rag.toml`, the current `tools/rag/rag_index.db`, and the indexing scripts before changing any source list or chunk sizing.
 - Edit `tools/rag/rag.toml` or the indexing scripts under `tools/rag/` to ingest new sources, adjust chunk size, or tune BM25 weighting.
-- Execute the local indexing tool: `python tools/rag/build_index.py` or `python tools/rag/build_index.py <targets...>` for a narrower rebuild. If the tool fails (exit code >0), fix the configuration or script logic.
+- Execute `python tools/rag/build_index.py` for a full rebuild, or `python tools/rag/build_index.py <targets...>` for a narrower rebuild. If the tool fails, fix the configuration or script logic and rerun it.
 - Run test queries with `python tools/rag/query.py "<query>" --profile all|game|engine --limit 10` against the rebuilt index and verify that the top results include the canonical source.
 - If retrieval quality is still weak, iterate on chunking or source priority and rebuild again.
 
@@ -47,7 +43,7 @@ description: "Create or update the RAG corpus, change retrieval sources or ranki
 
 ## References
 - `contracts: .codex/AGENTS.md, tools/AGENTS.md, tools/rag/AGENTS.md`
-- `tools: RAG indexing scripts inside tools/rag/`
+- `tools: python tools/rag/build_index.py, python tools/rag/query.py, tools/rag/rag.toml`
 - `agent: CAG-Architect`
 
 

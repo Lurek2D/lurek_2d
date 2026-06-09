@@ -10,7 +10,7 @@ description: "Review overall code quality using tools/audit/quality_report.py."
 ## Required inputs
 - Target module or full codebase
 - User triggers the general quality audit
-- Agent must collect output from `quality_report.py`
+- Agent must collect output from `python tools/audit/quality_report.py`
 
 ## Profile hint
 - `reviewer`
@@ -22,7 +22,8 @@ description: "Review overall code quality using tools/audit/quality_report.py."
 
 ## Steps
 - Read the listed contracts and stay in read-only mode.
-- Inspect the target scope and run the referenced checks or audits.
+- Run `python tools/audit/quality_report.py` for the selected scope and inspect the report sections that flag hotspots or contract drift.
+- Cross-check the report against the affected source files, especially `src/`, `src/lua_api/`, and the touched docs or tooling paths.
 - Record findings first, with severity and exact file or line evidence where possible.
 - Return a binary accept or reject decision with explicit follow-up gate conditions.
 
