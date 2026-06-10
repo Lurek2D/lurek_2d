@@ -38,7 +38,14 @@ describe("Evidence: svg", function()
         local ids = svg:getElementIds()
         expect_type("table", ids)
 
-        -- Apply modifiers
+        -- Evaluate adjacencies
+        local adj = svg:getAdjacencies("prov_", 3.0)
+        local neighbors = adj["prov_1"]
+        expect_type("table", neighbors)
+        expect_equal(1, #neighbors)
+        expect_equal("prov_2", neighbors[1])
+
+        -- Apply modifiers after adjacency extraction so the topology report stays stable.
         svg:setElementVisible("prov_1", true)
         svg:setElementColor("prov_1", 1, 0, 0, 1)
         svg:setElementTransform("prov_1", 10, 10, 0, 1, 1)
@@ -46,12 +53,6 @@ describe("Evidence: svg", function()
         -- Evaluate points
         local pts = svg:getElementPoints("prov_1", 10.0)
         expect_true(#pts > 0)
-
-        -- Evaluate adjacencies
-        local adj = svg:getAdjacencies("prov_", 3.0)
-        local neighbors = adj["prov_1"]
-        expect_equal(1, #neighbors)
-        expect_equal("prov_2", neighbors[1])
 
         -- Cache to canvas
         svg:cacheToCanvas("group1", 100, 100)

@@ -13,13 +13,6 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.update
     -- @integration lurek.event.clear
     -- @integration lurek.event.wait
-    -- @covers lurek.event.wait
-    -- @covers lurek.event.clear
-    -- @covers lurek.automation.update
-    -- @covers lurek.automation.unload
-    -- @covers lurek.automation.stop
-    -- @covers lurek.automation.start
-    -- @covers lurek.automation.load
     it("dispatches queued key events with expected payload", function()
         lurek.event.clear()
         lurek.automation.load("evt_payload", {
@@ -116,9 +109,6 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.update
     -- @integration lurek.image.newImageData
     -- @integration lurek.image.savePNG
-    -- @covers lurek.image.savePNG
-    -- @covers lurek.image.newImageData
-    -- @covers lurek.automation.isFailed
     it("passes visualassert action on identical images", function()
         local img = lurek.image.newImageData(2, 2)
         img:setPixel(0, 0, 255, 0, 0, 255)
@@ -158,7 +148,6 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.isFailed
     -- @integration lurek.event.clear
     -- @integration lurek.event.wait
-    -- @covers lurek.automation.setCondition
     it("supports boolean expressions in when gates", function()
         lurek.event.clear()
         automation.setCondition("ready", true)
@@ -202,7 +191,6 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.setCondition
     -- @integration lurek.automation.isFailed
     -- @integration lurek.automation.getLastError
-    -- @covers lurek.automation.getLastError
     it("reports expression failures for assert actions", function()
         automation.setCondition("ready", true)
         automation.setCondition("boss_dead", false)
@@ -226,6 +214,44 @@ describe("automation + event integration", function()
 
         automation.stop()
         automation.unload("expr_assert")
+    end)
+
+    -- @integration lurek.automation.isComplete
+    -- @integration lurek.automation.load
+    -- @integration lurek.automation.saveMacro
+    -- @integration lurek.automation.start
+    -- @integration lurek.automation.stop
+    -- @integration lurek.automation.unload
+    -- @integration lurek.automation.update
+    -- @integration lurek.event.clear
+    -- @integration lurek.event.poll
+    it("callmacro expands a saved macro into queued events", function()
+        lurek.event.clear()
+        automation.load("macro_src_ext", {
+            steps = { { action = "textinput", text = "hello", time = 0.0 } }
+        })
+        automation.saveMacro("macro_ext", "macro_src_ext")
+
+        automation.load("macro_call", {
+            steps = { { action = "callmacro", macro = "macro_ext", time = 0.0 } }
+        })
+
+        automation.start("macro_call")
+        automation.update(0.05)
+
+        local names = {}
+        for name in lurek.event.poll() do
+            table.insert(names, name)
+        end
+
+        expect_equal(1, #names)
+        expect_equal("textinput", names[1])
+        expect_true(automation.isComplete())
+
+        automation.stop()
+        automation.unload("macro_src_ext")
+        automation.unload("macro_call")
+        lurek.event.clear()
     end)
 end)
 test_summary()

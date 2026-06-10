@@ -2,15 +2,7 @@
 
 -- @describe lurek.render module exists
 describe("lurek.render module exists", function()
-    -- @covers lurek.render
-    it("lurek.render is a table", function()
-        expect_type("table", lurek.render)
-    end)
-
     -- @covers lurek.render.newDepthSorter
-    -- @covers LDepthSorter:type
-    -- @covers LDepthSorter:typeOf
-    -- @covers LDepthSorter:getCount
     it("newDepthSorter creates an empty depth sorter", function()
         local sorter = lurek.render.newDepthSorter()
         expect_type("userdata", sorter)
@@ -23,27 +15,13 @@ end)
 -- @describe lurek.render color functions
 describe("lurek.render color functions", function()
     -- @covers lurek.render.setColor
-    it("setColor is a function", function()
-        expect_type("function", lurek.render.setColor)
-    end)
-
-    -- @covers lurek.render.setColor
-    it("setColor accepts 3 args", function()
+    it("setColor accepts rgb and rgba arguments", function()
         expect_no_error(function()
             lurek.render.setColor(1, 0, 0)
         end)
-    end)
-
-    -- @covers lurek.render.setColor
-    it("setColor accepts 4 args", function()
         expect_no_error(function()
             lurek.render.setColor(1, 0, 0, 0.5)
         end)
-    end)
-
-    -- @covers lurek.render.setBackgroundColor
-    it("setBackgroundColor is a function", function()
-        expect_type("function", lurek.render.setBackgroundColor)
     end)
 
     -- @covers lurek.render.setBackgroundColor
@@ -57,33 +35,16 @@ end)
 -- @describe lurek.render shape functions
 describe("lurek.render shape functions", function()
     -- @covers lurek.render.rectangle
-    it("rectangle is a function", function()
-        expect_type("function", lurek.render.rectangle)
-    end)
-
-    -- @covers lurek.render.rectangle
-    -- @covers LShape:rectangle
-    it("rectangle fill mode", function()
+    it("rectangle supports fill and line modes", function()
         expect_no_error(function()
             lurek.render.rectangle("fill", 10, 10, 100, 50)
         end)
-    end)
-
-    -- @covers lurek.render.rectangle
-    -- @covers LShape:rectangle
-    it("rectangle line mode", function()
         expect_no_error(function()
             lurek.render.rectangle("line", 10, 10, 100, 50)
         end)
     end)
 
     -- @covers lurek.render.circle
-    it("circle is a function", function()
-        expect_type("function", lurek.render.circle)
-    end)
-
-    -- @covers lurek.render.circle
-    -- @covers LShape:circle
     it("circle fill mode", function()
         expect_no_error(function()
             lurek.render.circle("fill", 50, 50, 25)
@@ -91,12 +52,6 @@ describe("lurek.render shape functions", function()
     end)
 
     -- @covers lurek.render.line
-    it("line is a function", function()
-        expect_type("function", lurek.render.line)
-    end)
-
-    -- @covers lurek.render.line
-    -- @covers LShape:line
     it("line accepts 4 args", function()
         expect_no_error(function()
             lurek.render.line(0, 0, 100, 100)
@@ -107,12 +62,6 @@ end)
 -- @describe lurek.render text functions
 describe("lurek.render text functions", function()
     -- @covers lurek.render.print
-    it("print is a function", function()
-        expect_type("function", lurek.render.print)
-    end)
-
-    -- @covers lurek.render.print
-    -- @covers LTerminal:print
     it("print accepts text and position", function()
         expect_no_error(function()
             lurek.render.print("Hello", 10, 10)
@@ -120,28 +69,9 @@ describe("lurek.render text functions", function()
     end)
 end)
 
--- @describe lurek.render image functions
-describe("lurek.render image functions", function()
-    -- @covers lurek.render.newImage
-    it("newImage is a function", function()
-        expect_type("function", lurek.render.newImage)
-    end)
-
-    -- @covers lurek.render.draw
-    it("draw is a function", function()
-        expect_type("function", lurek.render.draw)
-    end)
-end)
-
 -- @describe lurek.render advanced shapes
 describe("lurek.render advanced shapes", function()
     -- @covers lurek.render.ellipse
-    it("ellipse is a function", function()
-        expect_type("function", lurek.render.ellipse)
-    end)
-
-    -- @covers lurek.render.ellipse
-    -- @covers LShape:ellipse
     it("ellipse fill mode", function()
         expect_no_error(function()
             lurek.render.ellipse("fill", 100, 100, 50, 30)
@@ -149,12 +79,6 @@ describe("lurek.render advanced shapes", function()
     end)
 
     -- @covers lurek.render.polygon
-    it("polygon is a function", function()
-        expect_type("function", lurek.render.polygon)
-    end)
-
-    -- @covers lurek.render.polygon
-    -- @covers LShape:polygon
     it("polygon fill mode with vertices", function()
         expect_no_error(function()
             lurek.render.polygon("fill", 0, 0, 100, 0, 50, 100)
@@ -162,12 +86,6 @@ describe("lurek.render advanced shapes", function()
     end)
 
     -- @covers lurek.render.triangle
-    it("triangle is a function", function()
-        expect_type("function", lurek.render.triangle)
-    end)
-
-    -- @covers lurek.render.triangle
-    -- @covers LShape:triangle
     it("triangle fill mode", function()
         expect_no_error(function()
             lurek.render.triangle("fill", 0, 0, 100, 0, 50, 80)
@@ -175,19 +93,9 @@ describe("lurek.render advanced shapes", function()
     end)
 
     -- @covers lurek.render.setLineWidth
-    it("setLineWidth is a function", function()
+    it("setLineWidth is callable and round-trips with getLineWidth", function()
         expect_type("function", lurek.render.setLineWidth)
-    end)
-
-    -- @covers lurek.render.getLineWidth
-    it("getLineWidth is a function", function()
         expect_type("function", lurek.render.getLineWidth)
-    end)
-
-    -- @covers lurek.render.getLineWidth
-    -- @covers lurek.render.setLineWidth
-    -- @covers LShape:setLineWidth
-    it("setLineWidth and getLineWidth roundtrip", function()
         lurek.render.setLineWidth(3.0)
         expect_near(3.0, lurek.render.getLineWidth())
         lurek.render.setLineWidth(1.0) -- reset
@@ -234,27 +142,19 @@ end)
 -- @describe lurek.render nine-slice
 describe("lurek.render nine-slice", function()
     -- @covers lurek.render.newNineSlice
-    it("newNineSlice is a function", function()
+    it("newNineSlice is callable, creates userdata, and rejects negative insets", function()
         expect_type("function", lurek.render.newNineSlice)
-    end)
-
-    -- @covers lurek.render.drawNineSlice
-    it("drawNineSlice is a function", function()
-        expect_type("function", lurek.render.drawNineSlice)
-    end)
-
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    it("creates a NineSlice from an image", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 10, 10, 10, 10)
         expect_type("userdata", ns)
+        local ok = pcall(function()
+            lurek.render.newNineSlice(img, -5, 10, 10, 10)
+        end)
+        expect_false(ok, "negative insets should error")
     end)
 
     -- @covers LNineSlice:getInsets
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    it("NineSlice:getInsets returns correct values", function()
+    it("NineSlice getters expose insets, texture size, and type", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 12, 8, 15, 6)
         local t, r, b, l = ns:getInsets()
@@ -262,61 +162,24 @@ describe("lurek.render nine-slice", function()
         expect_near(8, r)
         expect_near(15, b)
         expect_near(6, l)
-    end)
-
-    -- @covers LNineSlice:getTextureSize
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    it("NineSlice:getTextureSize returns image dimensions", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local ns = lurek.render.newNineSlice(img, 5, 5, 5, 5)
         local w, h = ns:getTextureSize()
         expect_greater(w, 0, "texture width should be positive")
         expect_greater(h, 0, "texture height should be positive")
+        expect_true(ns:typeOf("LNineSlice"), "should be LNineSlice type")
+        expect_true(ns:typeOf("LObject"), "should be Object type")
     end)
 
     -- @covers lurek.render.drawNineSlice
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    -- @covers LImageData:drawNineSlice
-    it("drawNineSlice accepts NineSlice and rect", function()
+    it("drawNineSlice is callable for different rects", function()
+        expect_type("function", lurek.render.drawNineSlice)
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 10, 10, 10, 10)
         expect_no_error(function()
             lurek.render.drawNineSlice(ns, 50, 50, 300, 200)
         end)
-    end)
-
-    -- @covers lurek.render.drawNineSlice
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    -- @covers LImageData:drawNineSlice
-    it("NineSlice:draw method works", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local ns = lurek.render.newNineSlice(img, 5, 5, 5, 5)
         expect_no_error(function()
             lurek.render.drawNineSlice(ns, 10, 20, 400, 300)
         end)
-    end)
-
-    -- @covers LNineSlice:typeOf
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    it("NineSlice:typeOf returns LNineSlice", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local ns = lurek.render.newNineSlice(img, 5, 5, 5, 5)
-        expect_true(ns:typeOf("LNineSlice"), "should be LNineSlice type")
-        expect_true(ns:typeOf("LObject"), "should be Object type")
-    end)
-
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
-    it("rejects negative border insets", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local ok = pcall(function()
-            lurek.render.newNineSlice(img, -5, 10, 10, 10)
-        end)
-        expect_false(ok, "negative insets should error")
     end)
 end)
 
@@ -325,57 +188,37 @@ end)
 -- @describe lurek.render.draw polymorphic dispatch
 describe("lurek.render.draw polymorphic dispatch", function()
     -- @covers lurek.render.draw
-    it("draw() rejects nil with an error", function()
+    it("draw() is callable and rejects invalid drawables", function()
+        expect_type("function", lurek.render.draw)
         expect_error(function()
             local bad = nil ---@type any
             lurek.render.draw(bad, 0, 0)
         end, "nil")
-    end)
-
-    -- @covers lurek.render.draw
-    it("draw() rejects a non-drawable string with an error", function()
         ---@type any
         local not_a_drawable = "not_a_drawable"
         expect_error(function()
             lurek.render.draw(not_a_drawable, 0, 0)
         end, "drawable")
     end)
-
-    -- @covers lurek.render.draw
-    it("draw() is a function", function()
-        expect_type("function", lurek.render.draw)
-    end)
 end)
 
 -- @describe lurek.render.captureScreenshot
 describe("lurek.render.captureScreenshot", function()
   -- @covers lurek.render.captureScreenshot
-  it("accepts a callback without error", function()
+  it("accepts a callback and passes ImageData userdata", function()
     local ok, err = pcall(lurek.render.captureScreenshot, function(img)
+      expect_equal("userdata", type(img))
     end)
     expect_equal(ok, true)
-  end)
-
-  -- @covers lurek.render.captureScreenshot
-  it("callback receives an ImageData userdata", function()
-    local received_type = nil
-    lurek.render.captureScreenshot(function(img)
-      received_type = type(img)
-    end)
-    expect_equal(received_type, "userdata")
   end)
 end)
 
 -- @describe lurek.render.saveScreenshot
 describe("lurek.render.saveScreenshot", function()
     -- @covers lurek.render.saveScreenshot
-    it("accepts a save-relative path without error", function()
+    it("accepts save-relative paths and rejects paths outside save", function()
         local ok = pcall(lurek.render.saveScreenshot, "save/test_render.png")
         expect_equal(ok, true)
-    end)
-
-    -- @covers lurek.render.saveScreenshot
-    it("rejects paths outside save", function()
         expect_error(function()
             lurek.render.saveScreenshot("test_render.png")
         end, "save/")
@@ -384,48 +227,22 @@ end)
 
 -- @describe lurek.render stencil mode
 describe("lurek.render stencil mode", function()
-  -- @covers lurek.render.getStencilMode
   -- @covers lurek.render.setStencilMode
-  it("setStencilMode and getStencilMode round-trip correctly", function()
+  it("setStencilMode supports round-trips, defaults, and invalid actions", function()
+    expect_type("function", lurek.render.setStencilMode)
     lurek.render.setStencilMode("replace", "always", 1)
     local action, compare, value = lurek.render.getStencilMode()
     expect_equal(action, "replace")
     expect_equal(compare, "always")
     expect_equal(value, 1)
-  end)
-
-  -- @covers lurek.render.clearStencil
-  -- @covers lurek.render.getStencilMode
-  -- @covers lurek.render.setStencilMode
-  it("clearStencil resets to keep/always/0", function()
-    lurek.render.setStencilMode("invert", "equal", 5)
-    lurek.render.clearStencil()
-    local action, compare, value = lurek.render.getStencilMode()
-    expect_equal(action, "keep")
-    expect_equal(compare, "always")
-    expect_equal(value, 0)
-  end)
-
-  -- @covers lurek.render.getStencilMode
-  -- @covers lurek.render.setStencilMode
-  it("setStencilMode defaults compare to always when omitted", function()
     lurek.render.setStencilMode("zero")
-    local action, compare, value = lurek.render.getStencilMode()
+    action, compare, value = lurek.render.getStencilMode()
     expect_equal(action, "zero")
     expect_equal(compare, "always")
     expect_equal(value, 0)
-  end)
-
-  -- @covers lurek.render.setStencilMode
-  it("setStencilMode errors on unknown action", function()
     expect_error(function()
       lurek.render.setStencilMode("explode")
     end)
-  end)
-
-  -- @covers lurek.render.setStencilMode
-  it("setStencilMode is a function", function()
-    expect_type("function", lurek.render.setStencilMode)
   end)
 
   -- @covers lurek.render.getStencilMode
@@ -434,41 +251,33 @@ describe("lurek.render stencil mode", function()
   end)
 
   -- @covers lurek.render.clearStencil
-  it("clearStencil is a function", function()
+  it("clearStencil is callable and resets to keep/always/0", function()
     expect_type("function", lurek.render.clearStencil)
+    lurek.render.setStencilMode("invert", "equal", 5)
+    lurek.render.clearStencil()
+    local action, compare, value = lurek.render.getStencilMode()
+    expect_equal(action, "keep")
+    expect_equal(compare, "always")
+    expect_equal(value, 0)
   end)
 end)
 
 -- @describe lurek.render depth mode
 describe("lurek.render depth mode", function()
-  -- @covers lurek.render.getDepthMode
   -- @covers lurek.render.setDepthMode
-  it("setDepthMode and getDepthMode round-trip correctly", function()
+  it("setDepthMode supports round-trips, defaults, and invalid modes", function()
+    expect_type("function", lurek.render.setDepthMode)
     lurek.render.setDepthMode("less", true)
     local mode, write = lurek.render.getDepthMode()
     expect_equal(mode, "less")
     expect_equal(write, true)
-  end)
-
-  -- @covers lurek.render.getDepthMode
-  -- @covers lurek.render.setDepthMode
-  it("setDepthMode write defaults to false", function()
     lurek.render.setDepthMode("always")
-    local mode, write = lurek.render.getDepthMode()
+    mode, write = lurek.render.getDepthMode()
     expect_equal(mode, "always")
     expect_equal(write, false)
-  end)
-
-  -- @covers lurek.render.setDepthMode
-  it("setDepthMode errors on unknown mode", function()
     expect_error(function()
       lurek.render.setDepthMode("turbo")
     end)
-  end)
-
-  -- @covers lurek.render.setDepthMode
-  it("setDepthMode is a function", function()
-    expect_type("function", lurek.render.setDepthMode)
   end)
 
   -- @covers lurek.render.getDepthMode
@@ -597,29 +406,9 @@ local function make_parallax_subject()
     error("No usable parallax constructor available for contract test")
 end
 
--- @describe target rendering/drawing contract: raycaster
-describe("target rendering/drawing contract: raycaster", function()
-    -- @covers LRaycaster:buildScene
-    it("raycaster objects expose buildScene()", function()
-        local rc = make_raycaster_subject()
-        expect_type("function", rc.buildScene)
-        expect_no_error(function()
-            rc:buildScene({ px = 4.5, py = 4.5, angle = 0, fov = 1.0, rays = 8, max_dist = 8, screen_w = 64, screen_h = 64 }, {}, {}, {})
-        end)
-    end)
-
-    -- @covers LRaycaster:drawView
-    it("raycaster objects expose drawView()", function()
-        local rc = make_raycaster_subject()
-        expect_type("function", rc.drawView)
-        local img = rc:drawView(4.5, 4.5, 0, 1.0, 32, 32, 8)
-        verify_image_data_contract(img)
-    end)
-end)
-
 -- @describe target rendering/drawing contract: particle
 describe("target rendering/drawing contract: particle", function()
-    -- @covers lurek.render
+    -- @covers LParticleSystem:render
     it("particle systems expose render()", function()
         local ps = make_particle_subject()
         expect_type("function", ps.render)
@@ -628,16 +417,7 @@ describe("target rendering/drawing contract: particle", function()
         end)
     end)
 
-    -- @covers lurek.render
-    -- @covers LAnimation:drawToImage
-    -- @covers LAreaChart:drawToImage
-    -- @covers LBarChart:drawToImage
-    -- @covers LLineChart:drawToImage
-    -- @covers LMinimap:drawToImage
-    -- @covers LOverlay:drawToImage
     -- @covers LParticleSystem:drawToImage
-    -- @covers LPieChart:drawToImage
-    -- @covers LScatterPlot:drawToImage
     it("particle systems expose drawToImage()", function()
         local ps = make_particle_subject()
         expect_type("function", ps.drawToImage)
@@ -648,12 +428,7 @@ end)
 
 -- @describe target rendering/drawing contract: tilemap
 describe("target rendering/drawing contract: tilemap", function()
-    -- @covers lurek.tilemap.loadTMX
-    it("exposes lurek.tilemap.loadTMX as the canonical TMX loader", function()
-        expect_type("function", lurek.tilemap.loadTMX)
-    end)
-
-    -- @covers lurek.render
+    -- @covers LTileMap:render
     it("tilemaps expose render()", function()
         local map = make_tilemap_subject()
         expect_type("function", map.render)
@@ -662,7 +437,7 @@ describe("target rendering/drawing contract: tilemap", function()
         end)
     end)
 
-    -- @covers lurek.render
+    -- @covers LTileMap:drawToImage
     it("tilemaps expose drawToImage()", function()
         local map = make_tilemap_subject()
         expect_type("function", map.drawToImage)
@@ -673,16 +448,7 @@ end)
 
 -- @describe target rendering/drawing contract: minimap
 describe("target rendering/drawing contract: minimap", function()
-    -- @covers lurek.render
-    it("minimaps expose render()", function()
-        local mini = make_minimap_subject()
-        expect_type("function", mini.render)
-        expect_no_error(function()
-            mini:render()
-        end)
-    end)
-
-    -- @covers lurek.render
+    -- @covers LMinimap:drawToImage
     it("minimaps expose drawToImage()", function()
         local mini = make_minimap_subject()
         expect_type("function", mini.drawToImage)
@@ -693,7 +459,7 @@ end)
 
 -- @describe target rendering/drawing contract: overlay
 describe("target rendering/drawing contract: overlay", function()
-    -- @covers lurek.render
+    -- @covers LOverlay:render
     it("overlays expose render()", function()
         local ov = make_overlay_subject()
         expect_type("function", ov.render)
@@ -702,7 +468,7 @@ describe("target rendering/drawing contract: overlay", function()
         end)
     end)
 
-    -- @covers LOverlay:flash
+    -- @covers LOverlay:drawToImage
     it("overlays expose drawToImage()", function()
         local ov = make_overlay_subject()
         if type(ov.flash) == "function" then
@@ -711,260 +477,6 @@ describe("target rendering/drawing contract: overlay", function()
         expect_type("function", ov.drawToImage)
         local img = ov:drawToImage(64, 64)
         verify_image_data_contract(img)
-    end)
-end)
-
--- @describe target rendering/drawing contract: parallax
-describe("target rendering/drawing contract: parallax", function()
-    -- @covers lurek.render
-    it("parallax sets expose render()", function()
-        local bg = make_parallax_subject()
-        expect_type("function", bg.render)
-        expect_no_error(function()
-            bg:render(0, 0)
-        end)
-    end)
-end)
-
--- @describe render missing API coverage sweep
-describe("render missing API coverage sweep", function()
-    -- @covers lurek.render.getBackgroundColor
-    it("getBackgroundColor is callable", function()
-        local r, g, b, a = lurek.render.getBackgroundColor()
-        expect_type("number", r)
-        expect_type("number", g)
-        expect_type("number", b)
-        expect_type("number", a)
-    end)
-
-    -- @covers lurek.render.setPointSize
-    -- @covers lurek.render.getPointSize
-    it("setPointSize and getPointSize round-trip", function()
-        lurek.render.setPointSize(2)
-        expect_type("number", lurek.render.getPointSize())
-        lurek.render.setPointSize(1)
-    end)
-
-    -- @covers lurek.render.printRich
-    -- @covers lurek.render.printf
-    -- @covers lurek.render.arc
-    -- @covers LShape:arc
-    it("text and arc helpers are callable", function()
-        expect_no_error(function()
-            lurek.render.printRich({ { text = "Hello", r = 255, g = 255, b = 255, a = 255 } }, 8, 8)
-            lurek.render.printf("Hello", 4, 4, 120, "left")
-            lurek.render.arc("line", 32, 32, 12, 0, math.pi)
-        end)
-    end)
-
-    -- @covers lurek.render.drawq
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newQuad
-    it("drawq is callable with image and quad", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local q = lurek.render.newQuad(0, 0, 1, 1, 1, 1)
-        expect_no_error(function()
-            lurek.render.drawq(img, q, 0, 0)
-        end)
-    end)
-
-    -- @covers lurek.render.setScissor
-    -- @covers lurek.render.getScissor
-    -- @covers lurek.render.intersectScissor
-    it("scissor API is callable", function()
-        lurek.render.setScissor(0, 0, 64, 64)
-        lurek.render.intersectScissor(8, 8, 32, 32)
-        local x, y, w, h = lurek.render.getScissor()
-        expect_type("number", x)
-        expect_type("number", y)
-        expect_type("number", w)
-        expect_type("number", h)
-        lurek.render.setScissor()
-    end)
-
-    -- @covers lurek.render.setColorMask
-    -- @covers lurek.render.getColorMask
-    -- @covers lurek.render.setWireframe
-    -- @covers lurek.render.isWireframe
-    -- @covers lurek.render.setStencilTest
-    it("render state API is callable", function()
-        lurek.render.setColorMask(true, true, true, true)
-        local r, g, b, a = lurek.render.getColorMask()
-        expect_type("boolean", r)
-        expect_type("boolean", g)
-        expect_type("boolean", b)
-        expect_type("boolean", a)
-        lurek.render.setWireframe(false)
-        expect_type("boolean", lurek.render.isWireframe())
-        lurek.render.setStencilTest("always", 1)
-        lurek.render.setStencilTest()
-    end)
-
-    -- @covers lurek.render.drawGradientRect
-    -- @covers lurek.render.drawColoredPolygon
-    -- @covers lurek.render.drawQuadBezier
-    -- @covers lurek.render.drawCubicBezier
-    -- @covers lurek.render.drawIsoCubeTile
-    -- @covers lurek.render.drawHexTile
-    -- @covers lurek.render.drawBevelRect
-    it("extended primitive APIs are callable", function()
-        lurek.render.drawGradientRect(0, 0, 16, 16, {1, 0, 0, 1}, {0, 1, 0, 1}, "vertical")
-        lurek.render.drawColoredPolygon({0, 0, 16, 0, 8, 16}, {{1, 0, 0, 1}, {0, 1, 0, 1}, {0, 0, 1, 1}}, "fill")
-        lurek.render.drawQuadBezier(0, 0, 8, 16, 16, 0)
-        lurek.render.drawCubicBezier(0, 0, 5, 10, 11, 10, 16, 0)
-        lurek.render.drawIsoCubeTile(32, 32, 16, 8, { depth = 12 })
-        lurek.render.drawHexTile(64, 64, 12)
-        lurek.render.drawBevelRect(2, 2, 20, 12, 2)
-    end)
-
-    -- @covers lurek.render.beginSortGroup
-    -- @covers lurek.render.pushSortKey
-    -- @covers lurek.render.flushSortGroup
-    it("sort-group API is callable", function()
-        lurek.render.beginSortGroup(1)
-        lurek.render.pushSortKey(1)
-        lurek.render.flushSortGroup(1)
-    end)
-
-    -- @covers lurek.render.pushLayer
-    -- @covers lurek.render.popLayer
-    -- @covers lurek.render.currentLayer
-    -- @covers lurek.render.isLayerVisible
-    -- @covers lurek.render.getLayerZOrder
-    -- @covers lurek.render.setLayerZOrder
-    -- @covers lurek.render.newLayer
-    -- @covers lurek.render.setLayer
-    it("layer API is callable", function()
-        lurek.render.newLayer("ui", 0)
-        lurek.render.setLayer("ui")
-        lurek.render.pushLayer(1)
-        local name = lurek.render.currentLayer()
-        expect_type("string", name)
-        expect_type("boolean", lurek.render.isLayerVisible("ui"))
-        lurek.render.setLayerZOrder("ui", 100)
-        expect_type("number", lurek.render.getLayerZOrder("ui"))
-        lurek.render.popLayer(1)
-    end)
-
-    -- @covers lurek.render.newMesh
-    -- @covers LMesh:getVertexCount
-    -- @covers LMesh:setVertex
-    -- @covers LMesh:getVertex
-    it("mesh API is callable", function()
-        local mesh = lurek.render.newMesh({
-            {0, 0, 0, 0, 1, 1, 1, 1},
-            {1, 0, 1, 0, 1, 1, 1, 1},
-            {0, 1, 0, 1, 1, 1, 1, 1},
-        })
-        expect_type("userdata", mesh)
-        expect_true(mesh:getVertexCount() >= 3)
-        mesh:setVertex(1, {0, 0, 0, 0, 1, 1, 1, 1})
-        local vx, vy = mesh:getVertex(1)
-        expect_type("number", vx)
-        expect_type("number", vy)
-    end)
-
-    -- @covers lurek.render.newShader
-    -- @covers LShader:hasUniform
-    it("shader API is callable", function()
-        local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
-        expect_type("userdata", shader)
-        expect_type("boolean", shader:hasUniform("u_time"))
-    end)
-
-    -- @covers lurek.render.newSpriteBatch
-    -- @covers LSpriteBatch:add
-    -- @covers lurek.render.newImage
-    it("spritebatch add is callable", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local sb = lurek.render.newSpriteBatch(img, 8)
-        expect_type("userdata", sb)
-        sb:add(0, 0)
-    end)
-
-    -- @covers lurek.render.drawBatch
-    -- @covers lurek.render.draw
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newSpriteBatch
-    -- @covers LSpriteBatch:add
-    -- @covers LSpriteBatch:getCount
-    it("drawBatch accepts the same sprite batch used by draw", function()
-        local img = lurek.render.newImage("assets/icon.png")
-        local sb = lurek.render.newSpriteBatch(img, 8)
-        sb:add(0, 0)
-        sb:add(4, 4, 0, 1, 1, 0, 0)
-        expect_equal(2, sb:getCount())
-        expect_no_error(function()
-            lurek.render.draw(sb)
-        end)
-        expect_no_error(function()
-            lurek.render.drawBatch(sb)
-        end)
-        expect_equal(2, sb:getCount())
-    end)
-
-    -- @covers lurek.render.newQuad
-    -- @covers LQuad:getTextureDimensions
-    it("quad texture dimensions are readable", function()
-        local q = lurek.render.newQuad(0, 0, 1, 1, 1, 1)
-        local tw, th = q:getTextureDimensions()
-        expect_type("number", tw)
-        expect_type("number", th)
-    end)
-
-    -- @covers lurek.render.getDefaultFont
-    -- @covers LFont:getLineHeight
-    -- @covers LFont:setLineHeight
-    -- @covers LFont:getAscent
-    -- @covers LFont:getDescent
-    it("font userdata metrics are callable", function()
-        local font = lurek.render.getDefaultFont()
-        expect_type("userdata", font)
-        local lh = font:getLineHeight()
-        expect_type("number", lh)
-        font:setLineHeight(lh)
-        expect_type("number", font:getAscent())
-        expect_type("number", font:getDescent())
-    end)
-
-    -- @covers lurek.render.getDefaultFont
-    -- @covers lurek.render.getFontWrap
-    -- @covers lurek.render.getFontCellWidth
-    -- @covers lurek.render.getFontSizes
-    it("font helper APIs are callable", function()
-        local font = lurek.render.getDefaultFont()
-        local lines, maxw = lurek.render.getFontWrap("abc def ghi", 40)
-        expect_type("table", lines)
-        expect_type("number", maxw)
-        expect_type("number", lurek.render.getFontCellWidth(font))
-        local sizes = lurek.render.getFontSizes()
-        expect_type("table", sizes)
-        expect_true(#sizes > 0)
-    end)
-
-    -- @covers lurek.render.getCanvas
-    -- @covers lurek.render.getCanvasSize
-    -- @covers lurek.render.newCanvas
-    -- @covers lurek.render.pop
-    -- @covers lurek.render.applyTransform
-    -- @covers lurek.render.setDefaultFilter
-    -- @covers lurek.render.getDefaultFilter
-    -- @covers LSvgImage:getCanvas
-    it("canvas/transform/filter APIs are callable", function()
-        local canvas = lurek.render.getCanvas()
-        if canvas == nil then
-            canvas = lurek.render.newCanvas(8, 8)
-        end
-        local cw, ch = lurek.render.getCanvasSize(canvas)
-        expect_type("number", cw)
-        expect_type("number", ch)
-        lurek.render.applyTransform({1, 0, 0, 0, 1, 0, 0, 0, 1})
-        lurek.render.pop()
-        lurek.render.setDefaultFilter("linear", "linear", 1)
-        local min_filter, mag_filter, aniso = lurek.render.getDefaultFilter()
-        expect_type("string", min_filter)
-        expect_type("string", mag_filter)
-        expect_type("number", aniso)
     end)
 end)
 
@@ -986,14 +498,12 @@ describe("render strict: screen globals", function()
     end)
 
     -- @covers lurek.render.getWidth
-    -- @covers lurek.render.getHeight
     it("getWidth and getHeight return numbers", function()
         expect_type("number", lurek.render.getWidth())
         expect_type("number", lurek.render.getHeight())
     end)
 
     -- @covers lurek.render.getStats
-    -- @covers LGraph:getStats
     it("getStats returns a table", function()
         local stats = lurek.render.getStats()
         expect_type("table", stats)
@@ -1009,7 +519,6 @@ end)
 -- @describe render strict: blend mode
 describe("render strict: blend mode", function()
     -- @covers lurek.render.setBlendMode
-    -- @covers lurek.render.getBlendMode
     it("setBlendMode and getBlendMode round-trip", function()
         lurek.render.setBlendMode("alpha")
         local mode = lurek.render.getBlendMode()
@@ -1020,7 +529,6 @@ end)
 -- @describe render strict: transform stack
 describe("render strict: transform stack", function()
     -- @covers lurek.render.push
-    -- @covers lurek.render.pop
     it("push is callable without error", function()
         local ok = pcall(lurek.render.push)
         expect_true(ok)
@@ -1028,7 +536,6 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.translate
-    -- @covers lurek.render.origin
     it("translate is callable without error", function()
         local ok = pcall(lurek.render.translate, 10, 20)
         expect_true(ok)
@@ -1036,7 +543,6 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.rotate
-    -- @covers lurek.render.origin
     it("rotate is callable without error", function()
         local ok = pcall(lurek.render.rotate, 0.5)
         expect_true(ok)
@@ -1044,7 +550,6 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.scale
-    -- @covers lurek.render.origin
     it("scale is callable without error", function()
         local ok = pcall(lurek.render.scale, 2, 2)
         expect_true(ok)
@@ -1052,7 +557,6 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.shear
-    -- @covers lurek.render.origin
     it("shear is callable without error", function()
         local ok = pcall(lurek.render.shear, 0.1, 0.1)
         expect_true(ok)
@@ -1068,9 +572,7 @@ end)
 
 -- @describe render strict: canvas and shader
 describe("render strict: canvas and shader", function()
-    -- @covers lurek.render.resetCanvas
     -- @covers lurek.render.setCanvas
-    -- @covers lurek.render.newCanvas
     it("setCanvas with nil resets to screen", function()
         local ok = pcall(lurek.render.setCanvas, nil)
         expect_true(ok)
@@ -1079,7 +581,6 @@ describe("render strict: canvas and shader", function()
     end)
 
     -- @covers lurek.render.setShader
-    -- @covers lurek.render.getShader
     it("setShader nil clears shader and getShader returns nil", function()
         local ok = pcall(lurek.render.setShader, nil)
         expect_true(ok)
@@ -1116,30 +617,9 @@ describe("render strict: stencil", function()
     end)
 end)
 
--- @describe render strict: LImageData methods
-describe("render strict: LImageData methods", function()
-    -- @covers LImageData:type
-    -- @covers LImageData:typeOf
-    it("LImageData type and typeOf return correct strings", function()
-        local fn = lurek.render["newImageData"]
-        local ok, img = false, nil
-        if fn then
-            ok, img = pcall(fn, 4, 4)
-        end
-        if ok and img ~= nil then
-            expect_equal(img:type(), "LImageData")
-            expect_true(img:typeOf("LImageData"))
-        else
-            expect_true(fn == nil or not ok or img == nil)
-        end
-    end)
-end)
-
 -- @describe render strict: LNineSlice methods
 describe("render strict: LNineSlice methods", function()
     -- @covers LNineSlice:type
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newNineSlice
     it("LNineSlice:type returns correct string", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 10, 10, 10, 10)
@@ -1150,8 +630,6 @@ end)
 -- @describe render strict: LImage methods
 describe("render strict: LImage methods", function()
     -- @covers LImage:type
-    -- @covers LImage:typeOf
-    -- @covers lurek.render.newImage
     it("LImage type and typeOf return correct strings", function()
         local img = lurek.render.newImage("assets/icon.png")
         expect_equal(img:type(), "LImage")
@@ -1159,8 +637,6 @@ describe("render strict: LImage methods", function()
     end)
 
     -- @covers LImage:getWidth
-    -- @covers LImage:getHeight
-    -- @covers lurek.render.newImage
     it("LImage getWidth and getHeight return numbers", function()
         local img = lurek.render.newImage("assets/icon.png")
         expect_type("number", img:getWidth())
@@ -1168,14 +644,12 @@ describe("render strict: LImage methods", function()
     end)
 
     -- @covers LImage:getId
-    -- @covers lurek.render.newImage
     it("LImage getId returns a number", function()
         local img = lurek.render.newImage("assets/icon.png")
         expect_type("number", img:getId())
     end)
 
     -- @covers LImage:getDimensions
-    -- @covers lurek.render.newImage
     it("LImage getDimensions returns two numbers", function()
         local img = lurek.render.newImage("assets/icon.png")
         local w, h = img:getDimensions()
@@ -1184,7 +658,6 @@ describe("render strict: LImage methods", function()
     end)
 
     -- @covers LImage:release
-    -- @covers lurek.render.newImage
     it("LImage release is callable without error", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ok = pcall(function() img:release() end)
@@ -1195,8 +668,6 @@ end)
 -- @describe render strict: LFont methods
 describe("render strict: LFont methods", function()
     -- @covers LFont:type
-    -- @covers LFont:typeOf
-    -- @covers lurek.render.getDefaultFont
     it("LFont type and typeOf return correct strings", function()
         local font = lurek.render.getDefaultFont()
         expect_equal(font:type(), "LFont")
@@ -1204,21 +675,18 @@ describe("render strict: LFont methods", function()
     end)
 
     -- @covers LFont:getWidth
-    -- @covers lurek.render.getDefaultFont
     it("LFont getWidth returns a number for a string", function()
         local font = lurek.render.getDefaultFont()
         expect_type("number", font:getWidth("hello"))
     end)
 
     -- @covers LFont:getHeight
-    -- @covers lurek.render.getDefaultFont
     it("LFont getHeight returns a number", function()
         local font = lurek.render.getDefaultFont()
         expect_type("number", font:getHeight())
     end)
 
     -- @covers LFont:getWrap
-    -- @covers lurek.render.getDefaultFont
     it("LFont getWrap returns lines and width", function()
         local font = lurek.render.getDefaultFont()
         local lines, max_w = font:getWrap("hello world", 100)
@@ -1228,7 +696,6 @@ describe("render strict: LFont methods", function()
     end)
 
     -- @covers LFont:release
-    -- @covers lurek.render.newFont
     it("LFont release is callable without error", function()
         local font = lurek.render.newFont(12)
         local ok = pcall(function() font:release() end)
@@ -1239,8 +706,6 @@ end)
 -- @describe render strict: LCanvas methods
 describe("render strict: LCanvas methods", function()
     -- @covers LCanvas:type
-    -- @covers LCanvas:typeOf
-    -- @covers lurek.render.newCanvas
     it("LCanvas type and typeOf return correct strings", function()
         local canvas = lurek.render.newCanvas(8, 8)
         expect_equal(canvas:type(), "LCanvas")
@@ -1248,8 +713,6 @@ describe("render strict: LCanvas methods", function()
     end)
 
     -- @covers LCanvas:getWidth
-    -- @covers LCanvas:getHeight
-    -- @covers lurek.render.newCanvas
     it("LCanvas getWidth and getHeight return numbers", function()
         local canvas = lurek.render.newCanvas(8, 8)
         expect_type("number", canvas:getWidth())
@@ -1257,7 +720,6 @@ describe("render strict: LCanvas methods", function()
     end)
 
     -- @covers LCanvas:getDimensions
-    -- @covers lurek.render.newCanvas
     it("LCanvas getDimensions returns two numbers", function()
         local canvas = lurek.render.newCanvas(8, 8)
         local w, h = canvas:getDimensions()
@@ -1266,7 +728,6 @@ describe("render strict: LCanvas methods", function()
     end)
 
     -- @covers LCanvas:release
-    -- @covers lurek.render.newCanvas
     it("LCanvas release is callable without error", function()
         local canvas = lurek.render.newCanvas(8, 8)
         local ok = pcall(function() canvas:release() end)
@@ -1277,9 +738,6 @@ end)
 -- @describe render strict: LSpriteBatch methods
 describe("render strict: LSpriteBatch methods", function()
     -- @covers LSpriteBatch:type
-    -- @covers LSpriteBatch:typeOf
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch type and typeOf return correct strings", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1288,9 +746,6 @@ describe("render strict: LSpriteBatch methods", function()
     end)
 
     -- @covers LSpriteBatch:getCount
-    -- @covers LSpriteBatch:getBufferSize
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch getCount and getBufferSize return numbers", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1299,8 +754,6 @@ describe("render strict: LSpriteBatch methods", function()
     end)
 
     -- @covers LSpriteBatch:clear
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch clear is callable without error", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1309,8 +762,6 @@ describe("render strict: LSpriteBatch methods", function()
     end)
 
     -- @covers LSpriteBatch:release
-    -- @covers lurek.render.newImage
-    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch release is callable without error", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1322,8 +773,6 @@ end)
 -- @describe render strict: LMesh methods
 describe("render strict: LMesh methods", function()
     -- @covers LMesh:type
-    -- @covers LMesh:typeOf
-    -- @covers lurek.render.newMesh
     it("LMesh type and typeOf return correct strings", function()
         local mesh = lurek.render.newMesh({
             {0,0,0,0}, {1,0,1,0}, {0.5,1,0.5,1}
@@ -1333,7 +782,6 @@ describe("render strict: LMesh methods", function()
     end)
 
     -- @covers LMesh:setTexture
-    -- @covers lurek.render.newMesh
     it("LMesh setTexture with nil is callable without error", function()
         local mesh = lurek.render.newMesh({
             {0,0,0,0}, {1,0,1,0}, {0.5,1,0.5,1}
@@ -1343,7 +791,6 @@ describe("render strict: LMesh methods", function()
     end)
 
     -- @covers LMesh:release
-    -- @covers lurek.render.newMesh
     it("LMesh release is callable without error", function()
         local mesh = lurek.render.newMesh({
             {0,0,0,0}, {1,0,1,0}, {0.5,1,0.5,1}
@@ -1356,8 +803,6 @@ end)
 -- @describe render strict: LShader methods
 describe("render strict: LShader methods", function()
     -- @covers LShader:type
-    -- @covers LShader:typeOf
-    -- @covers lurek.render.newShader
     it("LShader type and typeOf return correct strings", function()
         local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
         expect_equal(shader:type(), "LShader")
@@ -1365,7 +810,6 @@ describe("render strict: LShader methods", function()
     end)
 
     -- @covers LShader:send
-    -- @covers lurek.render.newShader
     it("LShader send with a uniform name and value is callable", function()
         local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
         local ok = pcall(function() shader:send("u_time", 1.0) end)
@@ -1373,7 +817,6 @@ describe("render strict: LShader methods", function()
     end)
 
     -- @covers LShader:release
-    -- @covers lurek.render.newShader
     it("LShader release is callable without error", function()
         local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
         local ok = pcall(function() shader:release() end)
@@ -1384,8 +827,6 @@ end)
 -- @describe render strict: LQuad methods
 describe("render strict: LQuad methods", function()
     -- @covers LQuad:type
-    -- @covers LQuad:typeOf
-    -- @covers lurek.render.newQuad
     it("LQuad type and typeOf return correct strings", function()
         local q = lurek.render.newQuad(0, 0, 1, 1, 1, 1)
         expect_equal(q:type(), "LQuad")
@@ -1393,7 +834,6 @@ describe("render strict: LQuad methods", function()
     end)
 
     -- @covers LQuad:getViewport
-    -- @covers lurek.render.newQuad
     it("LQuad getViewport returns four numbers", function()
         local q = lurek.render.newQuad(0, 0, 8, 8, 32, 32)
         local x, y, w, h = q:getViewport()
@@ -1404,7 +844,6 @@ describe("render strict: LQuad methods", function()
     end)
 
     -- @covers LQuad:setViewport
-    -- @covers lurek.render.newQuad
     it("LQuad setViewport is callable without error", function()
         local q = lurek.render.newQuad(0, 0, 8, 8, 32, 32)
         local ok = pcall(function() q:setViewport(0, 0, 4, 4) end)
@@ -1415,8 +854,6 @@ end)
 -- @describe render strict: LShape methods
 describe("render strict: LShape methods", function()
     -- @covers LShape:type
-    -- @covers LShape:typeOf
-    -- @covers lurek.render.newShape
     it("LShape type and typeOf return correct strings", function()
         local shape = lurek.render.newShape()
         expect_equal(shape:type(), "LShape")
@@ -1427,7 +864,6 @@ end)
 -- @describe render strict: batch text and OBJ APIs
 describe("render strict: batch text and OBJ APIs", function()
     -- @covers lurek.render.drawMany
-    -- @covers lurek.render.newImage
     it("drawMany accepts batched draw entries", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ok = pcall(function()
@@ -1448,7 +884,7 @@ describe("render strict: batch text and OBJ APIs", function()
     end)
 
     -- @covers lurek.render.newImage
-    it("newImage accepts optional color-space mode", function()
+    it("newImage accepts valid color-space modes and rejects unsupported ones", function()
         local ok_srgb, img_srgb = pcall(function()
             return lurek.render.newImage("assets/icon.png", "srgb")
         end)
@@ -1461,10 +897,6 @@ describe("render strict: batch text and OBJ APIs", function()
         expect_type("userdata", img_srgb)
         expect_type("userdata", img_linear)
         expect_type("number", img_srgb:getId())
-    end)
-
-    -- @covers lurek.render.newImage
-    it("newImage rejects unsupported color-space mode", function()
         local ok = pcall(function()
             lurek.render.newImage("assets/icon.png", "gamma")
         end)
@@ -1472,13 +904,6 @@ describe("render strict: batch text and OBJ APIs", function()
     end)
 
     -- @covers lurek.render.loadObj
-    -- @covers lurek.render.loadModel
-    -- @covers LObjModel:getFaceCount
-    -- @covers LObjModel:getUvCount
-    -- @covers LObjModel:getNormalCount
-    -- @covers LObjModel:getVertexCount
-    -- @covers LObjModel:renderToImage
-    -- @covers LObjModel:projectToMesh
     it("loads OBJ model and exposes mesh projection methods", function()
         local obj = lurek.render.loadObj("content/games/retro/dungeon_crawler/assets/models/tank.obj")
         local mdl = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")
@@ -1498,9 +923,7 @@ describe("render strict: batch text and OBJ APIs", function()
         local verts = obj:projectToMesh({ x = 0, y = 4, z = 8, tx = 0, ty = 0, tz = 0, fov = 60 }, 320, 180)
         expect_type("table", verts)
     end)
-    -- @covers lurek.render.isBold
     -- @covers lurek.render.setBold
-    -- @covers LFont:isBold
     it("isBold and setBold work correctly", function()
         local prev = lurek.render.isBold()
         expect_no_error(function()

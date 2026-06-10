@@ -26,16 +26,6 @@ describe("one-way platform integration", function()
         expect_near(-1, ny, 1e-5)
     end)
 
-    -- @covers LWorld:step
-    -- @covers lurek.physics.getBody
-    it("world stepping advances dynamic body under gravity", function()
-        local _, y0 = lurek.physics.getBody(world, player)
-        for _ = 1, 10 do
-            world:step(1/60)
-        end
-        local _, y1 = lurek.physics.getBody(world, player)
-        expect_true(y1 > y0, "player should move down after world steps")
-    end)
 end)
 
 -- @describe contact callbacks and sleeping integration
@@ -55,48 +45,22 @@ describe("contact callbacks and sleeping integration", function()
         end)
     end)
 
-    -- @covers LWorld:step
-    -- @covers lurek.physics.newBody
-    it("registered callbacks can observe contact activity", function()
-        local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
-        local b2 = lurek.physics.newBody(world, 0, 0, "static")
-        for _ = 1, 5 do
-            world:step(1/60)
-        end
-        expect_true(began >= 1, "begin-contact callback should fire at least once")
-    end)
-
     -- @covers LWorld:clearBeginContact
-    -- @covers LWorld:clearEndContact
-    -- @covers LWorld:step
-    it("stepping after clearing callbacks does not error", function()
+    it("clearBeginContact removes the begin callback", function()
         world:clearBeginContact()
-        world:clearEndContact()
+        lurek.physics.newBody(world, 0, 0, "dynamic")
+        lurek.physics.newBody(world, 0, 0, "static")
         world:step(1/60)
         expect_equal(0, began)
-        expect_equal(0, ended)
     end)
 
-    -- @covers LBody:getId
-    -- @covers LWorld:step
-    -- @covers LWorld:sleepBody
-    -- @covers LWorld:wakeUpBody
-    -- @covers lurek.physics.getBody
-    -- @covers lurek.physics.newBody
-    -- @covers lurek.physics.newWorld
-    it("sleep prevents motion until wake re-enables simulation", function()
-        local gravity_world = lurek.physics.newWorld(0, 100)
-        local b = lurek.physics.newBody(gravity_world, 0, 0, "dynamic")
-        local _, y0 = lurek.physics.getBody(gravity_world, b)
-        gravity_world:sleepBody(b:getId())
-        gravity_world:step(1/60)
-        local _, y_sleep = lurek.physics.getBody(gravity_world, b)
-        expect_near(y0, y_sleep, 1e-5, "sleeping body should not move")
-
-        gravity_world:wakeUpBody(b:getId())
-        gravity_world:step(1/60)
-        local _, y_awake = lurek.physics.getBody(gravity_world, b)
-        expect_true(y_awake > y_sleep, "woken body should move under gravity")
+    -- @covers LWorld:clearEndContact
+    it("clearEndContact removes the end callback", function()
+        world:clearEndContact()
+        lurek.physics.newBody(world, 0, 0, "dynamic")
+        lurek.physics.newBody(world, 0, 0, "static")
+        world:step(1/60)
+        expect_equal(0, ended)
     end)
 end)
 
@@ -123,14 +87,5 @@ describe("batch body creation integration", function()
         end)
     end)
 
-    -- @covers LWorld:getSolverIterations
-    -- @covers LWorld:newBodies
-    -- @covers LWorld:setSolverIterations
-    it("batch creation works with custom solver iterations", function()
-        world:setSolverIterations(6)
-        local ids = world:newBodies({{0, 0, "dynamic"}, {50, 0, "dynamic"}})
-        expect_equal(2, #ids)
-        expect_equal(6, world:getSolverIterations())
-    end)
 end)
 test_summary()

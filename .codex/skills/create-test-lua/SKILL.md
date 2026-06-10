@@ -23,8 +23,10 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 
 ## Workflow
 - Inspect existing test files, harness registration, and coverage output before writing.
+- Start from `tools/python.cmd tools/audit/unit_test_api_coverage.py` so the target module is framed by exact counts: total APIs, exactly-one-owner APIs, missing-owner APIs, and duplicated-owner APIs.
 - Modify the matching `tests/lua/` file when present; create a new file only for uncovered module coverage.
-- Use `@covers` markers, specific assertions, and `test_summary()`.
+- Use directly-adjacent `@covers` markers, specific assertions, and `test_summary()`.
+- For canonical unit coverage, keep `1 API = 1 unit it() = 1 @covers` unless fixture/setup constraints force a temporary shared block.
 - Register new files in `tests/lua/harness.rs`.
 - Run Lua test target, structure audit, coverage audit, and CAG validation when needed.
 - Finish by reporting changed files and validation evidence.
@@ -41,7 +43,7 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 
 ## Companion File Index
 - Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10`, `tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/`, `cargo test --test lua_tests`, `tools/python.cmd tools/validate/cag_validate.py`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/`, `cargo test --test lua_tests`, `tools/python.cmd tools/validate/cag_validate.py`
 - Owner profile: `tester`
 
 ## Common RAG Queries
@@ -51,5 +53,5 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests, tools/python.cmd tools/validate/cag_validate.py`
+- `tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests, tools/python.cmd tools/validate/cag_validate.py`
 - `agent: tester`

@@ -5,14 +5,6 @@
 describe("tanks terrain collapse + debris integration", function()
     --              can be spawned and the physics world can step without error.
     -- @covers LTerrain:collapseColumns
-    -- @covers LTerrain:fillRect
-    -- @covers LTerrain:flush
-    -- @covers LTerrain:setCell
-    -- @covers LTerrain:solidPositions
-    -- @covers LTerrain:spawnDebris
-    -- @covers LWorld:step
-    -- @covers lurek.physics.newTerrain
-    -- @covers lurek.physics.newWorld
     it("collapse then spawn debris and step without error", function()
         local world = lurek.physics.newWorld(0, 200)
         local terrain = lurek.physics.newTerrain(16, 16, 8, world)
@@ -50,8 +42,6 @@ describe("tanks terrain collapse + debris integration", function()
     end)
 
     -- @covers LTerrain:toImageData
-    -- @covers lurek.physics.newTerrain
-    -- @covers lurek.physics.newWorld
     it("toImageData returns expected byte count", function()
         local world = lurek.physics.newWorld(0, 0)
         local w, h = 8, 8

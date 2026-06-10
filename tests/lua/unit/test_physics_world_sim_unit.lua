@@ -5,12 +5,7 @@
 -- @describe cellular world simulation integration
 describe("cellular world simulation integration", function()
     --              over 50 steps, reducing sand count at the original row.
-    -- @covers LCellular:countCells
-    -- @covers LCellular:fillRect
-    -- @covers LCellular:getCell
     -- @covers LCellular:stepN
-    -- @covers lurek.procgen.CELL_SAND
-    -- @covers lurek.procgen.newCellular
     it("sand migrates downward over 50 steps", function()
         local sim = lurek.procgen.newCellular(8, 32)
 
@@ -36,7 +31,6 @@ describe("cellular world simulation integration", function()
     end)
 
     -- @covers LCellular:toImageData
-    -- @covers lurek.procgen.newCellular
     it("toImageData returns correct byte count", function()
         local w, h = 16, 16
         local sim = lurek.procgen.newCellular(w, h)
@@ -45,20 +39,13 @@ describe("cellular world simulation integration", function()
     end)
 
     -- @covers LCellular:toImageDataRegion
-    -- @covers lurek.procgen.newCellular
     it("toImageDataRegion returns sub-region byte count", function()
         local sim = lurek.procgen.newCellular(64, 64)
         local img = sim:toImageDataRegion(0, 0, 8, 8)
         expect_equal(8 * 8 * 4, #img)
     end)
 
-    -- @covers LCellular:countCells
-    -- @covers LCellular:fillRect
     -- @covers LCellular:loadFromBytes
-    -- @covers LCellular:stepN
-    -- @covers LCellular:toBytes
-    -- @covers lurek.procgen.CELL_SAND
-    -- @covers lurek.procgen.newCellular
     it("serialisation after 20 steps is lossless", function()
         local sim1 = lurek.procgen.newCellular(16, 16)
         sim1:fillRect(0, 0, 16, 1, lurek.procgen.CELL_SAND)
@@ -75,10 +62,7 @@ describe("cellular world simulation integration", function()
         )
     end)
 
-    -- @covers LCellular:countCells
     -- @covers LCellular:fillCircle
-    -- @covers lurek.procgen.CELL_ROCK
-    -- @covers lurek.procgen.newCellular
     it("fillCircle count matches countCells after fill", function()
         local sim = lurek.procgen.newCellular(32, 32)
         sim:fillCircle(16, 16, 4, lurek.procgen.CELL_ROCK)

@@ -4,25 +4,33 @@
 -- @describe province routing helpers
 describe("province routing helpers", function()
     -- @covers LProvinceRegistry:findRoute
-    -- @covers LProvinceRegistry:isConnected
-    -- @covers lurek.province.newFromPng
-    it("finds a trivial route and connectivity for same province", function()
+    it("findRoute returns trivial missing and weighted routes", function()
         local reg = lurek.province.newFromPng("test-province-routing-basic", "content/games/strategy/eu2/map.png")
         local route = reg:findRoute(1, 1)
         expect_type("table", route)
-        if route == nil then
-            error("findRoute(1,1) returned nil")
-        end
+        expect_not_nil(route)
         expect_equal(1, #route)
         expect_equal(1, route[1])
-        expect_true(reg:isConnected(1, 1))
+
+        local missing = reg:findRoute(999999, 999998)
+        expect_equal(nil, missing)
+
+        local weighted = reg:findRoute(1, 2, function(from_id, to_id)
+            if from_id == to_id then
+                return 0.1
+            end
+            return 1.0
+        end)
+        if weighted ~= nil then
+            expect_type("table", weighted)
+            expect_true(#weighted >= 1)
+        end
     end)
 
-    -- @covers LProvinceRegistry:findRoute
-    it("returns nil when ids are unknown", function()
-        local reg = lurek.province.newFromPng("test-province-routing-missing", "content/games/strategy/eu2/map.png")
-        local route = reg:findRoute(999999, 999998)
-        expect_equal(nil, route)
+    -- @covers LProvinceRegistry:isConnected
+    it("isConnected reports connectivity for the same province", function()
+        local reg = lurek.province.newFromPng("test-province-routing-connected", "content/games/strategy/eu2/map.png")
+        expect_true(reg:isConnected(1, 1))
     end)
 
     -- @covers LProvinceRegistry:findRoutes
@@ -48,36 +56,26 @@ describe("province routing helpers", function()
         expect_true(#components[1] >= 1)
     end)
 
-    -- @covers LProvinceRegistry:findRoute
-    it("accepts weighted cost function", function()
-        local reg = lurek.province.newFromPng("test-province-routing-weighted", "content/games/strategy/eu2/map.png")
-        local route = reg:findRoute(1, 2, function(from_id, to_id)
-            if from_id == to_id then
-                return 0.1
-            end
-            return 1.0
-        end)
-        if route ~= nil then
-            expect_type("table", route)
-            expect_true(#route >= 1)
-        end
+    -- @covers LProvinceRegistry:findIsolatedProvinces
+    it("findIsolatedProvinces returns a table", function()
+        local reg = lurek.province.newFromPng("test-province-routing-owner", "content/games/strategy/eu2/map.png")
+        reg:setAttr(1, "faction", "player")
+        reg:setAttr(2, "faction", "enemy")
+        reg:setAttr(3, "faction", "player")
+
+        local isolated = reg:findIsolatedProvinces("faction")
+        expect_type("table", isolated)
     end)
 
-    -- @covers LProvinceRegistry:findIsolatedProvinces
     -- @covers LProvinceRegistry:totalAttrForOwner
-    -- @covers LProvinceRegistry:setAttr
-    it("supports owner/isolation and owner totals", function()
-        local reg = lurek.province.newFromPng("test-province-routing-owner", "content/games/strategy/eu2/map.png")
+    it("totalAttrForOwner sums numeric owner attributes", function()
+        local reg = lurek.province.newFromPng("test-province-routing-owner-total", "content/games/strategy/eu2/map.png")
         reg:setAttr(1, "faction", "player")
         reg:setAttr(2, "faction", "enemy")
         reg:setAttr(3, "faction", "player")
         reg:setAttr(1, "iron", "10")
         reg:setAttr(2, "iron", "7")
         reg:setAttr(3, "iron", "2.5")
-
-        local isolated = reg:findIsolatedProvinces("faction")
-        expect_type("table", isolated)
-
         local total_player = reg:totalAttrForOwner("faction", "player", "iron")
         expect_type("number", total_player)
         expect_true(total_player >= 12.5)

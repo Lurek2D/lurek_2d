@@ -1,18 +1,6 @@
 --- @title Overlay Effects
 --- @desc Weather, atmosphere, screen flash/shake/fade, and transitions.
 
-local function f2(value)
-    return string.format("%.2f", value)
-end
-
-local function rgba_text(r, g, b, a)
-    return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
-end
-
-local function pair_text(x, y)
-    return string.format("(%.2f, %.2f)", x, y)
-end
-
 --@api-stub: lurek.overlay.new
 do
     local ov = lurek.overlay.new(800, 600)
@@ -56,6 +44,10 @@ end
 
 --@api-stub: LOverlay:flash
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:flash(1.0, 0.95, 0.70, 0.8, 0.2)
     print("LOverlay:flash isFlashing=" .. tostring(ov:isFlashing()))
@@ -64,6 +56,10 @@ end
 
 --@api-stub: LOverlay:getAmbientColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientColor(0.2, 0.1, 0.3, 0.5)
     local r, g, b, a = ov:getAmbientColor()
@@ -79,6 +75,10 @@ end
 
 --@api-stub: LOverlay:getCloudOpacity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudOpacity(0.7)
     print("LOverlay:getCloudOpacity=" .. f2(ov:getCloudOpacity()))
@@ -86,6 +86,10 @@ end
 
 --@api-stub: LOverlay:getCloudScale
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudScale(1.5)
     print("LOverlay:getCloudScale=" .. f2(ov:getCloudScale()))
@@ -93,6 +97,10 @@ end
 
 --@api-stub: LOverlay:getCloudSpeed
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudSpeed(0.3)
     print("LOverlay:getCloudSpeed=" .. f2(ov:getCloudSpeed()))
@@ -107,6 +115,10 @@ end
 
 --@api-stub: LOverlay:getFilmGrainIntensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFilmGrainIntensity(0.4)
     print("LOverlay:getFilmGrainIntensity=" .. f2(ov:getFilmGrainIntensity()))
@@ -114,6 +126,10 @@ end
 
 --@api-stub: LOverlay:getFlashAlpha
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:flash(1, 1, 0, 1.0, 0.5)
     print("LOverlay:getFlashAlpha=" .. f2(ov:getFlashAlpha()))
@@ -121,6 +137,10 @@ end
 
 --@api-stub: LOverlay:getFogColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogColor(0.5, 0.5, 0.5, 0.8)
     local r, g, b, a = ov:getFogColor()
@@ -129,6 +149,10 @@ end
 
 --@api-stub: LOverlay:getFogDensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogDensity(0.6)
     print("LOverlay:getFogDensity=" .. f2(ov:getFogDensity()))
@@ -136,6 +160,10 @@ end
 
 --@api-stub: LOverlay:getHeatHazeIntensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setHeatHazeIntensity(0.4)
     print("LOverlay:getHeatHazeIntensity=" .. f2(ov:getHeatHazeIntensity()))
@@ -149,6 +177,10 @@ end
 
 --@api-stub: LOverlay:getLightningAlpha
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerLightning()
     print("LOverlay:getLightningAlpha=" .. f2(ov:getLightningAlpha()))
@@ -156,6 +188,10 @@ end
 
 --@api-stub: LOverlay:getLightningColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setLightningColor(0.9, 0.9, 1.0, 1.0)
     local r, g, b, a = ov:getLightningColor()
@@ -164,6 +200,10 @@ end
 
 --@api-stub: LOverlay:getShakeOffset
 do
+    local function pair_text(x, y)
+        return string.format("(%.2f, %.2f)", x, y)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:shake(5.0, 0.3)
     local ox, oy = ov:getShakeOffset()
@@ -179,6 +219,10 @@ end
 
 --@api-stub: LOverlay:getVignetteStrength
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setVignetteStrength(0.6)
     print("LOverlay:getVignetteStrength=" .. f2(ov:getVignetteStrength()))
@@ -186,6 +230,10 @@ end
 
 --@api-stub: LOverlay:getWater
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWater(0.20, 1.10, 0.35)
     local w = ov:getWater()
@@ -202,6 +250,10 @@ end
 
 --@api-stub: LOverlay:getWeatherIntensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherIntensity(0.7)
     print("LOverlay:getWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
@@ -215,6 +267,10 @@ end
 
 --@api-stub: LOverlay:getWindDirection
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWindDirection(0.79)
     print("LOverlay:getWindDirection=" .. f2(ov:getWindDirection()))
@@ -222,6 +278,10 @@ end
 
 --@api-stub: LOverlay:getWindSpeed
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWindSpeed(12.0)
     print("LOverlay:getWindSpeed=" .. f2(ov:getWindSpeed()))
@@ -307,6 +367,10 @@ end
 
 --@api-stub: LOverlay:pullAmbientFromLight
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local source = lurek.overlay.new(800, 600)
     source:setAmbientColor(0.12, 0.18, 0.30, 0.65)
     source:pushAmbientToLight()
@@ -319,6 +383,10 @@ end
 
 --@api-stub: LOverlay:pushAmbientToLight
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local source = lurek.overlay.new(800, 600)
     source:setAmbientColor(0.30, 0.20, 0.50, 0.40)
     source:pushAmbientToLight()
@@ -331,6 +399,10 @@ end
 
 --@api-stub: LOverlay:render
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:flash(1.0, 1.0, 1.0, 0.5, 0.2)
     ov:render()
@@ -347,6 +419,10 @@ end
 
 --@api-stub: LOverlay:setAmbientColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientColor(0.2, 0.1, 0.3, 0.5)
     local r, g, b, a = ov:getAmbientColor()
@@ -369,6 +445,10 @@ end
 
 --@api-stub: LOverlay:setCloudOpacity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudOpacity(0.5)
     print("LOverlay:setCloudOpacity=" .. f2(ov:getCloudOpacity()))
@@ -376,6 +456,10 @@ end
 
 --@api-stub: LOverlay:setCloudScale
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudScale(2.0)
     print("LOverlay:setCloudScale=" .. f2(ov:getCloudScale()))
@@ -390,6 +474,10 @@ end
 
 --@api-stub: LOverlay:setCloudSpeed
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudSpeed(0.5)
     print("LOverlay:setCloudSpeed=" .. f2(ov:getCloudSpeed()))
@@ -414,6 +502,10 @@ end
 
 --@api-stub: LOverlay:setFilmGrainIntensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFilmGrainIntensity(0.3)
     print("LOverlay:setFilmGrainIntensity=" .. f2(ov:getFilmGrainIntensity()))
@@ -421,6 +513,10 @@ end
 
 --@api-stub: LOverlay:setFogColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogColor(0.7, 0.7, 0.8, 0.6)
     local r, g, b, a = ov:getFogColor()
@@ -429,6 +525,10 @@ end
 
 --@api-stub: LOverlay:setFogDensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setFogDensity(0.5)
     print("LOverlay:setFogDensity=" .. f2(ov:getFogDensity()))
@@ -450,6 +550,10 @@ end
 
 --@api-stub: LOverlay:setHeatHazeIntensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setHeatHazeIntensity(0.5)
     print("LOverlay:setHeatHazeIntensity=" .. f2(ov:getHeatHazeIntensity()))
@@ -457,6 +561,10 @@ end
 
 --@api-stub: LOverlay:setLightningColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setLightningColor(1.0, 1.0, 0.8, 1.0)
     local r, g, b, a = ov:getLightningColor()
@@ -479,6 +587,10 @@ end
 
 --@api-stub: LOverlay:setVignetteStrength
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setVignetteStrength(0.7)
     print("LOverlay:setVignetteStrength=" .. f2(ov:getVignetteStrength()))
@@ -486,6 +598,10 @@ end
 
 --@api-stub: LOverlay:setWater
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWater(0.25, 1.25, 0.60)
     local w = ov:getWater()
@@ -495,6 +611,10 @@ end
 
 --@api-stub: LOverlay:setWaterTint
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWater(0.20, 1.10, 0.35)
     ov:setWaterTint(0.1, 0.3, 0.7, 0.8)
@@ -518,6 +638,10 @@ end
 
 --@api-stub: LOverlay:setWeatherIntensity
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherIntensity(0.8)
     print("LOverlay:setWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
@@ -525,6 +649,10 @@ end
 
 --@api-stub: LOverlay:setWindDirection
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWindDirection(1.57)
     print("LOverlay:setWindDirection=" .. f2(ov:getWindDirection()))
@@ -532,6 +660,10 @@ end
 
 --@api-stub: LOverlay:setWindSpeed
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setWindSpeed(8.0)
     print("LOverlay:setWindSpeed=" .. f2(ov:getWindSpeed()))
@@ -546,6 +678,10 @@ end
 
 --@api-stub: LOverlay:syncAmbientWithLight
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientColor(0.20, 0.10, 0.40, 0.60)
     ov:syncAmbientWithLight("overlay")
@@ -572,6 +708,10 @@ end
 
 --@api-stub: LOverlay:triggerLightning
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local ov = lurek.overlay.new(800, 600)
     ov:triggerLightning()
     print("LOverlay:triggerLightning alpha=" .. f2(ov:getLightningAlpha()))
@@ -606,6 +746,10 @@ end
 
 --@api-stub: LScreenTransition:color
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     local r, g, b, a = tr:color()
     print("LScreenTransition:color=" .. rgba_text(r, g, b, a))
@@ -634,6 +778,10 @@ end
 
 --@api-stub: LScreenTransition:play
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local tr = lurek.overlay.newTransition("fade", 0.5, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
     print("LScreenTransition:play isActive=" .. tostring(tr:isActive()))
@@ -642,6 +790,10 @@ end
 
 --@api-stub: LScreenTransition:progress
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
     tr:update(0.5)
@@ -650,6 +802,10 @@ end
 
 --@api-stub: LScreenTransition:reverse
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     tr:reverse()
     print("LScreenTransition:reverse isActive=" .. tostring(tr:isActive()))
@@ -658,6 +814,10 @@ end
 
 --@api-stub: LScreenTransition:setColor
 do
+    local function rgba_text(r, g, b, a)
+        return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     tr:setColor({ 0.1, 0.05, 0.2, 1.0 })
     local r, g, b, a = tr:color()
@@ -678,6 +838,10 @@ end
 
 --@api-stub: LScreenTransition:update
 do
+    local function f2(value)
+        return string.format("%.2f", value)
+    end
+
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
     local still_active = tr:update(0.016)

@@ -1,171 +1,57 @@
 -- tests/lua/unit/test_input_unit.lua
--- Lua-first unit tests for lurek.input module covering keyboard, mouse, gamepad, binding management, and action queries.
+-- Complementary input userdata coverage that avoids duplicating the broader core suite.
 
-local harness = require("tests.lua.harness")
+local function fresh_recording()
+    lurek.input.stopRecording()
+    lurek.input.startRecording()
+    return lurek.input.stopRecording()
+end
 
--- @describe lurek.input
-describe("lurek.input", function()
-    -- @covers lurek.input.bind
-    it("binds an input to an action", function()
-        lurek.input.bind("jump", "space")
-        assert_equal("userdata", type(lurek.input))
+-- @describe lurek.input userdata handles
+describe("lurek.input userdata handles", function()
+    -- @covers LCursor:type
+    it("system cursors report their userdata type name", function()
+        local cursor = lurek.input.mouse.getSystemCursor("arrow")
+        expect_equal("LCursor", cursor:type())
     end)
 
-    -- @covers lurek.input.unbind
-    it("unbinds an action removing all bindings", function()
-        lurek.input.bind("move_left", "left")
-        lurek.input.unbind("move_left")
-        assert_equal("userdata", type(lurek.input))
+    -- @covers LCursor:typeOf
+    it("system cursors match the LCursor type guard", function()
+        local cursor = lurek.input.mouse.getSystemCursor("hand")
+        expect_true(cursor:typeOf("LCursor"))
     end)
 
-    -- @covers lurek.input.isKeyDown
-    it("queries if a key is currently held down", function()
-        local result = lurek.input.isKeyDown("space")
-        assert_true(type(result) == "boolean")
+    -- @covers LCombo:progress
+    it("combo progress advances after feeding the first matching step", function()
+        local combo = lurek.input.newCombo({"a", "b"})
+        expect_equal(0, combo:progress())
+        combo:feed("a")
+        expect_equal(1, combo:progress())
     end)
 
-    -- @covers lurek.input.isKeyPressed
-    it("queries if a key was just pressed this frame", function()
-        local result = lurek.input.isKeyPressed("return")
-        assert_true(type(result) == "boolean")
+    -- @covers LCombo:type
+    it("combo detectors report the LCombo type name", function()
+        local combo = lurek.input.newCombo({"left", "right"})
+        expect_equal("LCombo", combo:type())
     end)
 
-    -- @covers lurek.input.isKeyReleased
-    it("queries if a key was just released this frame", function()
-        local result = lurek.input.isKeyReleased("escape")
-        assert_true(type(result) == "boolean")
+    -- @covers LCombo:typeOf
+    it("combo detectors match the LCombo type guard", function()
+        local combo = lurek.input.newCombo({"up", "down"})
+        expect_true(combo:typeOf("LCombo"))
     end)
 
-    -- Mouse input
-    -- @covers lurek.input.isMouseDown
-    it("queries if a mouse button is held down", function()
-        local result = lurek.input.isMouseDown("left")
-        assert_true(type(result) == "boolean")
+    -- @covers LInputRecording:type
+    it("stopped recordings report the LInputRecording type name", function()
+        local rec = fresh_recording()
+        expect_equal("LInputRecording", rec:type())
     end)
 
-    -- @covers lurek.input.isMousePressed
-    it("queries if a mouse button was just pressed", function()
-        local result = lurek.input.isMousePressed("left")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.isMouseReleased
-    it("queries if a mouse button was just released", function()
-        local result = lurek.input.isMouseReleased("right")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.getMousePosition
-    it("gets current mouse position in screen coordinates", function()
-        local x, y = lurek.input.getMousePosition()
-        assert_equal("number", type(x))
-        assert_equal("number", type(y))
-    end)
-
-    -- Gamepad input
-    -- @covers lurek.input.isGamepadDown
-    it("queries if a gamepad button is held down", function()
-        local result = lurek.input.isGamepadDown("gamepad0:a")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.isGamepadPressed
-    it("queries if a gamepad button was just pressed", function()
-        local result = lurek.input.isGamepadPressed("gamepad0:x")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.isGamepadReleased
-    it("queries if a gamepad button was just released", function()
-        local result = lurek.input.isGamepadReleased("gamepad0:y")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.getGamepadAxis
-    it("queries a gamepad analog axis value", function()
-        local value = lurek.input.getGamepadAxis("gamepad0:left_stick_x")
-        assert_equal("number", type(value))
-        assert_true(value >= -1.0 and value <= 1.0)
-    end)
-
-    -- @covers lurek.input.getGamepadVibration
-    it("queries gamepad vibration state", function()
-        local left, right = lurek.input.getGamepadVibration("gamepad0")
-        assert_true(type(left) == "number" or left == nil)
-        assert_true(type(right) == "number" or right == nil)
-    end)
-
-    -- Action mapping
-    -- @covers lurek.input.define
-    it("defines a named action with multiple bindings", function()
-        lurek.input.define("attack", {"z", "gamepad0:a"})
-        assert_equal("userdata", type(lurek.input))
-    end)
-
-    -- @covers lurek.input.isActionDown
-    it("queries if an action is currently active", function()
-        lurek.input.define("shoot", {"space"})
-        local result = lurek.input.isActionDown("shoot")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.wasActionPressed
-    it("queries if an action was just pressed", function()
-        lurek.input.define("jump", {"space"})
-        local result = lurek.input.wasActionPressed("jump")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- @covers lurek.input.wasActionReleased
-    it("queries if an action was just released", function()
-        lurek.input.define("dash", {"shift"})
-        local result = lurek.input.wasActionReleased("dash")
-        assert_true(type(result) == "boolean")
-    end)
-
-    -- Analog input (virtual dpad / axes)
-    -- @covers lurek.input.getAxis
-    it("gets normalized axis value from multiple keys/buttons", function()
-        local value = lurek.input.getAxis("horizontal")
-        assert_equal("number", type(value))
-        assert_true(value >= -1.0 and value <= 1.0)
-    end)
-
-    -- @covers lurek.input.getVector
-    it("gets 2D vector from four directional inputs", function()
-        local x, y = lurek.input.getVector("horizontal", "vertical")
-        assert_equal("number", type(x))
-        assert_equal("number", type(y))
-    end)
-
-    -- @covers lurek.input.reset
-    it("resets all input state between frames", function()
-        lurek.input.reset()
-        assert_equal("userdata", type(lurek.input))
-    end)
-
-    -- Conflict detection and serialization
-    -- @covers lurek.input.getConflicts
-    it("detects conflicting bindings for actions", function()
-        lurek.input.define("action1", {"space"})
-        lurek.input.define("action2", {"space"})
-        local conflicts = lurek.input.getConflicts()
-        assert_true(type(conflicts) == "table" or conflicts == nil)
-    end)
-
-    -- @covers lurek.input.serializeBindings
-    it("serializes all bindings to a string", function()
-        lurek.input.define("test_action", {"q", "e"})
-        local serialized = lurek.input.serializeBindings()
-        assert_true(type(serialized) == "string" and string.len(serialized) > 0)
-    end)
-
-    -- @covers lurek.input.deserializeBindings
-    it("deserializes bindings from a string", function()
-        lurek.input.define("save_action", {"s"})
-        local serialized = lurek.input.serializeBindings()
-        lurek.input.deserializeBindings(serialized)
-        assert_equal("userdata", type(lurek.input))
+    -- @covers LInputRecording:typeOf
+    it("stopped recordings match the LInputRecording type guard", function()
+        local rec = fresh_recording()
+        expect_true(rec:typeOf("LInputRecording"))
     end)
 end)
+
 test_summary()

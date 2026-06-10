@@ -12,52 +12,16 @@ local function make_test_tone(sample_count, amplitude)
     return sd
 end
 
--- @describe lurek.dsp existence
-describe("lurek.dsp existence", function()
-    -- @covers lurek.dsp
-    it("lurek.dsp table exists", function()
-        expect_type("table", lurek.dsp)
-    end)
-
-    -- @covers lurek.dsp.newEffectParams
-    it("newEffectParams exists", function()
-        expect_type("function", lurek.dsp.newEffectParams)
-    end)
-
-    -- @covers lurek.dsp.processOffline
-    it("processOffline exists", function()
-        expect_type("function", lurek.dsp.processOffline)
-    end)
-
-    -- @covers lurek.dsp.normalize
-    it("normalize exists", function()
-        expect_type("function", lurek.dsp.normalize)
-    end)
-
-    -- @covers lurek.dsp.waveformToPng
-    it("waveformToPng exists", function()
-        expect_type("function", lurek.dsp.waveformToPng)
-    end)
-
-    -- @covers lurek.dsp.spectrogramToPng
-    it("spectrogramToPng exists", function()
-        expect_type("function", lurek.dsp.spectrogramToPng)
-    end)
-end)
-
 -- @describe lurek.dsp.newEffectParams
 describe("lurek.dsp.newEffectParams", function()
     -- @covers lurek.dsp.newEffectParams
-    it("creates params with correct fields", function()
+    it("creates params with correct fields and preserves effect type names", function()
+        expect_type("function", lurek.dsp.newEffectParams)
         local params = lurek.dsp.newEffectParams("lowpass", 1000, 0.7, 0)
         expect_equal("lowpass", params.type)
         expect_equal(1000, params.p1)
         expect_near(0.7, params.p2, 0.0001)
         expect_equal(0, params.p3)
-    end)
-
-    -- @covers lurek.dsp.newEffectParams
-    it("keeps effect type names unchanged", function()
         local types = {
             "lowpass", "highpass", "bandpass", "notch",
             "reverb", "delay", "chorus", "flanger",
@@ -68,59 +32,6 @@ describe("lurek.dsp.newEffectParams", function()
             local params = lurek.dsp.newEffectParams(effect_type, 1, 2, 3)
             expect_equal(effect_type, params.type)
         end
-    end)
-end)
-
--- @describe lurek.dsp functions exist
-describe("lurek.dsp functions exist", function()
-    -- @covers lurek.dsp.applyLowpass
-    it("applyLowpass exists", function()
-        expect_type("function", lurek.dsp.applyLowpass)
-    end)
-
-    -- @covers lurek.dsp.applyHighpass
-    it("applyHighpass exists", function()
-        expect_type("function", lurek.dsp.applyHighpass)
-    end)
-
-    -- @covers lurek.dsp.applyBandpass
-    it("applyBandpass exists", function()
-        expect_type("function", lurek.dsp.applyBandpass)
-    end)
-
-    -- @covers lurek.dsp.applyGain
-    it("applyGain exists", function()
-        expect_type("function", lurek.dsp.applyGain)
-    end)
-
-    -- @covers lurek.dsp.analyzeRms
-    it("analyzeRms exists", function()
-        expect_type("function", lurek.dsp.analyzeRms)
-    end)
-
-    -- @covers lurek.dsp.analyzePeak
-    it("analyzePeak exists", function()
-        expect_type("function", lurek.dsp.analyzePeak)
-    end)
-
-    -- @covers lurek.dsp.analyzeFft
-    it("analyzeFft exists", function()
-        expect_type("function", lurek.dsp.analyzeFft)
-    end)
-
-    -- @covers lurek.dsp.addEffectToBus
-    it("addEffectToBus exists", function()
-        expect_type("function", lurek.dsp.addEffectToBus)
-    end)
-
-    -- @covers lurek.dsp.removeEffectFromBus
-    it("removeEffectFromBus exists", function()
-        expect_type("function", lurek.dsp.removeEffectFromBus)
-    end)
-
-    -- @covers lurek.dsp.setEffectParam
-    it("setEffectParam exists", function()
-        expect_type("function", lurek.dsp.setEffectParam)
     end)
 end)
 
@@ -144,7 +55,6 @@ describe("lurek.dsp analysis", function()
         expect_equal(peak <= 1.0, true)
     end)
 
-    -- @covers lurek.dsp.analyzePeak
     -- @covers lurek.dsp.applyGain
     it("applyGain increases peak when gain is above one", function()
         local sound = make_test_tone(4410, 0.4)
@@ -203,8 +113,8 @@ end)
 -- @describe lurek.dsp offline file processing
 describe("lurek.dsp offline file processing", function()
     -- @covers lurek.dsp.processOffline
-    -- @covers lurek.filesystem.exists
-    it("processOffline writes output WAV with a chained effect list", function()
+    it("processOffline writes output WAVs and rejects missing sources", function()
+        expect_type("function", lurek.dsp.processOffline)
         local effects = {
             { type = "highpass", p1 = 150.0 },
             { type = "reverb", p1 = 0.5, p2 = 0.3, p3 = 0.25 },
@@ -213,44 +123,18 @@ describe("lurek.dsp offline file processing", function()
         local ok = lurek.dsp.processOffline(WAVE, out, effects)
         expect_equal(true, ok)
         expect_true(lurek.filesystem.exists(out), "processed WAV output should exist")
-    end)
-
-    -- @covers lurek.dsp.normalize
-    -- @covers lurek.filesystem.exists
-    it("normalize writes a normalized output WAV", function()
-        local out = OUT_DIR .. "normalized.wav"
-        local ok = lurek.dsp.normalize(WAVE, out, 0.9)
-        expect_equal(true, ok)
-        expect_true(lurek.filesystem.exists(out), "normalized WAV output should exist")
-    end)
-
-    -- @covers lurek.dsp.waveformToPng
-    -- @covers lurek.filesystem.exists
-    it("waveformToPng writes a PNG for valid input", function()
-        local out = OUT_DIR .. "waveform.png"
-        local ok = lurek.dsp.waveformToPng(WAVE, out, 256, 64)
-        expect_equal(true, ok)
-        expect_true(lurek.filesystem.exists(out), "waveform PNG output should exist")
-    end)
-
-    -- @covers lurek.dsp.spectrogramToPng
-    -- @covers lurek.filesystem.exists
-    it("spectrogramToPng writes a PNG for valid input", function()
-        local out = OUT_DIR .. "spectrogram.png"
-        local ok = lurek.dsp.spectrogramToPng(WAVE, out, 256, 128)
-        expect_equal(true, ok)
-        expect_true(lurek.filesystem.exists(out), "spectrogram PNG output should exist")
-    end)
-
-    -- @covers lurek.dsp.processOffline
-    it("processOffline rejects missing source file", function()
         expect_error(function()
             lurek.dsp.processOffline("no_such_file.wav", OUT_DIR .. "missing_out.wav", {})
         end, "not found")
     end)
 
     -- @covers lurek.dsp.normalize
-    it("normalize rejects invalid target level", function()
+    it("normalize writes output WAVs and rejects invalid target levels", function()
+        expect_type("function", lurek.dsp.normalize)
+        local out = OUT_DIR .. "normalized.wav"
+        local ok = lurek.dsp.normalize(WAVE, out, 0.9)
+        expect_equal(true, ok)
+        expect_true(lurek.filesystem.exists(out), "normalized WAV output should exist")
         expect_error(function()
             lurek.dsp.normalize(WAVE, OUT_DIR .. "bad_target_low.wav", 0.0)
         end, "target level")
@@ -260,11 +144,25 @@ describe("lurek.dsp offline file processing", function()
     end)
 
     -- @covers lurek.dsp.waveformToPng
-    it("waveformToPng rejects missing source file", function()
-        local ok = pcall(function()
+    it("waveformToPng writes PNGs and rejects missing sources", function()
+        expect_type("function", lurek.dsp.waveformToPng)
+        local out = OUT_DIR .. "waveform.png"
+        local ok = lurek.dsp.waveformToPng(WAVE, out, 256, 64)
+        expect_equal(true, ok)
+        expect_true(lurek.filesystem.exists(out), "waveform PNG output should exist")
+        ok = pcall(function()
             lurek.dsp.waveformToPng("tests/fixtures/does_not_exist.wav", OUT_DIR .. "missing_waveform.png", 100, 50)
         end)
         expect_equal(false, ok)
+    end)
+
+    -- @covers lurek.dsp.spectrogramToPng
+    it("spectrogramToPng writes a PNG for valid input", function()
+        expect_type("function", lurek.dsp.spectrogramToPng)
+        local out = OUT_DIR .. "spectrogram.png"
+        local ok = lurek.dsp.spectrogramToPng(WAVE, out, 256, 128)
+        expect_equal(true, ok)
+        expect_true(lurek.filesystem.exists(out), "spectrogram PNG output should exist")
     end)
 end)
 
@@ -272,6 +170,7 @@ end)
 describe("lurek.dsp filters", function()
     -- @covers lurek.dsp.applyLowpass
     it("applyLowpass accepts LSoundData", function()
+        expect_type("function", lurek.dsp.applyLowpass)
         local sound = make_test_tone(4410, 0.5)
         expect_no_error(function()
             lurek.dsp.applyLowpass(sound, 1000)
@@ -280,6 +179,7 @@ describe("lurek.dsp filters", function()
 
     -- @covers lurek.dsp.applyHighpass
     it("applyHighpass accepts LSoundData", function()
+        expect_type("function", lurek.dsp.applyHighpass)
         local sound = make_test_tone(4410, 0.5)
         expect_no_error(function()
             lurek.dsp.applyHighpass(sound, 100)
@@ -288,6 +188,7 @@ describe("lurek.dsp filters", function()
 
     -- @covers lurek.dsp.applyBandpass
     it("applyBandpass accepts LSoundData", function()
+        expect_type("function", lurek.dsp.applyBandpass)
         local sound = make_test_tone(4410, 0.5)
         expect_no_error(function()
             lurek.dsp.applyBandpass(sound, 200, 2000)
@@ -297,77 +198,49 @@ end)
 
 -- @describe lurek.dsp bus effects
 describe("lurek.dsp bus effects", function()
-    -- @covers lurek.audio.create_bus
     -- @covers lurek.dsp.addEffectToBus
-    it("addEffectToBus returns a number effect id", function()
+    it("addEffectToBus returns ids and rejects invalid buses or effect types", function()
+        expect_type("function", lurek.dsp.addEffectToBus)
         lurek.audio.create_bus("test_dsp_bus")
         local effect_id = lurek.dsp.addEffectToBus("test_dsp_bus", "lowpass")
         expect_type("number", effect_id)
-    end)
-
-    -- @covers lurek.audio.create_bus
-    -- @covers lurek.dsp.addEffectToBus
-    -- @covers lurek.dsp.removeEffectFromBus
-    it("removeEffectFromBus returns true", function()
-        lurek.audio.create_bus("test_dsp_remove_bus")
-        local effect_id = lurek.dsp.addEffectToBus("test_dsp_remove_bus", "lowpass")
-        local ok = lurek.dsp.removeEffectFromBus("test_dsp_remove_bus", effect_id)
-        expect_equal(true, ok)
-    end)
-
-    -- @covers lurek.audio.create_bus
-    -- @covers lurek.dsp.addEffectToBus
-    -- @covers lurek.dsp.setEffectParam
-    it("setEffectParam returns true for valid cutoff param", function()
-        lurek.audio.create_bus("test_dsp_param_bus")
-        local effect_id = lurek.dsp.addEffectToBus("test_dsp_param_bus", "lowpass")
-        local ok = lurek.dsp.setEffectParam("test_dsp_param_bus", effect_id, "cutoff", 500.0)
-        expect_equal(true, ok)
-    end)
-
-    -- @covers lurek.dsp.addEffectToBus
-    it("addEffectToBus errors for unknown bus", function()
         local ok = pcall(function()
             lurek.dsp.addEffectToBus("nonexistent_bus_xyz_dsp", "lowpass")
         end)
         expect_equal(false, ok)
-    end)
-end)
-
--- @describe lurek.dsp bus effects errors
-describe("lurek.dsp bus effects errors", function()
-    -- @covers lurek.dsp.addEffectToBus
-    it("addEffectToBus rejects unknown effect type", function()
         lurek.audio.create_bus("test_dsp_err_bus_1")
-        local ok = pcall(function()
+        ok = pcall(function()
             lurek.dsp.addEffectToBus("test_dsp_err_bus_1", "totally_unknown_xyz")
         end)
         expect_equal(false, ok)
-    end)
-
-    -- @covers lurek.audio.create_bus
-    -- @covers lurek.dsp.addEffectToBus
-    it("addEffectToBus first effect id is 1", function()
         lurek.audio.create_bus("test_dsp_id_bus_1")
-        local effect_id = lurek.dsp.addEffectToBus("test_dsp_id_bus_1", "lowpass")
+        effect_id = lurek.dsp.addEffectToBus("test_dsp_id_bus_1", "lowpass")
         expect_equal(1, effect_id)
     end)
 
-    -- @covers lurek.audio.create_bus
     -- @covers lurek.dsp.removeEffectFromBus
-    it("removeEffectFromBus rejects missing effect id", function()
+    it("removeEffectFromBus succeeds for valid ids and rejects missing ids", function()
+        expect_type("function", lurek.dsp.removeEffectFromBus)
+        lurek.audio.create_bus("test_dsp_remove_bus")
+        local effect_id = lurek.dsp.addEffectToBus("test_dsp_remove_bus", "lowpass")
+        local ok = lurek.dsp.removeEffectFromBus("test_dsp_remove_bus", effect_id)
+        expect_equal(true, ok)
         lurek.audio.create_bus("test_dsp_rm_err_bus")
-        local ok = pcall(function()
+        ok = pcall(function()
             lurek.dsp.removeEffectFromBus("test_dsp_rm_err_bus", 9999)
         end)
         expect_equal(false, ok)
     end)
 
-    -- @covers lurek.audio.create_bus
     -- @covers lurek.dsp.setEffectParam
-    it("setEffectParam rejects missing effect id", function()
+    it("setEffectParam updates valid effect params and rejects missing ids", function()
+        expect_type("function", lurek.dsp.setEffectParam)
+        lurek.audio.create_bus("test_dsp_param_bus")
+        local effect_id = lurek.dsp.addEffectToBus("test_dsp_param_bus", "lowpass")
+        local ok = lurek.dsp.setEffectParam("test_dsp_param_bus", effect_id, "cutoff", 500.0)
+        expect_equal(true, ok)
         lurek.audio.create_bus("test_dsp_param_err_bus")
-        local ok = pcall(function()
+        ok = pcall(function()
             lurek.dsp.setEffectParam("test_dsp_param_err_bus", 9999, "cutoff", 500.0)
         end)
         expect_equal(false, ok)
@@ -386,14 +259,10 @@ end)
 -- @describe lurek.dsp.newSynthWave
 describe("lurek.dsp.newSynthWave", function()
     -- @covers lurek.dsp.newSynthWave
-    it("newSynthWave returns SoundData userdata", function()
+    it("newSynthWave returns SoundData userdata with and without adsr tables", function()
         local sd = lurek.dsp.newSynthWave("sine", 440, 0.01, 44100, 0.5, nil)
         expect_type("userdata", sd)
-    end)
-
-    -- @covers lurek.dsp.newSynthWave
-    it("newSynthWave accepts adsr table", function()
-        local sd = lurek.dsp.newSynthWave("square", 220, 0.05, 44100, 0.5,
+        sd = lurek.dsp.newSynthWave("square", 220, 0.05, 44100, 0.5,
             { attack = 0.01, decay = 0.01, sustain = 0.8, release = 0.02 })
         expect_type("userdata", sd)
     end)
@@ -407,10 +276,7 @@ describe("lurek.dsp.newLevelDetector", function()
         expect_type("userdata", det)
     end)
 
-    -- @covers lurek.dsp.newLevelDetector
     -- @covers LLevelDetector:process_sample
-    -- @covers LLevelDetector:get_rms
-    -- @covers LLevelDetector:get_peak
     it("process_sample updates rms and peak", function()
         local det = lurek.dsp.newLevelDetector()
         det:process_sample(0.5)
@@ -423,7 +289,6 @@ describe("lurek.dsp.newLevelDetector", function()
         expect_equal(peak > 0, true)
     end)
 
-    -- @covers lurek.dsp.newLevelDetector
     -- @covers LLevelDetector:to_db
     it("to_db converts linear amplitude to dBFS", function()
         local det = lurek.dsp.newLevelDetector()
@@ -432,9 +297,7 @@ describe("lurek.dsp.newLevelDetector", function()
         expect_near(0.0, db, 0.1)
     end)
 
-    -- @covers lurek.dsp.newLevelDetector
     -- @covers LLevelDetector:reset
-    -- @covers LLevelDetector:get_rms
     it("reset clears rms to zero", function()
         local det = lurek.dsp.newLevelDetector()
         det:process_sample(0.8)
@@ -443,7 +306,6 @@ describe("lurek.dsp.newLevelDetector", function()
         expect_near(0.0, rms, 0.0001)
     end)
 
-    -- @covers lurek.dsp.newLevelDetector
     -- @covers LLevelDetector:process
     it("process accepts LSoundData and returns table with rms peak clipping", function()
         local sound = lurek.audio.newSoundData(44100, 44100, 1)
@@ -464,8 +326,6 @@ describe("lurek.dsp.newSpectrumAnalyzer", function()
         expect_type("userdata", sa)
     end)
 
-    -- @covers lurek.dsp.newSpectrumAnalyzer
-    -- @covers LSpectrumAnalyzer:setSize
     -- @covers LSpectrumAnalyzer:analyze
     it("setSize and analyze return frequency bins", function()
         local sa = lurek.dsp.newSpectrumAnalyzer()
@@ -487,14 +347,12 @@ describe("lurek.dsp.newWaveform", function()
         expect_type("userdata", wf)
     end)
 
-    -- @covers lurek.dsp.newWaveform
     -- @covers LWaveform:type
     it("type returns the waveform kind string", function()
         local wf = lurek.dsp.newWaveform("sawtooth")
         expect_equal("sawtooth", wf:type())
     end)
 
-    -- @covers lurek.dsp.newWaveform
     -- @covers LWaveform:render
     it("render returns LSoundData userdata", function()
         local wf = lurek.dsp.newWaveform("square")
@@ -511,10 +369,7 @@ describe("lurek.dsp.newAdsrEnvelope", function()
         expect_type("userdata", env)
     end)
 
-    -- @covers lurek.dsp.newAdsrEnvelope
     -- @covers LAdsrEnvelope:trigger_on
-    -- @covers LAdsrEnvelope:next_sample
-    -- @covers LAdsrEnvelope:is_idle
     it("trigger_on then next_sample returns non-zero and is_idle is false", function()
         local env = lurek.dsp.newAdsrEnvelope(0.5, 0.1, 0.8, 0.1)
         env:trigger_on()
@@ -524,9 +379,7 @@ describe("lurek.dsp.newAdsrEnvelope", function()
         expect_equal(false, env:is_idle())
     end)
 
-    -- @covers lurek.dsp.newAdsrEnvelope
     -- @covers LAdsrEnvelope:trigger_off
-    -- @covers LAdsrEnvelope:is_idle
     it("trigger_off makes envelope converge to idle", function()
         local env = lurek.dsp.newAdsrEnvelope(0.0, 0.0, 1.0, 0.0)
         env:trigger_on()
@@ -537,7 +390,6 @@ describe("lurek.dsp.newAdsrEnvelope", function()
         expect_equal(true, env:is_idle())
     end)
 
-    -- @covers lurek.dsp.newAdsrEnvelope
     -- @covers LAdsrEnvelope:apply
     it("apply accepts LSoundData without error", function()
         local sound = lurek.audio.newSoundData(4410, 44100, 1)
@@ -556,9 +408,7 @@ describe("lurek.dsp.newSynthesizer", function()
         expect_type("userdata", synth)
     end)
 
-    -- @covers lurek.dsp.newSynthesizer
     -- @covers LSynthesizer:setWaveform
-    -- @covers LSynthesizer:render
     it("setWaveform with string then render returns LSoundData", function()
         local synth = lurek.dsp.newSynthesizer()
         synth:setWaveform("triangle")
@@ -566,9 +416,7 @@ describe("lurek.dsp.newSynthesizer", function()
         expect_type("userdata", sd)
     end)
 
-    -- @covers lurek.dsp.newSynthesizer
     -- @covers LSynthesizer:setEnvelope
-    -- @covers LSynthesizer:generate
     it("setEnvelope then generate returns LSoundData", function()
         local synth = lurek.dsp.newSynthesizer()
         local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.02)
@@ -586,16 +434,13 @@ describe("lurek.dsp.newNode", function()
         expect_type("userdata", node)
     end)
 
-    -- @covers lurek.dsp.newNode
     -- @covers LDspNode:type
     it("type returns the node kind string", function()
         local node = lurek.dsp.newNode("highpass")
         expect_equal("highpass", node:type())
     end)
 
-    -- @covers lurek.dsp.newNode
     -- @covers LDspNode:setParam
-    -- @covers LDspNode:getParam
     it("setParam and getParam round-trip a parameter", function()
         local node = lurek.dsp.newNode("lowpass")
         node:setParam("cutoff", 1500.0)
@@ -613,10 +458,7 @@ describe("lurek.dsp.newGraph", function()
         expect_type("userdata", g)
     end)
 
-    -- @covers lurek.dsp.newGraph
     -- @covers LDspGraph:addNode
-    -- @covers LDspGraph:connect
-    -- @covers LDspGraph:disconnect
     it("addNode, connect, disconnect without error", function()
         local g = lurek.dsp.newGraph()
         local n1 = lurek.dsp.newNode("lowpass")
@@ -631,7 +473,6 @@ describe("lurek.dsp.newGraph", function()
         expect_equal(true, ok_d)
     end)
 
-    -- @covers lurek.dsp.newGraph
     -- @covers LDspGraph:process
     it("process returns LSoundData", function()
         local g = lurek.dsp.newGraph()
@@ -642,7 +483,6 @@ describe("lurek.dsp.newGraph", function()
         expect_type("userdata", out)
     end)
 
-    -- @covers lurek.dsp.newGraph
     -- @covers LDspGraph:clear
     it("clear does not error", function()
         local g = lurek.dsp.newGraph()

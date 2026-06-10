@@ -396,11 +396,13 @@ def scan_all_tests(
 
     all_explicit: Set[str] = set()
     duplicate_api_refs = 0
+    duplicated_api_list: List[str] = []
     for api_ref, occurrences in explicit_occurrences.items():
         if len(occurrences) == 1:
             all_explicit.add(api_ref)
             continue
         duplicate_api_refs += 1
+        duplicated_api_list.append(api_ref)
         first = occurrences[0]
         for occurrence in occurrences:
             violations.append(
@@ -437,6 +439,7 @@ def scan_all_tests(
         "valid_single_marker_blocks": len(all_explicit),
         "invalid_it_blocks": sum(by_code.values()),
         "duplicate_api_markers": duplicate_api_refs,
+        "duplicated_apis": sorted(duplicated_api_list),
         "by_code": dict(sorted(by_code.items())),
         "violations": structure_items,
     }
@@ -459,16 +462,17 @@ def scan_all_tests(
 
 def build_analytics(results: List[CoverageResult], structure: dict, strict: bool = False) -> dict:
     """Compute summary plus per-module breakdown from coverage results."""
-    total = len(results)
-    explicit_count = sum(1 for result in results if result.explicit)
-    heuristic_count = sum(1 for result in results if result.heuristic)
+    unique_results = list({result.api.lua_name: result for result in results}.values())
+    total = len(unique_results)
+    explicit_count = sum(1 for result in unique_results if result.explicit)
+    heuristic_count = sum(1 for result in unique_results if result.heuristic)
     covered_any = explicit_count + heuristic_count
 
     def pct(value: int, base: int) -> float:
         return round(value / base * 100, 2) if base else 100.0
 
     by_module: Dict[str, List[CoverageResult]] = defaultdict(list)
-    for result in results:
+    for result in unique_results:
         by_module[result.api.module].append(result)
 
     modules: Dict[str, dict] = {}
@@ -477,8 +481,16 @@ def build_analytics(results: List[CoverageResult], structure: dict, strict: bool
         explicit_module = sum(1 for result in module_results if result.explicit)
         heuristic_module = sum(1 for result in module_results if result.heuristic)
         covered_module = explicit_module + heuristic_module
+        duplicated_module_apis = sorted(
+            api_name
+            for api_name in structure.get("duplicated_apis", [])
+            if any(result.api.lua_name == api_name for result in module_results)
+        )
         modules[module_name] = {
             "total": total_module,
+            "unique_unit_owner": explicit_module,
+            "duplicated_unit_owner": len(duplicated_module_apis),
+            "missing_unit_owner": total_module - explicit_module - len(duplicated_module_apis),
             "covered_explicit": explicit_module,
             "covered_heuristic": heuristic_module,
             "covered_any": covered_module,
@@ -486,6 +498,7 @@ def build_analytics(results: List[CoverageResult], structure: dict, strict: bool
             "uncovered_any": total_module - covered_module,
             "pct_explicit": pct(explicit_module, total_module),
             "pct_any": pct(covered_module, total_module),
+            "duplicated_apis": duplicated_module_apis,
             "uncovered_apis": [
                 {
                     "lua_name": result.api.lua_name,
@@ -521,6 +534,9 @@ def build_analytics(results: List[CoverageResult], structure: dict, strict: bool
         "structure": structure,
         "summary": {
             "total_apis": total,
+            "unique_unit_owner": explicit_count,
+            "duplicated_unit_owner": structure.get("duplicate_api_markers", 0),
+            "missing_unit_owner": total - explicit_count - structure.get("duplicate_api_markers", 0),
             "covered_explicit": explicit_count,
             "covered_heuristic": heuristic_count,
             "covered_any": covered_any,
@@ -538,6 +554,9 @@ def format_summary(data: dict, strict: bool) -> str:
     """Render a compact human-readable summary."""
     summary = data["summary"]
     structure = data.get("structure", {})
+    total_apis = summary["total_apis"]
+    duplicated_pct = (summary["duplicated_unit_owner"] / total_apis * 100) if total_apis else 100.0
+    missing_pct = (summary["missing_unit_owner"] / total_apis * 100) if total_apis else 100.0
     lines = [
         "Lurek2D Unit-Test API Coverage",
         "================================",
@@ -551,6 +570,9 @@ def format_summary(data: dict, strict: bool) -> str:
         f"Duplicate markers:    {structure.get('duplicate_api_markers', 0)}",
         "",
         f"Total APIs:           {summary['total_apis']}",
+        f"Unique 1:1 unit test: {summary['unique_unit_owner']} ({summary['pct_explicit']:.1f}%)",
+        f"No unit test owner:   {summary['missing_unit_owner']} ({missing_pct:.1f}%)",
+        f"Duplicated owners:    {summary['duplicated_unit_owner']} ({duplicated_pct:.1f}%)",
         f"Covered (explicit):   {summary['covered_explicit']} ({summary['pct_explicit']:.1f}%)",
         f"Heuristic-only hits:  {summary['covered_heuristic']} ({summary['pct_any'] - summary['pct_explicit']:.1f}%)",
         f"Missing @covers:      {summary['uncovered']} ({100 - summary['pct_explicit']:.1f}%)",
@@ -589,6 +611,9 @@ def format_markdown(data: dict, strict: bool) -> str:
         f"| Unit `it()` blocks | {structure.get('total_it_blocks', 0)} |",
         f"| Structure violations | {len(structure.get('violations', []))} |",
         f"| Duplicate API markers | {structure.get('duplicate_api_markers', 0)} |",
+        f"| APIs with exactly one unit `it()` owner | {summary['unique_unit_owner']} ({summary['pct_explicit']:.1f}%) |",
+        f"| APIs with no unit `it()` owner | {summary['missing_unit_owner']} |",
+        f"| APIs with more than one unit `it()` owner | {summary['duplicated_unit_owner']} |",
         f"| Covered (explicit `@covers`) | {summary['covered_explicit']} ({summary['pct_explicit']:.1f}%) |",
         f"| Heuristic-only hits | {summary['covered_heuristic']} ({summary['pct_any'] - summary['pct_explicit']:.1f}%) |",
         f"| Missing explicit `@covers` | {summary['uncovered']} ({100 - summary['pct_explicit']:.1f}%) |",
@@ -619,15 +644,15 @@ def format_markdown(data: dict, strict: bool) -> str:
         [
             "## Module Coverage",
             "",
-            "| Module | Total | Explicit | Heuristic-only | Explicit% | Missing `@covers` | Zero-evidence |",
-            "|--------|-------|----------|----------------|-----------|-------------------|---------------|",
+            "| Module | Total | Unique 1:1 owner | Duplicated owners | No owner | Heuristic-only | Explicit% | Zero-evidence |",
+            "|--------|-------|------------------|-------------------|----------|----------------|-----------|---------------|",
         ]
     )
     for module_name, module_data in sorted(data["modules"].items()):
         markdown.append(
-            f"| `{module_name}` | {module_data['total']} | {module_data['covered_explicit']} | "
-            f"{module_data['covered_heuristic']} | {module_data['pct_explicit']:.1f}% | "
-            f"{module_data['uncovered']} | {module_data['uncovered_any']} |"
+            f"| `{module_name}` | {module_data['total']} | {module_data['unique_unit_owner']} | "
+            f"{module_data['duplicated_unit_owner']} | {module_data['missing_unit_owner']} | "
+            f"{module_data['covered_heuristic']} | {module_data['pct_explicit']:.1f}% | {module_data['uncovered_any']} |"
         )
 
     markdown.extend(

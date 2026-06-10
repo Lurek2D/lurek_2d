@@ -1,6 +1,6 @@
 # Repo-wide defaults for Codex in this workspace.
 # Keep these generic. Narrow role behavior should live in per-agent TOML files.
-model_reasoning_effort = "medium"
+# model_reasoning_effort = "medium"
 approval_policy = "on-failure"
 sandbox_mode = "danger-full-access"
 personality = "pragmatic"

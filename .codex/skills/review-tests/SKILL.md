@@ -23,8 +23,9 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 
 ## Workflow
 - Run Lua API coverage and structure audits before reading many test files.
+- Start unit-suite status with `tools/python.cmd tools/audit/unit_test_api_coverage.py` and read these counts first: total Lua APIs, APIs with exactly one unit owner test, APIs with no Lua unit owner test, APIs duplicated across multiple unit `it()` blocks.
 - Compare audit output with `tests/lua/` files and harness registration.
-- Report missing `@covers`, structure issues, and uncovered public APIs first.
+- Report missing `@covers`, structure issues, uncovered public APIs, and duplicated API owners first.
 - If edit-capable, fix tests and rerun coverage, structure audit, and `cargo test --test lua_tests`.
 - If read-only, hand off to `tester` with exact missing API coverage.
 - Finish by reporting changed files and validation evidence.
@@ -41,7 +42,7 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 
 ## Companion File Index
 - Contracts: `AGENTS.md`, `tests/AGENTS.md`, `tests/lua/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10`, `tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/`, `cargo test --test lua_tests`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/`, `cargo test --test lua_tests`
 - Owner profile: `tester`
 
 ## Common RAG Queries
@@ -51,5 +52,5 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 
 ## References
 - `contracts: AGENTS.md, tests/AGENTS.md, tests/lua/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10, tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests`
+- `tools: tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests`
 - `agent: tester`

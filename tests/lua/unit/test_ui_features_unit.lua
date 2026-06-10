@@ -8,7 +8,7 @@ local it = it or function(n,f) f() end
 -- @describe ui spatial focus navigation
 describe("ui spatial focus navigation", function()
     -- @covers lurek.ui.focusDirection
-    it("moves focus spatially to nearest widget in direction", function()
+    it("moves focus when a neighbor exists and returns false otherwise", function()
         -- Create two buttons side by side
         local btn1 = lurek.ui.newButton("Left")
         btn1:setPosition(10, 50)
@@ -24,10 +24,6 @@ describe("ui spatial focus navigation", function()
         -- Move focus right
         local moved = lurek.ui.focusDirection(1.0, 0.0)
         expect_type("boolean", moved)
-    end)
-
-    -- @covers lurek.ui.focusDirection
-    it("returns false when no neighbor exists in direction", function()
         local btn = lurek.ui.newButton("Solo")
         btn:setPosition(500, 500)
         btn:setSize(80, 30)
@@ -36,15 +32,14 @@ describe("ui spatial focus navigation", function()
         lurek.ui.setFocus(btn)
 
         -- Try to move in direction with nothing
-        local moved = lurek.ui.focusDirection(0.0, -1.0)
-        expect_type("boolean", moved)
+        local isolated = lurek.ui.focusDirection(0.0, -1.0)
+        expect_equal(false, isolated)
     end)
 end)
 
 -- @describe ui resolution scaling
 describe("ui resolution scaling", function()
     -- @covers lurek.ui.setBaseResolution
-    -- @covers lurek.ui.getScaleFactor
     it("computes scale factor from base and current resolution", function()
         lurek.ui.setBaseResolution(1920, 1080)
         lurek.ui.updateResolution(1920, 1080)
@@ -53,7 +48,6 @@ describe("ui resolution scaling", function()
     end)
 
     -- @covers lurek.ui.updateResolution
-    -- @covers lurek.ui.getScaleFactor
     it("scale factor changes when resolution changes", function()
         lurek.ui.setBaseResolution(1920, 1080)
         lurek.ui.updateResolution(1280, 720)
@@ -62,9 +56,7 @@ describe("ui resolution scaling", function()
         expect_near(0.667, factor, 0.01)
     end)
 
-    -- @covers lurek.ui.setBaseResolution
     -- @covers lurek.ui.getScaleFactor
-    -- @covers lurek.ui.updateResolution
     it("doubling resolution doubles scale factor", function()
         lurek.ui.setBaseResolution(1920, 1080)
         lurek.ui.updateResolution(3840, 2160)
@@ -94,17 +86,21 @@ end)
 -- @describe ui extended animations
 describe("ui extended animations", function()
     -- @covers lurek.ui.animateScale
-    it("starts scale animation on widget", function()
+    it("starts scale animation on valid widgets and rejects invalid indices", function()
         local panel = lurek.ui.newPanel()
         local result = lurek.ui.animateScale(panel._idx, 1.0, 1.0, 2.0, 2.0, 0.5, "cubic_out")
         expect_true(result, "animateScale should return true for valid widget")
+        local invalid = lurek.ui.animateScale(99999, 1.0, 1.0, 2.0, 2.0, 0.5)
+        expect_equal(false, invalid)
     end)
 
     -- @covers lurek.ui.animateRotation
-    it("starts rotation animation on widget", function()
+    it("starts rotation animation with explicit and default easing", function()
         local panel = lurek.ui.newPanel()
         local result = lurek.ui.animateRotation(panel._idx, 0.0, 3.14, 1.0, "bounce_out")
         expect_true(result, "animateRotation should return true for valid widget")
+        local fallback = lurek.ui.animateRotation(panel._idx, 0.0, 1.57, 1.0)
+        expect_true(fallback, "should accept nil easing (defaults to linear)")
     end)
 
     -- @covers lurek.ui.animateColor
@@ -116,17 +112,5 @@ describe("ui extended animations", function()
         expect_true(result, "animateColor should return true for valid widget")
     end)
 
-    -- @covers lurek.ui.animateScale
-    it("animateScale returns false for invalid widget index", function()
-        local result = lurek.ui.animateScale(99999, 1.0, 1.0, 2.0, 2.0, 0.5)
-        expect_equal(false, result)
-    end)
-
-    -- @covers lurek.ui.animateRotation
-    it("animateRotation uses linear easing by default", function()
-        local panel = lurek.ui.newPanel()
-        local result = lurek.ui.animateRotation(panel._idx, 0.0, 1.57, 1.0)
-        expect_true(result, "should accept nil easing (defaults to linear)")
-    end)
 end)
 test_summary()

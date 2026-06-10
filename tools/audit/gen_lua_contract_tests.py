@@ -2,8 +2,8 @@
 """
 gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json.
 
-Generates a single file under tests/lua/unit/ that verifies the existence of
-top-level lurek.* functions from the canonical API metadata.
+Generates a single smoke-contract file under tests/lua/generated/ that verifies
+the existence of top-level lurek.* functions from the canonical API metadata.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 API_DATA = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
-OUT_FILE = WORKSPACE_ROOT / "tests" / "lua" / "unit" / "test_lua_contract_generated_unit.lua"
+OUT_FILE = WORKSPACE_ROOT / "tests" / "lua" / "generated" / "test_lua_contract_generated.lua"
 
 
 def load_functions() -> list[str]:

@@ -4,64 +4,6 @@
 
 --- Network Module Part 1: LNetworkHost — server, client, peer management
 
-local function wait_for_event(host, expected_type, max_attempts)
-    max_attempts = max_attempts or 60
-    for _ = 1, max_attempts do
-        local event = host:service()
-        if event and (expected_type == nil or event.type == expected_type) then
-            return event
-        end
-        host:flush()
-    end
-    return nil
-end
-
-local function connect_pair(port, channels)
-    local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-
-    for _ = 1, 60 do
-        server:flush()
-        client:flush()
-
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = {type = "connect", peer_id = ids[1]}
-            end
-        end
-
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = {type = "connect", peer_id = ids[1]}
-            end
-        end
-
-        if server_connect and client_connect then
-            break
-        end
-    end
-
-    return server, client, server_connect, client_connect
-end
-
 --@api-stub: lurek.network.newServer
 do
     local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
@@ -90,6 +32,18 @@ end
 
 --@api-stub: LNetworkHost:connect
 do
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server = lurek.network.newServer({port = 7779, maxPeers = 4, channels = 2})
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 1, channels = 2})
     local peer_id = host:connect("127.0.0.1:7779", 2, 17)
@@ -102,6 +56,52 @@ end
 
 --@api-stub: LNetworkHost:service
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7780, 2)
     print("event_type=" .. tostring(server_connect and server_connect.type or "nil"))
     print("peer_id=" .. tostring(server_connect and server_connect.peer_id or "nil"))
@@ -111,6 +111,64 @@ end
 
 --@api-stub: LNetworkHost:send
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client, server_connect = connect_pair(7781, 2)
     server:send(server_connect.peer_id, 0, "welcome", true)
     server:flush()
@@ -123,6 +181,64 @@ end
 
 --@api-stub: LNetworkHost:broadcast
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client = connect_pair(7782, 2)
     server:broadcast(1, "state:update", true)
     server:flush()
@@ -135,6 +251,52 @@ end
 
 --@api-stub: LNetworkHost:getConnectedPeerCount
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client = connect_pair(7783, 2)
     print("connected=" .. server:getConnectedPeerCount())
     client:destroy()
@@ -143,6 +305,52 @@ end
 
 --@api-stub: LNetworkHost:getConnectedPeerIds
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client = connect_pair(7784, 2)
     local ids = server:getConnectedPeerIds()
     print("peer_count=" .. #ids)
@@ -153,6 +361,52 @@ end
 
 --@api-stub: LNetworkHost:getPeerState
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7785, 2)
     print("peer_state=" .. server:getPeerState(server_connect.peer_id))
     client:destroy()
@@ -161,6 +415,52 @@ end
 
 --@api-stub: LNetworkHost:getPeerAddress
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7786, 2)
     print("peer_addr=" .. tostring(server:getPeerAddress(server_connect.peer_id)))
     client:destroy()
@@ -169,6 +469,52 @@ end
 
 --@api-stub: LNetworkHost:getRoundTripTime
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7787, 2)
     server:ping(server_connect.peer_id)
     server:flush()
@@ -179,6 +525,52 @@ end
 
 --@api-stub: LNetworkHost:getPeerStats
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7788, 2)
     local stats = server:getPeerStats(server_connect.peer_id)
     print("packets_sent=" .. stats.packets_sent)
@@ -217,6 +609,64 @@ end
 
 --@api-stub: LNetworkHost:disconnect
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client, server_connect = connect_pair(7791, 2)
     server:disconnect(server_connect.peer_id, 7)
     server:flush()
@@ -229,6 +679,64 @@ end
 
 --@api-stub: LNetworkHost:disconnectLater
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client, server_connect = connect_pair(7792, 2)
     server:send(server_connect.peer_id, 0, "queued-goodbye", true)
     server:disconnectLater(server_connect.peer_id, 8)
@@ -243,6 +751,64 @@ end
 
 --@api-stub: LNetworkHost:disconnectNow
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client, server_connect = connect_pair(7793, 2)
     server:disconnectNow(server_connect.peer_id, 9)
     server:flush()
@@ -255,6 +821,64 @@ end
 
 --@api-stub: LNetworkHost:flush
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client, _, client_connect = connect_pair(7794, 2)
     client:send(client_connect.peer_id, 0, "flush-check", true)
     client:flush()
@@ -267,6 +891,52 @@ end
 
 --@api-stub: LNetworkHost:ping
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7795, 2)
     server:ping(server_connect.peer_id)
     server:flush()
@@ -278,6 +948,52 @@ end
 
 --@api-stub: LNetworkHost:resetPeer
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
     local server, client, server_connect = connect_pair(7796, 2)
     server:resetPeer(server_connect.peer_id)
     server:service()
@@ -420,6 +1136,64 @@ end
 
 --@api-stub: lurek.network.syncEntity
 do
+    local function connect_pair(port, channels)
+        local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
+        local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
+        local server_connect = nil
+        local client_connect = nil
+
+        for _ = 1, 60 do
+            server:flush()
+            client:flush()
+
+            if not server_connect then
+                local event = server:service()
+                if event and event.type == "connect" then
+                    server_connect = event
+                end
+            end
+
+            if not client_connect then
+                local event = client:service()
+                if event and event.type == "connect" then
+                    client_connect = event
+                end
+            end
+
+            if not server_connect then
+                local ids = server:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    server_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if not client_connect then
+                local ids = client:getConnectedPeerIds()
+                if ids[1] ~= nil then
+                    client_connect = {type = "connect", peer_id = ids[1]}
+                end
+            end
+
+            if server_connect and client_connect then
+                break
+            end
+        end
+
+        return server, client, server_connect, client_connect
+    end
+
+    local function wait_for_event(host, expected_type, max_attempts)
+        max_attempts = max_attempts or 60
+        for _ = 1, max_attempts do
+            local event = host:service()
+            if event and (expected_type == nil or event.type == expected_type) then
+                return event
+            end
+            host:flush()
+        end
+        return nil
+    end
+
     local server, client = connect_pair(7797, 2)
     lurek.network.syncEntity(server, 1, {x = 100, y = 200, hp = 50}, 0, true)
     server:flush()

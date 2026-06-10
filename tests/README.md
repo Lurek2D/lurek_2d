@@ -14,7 +14,7 @@ This file is a short contributor guide. The architecture source of truth is docs
 | Full quality gate | python tools/dev/parallel_cargo.py fmt check ; python tools/dev/parallel_cargo.py clippy --deny-warnings ; python tools/dev/parallel_cargo.py test rust ; python tools/dev/parallel_cargo.py test lua |
 | Run Rust tests only | python tools/dev/parallel_cargo.py test rust |
 | Run Lua tests only | python tools/dev/parallel_cargo.py test lua |
-| Strict Lua API coverage | python tools/audit/lua_api_test_coverage.py --strict --threshold 50 |
+| Strict Lua API coverage | python tools/audit/unit_test_api_coverage.py --threshold 50 |
 | Describe gate | python tools/audit/lua_api_test_coverage.py --strict --describe-threshold <N> |
 | Analytics JSON | python tools/audit/test_analytics.py --json |
 | Analytics HTML | python tools/audit/test_analytics.py --html |
@@ -59,6 +59,8 @@ Rules:
 - Markers must be directly above the it() they annotate.
 - Marker indentation must match that it() block.
 - @covers entries must be assertion-backed in the same it().
+- In `tests/lua/unit/`, every `it()` must have exactly one directly-adjacent `@covers`.
+- In `tests/lua/unit/`, every public Lua API should own exactly one `it()` across the full unit suite.
 - @tests is forbidden.
 
 ## Evidence and Golden

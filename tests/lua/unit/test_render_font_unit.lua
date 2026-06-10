@@ -2,16 +2,6 @@
 
 -- @describe lurek.render font functions
 describe("lurek.render font functions", function()
-  -- @covers lurek.render.newFont
-  it("newFont is a function", function()
-    expect_type("function", lurek.render.newFont)
-  end)
-
-  -- @covers lurek.render.setFont
-  it("setFont is a function", function()
-    expect_type("function", lurek.render.setFont)
-  end)
-
   -- @covers lurek.render.getFont
   it("getFont is a function", function()
     expect_type("function", lurek.render.getFont)
@@ -49,24 +39,24 @@ describe("lurek.render font functions", function()
     expect_type("userdata", font)
   end)
 
-  -- @covers lurek.render.newFont
+  -- @covers LFont:getAscent
   it("loads bundled fonts by stable font_* name", function()
     local regular = lurek.render.newFont("font_12")
     local bold = lurek.render.newFont("fontb_12")
     expect_type("userdata", regular)
     expect_type("userdata", bold)
+    expect_true(regular:getAscent() > 0)
+    expect_true(bold:getAscent() > 0)
   end)
 
-  -- @covers lurek.render.newFont
-  -- @covers LFont:getWidth
+  -- @covers LFont:getDescent
   it("loads a custom TTF font from file", function()
     local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     expect_type("userdata", font)
     expect_true(font:getWidth("Hello") > 0)
+    expect_type("number", font:getDescent())
   end)
 
-  -- @covers lurek.render.getFont
-  -- @covers lurek.render.newFont
   -- @covers lurek.render.setFont
   it("setFont and getFont round-trip to a non-nil font", function()
     local font = lurek.render.newFont(14)
@@ -76,8 +66,6 @@ describe("lurek.render font functions", function()
   end)
 
   -- @covers lurek.render.getDefaultFont
-  -- @covers lurek.render.getFontHeight
-  -- @covers lurek.render.newFont
   it("default configured font starts at built-in font_8", function()
     local configured = lurek.render.getDefaultFont()
     local expected = lurek.render.newFont("font_8")
@@ -85,57 +73,65 @@ describe("lurek.render font functions", function()
   end)
 
   -- @covers lurek.render.setDefaultFont
-  -- @covers lurek.render.getFont
-  -- @covers lurek.render.getFontHeight
-  -- @covers lurek.render.setBold
-  -- @covers lurek.render.isBold
-  -- @covers LFont:isBold
-  it("setDefaultFont switches between regular and bold built-in fonts", function()
+  it("setDefaultFont switches the active default font", function()
     local regular = lurek.render.setDefaultFont(10, false)
     local current = lurek.render.getFont()
     expect_equal(lurek.render.getFontHeight(regular), lurek.render.getFontHeight(current))
+  end)
+
+  -- @covers lurek.render.isBold
+  it("isBold reflects the bold font flag", function()
+    lurek.render.setDefaultFont(10, false)
     expect_equal(false, lurek.render.isBold())
 
-    local bold = lurek.render.setDefaultFont(10, true)
-    current = lurek.render.getFont()
-    expect_equal(lurek.render.getFontHeight(bold), lurek.render.getFontHeight(current))
+    lurek.render.setDefaultFont(10, true)
     expect_equal(true, lurek.render.isBold())
 
     lurek.render.setBold(false)
     expect_equal(false, lurek.render.isBold())
   end)
 
-  -- @covers lurek.render.getFontHeight
-  -- @covers lurek.render.getFontWidth
-  -- @covers lurek.render.newFont
+  -- @covers LFont:getLineHeight
   it("reports positive width and height for a loaded font", function()
     local font = lurek.render.newFont(14)
     expect_true(lurek.render.getFontWidth(font, "Hello") > 0)
     expect_true(lurek.render.getFontHeight(font) > 0)
+    expect_type("number", font:getLineHeight())
   end)
 
   -- @covers lurek.render.printWithFont
-  -- @covers lurek.render.printfWithFont
-  -- @covers lurek.render.printRotatedWithFont
-  -- @covers lurek.render.printRichWithFont
-  -- @covers lurek.render.newFont
-  it("per-call font draw helpers are callable", function()
+  it("printWithFont is callable", function()
     local font = lurek.render.newFont("font_12")
     expect_no_error(function()
       lurek.render.printWithFont(font, "A", 0, 0, 1)
+    end)
+  end)
+
+  -- @covers lurek.render.printfWithFont
+  it("printfWithFont is callable", function()
+    local font = lurek.render.newFont("font_12")
+    expect_no_error(function()
       lurek.render.printfWithFont(font, "A B C", 0, 0, 80, "left")
+    end)
+  end)
+
+  -- @covers lurek.render.printRotatedWithFont
+  it("printRotatedWithFont is callable", function()
+    local font = lurek.render.newFont("font_12")
+    expect_no_error(function()
       lurek.render.printRotatedWithFont(font, "A", 12, 14, 0.25, 1)
+    end)
+  end)
+
+  -- @covers lurek.render.printRichWithFont
+  it("printRichWithFont is callable", function()
+    local font = lurek.render.newFont("font_12")
+    expect_no_error(function()
       lurek.render.printRichWithFont(font, {
         { text = "A", r = 255, g = 255, b = 255, a = 255, scale = 1 },
       }, 0, 0)
     end)
   end)
 
-  -- @covers lurek.render.newFont
-  it("newFont errors when file does not exist", function()
-    expect_error(function()
-      lurek.render.newFont("nonexistent_font.png")
-    end)
-  end)
 end)
 test_summary()

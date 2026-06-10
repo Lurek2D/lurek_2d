@@ -5,116 +5,58 @@
 -- lurek.html Tests
 -- =========================================================================
 
--- @describe lurek.html module table exists
-describe("lurek.html module table exists", function()
-    -- @covers lurek.html
-    it("lurek.html is a table", function()
-        expect_type("table", lurek.html, "lurek.html must be a table")
-    end)
-    -- @covers lurek.html.newDocument
-    it("newDocument is a function", function()
-        expect_type("function", lurek.html.newDocument,
-            "lurek.html.newDocument must be a function")
-    end)
-    -- @covers lurek.html.loadDocument
-    it("loadDocument is a function", function()
-        expect_type("function", lurek.html.loadDocument,
-            "lurek.html.loadDocument must be a function")
-    end)
-    -- @covers lurek.html.supports
-    it("supports is a function", function()
-        expect_type("function", lurek.html.supports,
-            "lurek.html.supports must be a function")
-    end)
-end)
-
 -- @describe lurek.html.newDocument constructor
 describe("lurek.html.newDocument constructor", function()
     -- @covers lurek.html.newDocument
-    it("newDocument() returns a non-nil value", function()
+    it("constructs documents from html and options", function()
         local doc = lurek.html.newDocument()
         expect_not_nil(doc, "newDocument() must return an HtmlDocument")
-    end)
-    -- @covers lurek.html.newDocument
-    it("returned document has setHtml method", function()
-        local doc = lurek.html.newDocument()
         expect_type("function", doc.setHtml, "HtmlDocument must have setHtml method")
-    end)
-    -- @covers lurek.html.newDocument
-    it("newDocument(html_string) succeeds without error", function()
+
         local ok, err = pcall(function()
             lurek.html.newDocument("<div id='hero'>Hello</div>")
         end)
         expect_true(ok, "newDocument(html) must not error: " .. tostring(err))
-    end)
-    -- @covers LHtmlDocument:getViewport
-    -- @covers lurek.html.newDocument
-    it("newDocument with opts.width/height sets viewport", function()
+
         local doc = lurek.html.newDocument(nil, { width = 800, height = 600 })
         expect_not_nil(doc, "newDocument with opts must succeed")
         local w, h = doc:getViewport()
         expect_equal(w, 800, "viewport width must be 800")
         expect_equal(h, 600, "viewport height must be 600")
-    end)
-    -- @covers lurek.html.newDocument
-    it("newDocument with opts.css sets initial stylesheet without error", function()
-        local ok = pcall(function()
+
+        local css_ok = pcall(function()
             lurek.html.newDocument(nil, { css = "body { color: red; }" })
         end)
-        expect_true(ok, "newDocument with opts.css must not error")
+        expect_true(css_ok, "newDocument with opts.css must not error")
     end)
 end)
 
 -- @describe lurek.html.loadDocument behavior
 describe("lurek.html.loadDocument behavior", function()
     -- @covers lurek.html.loadDocument
-    -- @covers LHtmlDocument:getElementById
-    -- @covers LHtmlElement:getText
-    it("loadDocument reads HTML from the sandboxed game filesystem", function()
+    it("loads html, applies css, and errors for missing sources", function()
         local doc = lurek.html.loadDocument("tests/fixtures/html/menu.html")
         expect_not_nil(doc, "loadDocument must return an HtmlDocument")
         local title = doc:getElementById("title")
         expect_not_nil(title, "loaded document must expose #title")
         expect_equal("Main Menu", title:getText(), "loaded text must match file contents")
-    end)
 
-    -- @covers lurek.html.loadDocument
-    -- @covers LHtmlElement:getStyle
-    -- @covers LHtmlDocument:getElementById
-    it("loadDocument applies opts.cssPath stylesheet", function()
-        local doc = lurek.html.loadDocument("tests/fixtures/html/menu.html", {
+        local css_path_doc = lurek.html.loadDocument("tests/fixtures/html/menu.html", {
             cssPath = "tests/fixtures/html/menu.css",
         })
-        local title = doc:getElementById("title")
-        expect_not_nil(title, "title element must exist")
-        expect_equal("#00ff00", title:getStyle("color"), "cssPath stylesheet must be applied")
-    end)
+        local css_path_title = css_path_doc:getElementById("title")
+        expect_not_nil(css_path_title, "title element must exist")
+        expect_equal("#00ff00", css_path_title:getStyle("color"), "cssPath stylesheet must be applied")
 
-    -- @covers lurek.html.loadDocument
-    -- @covers LHtmlElement:getStyle
-    -- @covers LHtmlDocument:getElementById
-    it("loadDocument loads companion css when opts.css and opts.cssPath are omitted", function()
-        local doc = lurek.html.loadDocument("tests/fixtures/html/menu.html")
-        local title = doc:getElementById("title")
-        expect_not_nil(title, "title element must exist")
-        expect_equal("#00ff00", title:getStyle("color"), "companion .css should be auto-loaded")
-    end)
+        local auto_css_doc = lurek.html.loadDocument("tests/fixtures/html/menu.html")
+        local auto_css_title = auto_css_doc:getElementById("title")
+        expect_not_nil(auto_css_title, "title element must exist")
+        expect_equal("#00ff00", auto_css_title:getStyle("color"), "companion .css should be auto-loaded")
 
-    -- @covers lurek.html.loadDocument
-    it("loadDocument returns a Lua error when the source file does not exist", function()
         local ok = pcall(function()
             lurek.html.loadDocument("tests/fixtures/html/nope_missing_123.html")
         end)
         expect_false(ok, "missing file must raise an error")
-    end)
-end)
-
--- @describe lurek.html.supports capabilities
-describe("lurek.html.supports capabilities", function()
-    -- @covers lurek.html.supports
-    it("supports css-flex and load-document capability probes", function()
-        expect_true(lurek.html.supports("css-flex"), "css-flex capability should be advertised")
-        expect_true(lurek.html.supports("load-document"), "load-document capability should be advertised")
     end)
 end)
 
@@ -124,10 +66,7 @@ describe("HtmlDocument content API", function()
         return lurek.html.newDocument()
     end
 
-    -- @covers LHtmlDocument:getHtml
     -- @covers LHtmlDocument:setHtml
-    -- @covers LHtmlElement:getHtml
-    -- @covers LHtmlElement:setHtml
     it("setHtml then getHtml returns a string", function()
         local doc = make_doc()
         doc:setHtml("<p id='msg'>world</p>")
@@ -147,15 +86,13 @@ describe("HtmlDocument content API", function()
         expect_true(ok, "addCss must not error: " .. tostring(err))
     end)
     -- @covers LHtmlDocument:clearCss
-    -- @covers LHtmlDocument:setCss
     it("clearCss does not error after setCss", function()
         local doc = make_doc()
         doc:setCss("p { color: blue; }")
         local ok, err = pcall(function() doc:clearCss() end)
         expect_true(ok, "clearCss must not error: " .. tostring(err))
     end)
-    -- @covers LHtmlDocument:setHtml
-    -- @covers LHtmlElement:setHtml
+    -- @covers LHtmlDocument:isDirty
     it("isDirty is true after setHtml", function()
         local doc = make_doc()
         doc:setHtml("<span>dirty</span>")
@@ -178,22 +115,13 @@ end)
 
 -- @describe HtmlDocument viewport API
 describe("HtmlDocument viewport API", function()
-    -- @covers LHtmlDocument:getViewport
     -- @covers LHtmlDocument:setViewport
-    -- @covers lurek.html.newDocument
-    it("setViewport / getViewport round-trip", function()
+    it("setViewport round-trips and marks the document dirty", function()
         local doc = lurek.html.newDocument()
         doc:setViewport(1280, 720)
         local w, h = doc:getViewport()
         expect_equal(w, 1280, "viewport width must match")
         expect_equal(h, 720,  "viewport height must match")
-    end)
-    -- @covers LHtmlDocument:isDirty
-    -- @covers LHtmlDocument:relayout
-    -- @covers LHtmlDocument:setViewport
-    -- @covers lurek.html.newDocument
-    it("setViewport marks document dirty", function()
-        local doc = lurek.html.newDocument()
         doc:relayout()
         doc:setViewport(640, 480)
         expect_true(doc:isDirty(), "setViewport must mark the document dirty")
@@ -215,28 +143,19 @@ describe("HtmlDocument element access API", function()
     end
 
     -- @covers LHtmlDocument:getRoot
-    it("getRoot returns a non-nil element", function()
+    it("getRoot returns an element with html methods", function()
         local doc = make_doc_with_content()
         local root = doc:getRoot()
         expect_not_nil(root, "getRoot must return an HtmlElement")
-    end)
-    -- @covers LHtmlDocument:getRoot
-    it("getRoot element has getTagName method", function()
-        local doc = make_doc_with_content()
-        local root = doc:getRoot()
         expect_type("function", root.getTagName, "root must expose getTagName")
     end)
     -- @covers LHtmlDocument:getElementById
-    it("getElementById finds element by id", function()
+    it("getElementById finds existing ids and returns nil for missing ones", function()
         local doc = make_doc_with_content()
         local el = doc:getElementById("box")
         expect_not_nil(el, "getElementById('box') must find the element")
-    end)
-    -- @covers LHtmlDocument:getElementById
-    it("getElementById returns nil for missing id", function()
-        local doc = make_doc_with_content()
-        local el = doc:getElementById("nonexistent_id_xyz")
-        expect_nil(el, "getElementById must return nil for a missing id")
+        local missing = doc:getElementById("nonexistent_id_xyz")
+        expect_nil(missing, "getElementById must return nil for a missing id")
     end)
     -- @covers LHtmlDocument:query
     it("query('#id') returns the element", function()
@@ -245,24 +164,14 @@ describe("HtmlDocument element access API", function()
         expect_not_nil(el, "query('#label') must find the element")
     end)
     -- @covers LHtmlDocument:queryAll
-    it("queryAll('.class') returns a table", function()
+    it("queryAll returns matching elements and empty tables for misses", function()
         local doc = make_doc_with_content()
         local results = doc:queryAll(".text")
         expect_type("table", results, "queryAll must return a table")
-    end)
-    -- @covers LHtmlDocument:queryAll
-    it("queryAll('.class') finds all matching elements", function()
-        local doc = make_doc_with_content()
-        local results = doc:queryAll(".text")
         expect_true(#results >= 2, "queryAll('.text') must find at least 2 elements")
-    end)
-    -- @covers LHtmlDocument:queryAll
-    -- @covers LHtmlElement:queryAll
-    it("queryAll with no matches returns empty table", function()
-        local doc = make_doc_with_content()
-        local results = doc:queryAll(".no-such-class-xyz")
-        expect_type("table", results, "queryAll must return a table even when empty")
-        expect_equal(#results, 0, "queryAll with no match must return empty table")
+        local missing = doc:queryAll(".no-such-class-xyz")
+        expect_type("table", missing, "queryAll must return a table even when empty")
+        expect_equal(#missing, 0, "queryAll with no match must return empty table")
     end)
 end)
 
@@ -282,7 +191,6 @@ describe("HtmlDocument event and input API", function()
         expect_not_nil(handle, "on() must return a handle")
     end)
     -- @covers LHtmlDocument:off
-    -- @covers LHtmlElement:off
     it("off(handle) does not error", function()
         local doc = make_doc()
         local handle = doc:on("click", function() end)
@@ -355,20 +263,17 @@ describe("HtmlElement DOM manipulation API", function()
         local el = make_el()
         expect_equal(el:getText(), "Hello", "getText must return 'Hello'")
     end)
-    -- @covers LHtmlElement:getText
     -- @covers LHtmlElement:setText
     it("setText updates text content", function()
         local el = make_el()
         el:setText("World")
         expect_equal(el:getText(), "World", "setText must update text")
     end)
-    -- @covers LHtmlDocument:getHtml
     -- @covers LHtmlElement:getHtml
     it("getHtml returns a string", function()
         local el = make_el()
         expect_type("string", el:getHtml(), "getHtml must return a string")
     end)
-    -- @covers LHtmlElement:getAttribute
     -- @covers LHtmlElement:setAttribute
     it("setAttribute / getAttribute round-trip", function()
         local el = make_el()
@@ -376,9 +281,7 @@ describe("HtmlElement DOM manipulation API", function()
         expect_equal(el:getAttribute("data-score"), "42",
             "getAttribute must return the set value")
     end)
-    -- @covers LHtmlElement:getAttribute
     -- @covers LHtmlElement:removeAttribute
-    -- @covers LHtmlElement:setAttribute
     it("removeAttribute clears the attribute", function()
         local el = make_el()
         el:setAttribute("data-tmp", "x")
@@ -387,14 +290,11 @@ describe("HtmlElement DOM manipulation API", function()
             "getAttribute must return nil after removeAttribute")
     end)
     -- @covers LHtmlElement:addClass
-    -- @covers LHtmlElement:hasClass
     it("addClass adds the class; hasClass detects it", function()
         local el = make_el()
         el:addClass("active")
         expect_true(el:hasClass("active"), "hasClass must return true after addClass")
     end)
-    -- @covers LHtmlElement:addClass
-    -- @covers LHtmlElement:hasClass
     -- @covers LHtmlElement:removeClass
     it("removeClass removes the class", function()
         local el = make_el()
@@ -403,29 +303,20 @@ describe("HtmlElement DOM manipulation API", function()
         expect_false(el:hasClass("active"),
             "hasClass must return false after removeClass")
     end)
-    -- @covers LHtmlElement:hasClass
     -- @covers LHtmlElement:toggleClass
-    it("toggleClass adds when not present and returns true", function()
+    it("toggleClass adds then removes classes across repeated calls", function()
         local el = make_el()
         local result = el:toggleClass("highlight")
         expect_true(result, "toggleClass must return true when adding")
         expect_true(el:hasClass("highlight"),
             "class must be present after toggle-add")
-    end)
-    -- @covers LHtmlElement:addClass
-    -- @covers LHtmlElement:hasClass
-    -- @covers LHtmlElement:toggleClass
-    it("toggleClass removes when already present and returns false", function()
-        local el = make_el()
-        el:addClass("highlight")
-        local result = el:toggleClass("highlight")
-        expect_false(result, "toggleClass must return false when removing")
+
+        local removed = el:toggleClass("highlight")
+        expect_false(removed, "toggleClass must return false when removing")
         expect_false(el:hasClass("highlight"),
             "class must be absent after toggle-remove")
     end)
-    -- @covers LHtmlElement:getStyle
     -- @covers LHtmlElement:setStyle
-    -- @covers LTheme:setStyle
     it("setStyle / getStyle round-trip", function()
         local el = make_el()
         el:setStyle("color", "red")
@@ -462,14 +353,14 @@ describe("HtmlElement DOM manipulation API", function()
         expect_type("function", owner.setHtml,
             "getDocument result must expose setHtml")
     end)
-    -- @covers LHtmlDocument:getElementById
+    -- @covers LHtmlElement:query
     it("element:query finds a descendant", function()
         local _, doc = make_el()
         local root = doc:getElementById("root")
         local child = root:query("#para")
         expect_not_nil(child, "element:query('#para') must find the child")
     end)
-    -- @covers LHtmlDocument:getElementById
+    -- @covers LHtmlElement:queryAll
     it("element:queryAll returns a table", function()
         local _, doc = make_el()
         local root = doc:getElementById("root")
@@ -483,7 +374,6 @@ describe("HtmlElement DOM manipulation API", function()
         local h = el:on("click", function() end)
         expect_not_nil(h, "element:on must return a handle")
     end)
-    -- @covers LHtmlDocument:off
     -- @covers LHtmlElement:off
     it("element:off with handle does not error", function()
         local el = make_el()
@@ -504,158 +394,44 @@ end)
 -- @describe lurek.html.supports feature flags
 describe("lurek.html.supports feature flags", function()
     -- @covers lurek.html.supports
-    it("supports('html') is true", function()
+    it("reports supported and unsupported feature flags", function()
         expect_true(lurek.html.supports("html"),
             "supports('html') must be true")
-    end)
-    -- @covers lurek.html.supports
-    it("supports('css') is true", function()
         expect_true(lurek.html.supports("css"),
             "supports('css') must be true")
-    end)
-    -- @covers lurek.html.supports
-    it("supports('selectors') is true", function()
         expect_true(lurek.html.supports("selectors"),
             "supports('selectors') must be true")
-    end)
-    -- @covers lurek.html.supports
-    it("supports('pure-rust') is true", function()
+        expect_true(lurek.html.supports("css-flex"),
+            "supports('css-flex') must be true")
+        expect_true(lurek.html.supports("load-document"),
+            "supports('load-document') must be true")
         expect_true(lurek.html.supports("pure-rust"),
             "supports('pure-rust') must be true")
-    end)
-    -- @covers lurek.html.supports
-    it("supports('nonexistent-feature-xyz') is false", function()
         expect_false(lurek.html.supports("nonexistent-feature-xyz"),
             "supports must return false for unknown features")
     end)
 end)
 
--- @describe lurek.html.loadDocument error handling
-describe("lurek.html.loadDocument error handling", function()
-    -- @covers lurek.html.loadDocument
-    it("loadDocument on missing file raises an error", function()
-        local ok, err = pcall(function()
-            lurek.html.loadDocument("nonexistent_file_xyzzy.rml")
-        end)
-        expect_false(ok, "loadDocument on missing file must raise an error")
-        expect_true(err ~= nil and #tostring(err) > 0,
-            "the error value must be present and stringify to a non-empty message")
-    end)
-end)
-
--- @describe LHtmlElement:on
-describe("LHtmlElement:on", function()
-    -- @covers LHtmlDocument:query
-    -- @covers lurek.html.newDocument
-    it("on registers listener and returns numeric handle", function()
-        local doc = lurek.html.newDocument("<div id='root'></div>")
-        local root = doc:query("#root")
-        local handle = root:on("click", function(_evt) end)
-        expect_type("number", handle)
-        expect_true(handle > 0)
-    end)
-end)
-
 -- @describe html strict: LHtmlDocument methods
 describe("html strict: LHtmlDocument methods", function()
-    -- @covers LHtmlDocument:update
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument update is callable", function()
-        local doc = lurek.html.newDocument("<p>test</p>")
-        local ok = pcall(function() doc:update(0.016) end)
-        expect_true(ok)
-    end)
-
     -- @covers LHtmlDocument:draw
-    -- @covers lurek.html.newDocument
     it("LHtmlDocument draw is callable", function()
         local doc = lurek.html.newDocument("<p>draw</p>")
         local ok = pcall(function() doc:draw() end)
         expect_type("boolean", ok)
     end)
 
-    -- @covers LHtmlDocument:mousepressed
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument mousepressed is callable", function()
-        local doc = lurek.html.newDocument("<button id='b'>X</button>")
-        local ok = pcall(function() doc:mousepressed(10, 10, 1) end)
-        expect_true(ok)
-    end)
-
-    -- @covers LHtmlDocument:mousereleased
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument mousereleased is callable", function()
-        local doc = lurek.html.newDocument("<button id='b'>X</button>")
-        local ok = pcall(function() doc:mousereleased(10, 10, 1) end)
-        expect_true(ok)
-    end)
-
-    -- @covers LHtmlDocument:mousemoved
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument mousemoved is callable", function()
-        local doc = lurek.html.newDocument("<p>hover</p>")
-        local ok = pcall(function() doc:mousemoved(5, 5) end)
-        expect_true(ok)
-    end)
-
-    -- @covers LHtmlDocument:wheelmoved
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument wheelmoved is callable", function()
-        local doc = lurek.html.newDocument("<div style='overflow:scroll'>text</div>")
-        local ok = pcall(function() doc:wheelmoved(0, 3) end)
-        expect_true(ok)
-    end)
-
-    -- @covers LHtmlDocument:keypressed
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument keypressed is callable", function()
-        local doc = lurek.html.newDocument("<input id='i' type='text'/>")
-        local ok = pcall(function() doc:keypressed("return") end)
-        expect_true(ok)
-    end)
-
-    -- @covers LHtmlDocument:textinput
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument textinput is callable", function()
-        local doc = lurek.html.newDocument("<input id='i' type='text'/>")
-        local ok = pcall(function() doc:textinput("h") end)
-        expect_true(ok)
-    end)
-
     -- @covers LHtmlDocument:type
-    -- @covers LHtmlDocument:typeOf
-    -- @covers lurek.html.newDocument
     it("LHtmlDocument type and typeOf are callable", function()
         local doc = lurek.html.newDocument("<p>t</p>")
         expect_type("string", doc:type())
         expect_type("boolean", doc:typeOf("LObject"))
     end)
-
-    -- @covers LHtmlDocument:on
-    -- @covers lurek.html.newDocument
-    it("LHtmlDocument on returns event handle number", function()
-        local doc = lurek.html.newDocument("<p>e</p>")
-        local h = doc:on("mousemoved", function(_e) end)
-        expect_type("number", h)
-    end)
 end)
 
 -- @describe html strict: LHtmlElement methods
 describe("html strict: LHtmlElement methods", function()
-    -- @covers LHtmlElement:getId
-    -- @covers lurek.html.newDocument
-    it("LHtmlElement getId returns string", function()
-        local doc = lurek.html.newDocument("<p id='para'>hello</p>")
-        local el = doc:getElementById("para")
-        if el ~= nil then
-            expect_type("string", el:getId())
-        else
-            expect_nil(el)
-        end
-    end)
-
     -- @covers LHtmlElement:remove
-    -- @covers lurek.html.newDocument
     it("LHtmlElement remove is callable", function()
         local doc = lurek.html.newDocument("<p id='rm'>bye</p>")
         local el = doc:getElementById("rm")
@@ -667,22 +443,7 @@ describe("html strict: LHtmlElement methods", function()
         end
     end)
 
-    -- @covers LHtmlElement:on
-    -- @covers lurek.html.newDocument
-    it("LHtmlElement on returns event handle number", function()
-        local doc = lurek.html.newDocument("<button id='btn'>click</button>")
-        local el = doc:getElementById("btn")
-        if el ~= nil then
-            local h = el:on("click", function(_e) end)
-            expect_type("number", h)
-        else
-            expect_nil(el)
-        end
-    end)
-
     -- @covers LHtmlElement:type
-    -- @covers LHtmlElement:typeOf
-    -- @covers lurek.html.newDocument
     it("LHtmlElement type and typeOf are callable", function()
         local doc = lurek.html.newDocument("<span id='sp'>x</span>")
         local el = doc:getElementById("sp")
@@ -698,10 +459,6 @@ end)
 -- @describe html strict: event functions
 describe("html strict: event functions", function()
     -- @covers lurek.html.preventDefault
-    -- @covers lurek.html.stopPropagation
-    -- @covers lurek.html.isDefaultPrevented
-    -- @covers LHtmlDocument:on
-    -- @covers lurek.html.newDocument
     it("preventDefault / stopPropagation / isDefaultPrevented are called in event callback", function()
         local fired = false
         local doc = lurek.html.newDocument("<button id='b'>X</button>")
@@ -720,7 +477,6 @@ end)
 -- @describe html strict: document render method
 describe("html strict: document render method", function()
     -- @covers LHtmlDocument:render
-    -- @covers lurek.html.newDocument
     it("LHtmlDocument render is callable", function()
         local doc = lurek.html.newDocument("<p id='r'>render</p>")
         local ok = pcall(function() doc:render(0, 0) end)

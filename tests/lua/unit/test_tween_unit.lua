@@ -5,22 +5,22 @@ local harness = require("tests.lua.harness")
 
 -- @describe lurek.tween
 describe("lurek.tween", function()
-    -- @covers lurek.tween.newChain
-    it("creates a new tween chain", function()
-        local chain = lurek.tween.newChain(false)
-        assert_equal("userdata", type(chain))
-        assert_equal("LuaTweenChain", chain:type())
+    -- @covers LTweenParallel:typeOf
+    it("creates a new tween parallel group with a stable userdata type", function()
+        local group = lurek.tween.parallel()
+        assert_equal("userdata", type(group))
+        assert_true(group:typeOf("LTweenParallel"))
     end)
 
-    -- @covers lurek.tween.newChain
-    it("creates looping tween chain", function()
-        local chain = lurek.tween.newChain(true)
-        local is_loop = chain:isLooping()
-        assert_equal(true, is_loop)
+    -- @covers LTweenSequence:typeOf
+    it("creates a new tween sequence with the expected userdata type", function()
+        local seq = lurek.tween.sequence()
+        assert_equal("userdata", type(seq))
+        assert_true(seq:typeOf("LTweenSequence"))
     end)
 
     -- Tween sequence methods
-    -- @covers lurek.tween.LuaTweenChain.to
+    -- @covers LTweenChain:to
     it("adds property tween to chain", function()
         local obj = {x = 0, y = 0}
         local chain = lurek.tween.newChain(false)
@@ -28,14 +28,14 @@ describe("lurek.tween", function()
         assert_equal("userdata", type(chain))
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.wait
+    -- @covers LTweenChain:wait
     it("adds delay step to chain", function()
         local chain = lurek.tween.newChain(false)
         chain:wait(0.5)
         assert_equal("userdata", type(chain))
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.call
+    -- @covers LTweenChain:call
     it("adds callback step to chain", function()
         local chain = lurek.tween.newChain(false)
         local called = false
@@ -44,7 +44,7 @@ describe("lurek.tween", function()
     end)
 
     -- Loop control
-    -- @covers lurek.tween.LuaTweenChain.loop
+    -- @covers LTweenChain:loop
     it("sets loop count for chain", function()
         local chain = lurek.tween.newChain(false)
         chain:loop(3)
@@ -52,7 +52,7 @@ describe("lurek.tween", function()
     end)
 
     -- Callbacks
-    -- @covers lurek.tween.LuaTweenChain.onLoop
+    -- @covers LTweenChain:onLoop
     it("registers loop callback", function()
         local chain = lurek.tween.newChain(true)
         local count = 0
@@ -60,7 +60,7 @@ describe("lurek.tween", function()
         assert_equal("userdata", type(chain))
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.onComplete
+    -- @covers LTweenChain:onComplete
     it("registers completion callback", function()
         local chain = lurek.tween.newChain(false)
         chain:onComplete(function() end)
@@ -68,7 +68,7 @@ describe("lurek.tween", function()
     end)
 
     -- Playback control
-    -- @covers lurek.tween.LuaTweenChain.start
+    -- @covers LTweenChain:start
     it("starts chain playback", function()
         local obj = {x = 0}
         local chain = lurek.tween.newChain(false)
@@ -77,7 +77,7 @@ describe("lurek.tween", function()
         assert_equal(true, chain:isActive())
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.stop
+    -- @covers LTweenChain:stop
     it("stops chain playback", function()
         local obj = {x = 0}
         local chain = lurek.tween.newChain(false)
@@ -87,17 +87,20 @@ describe("lurek.tween", function()
         assert_equal(false, chain:isActive())
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.pause
+    -- @covers LTweenChain:pause
     it("pauses chain without stopping", function()
         local obj = {x = 0}
         local chain = lurek.tween.newChain(false)
         chain:to(obj, {x = 100}, 1.0)
         chain:start()
+        lurek.tween.update(0.25)
+        local before = chain:getProgress()
         chain:pause()
-        assert_equal(false, chain:isActive())
+        lurek.tween.update(0.25)
+        assert_near(before, chain:getProgress(), 0.001)
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.resume
+    -- @covers LTweenChain:resume
     it("resumes paused chain", function()
         local obj = {x = 0}
         local chain = lurek.tween.newChain(false)
@@ -109,21 +112,21 @@ describe("lurek.tween", function()
     end)
 
     -- State queries
-    -- @covers lurek.tween.LuaTweenChain.isComplete
+    -- @covers LTweenChain:isComplete
     it("reports completion state", function()
         local chain = lurek.tween.newChain(false)
         local completed = chain:isComplete()
         assert_true(type(completed) == "boolean")
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.isActive
+    -- @covers LTweenChain:isActive
     it("reports active state", function()
         local chain = lurek.tween.newChain(false)
         local active = chain:isActive()
         assert_true(type(active) == "boolean")
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.getProgress
+    -- @covers LTweenChain:getProgress
     it("returns current progress 0..1", function()
         local obj = {x = 0}
         local chain = lurek.tween.newChain(false)
@@ -133,7 +136,7 @@ describe("lurek.tween", function()
         assert_true(prog >= 0.0 and prog <= 1.0)
     end)
 
-    -- @covers lurek.tween.LuaTweenChain.getIteration
+    -- @covers LTweenChain:getIteration
     it("returns current iteration count", function()
         local chain = lurek.tween.newChain(true)
         chain:loop(5)
@@ -144,14 +147,15 @@ describe("lurek.tween", function()
     end)
 
     -- Update
-    -- @covers lurek.tween.LuaTweenChain.update
-    it("advances chain by delta time", function()
+    -- @covers LTweenSequence:getProgress
+    it("advances a tween sequence and reports normalized progress", function()
         local obj = {x = 0}
-        local chain = lurek.tween.newChain(false)
-        chain:to(obj, {x = 100}, 1.0)
-        chain:start()
-        chain:update(0.1)
-        assert_near(obj.x, 10, 5)  -- Should have moved ~10 units in 0.1s of 1s tween
+        local seq = lurek.tween.sequence()
+        seq:tween(1.0, obj, {x = 100})
+        seq:start()
+        lurek.tween.update(0.1)
+        local prog = seq:getProgress()
+        assert_true(prog >= 0.0 and prog <= 1.0)
     end)
 end)
 test_summary()

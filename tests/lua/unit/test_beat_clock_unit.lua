@@ -7,15 +7,12 @@ local audio = lurek.audio
 -- @describe lurek.audio.newBeatClock
 describe("lurek.audio.newBeatClock", function()
     -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:bpm
-    -- @covers LBeatClock:beatsPerBar
     it("creates clock at given bpm", function()
         local bc = audio.newBeatClock(120.0, 4)
         T.assert_equal(bc:bpm(), 120.0)
         T.assert_equal(bc:beatsPerBar(), 4)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:tick
     it("starts stopped, no crossings on tick", function()
         local bc = audio.newBeatClock(120.0)
@@ -23,9 +20,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_equal(#crossings, 0, "stopped clock must not tick")
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:start
-    -- @covers LBeatClock:tick
     it("start / tick produces beat crossings at 60 bpm", function()
         local bc = audio.newBeatClock(60.0, 4)
         bc:start()
@@ -35,9 +30,6 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_equal(#crossings, 2)
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:start
-    -- @covers LBeatClock:tick
     -- @covers LBeatClock:position
     it("position fields are present", function()
         local bc = audio.newBeatClock(120.0, 4)
@@ -50,9 +42,6 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_not_nil(pos.phase)
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:start
-    -- @covers LBeatClock:tick
     -- @covers LBeatClock:stop
     it("stop pauses the clock", function()
         local bc = audio.newBeatClock(120.0, 4)
@@ -65,11 +54,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_equal(b1, b2, "stopped clock must not advance")
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:start
-    -- @covers LBeatClock:tick
     -- @covers LBeatClock:reset
-    -- @covers LBeatClock:position
     it("reset clears elapsed time", function()
         local bc = audio.newBeatClock(120.0)
         bc:start()
@@ -78,25 +63,20 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(bc:position().beat < 0.001)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:setBpm
-    -- @covers LBeatClock:bpm
     it("setBpm changes rate", function()
         local bc = audio.newBeatClock(120.0)
         bc:setBpm(240.0)
         T.assert_equal(bc:bpm(), 240.0)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:setBeatsPerBar
-    -- @covers LBeatClock:beatsPerBar
     it("setBeatsPerBar changes signature", function()
         local bc = audio.newBeatClock(120.0, 4)
         bc:setBeatsPerBar(3)
         T.assert_equal(bc:beatsPerBar(), 3)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:tap
     it("tap returns bpm estimate after 2 taps", function()
         local bc = audio.newBeatClock(120.0)
@@ -105,11 +85,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(bpm > 100 and bpm < 140, "tap bpm out of range: " .. bpm)
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:scheduleAt
     -- @covers LBeatClock:drainFired
-    -- @covers LBeatClock:start
-    -- @covers LBeatClock:tick
     it("scheduleAt fires via drainFired", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
@@ -119,9 +95,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_equal(#fired, 1)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:every
-    -- @covers LBeatClock:update
     it("every invokes callback on each crossed division step", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
@@ -133,8 +107,6 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(#steps >= 4, "expected at least 4 callbacks, got " .. tostring(#steps))
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:at
     -- @covers LBeatClock:update
     it("at invokes callback once when beat is crossed", function()
         local bc = audio.newBeatClock(60.0)
@@ -151,9 +123,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(seen >= 1.0)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:pattern
-    -- @covers LBeatClock:update
     it("pattern invokes callback on active slots", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
@@ -166,10 +136,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(slots[1] == 1 or slots[1] == 3)
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:every
     -- @covers LBeatClock:cancel
-    -- @covers LBeatClock:update
     it("cancel stops future scheduled callbacks", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
@@ -185,11 +152,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_equal(hits, before)
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:every
-    -- @covers LBeatClock:pattern
     -- @covers LBeatClock:cancelAll
-    -- @covers LBeatClock:update
     it("cancelAll clears all callback schedules", function()
         local bc = audio.newBeatClock(60.0)
         bc:start()
@@ -205,14 +168,12 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_equal(hits, 0)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:secondsPerBeat
     it("secondsPerBeat is reciprocal of bpm", function()
         local bc = audio.newBeatClock(60.0)
         T.assert_true(math.abs(bc:secondsPerBeat() - 1.0) < 1e-6)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:quantise
     it("quantise rounds to grid", function()
         local bc = audio.newBeatClock(120.0)
@@ -220,10 +181,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(math.abs(q - 1.25) < 1e-9 or math.abs(q - 1.5) < 1e-9)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:isRunning
-    -- @covers LBeatClock:start
-    -- @covers LBeatClock:stop
     it("isRunning reflects state", function()
         local bc = audio.newBeatClock(120.0)
         T.assert_false(bc:isRunning())
@@ -233,8 +191,6 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_false(bc:isRunning())
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:typeOf
     -- @covers LBeatClock:type
     it("typeOf returns LBeatClock", function()
         local bc = audio.newBeatClock(120.0)
@@ -244,13 +200,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_false(bc:typeOf("LLootTable"))
     end)
 
-    -- @covers lurek.audio.newBeatClock
-    -- @covers LBeatClock:update
     -- @covers LBeatClock:getBeat
-    -- @covers LBeatClock:getBar
-    -- @covers LBeatClock:getPhase
-    -- @covers LBeatClock:beatTimeRemaining
-    -- @covers LBeatClock:nearestBeat
     it("newBeatClock accepts opts table and exposes extended position helpers", function()
         local bc = audio.newBeatClock(120.0, { subdivision = 8, swing = 0.2, latency_ms = 5 })
         bc:start()
@@ -265,10 +215,7 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_not_nil(err)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:rampBpm
-    -- @covers LBeatClock:update
-    -- @covers LBeatClock:getBpm
     it("rampBpm updates bpm over time", function()
         local bc = audio.newBeatClock(120.0)
         bc:start()
@@ -277,8 +224,6 @@ describe("lurek.audio.newBeatClock", function()
         T.assert_true(bc:getBpm() > 120.0)
     end)
 
-    -- @covers lurek.audio.setJudgementWindows
-    -- @covers lurek.audio.getJudgementWindows
     -- @covers lurek.audio.judgeBeat
     it("judgeBeat and global judgement windows are available", function()
         local before = audio.getJudgementWindows()
@@ -294,7 +239,6 @@ describe("lurek.audio.newBeatClock", function()
         audio.setJudgementWindows(before)
     end)
 
-    -- @covers lurek.audio.newBeatClock
     -- @covers LBeatClock:dump
     it("dump returns snapshot table", function()
         local bc = audio.newBeatClock(100.0)
@@ -317,10 +261,25 @@ describe("Audio BeatClock additional methods", function()
         T.assert_true(ok)
     end)
 
-    -- @covers LBeatClock:bpm
+    -- @covers LBeatClock:beatsPerBar
+    it("BeatClock:beatsPerBar returns time signature width", function()
+        local bc = audio.newBeatClock(120.0, 4)
+        T.assert_equal(4, bc:beatsPerBar())
+    end)
+
+    -- @covers LBeatClock:scheduleAt
+    it("BeatClock:scheduleAt is callable", function()
+        local bc = audio.newBeatClock(100.0)
+        local ok = pcall(function()
+            bc:scheduleAt(1.0)
+        end)
+        T.assert_true(ok)
+    end)
+
+    -- @covers LBeatClock:getBpm
     it("BeatClock:bpm returns tempo", function()
         local bc = audio.newBeatClock(120.0)
-        local bpm = bc:bpm()
+        local bpm = bc:getBpm()
         T.assert_equal(120, bpm)
     end)
 
@@ -335,14 +294,15 @@ describe("Audio BeatClock additional methods", function()
     it("BeatClock:isOnBeat returns beat status", function()
         local bc = audio.newBeatClock(100.0)
         local on_beat = bc:isOnBeat()
-        T.assert_type("boolean", on_beat)
+        T.assert_equal(type(on_beat), "boolean")
     end)
 
-    -- @covers LBeatClock:tap
-    it("BeatClock:tap registers tap for tempo", function()
-        local bc = audio.newBeatClock(100.0)
-        bc:tap(0.0)
-        T.assert_true(true)
+    -- @covers LBeatClock:typeOf
+    it("BeatClock:typeOf recognises supported types", function()
+        local bc = audio.newBeatClock(120.0)
+        T.assert_true(bc:typeOf("LBeatClock"))
+        T.assert_true(bc:typeOf("LObject"))
+        T.assert_false(bc:typeOf("LLootTable"))
     end)
 
     -- @covers LBeatClock:at
@@ -354,7 +314,7 @@ describe("Audio BeatClock additional methods", function()
     it("BeatClock:secondsToNextBeat returns time until next beat", function()
         local bc = audio.newBeatClock(100.0)
         local secs = bc:secondsToNextBeat()
-        T.assert_type("number", secs)
+        T.assert_equal(type(secs), "number")
     end)
 
     -- @covers LBeatClock:syncToSource

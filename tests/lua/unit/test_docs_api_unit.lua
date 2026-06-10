@@ -13,7 +13,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LApiCatalog:getModules
-    -- @covers lurek.docs.scan
     it("scan should return catalog with getModules", function()
         local catalog = lurek.docs.scan()
         local modules = catalog:getModules()
@@ -23,7 +22,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LApiCatalog:getEntries
-    -- @covers lurek.docs.scan
     it("scan should find lurek.render functions", function()
         local catalog = lurek.docs.scan()
         local entries = catalog:getEntries("render")
@@ -33,7 +31,6 @@ describe("lurek.docs", function()
 
     -- ============= scanModule =============
 
-    -- @covers LApiCatalog:entryCount
     -- @covers lurek.docs.scanModule
     it("should scan a single module", function()
         local catalog = lurek.docs.scanModule("render")
@@ -43,23 +40,16 @@ describe("lurek.docs", function()
     end)
     -- ============= describe / getCatalog / resetCatalog =============
 
-    -- @covers LApiCatalog:getEntry
-    -- @covers lurek.docs.describe
     -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.resetCatalog
     it("should describe and getCatalog", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.foo", "A test function")
         local cat = lurek.docs.getCatalog()
         local entry = cat:getEntry("lurek.test.foo")
         expect_not_nil(entry, "entry should exist after describe")
-        assert(entry)
         expect_equal("A test function", entry:getDescription())
         lurek.docs.resetCatalog()
     end)
-    -- @covers LApiCatalog:entryCount
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
     -- @covers lurek.docs.resetCatalog
     it("should reset the internal catalog", function()
         lurek.docs.describe("lurek.test.bar", "Another test")
@@ -70,12 +60,7 @@ describe("lurek.docs", function()
 
     -- ============= setParamInfo / setReturnInfo =============
 
-    -- @covers LApiCatalog:getEntry
     -- @covers LDocEntry:getParameters
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.resetCatalog
-    -- @covers lurek.docs.setParamInfo
     it("should set parameter info", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.func", "A function")
@@ -86,7 +71,6 @@ describe("lurek.docs", function()
         local cat = lurek.docs.getCatalog()
         local entry = cat:getEntry("lurek.test.func")
         expect_not_nil(entry, "entry should exist")
-        assert(entry)
         local params = entry:getParameters()
         expect_equal(2, #params)
         expect_equal("x", params[1].name)
@@ -94,12 +78,7 @@ describe("lurek.docs", function()
         expect_equal(true, params[2].optional)
         lurek.docs.resetCatalog()
     end)
-    -- @covers LApiCatalog:getEntry
     -- @covers LDocEntry:getReturns
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.resetCatalog
-    -- @covers lurek.docs.setReturnInfo
     it("should set return info", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.func2", "Another function")
@@ -109,7 +88,6 @@ describe("lurek.docs", function()
         local cat = lurek.docs.getCatalog()
         local entry = cat:getEntry("lurek.test.func2")
         expect_not_nil(entry, "entry should exist")
-        assert(entry)
         local returns = entry:getReturns()
         expect_equal(1, #returns)
         expect_equal("number", returns[1].type)
@@ -118,22 +96,14 @@ describe("lurek.docs", function()
 
     -- ============= DocEntry methods =============
 
-    -- @covers LApiCatalog:getEntry
     -- @covers LDocEntry:getScore
-    -- @covers LDocEntry:hasDescription
-    -- @covers LDocEntry:hasExample
-    -- @covers LDocEntry:hasParameters
-    -- @covers LDocEntry:hasReturnType
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.resetCatalog
     it("DocEntry should report score correctly", function()
         lurek.docs.resetCatalog()
         -- Entry with description only = 40%
         lurek.docs.describe("lurek.test.scored", "Has description")
         local cat = lurek.docs.getCatalog()
         local entry = cat:getEntry("lurek.test.scored")
-        assert(entry)
+        expect_not_nil(entry)
         local score = entry:getScore()
         expect_true(math.abs(score - 0.4) < 0.01, "score should be 0.4 for desc only, got " .. score)
         expect_true(entry:hasDescription())
@@ -145,14 +115,12 @@ describe("lurek.docs", function()
     -- ============= ApiCatalog methods =============
 
     -- @covers LApiCatalog:entryCount
-    -- @covers lurek.docs.scanModule
     it("catalog should support entryCount", function()
         local catalog = lurek.docs.scanModule("math")
         local count = catalog:entryCount()
         expect_true(count >= 0, "entryCount should return a number")
     end)
     -- @covers LApiCatalog:search
-    -- @covers lurek.docs.scan
     it("catalog should support search", function()
         local catalog = lurek.docs.scan()
         local results = catalog:search("render")
@@ -162,9 +130,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LApiCatalog:toTable
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.resetCatalog
     it("catalog should support toTable", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.tt", "Test toTable")
@@ -176,9 +141,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LApiCatalog:toJSON
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.resetCatalog
     it("catalog should support toJSON", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.json", "Test JSON")
@@ -190,8 +152,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LApiCatalog:filter
-    -- @covers LApiCatalog:getEntries
-    -- @covers lurek.docs.scan
     it("catalog should support filter", function()
         local catalog = lurek.docs.scan()
         local filtered = catalog:filter(function(entry)
@@ -205,17 +165,16 @@ describe("lurek.docs", function()
         end
     end)
 
-    -- @covers lurek.docs.scanModule
-    it("catalog should support merge", function()
+    -- @covers LApiCatalog:type
+    it("catalog exposes callable userdata type helpers", function()
         local cat1 = lurek.docs.scanModule("math")
         expect_type("function", cat1.merge)
+        expect_type("string", cat1:type())
     end)
 
     -- ============= validate =============
 
     -- @covers LValidationReport:isValid
-    -- @covers LValidationReport:missingCount
-    -- @covers lurek.docs.validate
     it("should validate completeness", function()
         -- Validating with no catalog should report many missing
         local report = lurek.docs.validate()
@@ -223,7 +182,6 @@ describe("lurek.docs", function()
         expect_true(report:missingCount() > 0, "should have missing entries with empty catalog")
         expect_true(not report:isValid(), "should not be valid with empty catalog")
     end)
-    -- @covers LValidationReport:getSummary
     -- @covers lurek.docs.validateModule
     it("should validate a single module", function()
         local report = lurek.docs.validateModule("math")
@@ -233,7 +191,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LValidationReport:toTable
-    -- @covers lurek.docs.validate
     it("validation report should support toTable", function()
         local report = lurek.docs.validate()
         local tbl = report:toTable()
@@ -243,7 +200,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LValidationReport:toJSON
-    -- @covers lurek.docs.validate
     it("validation report should support toJSON", function()
         local report = lurek.docs.validate()
         local json = report:toJSON()
@@ -253,14 +209,7 @@ describe("lurek.docs", function()
 
     -- ============= quality =============
 
-    -- @covers LQualityReport:getGrade
     -- @covers LQualityReport:getOverallScore
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.quality
-    -- @covers lurek.docs.resetCatalog
-    -- @covers lurek.docs.setParamInfo
-    -- @covers lurek.docs.setReturnInfo
     it("should compute quality metrics", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.q1", "Good entry")
@@ -281,10 +230,6 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
     -- @covers LQualityReport:getModuleScores
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.quality
-    -- @covers lurek.docs.resetCatalog
     it("quality should support getModuleScores", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.ms", "Module score test")
@@ -295,12 +240,7 @@ describe("lurek.docs", function()
         lurek.docs.resetCatalog()
     end)
 
-    -- @covers LQualityReport:getBest
     -- @covers LQualityReport:getWorst
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.quality
-    -- @covers lurek.docs.resetCatalog
     it("quality should support getWorst and getBest", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.w1", "Good")
@@ -315,10 +255,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LQualityReport:getByGrade
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.quality
-    -- @covers lurek.docs.resetCatalog
     it("quality should support getByGrade", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.g1", "Has desc only")
@@ -332,10 +268,6 @@ describe("lurek.docs", function()
     end)
 
     -- @covers LQualityReport:getSummary
-    -- @covers lurek.docs.describe
-    -- @covers lurek.docs.getCatalog
-    -- @covers lurek.docs.quality
-    -- @covers lurek.docs.resetCatalog
     it("quality should support getSummary", function()
         lurek.docs.resetCatalog()
         lurek.docs.describe("lurek.test.sum", "Summary test")
@@ -350,17 +282,12 @@ describe("lurek.docs", function()
     -- ============= coverage =============
 
     -- @covers lurek.docs.coverage
-    it("should compute coverage", function()
+    it("should compute coverage with and without an explicit catalog", function()
         local documented, total = lurek.docs.coverage()
         expect_true(total > 0, "total should be > 0")
         expect_equal(0, documented, "documented should be 0 with no catalog")
-    end)
-    -- @covers lurek.docs.coverage
-    -- @covers lurek.docs.scan
-    it("should compute coverage with catalog", function()
         local catalog = lurek.docs.scan()
-        local documented, total = lurek.docs.coverage(catalog)
-        expect_true(total > 0, "total should be > 0")
+        documented, total = lurek.docs.coverage(catalog)
         -- When passing the full scan, documented == total
         expect_equal(total, documented)
     end)

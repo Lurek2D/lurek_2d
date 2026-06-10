@@ -53,6 +53,8 @@ FULL_BLOCK_MIN_LINES = 2
 
 DO_LINE_RE = re.compile(r'^do(?:\s*--.*)?$')
 FUNCTION_START_RE = re.compile(r'^(?:local\s+)?function\b')
+LOCAL_FUNCTION_DEF_RE = re.compile(r'^local\s+function\s+([A-Za-z_][A-Za-z0-9_]*)\b')
+GLOBAL_FUNCTION_DEF_RE = re.compile(r'^function\s+([A-Za-z_][A-Za-z0-9_]*)\b')
 IF_START_RE = re.compile(r'^if\b.*\bthen(?:\s*--.*)?$')
 FOR_START_RE = re.compile(r'^for\b.*\bdo(?:\s*--.*)?$')
 WHILE_START_RE = re.compile(r'^while\b.*\bdo(?:\s*--.*)?$')
@@ -326,6 +328,14 @@ def _count_scope_closures(stripped: str) -> int:
 
 def _is_outer_block_end(stripped: str, depth: int) -> bool:
     return depth == 1 and _count_scope_closures(stripped) == 1 and _count_scope_openings(stripped) == 0
+
+
+def _extract_function_name(stripped: str) -> str | None:
+    for pattern in (LOCAL_FUNCTION_DEF_RE, GLOBAL_FUNCTION_DEF_RE):
+        match = pattern.match(stripped)
+        if match:
+            return match.group(1)
+    return None
 
 
 def classify_block(block: dict | None) -> str:
@@ -698,6 +708,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E5  marker text is not a clean API identifier
       E6  marker text appears more than once across example files
       E7  top-level ``do`` block has no immediately preceding stub marker
+      E8  stub block references a top-level helper function defined outside the block
     """
     issues: list = []
 
@@ -709,6 +720,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
         n = len(lines)
         i = 0
         top_level_depth = 0
+        top_level_helpers: dict[str, int] = {}
 
         while i < n:
             stripped = lines[i].strip()
@@ -728,6 +740,9 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                     top_level_depth = 0
                     i = end_idx + 1
                     continue
+                helper_name = _extract_function_name(stripped)
+                if helper_name and top_level_depth == 0:
+                    top_level_helpers.setdefault(helper_name, i + 1)
                 i += 1
                 continue
 
@@ -776,6 +791,23 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                 issues.append((p.name, stub_lineno, 'E4',
                     f"stub '{marker}': block has {len(non_blank)} non-blank line(s) "
                     f"(need >= {LINT_MIN_BODY_LINES})"))
+
+            block_local_helpers = {
+                helper_name
+                for body_line in body_lines
+                if (helper_name := _extract_function_name(body_line))
+            }
+            body_text = '\n'.join(body_lines)
+            for helper_name, helper_lineno in sorted(top_level_helpers.items(), key=lambda item: item[1]):
+                if helper_name in block_local_helpers:
+                    continue
+                if re.search(rf'\b{re.escape(helper_name)}\s*\(', body_text):
+                    issues.append((
+                        p.name,
+                        stub_lineno,
+                        'E8',
+                        f"stub '{marker}': references top-level helper '{helper_name}' defined at line {helper_lineno}",
+                    ))
 
             i = end_idx + 1
 

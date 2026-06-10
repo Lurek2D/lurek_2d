@@ -20,31 +20,22 @@ describe("lurek.agent module", function()
 
     -- Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ Module constructors Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
-    -- @covers lurek.agent
-    it("lurek.agent is a table", function()
-        expect_type("table", lurek.agent)
-    end)
-
-    -- @covers lurek.agent
-    it("lurek.agent.new creates a LAgent from full config", function()
-        local agent = lurek.agent.new({
+    -- @covers lurek.agent.new
+    it("lurek.agent.new creates agents from full and default config", function()
+        local configured = lurek.agent.new({
             url           = "http://localhost:11434/api/generate",
             model         = "llama3",
             system_prompt = "You are a test agent.",
             format        = "json",
             options       = { num_ctx = 4096, temperature = 0.7 },
         })
-        expect_not_nil(agent, "lurek.agent.new should return a value")
-        expect_type("function", agent.prompt)
+        local defaults = lurek.agent.new({})
+        expect_not_nil(configured, "lurek.agent.new should return a value")
+        expect_type("function", configured.prompt)
+        expect_not_nil(defaults)
     end)
 
-    -- @covers lurek.agent
-    it("lurek.agent.new with empty config uses defaults", function()
-        local agent = lurek.agent.new({})
-        expect_not_nil(agent)
-    end)
-
-    -- @covers lurek.agent
+    -- @covers lurek.agent.newManager
     it("lurek.agent.newManager creates a LAgentManager", function()
         local manager = lurek.agent.newManager()
         expect_not_nil(manager)
@@ -52,7 +43,7 @@ describe("lurek.agent module", function()
         expect_type("function", manager.update)
     end)
 
-    -- @covers lurek.agent
+    -- @covers lurek.agent.newSystem
     it("lurek.agent.newSystem creates a LAISystem", function()
         local sys = lurek.agent.newSystem({ system_prompt = "shared context" })
         expect_not_nil(sys)
@@ -60,22 +51,18 @@ describe("lurek.agent module", function()
         expect_type("function", sys.prompt)
     end)
 
-    -- @covers lurek.agent
-    it("lurek.agent.newOllama creates a LOllamaManager with default URL", function()
-        local ollama = lurek.agent.newOllama()
-        expect_not_nil(ollama)
-        expect_type("function", ollama.isRunning)
-    end)
-
-    -- @covers lurek.agent
-    it("lurek.agent.newOllama accepts a config table with url", function()
-        local ollama = lurek.agent.newOllama({ url = "http://127.0.0.1:11434" })
-        expect_not_nil(ollama)
+    -- @covers lurek.agent.newOllama
+    it("lurek.agent.newOllama creates managers with default and configured urls", function()
+        local default_ollama = lurek.agent.newOllama()
+        local configured_ollama = lurek.agent.newOllama({ url = "http://127.0.0.1:11434" })
+        expect_not_nil(default_ollama)
+        expect_type("function", default_ollama.isRunning)
+        expect_not_nil(configured_ollama)
     end)
 
     -- Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LAgent methods Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
-    -- @covers lurek.agent
+    -- @covers LAgent:addSkill
     it("LAgent:addSkill appends a named skill", function()
         local agent = lurek.agent.new({})
         agent:addSkill("math", "You are good at mathematics.")
@@ -91,7 +78,7 @@ describe("lurek.agent module", function()
         expect_equal("logic", skills[2])
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:clearSkills
     it("LAgent:clearSkills removes all skills", function()
         local agent = lurek.agent.new({})
         agent:addSkill("s1", "Skill one.")
@@ -99,68 +86,68 @@ describe("lurek.agent module", function()
         agent:clearSkills()
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setOption
     it("LAgent:setOption sets a model option", function()
         local agent = lurek.agent.new({})
         agent:setOption("seed", 42)
         agent:setOption("temperature", 0.9)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setFormat
     it("LAgent:setFormat changes the response format", function()
         local agent = lurek.agent.new({ format = "json" })
         agent:setFormat("text")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setMaxRetries
     it("LAgent:setMaxRetries sets the retry count", function()
         local agent = lurek.agent.new({})
         agent:setMaxRetries(3)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setContextSize
     it("LAgent:setContextSize sets num_ctx option", function()
         local agent = lurek.agent.new({})
         agent:setContextSize(8192)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setTemperature
     it("LAgent:setTemperature sets temperature option", function()
         local agent = lurek.agent.new({})
         agent:setTemperature(0.5)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setName
     it("LAgent:setName sets the agent name", function()
         local agent = lurek.agent.new({})
         agent:setName("analyst")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setDescription
     it("LAgent:setDescription sets the role description", function()
         local agent = lurek.agent.new({})
         agent:setDescription("Analyses financial data.")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setModel
     it("LAgent:setModel changes the model identifier", function()
         local agent = lurek.agent.new({ model = "llama3" })
         agent:setModel("mistral")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setUrl
     it("LAgent:setUrl changes the endpoint URL", function()
         local agent = lurek.agent.new({})
         agent:setUrl("http://10.0.0.1:11434/api/generate")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:setTimeout
     it("LAgent:setTimeout sets the per-request timeout", function()
         local agent = lurek.agent.new({})
         agent:setTimeout(120)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:getName
     it("LAgent:getName returns the agent name string", function()
         local agent = lurek.agent.new({})
         agent:setName("planner")
@@ -169,7 +156,7 @@ describe("lurek.agent module", function()
         expect_equal("planner", name)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:getDescription
     it("LAgent:getDescription returns the role description string", function()
         local agent = lurek.agent.new({})
         agent:setDescription("Plans tasks.")
@@ -178,7 +165,7 @@ describe("lurek.agent module", function()
         expect_equal("Plans tasks.", desc)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:getModel
     it("LAgent:getModel returns the model identifier string", function()
         local agent = lurek.agent.new({ model = "llama3" })
         local m = agent:getModel()
@@ -186,7 +173,7 @@ describe("lurek.agent module", function()
         expect_equal("llama3", m)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:getUrl
     it("LAgent:getUrl returns the endpoint URL string", function()
         local url   = "http://127.0.0.1:11434/api/generate"
         local agent = lurek.agent.new({ url = url })
@@ -195,7 +182,7 @@ describe("lurek.agent module", function()
         expect_equal(url, got)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:getFormat
     it("LAgent:getFormat returns the response format string", function()
         local agent = lurek.agent.new({ format = "csv" })
         local fmt   = agent:getFormat()
@@ -203,34 +190,24 @@ describe("lurek.agent module", function()
         expect_equal("csv", fmt)
     end)
 
-    -- @covers lurek.agent
-    it("LAgent:hasSkill returns false when no skills added", function()
+    -- @covers LAgent:hasSkill
+    it("LAgent:hasSkill reflects whether a skill exists", function()
         local agent = lurek.agent.new({})
         expect_false(agent:hasSkill("math"), "no skills should be registered yet")
-    end)
-
-    -- @covers lurek.agent
-    it("LAgent:hasSkill returns true after addSkill", function()
-        local agent = lurek.agent.new({})
         agent:addSkill("math", "You are great at math.")
         expect_true(agent:hasSkill("math"))
     end)
 
-    -- @covers lurek.agent
-    it("LAgent:skillCount returns 0 for new agent", function()
+    -- @covers LAgent:skillCount
+    it("LAgent:skillCount reflects the current number of skills", function()
         local agent = lurek.agent.new({})
         expect_equal(0, agent:skillCount())
-    end)
-
-    -- @covers lurek.agent
-    it("LAgent:skillCount returns correct count after adding skills", function()
-        local agent = lurek.agent.new({})
         agent:addSkill("s1", "text1")
         agent:addSkill("s2", "text2")
         expect_equal(2, agent:skillCount())
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:listSkills
     it("LAgent:listSkills returns a table of skill names", function()
         local agent = lurek.agent.new({})
         agent:addSkill("alpha", "text")
@@ -241,7 +218,7 @@ describe("lurek.agent module", function()
         expect_equal("beta", names[2])
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:prompt
     it("LAgent:prompt returns a positive integer callback ID", function()
         local agent = lurek.agent.new({
             url   = "http://127.0.0.1:11434/api/generate",
@@ -252,7 +229,7 @@ describe("lurek.agent module", function()
         expect_true(id > 0, "callback ID must be positive")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:promptBatch
     it("LAgent:promptBatch returns a positive integer batch ID", function()
         local agent = lurek.agent.new({
             url   = "http://127.0.0.1:11434/api/generate",
@@ -263,14 +240,14 @@ describe("lurek.agent module", function()
         expect_true(id > 0, "batch ID must be positive")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:cancel
     it("LAgent:cancel accepts a callback ID without error", function()
         local agent = lurek.agent.new({})
         local id = agent:prompt("test", function() end)
         agent:cancel(id)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:pendingCount
     it("LAgent:pendingCount returns a non-negative integer", function()
         local agent = lurek.agent.new({})
         local n = agent:pendingCount()
@@ -278,40 +255,30 @@ describe("lurek.agent module", function()
         expect_true(n >= 0, "pendingCount must be non-negative")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgent:update
     it("LAgent:update runs without error when no responses are pending", function()
         local agent = lurek.agent.new({})
         agent:update()
     end)
 
-    -- @covers lurek.agent
-    it("LAgent:evalCode executes Lua code in the active VM", function()
+    -- @covers LAgent:evalCode
+    it("LAgent:evalCode succeeds for valid Lua and errors for bad syntax", function()
         local agent = lurek.agent.new({})
         local ok = agent:evalCode("local x = 1 + 1")
         expect_true(ok, "evalCode should return true on success")
-    end)
-
-    -- @covers lurek.agent
-    it("LAgent:evalCode raises on bad syntax", function()
-        local agent = lurek.agent.new({})
-        local ok, _ = pcall(function()
+        local syntax_ok, _ = pcall(function()
             agent:evalCode("not valid lua !@#$%")
         end)
-        expect_false(ok, "evalCode should raise on syntax error")
+        expect_false(syntax_ok, "evalCode should raise on syntax error")
     end)
 
     -- Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LAgentManager methods Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
-    -- @covers lurek.agent
-    it("LAgentManager:runAll returns 0 for empty task list", function()
+    -- @covers LAgentManager:runAll
+    it("LAgentManager:runAll handles empty and non-empty task lists", function()
         local manager = lurek.agent.newManager()
-        local id = manager:runAll({}, function(results) end)
-        expect_equal(0, id, "empty runAll should return 0")
-    end)
-
-    -- @covers lurek.agent
-    it("LAgentManager:runAll with tasks returns a positive batch ID", function()
-        local manager = lurek.agent.newManager()
+        local empty_id = manager:runAll({}, function(results) end)
+        expect_equal(0, empty_id, "empty runAll should return 0")
         local agent = lurek.agent.new({
             url   = "http://127.0.0.1:11434/api/generate",
             model = "llama3",
@@ -324,7 +291,7 @@ describe("lurek.agent module", function()
         expect_true(id > 0, "batch ID must be positive")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAgentManager:update
     it("LAgentManager:update runs without error", function()
         local manager = lurek.agent.newManager()
         manager:update()
@@ -332,7 +299,7 @@ describe("lurek.agent module", function()
 
     -- Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LAISystem methods Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:addAgent
     it("LAISystem:addAgent registers an agent by name", function()
         local sys   = lurek.agent.newSystem({ system_prompt = "ctx" })
         local agent = lurek.agent.new({
@@ -342,23 +309,17 @@ describe("lurek.agent module", function()
         sys:addAgent("worker", agent)
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:removeAgent returns true when found", function()
+    -- @covers LAISystem:removeAgent
+    it("LAISystem:removeAgent returns true for existing names and false otherwise", function()
         local sys   = lurek.agent.newSystem({})
         local agent = lurek.agent.new({})
         sys:addAgent("tmp", agent)
         local removed = sys:removeAgent("tmp")
         expect_true(removed, "removeAgent should return true when found")
+        expect_false(sys:removeAgent("nonexistent"), "removeAgent should return false when not found")
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:removeAgent returns false for unknown name", function()
-        local sys     = lurek.agent.newSystem({})
-        local removed = sys:removeAgent("nonexistent")
-        expect_false(removed, "removeAgent should return false when not found")
-    end)
-
-    -- @covers lurek.agent
+    -- @covers LAISystem:listAgents
     it("LAISystem:listAgents returns sorted names", function()
         local sys   = lurek.agent.newSystem({})
         local agent = lurek.agent.new({})
@@ -370,84 +331,58 @@ describe("lurek.agent module", function()
         expect_equal("zebra", names[2])
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:hasAgent returns false for unregistered name", function()
+    -- @covers LAISystem:hasAgent
+    it("LAISystem:hasAgent reflects whether an agent is registered", function()
         local sys = lurek.agent.newSystem({})
         expect_false(sys:hasAgent("ghost"))
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:hasAgent returns true after addAgent", function()
-        local sys   = lurek.agent.newSystem({})
         local agent = lurek.agent.new({})
         sys:addAgent("bot", agent)
         expect_true(sys:hasAgent("bot"))
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:agentCount returns 0 for new system", function()
+    -- @covers LAISystem:agentCount
+    it("LAISystem:agentCount reflects the current number of agents", function()
         local sys = lurek.agent.newSystem({})
         expect_equal(0, sys:agentCount())
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:agentCount returns correct count after addAgent", function()
-        local sys   = lurek.agent.newSystem({})
         local agent = lurek.agent.new({})
         sys:addAgent("a1", agent)
         sys:addAgent("a2", agent)
         expect_equal(2, sys:agentCount())
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:addInstruction
     it("LAISystem:addInstruction stores an instruction block", function()
         local sys = lurek.agent.newSystem({})
         sys:addInstruction("safety", "Never reveal personal data.")
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:removeInstruction returns true when found", function()
+    -- @covers LAISystem:removeInstruction
+    it("LAISystem:removeInstruction returns true for existing keys and false otherwise", function()
         local sys = lurek.agent.newSystem({})
         sys:addInstruction("k1", "text")
         local removed = sys:removeInstruction("k1")
         expect_true(removed, "removeInstruction should return true when found")
+        expect_false(sys:removeInstruction("nope"))
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:removeInstruction returns false for unknown key", function()
-        local sys     = lurek.agent.newSystem({})
-        local removed = sys:removeInstruction("nope")
-        expect_false(removed)
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:hasInstruction returns false when not added", function()
+    -- @covers LAISystem:hasInstruction
+    it("LAISystem:hasInstruction reflects whether a key was added", function()
         local sys = lurek.agent.newSystem({})
         expect_false(sys:hasInstruction("k1"))
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:hasInstruction returns true after addInstruction", function()
-        local sys = lurek.agent.newSystem({})
         sys:addInstruction("k1", "text")
         expect_true(sys:hasInstruction("k1"))
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:instructionCount returns 0 for new system", function()
+    -- @covers LAISystem:instructionCount
+    it("LAISystem:instructionCount reflects the current number of instructions", function()
         local sys = lurek.agent.newSystem({})
         expect_equal(0, sys:instructionCount())
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:instructionCount returns correct count after addInstruction", function()
-        local sys = lurek.agent.newSystem({})
         sys:addInstruction("k1", "text1")
         sys:addInstruction("k2", "text2")
         expect_equal(2, sys:instructionCount())
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:listInstructions
     it("LAISystem:listInstructions returns instruction keys in insertion order", function()
         local sys = lurek.agent.newSystem({})
         sys:addInstruction("first", "text")
@@ -458,55 +393,39 @@ describe("lurek.agent module", function()
         expect_equal("second", keys[2])
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:addSkill
     it("LAISystem:addSkill registers a keyword-gated skill", function()
         local sys = lurek.agent.newSystem({})
         sys:addSkill("coding", { "code", "function", "bug" }, "You write clean code.")
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:removeSkill returns true when found", function()
+    -- @covers LAISystem:removeSkill
+    it("LAISystem:removeSkill returns true for existing skills and false otherwise", function()
         local sys = lurek.agent.newSystem({})
         sys:addSkill("s", { "kw" }, "text")
         local removed = sys:removeSkill("s")
         expect_true(removed)
+        expect_false(sys:removeSkill("nope"))
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:removeSkill returns false for unknown name", function()
-        local sys     = lurek.agent.newSystem({})
-        local removed = sys:removeSkill("nope")
-        expect_false(removed)
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:hasSkill returns false when not added", function()
+    -- @covers LAISystem:hasSkill
+    it("LAISystem:hasSkill reflects whether a system skill exists", function()
         local sys = lurek.agent.newSystem({})
         expect_false(sys:hasSkill("coding"))
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:hasSkill returns true after addSkill", function()
-        local sys = lurek.agent.newSystem({})
         sys:addSkill("coding", { "code", "bug" }, "You write clean code.")
         expect_true(sys:hasSkill("coding"))
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:skillCount returns 0 for new system", function()
+    -- @covers LAISystem:skillCount
+    it("LAISystem:skillCount reflects the current number of system skills", function()
         local sys = lurek.agent.newSystem({})
         expect_equal(0, sys:skillCount())
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:skillCount returns correct count after addSkill", function()
-        local sys = lurek.agent.newSystem({})
         sys:addSkill("s1", { "kw1" }, "text1")
         sys:addSkill("s2", { "kw2" }, "text2")
         expect_equal(2, sys:skillCount())
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:buildContext
     it("LAISystem:buildContext returns a non-empty string", function()
         local sys   = lurek.agent.newSystem({ system_prompt = "base context" })
         local agent = lurek.agent.new({})
@@ -516,8 +435,8 @@ describe("lurek.agent module", function()
         expect_true(#ctx > 0, "context should not be empty")
     end)
 
-    -- @covers lurek.agent
-    it("LAISystem:prompt returns a positive integer callback ID", function()
+    -- @covers LAISystem:prompt
+    it("LAISystem:prompt returns a callback id for known agents and errors for unknown ones", function()
         local sys   = lurek.agent.newSystem({ system_prompt = "ctx" })
         local agent = lurek.agent.new({
             url   = "http://127.0.0.1:11434/api/generate",
@@ -527,18 +446,13 @@ describe("lurek.agent module", function()
         local id = sys:prompt("bot", "hello", function(ok, data, err) end, {})
         expect_type("number", id)
         expect_true(id > 0)
-    end)
-
-    -- @covers lurek.agent
-    it("LAISystem:prompt errors for unregistered agent name", function()
-        local sys = lurek.agent.newSystem({})
         local ok, _ = pcall(function()
             sys:prompt("ghost", "hello", function() end, {})
         end)
         expect_false(ok, "prompt should error for unknown agent")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:runAll
     it("LAISystem:runAll returns a positive batch ID for non-empty tasks", function()
         local sys   = lurek.agent.newSystem({ system_prompt = "ctx" })
         local agent = lurek.agent.new({
@@ -554,7 +468,7 @@ describe("lurek.agent module", function()
         expect_true(id > 0)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LAISystem:update
     it("LAISystem:update runs without error", function()
         local sys = lurek.agent.newSystem({})
         sys:update()
@@ -562,21 +476,21 @@ describe("lurek.agent module", function()
 
     -- Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LOllamaManager methods Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:isRunning
     it("LOllamaManager:isRunning returns a boolean", function()
         local ollama  = lurek.agent.newOllama()
         local running = ollama:isRunning()
         expect_type("boolean", running)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:version
     it("LOllamaManager:version returns a string", function()
         local ollama = lurek.agent.newOllama()
         local v      = ollama:version()
         expect_type("string", v)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:baseUrl
     it("LOllamaManager:baseUrl returns the configured base URL string", function()
         local url    = "http://127.0.0.1:11434"
         local ollama = lurek.agent.newOllama({ url = url })
@@ -585,26 +499,26 @@ describe("lurek.agent module", function()
         expect_equal(url, got)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:listModels
     it("LOllamaManager:listModels returns a table", function()
         local ollama = lurek.agent.newOllama()
         local models = ollama:listModels()
         expect_type("table", models)
     end)
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:modelNames
     it("LOllamaManager:modelNames returns a string-array table", function()
         local ollama = lurek.agent.newOllama()
         local names  = ollama:modelNames()
         expect_type("table", names)
     end)
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:hasModel
     it("LOllamaManager:hasModel returns a boolean", function()
         local ollama = lurek.agent.newOllama()
         local found  = ollama:hasModel("llama3")
         expect_type("boolean", found)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:start
     it("LOllamaManager:start returns a boolean", function()
         local ollama = lurek.agent.newOllama()
         local ok     = ollama:start()
@@ -612,14 +526,14 @@ describe("lurek.agent module", function()
         if ok then ollama:stop() end
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:stop
     it("LOllamaManager:stop returns a boolean", function()
         local ollama  = lurek.agent.newOllama()
         local stopped = ollama:stop()
         expect_type("boolean", stopped)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:restart
     it("LOllamaManager:restart returns a boolean", function()
         local ollama = lurek.agent.newOllama()
         local ok     = ollama:restart()
@@ -627,7 +541,7 @@ describe("lurek.agent module", function()
         if ok then ollama:stop() end
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:pullModel
     it("LOllamaManager:pullModel returns a positive integer callback ID", function()
         local ollama = lurek.agent.newOllama()
         local id     = ollama:pullModel("llama3", function(ok, err) end)
@@ -635,14 +549,14 @@ describe("lurek.agent module", function()
         expect_true(id > 0, "pullModel should return a positive callback ID")
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:deleteModel
     it("LOllamaManager:deleteModel returns a boolean", function()
         local ollama = lurek.agent.newOllama()
         local ok     = ollama:deleteModel("nonexistent_model_xyz")
         expect_type("boolean", ok)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:pendingCount
     it("LOllamaManager:pendingCount returns a non-negative integer", function()
         local ollama = lurek.agent.newOllama()
         local n      = ollama:pendingCount()
@@ -650,24 +564,27 @@ describe("lurek.agent module", function()
         expect_true(n >= 0)
     end)
 
-    -- @covers lurek.agent
+    -- @covers LOllamaManager:update
     it("LOllamaManager:update runs without error", function()
         local ollama = lurek.agent.newOllama()
         ollama:update()
     end)
 
     -- @describe lurek.agent direct LLM helpers
+    -- @covers lurek.agent.configure
     it("lurek.agent.configure updates the global provider config", function()
         configure_dead_agent_backend()
         expect_type("function", lurek.agent.complete)
         expect_type("function", lurek.agent.completeAsync)
     end)
+    -- @covers lurek.agent.complete
     it("lurek.agent.complete raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
         local ok, err = pcall(lurek.agent.complete, "hello from unreachable backend")
         expect_false(ok)
         expect_not_nil(err)
     end)
+    -- @covers lurek.agent.completeAsync
     it("lurek.agent.completeAsync reports an error through the callback when the backend is unreachable", function()
         configure_dead_agent_backend()
         local seen_text = nil
@@ -679,32 +596,38 @@ describe("lurek.agent module", function()
         expect_true(seen_text == nil, "unreachable backend should not produce text")
         expect_type("string", seen_err)
     end)
+    -- @covers lurek.agent.completeJson
     it("lurek.agent.completeJson raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
         local ok, err = pcall(lurek.agent.completeJson, "return json")
         expect_false(ok)
         expect_not_nil(err)
     end)
+    -- @covers lurek.agent.embed
     it("lurek.agent.embed raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
         local ok, err = pcall(lurek.agent.embed, "embedding request")
         expect_false(ok)
         expect_not_nil(err)
     end)
+    -- @covers lurek.agent.isAvailable
     it("lurek.agent.isAvailable returns a boolean", function()
         configure_dead_agent_backend()
         expect_type("boolean", lurek.agent.isAvailable())
     end)
+    -- @covers lurek.agent.listModels
     it("lurek.agent.listModels returns a table even when the backend is unreachable", function()
         configure_dead_agent_backend()
         local models = lurek.agent.listModels()
         expect_type("table", models)
     end)
+    -- @covers lurek.agent.newChat
     it("lurek.agent.newChat creates a chat handle", function()
         local chat = lurek.agent.newChat()
         expect_not_nil(chat)
         expect_type("function", chat.getHistory)
     end)
+    -- @covers LAgentChat:addMessage
     it("LAgentChat stores system and user messages in history", function()
         local chat = lurek.agent.newChat()
         chat:setSystemPrompt("You are a careful assistant.")
@@ -714,6 +637,7 @@ describe("lurek.agent module", function()
         expect_equal("user", history[1].role)
         expect_equal("Hello", history[1].content)
     end)
+    -- @covers LAgentChat:complete
     it("LAgentChat:complete raises a Lua error when the backend is unreachable", function()
         configure_dead_agent_backend()
         local chat = lurek.agent.newChat()
@@ -724,6 +648,7 @@ describe("lurek.agent module", function()
         expect_false(ok)
         expect_not_nil(err)
     end)
+    -- @covers LAgentChat:clear
     it("LAgentChat:clear removes all history entries", function()
         local chat = lurek.agent.newChat()
         chat:addMessage("user", "first")
@@ -731,40 +656,44 @@ describe("lurek.agent module", function()
         chat:clear()
         expect_equal(0, #chat:getHistory())
     end)
+    -- @covers lurek.agent.newTemplate
     it("lurek.agent.newTemplate creates a renderable template", function()
         local template = lurek.agent.newTemplate("Hello, {name}!")
         expect_not_nil(template)
         expect_type("function", template.render)
     end)
-    it("LAgentTemplate:render substitutes string and numeric placeholders", function()
+    -- @covers LAgentTemplate:render
+    it("LAgentTemplate:render substitutes placeholders and errors when a value is missing", function()
         local template = lurek.agent.newTemplate("Hello, {name}! Level {level}.")
         local rendered = template:render({ name = "Alice", level = 3 })
         expect_equal("Hello, Alice! Level 3.", rendered)
-    end)
-    it("LAgentTemplate:render raises when a placeholder is missing", function()
-        local template = lurek.agent.newTemplate("Hello, {name}!")
+        local missing_template = lurek.agent.newTemplate("Hello, {name}!")
         local ok, err = pcall(function()
-            template:render({})
+            missing_template:render({})
         end)
         expect_false(ok)
         expect_not_nil(err)
     end)
+    -- @covers lurek.agent.newWorkingMemory
     it("lurek.agent.newWorkingMemory creates a bounded working memory", function()
         local memory = lurek.agent.newWorkingMemory(16)
         expect_not_nil(memory)
         expect_equal(16, memory:capacity())
     end)
+    -- @covers LWorkingMemory:push
     it("LWorkingMemory stores and returns scalar values", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("hp", 100)
         expect_equal(100, memory:get("hp"))
     end)
+    -- @covers LWorkingMemory:forget
     it("LWorkingMemory:forget returns true for an existing key", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("temp", "value")
         expect_true(memory:forget("temp"))
         expect_true(memory:get("temp") == nil)
     end)
+    -- @covers LWorkingMemory:getRecent
     it("LWorkingMemory:getRecent returns the newest inserted entries", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("a", 1)
@@ -776,11 +705,13 @@ describe("lurek.agent module", function()
         expect_equal("b", recent[1].key)
         expect_equal("c", recent[2].key)
     end)
+    -- @covers lurek.agent.newEpisodicMemory
     it("lurek.agent.newEpisodicMemory creates an episodic memory handle", function()
         local memory = lurek.agent.newEpisodicMemory()
         expect_not_nil(memory)
         expect_type("function", memory.record)
     end)
+    -- @covers LEpisodicMemory:query
     it("LEpisodicMemory records and filters episodes by payload", function()
         local memory = lurek.agent.newEpisodicMemory()
         memory:record(1, { type = "kill", target = "slime" })
@@ -791,6 +722,7 @@ describe("lurek.agent module", function()
         expect_equal(1, kills[1].tick)
         expect_equal("slime", kills[1].data.target)
     end)
+    -- @covers LEpisodicMemory:forgetBefore
     it("LEpisodicMemory:forgetBefore prunes older episodes", function()
         local memory = lurek.agent.newEpisodicMemory()
         memory:record(10, { note = "old" })
@@ -799,11 +731,13 @@ describe("lurek.agent module", function()
         expect_equal(1, memory:len())
         expect_equal(20, memory:query({})[1].tick)
     end)
+    -- @covers lurek.agent.newSemanticMemory
     it("lurek.agent.newSemanticMemory creates a semantic memory handle", function()
         local memory = lurek.agent.newSemanticMemory()
         expect_not_nil(memory)
         expect_type("function", memory.learn)
     end)
+    -- @covers LSemanticMemory:recall
     it("LSemanticMemory stores and recalls named facts", function()
         local memory = lurek.agent.newSemanticMemory()
         memory:learn("capital", { value = "Paris", category = "geo" })
@@ -812,6 +746,7 @@ describe("lurek.agent module", function()
         expect_equal("Paris", fact.value)
         expect_equal("geo", fact.category)
     end)
+    -- @covers LSemanticMemory:query
     it("LSemanticMemory can query and remove stored facts", function()
         local memory = lurek.agent.newSemanticMemory()
         memory:learn("fact_a", { category = "geo" })
@@ -822,11 +757,13 @@ describe("lurek.agent module", function()
         expect_true(memory:forget("fact_a"))
         expect_true(memory:recall("fact_a") == nil)
     end)
+    -- @covers lurek.agent.newAgentMemory
     it("lurek.agent.newAgentMemory creates a bundled memory handle", function()
         local memory = lurek.agent.newAgentMemory({ working_capacity = 12 })
         expect_not_nil(memory)
         expect_type("function", memory.working)
     end)
+    -- @covers LAgentMemory:working
     it("LAgentMemory exposes working, episodic, and semantic components", function()
         local memory = lurek.agent.newAgentMemory({ working_capacity = 6 })
         local working = memory:working()
@@ -836,19 +773,13 @@ describe("lurek.agent module", function()
         expect_type("function", episodic.record)
         expect_type("function", semantic.learn)
     end)
+    -- @covers LAgentMemory:save
     it("LAgentMemory saves and loads from disk when persist_path is configured", function()
         local memory = lurek.agent.newAgentMemory({ persist_path = AGENT_MEMORY_PATH })
         expect_true(memory:save())
         expect_true(memory:load())
     end)
-    it("lurek.agent.new creates a LAgent", function()
-        local agent = lurek.agent.new({
-            url = "http://localhost:11434",
-            model = "test",
-        })
-        expect_not_nil(agent)
-        expect_type("function", agent.update)
-    end)
+    -- @covers LWorkingMemory:get
     it("LWorkingMemory:get retrieves stored values", function()
         local memory = lurek.agent.newWorkingMemory(4)
         memory:push("key1", 42)
@@ -856,6 +787,7 @@ describe("lurek.agent module", function()
         expect_equal(42, memory:get("key1"))
         expect_equal("value", memory:get("key2"))
     end)
+    -- @covers LWorkingMemory:len
     it("LWorkingMemory:len returns count of stored items", function()
         local memory = lurek.agent.newWorkingMemory(5)
         expect_equal(0, memory:len())
@@ -864,6 +796,7 @@ describe("lurek.agent module", function()
         memory:push("b", 2)
         expect_equal(2, memory:len())
     end)
+    -- @covers LEpisodicMemory:len
     it("LEpisodicMemory:len returns total episodes recorded", function()
         local memory = lurek.agent.newEpisodicMemory()
         expect_equal(0, memory:len())
@@ -872,6 +805,7 @@ describe("lurek.agent module", function()
         memory:record(2, { event = "action" })
         expect_equal(2, memory:len())
     end)
+    -- @covers LSemanticMemory:len
     it("LSemanticMemory:len returns count of stored facts", function()
         local memory = lurek.agent.newSemanticMemory()
         expect_equal(0, memory:len())

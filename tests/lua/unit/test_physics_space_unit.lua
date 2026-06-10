@@ -4,12 +4,7 @@
 -- @describe space zone gravity integration
 describe("space zone gravity integration", function()
     --              and receives a zone enter event after the first step.
-    -- @covers LWorld:addZone
-    -- @covers LWorld:getZoneEvents
-    -- @covers LWorld:newBody
-    -- @covers LWorld:step
     -- @covers LZone:setGravityPoint
-    -- @covers lurek.physics.newWorld
     it("body inside point-gravity zone gets enter event", function()
         local world = lurek.physics.newWorld(0, 0)  -- no global gravity
         -- Create a large zone covering the whole arena.
@@ -27,12 +22,7 @@ describe("space zone gravity integration", function()
     end)
 
     --              (position remains approximately constant over multiple steps).
-    -- @covers LWorld:addZone
-    -- @covers LWorld:newBody
-    -- @covers LWorld:step
     -- @covers LZone:setGravityZero
-    -- @covers lurek.physics.getBody
-    -- @covers lurek.physics.newWorld
     it("body in zero-g zone stays put", function()
         local world = lurek.physics.newWorld(0, 500) -- strong global gravity
         local zone = world:addZone(-500, -500, 1000, 1000)
@@ -54,12 +44,7 @@ describe("space zone gravity integration", function()
     end)
 
     --              can both be created and stepped without error.
-    -- @covers LWorld:addZone
-    -- @covers LWorld:newBody
-    -- @covers LWorld:getZoneEvents
-    -- @covers LWorld:step
     -- @covers LZone:setGravityDirectional
-    -- @covers lurek.physics.newWorld
     it("overlapping zones with different priorities step without error", function()
         local world = lurek.physics.newWorld(0, 0)
         local z1 = world:addZone(-200, -200, 400, 400)

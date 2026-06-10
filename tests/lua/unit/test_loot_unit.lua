@@ -1,5 +1,5 @@
 -- tests/lua/unit/test_loot_unit.lua
--- lurek.math.newLootTable and lurek.math.newPityTracker unit tests (TST-06)
+-- lurek.math loot table and pity tracker unit tests.
 
 local T = ...
 local math = lurek.math
@@ -7,42 +7,32 @@ local math = lurek.math
 -- @describe lurek.math.newLootTable
 describe("lurek.math.newLootTable", function()
     -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:entryCount
-    it("creates an empty table", function()
+    it("creates an empty loot table", function()
         local lt = math.newLootTable()
         T.assert_equal(lt:entryCount(), 0)
     end)
 
-    -- @covers lurek.math.newLootTable
     -- @covers LLootTable:add
-    -- @covers LLootTable:entryCount
-    it("add / entryCount", function()
+    it("add increases entry count", function()
         local lt = math.newLootTable()
-        lt:add("sword",  10.0)
-        lt:add("shield",  5.0)
+        lt:add("sword", 10.0)
+        lt:add("shield", 5.0)
         T.assert_equal(lt:entryCount(), 2)
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
-    -- @covers LLootTable:build
     -- @covers LLootTable:sample
-    it("sample returns valid id after build", function()
+    it("sample returns a valid entry after build", function()
         local lt = math.newLootTable(42)
-        lt:add("gold",  80.0)
-        lt:add("gem",   20.0)
+        lt:add("gold", 80.0)
+        lt:add("gem", 20.0)
         lt:build()
         local entry = lt:sample()
         T.assert_not_nil(entry)
-        T.assert_true(entry.id == "gold" or entry.id == "gem",
-            "expected gold or gem, got: " .. tostring(entry and entry.id))
+        T.assert_true(entry.id == "gold" or entry.id == "gem")
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
-    -- @covers LLootTable:build
     -- @covers LLootTable:sampleN
-    it("sampleN returns n results", function()
+    it("sampleN returns the requested number of entries", function()
         local lt = math.newLootTable(1)
         lt:add("apple", 1.0)
         lt:add("banana", 1.0)
@@ -51,11 +41,8 @@ describe("lurek.math.newLootTable", function()
         T.assert_equal(#results, 5)
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
-    -- @covers LLootTable:build
     -- @covers LLootTable:sampleUnique
-    it("sampleUnique returns no duplicates", function()
+    it("sampleUnique avoids duplicate ids", function()
         local lt = math.newLootTable(99)
         lt:add("a", 1.0)
         lt:add("b", 1.0)
@@ -70,11 +57,8 @@ describe("lurek.math.newLootTable", function()
         end
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
     -- @covers LLootTable:remove
-    -- @covers LLootTable:entryCount
-    it("remove decreases entryCount", function()
+    it("remove decreases entry count", function()
         local lt = math.newLootTable()
         lt:add("x", 5.0)
         lt:add("y", 5.0)
@@ -83,20 +67,15 @@ describe("lurek.math.newLootTable", function()
         T.assert_equal(lt:entryCount(), 1)
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
     -- @covers LLootTable:setWeight
-    it("setWeight updates weight", function()
+    it("setWeight updates an entry weight", function()
         local lt = math.newLootTable()
         lt:add("rare", 1.0)
         local ok = lt:setWeight("rare", 50.0)
         T.assert_true(ok)
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
     -- @covers LLootTable:merge
-    -- @covers LLootTable:entryCount
     it("merge combines entries from another table", function()
         local a = math.newLootTable(5)
         a:add("sword", 1.0)
@@ -107,9 +86,7 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.lootFromList
-    -- @covers LLootTable:entryCount
-    -- @covers LLootTable:sample
-    it("lootFromList creates table with entries", function()
+    it("lootFromList creates a populated loot table", function()
         local lt = math.lootFromList({
             { id = "common", weight = 10.0, meta = { tier = "c" } },
             { id = "rare", weight = 1.0, meta = { tier = "r" } },
@@ -121,9 +98,7 @@ describe("lurek.math.newLootTable", function()
     end)
 
     -- @covers lurek.math.lootFromToml
-    -- @covers LLootTable:entryCount
-    -- @covers LLootTable:sample
-    it("lootFromToml loads entries from file", function()
+    it("lootFromToml loads entries from a file", function()
         local path = "save/loot_table_unit_test.toml"
         local toml_src = [=[
 seed = 42
@@ -138,7 +113,7 @@ tier = "c"
 [[entries]]
 id = "rare"
 weight = 1
-    ]=]
+        ]=]
         lurek.filesystem.write(path, toml_src)
 
         local lt = math.lootFromToml(path)
@@ -148,13 +123,8 @@ weight = 1
         T.assert_not_nil(sample.id)
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
-    -- @covers LLootTable:build
     -- @covers LLootTable:save
-    -- @covers LLootTable:restore
-    -- @covers LLootTable:entryCount
-    it("save / restore round-trips loot table state", function()
+    it("save and restore round-trip loot table state", function()
         local lt = math.newLootTable(123)
         lt:add("a", 1.0)
         lt:add("b", 2.0)
@@ -165,19 +135,15 @@ weight = 1
         local restored = math.newLootTable()
         restored:restore(blob)
         T.assert_equal(restored:entryCount(), 2)
-        local s = restored:sample()
-        T.assert_not_nil(s)
+        T.assert_not_nil(restored:sample())
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:add
-    -- @covers LLootTable:build
     -- @covers LLootTable:setSeed
-    it("setSeed makes results deterministic", function()
+    it("setSeed supports deterministic sampling", function()
         local function make_and_sample(seed)
             local lt = math.newLootTable(seed)
-            lt:add("head",  50.0)
-            lt:add("tail",  50.0)
+            lt:add("head", 50.0)
+            lt:add("tail", 50.0)
             lt:build()
             return lt:sample().id
         end
@@ -186,10 +152,8 @@ weight = 1
         T.assert_equal(a, b)
     end)
 
-    -- @covers lurek.math.newLootTable
-    -- @covers LLootTable:type
     -- @covers LLootTable:typeOf
-    it("typeOf returns LLootTable", function()
+    it("typeOf recognises loot table types", function()
         local lt = math.newLootTable()
         T.assert_true(lt:typeOf("LLootTable"))
         T.assert_true(lt:typeOf("LObject"))
@@ -200,18 +164,14 @@ end)
 -- @describe lurek.math.newPityTracker
 describe("lurek.math.newPityTracker", function()
     -- @covers lurek.math.newPityTracker
-    -- @covers LPityTracker:counter
-    -- @covers LPityTracker:isPrimed
-    it("creates tracker with zero counter", function()
+    it("creates a tracker with zero counter", function()
         local pt = math.newPityTracker("rare", 5)
         T.assert_equal(pt:counter(), 0)
         T.assert_false(pt:isPrimed())
     end)
 
-    -- @covers lurek.math.newPityTracker
     -- @covers LPityTracker:notice
-    -- @covers LPityTracker:isPrimed
-    it("primes after threshold misses", function()
+    it("notice primes the tracker after enough misses", function()
         local pt = math.newPityTracker("rare", 3)
         pt:notice("common")
         pt:notice("common")
@@ -220,26 +180,18 @@ describe("lurek.math.newPityTracker", function()
         T.assert_true(pt:isPrimed())
     end)
 
-    -- @covers lurek.math.newPityTracker
-    -- @covers LPityTracker:notice
-    -- @covers LPityTracker:isPrimed
     -- @covers LPityTracker:counter
-    it("resets on target hit", function()
+    it("counter resets to zero after the target hit", function()
         local pt = math.newPityTracker("rare", 3)
         pt:notice("common")
         pt:notice("common")
-        pt:notice("common") -- primed
-        pt:notice("rare")   -- hit resets
-        T.assert_false(pt:isPrimed())
+        pt:notice("common")
+        pt:notice("rare")
         T.assert_equal(pt:counter(), 0)
     end)
 
-    -- @covers lurek.math.newPityTracker
-    -- @covers LPityTracker:notice
     -- @covers LPityTracker:reset
-    -- @covers LPityTracker:isPrimed
-    -- @covers LPityTracker:counter
-    it("reset() clears counter and primed", function()
+    it("reset clears counter and primed state", function()
         local pt = math.newPityTracker("epic", 2)
         pt:notice("trash")
         pt:notice("trash")
@@ -249,14 +201,8 @@ describe("lurek.math.newPityTracker", function()
         T.assert_equal(pt:counter(), 0)
     end)
 
-    -- @covers lurek.math.newPityTracker
-    -- @covers LPityTracker:notice
-    -- @covers LPityTracker:export
-    -- @covers LPityTracker:import
     -- @covers LPityTracker:save
-    -- @covers LPityTracker:restore
-    -- @covers LPityTracker:counter
-    it("export / import round-trips state", function()
+    it("save and restore round-trip pity tracker state", function()
         local pt = math.newPityTracker("gold", 4)
         pt:notice("silver")
         pt:notice("silver")
@@ -267,12 +213,8 @@ describe("lurek.math.newPityTracker", function()
         T.assert_equal(pt2:counter(), 2)
     end)
 
-    -- @covers lurek.math.newPityTracker
     -- @covers lurek.math.sampleWithPity
-    -- @covers LLootTable:add
-    -- @covers LLootTable:build
-    -- @covers LPityTracker:isPrimed
-    it("sampleWithPity forces target when primed", function()
+    it("sampleWithPity forces the target when primed", function()
         local lt = math.newLootTable(2)
         lt:add("common", 100.0)
         lt:add("rare", 0.0, { tier = "r" })
@@ -288,14 +230,13 @@ describe("lurek.math.newPityTracker", function()
         T.assert_equal(meta.tier, "r")
     end)
 
-    -- @covers lurek.math.newPityTracker
-    -- @covers LPityTracker:type
     -- @covers LPityTracker:typeOf
-    it("typeOf returns LPityTracker", function()
+    it("typeOf recognises pity tracker types", function()
         local pt = math.newPityTracker("x", 1)
         T.assert_true(pt:typeOf("LPityTracker"))
         T.assert_true(pt:typeOf("LObject"))
         T.assert_false(pt:typeOf("LBeatClock"))
     end)
 end)
+
 test_summary()

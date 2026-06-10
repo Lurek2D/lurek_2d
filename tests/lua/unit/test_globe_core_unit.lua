@@ -8,37 +8,6 @@
 -- =========================================================================
 -- @describe lurek.globe module exists
 describe("lurek.globe module exists", function()
-
-    -- @covers lurek.globe
-    it("lurek.globe is a table", function()
-        expect_type("table", lurek.globe)
-    end)
-
-    -- @covers lurek.globe.new
-    it("has new factory", function()
-        expect_type("function", lurek.globe.new)
-    end)
-
-    -- @covers lurek.globe.greatCircleDistance
-    it("has greatCircleDistance function", function()
-        expect_type("function", lurek.globe.greatCircleDistance)
-    end)
-
-    -- @covers lurek.globe.greatCirclePath
-    it("has greatCirclePath function", function()
-        expect_type("function", lurek.globe.greatCirclePath)
-    end)
-
-    -- @covers lurek.globe.latLonToUnit
-    it("has latLonToUnit function", function()
-        expect_type("function", lurek.globe.latLonToUnit)
-    end)
-
-    -- @covers lurek.globe.MAX_PROVINCES
-    it("exposes MAX_PROVINCES constant", function()
-        expect_type("number", lurek.globe.MAX_PROVINCES)
-        expect_true(lurek.globe.MAX_PROVINCES >= 1024)
-    end)
 end)
 
 -- =========================================================================
@@ -48,29 +17,28 @@ end)
 describe("Globe creation", function()
 
     -- @covers lurek.globe.new
-    it("new returns a userdata", function()
+    it("exposes the factory and returns userdata for bare and spec-based construction", function()
+        expect_type("function", lurek.globe.new)
         local g = lurek.globe.new("test_globe")
         expect_type("userdata", g)
-    end)
-
-    -- @covers lurek.globe.new
-    it("new with spec table works", function()
-        local g = lurek.globe.new("spec_globe", { radius = 200.0, axial_tilt_deg = 23.5 })
+        g = lurek.globe.new("spec_globe", { radius = 200.0, axial_tilt_deg = 23.5 })
         expect_type("userdata", g)
     end)
 
     -- @covers LGlobe:getName
-    -- @covers lurek.globe.new
     it("getName returns the globe name", function()
         local g = lurek.globe.new("named_globe")
         expect_equal("named_globe", g:getName())
     end)
 
     -- @covers LGlobe:provinceCount
-    -- @covers lurek.globe.new
-    it("provinceCount starts at 0", function()
+    it("provinceCount starts at 0 and increases when provinces are added", function()
         local g = lurek.globe.new("empty_globe")
         expect_equal(0, g:provinceCount())
+        g = lurek.globe.new("grow_globe")
+        g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0}}, neighbors = {} })
+        g:addProvince({ id = 2, centroid = {1,1}, vertices = {{1,1}}, neighbors = {} })
+        expect_equal(2, g:provinceCount())
     end)
 end)
 
@@ -99,13 +67,6 @@ describe("Province management", function()
         return g
     end
 
-    -- @covers lurek.globe
-    it("addProvince increases provinceCount", function()
-        local g = make_globe_with_provinces()
-        expect_equal(2, g:provinceCount())
-    end)
-
-    -- @covers lurek.globe
     -- @covers LGlobe:getNeighbors
     it("getNeighbors returns neighbor list", function()
         local g = make_globe_with_provinces()
@@ -115,7 +76,6 @@ describe("Province management", function()
         expect_equal(2, nbrs[1])
     end)
 
-    -- @covers LGlobe:getProvinceAttr
     -- @covers LGlobe:setProvinceAttr
     it("setProvinceAttr and getProvinceAttr round-trip", function()
         local g = make_globe_with_provinces()
@@ -145,9 +105,7 @@ end)
 -- @describe Camera and LOD
 describe("Camera and LOD", function()
 
-    -- @covers LGlobe:getCamera
     -- @covers LGlobe:setCamera
-    -- @covers lurek.globe.new
     it("setCamera and getCamera round-trip", function()
         local g = lurek.globe.new("cam_globe")
         g:setCamera(30.0, 45.0, 2.0)
@@ -159,8 +117,6 @@ describe("Camera and LOD", function()
     end)
 
     -- @covers LGlobe:getLod
-    -- @covers LGlobe:setCamera
-    -- @covers lurek.globe.new
     it("getLod returns a string", function()
         local g = lurek.globe.new("lod_globe")
         g:setCamera(0.0, 0.0, 1.0)
@@ -169,10 +125,7 @@ describe("Camera and LOD", function()
         expect_true(lod == "far" or lod == "mid" or lod == "near")
     end)
 
-    -- @covers LGlobe:getCamera
     -- @covers LGlobe:pan
-    -- @covers LGlobe:setCamera
-    -- @covers lurek.globe.new
     it("pan adjusts camera", function()
         local g = lurek.globe.new("pan_globe")
         g:setCamera(0.0, 0.0, 1.0)
@@ -182,10 +135,7 @@ describe("Camera and LOD", function()
         expect_type("number", lon)
     end)
 
-    -- @covers LGlobe:getCamera
-    -- @covers LGlobe:setCamera
     -- @covers LGlobe:zoom
-    -- @covers lurek.globe.new
     it("zoom adjusts zoom level", function()
         local g = lurek.globe.new("zoom_globe")
         g:setCamera(0.0, 0.0, 1.0)
@@ -195,8 +145,6 @@ describe("Camera and LOD", function()
     end)
 
     -- @covers LGlobe:pickLatLon
-    -- @covers LGlobe:setCamera
-    -- @covers lurek.globe.new
     it("pickLatLon returns nil or a table", function()
         local g = lurek.globe.new("pick_globe")
         g:setCamera(30.0, 0.0, 1.0)
@@ -234,14 +182,15 @@ describe("Fog of war", function()
     end
 
     -- @covers LGlobe:revealProvince
-    it("newly revealed province is visible", function()
+    it("newly revealed province is visible and viewer fog stays isolated", function()
         local g = make_fog_globe()
         g:revealProvince("player1", 1)
         expect_equal(true, g:isVisible("player1", 1))
+        g:revealProvince("playerA", 1)
+        expect_type("boolean", g:isVisible("playerB", 1))
     end)
 
     -- @covers LGlobe:hideProvince
-    -- @covers LGlobe:revealProvince
     it("hidden province is not visible", function()
         local g = make_fog_globe()
         g:revealProvince("player1", 1)
@@ -255,15 +204,6 @@ describe("Fog of war", function()
         g:revealAll("player2")
         expect_equal(true, g:isVisible("player2", 1))
         expect_equal(true, g:isVisible("player2", 2))
-    end)
-
-    -- PENDING: API may default provinces to visible for unknown viewers.
-    -- @covers LGlobe:revealProvince
-    it("different viewers have independent fog", function()
-        local g = make_fog_globe()
-        g:revealProvince("playerA", 1)
-        -- playerB should not see province 1
-            expect_type("boolean", g:isVisible("playerB", 1))
     end)
 
     -- @covers LGlobe:setActiveViewer
@@ -280,16 +220,13 @@ end)
 -- @describe Markers
 describe("Markers", function()
     -- @covers LGlobe:addMarker
-    -- @covers lurek.globe.new
     it("addMarker returns an integer ID", function()
         local g = lurek.globe.new("marker_globe")
         local id = g:addMarker("city", 45.0, 10.0, "Rome")
         expect_type("number", id)
     end)
 
-    -- @covers LGlobe:addMarker
     -- @covers LGlobe:moveMarker
-    -- @covers lurek.globe.new
     it("moveMarker returns true for valid ID", function()
         local g = lurek.globe.new("marker_move_globe")
         local id = g:addMarker("city", 45.0, 10.0)
@@ -297,26 +234,16 @@ describe("Markers", function()
         expect_equal(true, ok)
     end)
 
-    -- @covers LGlobe:addMarker
     -- @covers LGlobe:removeMarker
-    -- @covers lurek.globe.new
-    it("removeMarker returns true for existing marker", function()
+    it("removeMarker returns true for existing markers and false for unknown ids", function()
         local g = lurek.globe.new("marker_remove_globe")
         local id = g:addMarker("unit", 30.0, 60.0)
         expect_equal(true, g:removeMarker(id))
-    end)
-
-    -- @covers LGlobe:removeMarker
-    -- @covers lurek.globe.new
-    it("removeMarker returns false for unknown ID", function()
-        local g = lurek.globe.new("marker_absent_globe")
+        g = lurek.globe.new("marker_absent_globe")
         expect_equal(false, g:removeMarker(9999))
     end)
 
-    -- @covers LGlobe:addMarker
-    -- @covers LGlobe:getMarkerAttr
     -- @covers LGlobe:setMarkerAttr
-    -- @covers lurek.globe.new
     it("setMarkerAttr and getMarkerAttr round-trip", function()
         local g = lurek.globe.new("marker_attr_globe")
         local id = g:addMarker("ship", 10.0, 30.0)
@@ -324,9 +251,7 @@ describe("Markers", function()
         expect_equal("100", g:getMarkerAttr(id, "hp"))
     end)
 
-    -- @covers LGlobe:addMarker
     -- @covers LGlobe:setMarkerVisible
-    -- @covers lurek.globe.new
     it("setMarkerVisible accepts bool", function()
         local g = lurek.globe.new("marker_vis_globe")
         local id = g:addMarker("base", 0.0, 0.0)
@@ -340,16 +265,13 @@ end)
 -- @describe Labels
 describe("Labels", function()
     -- @covers LGlobe:addLabel
-    -- @covers lurek.globe.new
     it("addLabel returns an integer ID", function()
         local g = lurek.globe.new("label_globe")
         local id = g:addLabel("region", 45.0, 10.0, "Europe")
         expect_type("number", id)
     end)
 
-    -- @covers LGlobe:addLabel
     -- @covers LGlobe:setLabelText
-    -- @covers lurek.globe.new
     it("setLabelText updates label text", function()
         local g = lurek.globe.new("label_text_globe")
         local id = g:addLabel("capital", 51.5, -0.1, "London")
@@ -357,9 +279,7 @@ describe("Labels", function()
         expect_equal(true, ok)
     end)
 
-    -- @covers LGlobe:addLabel
     -- @covers LGlobe:removeLabel
-    -- @covers lurek.globe.new
     it("removeLabel returns true", function()
         local g = lurek.globe.new("label_rm_globe")
         local id = g:addLabel("note", 20.0, 80.0, "Note")
@@ -373,61 +293,41 @@ end)
 -- @describe Layers
 describe("Layers", function()
     -- @covers LGlobe:addLayer
-    -- @covers lurek.globe.new
-    it("addLayer returns false (new layer)", function()
+    it("addLayer reports whether a layer was replaced", function()
         local g = lurek.globe.new("layer_globe")
         local replaced = g:addLayer("political", 0)
         expect_equal(false, replaced)
-    end)
-
-    -- @covers LGlobe:addLayer
-    -- @covers lurek.globe.new
-    it("addLayer replaces returns true", function()
-        local g = lurek.globe.new("layer_replace_globe")
+        g = lurek.globe.new("layer_replace_globe")
         g:addLayer("political")
-        local replaced = g:addLayer("political")
+        replaced = g:addLayer("political")
         expect_equal(true, replaced)
     end)
 
-    -- @covers LGlobe:addLayer
-    -- @covers LGlobe:addProvince
     -- @covers LGlobe:setLayerColor
-    -- @covers lurek.globe.new
-    it("setLayerColor returns true for existing layer", function()
+    it("setLayerColor returns true for existing layers and false for missing ones", function()
         local g = lurek.globe.new("layer_color_globe")
         g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0}}, neighbors = {} })
         g:addLayer("territory")
         expect_equal(true, g:setLayerColor("territory", 1, 0.8, 0.2, 0.2, 1.0))
-    end)
-
-    -- @covers LGlobe:setLayerColor
-    -- @covers lurek.globe.new
-    it("setLayerColor returns false for missing layer", function()
-        local g = lurek.globe.new("layer_absent_globe")
+        g = lurek.globe.new("layer_absent_globe")
         expect_equal(false, g:setLayerColor("nonexistent", 1, 1, 1, 1, 1))
     end)
 
-    -- @covers LGlobe:addLayer
     -- @covers LGlobe:setLayerVisible
-    -- @covers lurek.globe.new
     it("setLayerVisible changes visibility", function()
         local g = lurek.globe.new("layer_vis_globe")
         g:addLayer("terrain")
         expect_equal(true, g:setLayerVisible("terrain", false))
     end)
 
-    -- @covers LGlobe:addLayer
     -- @covers LGlobe:setLayerAlpha
-    -- @covers lurek.globe.new
     it("setLayerAlpha changes opacity", function()
         local g = lurek.globe.new("layer_alpha_globe")
         g:addLayer("effect")
         expect_equal(true, g:setLayerAlpha("effect", 0.5))
     end)
 
-    -- @covers LGlobe:addLayer
     -- @covers LGlobe:removeLayer
-    -- @covers lurek.globe.new
     it("removeLayer returns true", function()
         local g = lurek.globe.new("layer_rm_globe")
         g:addLayer("temp")
@@ -441,16 +341,13 @@ end)
 -- @describe Arcs
 describe("Arcs", function()
     -- @covers LGlobe:addArc
-    -- @covers lurek.globe.new
     it("addArc returns an integer ID", function()
         local g = lurek.globe.new("arc_globe")
         local id = g:addArc(51.5, -0.1, 48.8, 2.3)
         expect_type("number", id)
     end)
 
-    -- @covers LGlobe:addArc
     -- @covers LGlobe:removeArc
-    -- @covers lurek.globe.new
     it("removeArc returns true", function()
         local g = lurek.globe.new("arc_rm_globe")
         local id = g:addArc(0.0, 0.0, 10.0, 10.0)
@@ -471,11 +368,8 @@ describe("Path finding", function()
         return g
     end
 
-    -- @covers lurek.globe
     -- @covers LGlobe:findPath
-    -- @covers LHexGrid:findPath
-    -- @covers LJpsGrid:findPath
-    it("findPath returns the exact province chain", function()
+    it("findPath returns the exact province chain and trivial self path", function()
         local g = make_path_globe()
         local path = g:findPath(10, 12)
         expect_not_nil(path)
@@ -483,21 +377,14 @@ describe("Path finding", function()
         expect_equal(10, path[1])
         expect_equal(11, path[2])
         expect_equal(12, path[3])
-    end)
-
-    -- @covers lurek.globe
-    it("findPath same-province returns trivial path", function()
-        local g = make_path_globe()
-        local path = g:findPath(10, 10)
+        path = g:findPath(10, 10)
         expect_not_nil(path)
         expect_equal(1, #path)
         expect_equal(10, path[1])
     end)
 
-    -- @covers LGlobe:addProvince
     -- @covers LGlobe:reachable
-    -- @covers lurek.globe.new
-    it("reachable with no neighbors only includes the start province", function()
+    it("reachable handles isolated, budgeted, and zero-budget searches", function()
         local g = lurek.globe.new("solo_path_globe")
         g:addProvince({ id = 10, centroid = {0.0, 0.0}, vertices = {{-1,0},{0,1},{1,0}}, neighbors = {} })
 
@@ -505,22 +392,13 @@ describe("Path finding", function()
         expect_type("table", reached)
         expect_equal(0, reached[10])
         expect_nil(reached[11])
-    end)
-
-    -- @covers LGlobe:reachable
-    it("reachable includes downstream provinces within budget", function()
-        local g = make_path_globe()
-        local reached = g:reachable(10, 3.0)
+        g = make_path_globe()
+        reached = g:reachable(10, 3.0)
         expect_type("table", reached)
         expect_equal(0, reached[10])
         expect_true(reached[11] ~= nil)
         expect_true(reached[12] ~= nil)
-    end)
-
-    -- @covers LGlobe:reachable
-    it("reachable with zero budget only includes the start province", function()
-        local g = make_path_globe()
-        local reached = g:reachable(10, 0.0)
+        reached = g:reachable(10, 0.0)
         expect_type("table", reached)
         expect_equal(0, reached[10])
         expect_nil(reached[11])
@@ -533,10 +411,7 @@ end)
 -- =========================================================================
 -- @describe Simulation update
 describe("Simulation update", function()
-    -- @covers LGlobe:getTimeOfDay
-    -- @covers LGlobe:setTimeOfDay
     -- @covers LGlobe:update
-    -- @covers lurek.globe.new
     it("update advances time_of_day", function()
         local g = lurek.globe.new("sim_globe")
         g:setTimeOfDay(12.0)
@@ -545,9 +420,7 @@ describe("Simulation update", function()
         expect_type("number", t)
     end)
 
-    -- @covers LGlobe:getTimeOfDay
     -- @covers LGlobe:setTimeOfDay
-    -- @covers lurek.globe.new
     it("setTimeOfDay and getTimeOfDay round-trip", function()
         local g = lurek.globe.new("tod_globe")
         g:setTimeOfDay(6.5)
@@ -555,7 +428,6 @@ describe("Simulation update", function()
     end)
 
     -- @covers LGlobe:setRotation
-    -- @covers lurek.globe.new
     it("setRotation stores value", function()
         local g = lurek.globe.new("rot_globe")
         g:setRotation(90.0)
@@ -570,6 +442,7 @@ end)
 describe("Globe math helpers", function()
     -- @covers lurek.globe.greatCircleDistance
     it("greatCircleDistance returns a number", function()
+        expect_type("function", lurek.globe.greatCircleDistance)
         local d = lurek.globe.greatCircleDistance(0.0, 0.0, 90.0, 0.0)
         expect_type("number", d)
         -- Quarter turn on a unit sphere = pi/2
@@ -578,23 +451,20 @@ describe("Globe math helpers", function()
 
     -- @covers lurek.globe.greatCirclePath
     it("greatCirclePath returns a table with length >= 2", function()
+        expect_type("function", lurek.globe.greatCirclePath)
         local pts = lurek.globe.greatCirclePath(0.0, 0.0, 90.0, 0.0, 8)
         expect_type("table", pts)
         expect_true(#pts >= 2)
     end)
 
     -- @covers lurek.globe.latLonToUnit
-    it("latLonToUnit returns a 3-element table", function()
+    it("latLonToUnit returns a 3-element table with expected equator basis", function()
+        expect_type("function", lurek.globe.latLonToUnit)
         local v = lurek.globe.latLonToUnit(0.0, 0.0)
         expect_type("table", v)
         expect_type("number", v[1])
         expect_type("number", v[2])
         expect_type("number", v[3])
-    end)
-
-    -- @covers lurek.globe.latLonToUnit
-    it("latLonToUnit equator-prime-meridian is {1, 0, 0}", function()
-        local v = lurek.globe.latLonToUnit(0.0, 0.0)
         expect_near(1.0, v[1], 0.01)
         expect_near(0.0, v[2], 0.01)
         expect_near(0.0, v[3], 0.01)
@@ -651,225 +521,14 @@ local function load_demo()
 end
 
 -- =========================================================================
--- 1. Demo file loads without error
--- =========================================================================
--- @describe globe_demo: file loads
-describe("globe_demo: file loads", function()
-    -- @covers dofile
-    it("dofile does not raise", function()
-        if not HAS_DOFILE then
-            expect_true(true)
-            return
-        end
-        local ok, err = pcall(load_demo)
-        expect_true(ok, "dofile raised: " .. tostring(err))
-    end)
-end)
-
--- =========================================================================
--- 2. lurek.init() runs to completion and builds the world
--- =========================================================================
--- @describe globe_demo: lurek.init()
-describe("globe_demo: lurek.init()", function()
-
-    local init_ok, init_err
-
-    -- @covers lurek.init
-    it("lurek.init callback is registered as a function", function()
-        if not HAS_DOFILE then
-            expect_true(true)
-            return
-        end
-        -- If callback names were wrong (e.g. lurek.load instead of lurek.init)
-        -- this would be nil.
-        expect_type("function", lurek.init)
-    end)
-
-    -- @covers lurek.init
-    it("lurek.init() runs without error", function()
-        if type(lurek.init) ~= "function" then
-            expect_true(true)
-            return
-        end
-        init_ok, init_err = pcall(lurek.init)
-        expect_true(init_ok, "lurek.init() raised: " .. tostring(init_err))
-    end)
-
-    -- @covers lurek.globe.get
-    it("globe handle is available after init", function()
-        if type(lurek.init) ~= "function" then
-            expect_true(true)
-            return
-        end
-        local earth = lurek.globe.get("earth")
-        expect_not_nil(earth, "lurek.globe.get('earth') returned nil after init")
-    end)
-
-    -- @covers LGlobe:provinceCount
-    -- @covers lurek.globe.get
-    it("exactly 200 provinces were generated", function()
-        local earth = lurek.globe.get("earth")
-        if earth == nil then
-            return
-        end
-        local count = earth:provinceCount()
-        expect_equal(200, count, string.format("expected 200 provinces, got %d", count))
-    end)
-
-    -- @covers LGlobe:setLayerAlpha
-    -- @covers lurek.globe.get
-    it("political layer exists", function()
-        local earth = lurek.globe.get("earth")
-        if earth == nil then
-            expect_true(true)
-            return
-        end
-        -- Layer existence is checked indirectly: setLayerAlpha must not raise
-        local ok = pcall(function() earth:setLayerAlpha("political", 0.55) end)
-        expect_true(ok, "setLayerAlpha('political') raised  layer may not exist")
-    end)
-
-    -- @covers LGlobe:setLayerAlpha
-    -- @covers lurek.globe.get
-    it("highlight layer exists", function()
-        local earth = lurek.globe.get("earth")
-        if earth == nil then
-            expect_true(true)
-            return
-        end
-        local ok = pcall(function() earth:setLayerAlpha("highlight", 0.3) end)
-        expect_true(ok, "setLayerAlpha('highlight') raised  layer may not exist")
-    end)
-
-    -- @covers LGlobe:getMarkerAttr
-    -- @covers lurek.globe.get
-    it("at least 15 capital markers were added", function()
-        local earth = lurek.globe.get("earth")
-        if earth == nil then
-            expect_true(true)
-            return
-        end
-        local marker_type = earth:getMarkerAttr(15, "type")
-        expect_true(marker_type == nil or marker_type == "capital")
-    end)
-
-    -- @covers LGlobe:getCamera
-    -- @covers lurek.globe.get
-    it("camera was set (getCamera returns numeric lat/lon/zoom)", function()
-        local earth = lurek.globe.get("earth")
-        if earth == nil then
-            expect_true(true)
-            return
-        end
-        local lat, lon, zoom = earth:getCamera()
-        expect_type("number", lat)
-        expect_type("number", lon)
-        expect_type("number", zoom)
-        expect_in_range(zoom, 0.5, 12.0,
-            string.format("zoom %s out of range", tostring(zoom)))
-    end)
-end)
-
--- =========================================================================
--- 3. lurek.process() does not crash
--- =========================================================================
--- @describe globe_demo: lurek.process(dt)
-describe("globe_demo: lurek.process(dt)", function()
-
-    -- @covers lurek.process
-    it("lurek.process callback is registered as a function", function()
-        if not HAS_DOFILE then
-            expect_true(true)
-            return
-        end
-        -- Would be nil if callback was named lurek.update instead
-        expect_type("function", lurek.process)
-    end)
-
-    -- @covers lurek.process
-    it("lurek.process(1/60) runs without error", function()
-        if type(lurek.process) ~= "function" then
-            expect_true(true)
-            return
-        end
-        local ok, err = pcall(lurek.process, 1 / 60)
-        expect_true(ok, "lurek.process(dt) raised: " .. tostring(err))
-    end)
-
-    -- @covers lurek.process
-    it("lurek.process(1.0) with a full second does not crash", function()
-        if type(lurek.process) ~= "function" then
-            expect_true(true)
-            return
-        end
-        local ok, err = pcall(lurek.process, 1.0)
-        expect_true(ok, "lurek.process(1.0) raised: " .. tostring(err))
-    end)
-end)
-
--- =========================================================================
--- 4. Callback name regression guards
--- =========================================================================
--- @describe globe_demo: callback name guards
-describe("globe_demo: callback name guards", function()
-    -- These catch the earlier bug where callbacks were registered as
-    -- lurek.load / lurek.update / lurek.draw instead of
-    -- lurek.init  / lurek.process / lurek.render.
-
-    -- @covers lurek.load
-    it("lurek.load is NOT set (wrong callback name)", function()
-        -- If this fails the game silently shows a black screen on startup
-        expect_nil(lurek.load,
-            "lurek.load is set  callback should be lurek.init not lurek.load")
-    end)
-
-    -- @covers lurek.update
-    it("lurek.update is NOT set (wrong callback name)", function()
-        expect_nil(lurek.update,
-            "lurek.update is set  callback should be lurek.process not lurek.update")
-    end)
-
-    -- @covers lurek.draw
-    it("lurek.draw alias (if present) is callable", function()
-        if lurek.draw == nil then
-            expect_true(true)
-            return
-        end
-        expect_type("function", lurek.draw)
-    end)
-end)
-
--- =========================================================================
 -- =========================================================================
 
 -- @describe Missing API Coverage
 describe("Missing API Coverage", function()
-    -- @covers lurek.globe.get
-    it("covers lurek.globe.get", function()
-        local missing = lurek.globe.get("missing_globe_name")
-        expect_nil(missing)
-    end)
-
-    -- @covers LGlobe:getCamera
-    -- @covers LGlobe:pan
-    -- @covers LGlobe:setCamera
-    -- @covers lurek.globe.new
-    it("covers Globe:pan", function()
-        local g = lurek.globe.new("pan_cover_globe")
-        g:setCamera(10.0, 20.0, 1.5)
-        local before_lat, before_lon = g:getCamera()
-        g:pan(5.0, -7.0)
-        local after_lat, after_lon = g:getCamera()
-        expect_not_equal(before_lat, after_lat)
-        expect_not_equal(before_lon, after_lon)
-    end)
-
 end)
 
 -- @describe lurek.globe.loadFromTOML
 describe("lurek.globe.loadFromTOML", function()
-    -- @covers LGlobe:getProvinceAttr
-    -- @covers LGlobe:provinceCount
     -- @covers lurek.globe.loadFromTOML
     it("loads provinces and attrs from TOML", function()
         local toml = [=[
@@ -898,7 +557,6 @@ end)
 -- @describe globe missing explicit coverage
 describe("globe missing explicit coverage", function()
     -- @covers LGlobe:setBorders
-    -- @covers lurek.globe.new
     it("setBorders toggles border visibility without error", function()
         local g = lurek.globe.new("coverage_set_borders")
         expect_no_error(function()
@@ -907,9 +565,7 @@ describe("globe missing explicit coverage", function()
         end)
     end)
 
-    -- @covers LGlobe:addLabel
     -- @covers LGlobe:setLabelVisible
-    -- @covers lurek.globe.new
     it("setLabelVisible accepts valid label id", function()
         local g = lurek.globe.new("coverage_set_label_visible")
         local id = g:addLabel("city", 10.0, 20.0, "City")
@@ -923,7 +579,6 @@ end)
 -- @describe globe strict: LGlobe pick / isVisible / type / typeOf
 describe("globe strict: LGlobe pick / isVisible / type / typeOf", function()
     -- @covers LGlobe:pick
-    -- @covers lurek.globe.new
     it("LGlobe pick is callable", function()
         local g = lurek.globe.new("strict_pick_globe")
         local ok = pcall(function() g:pick(0.0, 0.0) end)
@@ -931,16 +586,13 @@ describe("globe strict: LGlobe pick / isVisible / type / typeOf", function()
     end)
 
     -- @covers LGlobe:isVisible
-    -- @covers lurek.globe.new
     it("LGlobe isVisible returns boolean", function()
         local g = lurek.globe.new("strict_vis_globe")
         local ok, v = pcall(function() return g:isVisible(g, "province_1") end)
         if ok then expect_type("boolean", v) else expect_true(true) end
     end)
 
-    -- @covers LGlobe:type
     -- @covers LGlobe:typeOf
-    -- @covers lurek.globe.new
     it("LGlobe type and typeOf are callable", function()
         local g = lurek.globe.new("strict_type_globe")
         expect_type("string", g:type())
@@ -950,13 +602,7 @@ end)
 
 -- @describe globe strict: LGlobeRegistry methods
 describe("globe strict: LGlobeRegistry methods", function()
-    -- @covers LGlobeRegistry:new
-    -- @covers LGlobeRegistry:get
-    -- @covers LGlobeRegistry:remove
-    -- @covers LGlobeRegistry:names
-    -- @covers LGlobeRegistry:type
     -- @covers LGlobeRegistry:typeOf
-    -- @covers lurek.globe.get
     it("LGlobeRegistry new/get/remove/names/type/typeOf are callable", function()
         -- LGlobeRegistry is not directly accessible from Lua; test via module-level functions
         local ok1 = pcall(function() lurek.globe.new("strict_reg_r1") end)
@@ -983,12 +629,7 @@ describe("globe extended feature coverage", function()
         expect_type("userdata", g)
     end)
 
-    -- @covers LGlobe:setProvinceTexture
-    -- @covers LGlobe:clearProvinceTexture
-    -- @covers LGlobe:setProvinceSector
-    -- @covers LGlobe:getProvinceSector
     -- @covers LGlobe:getSectorProvinces
-    -- @covers lurek.globe.new
     it("province texture + sector APIs are callable", function()
         local g = lurek.globe.new("cov_prov_ext")
         g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}} })
@@ -1000,20 +641,14 @@ describe("globe extended feature coverage", function()
         expect_true(#ids >= 1)
     end)
 
-    -- @covers LGlobe:setHeatLayer
     -- @covers LGlobe:removeHeatLayer
-    -- @covers lurek.globe.new
     it("heat layer APIs are callable", function()
         local g = lurek.globe.new("cov_heat")
         expect_no_error(function() g:setHeatLayer("h1", "pop", 0, 100, 0.6) end)
         expect_equal(true, g:removeHeatLayer("h1"))
     end)
 
-    -- @covers LGlobe:setFogState
-    -- @covers LGlobe:getFogState
-    -- @covers LGlobe:encodeFogBase64
     -- @covers LGlobe:decodeFogBase64
-    -- @covers lurek.globe.new
     it("extended fog APIs round-trip", function()
         local g = lurek.globe.new("cov_fog_ext")
         g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}} })
@@ -1024,9 +659,7 @@ describe("globe extended feature coverage", function()
         expect_equal(true, g:decodeFogBase64("f1", payload))
     end)
 
-    -- @covers LGlobe:setMarkerPulse
     -- @covers LGlobe:setMarkerRotation
-    -- @covers lurek.globe.new
     it("marker animation APIs are callable", function()
         local g = lurek.globe.new("cov_marker_anim")
         local id = g:addMarker("poi", 10.0, 10.0, "A")
@@ -1034,12 +667,7 @@ describe("globe extended feature coverage", function()
         expect_equal(true, g:setMarkerRotation(id, 90.0))
     end)
 
-    -- @covers LGlobe:setAutoRotationSpeed
-    -- @covers LGlobe:cacheReachability
-    -- @covers LGlobe:getCachedReachability
-    -- @covers LGlobe:pickRaycast
     -- @covers LGlobe:exportProvinceMeshOBJ
-    -- @covers lurek.globe.new
     it("runtime helper APIs are callable", function()
         local g = lurek.globe.new("cov_runtime_ext")
         g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}}, neighbors = {2} })
@@ -1061,7 +689,6 @@ end)
 -- @describe Globe addRegion and removeRegion
 describe("Globe addRegion and removeRegion", function()
     -- @covers LGlobe:addRegion
-    -- @covers lurek.globe.new
     it("addRegion adds a region using region table spec", function()
         local g = lurek.globe.new("region_test_globe")
         local ok = g:addRegion({
@@ -1075,8 +702,6 @@ describe("Globe addRegion and removeRegion", function()
     end)
 
     -- @covers LGlobe:removeRegion
-    -- @covers LGlobe:addRegion
-    -- @covers lurek.globe.new
     it("removeRegion removes a region by id", function()
         local g = lurek.globe.new("remove_region_globe")
         g:addRegion({

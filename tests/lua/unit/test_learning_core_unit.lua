@@ -9,7 +9,7 @@ describe("lurek.learning", function()
         expect_equal(net:layerCount(), 0)
     end)
 
-    -- @covers lurek.learning.newNeuralNet
+    -- @covers LNeuralNet:forward
     it("adds layers and runs forward pass", function()
         local net = lurek.learning.newNeuralNet()
         net:addLayer(2, 3, "relu")
@@ -28,7 +28,7 @@ describe("lurek.learning", function()
         expect_equal(ga:generation(), 0)
     end)
 
-    -- @covers lurek.learning.newGeneticAlgorithm
+    -- @covers LGeneticAlgorithm:evolve
     it("evolves a generation", function()
         local ga = lurek.learning.newGeneticAlgorithm(10, 4, 123)
         ga:setFitness(0, 1.0)
@@ -45,7 +45,7 @@ describe("lurek.learning", function()
         expect_equal(q:getActionCount(), 3)
     end)
 
-    -- @covers lurek.learning.newQLearner
+    -- @covers LQLearner:learn
     it("learns from transitions", function()
         local q = lurek.learning.newQLearner(3, 2)
         q:setLearningRate(0.5)
@@ -62,7 +62,7 @@ describe("lurek.learning", function()
         expect_equal(b:totalPulls(), 0)
     end)
 
-    -- @covers lurek.learning.newBandit
+    -- @covers LBandit:select
     it("selects and updates arms", function()
         local b = lurek.learning.newBandit(3, "epsilon_greedy", 0.1, 99)
         local arm = b:select()
@@ -82,7 +82,7 @@ describe("lurek.learning", function()
         expect_equal(ne:generation(), 0)
     end)
 
-    -- @covers lurek.learning.newNeuroevolution
+    -- @covers LNeuroevolution:chromosomeToNet
     it("converts chromosome to network", function()
         local ne = lurek.learning.newNeuroevolution({
             { inputs = 2, outputs = 3, activation = "tanh" }
@@ -107,7 +107,7 @@ describe("lurek.learning", function()
         expect_true(not env:typeOf("LBandit"), "typeOf LBandit false")
     end)
 
-    -- @covers lurek.learning.defineEnv
+    -- @covers LEnv:obsSpace
     it("LEnv:obsSpace and actionSpace return tables", function()
         local env = lurek.learning.defineEnv({
             reset = function() return {0.0} end,
@@ -124,7 +124,21 @@ describe("lurek.learning", function()
         expect_equal(act.n, 4)
     end)
 
-    -- @covers lurek.learning.defineEnv
+    -- @covers LEnv:actionSpace
+    it("LEnv:actionSpace exposes action metadata", function()
+        local env = lurek.learning.defineEnv({
+            reset = function() return {0.0} end,
+            step  = function(a) return {{0.0}, 0.0, false, {}} end,
+            obs_space    = { shape = {1}, low = {-1}, high = {1} },
+            action_space = { n = 3, low = {0}, high = {2} },
+        })
+        local act = env:actionSpace()
+        expect_equal(3, act.n)
+        expect_equal(0, act.low[1])
+        expect_equal(2, act.high[1])
+    end)
+
+    -- @covers LEnv:reset
     it("LEnv:reset returns obs table", function()
         local env = lurek.learning.defineEnv({
             reset = function() return {1.0, 2.0, 3.0} end,
@@ -138,7 +152,7 @@ describe("lurek.learning", function()
         expect_equal(obs[1], 1.0)
     end)
 
-    -- @covers lurek.learning.defineEnv
+    -- @covers LEnv:step
     it("LEnv:step returns obs, reward, done, info", function()
         local env = lurek.learning.defineEnv({
             reset = function() return {0.0} end,
@@ -163,7 +177,7 @@ describe("lurek.learning", function()
         expect_equal(fs:capacity(), 3)
     end)
 
-    -- @covers lurek.learning.frameStack
+    -- @covers LFrameStack:get
     it("LFrameStack:push and get return flat vector", function()
         local fs = lurek.learning.frameStack(3)
         fs:push({1.0, 2.0})
@@ -175,7 +189,7 @@ describe("lurek.learning", function()
         expect_true(flat[1] ~= nil, "flat[1] not nil")
     end)
 
-    -- @covers lurek.learning.frameStack
+    -- @covers LFrameStack:reset
     it("LFrameStack:reset clears frames", function()
         local fs = lurek.learning.frameStack(2)
         fs:push({1.0})
@@ -232,7 +246,7 @@ describe("lurek.learning", function()
         expect_true(not t:typeOf("LOnnxModel"), "typeOf LOnnxModel false")
     end)
 
-    -- @covers lurek.learning.newTensor
+    -- @covers LTensor:shape
     it("LTensor:shape returns correct dimensions", function()
         local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
         local s = t:shape()
@@ -241,7 +255,7 @@ describe("lurek.learning", function()
         expect_equal(s[2], 3)
     end)
 
-    -- @covers lurek.learning.newTensor
+    -- @covers LTensor:data
     it("LTensor:data returns flat element array", function()
         local t = lurek.learning.newTensor({3}, {10.5, 20.5, 30.5})
         local d = t:data()
@@ -251,13 +265,13 @@ describe("lurek.learning", function()
         expect_true(math.abs(d[3] - 30.5) < 0.001, "d[3] close to 30.5")
     end)
 
-    -- @covers lurek.learning.newTensor
+    -- @covers LTensor:len
     it("LTensor:len returns total element count", function()
         local t = lurek.learning.newTensor({4, 2}, {1, 2, 3, 4, 5, 6, 7, 8})
         expect_equal(t:len(), 8)
     end)
 
-    -- @covers lurek.learning.newTensor
+    -- @covers LTensor:get
     it("LTensor:get returns element by one-based index", function()
         local t = lurek.learning.newTensor({3}, {7.0, 8.0, 9.0})
         expect_true(math.abs(t:get(1) - 7.0) < 0.001, "get(1) = 7.0")
@@ -265,9 +279,10 @@ describe("lurek.learning", function()
         expect_true(math.abs(t:get(3) - 9.0) < 0.001, "get(3) = 9.0")
     end)
 
-    -- @covers lurek.learning.newTensor
+    -- @covers LTensor:type
     it("LTensor:get out of bounds returns error", function()
         local t = lurek.learning.newTensor({2}, {1.0, 2.0})
+        expect_equal("LTensor", t:type())
         local ok, err = pcall(function() return t:get(5) end)
         expect_true(not ok, "out-of-bounds get should error")
         expect_true(err ~= nil, "error message not nil")
@@ -381,21 +396,6 @@ describe("lurek.learning", function()
         local shape = out:shape()
         expect_equal(shape[1], 2)
         expect_equal(shape[2], 4)
-    end)
-
-    -- @covers LFrameStack:get
-    it("FrameStack:get exists", function()
-        expect_true(true)
-    end)
-
-    -- @covers LTensor:get
-    it("Tensor:get exists", function()
-        expect_true(true)
-    end)
-
-    -- @covers LTensor:len
-    it("Tensor:len exists", function()
-        expect_true(true)
     end)
 
     -- @covers LOnnxModel:run
